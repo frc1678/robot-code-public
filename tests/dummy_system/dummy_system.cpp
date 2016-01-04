@@ -14,6 +14,6 @@ TEST(DummySystem, Works) {
     tsm.Update();
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
   }
-  sub.Join();
+  sub.Stop();
   ASSERT_EQ(sub.count_, 2);
 }

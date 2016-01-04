@@ -1,4 +1,4 @@
-#include "muan/multithreading/updateable.h"
+#include "../../multithreading/updateable.h"
 
 class TestSubsystem : public Updateable {
  public:

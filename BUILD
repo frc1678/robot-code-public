@@ -1,23 +1,23 @@
 package(default_visibility = ["//visibility:public"])
 
 cc_library(
-	name = "muan",
-	deps = [":utils", ":statemachine", ":logging", ":multithreading"]
+  name = "muan",
+  deps = [":utils", ":statemachine", ":logging", ":multithreading"]
 )
 
 cc_library(
-	name = "utils",
-	srcs = glob(["utils/**/*.cpp"]),
-	includes = ["utils"],
-	hdrs = glob(["utils/**/*.h"]),
+  name = "utils",
+  srcs = glob(["utils/**/*.cpp"]),
+  includes = ["utils"],
+  hdrs = glob(["utils/**/*.h"]),
   deps = [":unitscpp"]
 )
 
 cc_library(
-	name = "statemachine",
-	srcs = glob(["statemachine/**/*.cpp"]),
-	includes = ["statemachine"],
-	hdrs = glob(["statemachine/**/*.h"]),
+  name = "statemachine",
+  srcs = glob(["statemachine/**/*.cpp"]),
+  includes = ["statemachine"],
+  hdrs = glob(["statemachine/**/*.h"]),
 )
 
 cc_library(
@@ -39,5 +39,11 @@ cc_library(
   name = 'unitscpp',
   srcs = [],
   hdrs = ['unitscpp/unitscpp.h'],
-  visibility = ["//visibility:public"],
+)
+
+cc_library(
+  name = 'control',
+  srcs = glob(["control/**/*.cpp"]),
+  hdrs = glob(["control/**/*.h"]),
+  deps = [":unitscpp", ":utils"]
 )
