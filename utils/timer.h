@@ -1,3 +1,5 @@
+#ifndef MUAN_UTILS_TIMER_H_
+#define MUAN_UTILS_TIMER_H_
 #include "../unitscpp/unitscpp.h"
 
 class Timer {
@@ -10,3 +12,5 @@ class Timer {
  private:
   Time start_;
 };
+
+#endif
