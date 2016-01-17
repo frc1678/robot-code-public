@@ -2,6 +2,8 @@
 #include "../utils/timer.h"
 #include "../utils/timing_utils.h"
 
+using namespace muan;
+
 TEST(TimeUtils, TimerPositive) {
   Timer t;
   t.Start();

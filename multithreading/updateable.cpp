@@ -11,6 +11,8 @@
 #include <iostream>
 #include "../utils/timing_utils.h"
 
+namespace muan {
+
 Updateable::Updateable(Frequency tick_rate) {
   Time loop_time = 1 / tick_rate;
   main_ = std::thread([this, loop_time]() {
@@ -36,3 +38,5 @@ Updateable::~Updateable() { Stop(); }
 void Updateable::Start() { running_ = true; }
 
 void Updateable::Stop() { running_ = false; }
+
+}

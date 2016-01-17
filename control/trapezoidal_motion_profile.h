@@ -5,11 +5,13 @@
  *      Author: Kyle
  */
 
-#ifndef SRC_ROBOTCODE_TRAPEZOIDALMOTIONPROFILE_H_
-#define SRC_ROBOTCODE_TRAPEZOIDALMOTIONPROFILE_H_
+#ifndef MUAN_CONTROL_TRAPEZOIDALMOTIONPROFILE_H_
+#define MUAN_CONTROL_TRAPEZOIDALMOTIONPROFILE_H_
 
 #include "motion_profile.h"
 #include <cmath>
+
+namespace muan {
 
 template<typename DistanceU>
 class TrapezoidalMotionProfile : public MotionProfile<DistanceU>
@@ -43,7 +45,7 @@ public:
 		}
 	}
 	virtual ~TrapezoidalMotionProfile() {}
-	virtual VelocityU calculate_speed(Time time) override {
+	VelocityU CalculateDerivative(Time time) override {
 		VelocityU speed = 0;
 
 		if (time <= _accel_time) {
@@ -56,7 +58,7 @@ public:
 
 		return speed;
 	}
-	virtual DistanceU calculate_distance(Time time) override {
+	DistanceU Calculate(Time time) override {
 		DistanceU accel_dist = _max_speed * _accel_time / 2;
 		DistanceU full_dist = _max_speed * (_total_time - _deccel_time - _accel_time);
 
@@ -77,5 +79,7 @@ public:
 		return time > _total_time;
 	}
 };
+
+}
 
 #endif /* SRC_ROBOTCODE_TRAPEZOIDALMOTIONPROFILE_H_ */

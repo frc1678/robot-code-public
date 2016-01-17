@@ -13,6 +13,9 @@
 #include <utility>
 #include <string>
 #include "log.h"
+
+namespace muan {
+
 /*
  * A log in CSV (comma-separated values) format.
  * Example:
@@ -38,5 +41,7 @@ class CSVLog : public Log {
   std::stringstream buffer_;
   std::vector<std::pair<std::string, std::string>> entries_;
 };
+
+}
 
 #endif /* MUAN_LOGGING_CSV_LOG_H_ */

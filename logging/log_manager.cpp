@@ -9,6 +9,8 @@
 #include "log_manager.h"
 #include <string>
 
+namespace muan {
+
 LogManager *LogManager::instance_ = new LogManager();
 
 LogManager::LogManager() {
@@ -60,4 +62,6 @@ LogManager::~LogManager() {
   for (auto pair : logs_) {
     delete pair.second;
   }
+}
+
 }

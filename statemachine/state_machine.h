@@ -13,6 +13,8 @@
 #include <map>
 #include "state.h"
 
+namespace muan {
+
 class StateMachine {
  public:
   explicit StateMachine(std::string initial_state);
@@ -26,5 +28,7 @@ class StateMachine {
   std::map<std::string, State> states_;
   std::string first_, current_;
 };
+
+}
 
 #endif  // MUAN_STATEMACHINE_STATE_MACHINE_H_

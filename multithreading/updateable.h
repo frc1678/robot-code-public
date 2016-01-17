@@ -13,6 +13,8 @@
 #include <thread>
 #include "../unitscpp/unitscpp.h"
 
+namespace muan {
+
 /*
  * A base class for an object that runs in a separate thread at a constant rate.
  * To use, implement the Update(Time dt) method.
@@ -29,5 +31,7 @@ class Updateable {
   std::thread main_;
   volatile std::atomic<bool> running_{false};
 };
+
+}
 
 #endif  // MUAN_MULTITHREADING_UPDATEABLE_H_

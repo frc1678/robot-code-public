@@ -2,7 +2,7 @@ package(default_visibility = ["//visibility:public"])
 
 cc_library(
   name = "muan",
-  deps = [":utils", ":statemachine", ":logging", ":multithreading"]
+  deps = [":utils", ":statemachine", ":logging", ":multithreading", ":control"]
 )
 
 cc_library(

@@ -2,6 +2,8 @@
 #include "../multithreading/updateable.h"
 #include "../utils/timing_utils.h"
 
+using namespace muan;
+
 class TestUpdateable : public Updateable, public testing::Test {
  public:
   TestUpdateable() : Updateable(500 * hz) {}

@@ -15,6 +15,8 @@
 #include <string>
 #include "log.h"
 
+namespace muan {
+
 /*
  * A singleton object which manages all of an application's logs. Any instance
  * of a subclass of Log will automatically add itself to the LogManager.
@@ -36,5 +38,7 @@ class LogManager {
   void Stop();
   virtual ~LogManager();
 };
+
+}
 
 #endif /* MUAN_LOGGING_LOG_MANAGER_H_ */

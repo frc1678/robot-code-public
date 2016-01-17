@@ -13,6 +13,8 @@
 #include <string>
 #include "log_manager.h"
 
+namespace muan {
+
 std::string Log::folder_path_ = "./logs/" + Log::GetDateString() + "/";
 std::once_flag Log::folder_created_;
 
@@ -55,4 +57,6 @@ std::string Log::GetTimeString() {
   timeinfo = localtime(&rawtime);
   strftime(buffer, 80, "%H-%M-%S", timeinfo);
   return buffer;
+}
+
 }

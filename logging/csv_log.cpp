@@ -11,6 +11,8 @@
 #include <vector>
 #include "log_manager.h"
 
+namespace muan {
+
 CSVLog::CSVLog(std::string filename, std::vector<std::string> keys)
     : Log(filename, GetExtension()) {
   buffer_ << "timestamp,";
@@ -82,3 +84,5 @@ std::string &CSVLog::operator[](std::string key) {
 }
 
 CSVLog::~CSVLog() {}
+
+}

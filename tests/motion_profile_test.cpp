@@ -4,6 +4,8 @@
 #include "unitscpp/unitscpp.h"
 #include "../control/trapezoidal_motion_profile.h"
 
+using namespace muan;
+
 TEST(DriveTest, DistDriven) {
   Length distance = 5*ft;
   TrapezoidalMotionProfile<Length> motion_profile(distance, maxHighRobotSpeed, maxHighRobotSpeed / (2*s));

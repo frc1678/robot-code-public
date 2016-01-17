@@ -1,5 +1,6 @@
 #include "../statemachine/state_machine.h"
 #include <iostream>
+using namespace muan;
 int i = 0;
 int j = 0;
 class TestStateMachine : public StateMachine {

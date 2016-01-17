@@ -10,6 +10,8 @@
 #include <string>
 #include <iostream>
 
+namespace muan {
+
 StateMachine::StateMachine(std::string initial_state) : first_(initial_state) {}
 
 void StateMachine::Start() {
@@ -38,3 +40,5 @@ void StateMachine::Update() {
 }
 
 void StateMachine::AddState(State &to_add) { states_[to_add.Name()] = to_add; }
+
+}

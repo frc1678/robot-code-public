@@ -10,6 +10,8 @@
 #include <string>
 #include "log_manager.h"
 
+namespace muan {
+
 TextLog::TextLog(std::string name) : Log(name, GetExtension()) {}
 
 std::string TextLog::GetExtension() const { return "log"; }
@@ -42,4 +44,6 @@ void TextLog::FlushToFile() {
   file_.flush();
   std::cout << buffer_.str() << std::endl;
   buffer_.str(std::string());
+}
+
 }
