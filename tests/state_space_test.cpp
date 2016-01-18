@@ -1,16 +1,14 @@
 #include "gtest/gtest.h"
 #include "../control/state_space_plant.h"
+#include "../control/control_utils.h"
 #include "../control/state_feedback_controller.h"
 
 using namespace muan;
 
 TEST(StateSpacePlantTest, StableSystem) {
-  Eigen::Matrix<double, 2, 2> a;
-  a << 1, .05, 0, 0.97;
-  Eigen::Matrix<double, 2, 1> b;
-  b << 0, .05;
-  Eigen::Matrix<double, 1, 2> c;
-  c << 1, 0;
+  auto a = as_matrix<2, 2>({{1, .05}, {0, .97}});
+  auto b = as_matrix<2, 1>({{0}, {.05}});
+  auto c = as_matrix<1, 2>({{1, 0}});
   StateSpacePlant<1, 2, 1, true> flywheel_plant_(a, b, c);
   for (int i = 0; i < 100; i++) {
     Eigen::Matrix<double, 1, 1> u;
@@ -26,12 +24,9 @@ TEST(StateSpacePlantTest, StableSystem) {
 }
 
 TEST(StateSpacePlantTest, UnstableSystem) {
-  Eigen::Matrix<double, 2, 2> a;
-  a << 1, .05, 0, 1.03;
-  Eigen::Matrix<double, 2, 1> b;
-  b << 0, .05;
-  Eigen::Matrix<double, 1, 2> c;
-  c << 1, 0;
+  auto a = as_matrix<2, 2>({{1, .05}, {0, 1.03}});
+  auto b = as_matrix<2, 1>({{0}, {.05}});
+  auto c = as_matrix<1, 2>({{1, 0}});
   StateSpacePlant<1, 2, 1, true> flywheel_plant_(a, b, c);
   for (int i = 0; i < 100; i++) {
     Eigen::Matrix<double, 1, 1> u;
@@ -47,12 +42,9 @@ TEST(StateSpacePlantTest, UnstableSystem) {
 }
 
 TEST(StateSpacePlantTest, SteadyState) {
-  Eigen::Matrix<double, 2, 2> a;
-  a << 1, .05, 0, 0.97;
-  Eigen::Matrix<double, 2, 1> b;
-  b << 0, .05;
-  Eigen::Matrix<double, 1, 2> c;
-  c << 1, 0;
+  auto a = as_matrix<2, 2>({{1, .05}, {0, 0.97}});
+  auto b = as_matrix<2, 1>({{0}, {.05}});
+  auto c = as_matrix<1, 2>({{1, 0}});
   StateSpacePlant<1, 2, 1, true> flywheel_plant_(a, b, c);
   for (int i = 0; i < 1000; i++) {
     Eigen::Matrix<double, 1, 1> u;
@@ -63,19 +55,16 @@ TEST(StateSpacePlantTest, SteadyState) {
 }
 
 TEST(StateSpaceControllerTest, GoesToZero) {
-  Eigen::Matrix<double, 2, 2> a;
-  a << 1, .05, 0, 0.9;
-  Eigen::Matrix<double, 2, 1> b;
-  b << 0, .05;
-  Eigen::Matrix<double, 1, 2> c;
-  c << 1, 0;
+  auto a = as_matrix<2, 2>({{1, .05}, {0, 0.9}});
+  auto b = as_matrix<2, 1>({{0}, {.05}});
+  auto c = as_matrix<1, 2>({{1, 0}});
+
   StateSpacePlant<1, 2, 1, true> plant(a, b, c);
-  Eigen::Matrix<double, 1, 2> k;
-  k << -1.0, -1.0;
+
+  auto k = as_matrix<1, 2>({{-1, -1}});
   StateFeedbackController<2, 1> controller(k);
 
-  Eigen::Matrix<double, 2, 1> x0;
-  x0 << 1.0, 3.0;
+  auto x0 = as_matrix<2, 1>({{1}, {3}});
   plant.SetX(x0);
   for (int i = 0; i < 1000; i++) {
     auto u = -controller.Calculate(plant.GetX());
@@ -86,23 +75,19 @@ TEST(StateSpaceControllerTest, GoesToZero) {
 }
 
 TEST(StateSpaceControllerTest, GoesToGoal) {
-  Eigen::Matrix<double, 2, 2> a;
-  a << 1, .05, 0, 0.9;
-  Eigen::Matrix<double, 2, 1> b;
-  b << 0, .05;
-  Eigen::Matrix<double, 1, 2> c;
-  c << 1, 0;
+  auto a = as_matrix<2, 2>({{1, .05}, {0, .9}});
+  auto b = as_matrix<2, 1>({{0},{.05}});
+  auto c = as_matrix<1, 2>({{1, 0}});
+
   StateSpacePlant<1, 2, 1, true> plant(a, b, c);
-  Eigen::Matrix<double, 1, 2> k;
-  k << -1.0, -1.0;
+
+  auto k = as_matrix<1, 2>({{-1, -1}});
   StateFeedbackController<2, 1> controller(k);
 
-  Eigen::Matrix<double, 2, 1> x0;
-  x0 << 1.0, 3.0;
+  auto x0 = as_matrix<2, 1>({{1}, {3}});
   plant.SetX(x0);
 
-  Eigen::Matrix<double, 2, 1> r;
-  r << 1.0, 0.0;
+  auto r = as_matrix<2, 1>({{1}, {0}});
   controller.SetGoal(r);
 
   for (int i = 0; i < 1000; i++) {
@@ -113,12 +98,19 @@ TEST(StateSpaceControllerTest, GoesToGoal) {
   ASSERT_NEAR(plant.GetX()(1), r(1), 1e-5);
 }
 
-TEST(DiscretizeSystem, Compiles) {
-  Eigen::Matrix<double, 2, 2> a;
-  a << 1.0, 0.0, 0.0, -1.0;
-  Eigen::Matrix<double, 2, 1> b;
-  b << 0, 1;
-  Eigen::Matrix<double, 1, 2> c;
-  c << 1, 0;
-  auto plant = c2d(StateSpacePlant<1, 2, 1>(a, b, c), .005*s);
+TEST(DiscretizeSystem, FollowsSimilarPath) {
+  auto a = as_matrix<2, 2>({{0.0, 1.0}, {0.0, -1.0}});
+  auto b = as_matrix<2, 1>({{0}, {1}});
+  auto c = as_matrix<1, 2>({{3, 0}});
+  Time dt = .001;
+  auto sys = StateSpacePlant<1, 2, 1>(a, b, c);
+  auto sys_d = c2d(sys, dt);
+  for (Time t = 0; t <= 100; t += dt) {
+    Eigen::Matrix<double, 1, 1> u;
+    u << 1.0;
+    sys.Update(u, dt);
+    sys_d.Update(u);
+  }
+  ASSERT_NEAR(sys.GetX()(0), sys.GetX()(0), 1e-5);
+  ASSERT_NEAR(sys.GetX()(1), sys.GetX()(1), 1e-5);
 }
