@@ -30,6 +30,13 @@ cc_test(
 )
 
 cc_test(
+  name = "state_space",
+  deps = ["//:control", "@gtest//:main", "@eigen//:main"],
+  srcs = ["state_space_test.cpp"],
+  linkopts = ["-lm"]
+)
+
+cc_test(
   name = "dummy_system",
   deps = ["//:muan", "@gtest//:main"],
   srcs = glob(["dummy_system/**/*.cpp", "dummy_system/**/*.h"]),
