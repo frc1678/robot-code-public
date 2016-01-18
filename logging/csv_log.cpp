@@ -84,5 +84,4 @@ std::string &CSVLog::operator[](std::string key) {
 }
 
 CSVLog::~CSVLog() {}
-
 }

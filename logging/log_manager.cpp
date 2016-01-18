@@ -63,5 +63,4 @@ LogManager::~LogManager() {
     delete pair.second;
   }
 }
-
 }

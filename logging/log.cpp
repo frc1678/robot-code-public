@@ -58,5 +58,4 @@ std::string Log::GetTimeString() {
   strftime(buffer, 80, "%H-%M-%S", timeinfo);
   return buffer;
 }
-
 }

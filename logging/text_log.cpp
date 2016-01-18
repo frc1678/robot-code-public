@@ -45,5 +45,4 @@ void TextLog::FlushToFile() {
   std::cout << buffer_.str() << std::endl;
   buffer_.str(std::string());
 }
-
 }

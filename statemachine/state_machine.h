@@ -28,7 +28,6 @@ class StateMachine {
   std::map<std::string, State> states_;
   std::string first_, current_;
 };
-
 }
 
 #endif  // MUAN_STATEMACHINE_STATE_MACHINE_H_

@@ -31,7 +31,6 @@ class Updateable {
   std::thread main_;
   volatile std::atomic<bool> running_{false};
 };
-
 }
 
 #endif  // MUAN_MULTITHREADING_UPDATEABLE_H_

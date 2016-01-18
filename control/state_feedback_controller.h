@@ -19,9 +19,7 @@ class StateFeedbackController {
     return k_ * (goal_ - state);
   }
 
-  void SetGoal(Eigen::Matrix<double, States, 1> goal) {
-    goal_ = goal;
-  }
+  void SetGoal(Eigen::Matrix<double, States, 1> goal) { goal_ = goal; }
 
  private:
   Eigen::Matrix<double, Outputs, States> k_;

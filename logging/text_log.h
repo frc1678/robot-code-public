@@ -36,7 +36,6 @@ class TextLog : public Log {
                          std::string category, std::string code_stamp);
   virtual ~TextLog();
 };
-
 }
 
 #endif /* MUAN_LOGGING_TEXT_LOG_H_ */

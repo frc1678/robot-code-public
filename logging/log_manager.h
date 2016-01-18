@@ -38,7 +38,6 @@ class LogManager {
   void Stop();
   virtual ~LogManager();
 };
-
 }
 
 #endif /* MUAN_LOGGING_LOG_MANAGER_H_ */

@@ -10,5 +10,4 @@ void Timer::Start() { start_ = now(); }
 void Timer::Reset() { start_ = now(); }
 
 Time Timer::Get() { return now() - start_; }
-
 }

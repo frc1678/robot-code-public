@@ -51,7 +51,6 @@ class Log {
   std::mutex mutex_;
   std::string name_;
 };
-
 }
 
 #endif  // MUAN_LOGGING_LOG_H_

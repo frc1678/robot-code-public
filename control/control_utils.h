@@ -44,8 +44,9 @@ StateSpacePlant<Inputs, States, Outputs, true> c2d(
   return c2d(sys.GetA(), sys.GetB(), sys.GetC(), dt);
 }
 
-template<int rows, int cols>
-Eigen::Matrix<double, rows, cols> as_matrix(std::initializer_list<std::initializer_list<double>> data) {
+template <int rows, int cols>
+Eigen::Matrix<double, rows, cols> as_matrix(
+    std::initializer_list<std::initializer_list<double>> data) {
   Eigen::Matrix<double, rows, cols> ret;
   int i = 0;
   for (auto il : data) {
@@ -58,5 +59,4 @@ Eigen::Matrix<double, rows, cols> as_matrix(std::initializer_list<std::initializ
   }
   return ret;
 }
-
 }

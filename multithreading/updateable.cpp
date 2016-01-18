@@ -38,5 +38,4 @@ Updateable::~Updateable() { Stop(); }
 void Updateable::Start() { running_ = true; }
 
 void Updateable::Stop() { running_ = false; }
-
 }

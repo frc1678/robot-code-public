@@ -41,7 +41,6 @@ class CSVLog : public Log {
   std::stringstream buffer_;
   std::vector<std::pair<std::string, std::string>> entries_;
 };
-
 }
 
 #endif /* MUAN_LOGGING_CSV_LOG_H_ */

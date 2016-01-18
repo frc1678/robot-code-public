@@ -76,7 +76,7 @@ TEST(StateSpaceControllerTest, GoesToZero) {
 
 TEST(StateSpaceControllerTest, GoesToGoal) {
   auto a = as_matrix<2, 2>({{1, .05}, {0, .9}});
-  auto b = as_matrix<2, 1>({{0},{.05}});
+  auto b = as_matrix<2, 1>({{0}, {.05}});
   auto c = as_matrix<1, 2>({{1, 0}});
 
   StateSpacePlant<1, 2, 1, true> plant(a, b, c);

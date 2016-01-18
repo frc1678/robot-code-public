@@ -40,5 +40,4 @@ void StateMachine::Update() {
 }
 
 void StateMachine::AddState(State &to_add) { states_[to_add.Name()] = to_add; }
-
 }

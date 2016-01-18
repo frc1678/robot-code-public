@@ -31,7 +31,6 @@ class State {
   std::function<void()> init_func_;
   std::function<std::string()> update_func_;
 };
-
 }
 
 #endif  // MUAN_STATEMACHINE_STATE_H_

@@ -14,7 +14,6 @@ class Timer {
  private:
   Time start_;
 };
-
 }
 
 #endif

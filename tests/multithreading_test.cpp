@@ -10,9 +10,7 @@ class TestUpdateable : public Updateable, public testing::Test {
   int x() { return _x; }
 
  protected:
-  void SetUp() {
-    sleep_for(.001*s);
-  }
+  void SetUp() { sleep_for(.001 * s); }
 
   void TearDown() {}
 
@@ -24,14 +22,14 @@ class TestUpdateable : public Updateable, public testing::Test {
 
 TEST_F(TestUpdateable, BasicTest) {
   Start();
-  sleep_for(.7*s);
+  sleep_for(.7 * s);
   Stop();
   ASSERT_EQ(_x, 0);
 }
 
 TEST_F(TestUpdateable, Stop) {
   Start();
-  sleep_for(.1*s);
+  sleep_for(.1 * s);
   Stop();
   ASSERT_GT(_x, 0);
 }
@@ -40,7 +38,7 @@ TEST_F(TestUpdateable, StopsPromptly) {
   Start();
   // The countdown takes .6 seconds total at 500hz, so it should not finish if
   // left for .59 seconds - it should finish very quickly when called.
-  sleep_for(.595*s);
+  sleep_for(.595 * s);
   Stop();
   ASSERT_GT(_x, 0);
 }

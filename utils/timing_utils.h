@@ -24,7 +24,6 @@ void sleep_until(Time t) {
       time_point<system_clock>(microseconds(static_cast<long long>(t.to(us))));
   std::this_thread::sleep_until(as_time_point);
 }
-
 }
 
 #endif  // MUAN_UTILS_TIMING_UTILS_H_

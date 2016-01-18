@@ -30,5 +30,4 @@ void State::Init() { init_func_(); }
 std::string State::Update() { return update_func_(); }
 
 std::string State::Name() { return name_; }
-
 }
