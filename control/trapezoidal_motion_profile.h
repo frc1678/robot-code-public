@@ -24,10 +24,16 @@ class TrapezoidalMotionProfile : public MotionProfile<DistanceU> {
   Time _deccel_time;
   VelocityU _max_speed;
   AccelerationU _max_acceleration;
+  bool is_negative;
 
  public:
   TrapezoidalMotionProfile<DistanceU>(DistanceU distance, VelocityU max_speed,
                                       AccelerationU max_acceleration) {
+    if (distance < DistanceU(0)) {
+      distance = -distance;
+      is_negative = true;
+    }
+    else is_negative = false;
     _accel_time = max_speed / max_acceleration;
     _deccel_time = max_speed / max_acceleration;
     _max_speed = max_speed;
@@ -58,7 +64,7 @@ class TrapezoidalMotionProfile : public MotionProfile<DistanceU> {
       speed = _max_speed * ((_total_time - time) / _deccel_time);
     }
 
-    return speed;
+    return is_negative ? -speed : speed;
   }
   DistanceU Calculate(Time time) override {
     DistanceU accel_dist = _max_speed * _accel_time / 2;
@@ -76,7 +82,7 @@ class TrapezoidalMotionProfile : public MotionProfile<DistanceU> {
                  (_deccel_time + time - _total_time) * _max_speed / 2;
     }
 
-    return distance;
+    return is_negative ? -distance : distance;
   }
   bool finished(Time time) override { return time > _total_time; }
 };

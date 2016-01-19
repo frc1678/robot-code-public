@@ -31,6 +31,11 @@ class PidController {
     return proportional * kP + integral_ * kI + derivative * kD;
   }
 
+  void Reset() {
+    last_proportional_ = 0;
+    integral_ = 0;
+  }
+
  private:
   InputType last_proportional_;
   Units<InputType::u1, InputType::u2 + 1, InputType::u3, InputType::u4>
