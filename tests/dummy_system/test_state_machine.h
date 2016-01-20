@@ -1,6 +1,8 @@
 #include "../../statemachine/state_machine.h"
 #include "unitscpp/unitscpp.h"
 
+using namespace muan;
+
 class TestStateMachine : public StateMachine {
  public:
   TestStateMachine(TestSubsystem& sub) : StateMachine("counting") {

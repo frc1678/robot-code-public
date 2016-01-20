@@ -11,9 +11,9 @@ TEST(DriveTest, DistDriven) {
   TrapezoidalMotionProfile<Length> motion_profile(distance, maxHighRobotSpeed,
                                                   maxHighRobotSpeed / (2 * s));
   Time t;
-  Velocity last_speed = motion_profile.calculate_speed(0 * s);
+  Velocity last_speed = motion_profile.CalculateDerivative(0 * s);
   for (t = 0; !motion_profile.finished(t); t += .05 * s) {
-    Velocity cur_speed = motion_profile.calculate_speed(t);
+    Velocity cur_speed = motion_profile.CalculateDerivative(t);
     Acceleration accel = (cur_speed - last_speed) / (.05 * s);
     EXPECT_LE(cur_speed, maxHighRobotSpeed);
     EXPECT_LE(accel.to(ft / s / s),
@@ -24,6 +24,5 @@ TEST(DriveTest, DistDriven) {
         << "Robot deccelerating too quickly";
     last_speed = cur_speed;
   }
-  EXPECT_NEAR(motion_profile.calculate_distance(t).to(ft), distance.to(ft),
-              0.00001);
+  EXPECT_NEAR(motion_profile.Calculate(t).to(ft), distance.to(ft), 0.00001);
 }

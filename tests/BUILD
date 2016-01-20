@@ -18,7 +18,7 @@ cc_test(
 
 cc_test(
   name = "pid",
-  deps = ["//:utils", "@gtest//:main"],
+  deps = ["//:control", "//:utils", "@gtest//:main"],
   srcs = ["pid_test.cpp"]
 )
 

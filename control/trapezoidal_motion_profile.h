@@ -32,8 +32,8 @@ class TrapezoidalMotionProfile : public MotionProfile<DistanceU> {
     if (distance < DistanceU(0)) {
       distance = -distance;
       is_negative = true;
-    }
-    else is_negative = false;
+    } else
+      is_negative = false;
     _accel_time = max_speed / max_acceleration;
     _deccel_time = max_speed / max_acceleration;
     _max_speed = max_speed;

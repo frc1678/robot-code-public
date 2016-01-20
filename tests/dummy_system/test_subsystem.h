@@ -1,5 +1,7 @@
 #include "../../multithreading/updateable.h"
 
+using namespace muan;
+
 class TestSubsystem : public Updateable {
  public:
   TestSubsystem() : Updateable(100 * hz) {

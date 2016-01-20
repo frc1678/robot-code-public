@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "../control/pid_controller.h"
+#include "control/pid_controller.h"
 
 using namespace muan;
 
