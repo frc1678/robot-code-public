@@ -7,25 +7,36 @@
 
 namespace muan {
 
-template <int Inputs, int States, int Outputs>
+template <int Inputs, int States, int Outputs, bool discrete = false>
 class StateObserver {
  public:
-  StateObserver(Eigen::Matrix<double, States, States> a,
-                Eigen::Matrix<double, States, Outputs> b,
-                Eigen::Matrix<double, Inputs, States> c,
-                Eigen::Matrix<double, States, Inputs> l)
-      : plant_(a, b, c), l_(l) {}
+  StateObserver() {}
+  StateObserver(StateSpacePlant<Inputs, States, Outputs, true> plant)
+      : plant_(plant) {}
 
-  void Update(const Eigen::Vector<double, Outputs, 1>& u,
+  void Update(const Eigen::Matrix<double, Outputs, 1>& u,
               const Eigen::Matrix<double, Inputs, 1>& y) {
-    plant_.Update();
-    plant_.SetX(plant.GetX() + l_ * (y - plant.GetY()));
+    plant_.Update(u);
+    plant_.SetX(plant_.GetX() +
+                plant_.GetTimestep().to(s) * l_ * (y - plant_.GetY()));
+  }
+
+  void Update(const Eigen::Matrix<double, Outputs, 1>& u,
+              const Eigen::Matrix<double, Inputs, 1>& y, Time dt) {
+    plant_.Update(u, dt);
+    plant_.SetX(plant_.GetX() +
+                plant_.GetTimestep().to(s) * l_ * (y - plant_.GetY()));
   }
 
   Eigen::Matrix<double, States, 1> GetX() { return plant_.GetX(); }
 
+  void SetGains(Eigen::Matrix<double, States, Inputs> l) { l_ = l; }
+  void SetPlant(StateSpacePlant<Inputs, States, Outputs, discrete> plant) {
+    plant_ = plant;
+  }
+
  private:
-  StateSpacePlant<Inputs, States, Outputs> plant_;
+  StateSpacePlant<Inputs, States, Outputs, discrete> plant_;
   Eigen::Matrix<double, States, Inputs> l_;
 };
 }
