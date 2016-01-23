@@ -50,9 +50,21 @@ class TrapezoidalMotionProfile : public MotionProfile<DistanceU> {
       _deccel_time = _accel_time;
       _max_speed = _accel_time * _max_acceleration;
       _total_time = _accel_time + _deccel_time;
+      std::cout << _total_time << ", " << _accel_time << ", " << _deccel_time<< std::endl;
     }
   }
   virtual ~TrapezoidalMotionProfile() {}
+  AccelerationU CalculateSecondDerivative(Time time) override {
+    if (time < _accel_time) {
+      return _max_acceleration;
+    } else if (time < _total_time - _deccel_time) {
+      return 0;
+    } else if (time < _total_time) {
+      return -_max_acceleration;
+    } else {
+      return 0;
+    }
+  }
   VelocityU CalculateDerivative(Time time) override {
     VelocityU speed = 0;
 
@@ -68,18 +80,20 @@ class TrapezoidalMotionProfile : public MotionProfile<DistanceU> {
   }
   DistanceU Calculate(Time time) override {
     DistanceU accel_dist = _max_speed * _accel_time / 2;
-    DistanceU full_dist =
+    DistanceU deccel_dist = _max_speed * _deccel_time / 2;
+    DistanceU full_speed_dist =
         _max_speed * (_total_time - _deccel_time - _accel_time);
 
-    DistanceU distance = accel_dist + full_dist + _deccel_time * _max_speed / 2;
+    DistanceU distance = accel_dist + full_speed_dist + _deccel_time * _max_speed / 2;
 
     if (time <= _accel_time) {
       distance = time * time * _max_speed / _accel_time / 2;
     } else if (time <= _total_time - _deccel_time) {
-      distance = (time - _accel_time / 2) * _max_speed;
+      distance = accel_dist + _max_speed * (time - _accel_time);
     } else if (time <= _total_time) {
-      distance = accel_dist + full_dist +
-                 (_deccel_time + time - _total_time) * _max_speed / 2;
+      Time time_left = _total_time - time;
+      DistanceU dist_left = time_left * time_left * _max_speed / _accel_time / 2;
+      distance = accel_dist + full_speed_dist + (deccel_dist - dist_left);
     }
 
     return is_negative ? -distance : distance;

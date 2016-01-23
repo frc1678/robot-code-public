@@ -20,6 +20,7 @@ class MotionProfile {
       AccelerationU;
   MotionProfile() {}
   virtual ~MotionProfile() {}
+  virtual AccelerationU CalculateSecondDerivative(Time time) = 0;
   virtual VelocityU CalculateDerivative(Time time) = 0;
   virtual DistanceU Calculate(Time time) = 0;
   virtual bool finished(Time time) = 0;
