@@ -53,6 +53,17 @@ class TrapezoidalMotionProfile : public MotionProfile<DistanceU> {
     }
   }
   virtual ~TrapezoidalMotionProfile() {}
+  AccelerationU CalculateSecondDerivative(Time time) override {
+    if (time < _accel_time) {
+      return _max_acceleration;
+    } else if (time < _total_time - _deccel_time) {
+      return 0;
+    } else if (time < _total_time) {
+      return -_max_acceleration;
+    } else {
+      return 0;
+    }
+  }
   VelocityU CalculateDerivative(Time time) override {
     VelocityU speed = 0;
 
