@@ -1,4 +1,5 @@
 #include "gtest/gtest.h"
+#include "Eigen/Core"
 #include "../control/state_space_plant.h"
 #include "../control/control_utils.h"
 #include "../control/state_feedback_controller.h"
@@ -11,13 +12,11 @@ TEST(StateSpacePlantTest, StableSystem) {
   auto c = as_matrix<1, 2>({{1, 0}});
   StateSpacePlant<1, 2, 1, true> flywheel_plant_(a, b, c);
   for (int i = 0; i < 100; i++) {
-    Eigen::Matrix<double, 1, 1> u;
-    u << 1.0;
+    auto u = as_matrix<1, 1>({{1}});
     flywheel_plant_.Update(u);
   }
   for (int i = 0; i < 1000; i++) {
-    Eigen::Matrix<double, 1, 1> u;
-    u << 0.0;
+    auto u = as_matrix<1, 1>({{0.0}});
     flywheel_plant_.Update(u);
   }
   ASSERT_NEAR(flywheel_plant_.GetX()(1), 0, 1e-10);
@@ -29,13 +28,11 @@ TEST(StateSpacePlantTest, UnstableSystem) {
   auto c = as_matrix<1, 2>({{1, 0}});
   StateSpacePlant<1, 2, 1, true> flywheel_plant_(a, b, c);
   for (int i = 0; i < 100; i++) {
-    Eigen::Matrix<double, 1, 1> u;
-    u << 1.0;
+    auto u = as_matrix<1, 1>({{1}});
     flywheel_plant_.Update(u);
   }
   for (int i = 0; i < 1000; i++) {
-    Eigen::Matrix<double, 1, 1> u;
-    u << 0.0;
+    auto u = as_matrix<1, 1>({{0}});
     flywheel_plant_.Update(u);
   }
   ASSERT_GT(flywheel_plant_.GetX()(1), 1e10);
@@ -47,8 +44,7 @@ TEST(StateSpacePlantTest, SteadyState) {
   auto c = as_matrix<1, 2>({{1, 0}});
   StateSpacePlant<1, 2, 1, true> flywheel_plant_(a, b, c);
   for (int i = 0; i < 1000; i++) {
-    Eigen::Matrix<double, 1, 1> u;
-    u << 1.0;
+    auto u = as_matrix<1, 1>({{1}});
     flywheel_plant_.Update(u);
   }
   ASSERT_NEAR(flywheel_plant_.GetX()(1), 5.0 / 3.0, 1e-10);
@@ -61,13 +57,13 @@ TEST(StateSpaceControllerTest, GoesToZero) {
 
   StateSpacePlant<1, 2, 1, true> plant(a, b, c);
 
-  auto k = as_matrix<1, 2>({{-1, -1}});
+  auto k = as_matrix<1, 2>({{1, 1}});
   StateFeedbackController<2, 1> controller(k);
 
   auto x0 = as_matrix<2, 1>({{1}, {3}});
   plant.SetX(x0);
   for (int i = 0; i < 1000; i++) {
-    auto u = -controller.Calculate(plant.GetX());
+    auto u = controller.Calculate(plant.GetX());
     plant.Update(u);
   }
   ASSERT_NEAR(plant.GetX()(0), 0.0, 1e-5);
@@ -81,7 +77,7 @@ TEST(StateSpaceControllerTest, GoesToGoal) {
 
   StateSpacePlant<1, 2, 1, true> plant(a, b, c);
 
-  auto k = as_matrix<1, 2>({{-1, -1}});
+  auto k = as_matrix<1, 2>({{1, 1}});
   StateFeedbackController<2, 1> controller(k);
 
   auto x0 = as_matrix<2, 1>({{1}, {3}});
@@ -91,7 +87,7 @@ TEST(StateSpaceControllerTest, GoesToGoal) {
   controller.SetGoal(r);
 
   for (int i = 0; i < 1000; i++) {
-    auto u = -controller.Calculate(plant.GetX());
+    auto u = controller.Calculate(plant.GetX());
     plant.Update(u);
   }
   ASSERT_NEAR(plant.GetX()(0), r(0), 1e-5);
@@ -106,8 +102,7 @@ TEST(DiscretizeSystem, FollowsSimilarPath) {
   auto sys = StateSpacePlant<1, 2, 1>(a, b, c);
   auto sys_d = c2d(sys, dt);
   for (Time t = 0; t <= 100; t += dt) {
-    Eigen::Matrix<double, 1, 1> u;
-    u << 1.0;
+    auto u = as_matrix<1, 1>({{1}});
     sys.Update(u, dt);
     sys_d.Update(u);
   }

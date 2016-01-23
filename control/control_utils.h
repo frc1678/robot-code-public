@@ -1,5 +1,7 @@
 #include "Eigen/Eigenvalues"
 #include "state_space_plant.h"
+#include "state_feedback_controller.h"
+#include <vector>
 
 namespace muan {
 
