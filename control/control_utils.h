@@ -1,3 +1,6 @@
+#ifndef MUAN_CONTROL_CONTROL_UTILS_H_
+#define MUAN_CONTROL_CONTROL_UTILS_H_
+
 #include "Eigen/Eigenvalues"
 #include "state_space_plant.h"
 #include "state_feedback_controller.h"
@@ -62,3 +65,5 @@ Eigen::Matrix<double, rows, cols> as_matrix(
   return ret;
 }
 }
+
+#endif
