@@ -31,6 +31,18 @@ class PidController {
     return proportional * kP + integral_ * kI + derivative * kD;
   }
 
+  void SetProportionalConstants(ProportionalConstant p) {
+    kP = p;
+  }
+
+  void SetIntegralConstant(IntegralConstant i) {
+    kI = i;
+  }
+
+  void SetDerivativeConstant(DerivativeConstant d) {
+    kD = d;
+  }
+
   void Reset() {
     last_proportional_ = 0;
     integral_ = 0;
