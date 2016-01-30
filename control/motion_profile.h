@@ -24,6 +24,7 @@ class MotionProfile {
   virtual VelocityU CalculateDerivative(Time time) = 0;
   virtual DistanceU Calculate(Time time) = 0;
   virtual bool finished(Time time) = 0;
+  virtual DistanceU GetTotalDistance() = 0;
 };
 }
 
