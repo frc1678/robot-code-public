@@ -40,7 +40,7 @@ StateSpacePlant<Inputs, States, Outputs, true> c2d(
   Eigen::Matrix<double, States, Outputs> b_discrete =
       (evecs * diage * evecs.inverse() * b);
   return StateSpacePlant<Inputs, States, Outputs, true>(a_discrete, b_discrete,
-                                                        c);
+                                                        c, dt);
 }
 
 template <int Inputs, int States, int Outputs>
