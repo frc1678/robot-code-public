@@ -10,7 +10,7 @@ namespace muan {
 template <int Inputs, int States, int Outputs, bool discrete = false>
 class StateSpacePlant {
  public:
-  StateSpacePlant(Time dt = 0 * s) : dt_(dt) {}
+  StateSpacePlant(Time dt) : dt_(dt) {}
   StateSpacePlant(Eigen::Matrix<double, States, States> a,
                   Eigen::Matrix<double, States, Outputs> b,
                   Eigen::Matrix<double, Inputs, States> c, Time dt = 0 * s)

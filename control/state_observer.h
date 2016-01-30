@@ -10,7 +10,7 @@ namespace muan {
 template <int Inputs, int States, int Outputs, bool discrete = false>
 class StateObserver {
  public:
-  StateObserver() {}
+  StateObserver(Time dt) : plant_(dt) {}
   StateObserver(StateSpacePlant<Inputs, States, Outputs, true> plant)
       : plant_(plant) {}
 
@@ -29,10 +29,14 @@ class StateObserver {
   }
 
   Eigen::Matrix<double, States, 1> GetX() { return plant_.GetX(); }
+  void SetX(Eigen::Matrix<double, States, 1> x) { plant_.SetX(x); }
 
   void SetGains(Eigen::Matrix<double, States, Inputs> l) { l_ = l; }
   void SetPlant(StateSpacePlant<Inputs, States, Outputs, discrete> plant) {
     plant_ = plant;
+  }
+  StateSpacePlant<Inputs, States, Outputs, discrete> GetPlant() {
+    return plant_;
   }
 
  private:

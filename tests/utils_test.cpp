@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include "../utils/timer.h"
 #include "../utils/timing_utils.h"
+#include "../utils/history.h"
 
 using namespace muan;
 
@@ -34,4 +35,15 @@ TEST(TimeUtils, SleepUntil) {
   Time start = now();
   sleep_until(start + .5 * s);
   ASSERT_NEAR(now().to(s), start.to(s) + .5, .01);
+}
+
+TEST(History, WorksCorrectly) {
+  History<int, 200> hist(.01 * s);
+  for (int i = 0; i < 100; i++) {
+    hist.Update(i);
+  }
+  // We don't really care about off-by-one errors
+  for (Time t = .01 * s; t < 1 * s; t += .01 * s) {
+    ASSERT_NEAR(hist.GoBack(t), 100 - static_cast<int>(t.to(.01 * s)), 1);
+  }
 }
