@@ -3,7 +3,7 @@
  *
  *  Created on: Jan 21, 2016
  *  Copyright 2016 Citrus Circuits
- *      Author: Hiatt Leveillee 
+ *      Author: Hiatt Leveillee
  */
 
 #include "test_log.h"
@@ -15,8 +15,7 @@ namespace muan {
 
 TestLog::TestLog(std::string filename, std::vector<std::string> keys)
     : Log(filename, GetExtension()) {
-  if(file_.is_open())
-    file_.close();
+  if (file_.is_open()) file_.close();
   folder_path_ = "./logs/tests/";
   file_.open(folder_path_ + name_ + ".csv");
 }
