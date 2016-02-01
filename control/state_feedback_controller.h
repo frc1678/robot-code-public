@@ -3,6 +3,7 @@
 
 #include "Eigen/Core"
 #include "unitscpp/unitscpp.h"
+#include <iostream>
 
 namespace muan {
 
