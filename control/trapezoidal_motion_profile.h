@@ -25,10 +25,12 @@ class TrapezoidalMotionProfile : public MotionProfile<DistanceU> {
   VelocityU _max_speed;
   AccelerationU _max_acceleration;
   bool is_negative;
+  DistanceU total_distance;
 
  public:
   TrapezoidalMotionProfile<DistanceU>(DistanceU distance, VelocityU max_speed,
                                       AccelerationU max_acceleration) {
+    total_distance = distance;
     if (distance < DistanceU(0)) {
       distance = -distance;
       is_negative = true;
@@ -50,7 +52,8 @@ class TrapezoidalMotionProfile : public MotionProfile<DistanceU> {
       _deccel_time = _accel_time;
       _max_speed = _accel_time * _max_acceleration;
       _total_time = _accel_time + _deccel_time;
-      std::cout << _total_time << ", " << _accel_time << ", " << _deccel_time<< std::endl;
+      std::cout << _total_time << ", " << _accel_time << ", " << _deccel_time
+                << std::endl;
     }
   }
   virtual ~TrapezoidalMotionProfile() {}
@@ -84,7 +87,8 @@ class TrapezoidalMotionProfile : public MotionProfile<DistanceU> {
     DistanceU full_speed_dist =
         _max_speed * (_total_time - _deccel_time - _accel_time);
 
-    DistanceU distance = accel_dist + full_speed_dist + _deccel_time * _max_speed / 2;
+    DistanceU distance =
+        accel_dist + full_speed_dist + _deccel_time * _max_speed / 2;
 
     if (time <= _accel_time) {
       distance = time * time * _max_speed / _accel_time / 2;
@@ -92,13 +96,15 @@ class TrapezoidalMotionProfile : public MotionProfile<DistanceU> {
       distance = accel_dist + _max_speed * (time - _accel_time);
     } else if (time <= _total_time) {
       Time time_left = _total_time - time;
-      DistanceU dist_left = time_left * time_left * _max_speed / _accel_time / 2;
+      DistanceU dist_left =
+          time_left * time_left * _max_speed / _accel_time / 2;
       distance = accel_dist + full_speed_dist + (deccel_dist - dist_left);
     }
 
     return is_negative ? -distance : distance;
   }
   bool finished(Time time) override { return time > _total_time; }
+  DistanceU GetTotalDistance() override { return total_distance; }
 };
 }
 

@@ -13,7 +13,7 @@ TEST(DriveTest, DistDriven) {
                                                   maxHighRobotSpeed / (2 * s));
   Time t;
   Velocity last_speed = motion_profile.CalculateDerivative(0 * s);
-  Length last_distance = motion_profile.Calculate(0*s);
+  Length last_distance = motion_profile.Calculate(0 * s);
   std::ofstream out("out.csv");
   for (t = 0; !motion_profile.finished(t); t += .05 * s) {
     Velocity cur_speed = motion_profile.CalculateDerivative(t);

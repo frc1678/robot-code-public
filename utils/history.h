@@ -9,8 +9,9 @@ namespace muan {
 template <class T, int size>
 class History {
  public:
-  History(Time time_step_) : current_pos_(0), time_step_(time_step_) {}
-
+  History(Time time_step_) : current_pos_(0), time_step_(time_step_) {
+    hist_arr_ = new T[size];
+  }
   void Update(T val) {
     hist_arr_[current_pos_] = val;
     current_pos_ = (current_pos_ + 1) % size;
@@ -27,7 +28,7 @@ class History {
  private:
   int current_pos_;
   Time time_step_;
-  T hist_arr_[size];
+  T* hist_arr_;
 };
 }
 
