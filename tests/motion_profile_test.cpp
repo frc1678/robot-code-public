@@ -8,7 +8,7 @@
 using namespace muan;
 
 TEST(DriveTest, DistDriven) {
-  Length distance = 5 * ft;
+  Length distance = -50 * ft;
   TrapezoidalMotionProfile<Length> motion_profile(distance, maxHighRobotSpeed,
                                                   maxHighRobotSpeed / (2 * s));
   Time t;
@@ -28,7 +28,8 @@ TEST(DriveTest, DistDriven) {
     last_speed = cur_speed;
 
     Length cur_dist = motion_profile.Calculate(t);
-    out << cur_dist << std::endl;
+    out << t << ", " << cur_dist << ", " << cur_speed << ", "
+        << motion_profile.CalculateSecondDerivative(t) << std::endl;
   }
   EXPECT_NEAR(motion_profile.Calculate(t).to(ft), distance.to(ft), 0.00001);
 }

@@ -28,7 +28,7 @@ Log::Log(std::string name, std::string extension) {
   std::string file_path = folder_path_ + name_ + "." + extension;
 
   file_.open(file_path);
-  LogManager::GetInstance()->AddLog(name_, this);
+  LogManager::GetInstance()->AddLog(name_ + "." + extension, this);
 }
 
 Log::~Log() { file_.close(); }
