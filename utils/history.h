@@ -25,6 +25,13 @@ class History {
     return hist_arr_[element_pos];
   }
 
+  T* begin() {
+    return &hist_arr_[0];
+  }
+  T* end() {
+    return &hist_arr_[size];
+  }
+
  private:
   int current_pos_;
   Time time_step_;
