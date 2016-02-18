@@ -42,7 +42,6 @@ void TextLog::FlushToFile() {
   std::lock_guard<std::mutex> lock(mutex_);
   file_ << buffer_.str();
   file_.flush();
-  std::cout << buffer_.str() << std::endl;
   buffer_.str(std::string());
 }
 }
