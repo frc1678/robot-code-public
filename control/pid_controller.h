@@ -3,6 +3,7 @@
 
 #include "../utils/timer.h"
 #include "../unitscpp/unitscpp.h"
+#include <type_traits>
 
 namespace muan {
 
@@ -10,22 +11,41 @@ template <typename InputType, typename OutputType>
 
 class PidController {
  public:
-  using ProportionalConstant = decltype(OutputType(0) / InputType(0));
-  using IntegralConstant = decltype(ProportionalConstant(0) / s);
-  using DerivativeConstant = decltype(ProportionalConstant(0) * s);
+  using ProportionalConstant =
+      typename std::remove_cv<decltype(OutputType(0) / InputType(0))>::type;
+  using IntegralConstant = typename std::remove_cv<decltype(
+      ProportionalConstant(0) / Time(0))>::type;
+  using DerivativeConstant = typename std::remove_cv<decltype(
+      ProportionalConstant(0) * Time(0))>::type;
+
+  struct PidGains {
+    ProportionalConstant kP;
+    IntegralConstant kI;
+    DerivativeConstant kD;
+  };
+
   PidController(ProportionalConstant kP, IntegralConstant kI,
                 DerivativeConstant kD)
       : kP(kP), kI(kI), kD(kD), integral_(0), last_proportional_(0) {}
+  PidController(const PidGains& gains)
+      : PidController(gains.kP, gains.kI, gains.kD) {}
 
   OutputType Calculate(Time dt, InputType error) {
-    return error * kP + CalculateIntegral(dt, error) * kI + CalculateDerivative(dt, error) * kD;
+    return error * kP + CalculateIntegral(dt, error) * kI +
+           CalculateDerivative(dt, error) * kD;
   }
 
-  void SetProportionalConstants(ProportionalConstant p) { kP = p; }
+  void SetProportionalConstant(ProportionalConstant p) { kP = p; }
 
   void SetIntegralConstant(IntegralConstant i) { kI = i; }
 
   void SetDerivativeConstant(DerivativeConstant d) { kD = d; }
+
+  void SetGains(const PidGains& gains) {
+    kP = gains.kP;
+    kI = gains.kI;
+    kD = gains.kD;
+  }
 
   void Reset() {
     last_proportional_ = 0;

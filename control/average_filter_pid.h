@@ -18,9 +18,14 @@ class AverageFilterPidController : public PidController<InputType, OutputType> {
   using DerivativeConstant =
       Units<OutputType::u1 - InputType::u1, OutputType::u2 - InputType::u2 + 1,
             OutputType::u3 - InputType::u3, OutputType::u4 - InputType::u4>;
+
+  using PidGains = typename PidController<InputType, OutputType>::PidGains;
+
   AverageFilterPidController(ProportionalConstant kP, IntegralConstant kI,
                              DerivativeConstant kD)
       : PidController<InputType, OutputType>(kP, kI, kD), hist_(.005 * s) {}
+  AverageFilterPidController(const PidGains& gains)
+      : PidController<InputType, OutputType>(gains), hist_(.005 * s) {}
 
  protected:
   decltype(InputType(0) / s) CalculateDerivative(Time dt, InputType error) {
