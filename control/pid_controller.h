@@ -1,8 +1,8 @@
 #ifndef MUAN_CONTROL_PID_CONTROLLER_H_
 #define MUAN_CONTROL_PID_CONTROLLER_H_
 
-#include "../utils/timer.h"
-#include "../unitscpp/unitscpp.h"
+#include "muan/utils/timer.h"
+#include "muan/unitscpp/unitscpp.h"
 #include <type_traits>
 
 namespace muan {
@@ -67,8 +67,7 @@ class PidController {
   ProportionalConstant kP;
   IntegralConstant kI;
   DerivativeConstant kD;
-  Units<InputType::u1, InputType::u2 + 1, InputType::u3, InputType::u4>
-      integral_;
+  typename std::remove_cv<decltype(InputType(0) * s)>::type integral_;
   InputType last_proportional_;
 };
 }

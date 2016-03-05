@@ -1,5 +1,6 @@
 #include "timer.h"
 #include "timing_utils.h"
+#include "muan/unitscpp/unitscpp.h"
 
 namespace muan {
 

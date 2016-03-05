@@ -7,17 +7,17 @@
 
 #ifndef SRC_ROBOTCODE_MOTIONPROFILE_H_
 #define SRC_ROBOTCODE_MOTIONPROFILE_H_
-#include "unitscpp/unitscpp.h"
+#include "muan/unitscpp/unitscpp.h"
+#include <type_traits>
 
 namespace muan {
 
 template <typename DistanceU>
 class MotionProfile {
  public:
-  typedef Units<DistanceU::u1, DistanceU::u2 - 1, DistanceU::u3, DistanceU::u4>
-      VelocityU;
-  typedef Units<DistanceU::u1, DistanceU::u2 - 2, DistanceU::u3, DistanceU::u4>
-      AccelerationU;
+  using VelocityU = typename std::remove_cv_t<decltype(DistanceU(0) / s)>;
+  using AccelerationU =
+      typename std::remove_cv_t<decltype(DistanceU(0) / s / s)>;
   MotionProfile() {}
   virtual ~MotionProfile() {}
   virtual AccelerationU CalculateSecondDerivative(Time time) = 0;

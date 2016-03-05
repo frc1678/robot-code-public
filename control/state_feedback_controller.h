@@ -2,7 +2,7 @@
 #define MUAN_CONTROL_STATE_FEEDBACK_CONTROLLER_H_
 
 #include "Eigen/Core"
-#include "unitscpp/unitscpp.h"
+#include "muan/unitscpp/unitscpp.h"
 #include <iostream>
 
 namespace muan {
