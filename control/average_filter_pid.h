@@ -10,14 +10,11 @@ template <typename InputType, typename OutputType, int HistLength = 5>
 class AverageFilterPidController : public PidController<InputType, OutputType> {
  public:
   using ProportionalConstant =
-      Units<OutputType::u1 - InputType::u1, OutputType::u2 - InputType::u2,
-            OutputType::u3 - InputType::u3, OutputType::u4 - InputType::u4>;
-  using IntegralConstant =
-      Units<OutputType::u1 - InputType::u1, OutputType::u2 - InputType::u2 - 1,
-            OutputType::u3 - InputType::u3, OutputType::u4 - InputType::u4>;
-  using DerivativeConstant =
-      Units<OutputType::u1 - InputType::u1, OutputType::u2 - InputType::u2 + 1,
-            OutputType::u3 - InputType::u3, OutputType::u4 - InputType::u4>;
+      typename std::remove_cv<decltype(OutputType(0) / InputType(0))>::type;
+  using IntegralConstant = typename std::remove_cv<decltype(
+      ProportionalConstant(0) / Time(0))>::type;
+  using DerivativeConstant = typename std::remove_cv<decltype(
+      ProportionalConstant(0) * Time(0))>::type;
 
   using PidGains = typename PidController<InputType, OutputType>::PidGains;
 

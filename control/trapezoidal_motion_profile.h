@@ -10,15 +10,15 @@
 
 #include "motion_profile.h"
 #include <cmath>
+#include <type_traits>
 
 namespace muan {
 
 template <typename DistanceU>
 class TrapezoidalMotionProfile : public MotionProfile<DistanceU> {
-  typedef Units<DistanceU::u1, DistanceU::u2 - 1, DistanceU::u3, DistanceU::u4>
-      VelocityU;
-  typedef Units<DistanceU::u1, DistanceU::u2 - 2, DistanceU::u3, DistanceU::u4>
-      AccelerationU;
+  using VelocityU = typename std::remove_cv_t<decltype(DistanceU(0) / s)>;
+  using AccelerationU =
+      typename std::remove_cv_t<decltype(DistanceU(0) / s / s)>;
   Time _accel_time;
   Time _total_time;
   Time _deccel_time;

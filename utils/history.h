@@ -1,7 +1,7 @@
 #ifndef MUAN_CONTROL_HISTORY_H_
 #define MUAN_CONTROL_HISTORY_H_
 
-#include "unitscpp/unitscpp.h"
+#include "muan/unitscpp/unitscpp.h"
 #include <stdexcept>
 
 namespace muan {
@@ -25,12 +25,8 @@ class History {
     return hist_arr_[element_pos];
   }
 
-  T* begin() {
-    return &hist_arr_[0];
-  }
-  T* end() {
-    return &hist_arr_[size];
-  }
+  T* begin() { return &hist_arr_[0]; }
+  T* end() { return &hist_arr_[size]; }
 
  private:
   int current_pos_;
