@@ -38,6 +38,7 @@ class Log {
   Log(std::string name, std::string extension);
   virtual void FlushToFile() = 0;
   virtual std::string GetExtension() const = 0;
+  const std::string& GetName() const;
   virtual ~Log();
 
  protected:

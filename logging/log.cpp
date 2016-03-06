@@ -58,4 +58,6 @@ std::string Log::GetTimeString() {
   strftime(buffer, 80, "%H-%M-%S", timeinfo);
   return buffer;
 }
+
+const std::string& Log::GetName() const { return name_; }
 }

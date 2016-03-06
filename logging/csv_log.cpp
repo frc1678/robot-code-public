@@ -83,4 +83,9 @@ std::string &CSVLog::operator[](std::string key) {
 }
 
 CSVLog::~CSVLog() {}
+
+const std::vector<std::pair<std::string, std::string>> CSVLog::GetEntries()
+    const {
+  return entries_;
+}
 }
