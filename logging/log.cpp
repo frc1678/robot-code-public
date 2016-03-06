@@ -15,14 +15,15 @@
 
 namespace muan {
 
-std::string Log::folder_path_ = "./logs/" + Log::GetDateString() + "/";
+std::string Log::folder_path_ = "/home/lvuser/logs/" + Log::GetDateString() + "/";
 std::once_flag Log::folder_created_;
 
 Log::Log(std::string name, std::string extension) {
+  mkdir("/home/lvuser/logs/", 0777);
+
   name_ = name;
   std::call_once(folder_created_, [=]() {
     mkdir(folder_path_.c_str(), 0777);
-    chmod(folder_path_.c_str(), 0777);
   });
 
   std::string file_path = folder_path_ + name_ + "." + extension;
