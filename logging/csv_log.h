@@ -37,6 +37,8 @@ class CSVLog : public Log {
   static void WriteToLog(std::string log, std::string key, std::string value);
   virtual ~CSVLog();
 
+  const std::vector<std::pair<std::string, std::string>> GetEntries() const;
+
  private:
   std::stringstream buffer_;
   std::vector<std::pair<std::string, std::string>> entries_;
