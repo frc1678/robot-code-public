@@ -31,8 +31,8 @@ class PidController {
       : PidController(gains.kP, gains.kI, gains.kD) {}
 
   OutputType Calculate(Time dt, InputType error) {
-    return error * kP + CalculateIntegral(dt, error) * kI +
-           CalculateDerivative(dt, error) * kD;
+    return error* kP + CalculateIntegral(dt, error)* kI +
+           (last_derivative_ = CalculateDerivative(dt, error)) * kD;
   }
 
   void SetProportionalConstant(ProportionalConstant p) { kP = p; }
@@ -52,6 +52,8 @@ class PidController {
     integral_ = 0;
   }
 
+  decltype(InputType(0) / s) GetDerivative() { return last_derivative_; }
+
  protected:
   decltype(InputType(0) / s) CalculateDerivative(Time dt, InputType error) {
     auto ret = (error - last_proportional_) / dt;
@@ -70,6 +72,7 @@ class PidController {
   Units<InputType::u1, InputType::u2 + 1, InputType::u3, InputType::u4>
       integral_;
   InputType last_proportional_;
+  typename std::remove_cv<decltype(InputType(0) / s)>::type last_derivative_;
 };
 }
 
