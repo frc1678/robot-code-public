@@ -8,7 +8,7 @@ class Timer {
  public:
   Timer();
   void Start();
-  void Reset();
+  Time Reset();
   Time Get();
 
  private:
