@@ -42,7 +42,7 @@ void CSVLog::Write(std::string key, std::string value) {
  */
 void CSVLog::EndLine() {
   std::lock_guard<std::mutex> lock(mutex_);
-  buffer_ << Log::GetTimeString() << ",";
+  buffer_ << timer.Get().to(s) << ",";
   for (auto entry = entries_.begin(); entry != entries_.end(); entry++) {
     buffer_ << entry->second;
     if (entry + 1 != entries_.end()) {

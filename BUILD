@@ -21,6 +21,7 @@ cc_library(
   name = "logging",
   srcs = glob(["logging/**/*.cpp"]),
   hdrs = glob(["logging/**/*.h"]),
+  deps = [":utils"]
 )
 
 cc_library(

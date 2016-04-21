@@ -13,6 +13,7 @@
 #include <utility>
 #include <string>
 #include "log.h"
+#include "muan/utils/timer.h"
 
 namespace muan {
 
@@ -42,6 +43,7 @@ class CSVLog : public Log {
  private:
   std::stringstream buffer_;
   std::vector<std::pair<std::string, std::string>> entries_;
+  Timer timer;
 };
 }
 
