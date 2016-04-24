@@ -23,13 +23,19 @@ class TrapezoidalMotionProfile : public MotionProfile<DistanceU> {
   Time _total_time;
   Time _deccel_time;
   VelocityU _max_speed;
-  AccelerationU _max_acceleration;
+  AccelerationU _max_acceleration, _max_decceleration;
   bool is_negative;
   DistanceU total_distance;
 
  public:
   TrapezoidalMotionProfile<DistanceU>(DistanceU distance, VelocityU max_speed,
-                                      AccelerationU max_acceleration) {
+                                      AccelerationU max_acceleration)
+      : TrapezoidalMotionProfile<DistanceU>(
+            distance, max_speed, max_acceleration, max_acceleration) {}
+
+  TrapezoidalMotionProfile<DistanceU>(DistanceU distance, VelocityU max_speed,
+                                      AccelerationU max_acceleration,
+                                      AccelerationU max_decceleration) {
     total_distance = distance;
     if (distance < DistanceU(0)) {
       distance = -distance;
@@ -38,9 +44,10 @@ class TrapezoidalMotionProfile : public MotionProfile<DistanceU> {
       is_negative = false;
     }
     _accel_time = max_speed / max_acceleration;
-    _deccel_time = max_speed / max_acceleration;
+    _deccel_time = max_speed / max_decceleration;
     _max_speed = max_speed;
     _max_acceleration = max_acceleration;
+    _max_decceleration = max_decceleration;
 
     if (distance > (_accel_time + _deccel_time) * _max_speed / 2) {
       _total_time = _accel_time + _deccel_time +
@@ -50,11 +57,12 @@ class TrapezoidalMotionProfile : public MotionProfile<DistanceU> {
       DistanceU accel_dist = distance / 2;
 
       _accel_time = std::sqrt((2 * accel_dist / max_acceleration)()) * s;
-      _deccel_time = _accel_time;
+      _deccel_time = std::sqrt((2 * deccel_dist / max_decceleration)()) * s;
       _max_speed = _accel_time * _max_acceleration;
       _total_time = _accel_time + _deccel_time;
     }
   }
+
   virtual ~TrapezoidalMotionProfile() {}
   AccelerationU CalculateSecondDerivative(Time time) override {
     AccelerationU accel;
@@ -63,7 +71,7 @@ class TrapezoidalMotionProfile : public MotionProfile<DistanceU> {
     } else if (time < _total_time - _deccel_time) {
       accel = AccelerationU(0);
     } else if (time < _total_time) {
-      accel = -_max_acceleration;
+      accel = -_max_decceleration;
     } else {
       accel = AccelerationU(0);
     }
