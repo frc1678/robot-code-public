@@ -19,5 +19,9 @@ then
   export CLANG_PATH="/usr/bin/clang-format"
 fi
 
+if [ -f /usr/local/bin/clang-format ]
+then
+  export CLANG_PATH="/usr/local/bin/clang-format"
+fi
 
 $CLANG_PATH -i $(find . | grep "\(\.cpp\|\.h\)\$") -style=Google
