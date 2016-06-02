@@ -20,4 +20,4 @@ then
 fi
 
 
-$CLANG_PATH -i $(find | grep "\(\.cpp\|\.h\)\$") -style=Google
+$CLANG_PATH -i $(find . | grep "\(\.cpp\|\.h\)\$") -style=Google
