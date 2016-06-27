@@ -2,7 +2,7 @@
 #define MUAN_CONTROL_STATE_SPACE_PLANT_H_
 
 #include "Eigen/Core"
-#include "muan/unitscpp/unitscpp.h"
+#include "unitscpp/unitscpp.h"
 #include <cmath>
 
 namespace muan {

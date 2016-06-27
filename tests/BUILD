@@ -38,7 +38,7 @@ cc_test(
 
 cc_test(
   name = "units",
-  deps = ["//muan/unitscpp", "@gtest//:main"],
+  deps = ["@third_party//unitscpp", "@gtest//:main"],
   srcs = ["units_test.cpp"]
 )
 
