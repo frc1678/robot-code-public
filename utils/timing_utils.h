@@ -1,10 +1,10 @@
 #ifndef MUAN_UTILS_TIMING_UTILS_H_
 #define MUAN_UTILS_TIMING_UTILS_H_
 
+#include "unitscpp/unitscpp.h"
 #include <chrono>
-#include <thread>
-#include "muan/unitscpp/unitscpp.h"
 #include <iostream>
+#include <thread>
 
 namespace muan {
 
