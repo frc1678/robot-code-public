@@ -2,7 +2,6 @@
 #define MUAN_CONTROL_PID_CONTROLLER_H_
 
 #include "unitscpp/unitscpp.h"
-#include "utils/timer.h"
 #include <type_traits>
 
 namespace muan {

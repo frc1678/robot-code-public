@@ -15,9 +15,8 @@ namespace muan {
 template <typename DistanceU>
 class MotionProfile {
  public:
-  using VelocityU = typename std::remove_cv_t<decltype(DistanceU(0) / s)>;
-  using AccelerationU =
-      typename std::remove_cv_t<decltype(DistanceU(0) / s / s)>;
+  using VelocityU = std::remove_cv_t<decltype(DistanceU(0) / s)>;
+  using AccelerationU = std::remove_cv_t<decltype(DistanceU(0) / s / s)>;
   MotionProfile() {}
   virtual ~MotionProfile() {}
   virtual AccelerationU CalculateSecondDerivative(Time time) = 0;
