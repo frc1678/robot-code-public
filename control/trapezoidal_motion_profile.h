@@ -16,9 +16,8 @@ namespace muan {
 
 template <typename DistanceU>
 class TrapezoidalMotionProfile : public MotionProfile<DistanceU> {
-  using VelocityU = typename std::remove_cv_t<decltype(DistanceU(0) / s)>;
-  using AccelerationU =
-      typename std::remove_cv_t<decltype(DistanceU(0) / s / s)>;
+  using VelocityU = std::remove_cv_t<decltype(DistanceU(0) / s)>;
+  using AccelerationU = std::remove_cv_t<decltype(DistanceU(0) / s / s)>;
   Time _accel_time;
   Time _total_time;
   Time _deccel_time;
@@ -55,6 +54,7 @@ class TrapezoidalMotionProfile : public MotionProfile<DistanceU> {
                         _max_speed;
     } else {
       DistanceU accel_dist = distance / 2;
+      DistanceU deccel_dist = accel_dist;
 
       _accel_time = std::sqrt((2 * accel_dist / max_acceleration)()) * s;
       _deccel_time = std::sqrt((2 * deccel_dist / max_decceleration)()) * s;

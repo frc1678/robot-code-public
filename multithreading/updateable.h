@@ -28,6 +28,9 @@ class Updateable {
   void Stop();
 
  private:
+  void RunForever();
+  Time loop_time;
+
   std::thread main_;
   volatile std::atomic<bool> running_{false};
 };

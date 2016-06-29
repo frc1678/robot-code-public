@@ -7,35 +7,33 @@
  */
 
 #include "updateable.h"
+#include "../utils/timing_utils.h"
 #include <chrono>
 #include <iostream>
-#include "../utils/timing_utils.h"
 
 namespace muan {
 
-Updateable::Updateable(Frequency tick_rate) {
-  Time loop_time = 1 / tick_rate;
-  main_ = std::thread([this, loop_time]() {
-    // Wait for it to start
-    while (!this->running_) {
-      sleep_for(loop_time);
-    }
-    Time until = now() + loop_time;
-    while (this->running_) {
-      // Capture the current time, adding 5 milliseconds to ensure exact timing
-      Update(loop_time);
+Updateable::Updateable(Frequency tick_rate) : loop_time(1.0 / tick_rate) {}
 
-      // Maintain timing
-      sleep_until(until);
-      until = now() + loop_time;
-    }
-  });
-  main_.detach();
+void Updateable::RunForever() {
+  Time until = now() + loop_time;
+  while (this->running_) {
+    // Capture the current time, adding 5 milliseconds to ensure exact timing
+    Update(loop_time);
+
+    // Maintain timing
+    sleep_until(until);
+    until = now() + loop_time;
+  }
 }
 
 Updateable::~Updateable() { Stop(); }
 
-void Updateable::Start() { running_ = true; }
+void Updateable::Start() {
+  running_ = true;
+  main_ = std::thread(std::bind(&Updateable::RunForever, this));
+  main_.detach();
+}
 
 void Updateable::Stop() { running_ = false; }
 }
