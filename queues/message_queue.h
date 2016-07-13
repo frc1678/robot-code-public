@@ -28,12 +28,11 @@ class MessageQueue {
   const MessageQueue& operator=(const MessageQueue&) = delete;
 
   void WriteMessage(const T& message) {
-    // Take care of the case where the front needs to be overwritten by the back
-    if (front_ % size == (back_ + 1) % size) {
-      front_++;
-    }
     // Push messages into the back
     uint32_t position = back_++;
+    // If the back wraps around and "catches up" with the front, drop the front
+    // message and move the front forward
+    if (front_ % size == (position + 1) % size) front_++;
     messages_[position % size] = message;
   }
 
