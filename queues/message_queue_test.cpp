@@ -4,11 +4,6 @@
 
 using namespace muan::queues;
 
-uint64_t factorial(uint64_t a) {
-  if (a == 0) return 1;
-  return a * factorial(a - 1);
-}
-
 TEST(MessageQueue, DeliversSingleMessage) {
   MessageQueue<uint32_t, 10> int_queue;
   int_queue.WriteMessage(10);
@@ -22,12 +17,12 @@ TEST(MessageQueue, DeliversManyMessages) {
   for (uint32_t i = 1; i <= 10; i++) {
     int_queue.WriteMessage(i);
   }
-  uint64_t accum = 1;
+  uint64_t accum = 0;
   std::experimental::optional<uint32_t> val;
   while (val = reader.ReadMessage()) {
-    accum *= val.value();
+    accum++;
   }
-  ASSERT_EQ(accum, factorial(10));
+  ASSERT_EQ(accum, 10);
 }
 
 TEST(MessageQueue, Wraparound) {
@@ -36,19 +31,19 @@ TEST(MessageQueue, Wraparound) {
   for (uint32_t i = 1; i <= 10; i++) {
     int_queue.WriteMessage(i);
   }
-  uint64_t accum = 1;
+  uint64_t accum = 0;
   std::experimental::optional<uint32_t> val;
   while (val = reader.ReadMessage()) {
-    accum *= val.value();
+    accum++;
   }
 
   for (uint32_t i = 11; i <= 15; i++) {
     int_queue.WriteMessage(i);
   }
   while (val = reader.ReadMessage()) {
-    accum *= val.value();
+    accum++;
   }
-  ASSERT_EQ(accum, factorial(15));
+  ASSERT_EQ(accum, 15);
 }
 
 TEST(MessageQueue, TwoReaders) {
@@ -59,18 +54,18 @@ TEST(MessageQueue, TwoReaders) {
     int_queue.WriteMessage(i);
   }
 
-  uint64_t accum1 = 1;
+  uint64_t accum1 = 0;
   std::experimental::optional<uint32_t> val;
   while (val = reader1.ReadMessage()) {
-    accum1 *= val.value();
+    accum1++;
   }
 
-  uint64_t accum2 = 1;
+  uint64_t accum2 = 0;
   while (val = reader2.ReadMessage()) {
-    accum2 *= val.value();
+    accum2++;
   }
-  ASSERT_EQ(accum1, factorial(10));
-  ASSERT_EQ(accum2, factorial(10));
+  ASSERT_EQ(accum1, 10);
+  ASSERT_EQ(accum2, 10);
 }
 
 TEST(MessageQueue, SpeedTest) {
@@ -81,13 +76,13 @@ TEST(MessageQueue, SpeedTest) {
     int_queue.WriteMessage(i);
   }
 
-  uint64_t accum1 = 1;
+  uint64_t accum1 = 0;
   std::experimental::optional<uint32_t> val;
   while (val = reader1.ReadMessage()) {
     accum1++;
   }
 
-  uint64_t accum2 = 1;
+  uint64_t accum2 = 0;
   while (val = reader2.ReadMessage()) {
     accum2++;
   }
