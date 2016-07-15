@@ -14,47 +14,34 @@ namespace queues {
 template <typename T, uint32_t size = 100>
 class MessageQueue {
  public:
-  MessageQueue() {}
-  virtual ~MessageQueue() {}
+  MessageQueue() = default;
+  virtual ~MessageQueue() = default;
 
   // Enable moving, disable copying
-  MessageQueue(MessageQueue&& move_from)
-      : messages_(move_from.messages_),
-        back_(static_cast<uint32_t>(move_from.back_)) {}
-
+  MessageQueue(MessageQueue&& move_from);
   MessageQueue& operator=(MessageQueue&& move_from) = default;
   MessageQueue(const MessageQueue&) = delete;
   const MessageQueue& operator=(const MessageQueue&) = delete;
 
-  void WriteMessage(const T& message) {
-    // Push messages into the back
-    uint32_t position = back_++;
-    messages_[position % size] = message;
-  }
+  void WriteMessage(const T& message);
 
   class QueueReader {
    public:
-    std::experimental::optional<T> ReadMessage() {
-      return queue_.NextMessage(next_message_);
-    }
+    std::experimental::optional<T> ReadMessage();
 
     // Allow move constructor but not move assignment as it cannot be reassigned
     // to another queue
-    QueueReader(QueueReader&& move_from) : queue_{move_from.queue_} {
-      next_message_ = std::move(move_from.next_message_);
-    }
+    QueueReader(QueueReader&& move_from);
     QueueReader& operator=(QueueReader&& move_from) = delete;
 
     // Prevent copying
     QueueReader(const QueueReader&) = delete;
     const QueueReader& operator=(const QueueReader&) = delete;
 
-    virtual ~QueueReader() {}
+    virtual ~QueueReader() = default;
 
    private:
-    QueueReader(MessageQueue& queue) : queue_(queue) {
-      next_message_ = queue_.front_();
-    }
+    QueueReader(MessageQueue& queue);
 
     MessageQueue& queue_;
     uint32_t next_message_;
@@ -62,30 +49,15 @@ class MessageQueue {
     friend class MessageQueue;
   };
 
-  QueueReader MakeReader() { return QueueReader{*this}; }
+  QueueReader MakeReader();
 
  private:
-  std::experimental::optional<T> NextMessage(uint32_t& next) {
-    using namespace std::experimental;
-    if (next >= back_) {
-      next = back_;
-      return std::experimental::nullopt;
-    } else if (next < front_()) {
-      next = front_();
-    }
-    auto current = next;
-    next++;
-    return messages_[current % size];
-  }
-  
+  std::experimental::optional<T> NextMessage(uint32_t& next);
+
   // If the back wraps around and "catches up" with the front, drop the front
   // message and move the front forward
-  uint32_t front_() {
-   if (back_ > size) {
-    return back_ - size;
-   }
-   return 0;
-  }
+  uint32_t front();
+
   std::array<T, size> messages_;
   std::atomic<uint32_t> back_{0};
 };
@@ -93,5 +65,7 @@ class MessageQueue {
 } /* queues */
 
 } /* muan */
+
+#include "message_queue.hpp"
 
 #endif /* MUAN_QUEUES_MESSAGE_QUEUE_H_ */

@@ -2,6 +2,7 @@ package(default_visibility = ['//visibility:public'])
 
 cc_library(
   name = 'queues',
+  srcs = ['message_queue.hpp'],
   hdrs = ['message_queue.h'],
   deps = ['//utils:math_utils'],
   linkstatic = 1
