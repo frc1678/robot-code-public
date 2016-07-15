@@ -20,7 +20,6 @@ class MessageQueue {
   // Enable moving, disable copying
   MessageQueue(MessageQueue&& move_from)
       : messages_(move_from.messages_),
-        front_(static_cast<uint32_t>(move_from.front_)),
         back_(static_cast<uint32_t>(move_from.back_)) {}
 
   MessageQueue& operator=(MessageQueue&& move_from) = default;
@@ -30,9 +29,6 @@ class MessageQueue {
   void WriteMessage(const T& message) {
     // Push messages into the back
     uint32_t position = back_++;
-    // If the back wraps around and "catches up" with the front, drop the front
-    // message and move the front forward
-    if (front_ % size == (position + 1) % size) front_++;
     messages_[position % size] = message;
   }
 
@@ -57,7 +53,7 @@ class MessageQueue {
 
    private:
     QueueReader(MessageQueue& queue) : queue_(queue) {
-      next_message_ = queue_.front_;
+      next_message_ = queue_.front_();
     }
 
     MessageQueue& queue_;
@@ -74,16 +70,24 @@ class MessageQueue {
     if (next >= back_) {
       next = back_;
       return std::experimental::nullopt;
-    } else if (next < front_) {
-      next = front_;
+    } else if (next < front_()) {
+      next = front_();
     }
     auto current = next;
     next++;
     return messages_[current % size];
   }
-
+  
+  // If the back wraps around and "catches up" with the front, drop the front
+  // message and move the front forward
+  uint32_t front_() {
+   if (back_ > size) {
+    return back_ - size;
+   }
+   return 0;
+  }
   std::array<T, size> messages_;
-  std::atomic<uint32_t> front_{0}, back_{0};
+  std::atomic<uint32_t> back_{0};
 };
 
 } /* queues */
