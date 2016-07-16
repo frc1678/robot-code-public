@@ -89,3 +89,34 @@ TEST(MessageQueue, SpeedTest) {
   ASSERT_EQ(accum1, 1000000);
   ASSERT_EQ(accum2, 1000000);
 }
+
+TEST(MessageQueue, Multithreading) {
+  MessageQueue<uint32_t, 10000> int_queue;
+  auto func = [&int_queue]() {
+    uint32_t count = 0;
+    auto reader = int_queue.MakeReader();
+    auto end_time =
+        std::chrono::steady_clock::now() + std::chrono::milliseconds(300);
+
+    while (std::chrono::steady_clock::now() < end_time) {
+      auto val = reader.ReadMessage();
+      if (val) {
+        count++;
+      }
+    }
+    ASSERT_EQ(count, 10000);
+  };
+
+  std::array<std::thread, 5> threads;
+  for (auto& t : threads) {
+    t = std::thread{func};
+  }
+
+  for (uint32_t i = 0; i < 10000; i++) {
+    int_queue.WriteMessage(i);
+  }
+
+  for (auto& t : threads) {
+    t.join();
+  }
+}
