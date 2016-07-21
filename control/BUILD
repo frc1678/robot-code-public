@@ -1,5 +1,28 @@
 package(default_visibility = ['//visibility:public'])
 
+# TODO(Kyle) Until I find a workaround, these python rules have to be run with --force_python=PY3
+py_library(
+  name = 'python_controls',
+  srcs = [
+    'controls.py',
+    'ss_controller.py',
+    'ss_observer.py',
+    'ss_plant.py',
+    'ss_scenario.py',
+    'trapezoidal_profile.py'
+  ],
+  srcs_version = 'PY3ONLY'
+)
+
+py_binary(
+  name = 'python_controls_demo',
+  srcs = ['ss_test.py'],
+  main = 'ss_test.py',
+  srcs_version = 'PY3ONLY',
+  default_python_version = 'PY3',
+  deps = [':python_controls']
+)
+
 cc_library(
   name = 'pid_controller',
   hdrs = [
