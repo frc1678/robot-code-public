@@ -30,13 +30,18 @@ cc_library(
   name = 'state_space',
   hdrs = [
     'state_space_plant.h',
-    'state_observer.h',
-    'state_feedback_controller.h',
-    'control_utils.h'
+    'state_space_observer.h',
+    'state_space_controller.h',
+  ],
+  srcs = [
+    'state_space_plant.hpp',
+    'state_space_observer.hpp',
+    'state_space_controller.hpp',
   ],
   deps = [
     '@third_party//unitscpp',
-    '@third_party//eigen'
+    '@third_party//eigen',
+    '//utils:math_utils'
   ],
   linkopts = ['-lm'],
   linkstatic = 1

@@ -1,111 +1,343 @@
+#include "Eigen/Dense"
+#include "state_space_controller.h"
+#include "state_space_observer.h"
+#include "state_space_plant.h"
 #include "gtest/gtest.h"
-#include "Eigen/Core"
-#include "../control/state_space_plant.h"
-#include "../control/control_utils.h"
-#include "../control/state_feedback_controller.h"
+#include <random>
 
-using namespace muan;
+TEST(StateSpace, Initialization) {
+  muan::control::StateSpacePlant<1, 2, 1> plant;
+  muan::control::StateSpaceController<1, 2, 1> controller;
+  muan::control::StateSpaceObserver<1, 2, 1> observer;
 
-TEST(StateSpacePlantTest, StableSystem) {
-  auto a = as_matrix<2, 2>({{1, .05}, {0, .97}});
-  auto b = as_matrix<2, 1>({{0}, {.05}});
-  auto c = as_matrix<1, 2>({{1, 0}});
-  StateSpacePlant<1, 2, 1, true> flywheel_plant_(a, b, c);
-  for (int i = 0; i < 100; i++) {
-    auto u = as_matrix<1, 1>({{1}});
-    flywheel_plant_.Update(u);
+  for (uint32_t i = 0; i < 2; i++) {
+    for (uint32_t j = 0; j < 2; j++) {
+      if (i == j) {
+        ASSERT_EQ(plant.A(i, j), 1);
+        ASSERT_EQ(controller.A(i, j), 1);
+      } else {
+        ASSERT_EQ(plant.A(i, j), 0);
+        ASSERT_EQ(controller.A(i, j), 0);
+      }
+    }
+    ASSERT_EQ(plant.x(i), 0);
+    ASSERT_EQ(observer.x(i), 0);
+    ASSERT_EQ(controller.K(0, i), 0);
+    ASSERT_EQ(controller.Kff(0, i), 0);
+    ASSERT_EQ(plant.B(i, 0), 0);
+    ASSERT_EQ(plant.C(0, i), 0);
   }
-  for (int i = 0; i < 1000; i++) {
-    auto u = as_matrix<1, 1>({{0.0}});
-    flywheel_plant_.Update(u);
-  }
-  ASSERT_NEAR(flywheel_plant_.GetX()(1), 0, 1e-10);
+
+  ASSERT_EQ(plant.D(0, 0), 0);
+  ASSERT_EQ(controller.u_min(0), -std::numeric_limits<double>::infinity());
+  ASSERT_EQ(controller.u_max(0), std::numeric_limits<double>::infinity());
 }
 
-TEST(StateSpacePlantTest, UnstableSystem) {
-  auto a = as_matrix<2, 2>({{1, .05}, {0, 1.03}});
-  auto b = as_matrix<2, 1>({{0}, {.05}});
-  auto c = as_matrix<1, 2>({{1, 0}});
-  StateSpacePlant<1, 2, 1, true> flywheel_plant_(a, b, c);
-  for (int i = 0; i < 100; i++) {
-    auto u = as_matrix<1, 1>({{1}});
-    flywheel_plant_.Update(u);
+TEST(StateSpace, StablePlant) {
+  Eigen::Matrix<double, 2, 2> A;
+  A << 1.0, .01, -.05, .95;
+  muan::control::StateSpacePlant<1, 2, 1> plant(
+      A, Eigen::Matrix<double, 2, 1>::Zero(),
+      Eigen::Matrix<double, 1, 2>::Zero(), Eigen::Matrix<double, 1, 1>::Zero(),
+      (Eigen::Matrix<double, 2, 1>() << 1.0, 1.0).finished());
+
+  for (uint32_t i = 0; i < 100; i++) {
+    plant.Update((Eigen::Matrix<double, 1, 1>() << 1).finished());
   }
-  for (int i = 0; i < 1000; i++) {
-    auto u = as_matrix<1, 1>({{0}});
-    flywheel_plant_.Update(u);
+
+  for (uint32_t i = 0; i < 2000; i++) {
+    plant.Update((Eigen::Matrix<double, 1, 1>() << 0).finished());
   }
-  ASSERT_GT(flywheel_plant_.GetX()(1), 1e10);
+
+  for (uint32_t i = 0; i < 2; i++) {
+    ASSERT_NEAR(plant.x(i), 0, 1e-6);
+  }
 }
 
-TEST(StateSpacePlantTest, SteadyState) {
-  auto a = as_matrix<2, 2>({{1, .05}, {0, 0.97}});
-  auto b = as_matrix<2, 1>({{0}, {.05}});
-  auto c = as_matrix<1, 2>({{1, 0}});
-  StateSpacePlant<1, 2, 1, true> flywheel_plant_(a, b, c);
-  for (int i = 0; i < 1000; i++) {
-    auto u = as_matrix<1, 1>({{1}});
-    flywheel_plant_.Update(u);
+TEST(StateSpace, UnstablePlant) {
+  Eigen::Matrix<double, 2, 2> A;
+  A << 1.0, .01, .05, 0.99;
+  muan::control::StateSpacePlant<1, 2, 1> plant(
+      A, Eigen::Matrix<double, 2, 1>::Zero(),
+      Eigen::Matrix<double, 1, 2>::Zero(), Eigen::Matrix<double, 1, 1>::Zero(),
+      (Eigen::Matrix<double, 2, 1>() << 1.0, 0.0).finished());
+
+  for (uint32_t i = 0; i < 1000; i++) {
+    plant.Update((Eigen::Matrix<double, 1, 1>() << 0).finished());
   }
-  ASSERT_NEAR(flywheel_plant_.GetX()(1), 5.0 / 3.0, 1e-10);
+
+  for (uint32_t i = 0; i < 2; i++) {
+    ASSERT_GT(plant.x(i), 1e6);
+  }
 }
 
-TEST(StateSpaceControllerTest, GoesToZero) {
-  auto a = as_matrix<2, 2>({{1, .05}, {0, 0.9}});
-  auto b = as_matrix<2, 1>({{0}, {.05}});
-  auto c = as_matrix<1, 2>({{1, 0}});
+TEST(StateSpace, ControllerConverges) {
+  muan::control::StateSpacePlant<1, 2, 1> plant;
+  plant.A() << 1, 0.01, 0, 0.98;
+  plant.B() << 1e-5, 0.02;
+  plant.C() << 1, 0;
+  plant.x() << 1, 0;
 
-  StateSpacePlant<1, 2, 1, true> plant(a, b, c);
+  muan::control::StateSpaceController<1, 2, 1> controller{};
+  controller.K() << 10.0, 1.0;
+  controller.A() = plant.A();
+  controller.Kff() =
+      (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
+  controller.r() << 0.0, 0.0;
 
-  auto k = as_matrix<1, 2>({{1, 1}});
-  StateFeedbackController<2, 1> controller(k);
-
-  auto x0 = as_matrix<2, 1>({{1}, {3}});
-  plant.SetX(x0);
-  for (int i = 0; i < 1000; i++) {
-    auto u = controller.Calculate(plant.GetX());
+  for (uint32_t t = 0; t < 1000; t++) {
+    auto u = controller.Update(plant.x());
     plant.Update(u);
   }
-  ASSERT_NEAR(plant.GetX()(0), 0.0, 1e-5);
-  ASSERT_NEAR(plant.GetX()(1), 0.0, 1e-5);
+
+  ASSERT_NEAR(plant.x(0), controller.r(0), 1e-6);
+  ASSERT_NEAR(plant.x(1), controller.r(1), 1e-6);
 }
 
-TEST(StateSpaceControllerTest, GoesToGoal) {
-  auto a = as_matrix<2, 2>({{1, .05}, {0, .9}});
-  auto b = as_matrix<2, 1>({{0}, {.05}});
-  auto c = as_matrix<1, 2>({{1, 0}});
+TEST(StateSpace, ControllerGoesToGoal) {
+  muan::control::StateSpacePlant<1, 2, 1> plant;
+  plant.A() << 1, 0.01, 0, 0.98;
+  plant.B() << 1e-5, 0.02;
+  plant.C() << 1, 0;
+  plant.x() << 0, 0;
 
-  StateSpacePlant<1, 2, 1, true> plant(a, b, c);
+  muan::control::StateSpaceController<1, 2, 1> controller{};
+  controller.K() << 10.0, 1.0;
+  controller.A() = plant.A();
+  controller.Kff() =
+      (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
+  controller.r() << 1.0, 0.0;
 
-  auto k = as_matrix<1, 2>({{1, 1}});
-  StateFeedbackController<2, 1> controller(k);
-
-  auto x0 = as_matrix<2, 1>({{1}, {3}});
-  plant.SetX(x0);
-
-  auto r = as_matrix<2, 1>({{1}, {0}});
-  controller.SetGoal(r);
-
-  for (int i = 0; i < 1000; i++) {
-    auto u = controller.Calculate(plant.GetX());
+  for (uint32_t t = 0; t < 1000; t++) {
+    auto u = controller.Update(plant.x());
     plant.Update(u);
   }
-  ASSERT_NEAR(plant.GetX()(0), r(0), 1e-5);
-  ASSERT_NEAR(plant.GetX()(1), r(1), 1e-5);
+
+  ASSERT_NEAR(plant.x(0), controller.r(0), 1e-6);
+  ASSERT_NEAR(plant.x(1), controller.r(1), 1e-6);
 }
 
-TEST(DiscretizeSystem, FollowsSimilarPath) {
-  auto a = as_matrix<2, 2>({{0.0, 1.0}, {0.0, -1.0}});
-  auto b = as_matrix<2, 1>({{0}, {1}});
-  auto c = as_matrix<1, 2>({{3, 0}});
-  Time dt = .001;
-  auto sys = StateSpacePlant<1, 2, 1>(a, b, c);
-  auto sys_d = c2d(sys, dt);
-  for (Time t = 0; t <= 100; t += dt) {
-    auto u = as_matrix<1, 1>({{1}});
-    sys.Update(u, dt);
-    sys_d.Update(u);
+TEST(StateSpace, ControllerHoldsSteadyState) {
+  muan::control::StateSpacePlant<1, 2, 1> plant;
+  plant.A() << 1, 0.01, -.03, 0.98;
+  plant.B() << 1e-5, 0.02;
+  plant.C() << 1, 0;
+  plant.x() << 0, 0;
+
+  muan::control::StateSpaceController<1, 2, 1> controller{};
+  controller.K() << 10.0, 1.0;
+  controller.A() = plant.A();
+  controller.Kff() =
+      (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
+  controller.r() << 1.0, 0.0;
+
+  for (uint32_t t = 0; t < 1000; t++) {
+    auto u = controller.Update(plant.x());
+    plant.Update(u);
   }
-  ASSERT_NEAR(sys.GetX()(0), sys.GetX()(0), 1e-5);
-  ASSERT_NEAR(sys.GetX()(1), sys.GetX()(1), 1e-5);
+
+  ASSERT_NEAR(plant.x(0), controller.r(0), 1e-2);
+  ASSERT_NEAR(plant.x(1), controller.r(1), 1e-2);
+}
+
+TEST(StateSpace, ControllerObeysInputConstraints) {
+  muan::control::StateSpacePlant<1, 2, 1> plant;
+  plant.A() << 1, 0.01, 0, 0.98;
+  plant.B() << 1e-5, 0.02;
+  plant.C() << 1, 0;
+  plant.x() << 0, 0;
+
+  muan::control::StateSpaceController<1, 2, 1> controller{};
+  controller.K() << 10.0, 1.0;
+  controller.A() = plant.A();
+  controller.Kff() =
+      (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
+  controller.r() << 1.0, 0.0;
+  controller.u_max() << 12;
+  controller.u_min() << -12;
+
+  for (uint32_t t = 0; t < 1000; t++) {
+    auto u = controller.Update(plant.x());
+    ASSERT_LT(u(0), controller.u_max(0));
+    ASSERT_GT(u(0), controller.u_min(0));
+    plant.Update(u);
+  }
+
+  ASSERT_NEAR(plant.x(0), controller.r(0), 1e-6);
+  ASSERT_NEAR(plant.x(1), controller.r(1), 1e-6);
+}
+
+TEST(StateSpace, ControllerTracksFeedForward) {
+  muan::control::StateSpacePlant<1, 2, 1> plant;
+  plant.A() << 1, 9.9502e-3, 0, 9.9005e-1;
+  plant.B() << 4.9834e-5, 9.9502e-3;
+  plant.C() << 1, 0;
+  plant.x() << 0, 0;
+
+  muan::control::StateSpaceController<1, 2, 1> controller{};
+  controller.K() << 0, 0;
+  controller.A() = plant.A();
+  controller.Kff() =
+      (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
+  controller.r() << 0, 0;
+
+  Eigen::Matrix<double, 2, 1> r = controller.r();
+  Eigen::Matrix<double, 1, 1> expected_u;
+  expected_u << 1;
+
+  for (uint32_t t = 0; t < 1000; t++) {
+    r = plant.A() * r + plant.B() * expected_u;
+
+    auto u = controller.Update(plant.x(), r);
+    plant.Update(u);
+    ASSERT_NEAR(plant.x(0), controller.r(0), 1e-3);
+    ASSERT_NEAR(plant.x(1), controller.r(1), 1e-3);
+
+    ASSERT_NEAR(u(0), expected_u(0), 1e-3);
+  }
+
+  ASSERT_NEAR(plant.x(0), controller.r(0), 1e-3);
+  ASSERT_NEAR(plant.x(1), controller.r(1), 1e-3);
+}
+
+TEST(StateSpace, ObserverRecoversFromInitialError) {
+  muan::control::StateSpacePlant<1, 2, 1> plant;
+  plant.A() << 1, 9.9502e-3, 0, 9.9005e-1;
+  plant.B() << 4.9834e-5, 9.9502e-3;
+  plant.C() << 1, 0;
+  plant.x() << 0, 0;
+
+  muan::control::StateSpaceController<1, 2, 1> controller{};
+  controller.K() << 0, 0;
+  controller.A() = plant.A();
+  controller.Kff() =
+      (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
+  controller.r() << 0, 0;
+
+  muan::control::StateSpaceObserver<1, 2, 1> observer{plant};
+  observer.L() << 1e-1, 1;
+
+  plant.x(0) = 1;
+
+  for (uint32_t t = 0; t < 1000; t++) {
+    auto u = Eigen::Matrix<double, 1, 1>::Zero();
+    plant.Update(u);
+    observer.Update(u, plant.y());
+  }
+
+  ASSERT_NEAR(plant.x(0), observer.x(0), 1e-6);
+  ASSERT_NEAR(plant.x(1), observer.x(1), 1e-6);
+}
+
+TEST(StateSpace, ObserverRecoversFromInitialErrorMovingSystem) {
+  muan::control::StateSpacePlant<1, 2, 1> plant;
+  plant.A() << 1, 9.9502e-3, 0, 9.9005e-1;
+  plant.B() << 4.9834e-5, 9.9502e-3;
+  plant.C() << 1, 0;
+  plant.x() << 0, 0;
+
+  muan::control::StateSpaceController<1, 2, 1> controller{};
+  controller.K() << 0, 0;
+  controller.A() = plant.A();
+  controller.Kff() =
+      (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
+  controller.r() << 0, 0;
+
+  muan::control::StateSpaceObserver<1, 2, 1> observer{plant};
+  observer.L() << 1e-1, 1;
+
+  plant.x(0) = 1;
+
+  for (uint32_t t = 0; t < 1000; t++) {
+    auto u = Eigen::Matrix<double, 1, 1>::Constant(1);
+    observer.Update(u, plant.y());
+    plant.Update(u);
+  }
+
+  ASSERT_NEAR(plant.x(0), observer.x(0), 1e-6);
+  ASSERT_NEAR(plant.x(1), observer.x(1), 1e-6);
+}
+
+TEST(StateSpace, ObserverRecoversFromIncorrectModel) {
+  muan::control::StateSpacePlant<1, 2, 1> plant;
+  plant.A() << 1, 9.9502e-3, 0, 9.9005e-1;
+  plant.B() << 4.9834e-5, 9.9502e-3;
+  plant.C() << 1, 0;
+  plant.x() << 0, 0;
+
+  muan::control::StateSpaceController<1, 2, 1> controller{};
+  controller.K() << 0, 0;
+  controller.A() = plant.A();
+  controller.Kff() =
+      (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
+  controller.r() << 0, 0;
+
+  muan::control::StateSpaceObserver<1, 2, 1> observer{plant};
+  observer.L() << 2e-1, 3;
+
+  plant.A(1, 1) *= .985;
+  plant.A(0, 1) *= .995;
+
+  for (uint32_t t = 0; t < 1000; t++) {
+    auto u = Eigen::Matrix<double, 1, 1>::Constant(1);
+    observer.Update(u, plant.y());
+    plant.Update(u);
+  }
+
+  ASSERT_NEAR(plant.x(0), observer.x(0), 1e-2);
+  ASSERT_NEAR(plant.x(1), observer.x(1), 1e-1);
+}
+
+double GaussianNoise() {
+  static std::mt19937_64 rng;
+  static std::normal_distribution<double> dist;
+  return dist(rng);
+}
+
+template <uint32_t A>
+Eigen::Matrix<double, A, 1> NoiseVector(
+    const Eigen::Matrix<double, A, A>& covariance) {
+  Eigen::Matrix<double, A, 1> ret;
+
+  for (uint32_t i = 0; i < A; i++) {
+    ret[i] = GaussianNoise();
+  }
+
+  return covariance * ret;
+}
+
+TEST(StateSpace, ObserverRecoversFromNoise) {
+  Eigen::Matrix<double, 2, 2> Q;
+  Q << .001, 0, 0, .001;
+  Eigen::Matrix<double, 1, 1> R;
+  R << .003;
+
+  muan::control::StateSpacePlant<1, 2, 1> plant;
+  plant.A() << 1, 9.9502e-3, 0, 9.9005e-1;
+  plant.B() << 4.9834e-5, 9.9502e-3;
+  plant.C() << 1, 0;
+  plant.x() << 0, 0;
+
+  muan::control::StateSpaceController<1, 2, 1> controller{};
+  controller.K() << 0, 0;
+  controller.A() = plant.A();
+  controller.Kff() =
+      (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
+  controller.r() << 0, 0;
+
+  muan::control::StateSpaceObserver<1, 2, 1> observer{plant};
+  observer.L() << 2e-1, 5;
+
+  for (uint32_t t = 0; t < 1000; t++) {
+    auto u = Eigen::Matrix<double, 1, 1>::Constant(1);
+    observer.Update(u, plant.y() + NoiseVector<1>(R));
+    plant.Update(u);
+    plant.x() += NoiseVector<2>(Q);
+
+    ASSERT_NEAR(plant.x(0), observer.x(0), 2e-2);
+    ASSERT_NEAR(plant.x(1), observer.x(1), 2e-1);
+  }
+
+  ASSERT_NEAR(plant.x(0), observer.x(0), 1e-2);
+  ASSERT_NEAR(plant.x(1), observer.x(1), 1e-1);
 }

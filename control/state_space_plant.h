@@ -2,69 +2,68 @@
 #define MUAN_CONTROL_STATE_SPACE_PLANT_H_
 
 #include "Eigen/Core"
-#include "unitscpp/unitscpp.h"
-#include <cmath>
+#include <cstdint>
 
 namespace muan {
 
-template <int Inputs, int States, int Outputs, bool discrete = false>
+namespace control {
+
+template <uint32_t kNumInputs, uint32_t kNumStates, uint32_t kNumOutputs>
 class StateSpacePlant {
  public:
-  StateSpacePlant(Time dt) : dt_(dt) {}
-  StateSpacePlant(Eigen::Matrix<double, States, States> a,
-                  Eigen::Matrix<double, States, Outputs> b,
-                  Eigen::Matrix<double, Inputs, States> c, Time dt = 0 * s)
-      : a_(a), b_(b), c_(c), dt_(dt) {
-    for (int i = 0; i < States; i++) {
-      x_(i) = 0;
-    }
-  }
+  StateSpacePlant();
+  StateSpacePlant(const Eigen::Matrix<double, kNumStates, kNumStates>& A,
+                  const Eigen::Matrix<double, kNumStates, kNumInputs>& B,
+                  const Eigen::Matrix<double, kNumOutputs, kNumStates>& C,
+                  const Eigen::Matrix<double, kNumOutputs, kNumInputs>& D =
+                      Eigen::Matrix<double, kNumOutputs, kNumInputs>::Zeros(),
+                  const Eigen::Matrix<double, kNumStates, 1>& x_0 =
+                      Eigen::Matrix<double, kNumStates, 1>::Zeros());
+  virtual ~StateSpacePlant();
 
-  void Update(const Eigen::Matrix<double, Outputs, 1>& u) {
-    static_assert(
-        discrete,
-        "You have to supply a delta time parameter to a continuous system!");
-    x_ = a_ * x_ + b_ * u;
-  }
+  void Update(const Eigen::Matrix<double, kNumInputs, 1>& u);
 
-  void Update(const Eigen::Matrix<double, Outputs, 1>& u, Time dt) {
-    static_assert(!discrete, "Don't supply a delta time to a discrete system!");
-    x_ += (a_ * x_ + b_ * u) * dt.to(s);
-  }
+  const Eigen::Matrix<double, kNumStates, 1>& x() const;
+  Eigen::Matrix<double, kNumStates, 1>& x();
+  double x(uint32_t i) const;
+  double& x(uint32_t i);
 
-  Eigen::Matrix<double, States, 1> GetX() { return x_; }
+  Eigen::Matrix<double, kNumOutputs, 1> y() const;
+  double y(uint32_t i) const;
 
-  void SetX(const Eigen::Matrix<double, States, 1>& x) { x_ = x; }
+  const Eigen::Matrix<double, kNumStates, kNumStates>& A() const;
+  Eigen::Matrix<double, kNumStates, kNumStates>& A();
+  double A(uint32_t i, uint32_t j) const;
+  double& A(uint32_t i, uint32_t j);
 
-  void SetSystem(Eigen::Matrix<double, States, States> A,
-                 Eigen::Matrix<double, States, Outputs> B,
-                 Eigen::Matrix<double, Inputs, States> C) {
-    a_ = A;
-    b_ = B;
-    c_ = C;
-  }
+  const Eigen::Matrix<double, kNumStates, kNumInputs>& B() const;
+  Eigen::Matrix<double, kNumStates, kNumInputs>& B();
+  double B(uint32_t i, uint32_t j) const;
+  double& B(uint32_t i, uint32_t j);
 
-  Eigen::Matrix<double, Inputs, 1> GetY() { return c_ * x_; }
+  const Eigen::Matrix<double, kNumOutputs, kNumStates>& C() const;
+  Eigen::Matrix<double, kNumOutputs, kNumStates>& C();
+  double C(uint32_t i, uint32_t j) const;
+  double& C(uint32_t i, uint32_t j);
 
-  Eigen::Matrix<double, States, States> GetA() { return a_; }
-
-  Eigen::Matrix<double, States, Outputs> GetB() { return b_; }
-
-  Eigen::Matrix<double, Inputs, States> GetC() { return c_; }
-
-  Time GetTimestep() {
-    static_assert(discrete, "Only a discrete-time model has a fixed timestep");
-    return dt_;
-  }
+  const Eigen::Matrix<double, kNumOutputs, kNumInputs>& D() const;
+  Eigen::Matrix<double, kNumOutputs, kNumInputs>& D();
+  double D(uint32_t i, uint32_t j) const;
+  double& D(uint32_t i, uint32_t j);
 
  private:
-  Eigen::Matrix<double, States, States> a_;
-  Eigen::Matrix<double, States, Outputs> b_;
-  Eigen::Matrix<double, Inputs, States> c_;
+  Eigen::Matrix<double, kNumStates, kNumStates> A_;
+  Eigen::Matrix<double, kNumStates, kNumInputs> B_;
+  Eigen::Matrix<double, kNumOutputs, kNumStates> C_;
+  Eigen::Matrix<double, kNumOutputs, kNumInputs> D_;
 
-  Eigen::Matrix<double, States, 1> x_;
-  Time dt_;
+  Eigen::Matrix<double, kNumStates, 1> x_;
 };
-}
 
-#endif
+} /* control */
+
+} /* muan */
+
+#include "state_space_plant.hpp"
+
+#endif /* MUAN_CONTROL_STATE_SPACE_PLANT_H_ */
