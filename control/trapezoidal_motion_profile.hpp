@@ -2,6 +2,7 @@
 #define MUAN_CONTROL_TRAPEZOIDAL_MOTION_PROFILE_HPP_
 
 #include "trapezoidal_motion_profile.h"
+#include <iostream>
 
 namespace muan {
 
@@ -61,15 +62,16 @@ TrapezoidalMotionProfile<DistanceType>::Calculate(Time t) const {
     result.velocity = constraints_.max_velocity;
     result.position = (this->initial().velocity +
                        end_accel_ * constraints_.max_acceleration / 2.0) *
-                      end_accel_;
+                          end_accel_ +
+                      constraints_.max_velocity * (t - end_accel_);
   } else if (t < end_deccel_) {
     result.velocity = this->goal().velocity +
                       (end_deccel_ - t) * constraints_.max_acceleration;
-    result.position =
-        this->goal().position -
-        (this->goal().velocity +
-         (end_deccel_ - t) * constraints_.max_acceleration / 2.0) *
-            t;
+    Time time_left = end_deccel_ - t;
+    result.position = this->goal().position -
+                      (this->goal().velocity +
+                       time_left * constraints_.max_acceleration / 2.0) *
+                          time_left;
   } else {
     return this->goal();
   }
