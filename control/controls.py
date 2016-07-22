@@ -98,7 +98,7 @@ def place(A, B, poles):
     result = scipy.signal.place_poles(A, B, poles)
 
     for req, res in zip(result.requested_poles, result.computed_poles):
-        if req != res:
+        if abs(req - res) > 1e-3:
             print("Warning: Pole %s could not be assigned as given and was instead assigned as %s" % (req, res))
 
     return result.gain_matrix
