@@ -44,6 +44,9 @@ cc_library(
     'linear_motion_profile.h',
     'instant_motion_profile.h'
   ],
+  srcs = [
+    'trapezoidal_motion_profile.hpp'
+  ],
   deps = ['@third_party//unitscpp'],
   linkopts = ['-lm'],
   linkstatic = 1

@@ -1,10 +1,3 @@
-/*
- * MotionProfile.h
- *
- *  Created on: Sep 25, 2015
- *      Author: Kyle
- */
-
 #ifndef SRC_ROBOTCODE_MOTIONPROFILE_H_
 #define SRC_ROBOTCODE_MOTIONPROFILE_H_
 #include "unitscpp/unitscpp.h"
@@ -12,19 +5,44 @@
 
 namespace muan {
 
-template <typename DistanceU>
+namespace control {
+
+template <typename T>
+using TimeDerivative = std::remove_cv_t<decltype(T{0} / s)>;
+
+template <typename T>
+using TimeDerivative2 = std::remove_cv_t<decltype(T{0} / s / s)>;
+
+template <typename DistanceType>
+struct MotionProfilePosition {
+  DistanceType position;
+  TimeDerivative<DistanceType> velocity;
+};
+
+template <typename DistanceType>
 class MotionProfile {
  public:
-  using VelocityU = std::remove_cv_t<decltype(DistanceU(0) / s)>;
-  using AccelerationU = std::remove_cv_t<decltype(DistanceU(0) / s / s)>;
-  MotionProfile() {}
-  virtual ~MotionProfile() {}
-  virtual AccelerationU CalculateSecondDerivative(Time time) = 0;
-  virtual VelocityU CalculateDerivative(Time time) = 0;
-  virtual DistanceU Calculate(Time time) = 0;
-  virtual bool finished(Time time) = 0;
-  virtual DistanceU GetTotalDistance() = 0;
+  MotionProfile(const MotionProfilePosition<DistanceType>& initial,
+                const MotionProfilePosition<DistanceType>& goal)
+      : initial_{initial}, goal_{goal} {}
+  virtual ~MotionProfile() = default;
+
+  virtual MotionProfilePosition<DistanceType> Calculate(Time time) const = 0;
+
+  virtual bool finished(Time time) const = 0;
+
+  const MotionProfilePosition<DistanceType>& initial() const {
+    return initial_;
+  }
+
+  const MotionProfilePosition<DistanceType>& goal() const { return goal_; }
+
+ protected:
+  MotionProfilePosition<DistanceType> initial_, goal_;
 };
-}
+
+} /* control */
+
+} /* muan */
 
 #endif /* SRC_ROBOTCODE_MOTIONPROFILE_H_ */
