@@ -14,7 +14,7 @@ TrapezoidalMotionProfile<DistanceType>::TrapezoidalMotionProfile(
     MotionProfilePosition<DistanceType> goal,
     MotionProfilePosition<DistanceType> initial)
     : MotionProfile<DistanceType>{initial, goal}, constraints_{constraints} {
-  Time cutoff_begin = goal.velocity / constraints_.max_acceleration;
+  Time cutoff_begin = initial.velocity / constraints_.max_acceleration;
   DistanceType cutoff_dist_begin =
       cutoff_begin * cutoff_begin * constraints_.max_acceleration / 2.0;
 
