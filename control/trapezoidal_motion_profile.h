@@ -36,6 +36,16 @@ class TrapezoidalMotionProfile : public MotionProfile<DistanceType> {
   MotionProfileConstraints<DistanceType>& constraints() { return constraints_; }
 
  private:
+  MotionProfilePosition<DistanceType> Direct(
+      const MotionProfilePosition<DistanceType>& in) const {
+    MotionProfilePosition<DistanceType> result = in;
+    result.position *= direction_;
+    result.velocity *= direction_;
+    return result;
+  }
+
+  int direction_;
+
   MotionProfileConstraints<DistanceType> constraints_;
   MotionProfilePosition<DistanceType> initial_, goal_;
 

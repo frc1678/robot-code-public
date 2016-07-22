@@ -13,9 +13,10 @@ TrapezoidalMotionProfile<DistanceType>::TrapezoidalMotionProfile(
     MotionProfileConstraints<DistanceType> constraints,
     MotionProfilePosition<DistanceType> goal,
     MotionProfilePosition<DistanceType> initial)
-    : constraints_{constraints},
-      initial_{initial},
-      goal_{goal} {
+    : direction_{(goal.position > initial.position) ? 1 : -1},
+      constraints_{constraints},
+      initial_{Direct(initial)},
+      goal_{Direct(goal)} {
   Time cutoff_begin = initial_.velocity / constraints_.max_acceleration;
   DistanceType cutoff_dist_begin =
       cutoff_begin * cutoff_begin * constraints_.max_acceleration / 2.0;
@@ -77,7 +78,7 @@ TrapezoidalMotionProfile<DistanceType>::Calculate(Time t) const {
     result = goal_;
   }
 
-  return result;
+  return Direct(result);
 }
 
 } /* control */
