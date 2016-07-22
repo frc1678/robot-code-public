@@ -41,8 +41,6 @@ cc_library(
   hdrs = [
     'motion_profile.h',
     'trapezoidal_motion_profile.h',
-    'linear_motion_profile.h',
-    'instant_motion_profile.h'
   ],
   srcs = [
     'trapezoidal_motion_profile.hpp'
