@@ -64,7 +64,7 @@ TrapezoidalMotionProfile<DistanceType>::Calculate(Time t) const {
                        end_accel_ * constraints_.max_acceleration / 2.0) *
                           end_accel_ +
                       constraints_.max_velocity * (t - end_accel_);
-  } else if (t < end_deccel_) {
+  } else if (t <= end_deccel_) {
     result.velocity = this->goal().velocity +
                       (end_deccel_ - t) * constraints_.max_acceleration;
     Time time_left = end_deccel_ - t;
