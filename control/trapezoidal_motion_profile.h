@@ -31,7 +31,7 @@ class TrapezoidalMotionProfile : public MotionProfile<DistanceType> {
 
   MotionProfilePosition<DistanceType> Calculate(Time t) const override;
 
-  bool finished(Time t) const override { return t >= end_deccel_; }
+  Time total_time() const override { return end_deccel_; }
 
   MotionProfileConstraints<DistanceType>& constraints() { return constraints_; }
 

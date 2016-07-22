@@ -29,7 +29,8 @@ class MotionProfile {
 
   virtual MotionProfilePosition<DistanceType> Calculate(Time time) const = 0;
 
-  virtual bool finished(Time time) const = 0;
+  virtual Time total_time() const = 0;
+  virtual bool finished(Time time) { return time > total_time(); }
 
   const MotionProfilePosition<DistanceType>& initial() const {
     return initial_;
