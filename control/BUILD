@@ -78,6 +78,7 @@ cc_test(
   srcs = ['motion_profile_test.cpp'],
   deps = [
     ':motion_profiles',
+    '//utils:math_utils',
     '@third_party//google/googletest:googletest'
   ]
 )
