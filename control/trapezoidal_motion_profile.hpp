@@ -13,12 +13,14 @@ TrapezoidalMotionProfile<DistanceType>::TrapezoidalMotionProfile(
     MotionProfileConstraints<DistanceType> constraints,
     MotionProfilePosition<DistanceType> goal,
     MotionProfilePosition<DistanceType> initial)
-    : MotionProfile<DistanceType>{initial, goal}, constraints_{constraints} {
-  Time cutoff_begin = initial.velocity / constraints_.max_acceleration;
+    : constraints_{constraints},
+      initial_{initial},
+      goal_{goal} {
+  Time cutoff_begin = initial_.velocity / constraints_.max_acceleration;
   DistanceType cutoff_dist_begin =
       cutoff_begin * cutoff_begin * constraints_.max_acceleration / 2.0;
 
-  Time cutoff_end = goal.velocity / constraints_.max_acceleration;
+  Time cutoff_end = goal_.velocity / constraints_.max_acceleration;
   DistanceType cutoff_dist_end =
       cutoff_end * cutoff_end * constraints_.max_acceleration / 2.0;
 
@@ -26,7 +28,7 @@ TrapezoidalMotionProfile<DistanceType>::TrapezoidalMotionProfile(
   // of a truncated one
   {
     auto full_trapezoid_dist = cutoff_dist_begin +
-                               (goal.position - initial.position) +
+                               (goal_.position - initial_.position) +
                                cutoff_dist_end;
     auto acceleration_time =
         constraints_.max_velocity / constraints_.max_acceleration;
@@ -51,28 +53,28 @@ TrapezoidalMotionProfile<DistanceType>::TrapezoidalMotionProfile(
 template <typename DistanceType>
 MotionProfilePosition<DistanceType>
 TrapezoidalMotionProfile<DistanceType>::Calculate(Time t) const {
-  MotionProfilePosition<DistanceType> result = this->initial();
+  MotionProfilePosition<DistanceType> result = initial_;
+
   if (t < end_accel_) {
     result.velocity += t * constraints_.max_acceleration;
     result.position +=
-        (this->initial().velocity + t * constraints_.max_acceleration / 2.0) *
-        t;
+        (initial_.velocity + t * constraints_.max_acceleration / 2.0) * t;
   } else if (t < end_full_speed_) {
     result.velocity = constraints_.max_velocity;
-    result.position += (this->initial().velocity +
-                        end_accel_ * constraints_.max_acceleration / 2.0) *
-                           end_accel_ +
-                       constraints_.max_velocity * (t - end_accel_);
+    result.position +=
+        (initial_.velocity + end_accel_ * constraints_.max_acceleration / 2.0) *
+            end_accel_ +
+        constraints_.max_velocity * (t - end_accel_);
   } else if (t <= end_deccel_) {
-    result.velocity = this->goal().velocity +
-                      (end_deccel_ - t) * constraints_.max_acceleration;
+    result.velocity =
+        goal_.velocity + (end_deccel_ - t) * constraints_.max_acceleration;
     Time time_left = end_deccel_ - t;
-    result.position = this->goal().position -
-                      (this->goal().velocity +
-                       time_left * constraints_.max_acceleration / 2.0) *
-                          time_left;
+    result.position =
+        goal_.position -
+        (goal_.velocity + time_left * constraints_.max_acceleration / 2.0) *
+            time_left;
   } else {
-    return this->goal();
+    result = goal_;
   }
 
   return result;

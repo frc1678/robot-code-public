@@ -22,24 +22,13 @@ struct MotionProfilePosition {
 template <typename DistanceType>
 class MotionProfile {
  public:
-  MotionProfile(const MotionProfilePosition<DistanceType>& initial,
-                const MotionProfilePosition<DistanceType>& goal)
-      : initial_{initial}, goal_{goal} {}
+  MotionProfile() = default;
   virtual ~MotionProfile() = default;
 
   virtual MotionProfilePosition<DistanceType> Calculate(Time time) const = 0;
 
   virtual Time total_time() const = 0;
   virtual bool finished(Time time) { return time > total_time(); }
-
-  const MotionProfilePosition<DistanceType>& initial() const {
-    return initial_;
-  }
-
-  const MotionProfilePosition<DistanceType>& goal() const { return goal_; }
-
- protected:
-  MotionProfilePosition<DistanceType> initial_, goal_;
 };
 
 } /* control */

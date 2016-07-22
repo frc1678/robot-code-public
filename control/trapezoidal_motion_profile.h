@@ -37,6 +37,7 @@ class TrapezoidalMotionProfile : public MotionProfile<DistanceType> {
 
  private:
   MotionProfileConstraints<DistanceType> constraints_;
+  MotionProfilePosition<DistanceType> initial_, goal_;
 
   Time end_accel_, end_full_speed_, end_deccel_;
 };
