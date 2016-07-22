@@ -51,19 +51,18 @@ TrapezoidalMotionProfile<DistanceType>::TrapezoidalMotionProfile(
 template <typename DistanceType>
 MotionProfilePosition<DistanceType>
 TrapezoidalMotionProfile<DistanceType>::Calculate(Time t) const {
-  MotionProfilePosition<DistanceType> result{0, 0};
+  MotionProfilePosition<DistanceType> result = this->initial();
   if (t < end_accel_) {
-    result.velocity =
-        this->initial().velocity + t * constraints_.max_acceleration;
-    result.position =
+    result.velocity += t * constraints_.max_acceleration;
+    result.position +=
         (this->initial().velocity + t * constraints_.max_acceleration / 2.0) *
         t;
   } else if (t < end_full_speed_) {
     result.velocity = constraints_.max_velocity;
-    result.position = (this->initial().velocity +
-                       end_accel_ * constraints_.max_acceleration / 2.0) *
-                          end_accel_ +
-                      constraints_.max_velocity * (t - end_accel_);
+    result.position += (this->initial().velocity +
+                        end_accel_ * constraints_.max_acceleration / 2.0) *
+                           end_accel_ +
+                       constraints_.max_velocity * (t - end_accel_);
   } else if (t <= end_deccel_) {
     result.velocity = this->goal().velocity +
                       (end_deccel_ - t) * constraints_.max_acceleration;
@@ -75,6 +74,7 @@ TrapezoidalMotionProfile<DistanceType>::Calculate(Time t) const {
   } else {
     return this->goal();
   }
+
   return result;
 }
 
