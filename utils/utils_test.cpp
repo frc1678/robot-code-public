@@ -1,7 +1,7 @@
-#include "gtest/gtest.h"
+#include "../utils/history.h"
 #include "../utils/timer.h"
 #include "../utils/timing_utils.h"
-#include "../utils/history.h"
+#include "gtest/gtest.h"
 
 using namespace muan;
 
@@ -11,7 +11,7 @@ TEST(TimeUtils, TimerPositive) {
   for (int i = 0; i < 10000; i++) {
     t.Get();
   }
-  ASSERT_GT(t.Get(), 0 * s);
+  EXPECT_GT(t.Get(), 0 * s);
 }
 
 TEST(TimeUtils, TimerReset) {
@@ -21,20 +21,20 @@ TEST(TimeUtils, TimerReset) {
     t.Get();
   }
   t.Reset();
-  ASSERT_LT(t.Get(), 0.1 * s);
+  EXPECT_LT(t.Get(), 0.1 * s);
 }
 
 TEST(TimeUtils, TimerAndDelay) {
   Timer t;
   t.Start();
   sleep_for(.2 * s);
-  ASSERT_NEAR(t.Get().to(s), .2, .01);
+  EXPECT_NEAR(t.Get().to(s), .2, .01);
 }
 
 TEST(TimeUtils, SleepUntil) {
   Time start = now();
   sleep_until(start + .5 * s);
-  ASSERT_NEAR(now().to(s), start.to(s) + .5, .01);
+  EXPECT_NEAR(now().to(s), start.to(s) + .5, .01);
 }
 
 TEST(History, WorksCorrectly) {
@@ -44,6 +44,6 @@ TEST(History, WorksCorrectly) {
   }
   // We don't really care about off-by-one errors
   for (Time t = .01 * s; t < 1 * s; t += .01 * s) {
-    ASSERT_NEAR(hist.GoBack(t), 100 - static_cast<int>(t.to(.01 * s)), 1);
+    EXPECT_NEAR(hist.GoBack(t), 100 - static_cast<int>(t.to(.01 * s)), 1);
   }
 }

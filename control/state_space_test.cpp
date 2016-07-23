@@ -13,24 +13,24 @@ TEST(StateSpace, Initialization) {
   for (uint32_t i = 0; i < 2; i++) {
     for (uint32_t j = 0; j < 2; j++) {
       if (i == j) {
-        ASSERT_EQ(plant.A(i, j), 1);
-        ASSERT_EQ(controller.A(i, j), 1);
+        EXPECT_EQ(plant.A(i, j), 1);
+        EXPECT_EQ(controller.A(i, j), 1);
       } else {
-        ASSERT_EQ(plant.A(i, j), 0);
-        ASSERT_EQ(controller.A(i, j), 0);
+        EXPECT_EQ(plant.A(i, j), 0);
+        EXPECT_EQ(controller.A(i, j), 0);
       }
     }
-    ASSERT_EQ(plant.x(i), 0);
-    ASSERT_EQ(observer.x(i), 0);
-    ASSERT_EQ(controller.K(0, i), 0);
-    ASSERT_EQ(controller.Kff(0, i), 0);
-    ASSERT_EQ(plant.B(i, 0), 0);
-    ASSERT_EQ(plant.C(0, i), 0);
+    EXPECT_EQ(plant.x(i), 0);
+    EXPECT_EQ(observer.x(i), 0);
+    EXPECT_EQ(controller.K(0, i), 0);
+    EXPECT_EQ(controller.Kff(0, i), 0);
+    EXPECT_EQ(plant.B(i, 0), 0);
+    EXPECT_EQ(plant.C(0, i), 0);
   }
 
-  ASSERT_EQ(plant.D(0, 0), 0);
-  ASSERT_EQ(controller.u_min(0), -std::numeric_limits<double>::infinity());
-  ASSERT_EQ(controller.u_max(0), std::numeric_limits<double>::infinity());
+  EXPECT_EQ(plant.D(0, 0), 0);
+  EXPECT_EQ(controller.u_min(0), -std::numeric_limits<double>::infinity());
+  EXPECT_EQ(controller.u_max(0), std::numeric_limits<double>::infinity());
 }
 
 TEST(StateSpace, StablePlant) {
@@ -50,7 +50,7 @@ TEST(StateSpace, StablePlant) {
   }
 
   for (uint32_t i = 0; i < 2; i++) {
-    ASSERT_NEAR(plant.x(i), 0, 1e-6);
+    EXPECT_NEAR(plant.x(i), 0, 1e-6);
   }
 }
 
@@ -67,7 +67,7 @@ TEST(StateSpace, UnstablePlant) {
   }
 
   for (uint32_t i = 0; i < 2; i++) {
-    ASSERT_GT(plant.x(i), 1e6);
+    EXPECT_GT(plant.x(i), 1e6);
   }
 }
 
@@ -90,8 +90,8 @@ TEST(StateSpace, ControllerConverges) {
     plant.Update(u);
   }
 
-  ASSERT_NEAR(plant.x(0), controller.r(0), 1e-6);
-  ASSERT_NEAR(plant.x(1), controller.r(1), 1e-6);
+  EXPECT_NEAR(plant.x(0), controller.r(0), 1e-6);
+  EXPECT_NEAR(plant.x(1), controller.r(1), 1e-6);
 }
 
 TEST(StateSpace, ControllerGoesToGoal) {
@@ -113,8 +113,8 @@ TEST(StateSpace, ControllerGoesToGoal) {
     plant.Update(u);
   }
 
-  ASSERT_NEAR(plant.x(0), controller.r(0), 1e-6);
-  ASSERT_NEAR(plant.x(1), controller.r(1), 1e-6);
+  EXPECT_NEAR(plant.x(0), controller.r(0), 1e-6);
+  EXPECT_NEAR(plant.x(1), controller.r(1), 1e-6);
 }
 
 TEST(StateSpace, ControllerHoldsSteadyState) {
@@ -136,8 +136,8 @@ TEST(StateSpace, ControllerHoldsSteadyState) {
     plant.Update(u);
   }
 
-  ASSERT_NEAR(plant.x(0), controller.r(0), 1e-2);
-  ASSERT_NEAR(plant.x(1), controller.r(1), 1e-2);
+  EXPECT_NEAR(plant.x(0), controller.r(0), 1e-2);
+  EXPECT_NEAR(plant.x(1), controller.r(1), 1e-2);
 }
 
 TEST(StateSpace, ControllerObeysInputConstraints) {
@@ -158,13 +158,13 @@ TEST(StateSpace, ControllerObeysInputConstraints) {
 
   for (uint32_t t = 0; t < 1000; t++) {
     auto u = controller.Update(plant.x());
-    ASSERT_LT(u(0), controller.u_max(0));
-    ASSERT_GT(u(0), controller.u_min(0));
+    EXPECT_LT(u(0), controller.u_max(0));
+    EXPECT_GT(u(0), controller.u_min(0));
     plant.Update(u);
   }
 
-  ASSERT_NEAR(plant.x(0), controller.r(0), 1e-6);
-  ASSERT_NEAR(plant.x(1), controller.r(1), 1e-6);
+  EXPECT_NEAR(plant.x(0), controller.r(0), 1e-6);
+  EXPECT_NEAR(plant.x(1), controller.r(1), 1e-6);
 }
 
 TEST(StateSpace, ControllerTracksFeedForward) {
@@ -190,14 +190,14 @@ TEST(StateSpace, ControllerTracksFeedForward) {
 
     auto u = controller.Update(plant.x(), r);
     plant.Update(u);
-    ASSERT_NEAR(plant.x(0), controller.r(0), 1e-3);
-    ASSERT_NEAR(plant.x(1), controller.r(1), 1e-3);
+    EXPECT_NEAR(plant.x(0), controller.r(0), 1e-3);
+    EXPECT_NEAR(plant.x(1), controller.r(1), 1e-3);
 
-    ASSERT_NEAR(u(0), expected_u(0), 1e-3);
+    EXPECT_NEAR(u(0), expected_u(0), 1e-3);
   }
 
-  ASSERT_NEAR(plant.x(0), controller.r(0), 1e-3);
-  ASSERT_NEAR(plant.x(1), controller.r(1), 1e-3);
+  EXPECT_NEAR(plant.x(0), controller.r(0), 1e-3);
+  EXPECT_NEAR(plant.x(1), controller.r(1), 1e-3);
 }
 
 TEST(StateSpace, ObserverRecoversFromInitialError) {
@@ -225,8 +225,8 @@ TEST(StateSpace, ObserverRecoversFromInitialError) {
     observer.Update(u, plant.y());
   }
 
-  ASSERT_NEAR(plant.x(0), observer.x(0), 1e-6);
-  ASSERT_NEAR(plant.x(1), observer.x(1), 1e-6);
+  EXPECT_NEAR(plant.x(0), observer.x(0), 1e-6);
+  EXPECT_NEAR(plant.x(1), observer.x(1), 1e-6);
 }
 
 TEST(StateSpace, ObserverRecoversFromInitialErrorMovingSystem) {
@@ -254,8 +254,8 @@ TEST(StateSpace, ObserverRecoversFromInitialErrorMovingSystem) {
     plant.Update(u);
   }
 
-  ASSERT_NEAR(plant.x(0), observer.x(0), 1e-6);
-  ASSERT_NEAR(plant.x(1), observer.x(1), 1e-6);
+  EXPECT_NEAR(plant.x(0), observer.x(0), 1e-6);
+  EXPECT_NEAR(plant.x(1), observer.x(1), 1e-6);
 }
 
 TEST(StateSpace, ObserverRecoversFromIncorrectModel) {
@@ -284,8 +284,8 @@ TEST(StateSpace, ObserverRecoversFromIncorrectModel) {
     plant.Update(u);
   }
 
-  ASSERT_NEAR(plant.x(0), observer.x(0), 1e-2);
-  ASSERT_NEAR(plant.x(1), observer.x(1), 1e-1);
+  EXPECT_NEAR(plant.x(0), observer.x(0), 1e-2);
+  EXPECT_NEAR(plant.x(1), observer.x(1), 1e-1);
 }
 
 double GaussianNoise() {
@@ -334,10 +334,10 @@ TEST(StateSpace, ObserverRecoversFromNoise) {
     plant.Update(u);
     plant.x() += NoiseVector<2>(Q);
 
-    ASSERT_NEAR(plant.x(0), observer.x(0), 2e-2);
-    ASSERT_NEAR(plant.x(1), observer.x(1), 2e-1);
+    EXPECT_NEAR(plant.x(0), observer.x(0), 2e-2);
+    EXPECT_NEAR(plant.x(1), observer.x(1), 2e-1);
   }
 
-  ASSERT_NEAR(plant.x(0), observer.x(0), 1e-2);
-  ASSERT_NEAR(plant.x(1), observer.x(1), 1e-1);
+  EXPECT_NEAR(plant.x(0), observer.x(0), 1e-2);
+  EXPECT_NEAR(plant.x(1), observer.x(1), 1e-1);
 }
