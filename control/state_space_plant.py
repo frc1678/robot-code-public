@@ -5,7 +5,7 @@ import numpy.matlib as mat
 import scipy as sci
 import controls
 
-class ss_plant:
+class state_space_plant:
     def __init__(self, dt, x_initial, A, B, C, D = np.asmatrix([[0]]), *, Q = None, R = None):
         self.num_states = A.shape[0]
         self.num_inputs = B.shape[1]

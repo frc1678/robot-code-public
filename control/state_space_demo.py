@@ -2,11 +2,11 @@
 
 import numpy as np
 import math
-from ss_controller import ss_controller
-from ss_plant import ss_plant
-from ss_observer import ss_observer
-from ss_scenario import ss_scenario
-from error_u import error_u_observer, error_u_controller
+import state_space_controller
+from state_space_plant import state_space_plant
+import state_space_observer
+from state_space_scenario import state_space_scenario
+import error_u
 from trapezoidal_profile import trapezoidal_profile
 
 # Simple linear second-order system
@@ -34,11 +34,11 @@ R_o = np.asmatrix([
 
 u_max = np.asmatrix([[12]])
 
-plant = ss_plant(dt, x_initial, A, B, C, Q = Q_o, R = R_o)
-controller = ss_controller(plant, Q = Q_c, R = R_c, u_min = -u_max, u_max = u_max)
-observer = ss_observer(plant, Q = Q_o, R = R_o)
+plant = state_space_plant(dt, x_initial, A, B, C, Q = Q_o, R = R_o)
+controller = state_space_controller.lqr(plant, Q = Q_c, R = R_c, u_min = -u_max, u_max = u_max)
+observer = state_space_observer.kalman(plant)
 
-scenario = ss_scenario(plant, x_initial, controller, observer, x_initial, 'test')
+scenario = state_space_scenario(plant, x_initial, controller, observer, x_initial, 'test')
 
 profile = trapezoidal_profile(10, 5, 5)
 
@@ -50,7 +50,7 @@ scenario.write('test.h', 'test.cpp')
 
 # Nonlinear system with error-u controller
 
-class nonlinear_plant(ss_plant):
+class nonlinear_plant(state_space_plant):
     def __init__(self, x_initial):
         A = np.asmatrix([[0, 1, 0],
                          [0, -1, 1],
@@ -76,11 +76,11 @@ Au = np.asmatrix([[0, 1],
                  [0, -1]])
 Bu = np.asmatrix([0, 1]).T
 Cu = np.asmatrix([1, 0])
-plant_lin = ss_plant(.01, x_initial_nl[0:2, 0], Au, Bu, Cu)
-controller_nl = error_u_controller(plant_lin, poles = [.97, .98], u_min = -u_max, u_max = u_max)
-observer_nl = error_u_observer(plant_lin, Q = Q_nl, R = R_nl)
+plant_lin = state_space_plant(.01, x_initial_nl[0:2, 0], Au, Bu, Cu)
+controller_nl = error_u.error_u_controller_poles(plant_lin, [.97, .98], -u_max, u_max)
+observer_nl = error_u.error_u_kalman(plant_lin, Q_c = Q_nl, R_c = R_nl)
 
-scenario = ss_scenario(plant_nl, x_initial_nl, controller_nl, observer_nl, x_initial_nl, 'test')
+scenario = state_space_scenario(plant_nl, x_initial_nl, controller_nl, observer_nl, x_initial_nl, 'test')
 
 profile = trapezoidal_profile(10, 5, 5)
 

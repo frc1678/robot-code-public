@@ -2,9 +2,9 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 from functools import reduce
-import ss_plant
-import ss_controller
-import ss_observer
+import state_space_plant
+import state_space_controller
+import state_space_observer
 from copy import copy
 
 def diff(vector_hist):
@@ -28,7 +28,7 @@ def plot_with_discontinuities(ax, x, y, name, i):
 
     ax.plot(t_copy, y_copy, label = name)
 
-class ss_scenario:
+class state_space_scenario:
     def __init__(self, sys, x_initial, controller, observer, x_hat_initial, name = '', noise = None):
         self.sys = sys
 

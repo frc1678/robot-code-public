@@ -5,10 +5,10 @@ py_library(
   name = 'python_controls',
   srcs = [
     'controls.py',
-    'ss_controller.py',
-    'ss_observer.py',
-    'ss_plant.py',
-    'ss_scenario.py',
+    'state_space_controller.py',
+    'state_space_observer.py',
+    'state_space_plant.py',
+    'state_space_scenario.py',
     'trapezoidal_profile.py'
   ],
   srcs_version = 'PY3ONLY'
@@ -16,8 +16,8 @@ py_library(
 
 py_binary(
   name = 'python_controls_demo',
-  srcs = ['ss_test.py'],
-  main = 'ss_test.py',
+  srcs = ['state_space_demo.py'],
+  main = 'state_space_demo.py',
   srcs_version = 'PY3ONLY',
   default_python_version = 'PY3',
   deps = [':python_controls']

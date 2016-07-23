@@ -124,7 +124,6 @@ def controllability(A, B):
     E = numpy.asmatrix(numpy.zeros((n, n*m)))
     x = B
     for i in range(0, n):
-        print(x)
         j = i * m
         E[:n, j:j+m] = x
         x = A * x
