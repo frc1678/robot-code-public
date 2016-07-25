@@ -2,7 +2,7 @@
 #define MUAN_UTILS_MATH_UTILS_H_
 
 #include "Eigen/Core"
-#include <iostream>
+#include "unitscpp/unitscpp.h"
 
 namespace muan {
 

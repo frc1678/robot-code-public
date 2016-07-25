@@ -2,7 +2,6 @@
 #define MUAN_CONTROL_TRAPEZOIDAL_MOTION_PROFILE_HPP_
 
 #include "trapezoidal_motion_profile.h"
-#include <iostream>
 
 namespace muan {
 
