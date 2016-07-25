@@ -42,36 +42,6 @@ using TimeDerivative = std::remove_cv_t<decltype(T{0} / s)>;
 template <typename T>
 using TimeDerivative2 = std::remove_cv_t<decltype(T{0} / s / s)>;
 
-template <typename T>
-using TimeIntegral = std::remove_cv_t<decltype(T{0} * s)>;
-
-template <class T>
-class Differentiator {
-  private:
-    T prev_val_ = T();
-  public:
-    TimeDerivative<T> differentiate(T val, Time dt) {
-      TimeDerivative<T> derivative = (val - prev_val_) / dt;
-      prev_val_ = val;
-      return derivative;
-    }
-};
-
-template <class T>
-class Integrator {
-  private:
-    TimeIntegral<T> integral = TimeIntegral<T>();
-  public:
-    TimeIntegral<T> integrate(T val, Time dt) {
-      integral += val * dt;
-      return integral;
-    }
-    
-    void reset() {
-      integral = TimeIntegral<T>();
-    }
-};
-
 } /* muan */
 
 #endif
