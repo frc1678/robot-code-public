@@ -6,126 +6,160 @@
 
 using namespace muan::control;
 
-TEST(TrapezoidalMotionProfileTest, IsSane) {
-  muan::control::MotionProfileConstraints<Length> constraints{1 * m / s,
-                                                              1 * m / s / s};
-  muan::control::MotionProfilePosition<Length> goal{1 * m, 0 * m / s};
-  muan::control::TrapezoidalMotionProfile<Length> profile{constraints, goal}; 
-
-  muan::control::MotionProfilePosition<Length> result{0 * m, 0 * m / s};
-
-  Time t = 0 *s;
-
-  result = profile.Calculate(t);
-
-  ASSERT_TRUE(result.position == 0 * m);
-  ASSERT_TRUE(result.velocity == 0 * m / s);
-}
-
-TEST(TrapezoidalMotionProfileTest, ReachesGoal) {
-  muan::control::MotionProfileConstraints<Length> constraints{1 * m / s,
-                                                              1 * m / s / s};
-  muan::control::MotionProfilePosition<Length> goal{1 * m, 0 * m / s};
-  muan::control::MotionProfilePosition<Length> result{0 * m, 0 * m / s};
-  muan::control::TrapezoidalMotionProfile<Length> profile{constraints, goal}; 
-
-  const Time dt = 0.005 * s;
-  Time t = 0 *s;
-
-  while(!profile.finished(t)) {
-    result = profile.Calculate(t);
-    t += dt;
+class MotionProfileTest : public ::testing::Test {
+ public:
+  void SetUp() override {
+    constraints.max_velocity = 1 * m / s;
+    constraints.max_acceleration = 1 * m / s / s;
   }
 
-  ASSERT_TRUE(result.position == 1 * m);
-  ASSERT_TRUE(result.velocity == 0 * m / s);
-}
+  void RunTest() {
+    muan::control::TrapezoidalMotionProfile<Length> profile{constraints, goal,
+                                                            initial_position};
 
-TEST(TrapezoidalMotionProfileTest, StaysInBounds) {
-  muan::control::MotionProfileConstraints<Length> constraints{1 * m / s,
-                                                              1 * m / s / s};
-  muan::control::MotionProfilePosition<Length> goal{3 * m, 0 * m / s};
-  muan::control::MotionProfilePosition<Length> result{0 * m, 0 * m / s};
-  muan::control::TrapezoidalMotionProfile<Length> profile{constraints, goal}; 
+    const Time dt = 0.005 * s;
+    const Velocity discreete_error =
+        0.0026 * m /
+        s;  // Discreete time differentiation leaves a bit of over/undershoot.
 
-  muan::Differentiator<Velocity> dvdt;
-  muan::Differentiator<Length> dxdt;
+    EXPECT_NEAR(profile.Calculate(0 * s).position(),
+                initial_position.position(), 1e-6);
+    EXPECT_NEAR(profile.Calculate(0 * s).velocity(),
+                initial_position.velocity(), 1e-6);
 
-  const Time dt = 0.005 * s;
-  const Velocity discreete_error = 0.0026 * m / s;
+    for (Time t = 0 * s; t <= profile.total_time(); t += dt) {
+      Acceleration estimated_acceleration =
+          (profile.Calculate(t).velocity - profile.Calculate(t - dt).velocity) /
+          (dt);
+      Velocity estimated_velocity =
+          (profile.Calculate(t).position - profile.Calculate(t - dt).position) /
+          (dt);
 
-  Time t = 0 *s;
+      EXPECT_GE(constraints.max_velocity,
+                muan::abs(profile.Calculate(t).velocity));
+      EXPECT_GE(constraints.max_acceleration + (discreete_error / s),
+                muan::abs(estimated_acceleration));
+      EXPECT_NEAR(profile.Calculate(t).velocity(), estimated_velocity(),
+                  discreete_error());
 
-  bool velocity_stayed_in_bounds = true;
-  bool estimated_velocity_follows_velocity = true;
-  bool acceleration_stayed_in_bounds = true;
-
-  while(!profile.finished(t)) {
-    result = profile.Calculate(t);
-    Acceleration estimated_acceleration = dvdt.differentiate(result.velocity, dt);
-    Velocity estimated_velocity = dxdt.differentiate(result.position, dt);
-
-    if(muan::abs(result.velocity) > 1 * m / s) {
-      velocity_stayed_in_bounds = false;
+      t += dt;
     }
-    if(muan::abs(estimated_acceleration) > 1 * m / s / s + (discreete_error / s)) {
-      acceleration_stayed_in_bounds = false;
-    }
-    if(muan::abs(estimated_velocity) > result.velocity + discreete_error) {
-      estimated_velocity_follows_velocity = false;
-    } 
 
-    t += dt;
+    EXPECT_NEAR(profile.Calculate(profile.total_time()).position(),
+                goal.position(), 1e-5);
+    EXPECT_NEAR(profile.Calculate(profile.total_time()).velocity(),
+                goal.velocity(), 1e-5);
   }
 
-  ASSERT_TRUE(velocity_stayed_in_bounds);
-  ASSERT_TRUE(estimated_velocity_follows_velocity);
-  ASSERT_TRUE(acceleration_stayed_in_bounds);
+  muan::control::MotionProfilePosition<Length> initial_position, result, goal;
+  muan::control::MotionProfileConstraints<Length> constraints;
+};
+
+// Probbably too many tests :P
+TEST_F(MotionProfileTest, PositiveGoal) {
+  initial_position = {0 * m, 0 * m / s};
+  goal = {3 * m, 0 * m / s};
+  RunTest();
 }
 
-TEST(TrapezoidalMotionProfileTest, NonZeroInitial) {
-  muan::control::MotionProfileConstraints<Length> constraints{1 * m / s,
-                                                              1 * m / s / s};
-  muan::control::MotionProfilePosition<Length> goal{3 * m, 0 * m / s};
-  muan::control::MotionProfilePosition<Length> result{-1 * m, -10 * m / s};
-  muan::control::TrapezoidalMotionProfile<Length> profile{constraints, goal, result}; 
+TEST_F(MotionProfileTest, NegativeGoal) {
+  initial_position = {0 * m, 0 * m / s};
+  goal = {-3 * m, 0 * m / s};
+  RunTest();
+}
 
-  muan::Differentiator<Velocity> dvdt;
-  muan::Differentiator<Length> dxdt;
+TEST_F(MotionProfileTest, OnGoal) {
+  initial_position = {2 * m, 0 * m / s};
+  goal = {2 * m, 0 * m / s};
+  RunTest();
+}
 
-  const Time dt = 0.005 * s;
-  const Velocity discreete_error = 0.0026 * m / s;
+TEST_F(MotionProfileTest, InitialVelocity) {
+  initial_position = {0 * m, 0.5 * m / s};
+  goal = {3 * m, 0 * m / s};
+  RunTest();
+}
 
-  Time t = 0 *s;
+TEST_F(MotionProfileTest, NegativeInitialVelocity) {
+  initial_position = {0 * m, -0.5 * m / s};
+  goal = {3 * m, 0 * m / s};
+  RunTest();
+}
 
-  bool velocity_stayed_in_bounds = true;
-  bool estimated_velocity_follows_velocity = true;
-  bool acceleration_stayed_in_bounds = true;
+TEST_F(MotionProfileTest, PositiveGoalVelocity) {
+  initial_position = {0 * m, 0 * m / s};
+  goal = {3 * m, 0.8 * m / s};
+  RunTest();
+}
 
-  while(!profile.finished(t)) {
-    result = profile.Calculate(t);
-    Acceleration estimated_acceleration = dvdt.differentiate(result.velocity, dt);
-    Velocity estimated_velocity = dxdt.differentiate(result.position, dt);
+TEST_F(MotionProfileTest, NegativeGoalVelocity) {
+  initial_position = {0 * m, 0 * m / s};
+  goal = {3 * m, -0.7 * m / s};
+  RunTest();
+}
 
-    if(muan::abs(result.velocity) > 1 * m / s) {
-      velocity_stayed_in_bounds = false;
-    }
-    if(muan::abs(estimated_acceleration) > 1 * m / s / s + (discreete_error / s)) {
-      acceleration_stayed_in_bounds = false;
-    }
-    if(muan::abs(estimated_velocity) > result.velocity + discreete_error) {
-      estimated_velocity_follows_velocity = false;
-    } 
+TEST_F(MotionProfileTest, OnGoalPositiveVelocity) {
+  initial_position = {2 * m, 1 * m / s};
+  goal = {2 * m, 0 * m / s};
+  RunTest();
+}
 
-    std::cout << std::to_string(t.to(s)) << ", " << std::to_string(result.position.to(m)) << ", " << std::to_string(result.velocity.to(m/s)) << ", " << std::to_string(estimated_velocity.to(m/s)) << ", " << std::to_string(estimated_acceleration.to(m/s/s)) << std::endl;
+TEST_F(MotionProfileTest, OnGoalNegativeVelocity) {
+  initial_position = {2 * m, -1 * m / s};
+  goal = {2 * m, 0 * m / s};
+  RunTest();
+}
 
-    t += dt;
-  }
+TEST_F(MotionProfileTest, ZeroGoal) {
+  initial_position = {2 * m, 0 * m / s};
+  goal = {0 * m, 0 * m / s};
+  RunTest();
+}
 
-  ASSERT_TRUE(result.position == 3 * m);
-  ASSERT_TRUE(result.velocity == 0 * m / s);
-  ASSERT_TRUE(velocity_stayed_in_bounds);
-  ASSERT_TRUE(estimated_velocity_follows_velocity);
-  ASSERT_TRUE(acceleration_stayed_in_bounds);
+TEST_F(MotionProfileTest, ZeroGoalPositiveGoalVelocity) {
+  initial_position = {1 * m, 0 * m / s};
+  goal = {0 * m, 0.6 * m / s};
+  RunTest();
+}
 
+TEST_F(MotionProfileTest, ZeroGoalNegativeGoalVelocity) {
+  initial_position = {2 * m, 0 * m / s};
+  goal = {0 * m, -0.4 * m / s};
+  RunTest();
+}
+
+TEST_F(MotionProfileTest, ShortPositiveDistance) {
+  initial_position = {0 * m, 0 * m / s};
+  goal = {0.5 * m, 0 * m / s};
+  RunTest();
+}
+
+TEST_F(MotionProfileTest, ShortNegativeDistance) {
+  initial_position = {0 * m, 0 * m / s};
+  goal = {-0.5 * m, 0 * m / s};
+  RunTest();
+}
+
+TEST_F(MotionProfileTest, ShortDistanceInitialVelocity) {
+  initial_position = {0 * m, 1 * m / s};
+  goal = {0.5 * m, 0 * m / s};
+  RunTest();
+}
+
+TEST_F(MotionProfileTest, ShortDistanceNegativeInitalVelocity) {
+  initial_position = {0 * m, -1 * m / s};
+  goal = {0.5 * m, 0 * m / s};
+  RunTest();
+}
+
+TEST_F(MotionProfileTest, ShortNegativeDistanceInitialVelocity) {
+  initial_position = {0 * m, 0.8 * m / s};
+  goal = {-0.5 * m, 0 * m / s};
+  RunTest();
+}
+
+TEST_F(MotionProfileTest, ShortNegativeDistanceNegativeVelocity) {
+  initial_position = {0 * m, -0.7 * m / s};
+  goal = {-0.5 * m, 0 * m / s};
+  RunTest();
 }
