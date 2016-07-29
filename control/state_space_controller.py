@@ -21,7 +21,7 @@ class state_space_controller:
 
         self.r = np.asmatrix(np.zeros(K.shape[1]))
 
-    def update(self, x, goal_next):
+    def update(self, x, goal_next = None):
         if goal_next is None:
             goal_next = self.r
 
