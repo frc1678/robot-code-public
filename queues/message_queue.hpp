@@ -39,7 +39,7 @@ MessageQueue<T, size>::MakeReader() {
 }
 
 template <typename T, uint32_t size>
-uint32_t MessageQueue<T, size>::front() {
+uint32_t MessageQueue<T, size>::front() const {
   return std::max<uint32_t>(back_, size) - size;
 }
 
