@@ -1,7 +1,8 @@
 #include "trapezoidal_motion_profile.h"
-#include "unitscpp/unitscpp.h"
 #include "utils/math_utils.h"
+#include "unitscpp/unitscpp.h"
 #include "gtest/gtest.h"
+#include <fstream>
 
 using namespace muan::control;
 
@@ -99,13 +100,13 @@ TEST_F(MotionProfileTest, NegativeGoalVelocity) {
 
 TEST_F(MotionProfileTest, OnGoalPositiveVelocity) {
   initial_position = {2 * m, 1 * m / s};
-  goal = {2 * m, 1 * m / s};
+  goal = {2 * m, 0 * m / s};
   RunTest();
 }
 
 TEST_F(MotionProfileTest, OnGoalNegativeVelocity) {
   initial_position = {2 * m, -1 * m / s};
-  goal = {2 * m, -1 * m / s};
+  goal = {2 * m, 0 * m / s};
   RunTest();
 }
 
