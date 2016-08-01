@@ -36,6 +36,22 @@ class TrapezoidalMotionProfile : public MotionProfile<DistanceType> {
   MotionProfileConstraints<DistanceType>& constraints() { return constraints_; }
 
  private:
+  bool ShouldFlipAcceleration(
+      const MotionProfilePosition<DistanceType>& initial,
+      const MotionProfilePosition<DistanceType>& goal,
+      const MotionProfileConstraints<DistanceType>& constraints) const {
+    // Calculate the distance travelled by a linear velocity ramp
+    // from the initial to the final velocity and compare it to the desired
+    // distance. If it is smaller, invert the profile.
+    TimeDerivative<DistanceType> velocity_change =
+        goal.velocity - initial.velocity;
+    DistanceType distance_change = goal.position - initial.position;
+    Time t = muan::abs(velocity_change) / constraints.max_acceleration;
+    bool is_acceleration_flipped =
+        t * (velocity_change / 2 + initial.velocity) > distance_change;
+    return is_acceleration_flipped;
+  }
+
   MotionProfilePosition<DistanceType> Direct(
       const MotionProfilePosition<DistanceType>& in) const {
     MotionProfilePosition<DistanceType> result = in;

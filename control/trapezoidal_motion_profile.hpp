@@ -2,7 +2,6 @@
 #define MUAN_CONTROL_TRAPEZOIDAL_MOTION_PROFILE_HPP_
 
 #include "trapezoidal_motion_profile.h"
-#include <iostream>
 
 namespace muan {
 
@@ -13,7 +12,7 @@ TrapezoidalMotionProfile<DistanceType>::TrapezoidalMotionProfile(
     MotionProfileConstraints<DistanceType> constraints,
     MotionProfilePosition<DistanceType> goal,
     MotionProfilePosition<DistanceType> initial)
-    : direction_{(goal.position > initial.position) ? 1 : -1},
+    : direction_{ShouldFlipAcceleration(initial, goal, constraints) ? -1 : 1},
       constraints_{constraints},
       initial_{Direct(initial)},
       goal_{Direct(goal)} {
