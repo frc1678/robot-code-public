@@ -1,18 +1,18 @@
 #ifndef MUAN_HALL_ENCODER_CALIBRATION_H_
 #define MUAN_HALL_ENCODER_CALIBRATION_H_
 
-#include "calibration.h"
-
 namespace muan {
 
 /*
  * A class for calibrating an encoder using a hall effect sensor
  */
-class HallEncoderCalibration : public Calibration<int, bool> {
+class HallEncoderCalibration {
   public:
     HallEncoderCalibration();
     ~HallEncoderCalibration();
     void Update(int encoder_value, bool hall_value);
+    bool Calibrated();
+    int Offset();
 
   private:
     int boundary_high_;
@@ -22,6 +22,8 @@ class HallEncoderCalibration : public Calibration<int, bool> {
     int prev_encoder_value_;
     bool prev_hall_value_;
     bool first_time_;
+    bool calibrated_;
+    int offset_;
 };
 }
 

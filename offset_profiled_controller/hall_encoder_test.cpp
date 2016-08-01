@@ -2,8 +2,8 @@
 #include "gtest/gtest.h"
 
 TEST(HallEncoderCalibration, Initializes) {
-  muan::Calibration<int, bool> *c = new muan::HallEncoderCalibration();
-  EXPECT_FALSE(c->Calibrated());
+  muan::HallEncoderCalibration c;
+  EXPECT_FALSE(c.Calibrated());
 }
 
 /* \ | |
@@ -14,7 +14,7 @@ TEST(HallEncoderCalibration, Initializes) {
  *   | |\
  */
 TEST(HallEncoderCalibration, CalibratesGoingUp) {
-  muan::HallEncoderCalibration c = muan::HallEncoderCalibration();
+  muan::HallEncoderCalibration c;
   for(int i = 0; i < 100; i++) {
     c.Update(i, false);
     EXPECT_FALSE(c.Calibrated());
@@ -36,7 +36,7 @@ TEST(HallEncoderCalibration, CalibratesGoingUp) {
  *  /| |
  */
 TEST(HallEncoderCalibration, CalibratesGoingDown) {
-  muan::HallEncoderCalibration c = muan::HallEncoderCalibration();
+  muan::HallEncoderCalibration c;
   for(int i = 300; i > 200; i--) {
     c.Update(i, false);
     EXPECT_FALSE(c.Calibrated());
@@ -64,7 +64,7 @@ TEST(HallEncoderCalibration, CalibratesGoingDown) {
  *   | |\
  */
 TEST(HallEncoderCalibration, ReverseFromOutside) {
-  muan::HallEncoderCalibration c = muan::HallEncoderCalibration();
+  muan::HallEncoderCalibration c;
   for(int i = 0; i < 100; i++) {
     c.Update(i, false);
     EXPECT_FALSE(c.Calibrated());
@@ -104,7 +104,7 @@ TEST(HallEncoderCalibration, ReverseFromOutside) {
  *   | |\
  */
 TEST(HallEncoderCalibration, ReverseFromInside) {
-  muan::HallEncoderCalibration c = muan::HallEncoderCalibration();
+  muan::HallEncoderCalibration c;
   for(int i = 150; i > 100; i--) {
     c.Update(i, true);
     EXPECT_FALSE(c.Calibrated());

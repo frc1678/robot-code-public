@@ -3,11 +3,9 @@ package(default_visibility = ['//visibility:public'])
 cc_library(
   name = 'calibration',
   hdrs = [
-    'calibration.h',
     'hall_encoder_calibration.h'
   ],
   srcs = [
-    'calibration.hpp',
     'hall_encoder_calibration.cpp'
   ],
   linkstatic = 1

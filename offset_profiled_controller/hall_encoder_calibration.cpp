@@ -53,4 +53,9 @@ void HallEncoderCalibration::Update(int encoder_value, bool hall_value) {
     calibrated_ = true;
   }
 }
-}
+
+bool HallEncoderCalibration::Calibrated() { return calibrated_; }
+
+int HallEncoderCalibration::Offset() { return offset_; }
+
+} // namespace muan
