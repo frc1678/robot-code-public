@@ -91,20 +91,23 @@ TEST(MessageQueue, SpeedTest) {
 }
 
 TEST(MessageQueue, Multithreading) {
-  MessageQueue<uint32_t, 10000> int_queue;
+  constexpr uint32_t num_messages = 10000;
+  MessageQueue<uint32_t, num_messages> int_queue;
   auto func = [&int_queue]() {
     uint32_t count = 0;
     auto reader = int_queue.MakeReader();
     auto end_time =
         std::chrono::steady_clock::now() + std::chrono::milliseconds(300);
 
+    // TODO(Kyle) Find a better termination condition for this
     while (std::chrono::steady_clock::now() < end_time) {
       auto val = reader.ReadMessage();
       if (val) {
+        EXPECT_EQ(count, *val);
         count++;
       }
     }
-    ASSERT_EQ(count, 10000);
+    EXPECT_EQ(count, num_messages);
   };
 
   std::array<std::thread, 5> threads;
@@ -112,7 +115,7 @@ TEST(MessageQueue, Multithreading) {
     t = std::thread{func};
   }
 
-  for (uint32_t i = 0; i < 10000; i++) {
+  for (uint32_t i = 0; i < num_messages; i++) {
     int_queue.WriteMessage(i);
   }
 

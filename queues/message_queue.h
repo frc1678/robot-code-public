@@ -13,9 +13,10 @@ namespace queues {
 
 /*
  * A thread-safe FILO buffer to be used as a message-passing system for transfer
- * of data between threads. A MessageQueue can create Readers to allow access to
- * the queue. As long as the reader approximately keeps pace with the speed at
- * which data is written to the queue, data will remain valid.
+ * of data between threads. A MessageQueue can only be written to by a single
+ * thread at a time, but it can create multiple QueueReaders to allow access to
+ * the queue. As long as the reader is able to read as least as quickly as
+ * messages are being written, it will not skip data.
  * Example:
  *    MessageQueue<DrivetrainState> state_queue;
  *    auto state_reader = state_queue.MakeReader();
@@ -85,6 +86,7 @@ class MessageQueue {
   std::experimental::optional<T> NextMessage(uint32_t& next);
 
   uint32_t front() const;
+  uint32_t front(uint32_t back) const;
 
   std::array<T, size> messages_;
   std::atomic<uint32_t> back_{0};

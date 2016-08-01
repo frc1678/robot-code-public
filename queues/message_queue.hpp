@@ -15,19 +15,35 @@ MessageQueue<T, size>::MessageQueue(MessageQueue<T, size>&& move_from)
 template <typename T, uint32_t size>
 void MessageQueue<T, size>::WriteMessage(const T& message) {
   // Push messages into the back
-  uint32_t position = back_++;
-  messages_[position % size] = message;
+  messages_[back_ % size] = message;
+
+  // Increment the count after the emplacement into the array. This fixes the
+  // synchronization issue in which a reader interrupts the writer before it has
+  // finished copying the message into the buffer, but does not allow for
+  // multiple writers. At this point in time (July 2016) we do not need
+  // multiple-writer queues, but if we do need that feature a possible solution
+  // would be to increment a separate atomic index back_writer_ before the
+  // copying and increment back_ after the copying.
+  back_++;
 }
 
 template <typename T, uint32_t size>
 std::experimental::optional<T> MessageQueue<T, size>::NextMessage(
     uint32_t& next) {
-  if (next >= back_) {
-    next = back_;
+  // Capture the values of back_ and front() so that they cannot be changed
+  // during the execution of this function.
+  uint32_t back_capture = back_;
+  uint32_t front_capture = front(back_capture);
+
+  // Make sure the reader's index is within the bounds of still-valid messages,
+  // and if it is at the end of the queue return nullopt.
+  if (next >= back_capture) {
+    next = back_capture;
     return std::experimental::nullopt;
-  } else if (next < front()) {
-    next = front();
+  } else if (next < front_capture) {
+    next = front_capture;
   }
+
   auto current = next++;
   return messages_[current % size];
 }
@@ -40,7 +56,12 @@ MessageQueue<T, size>::MakeReader() {
 
 template <typename T, uint32_t size>
 uint32_t MessageQueue<T, size>::front() const {
-  return std::max<uint32_t>(back_, size) - size;
+  return front(back_);
+}
+
+template <typename T, uint32_t size>
+uint32_t MessageQueue<T, size>::front(uint32_t back) const {
+  return std::max<uint32_t>(back, size) - size;
 }
 
 template <typename T, uint32_t size>
