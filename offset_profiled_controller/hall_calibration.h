@@ -8,7 +8,7 @@ namespace muan {
  */
 class HallCalibration {
   public:
-    HallCalibration();
+    HallCalibration(double magnet_position);
     ~HallCalibration();
     // Based on the raw sensor values, run calibration when calibration in not
     // complete, and return the offsetted sensor values if calibration is
@@ -33,6 +33,8 @@ class HallCalibration {
     bool calibrated_;
     // The offset is the value *added* to the raw sensor values
     double offset_;
+    // The value that should be returned at the center of the magnet
+    double magnet_position_;
 };
 }
 

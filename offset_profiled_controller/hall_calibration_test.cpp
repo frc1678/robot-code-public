@@ -5,7 +5,7 @@
  * Make sure that it initializes to not calibrated
  */
 TEST(HallCalibration, Initializes) {
-  muan::HallCalibration c;
+  muan::HallCalibration c(0);
   EXPECT_FALSE(c.Calibrated());
 }
 
@@ -15,7 +15,7 @@ TEST(HallCalibration, Initializes) {
  * Test that it calibrates going up, using all increasing values
  */
 TEST(HallCalibration, CalibratesGoingUp) {
-  muan::HallCalibration c;
+  muan::HallCalibration c(0);
   for(int i = 0; i < 100; i++) {
     c.Update(i, false);
     EXPECT_FALSE(c.Calibrated());
@@ -32,7 +32,7 @@ TEST(HallCalibration, CalibratesGoingUp) {
  * Test that it calibrates going down, using all decreasing values
  */
 TEST(HallCalibration, CalibratesGoingDown) {
-  muan::HallCalibration c;
+  muan::HallCalibration c(0);
   for(int i = 300; i > 200; i--) {
     c.Update(i, false);
     EXPECT_FALSE(c.Calibrated());
@@ -51,7 +51,7 @@ TEST(HallCalibration, CalibratesGoingDown) {
  * through the magnet's range after that successfully calibrates it.
  */
 TEST(HallCalibration, ReverseFromOutside) {
-  muan::HallCalibration c;
+  muan::HallCalibration c(0);
   for(int i = 0; i < 100; i++) {
     c.Update(i, false);
     EXPECT_FALSE(c.Calibrated());
@@ -86,7 +86,7 @@ TEST(HallCalibration, ReverseFromOutside) {
  * calibrates it.
  */
 TEST(HallCalibration, ReverseFromInside) {
-  muan::HallCalibration c;
+  muan::HallCalibration c(0);
   for(int i = 150; i > 100; i--) {
     c.Update(i, true);
     EXPECT_FALSE(c.Calibrated());
@@ -112,7 +112,7 @@ TEST(HallCalibration, ReverseFromInside) {
  * under normal conditions.
  */
 TEST(HallCalibration, FindsMagnetCenter) {
-  muan::HallCalibration c;
+  muan::HallCalibration c(0);
   for(int i = 0; i < 100; i++) {
     c.Update(i, false);
   }
@@ -121,4 +121,19 @@ TEST(HallCalibration, FindsMagnetCenter) {
   }
   c.Update(200, false);
   EXPECT_EQ(c.Update(150, true), 0);
+}
+
+/*
+ * Test that a nonzero value can be used as the center of the magnet
+ */
+TEST(HallCalibration, UsesMagnetPosition) {
+  muan::HallCalibration c(1000);
+  for(int i = 0; i < 100; i++) {
+    c.Update(i, false);
+  }
+  for(int i = 100; i < 200; i++) {
+    c.Update(i, true);
+  }
+  c.Update(200, false);
+  EXPECT_EQ(c.Update(150, true), 1000);
 }

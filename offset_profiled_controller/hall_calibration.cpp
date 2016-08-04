@@ -1,14 +1,15 @@
 #include "hall_calibration.h"
 namespace muan {
 
-HallCalibration::HallCalibration() :
+HallCalibration::HallCalibration(double magnet_position) :
   boundary_high_(0),
   boundary_low_(0),
   boundary_high_reached_(false),
   boundary_low_reached_(false),
   prev_main_value_(0),
   prev_hall_value_(false),
-  first_time_(true) {}
+  first_time_(true),
+  magnet_position_(magnet_position) {}
 
 HallCalibration::~HallCalibration() {}
 
@@ -48,8 +49,9 @@ double HallCalibration::Update(double main_value, bool hall_value) {
   first_time_ = false;
   // Calibration is complete when both boundaries have been reached
   if (boundary_high_reached_ && boundary_low_reached_) {
-    // Zero is at the center of the magnet's range
-    offset_ = -(boundary_high_ + boundary_low_) / 2;
+    // The center of the magnet's range is magnet_position_, so the offset if
+    // magnet_position_ - the raw value of the center of the magnet
+    offset_ = magnet_position_ - (boundary_high_ + boundary_low_) / 2;
     calibrated_ = true;
   }
 
