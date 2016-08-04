@@ -1,17 +1,18 @@
 #include "hall_calibration.h"
 #include "gtest/gtest.h"
 
+/*
+ * Make sure that it initializes to not calibrated
+ */
 TEST(HallCalibration, Initializes) {
   muan::HallCalibration c;
   EXPECT_FALSE(c.Calibrated());
 }
 
-/* \ | |
- *  \| |
- *   \ |
- *   |\|
- *   | \
- *   | |\
+/*
+ * All calibration tests use 100 to 200 as the magnet's range.
+ *
+ * Test that it calibrates going up, using all increasing values
  */
 TEST(HallCalibration, CalibratesGoingUp) {
   muan::HallCalibration c;
@@ -27,12 +28,8 @@ TEST(HallCalibration, CalibratesGoingUp) {
   EXPECT_TRUE(c.Calibrated());
 }
 
-/*   | | /
- *   | |/
- *   | /
- *   |/|
- *   / |
- *  /| |
+/*
+ * Test that it calibrates going down, using all decreasing values
  */
 TEST(HallCalibration, CalibratesGoingDown) {
   muan::HallCalibration c;
@@ -48,18 +45,10 @@ TEST(HallCalibration, CalibratesGoingDown) {
   EXPECT_TRUE(c.Calibrated());
 }
 
-/* \ | |
- *  \| |
- *   \ |
- *   |\|
- *   |/|
- *   / |
- *  /| |
- *  \| |
- *   \ |
- *   |\|
- *   | \
- *   | |\
+/*
+ * Starting from outside the magnet's range, test that going into the magnet's
+ * range and then reversing back out does not calibrate it, and that going
+ * through the magnet's range after that successfully calibrates it.
  */
 TEST(HallCalibration, ReverseFromOutside) {
   muan::HallCalibration c;
@@ -91,14 +80,10 @@ TEST(HallCalibration, ReverseFromOutside) {
   EXPECT_TRUE(c.Calibrated());
 }
 
-/*   |/|
- *   / |
- *  /| |
- *  \| |
- *   \ |
- *   |\|
- *   | \
- *   | |\
+/*
+ * Test that starting in the magnet's range and moving out does not calibrate
+ * it, and that going through the magnet's range after that successfully
+ * calibrates it.
  */
 TEST(HallCalibration, ReverseFromInside) {
   muan::HallCalibration c;
@@ -122,6 +107,10 @@ TEST(HallCalibration, ReverseFromInside) {
   EXPECT_TRUE(c.Calibrated());
 }
 
+/*
+ * Test that the calibration routine finds the center of the magnet's range
+ * under normal conditions.
+ */
 TEST(HallCalibration, FindsMagnetCenter) {
   muan::HallCalibration c;
   for(int i = 0; i < 100; i++) {
