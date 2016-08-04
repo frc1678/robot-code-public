@@ -25,7 +25,6 @@ TEST(HallCalibration, CalibratesGoingUp) {
   }
   c.Update(200, false);
   EXPECT_TRUE(c.Calibrated());
-  EXPECT_EQ(c.Offset(), -150);
 }
 
 /*   | | /
@@ -47,7 +46,6 @@ TEST(HallCalibration, CalibratesGoingDown) {
   }
   c.Update(100, false);
   EXPECT_TRUE(c.Calibrated());
-  EXPECT_EQ(c.Offset(), -150);
 }
 
 /* \ | |
@@ -91,7 +89,6 @@ TEST(HallCalibration, ReverseFromOutside) {
   }
   c.Update(200, false);
   EXPECT_TRUE(c.Calibrated());
-  EXPECT_EQ(c.Offset(), -150);
 }
 
 /*   |/|
@@ -123,5 +120,16 @@ TEST(HallCalibration, ReverseFromInside) {
   }
   c.Update(200, false);
   EXPECT_TRUE(c.Calibrated());
-  EXPECT_EQ(c.Offset(), -150);
+}
+
+TEST(HallCalibration, FindsMagnetCenter) {
+  muan::HallCalibration c;
+  for(int i = 0; i < 100; i++) {
+    c.Update(i, false);
+  }
+  for(int i = 100; i < 200; i++) {
+    c.Update(i, true);
+  }
+  c.Update(200, false);
+  EXPECT_EQ(c.Update(150, true), 0);
 }

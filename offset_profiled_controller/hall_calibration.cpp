@@ -12,7 +12,7 @@ HallCalibration::HallCalibration() :
 
 HallCalibration::~HallCalibration() {}
 
-void HallCalibration::Update(double main_value, bool hall_value) {
+double HallCalibration::Update(double main_value, bool hall_value) {
   // Moving into the range of the magnet
   // The first time this function is run, it will not have correct information
   // about the previous state
@@ -52,6 +52,8 @@ void HallCalibration::Update(double main_value, bool hall_value) {
     offset_ = -(boundary_high_ + boundary_low_) / 2;
     calibrated_ = true;
   }
+
+  return main_value + offset_;
 }
 
 bool HallCalibration::Calibrated() { return calibrated_; }

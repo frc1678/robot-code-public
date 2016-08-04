@@ -10,7 +10,7 @@ class HallCalibration {
   public:
     HallCalibration();
     ~HallCalibration();
-    void Update(double main_value, bool hall_value);
+    double Update(double main_value, bool hall_value);
     bool Calibrated();
     double Offset();
 
