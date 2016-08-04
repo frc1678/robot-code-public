@@ -1,5 +1,3 @@
-package(default_visibility = ['//visibility:public'])
-
 cc_library(
   name = 'calibration',
   hdrs = [
@@ -8,7 +6,7 @@ cc_library(
   srcs = [
     'hall_calibration.cpp'
   ],
-  linkstatic = 1
+  visibility = ['//visibility:public']
 )
 
 cc_test(
