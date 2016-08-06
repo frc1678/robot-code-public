@@ -19,17 +19,17 @@ class HallCalibration {
     double Offset();
 
   private:
-    // The raw sensor values of the top and bottom of the magnet's range
-    double boundary_high_;
-    double boundary_low_;
-    // Whether the high and low boundaries of the magnet have boon reached
-    bool boundary_high_reached_;
-    bool boundary_low_reached_;
-    // The previous raw sensor values
-    double prev_main_value_;
-    bool prev_hall_value_;
+    // The max and min raw sensor values of when the hall sensor reads true, as
+    // seen so far
+    double max_hall_true_;
+    double min_hall_true_;
+    // The max and min raw sensor values that have been read
+    double max_overall_;
+    double min_overall_;
     // Whether it is the first time running Update()
     bool first_time_;
+    // Whether the hall sensor has ever been triggered
+    bool magnet_found_;
     bool calibrated_;
     // The offset is the value *added* to the raw sensor values
     double offset_;
