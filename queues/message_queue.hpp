@@ -29,7 +29,7 @@ void MessageQueue<T, size>::WriteMessage(const T& message) {
 
 template <typename T, uint32_t size>
 std::experimental::optional<T> MessageQueue<T, size>::NextMessage(
-    uint32_t& next) {
+    uint32_t& next) const {
   // Capture the values of back_ and front() so that they cannot be changed
   // during the execution of this function.
   uint32_t back_capture = back_;
@@ -49,8 +49,8 @@ std::experimental::optional<T> MessageQueue<T, size>::NextMessage(
 }
 
 template <typename T, uint32_t size>
-typename MessageQueue<T, size>::QueueReader
-MessageQueue<T, size>::MakeReader() {
+typename MessageQueue<T, size>::QueueReader MessageQueue<T, size>::MakeReader()
+    const {
   return MessageQueue<T, size>::QueueReader{*this};
 }
 
@@ -72,7 +72,8 @@ MessageQueue<T, size>::QueueReader::QueueReader(
 }
 
 template <typename T, uint32_t size>
-MessageQueue<T, size>::QueueReader::QueueReader(MessageQueue<T, size>& queue)
+MessageQueue<T, size>::QueueReader::QueueReader(
+    const MessageQueue<T, size>& queue)
     : queue_(queue) {
   next_message_ = queue_.front();
 }

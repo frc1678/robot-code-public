@@ -67,9 +67,9 @@ class MessageQueue {
 
    private:
     // Creates a QueueReader from a MessageQueue.
-    QueueReader(MessageQueue& queue);
+    QueueReader(const MessageQueue& queue);
 
-    MessageQueue& queue_;
+    const MessageQueue& queue_;
     uint32_t next_message_;
 
     friend class MessageQueue;
@@ -77,13 +77,13 @@ class MessageQueue {
 
   // Creates a QueueReader for this queue. The QueueReader's first message will
   // be the oldest message still present in the queue.
-  QueueReader MakeReader();
+  QueueReader MakeReader() const;
 
  private:
   // Gets the next message (or nullopt if all messages have been read) from the
   // position passed in. The parameter's value will be changed to the position
   // of the next valid message.
-  std::experimental::optional<T> NextMessage(uint32_t& next);
+  std::experimental::optional<T> NextMessage(uint32_t& next) const;
 
   uint32_t front() const;
   uint32_t front(uint32_t back) const;
