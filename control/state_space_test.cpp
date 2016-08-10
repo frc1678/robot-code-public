@@ -5,12 +5,15 @@
 #include "gtest/gtest.h"
 #include <random>
 
+// Ensure that all state-space objects are properly zero-initialized
 TEST(StateSpace, Initialization) {
   muan::control::StateSpacePlant<1, 2, 1> plant;
   muan::control::StateSpaceController<1, 2, 1> controller;
   muan::control::StateSpaceObserver<1, 2, 1> observer;
 
   for (uint32_t i = 0; i < 2; i++) {
+    // A should be initialized to the identity matrix, for a static system by
+    // default
     for (uint32_t j = 0; j < 2; j++) {
       if (i == j) {
         EXPECT_EQ(plant.A(i, j), 1);
@@ -20,6 +23,7 @@ TEST(StateSpace, Initialization) {
         EXPECT_EQ(controller.A(i, j), 0);
       }
     }
+    // Everything else should be initialized to zero
     EXPECT_EQ(plant.x(i), 0);
     EXPECT_EQ(observer.x(i), 0);
     EXPECT_EQ(controller.K(0, i), 0);
@@ -29,24 +33,32 @@ TEST(StateSpace, Initialization) {
   }
 
   EXPECT_EQ(plant.D(0, 0), 0);
+
+  // The control signal boundaries should be initialized to +/- infinity by
+  // default
   EXPECT_EQ(controller.u_min(0), -std::numeric_limits<double>::infinity());
   EXPECT_EQ(controller.u_max(0), std::numeric_limits<double>::infinity());
 }
 
+// Ensure that a mathematically stable plant converges to zero
 TEST(StateSpace, StablePlant) {
+  // Discrete-time open-loop poles are 0.986 and 0.964
   Eigen::Matrix<double, 2, 2> A;
   A << 1.0, .01, -.05, .95;
+
   muan::control::StateSpacePlant<1, 2, 1> plant(
       A, Eigen::Matrix<double, 2, 1>::Zero(),
       Eigen::Matrix<double, 1, 2>::Zero(), Eigen::Matrix<double, 1, 1>::Zero(),
       (Eigen::Matrix<double, 2, 1>() << 1.0, 1.0).finished());
 
+  auto u = Eigen::Matrix<double, 1, 1>::Zero();
+
   for (uint32_t i = 0; i < 100; i++) {
-    plant.Update((Eigen::Matrix<double, 1, 1>() << 1).finished());
+    plant.Update(u);
   }
 
   for (uint32_t i = 0; i < 2000; i++) {
-    plant.Update((Eigen::Matrix<double, 1, 1>() << 0).finished());
+    plant.Update(u);
   }
 
   for (uint32_t i = 0; i < 2; i++) {
@@ -54,16 +66,21 @@ TEST(StateSpace, StablePlant) {
   }
 }
 
+// Ensure that a mathmatically unstable plant diverges to infinity
 TEST(StateSpace, UnstablePlant) {
+  // Discrete-time open-loop poles are 1.018 and 0.972
   Eigen::Matrix<double, 2, 2> A;
   A << 1.0, .01, .05, 0.99;
+
   muan::control::StateSpacePlant<1, 2, 1> plant(
       A, Eigen::Matrix<double, 2, 1>::Zero(),
       Eigen::Matrix<double, 1, 2>::Zero(), Eigen::Matrix<double, 1, 1>::Zero(),
       (Eigen::Matrix<double, 2, 1>() << 1.0, 0.0).finished());
 
+  auto u = Eigen::Matrix<double, 1, 1>::Zero();
+
   for (uint32_t i = 0; i < 1000; i++) {
-    plant.Update((Eigen::Matrix<double, 1, 1>() << 0).finished());
+    plant.Update(u);
   }
 
   for (uint32_t i = 0; i < 2; i++) {
@@ -71,7 +88,9 @@ TEST(StateSpace, UnstablePlant) {
   }
 }
 
+// Ensure that adding a controller causes a plant to converge to zero
 TEST(StateSpace, ControllerConverges) {
+  // Discrete-time closed-loop poles are 0.987 and 0.952
   muan::control::StateSpacePlant<1, 2, 1> plant;
   plant.A() << 1, 0.01, 0, 0.98;
   plant.B() << 1e-5, 0.02;
@@ -81,6 +100,7 @@ TEST(StateSpace, ControllerConverges) {
   muan::control::StateSpaceController<1, 2, 1> controller{};
   controller.K() << 10.0, 1.0;
   controller.A() = plant.A();
+  // Kff is the pseudoinverse of B
   controller.Kff() =
       (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
   controller.r() << 0.0, 0.0;
@@ -94,7 +114,9 @@ TEST(StateSpace, ControllerConverges) {
   EXPECT_NEAR(plant.x(1), controller.r(1), 1e-6);
 }
 
+// Ensure that a controller will converge to a goal if supplied
 TEST(StateSpace, ControllerGoesToGoal) {
+  // Discrete-time closed-loop poles are 0.987 and 0.952
   muan::control::StateSpacePlant<1, 2, 1> plant;
   plant.A() << 1, 0.01, 0, 0.98;
   plant.B() << 1e-5, 0.02;
@@ -104,6 +126,7 @@ TEST(StateSpace, ControllerGoesToGoal) {
   muan::control::StateSpaceController<1, 2, 1> controller{};
   controller.K() << 10.0, 1.0;
   controller.A() = plant.A();
+  // Kff is the pseudoinverse of B
   controller.Kff() =
       (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
   controller.r() << 1.0, 0.0;
@@ -117,7 +140,10 @@ TEST(StateSpace, ControllerGoesToGoal) {
   EXPECT_NEAR(plant.x(1), controller.r(1), 1e-6);
 }
 
+// Ensure the controller will hold a correct steady-state goal even if the goal
+// requires a nonzero control signal (via feedforward)
 TEST(StateSpace, ControllerHoldsSteadyState) {
+  // Discrete-time closed-loop poles are 0.995 and 0.945
   muan::control::StateSpacePlant<1, 2, 1> plant;
   plant.A() << 1, 0.01, -.03, 0.98;
   plant.B() << 1e-5, 0.02;
@@ -127,6 +153,7 @@ TEST(StateSpace, ControllerHoldsSteadyState) {
   muan::control::StateSpaceController<1, 2, 1> controller{};
   controller.K() << 10.0, 1.0;
   controller.A() = plant.A();
+  // Kff is the pseudoinverse of B
   controller.Kff() =
       (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
   controller.r() << 1.0, 0.0;
@@ -140,7 +167,10 @@ TEST(StateSpace, ControllerHoldsSteadyState) {
   EXPECT_NEAR(plant.x(1), controller.r(1), 1e-2);
 }
 
+// Ensure that the control signal from the controller stays within the specified
+// bounds
 TEST(StateSpace, ControllerObeysInputConstraints) {
+  // Discrete-time closed-loop poles are 0.987 and 0.952
   muan::control::StateSpacePlant<1, 2, 1> plant;
   plant.A() << 1, 0.01, 0, 0.98;
   plant.B() << 1e-5, 0.02;
@@ -150,6 +180,7 @@ TEST(StateSpace, ControllerObeysInputConstraints) {
   muan::control::StateSpaceController<1, 2, 1> controller{};
   controller.K() << 10.0, 1.0;
   controller.A() = plant.A();
+  // Kff is the pseudoinverse of B
   controller.Kff() =
       (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
   controller.r() << 1.0, 0.0;
@@ -167,7 +198,10 @@ TEST(StateSpace, ControllerObeysInputConstraints) {
   EXPECT_NEAR(plant.x(1), controller.r(1), 1e-6);
 }
 
+// Ensure that the controller correctly tracks a moving goal
 TEST(StateSpace, ControllerTracksFeedForward) {
+  // System discretized from continuous-time system, so it should be dynamically
+  // consistent
   muan::control::StateSpacePlant<1, 2, 1> plant;
   plant.A() << 1, 9.9502e-3, 0, 9.9005e-1;
   plant.B() << 4.9834e-5, 9.9502e-3;
@@ -175,8 +209,10 @@ TEST(StateSpace, ControllerTracksFeedForward) {
   plant.x() << 0, 0;
 
   muan::control::StateSpaceController<1, 2, 1> controller{};
+  // Use a zero feedback matrix so we're only relying on feedforwards control
   controller.K() << 0, 0;
   controller.A() = plant.A();
+  // Kff is the pseudoinverse of B
   controller.Kff() =
       (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
   controller.r() << 0, 0;
@@ -200,6 +236,8 @@ TEST(StateSpace, ControllerTracksFeedForward) {
   EXPECT_NEAR(plant.x(1), controller.r(1), 1e-3);
 }
 
+// Ensure that the observer's estimation converges to the correct state after a
+// large initial error in a static system
 TEST(StateSpace, ObserverRecoversFromInitialError) {
   muan::control::StateSpacePlant<1, 2, 1> plant;
   plant.A() << 1, 9.9502e-3, 0, 9.9005e-1;
@@ -229,6 +267,8 @@ TEST(StateSpace, ObserverRecoversFromInitialError) {
   EXPECT_NEAR(plant.x(1), observer.x(1), 1e-6);
 }
 
+// Ensure that the observer's estimation converges to the correct state after a
+// large initial error in a moving system
 TEST(StateSpace, ObserverRecoversFromInitialErrorMovingSystem) {
   muan::control::StateSpacePlant<1, 2, 1> plant;
   plant.A() << 1, 9.9502e-3, 0, 9.9005e-1;
@@ -258,6 +298,8 @@ TEST(StateSpace, ObserverRecoversFromInitialErrorMovingSystem) {
   EXPECT_NEAR(plant.x(1), observer.x(1), 1e-6);
 }
 
+// Ensure that the observer's estimation converges to the correct state when its
+// model is slightly incorrect
 TEST(StateSpace, ObserverRecoversFromIncorrectModel) {
   muan::control::StateSpacePlant<1, 2, 1> plant;
   plant.A() << 1, 9.9502e-3, 0, 9.9005e-1;
@@ -289,11 +331,14 @@ TEST(StateSpace, ObserverRecoversFromIncorrectModel) {
 }
 
 double GaussianNoise() {
+  // Only initialize the random number generator once, and keep it within the
+  // scope of this function
   static std::mt19937_64 rng;
   static std::normal_distribution<double> dist;
   return dist(rng);
 }
 
+// Generate a vector of gaussian noise with a given covariance matrix
 template <uint32_t A>
 Eigen::Matrix<double, A, 1> NoiseVector(
     const Eigen::Matrix<double, A, A>& covariance) {
@@ -306,7 +351,9 @@ Eigen::Matrix<double, A, 1> NoiseVector(
   return covariance * ret;
 }
 
+// Ensure that the observer is able to compensate for a noisy signal
 TEST(StateSpace, ObserverRecoversFromNoise) {
+  // Discrete-time Q matrix and continuous-time R matrix
   Eigen::Matrix<double, 2, 2> Q;
   Q << .001, 0, 0, .001;
   Eigen::Matrix<double, 1, 1> R;
@@ -328,6 +375,7 @@ TEST(StateSpace, ObserverRecoversFromNoise) {
   muan::control::StateSpaceObserver<1, 2, 1> observer{plant};
   observer.L() << 2e-1, 5;
 
+  // Apply both process noise (Q) and measurement noise (R) to the simulation
   for (uint32_t t = 0; t < 1000; t++) {
     auto u = Eigen::Matrix<double, 1, 1>::Constant(1);
     observer.Update(u, plant.y() + NoiseVector<1>(R));
