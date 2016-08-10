@@ -16,6 +16,9 @@ TrapezoidalMotionProfile<DistanceType>::TrapezoidalMotionProfile(
       constraints_{constraints},
       initial_{Direct(initial)},
       goal_{Direct(goal)} {
+  // Deal with a possibly truncated motion profile (with nonzero initial or
+  // final velocity) by calculating the parameters as if the profile began and
+  // ended at zero velocity
   Time cutoff_begin = initial_.velocity / constraints_.max_acceleration;
   DistanceType cutoff_dist_begin =
       cutoff_begin * cutoff_begin * constraints_.max_acceleration / 2.0;
@@ -37,6 +40,7 @@ TrapezoidalMotionProfile<DistanceType>::TrapezoidalMotionProfile(
         full_trapezoid_dist -
         acceleration_time * acceleration_time * constraints_.max_acceleration;
 
+    // Handle the case where the profile never reaches full speed
     if (full_speed_dist < DistanceType{0}) {
       acceleration_time =
           std::sqrt((full_trapezoid_dist / constraints_.max_acceleration)()) *

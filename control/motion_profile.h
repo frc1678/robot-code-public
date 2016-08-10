@@ -8,13 +8,16 @@ namespace muan {
 
 namespace control {
 
-
 template <typename DistanceType>
 struct MotionProfilePosition {
   DistanceType position;
   TimeDerivative<DistanceType> velocity;
 };
 
+/*
+ * A base class for a motion profile.
+ * To use, implement Calculate(Time) and total_time()
+ */
 template <typename DistanceType>
 class MotionProfile {
  public:

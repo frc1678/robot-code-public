@@ -17,9 +17,9 @@ class MotionProfileTest : public ::testing::Test {
                                                             initial_position};
 
     const Time dt = 0.005 * s;
-    const Velocity discreete_error =
+    const Velocity discrete_error =
         0.0026 * m /
-        s;  // Discreete time differentiation leaves a bit of over/undershoot.
+        s;  // Discrete time differentiation leaves a bit of over/undershoot.
 
     EXPECT_NEAR(profile.Calculate(0 * s).position(),
                 initial_position.position(), 1e-6);
@@ -36,10 +36,10 @@ class MotionProfileTest : public ::testing::Test {
 
       EXPECT_GE(constraints.max_velocity,
                 muan::abs(profile.Calculate(t).velocity));
-      EXPECT_GE(constraints.max_acceleration + (discreete_error / s),
+      EXPECT_GE(constraints.max_acceleration + (discrete_error / s),
                 muan::abs(estimated_acceleration));
       EXPECT_NEAR(profile.Calculate(t).velocity(), estimated_velocity(),
-                  discreete_error());
+                  discrete_error());
 
       t += dt;
     }
@@ -54,7 +54,13 @@ class MotionProfileTest : public ::testing::Test {
   muan::control::MotionProfileConstraints<Length> constraints;
 };
 
-// Probbably too many tests :P
+/*
+ * Test many scenarios with combinations of:
+ *  positive, negative or 0/small delta position
+ *  positive, negative, or 0/small initial velocity
+ *  positive, negative, or 0/small goal velocity
+ */
+
 TEST_F(MotionProfileTest, PositiveGoal) {
   initial_position = {0 * m, 0 * m / s};
   goal = {3 * m, 0 * m / s};
