@@ -146,7 +146,6 @@ class state_space_scenario:
         )
 
     def _matrix_generator_definition(self, name, mat):
-        # return '\n'.join(['''Eigen::Matrix<double, {n}, {m}> {name}() {{ return (Eigen::matrix<double, {n}, {m}>() << {entries}).finished() }}'''.format(n = mat.shape[0], m = mat.shape[1], name = name, entries = ', '.join([str(x) for x in np.nditer(mat)])) for name, mat in self._writable_matrices()])
         entries = ', '.join([str(x) for x in np.nditer(mat)])
         format_string = \
 '''Eigen::Matrix<double, {n}, {m}> {name}() {{
