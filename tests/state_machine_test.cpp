@@ -15,8 +15,8 @@ class TestStateMachine : public StateMachine {
       }
     });
 
-    State s2("s2", [&j]() { j = 0; },
-             [i, &j]() -> std::string {
+    State s2("s2", []() { j = 0; },
+             []() -> std::string {
                j++;
                if (j < 10) {
                  return "";
@@ -27,8 +27,8 @@ class TestStateMachine : public StateMachine {
                }
              });
 
-    State s3("s3", [i]() { std::cout << "Done" << std::endl; },
-             [i]() -> std::string {
+    State s3("s3", []() { std::cout << "Done" << std::endl; },
+             []() -> std::string {
                if (i == 300) {
                  exit(0);
                } else {
