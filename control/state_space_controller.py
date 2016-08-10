@@ -3,15 +3,14 @@
 import numpy as np
 import state_space_plant
 import controls
-import math
 import matplotlib.pyplot as plt
 
 class state_space_controller:
     def __init__(self, K, Kff, plant, u_min = None, u_max = None):
         if u_min is None:
-            u_min = np.full(plant.x.shape, -math.inf)
+            u_min = np.full(plant.x.shape, -np.inf)
         if u_max is None:
-            u_max = np.full(plant.x.shape, math.inf)
+            u_max = np.full(plant.x.shape, np.inf)
 
         self.u_min = np.asmatrix(u_min)
         self.u_max = np.asmatrix(u_max)

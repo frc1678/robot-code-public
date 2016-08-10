@@ -58,11 +58,11 @@ class nonlinear_plant(state_space_plant):
         B = np.asmatrix([0, 1, 0]).T
         C = np.asmatrix([1, 0, 0])
 
-        super(nonlinear_plant, self).__init__(.01, x_initial, A, B, C);
+        state_space_plant.__init__(self, .01, x_initial, A, B, C)
 
     def update(self, u):
         self.x[2] = 3 * math.cos(self.x[0])
-        super(nonlinear_plant, self).update(u)
+        state_space_plant.update(self, u)
 
 Q_nl = np.asmatrix([[1e-4, 0, 0],
                     [0, 1e-5, 0],

@@ -214,7 +214,7 @@ def c2d(A, B, dt, Q = None, R = None):
 def dlqr(A, B, Q, R):
     """
     Calculate the discrete-time steady-state LQR gain matrix.
-    Minimize Σ{0, ∞}(x'Qx + u'Ru) for the system x(n+1) = Ax(n) + Bu(n).
+    Minimize sum{0, inf}(x'Qx + u'Ru) for the system x(n+1) = Ax(n) + Bu(n).
     Args:
         A: n*n discrete-time system dynamics matrix
         B: n*m discrete-time control signal matrix
@@ -241,7 +241,7 @@ def dlqr(A, B, Q, R):
 def clqr(A, B, Q, R):
     """
     Calculate the continuous-time steady-state LQR gain matrix.
-    Minimize ∫{0, ∞}(x'Qx + u'Ru) for the system dx/dt = Ax + Bu.
+    Minimize integral{0, inf}(x'Qx + u'Ru) for the system dx/dt = Ax + Bu.
     Args:
         A: n*n continuous-time system dynamics matrix
         B: n*m continuous-time control signal matrix

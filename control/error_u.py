@@ -24,7 +24,7 @@ def _augment(plant):
 
     return state_space_plant(plant.dt, x, A_c, B_c, C, D)
 
-def error_u_lqr(plant, u_min = None, u_max = None, *, Q_c = None, R_c = None, Q_d = None, R_d = None):
+def error_u_lqr(plant, u_min = None, u_max = None, Q_c = None, R_c = None, Q_d = None, R_d = None):
     augmented_system = _augment(plant)
 
     if Q_c is not None and R_c is not None:
@@ -48,7 +48,7 @@ def error_u_controller_poles(plant, poles, u_min = None, u_max = None):
     Kff = np.linalg.pinv(augmented_system.B_d)
     return state_space_controller.state_space_controller(K, Kff, augmented_system, u_min, u_max)
 
-def error_u_kalman(plant, *, Q_c = None, R_c = None, Q_d = None, R_d = None):
+def error_u_kalman(plant, Q_c = None, R_c = None, Q_d = None, R_d = None):
     augmented_system = _augment(plant)
 
     if Q_c is not None and R_c is not None:
