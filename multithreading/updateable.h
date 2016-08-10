@@ -9,9 +9,9 @@
 #ifndef MUAN_MULTITHREADING_UPDATEABLE_H_
 #define MUAN_MULTITHREADING_UPDATEABLE_H_
 
+#include "unitscpp/unitscpp.h"
 #include <atomic>
 #include <thread>
-#include "muan/unitscpp/unitscpp.h"
 
 namespace muan {
 
@@ -28,6 +28,9 @@ class Updateable {
   void Stop();
 
  private:
+  void RunForever();
+  Time loop_time;
+
   std::thread main_;
   volatile std::atomic<bool> running_{false};
 };

@@ -1,8 +1,7 @@
 #ifndef MUAN_CONTROL_PID_CONTROLLER_H_
 #define MUAN_CONTROL_PID_CONTROLLER_H_
 
-#include "muan/utils/timer.h"
-#include "muan/unitscpp/unitscpp.h"
+#include "unitscpp/unitscpp.h"
 #include <type_traits>
 
 namespace muan {
@@ -31,7 +30,7 @@ class PidController {
       : PidController(gains.kP, gains.kI, gains.kD) {}
 
   OutputType Calculate(Time dt, InputType error) {
-    return error* kP + CalculateIntegral(dt, error)* kI +
+    return error * kP + CalculateIntegral(dt, error) * kI +
            (last_derivative_ = CalculateDerivative(dt, error)) * kD;
   }
 
