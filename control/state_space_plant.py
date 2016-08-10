@@ -5,6 +5,11 @@ import numpy.matlib as mat
 import scipy as sci
 import controls
 
+"""
+A state-space plant class with support for process and measurement noise
+"""
+__author__ = 'Kyle Stachowicz (kylestach99@gmail.com)'
+
 class state_space_plant:
     def __init__(self, dt, x_initial, A, B, C, D = np.asmatrix([[0]]), Q = None, R = None):
         self.num_states = A.shape[0]

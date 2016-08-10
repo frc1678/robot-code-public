@@ -1,6 +1,12 @@
 import numpy as np
 import controls
 
+"""
+A state-space observer class
+"""
+__author__ = 'Kyle Stachowicz (kylestach99@gmail.com)'
+
+
 class state_space_observer:
     def __init__(self, plant, L, x0 = None):
         if x0 is None:

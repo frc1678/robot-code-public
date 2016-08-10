@@ -7,9 +7,17 @@ import state_space_controller
 import state_space_observer
 from copy import copy
 
+"""
+A class to handle the simulation and plotting of state space systems as well as
+writing the constant matrices to files.
+"""
+__author__ = 'Kyle Stachowicz (kylestach99@gmail.com)'
+
+# Find the difference between two arrays of vectors
 def diff(vector_hist):
     return [(np.zeros(vector_hist[0].shape) if i == 0 else vector_hist[i] - vector_hist[i - 1]) for i in range(len(vector_hist))]
 
+# Find discontinuities in an array of vectors
 def find_discontinuities(vector_hist, thresh = 2):
     values = []
     for i, d in enumerate(diff(vector_hist)):
@@ -17,6 +25,7 @@ def find_discontinuities(vector_hist, thresh = 2):
             values.append(i)
     return values
 
+# Plot an array of values without drawing a line at discontinuous points
 def plot_with_discontinuities(ax, x, y, name, i):
     t_copy = [t for t in np.nditer(x)]
     y_copy = [v[i, 0] for v in y]
@@ -89,7 +98,7 @@ class state_space_scenario:
 
         for i in range(num_x_plots):
             ax = fig.add_subplot(plots_y, plots_x, i + 1)
-            
+
             # TODO(Kyle) Insert np.nan where there are discontinuities
             for name in ['x', 'x_hat', 'r']:
                 hist = getattr(self, name + '_history')
@@ -115,14 +124,17 @@ class state_space_scenario:
         plt.show()
 
 
+    # Write C++ code to open all namespaces
     def _namespace_openers(self):
         return '\n'.join(['namespace {} {{'.format(ns) for ns in self.namespaces])
-    
 
+
+    # Write the curly braces to close all namespaces
     def _namespace_closers(self):
         return '\n'.join(['}} /* {} */'.format(ns) for ns in self.namespaces])
 
 
+    # Get an array of all matrices to write to the C++ file
     def _writable_matrices(self):
         return [
             ('ContinuousA', self.sys.A_c),
@@ -136,15 +148,18 @@ class state_space_scenario:
             ('L', self.observer.L),
         ]
 
+    # Write the declaration for a single C++ matrix generator
     def _matrix_generator_declaration(self, name, mat):
         format_string = 'Eigen::Matrix<double, {n}, {m}> {name}();'
         return format_string.format(n = mat.shape[0], m = mat.shape[1], name = name)
 
+    # Write all C++ matrix generator declarations
     def _matrix_generator_declarations(self):
         return '\n'.join(
             [self._matrix_generator_declaration(name, mat) for name, mat in self._writable_matrices()]
         )
 
+    # Write a single C++ matrix generator
     def _matrix_generator_definition(self, name, mat):
         entries = ', '.join([str(x) for x in np.nditer(mat)])
         format_string = \
@@ -153,11 +168,13 @@ class state_space_scenario:
 }}'''
         return format_string.format(n = mat.shape[0], m = mat.shape[1], name = name, entries = entries)
 
+    # Write all C++ matrix generators
     def _matrix_generator_definitions(self):
         return '\n'.join(
             [self._matrix_generator_definition(name, mat) for name, mat in self._writable_matrices()]
         )
 
+    # Write C++ code to a header file and a cpp file
     def write(self, h_file_name, cpp_file_name):
         with open(h_file_name, 'w') as h_file, open(cpp_file_name, 'w') as cpp_file:
             h_file.write(

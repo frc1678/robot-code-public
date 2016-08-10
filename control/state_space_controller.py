@@ -5,6 +5,11 @@ import state_space_plant
 import controls
 import matplotlib.pyplot as plt
 
+"""
+A state-space controller class with support for feedforward control.
+"""
+__author__ = 'Kyle Stachowicz (kylestach99@gmail.com)'
+
 class state_space_controller:
     def __init__(self, K, Kff, plant, u_min = None, u_max = None):
         if u_min is None:
@@ -21,6 +26,7 @@ class state_space_controller:
         self.r = np.asmatrix(np.zeros(K.shape[1]))
 
     def update(self, x, goal_next = None):
+        # To use a moving goal, pass in a value for goal_next
         if goal_next is None:
             goal_next = self.r
 
@@ -36,6 +42,17 @@ class state_space_controller:
         u = np.clip(u, self.u_min, self.u_max)
 
         return u
+
+"""
+The formula for Kff can be derived as follows:
+    r(n+1) = A*r(n) + B*u_ff
+    B*u_ff = r(n+1) - A*r(n)
+    u_ff = pinv(B)*(r(n+1) - A*r(n))
+    Kff = B
+    u_ff = Kff*(r(n+1) - A*r(n))
+There is also an LQR-weighted solution, but it gives the same u_ff assuming
+that there is some u_ff that satisfies the equation above.
+"""
 
 def placement(plant, poles, u_min = None, u_max = None):
     K = controls.place(plant.A_d, plant.B_d, poles)

@@ -1,6 +1,12 @@
 import numpy as np
 import math
 
+"""
+A simple trapezoidal motion profile class to test controllers with. This
+class does not deal with all of the corner cases dealt with in the C++ version.
+"""
+__author__ = 'Kyle Stachowicz (kylestach99@gmail.com)'
+
 class trapezoidal_profile:
     def __init__(self, distance, max_speed, max_acceleration):
         self.total_distance = distance
@@ -18,7 +24,7 @@ class trapezoidal_profile:
         self.full_speed_time = self.full_speed_distance / self.max_speed
 
         self.total_time = self.acceleration_time * 2.0 + self.full_speed_time
-        
+
 
     def distance(self, t):
         if t < self.acceleration_time:

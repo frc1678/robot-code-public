@@ -4,6 +4,15 @@ import state_space_controller
 from state_space_plant import state_space_plant
 import state_space_observer
 
+"""
+An "error-u" formulation to add integral action to state-space controllers. The
+normal state vector is augmented with the control signal needed to compensate
+for any unaccounted-for disturbances. The observer observes this value from the
+system, giving the controller an integral component but placing a pole of the
+system's response in the controller, violating the separation principle.
+"""
+__author__ = 'Kyle Stachowicz (kylestach99@gmail.com)'
+
 def _augment(plant):
     n_ua = plant.A_c.shape[0]
 
