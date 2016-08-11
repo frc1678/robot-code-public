@@ -16,11 +16,11 @@ TEST(HallCalibration, Initializes) {
  */
 TEST(HallCalibration, CalibratesGoingUp) {
   muan::HallCalibration c(0);
-  for(int i = 0; i < 100; i++) {
+  for (int i = 0; i < 100; i++) {
     c.Update(i, false);
     EXPECT_FALSE(c.Calibrated());
   }
-  for(int i = 100; i < 200; i++) {
+  for (int i = 100; i < 200; i++) {
     c.Update(i, true);
     EXPECT_FALSE(c.Calibrated());
   }
@@ -33,11 +33,11 @@ TEST(HallCalibration, CalibratesGoingUp) {
  */
 TEST(HallCalibration, CalibratesGoingDown) {
   muan::HallCalibration c(0);
-  for(int i = 300; i > 200; i--) {
+  for (int i = 300; i > 200; i--) {
     c.Update(i, false);
     EXPECT_FALSE(c.Calibrated());
   }
-  for(int i = 200; i > 100; i--) {
+  for (int i = 200; i > 100; i--) {
     c.Update(i, true);
     EXPECT_FALSE(c.Calibrated());
   }
@@ -52,27 +52,27 @@ TEST(HallCalibration, CalibratesGoingDown) {
  */
 TEST(HallCalibration, ReverseFromOutside) {
   muan::HallCalibration c(0);
-  for(int i = 0; i < 100; i++) {
+  for (int i = 0; i < 100; i++) {
     c.Update(i, false);
     EXPECT_FALSE(c.Calibrated());
   }
-  for(int i = 100; i < 150; i++) {
+  for (int i = 100; i < 150; i++) {
     c.Update(i, true);
     EXPECT_FALSE(c.Calibrated());
   }
-  for(int i = 150; i > 100; i--) {
+  for (int i = 150; i > 100; i--) {
     c.Update(i, true);
     EXPECT_FALSE(c.Calibrated());
   }
-  for(int i = 100; i > 0; i--) {
+  for (int i = 100; i > 0; i--) {
     c.Update(i, false);
     EXPECT_FALSE(c.Calibrated());
   }
-  for(int i = 0; i < 100; i++) {
+  for (int i = 0; i < 100; i++) {
     c.Update(i, false);
     EXPECT_FALSE(c.Calibrated());
   }
-  for(int i = 100; i < 200; i++) {
+  for (int i = 100; i < 200; i++) {
     c.Update(i, true);
     EXPECT_FALSE(c.Calibrated());
   }
@@ -87,19 +87,19 @@ TEST(HallCalibration, ReverseFromOutside) {
  */
 TEST(HallCalibration, ReverseFromInside) {
   muan::HallCalibration c(0);
-  for(int i = 150; i > 100; i--) {
+  for (int i = 150; i > 100; i--) {
     c.Update(i, true);
     EXPECT_FALSE(c.Calibrated());
   }
-  for(int i = 100; i > 0; i--) {
+  for (int i = 100; i > 0; i--) {
     c.Update(i, false);
     EXPECT_FALSE(c.Calibrated());
   }
-  for(int i = 0; i < 100; i++) {
+  for (int i = 0; i < 100; i++) {
     c.Update(i, false);
     EXPECT_FALSE(c.Calibrated());
   }
-  for(int i = 100; i < 200; i++) {
+  for (int i = 100; i < 200; i++) {
     c.Update(i, true);
     EXPECT_FALSE(c.Calibrated());
   }
@@ -113,10 +113,10 @@ TEST(HallCalibration, ReverseFromInside) {
  */
 TEST(HallCalibration, FindsMagnetCenter) {
   muan::HallCalibration c(0);
-  for(int i = 0; i < 100; i++) {
+  for (int i = 0; i < 100; i++) {
     c.Update(i, false);
   }
-  for(int i = 100; i < 200; i++) {
+  for (int i = 100; i < 200; i++) {
     c.Update(i, true);
   }
   c.Update(200, false);
@@ -129,10 +129,10 @@ TEST(HallCalibration, FindsMagnetCenter) {
  */
 TEST(HallCalibration, UsesMagnetPosition) {
   muan::HallCalibration c(1000);
-  for(int i = 0; i < 100; i++) {
+  for (int i = 0; i < 100; i++) {
     c.Update(i, false);
   }
-  for(int i = 100; i < 200; i++) {
+  for (int i = 100; i < 200; i++) {
     c.Update(i, true);
   }
   c.Update(200, false);
@@ -151,25 +151,25 @@ TEST(HallCalibration, UsesMagnetPosition) {
  */
 TEST(HallCalibration, SensorInaccuracies1) {
   muan::HallCalibration c(0);
-  for(int i = 0; i < 100; i++) {
+  for (int i = 0; i < 100; i++) {
     c.Update(i, false);
   }
-  for(int i = 100; i < 195; i++) {
+  for (int i = 100; i < 195; i++) {
     c.Update(i, true);
   }
   // The main sensor has reversed direction, but the hall hasn't
-  for(int i = 195; i > 190; i--) {
+  for (int i = 195; i > 190; i--) {
     c.Update(i, true);
   }
-  for(int i = 190; i > 185; i--) {
+  for (int i = 190; i > 185; i--) {
     c.Update(i, false);
   }
   ASSERT_FALSE(c.Calibrated());
   // The hall has reversed direction and is in sync with the main sensor
-  for(int i = 185; i > 180; i--) {
+  for (int i = 185; i > 180; i--) {
     c.Update(i, true);
   }
-  for(int i = 180; i < 200; i++) {
+  for (int i = 180; i < 200; i++) {
     c.Update(i, true);
   }
   c.Update(200, false);
@@ -183,25 +183,25 @@ TEST(HallCalibration, SensorInaccuracies1) {
  */
 TEST(HallCalibration, SensorInaccuracies2) {
   muan::HallCalibration c(0);
-  for(int i = 0; i < 95; i++) {
+  for (int i = 0; i < 95; i++) {
     c.Update(i, false);
   }
   // The main sensor has reversed direction, but the hall hasn't
-  for(int i = 95; i > 90; i--) {
+  for (int i = 95; i > 90; i--) {
     c.Update(i, false);
   }
-  for(int i = 90; i > 85; i--) {
+  for (int i = 90; i > 85; i--) {
     c.Update(i, true);
   }
   // The hall has reversed direction and is in sync with the main sensor
-  for(int i = 85; i > 0; i--) {
+  for (int i = 85; i > 0; i--) {
     c.Update(i, false);
   }
   // Now calibrate normally
-  for(int i = 0; i < 100; i++) {
+  for (int i = 0; i < 100; i++) {
     c.Update(i, false);
   }
-  for(int i = 100; i < 200; i++) {
+  for (int i = 100; i < 200; i++) {
     c.Update(i, true);
   }
   c.Update(200, false);
@@ -213,21 +213,21 @@ TEST(HallCalibration, SensorInaccuracies2) {
  * Test that even if the condition for being calibrated becomes false, it does
  * not become uncalibrated.
  */
-TEST(HallCalibration, DoesntUncalibrate) { 
+TEST(HallCalibration, DoesntUncalibrate) {
   muan::HallCalibration c(0);
   // Calibrate normally
-  for(int i = 0; i < 100; i++) {
+  for (int i = 0; i < 100; i++) {
     c.Update(i, false);
   }
-  for(int i = 100; i < 200; i++) {
+  for (int i = 100; i < 200; i++) {
     c.Update(i, true);
   }
-  for(int i = 200; i < 300; i++) {
+  for (int i = 200; i < 300; i++) {
     c.Update(i, false);
     // It currently meets the condition for being calibrated
     ASSERT_TRUE(c.Calibrated());
   }
-  for(int i = 300; i < 400; i++) {
+  for (int i = 300; i < 400; i++) {
     c.Update(i, true);
     // It currently does not meet the condition for being calibrated, but it
     // was previously calibrated
