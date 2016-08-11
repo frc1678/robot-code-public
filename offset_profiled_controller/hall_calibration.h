@@ -4,7 +4,15 @@
 namespace muan {
 
 /*
- * A class for calibrating a main sensor using a hall effect sensor
+ * A class for calibrating a main sensor using a hall effect sensor. To use
+ * call Update in a loop.
+ *
+ * Example:
+ *   double angle = calibration.Calibrate(encoder_value, hall_value);
+ *   if (calibration.Calibrated())
+ *     DoSomething(angle);
+ *   else
+ *     state = still_calibrating;
  */
 class HallCalibration {
   public:
@@ -20,7 +28,8 @@ class HallCalibration {
 
   private:
     // The max and min raw sensor values of when the hall sensor reads true, as
-    // seen so far
+    // seen so far. When calibration is complete it is approximately the top
+    // and bottom of the magnet's range.
     double max_hall_true_;
     double min_hall_true_;
     // The max and min raw sensor values that have been read
