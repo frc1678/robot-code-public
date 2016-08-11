@@ -22,7 +22,7 @@ class HallCalibration {
     // complete, and return the offsetted sensor values if calibration is
     // complete. When calibration is not complete, the value returned is not
     // useful.
-    double Update(double main_value, bool hall_value);
+    double Update(double main_sensor_value, bool hall_value);
     bool Calibrated() const;
     double Offset() const;
 

@@ -14,25 +14,25 @@ HallCalibration::HallCalibration(double magnet_position)
 
 HallCalibration::~HallCalibration() {}
 
-double HallCalibration::Update(double main_value, bool hall_value) {
+double HallCalibration::Update(double main_sensor_value, bool hall_value) {
   if (hall_value) {
     // Update the max and min values for when the hall sensor is triggered. Set
     // them to the current value if it is the first time seeing the magnet.
-    if (main_value > max_hall_true_ || !magnet_found_) {
-      max_hall_true_ = main_value;
+    if (main_sensor_value > max_hall_true_ || !magnet_found_) {
+      max_hall_true_ = main_sensor_value;
     }
-    if (main_value < min_hall_true_ || !magnet_found_) {
-      min_hall_true_ = main_value;
+    if (main_sensor_value < min_hall_true_ || !magnet_found_) {
+      min_hall_true_ = main_sensor_value;
     }
     magnet_found_ = true;
   }
   // Update the max and min overall values. Set the to the current value if
   // it is the first time running Update()
-  if (main_value > max_overall_ || first_time_) {
-    max_overall_ = main_value;
+  if (main_sensor_value > max_overall_ || first_time_) {
+    max_overall_ = main_sensor_value;
   }
-  if (main_value < min_overall_ || first_time_) {
-    min_overall_ = main_value;
+  if (main_sensor_value < min_overall_ || first_time_) {
+    min_overall_ = main_sensor_value;
   }
   // return the best estimate known. If the magnet is not found or the edges of
   // the magnet's range have not been reached, there is no best estimate. In
@@ -47,7 +47,7 @@ double HallCalibration::Update(double main_value, bool hall_value) {
   }
 
   first_time_ = false;
-  return main_value + offset_;
+  return main_sensor_value + offset_;
 }
 
 bool HallCalibration::Calibrated() const { return calibrated_; }
