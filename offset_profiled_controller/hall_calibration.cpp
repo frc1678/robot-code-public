@@ -50,8 +50,8 @@ double HallCalibration::Update(double main_value, bool hall_value) {
   return main_value + offset_;
 }
 
-bool HallCalibration::Calibrated() { return calibrated_; }
+bool HallCalibration::Calibrated() const { return calibrated_; }
 
-double HallCalibration::Offset() { return offset_; }
+double HallCalibration::Offset() const { return offset_; }
 
 } // namespace muan

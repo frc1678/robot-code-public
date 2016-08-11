@@ -23,8 +23,8 @@ class HallCalibration {
     // complete. When calibration is not complete, the value returned is not
     // useful.
     double Update(double main_value, bool hall_value);
-    bool Calibrated();
-    double Offset();
+    bool Calibrated() const;
+    double Offset() const;
 
   private:
     // The max and min raw sensor values of when the hall sensor reads true, as
