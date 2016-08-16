@@ -10,11 +10,8 @@ def cppinfo_to_json(source_file, compile_info):
     out_fmt = '{{"directory":"{pwd}","command":"{command}","file":"{sfile}"}}'
     pwd = os.getcwd()
 
-    command = compile_info.tool
-    for option in compile_info.compiler_option:
-        if not option in invalid_clang_flags:
-            command += ' ' + option
-    command += ' -x c++ -Wno-unknown-warning-option -c %s -o %s' % (compile_info.source_file, compile_info.output_file)
+    options = ' '.join(filter(lambda opt: not opt in invalid_clang_flags, compile_info.compiler_option))
+    command = '%s %s -x c++ -Wno-unknown-warning-option -c %s -o %s' % (compile_info.tool, options, compile_info.source_file, compile_info.output_file)
 
     return out_fmt.format(pwd = pwd, command = command.replace('"', '\\"'), sfile = source_file)
 
