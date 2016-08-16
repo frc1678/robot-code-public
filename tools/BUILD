@@ -21,13 +21,6 @@ extra_action(
 py_binary(
   name = 'gather_compilation_commands',
   srcs = ['gather_cdb.py'],
-  deps = [':compile_info'],
+  deps = ['@third_party//google/bazel:compile_info'],
   main = 'gather_cdb.py'
-)
-
-py_proto_library(
-  name = 'compile_info',
-  srcs = ['extra_actions.proto'],
-  protoc = '@third_party//google/protobuf:protoc',
-  default_runtime = '@third_party//google/protobuf:protobuf_python'
 )

@@ -1,4 +1,4 @@
-import extra_actions_pb2
+import external.third_party.google.bazel.src.main.protobuf.extra_actions_pb2 as extra_actions
 import os
 import sys
 
@@ -20,10 +20,10 @@ def cppinfo_to_json(source_file, compile_info):
 
 
 with open(sys.argv[1]) as in_proto:
-    compile_info = extra_actions_pb2.ExtraActionInfo()
+    compile_info = extra_actions.ExtraActionInfo()
     compile_info.ParseFromString(in_proto.read())
 
-    cpp_compile_info = compile_info.Extensions[extra_actions_pb2.CppCompileInfo.cpp_compile_info]
+    cpp_compile_info = compile_info.Extensions[extra_actions.CppCompileInfo.cpp_compile_info]
 
     descriptors = []
     for source in cpp_compile_info.sources_and_headers:
