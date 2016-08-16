@@ -1,5 +1,5 @@
 #ifndef MUAN_CONTROL_STATE_SPACE_OBSERVER_HPP_
-#define MUAN_CONTROL_STATE_SPACE_OBSERVER_HPP_ value
+#define MUAN_CONTROL_STATE_SPACE_OBSERVER_HPP_
 
 #include "state_space_observer.h"
 
