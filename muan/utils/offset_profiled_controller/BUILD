@@ -16,6 +16,6 @@ cc_test(
   ],
   deps = [
     ':calibration',
-    '@third_party//google/googletest:googletest'
+    '//third_party/google/googletest:googletest'
   ]
 )

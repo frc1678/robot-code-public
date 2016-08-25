@@ -1,8 +1,8 @@
 #ifndef MUAN_QUEUES_MESSAGE_QUEUE_H_
 #define MUAN_QUEUES_MESSAGE_QUEUE_H_
 
-#include "../utils/math_utils.h"
-#include "optional/optional.hpp"
+#include "muan/utils/math_utils.h"
+#include "third_party/optional/optional.hpp"
 #include <array>
 #include <atomic>
 #include <cstdint>

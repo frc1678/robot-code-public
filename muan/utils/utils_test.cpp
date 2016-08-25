@@ -1,6 +1,6 @@
-#include "../utils/history.h"
-#include "../utils/timer.h"
-#include "../utils/timing_utils.h"
+#include "muan/utils/history.h"
+#include "muan/utils/timer.h"
+#include "muan/utils/timing_utils.h"
 #include "gtest/gtest.h"
 
 using namespace muan;

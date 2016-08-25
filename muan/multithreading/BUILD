@@ -13,6 +13,6 @@ cc_test(
   srcs = ['multithreading_test.cpp'],
   deps = [
     ':updateable',
-    '@third_party//google/googletest:googletest' 
+    '//third_party/google/googletest:googletest' 
   ]
 )

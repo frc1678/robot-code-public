@@ -7,7 +7,7 @@
  */
 
 #include "updateable.h"
-#include "../utils/timing_utils.h"
+#include "muan/utils/timing_utils.h"
 #include <chrono>
 #include <iostream>
 
