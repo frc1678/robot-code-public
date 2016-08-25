@@ -3,7 +3,7 @@ package(default_visibility = ['//visibility:public'])
 cc_library(
   name = 'log_base',
   hdrs = ['log_manager.h', 'log.h'],
-  srcs = ['log_manager.cpp'],
+  srcs = ['log_manager.cpp', 'log.cpp'],
   deps = ['//utils:timing'],
   visibility = ['//visibility:private']
 )

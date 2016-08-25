@@ -1,10 +1,3 @@
-/*
- * TrapezoidalMotionProfile.h
- *
- *  Created on: Sep 25, 2015
- *      Author: Kyle
- */
-
 #ifndef MUAN_CONTROL_TRAPEZOIDALMOTIONPROFILE_H_
 #define MUAN_CONTROL_TRAPEZOIDALMOTIONPROFILE_H_
 
@@ -14,107 +7,89 @@
 
 namespace muan {
 
-template <typename DistanceU>
-class TrapezoidalMotionProfile : public MotionProfile<DistanceU> {
-  using VelocityU = std::remove_cv_t<decltype(DistanceU(0) / s)>;
-  using AccelerationU = std::remove_cv_t<decltype(DistanceU(0) / s / s)>;
-  Time _accel_time;
-  Time _total_time;
-  Time _deccel_time;
-  VelocityU _max_speed;
-  AccelerationU _max_acceleration, _max_decceleration;
-  bool is_negative;
-  DistanceU total_distance;
+namespace control {
 
- public:
-  TrapezoidalMotionProfile<DistanceU>(DistanceU distance, VelocityU max_speed,
-                                      AccelerationU max_acceleration)
-      : TrapezoidalMotionProfile<DistanceU>(
-            distance, max_speed, max_acceleration, max_acceleration) {}
-
-  TrapezoidalMotionProfile<DistanceU>(DistanceU distance, VelocityU max_speed,
-                                      AccelerationU max_acceleration,
-                                      AccelerationU max_decceleration) {
-    total_distance = distance;
-    if (distance < DistanceU(0)) {
-      distance = -distance;
-      is_negative = true;
-    } else {
-      is_negative = false;
-    }
-    _accel_time = max_speed / max_acceleration;
-    _deccel_time = max_speed / max_decceleration;
-    _max_speed = max_speed;
-    _max_acceleration = max_acceleration;
-    _max_decceleration = max_decceleration;
-
-    if (distance > (_accel_time + _deccel_time) * _max_speed / 2) {
-      _total_time = _accel_time + _deccel_time +
-                    (distance - _max_speed * (_deccel_time + _accel_time) / 2) /
-                        _max_speed;
-    } else {
-      DistanceU accel_dist = distance / 2;
-      DistanceU deccel_dist = accel_dist;
-
-      _accel_time = std::sqrt((2 * accel_dist / max_acceleration)()) * s;
-      _deccel_time = std::sqrt((2 * deccel_dist / max_decceleration)()) * s;
-      _max_speed = _accel_time * _max_acceleration;
-      _total_time = _accel_time + _deccel_time;
-    }
-  }
-
-  virtual ~TrapezoidalMotionProfile() {}
-  AccelerationU CalculateSecondDerivative(Time time) override {
-    AccelerationU accel;
-    if (time < _accel_time) {
-      accel = _max_acceleration;
-    } else if (time < _total_time - _deccel_time) {
-      accel = AccelerationU(0);
-    } else if (time < _total_time) {
-      accel = -_max_decceleration;
-    } else {
-      accel = AccelerationU(0);
-    }
-    return is_negative ? -accel : accel;
-  }
-  VelocityU CalculateDerivative(Time time) override {
-    VelocityU speed = 0;
-
-    if (time <= _accel_time) {
-      speed = _max_speed * (time / _accel_time);
-    } else if (time <= _total_time - _deccel_time) {
-      speed = _max_speed;
-    } else if (time <= _total_time) {
-      speed = _max_speed * ((_total_time - time) / _deccel_time);
-    }
-
-    return is_negative ? -speed : speed;
-  }
-  DistanceU Calculate(Time time) override {
-    DistanceU accel_dist = _max_speed * _accel_time / 2;
-    DistanceU deccel_dist = _max_speed * _deccel_time / 2;
-    DistanceU full_speed_dist =
-        _max_speed * (_total_time - _deccel_time - _accel_time);
-
-    DistanceU distance =
-        accel_dist + full_speed_dist + _deccel_time * _max_speed / 2;
-
-    if (time <= _accel_time) {
-      distance = time * time * _max_speed / _accel_time / 2;
-    } else if (time <= _total_time - _deccel_time) {
-      distance = accel_dist + _max_speed * (time - _accel_time);
-    } else if (time <= _total_time) {
-      Time time_left = _total_time - time;
-      DistanceU dist_left =
-          time_left * time_left * _max_speed / _accel_time / 2;
-      distance = accel_dist + full_speed_dist + (deccel_dist - dist_left);
-    }
-
-    return is_negative ? -distance : distance;
-  }
-  bool finished(Time time) override { return time > _total_time; }
-  DistanceU GetTotalDistance() override { return total_distance; }
+template <typename DistanceType>
+struct MotionProfileConstraints {
+  TimeDerivative<DistanceType> max_velocity;
+  TimeDerivative2<DistanceType> max_acceleration;
 };
-}
+
+/*
+ * A trapezoidal-shaped velocity profile.
+ * Example:
+ *    MotionProfileConstraints constraints{ 1 * m / s, 1 * m / s / s };
+ *    TrapezoidalMotionProfile<Length> profile{ constraints,
+ *                                              current_position,
+ *                                              goal_position };
+ *    ...
+ *    desired_position = profile.Calculate(t - profile_start_time);
+ */
+template <typename DistanceType>
+class TrapezoidalMotionProfile : public MotionProfile<DistanceType> {
+ public:
+  TrapezoidalMotionProfile(MotionProfileConstraints<DistanceType> constraints,
+                           MotionProfilePosition<DistanceType> goal)
+      : TrapezoidalMotionProfile<DistanceType>{
+            constraints, goal, MotionProfilePosition<DistanceType>{0, 0}} {}
+
+  TrapezoidalMotionProfile(MotionProfileConstraints<DistanceType> constraints,
+                           MotionProfilePosition<DistanceType> goal,
+                           MotionProfilePosition<DistanceType> initial);
+
+  virtual ~TrapezoidalMotionProfile() = default;
+
+  // Calculate the correct position and velocity for the profile at a time t
+  // where the beginning of the profile was at time t=0
+  MotionProfilePosition<DistanceType> Calculate(Time t) const override;
+
+  Time total_time() const override { return end_deccel_; }
+
+  MotionProfileConstraints<DistanceType>& constraints() { return constraints_; }
+
+ private:
+  // Is the profile inverted? In other words, does it need to increase or
+  // decrease the velocity to get to the peak from the initial velocity?
+  bool ShouldFlipAcceleration(
+      const MotionProfilePosition<DistanceType>& initial,
+      const MotionProfilePosition<DistanceType>& goal,
+      const MotionProfileConstraints<DistanceType>& constraints) const {
+    // Calculate the distance travelled by a linear velocity ramp
+    // from the initial to the final velocity and compare it to the desired
+    // distance. If it is smaller, invert the profile.
+    TimeDerivative<DistanceType> velocity_change =
+        goal.velocity - initial.velocity;
+
+    DistanceType distance_change = goal.position - initial.position;
+
+    Time t = muan::abs(velocity_change) / constraints.max_acceleration;
+    bool is_acceleration_flipped =
+        t * (velocity_change / 2 + initial.velocity) > distance_change;
+    return is_acceleration_flipped;
+  }
+
+  // Flip the sign of the velocity and position if the profile is inverted
+  MotionProfilePosition<DistanceType> Direct(
+      const MotionProfilePosition<DistanceType>& in) const {
+    MotionProfilePosition<DistanceType> result = in;
+    result.position *= direction_;
+    result.velocity *= direction_;
+    return result;
+  }
+
+  // The direction of the profile, either 1 for forwards or -1 for inverted
+  int direction_;
+
+  MotionProfileConstraints<DistanceType> constraints_;
+  MotionProfilePosition<DistanceType> initial_, goal_;
+
+  Time end_accel_, end_full_speed_, end_deccel_;
+};
+
+} /* control */
+
+} /* muan */
+
+#include "trapezoidal_motion_profile.hpp"
 
 #endif /* SRC_ROBOTCODE_TRAPEZOIDALMOTIONPROFILE_H_ */

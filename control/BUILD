@@ -1,5 +1,24 @@
 package(default_visibility = ['//visibility:public'])
 
+py_library(
+  name = 'python_controls',
+  srcs = [
+    'controls.py',
+    'state_space_controller.py',
+    'state_space_observer.py',
+    'state_space_plant.py',
+    'state_space_scenario.py',
+    'trapezoidal_profile.py'
+  ],
+)
+
+py_binary(
+  name = 'python_controls_demo',
+  srcs = ['state_space_demo.py'],
+  main = 'state_space_demo.py',
+  deps = [':python_controls']
+)
+
 cc_library(
   name = 'pid_controller',
   hdrs = [
@@ -18,8 +37,9 @@ cc_library(
   hdrs = [
     'motion_profile.h',
     'trapezoidal_motion_profile.h',
-    'linear_motion_profile.h',
-    'instant_motion_profile.h'
+  ],
+  srcs = [
+    'trapezoidal_motion_profile.hpp'
   ],
   deps = ['@third_party//unitscpp'],
   linkopts = ['-lm'],
@@ -30,13 +50,18 @@ cc_library(
   name = 'state_space',
   hdrs = [
     'state_space_plant.h',
-    'state_observer.h',
-    'state_feedback_controller.h',
-    'control_utils.h'
+    'state_space_observer.h',
+    'state_space_controller.h',
+  ],
+  srcs = [
+    'state_space_plant.hpp',
+    'state_space_observer.hpp',
+    'state_space_controller.hpp',
   ],
   deps = [
     '@third_party//unitscpp',
-    '@third_party//eigen'
+    '@third_party//eigen',
+    '//utils:math_utils'
   ],
   linkopts = ['-lm'],
   linkstatic = 1
@@ -47,6 +72,7 @@ cc_test(
   srcs = ['motion_profile_test.cpp'],
   deps = [
     ':motion_profiles',
+    '//utils:math_utils',
     '@third_party//google/googletest:googletest'
   ]
 )

@@ -3,7 +3,7 @@ package(default_visibility = ['//visibility:public'])
 cc_library(
   name = 'math_utils',
   hdrs = ['math_utils.h'],
-  deps = ["@third_party//unitscpp"],
+  deps = ['@third_party//unitscpp', '@third_party//eigen'],
   linkstatic = 1
 )
 
