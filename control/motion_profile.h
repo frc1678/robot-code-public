@@ -1,30 +1,37 @@
-/*
- * MotionProfile.h
- *
- *  Created on: Sep 25, 2015
- *      Author: Kyle
- */
-
 #ifndef SRC_ROBOTCODE_MOTIONPROFILE_H_
 #define SRC_ROBOTCODE_MOTIONPROFILE_H_
 #include "unitscpp/unitscpp.h"
+#include "utils/math_utils.h"
 #include <type_traits>
 
 namespace muan {
 
-template <typename DistanceU>
+namespace control {
+
+template <typename DistanceType>
+struct MotionProfilePosition {
+  DistanceType position;
+  TimeDerivative<DistanceType> velocity;
+};
+
+/*
+ * A base class for a motion profile.
+ * To use, implement Calculate(Time) and total_time()
+ */
+template <typename DistanceType>
 class MotionProfile {
  public:
-  using VelocityU = std::remove_cv_t<decltype(DistanceU(0) / s)>;
-  using AccelerationU = std::remove_cv_t<decltype(DistanceU(0) / s / s)>;
-  MotionProfile() {}
-  virtual ~MotionProfile() {}
-  virtual AccelerationU CalculateSecondDerivative(Time time) = 0;
-  virtual VelocityU CalculateDerivative(Time time) = 0;
-  virtual DistanceU Calculate(Time time) = 0;
-  virtual bool finished(Time time) = 0;
-  virtual DistanceU GetTotalDistance() = 0;
+  MotionProfile() = default;
+  virtual ~MotionProfile() = default;
+
+  virtual MotionProfilePosition<DistanceType> Calculate(Time time) const = 0;
+
+  virtual Time total_time() const = 0;
+  virtual bool finished(Time time) { return time > total_time(); }
 };
-}
+
+} /* control */
+
+} /* muan */
 
 #endif /* SRC_ROBOTCODE_MOTIONPROFILE_H_ */

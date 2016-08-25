@@ -27,14 +27,14 @@ TEST_F(TestUpdateable, BasicTest) {
   Start();
   sleep_for(1.1 * s);
   Stop();
-  ASSERT_EQ(_x, 0);
+  EXPECT_EQ(_x, 0);
 }
 
 TEST_F(TestUpdateable, Stop) {
   Start();
   sleep_for(.1 * s);
   Stop();
-  ASSERT_GT(_x, 0);
+  EXPECT_GT(_x, 0);
 }
 
 TEST_F(TestUpdateable, StopsPromptly) {
@@ -43,5 +43,5 @@ TEST_F(TestUpdateable, StopsPromptly) {
   // left for .55 seconds - it should finish very quickly when called.
   sleep_for(.55 * s);
   Stop();
-  ASSERT_GT(_x, 0);
+  EXPECT_GT(_x, 0);
 }

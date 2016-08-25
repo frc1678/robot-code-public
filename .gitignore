@@ -1,4 +1,5 @@
 bazel-*
 *.swp
 .DS_Store
+*/__pycache__/*
 compile_commands.json
