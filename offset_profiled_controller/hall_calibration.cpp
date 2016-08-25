@@ -34,10 +34,11 @@ double HallCalibration::Update(double main_sensor_value, bool hall_value) {
   if (main_sensor_value < min_overall_ || first_time_) {
     min_overall_ = main_sensor_value;
   }
-  // return the best estimate known. If the magnet is not found or the edges of
+  // Return the best estimate known. If the magnet is not found or the edges of
   // the magnet's range have not been reached, there is no best estimate. In
   // the event that calibrated_ is true, do not set it to false even if the
-  // condition is not currently met, as that could mess things up.
+  // condition is not currently met, as that could reset any portions of code
+  // that assume calibration is complete.
   if ((magnet_found_ && max_overall_ > max_hall_true_ &&
        min_overall_ < min_hall_true_) || calibrated_) {
     // The center of the magnet's range is magnet_position_, so the offset if
