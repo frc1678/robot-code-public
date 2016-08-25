@@ -1,0 +1,114 @@
+#!/bin/bash
+
+# Define color values
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+# Default argument values
+rio_addr='roboRIO-1678-FRC.local'
+auto_only=''
+constants_only=''
+vision_only=''
+help_flag=''
+
+# Use getopts to set variables according to args
+while getopts 'i:acvh' opt; do
+  case "${opt}" in
+    i) rio_addr=$OPTARG ;;
+    a) auto_only='true' ;;
+    c) constants_only='true' ;;
+    v) vision_only='true' ;;
+    h) help_flag='true' ;;
+    *) exit 1 ;;
+  esac
+done
+
+# Define functions for various actions
+user_print() {
+  printf "${BLUE}$1${NC}\n"
+}
+
+deploy_code() {
+  user_print "Deploying FRCUserProgram..."
+  sshpass -p '' ssh admin@$rio_addr <<'ENDSSH'
+kill -9 $(pidof FRCUserProgram)
+ENDSSH
+  sleep 1.0 # Wait for the file to be removed before we try to write to it
+  sshpass -p '' scp bazel-bin/frc1678/frc1678 admin@$rio_addr:/home/lvuser/FRCUserProgram
+  sshpass -p '' scp robotCommand admin@$rio_addr:/home/lvuser/robotCommand
+}
+
+deploy_auto() {
+  user_print "Deploying auto files..."
+  sshpass -p '' scp frc1678/auto/*.auto admin@$rio_addr:/home/lvuser
+}
+
+deploy_constants() {
+  user_print "Deploying constants files..."
+  sshpass -p '' scp -r constants admin@$rio_addr:/home/lvuser/
+}
+
+deploy_vision() {
+  user_print "Deploying vision..."
+  sshpass -p '' ssh citrus@citrus-vision.local <<'ENDSSH'
+kill -9 $(pidof coprocessor_side)
+rm ~/coprocessor_side
+ENDSSH
+  sleep 1.0
+  sshpass -p '' scp bazel-bin/vision/coprocessor/main citrus@citrus-vision.local:/home/citrus/coprocessor_side
+  sshpass -p '' scp PARAMS.txt citrus@citrus-vision.local:/home/citrus/
+  sshpass -p '' ssh citrus@citrus-vision.local <<'ENDSSH'
+  sudo reboot
+ENDSSH
+}
+
+start_code() {
+  user_print "Starting code..."
+  sshpass -p '' ssh admin@$rio_addr <<'ENDSSH'
+/usr/local/frc/bin/frcKillRobot.sh -t -r;
+ENDSSH
+}
+
+show_help() {
+  echo "Flags:"
+  echo "-i rio_addr     Set roborio address"
+  echo "                Default: roborio-1678-frc.local"
+  echo "-a              Upload auto files without redeploying code"
+  echo "-c              Upload PID constants without redeploying code"
+  echo "-v              Upload vision code. This will not deploy robot code"
+  echo "-h              That's me!"
+  exit
+}
+
+# Run needed commands
+# TODO(Wesley) make this logic better at some point in the future when writing bash doesn't make me want to vomit. so never
+if [ $help_flag ]
+then
+  show_help
+  exit
+fi
+
+if [ $auto_only ]
+then
+  deploy_auto
+fi
+
+if [ $constants_only ]
+then
+  deploy_constants
+fi
+
+if [ $vision_only ]
+then
+  deploy_vision
+fi
+
+if [[ $auto_only ]] || [[ $constants_only ]] || [[ $vision_only ]]
+then
+  exit
+fi
+
+deploy_auto
+deploy_constants
+deploy_code
+start_code
