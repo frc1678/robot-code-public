@@ -1,6 +1,10 @@
 #ifndef MUAN_UTILS_MATH_UTILS_H_
 #define MUAN_UTILS_MATH_UTILS_H_
 
+#include "Eigen/Core"
+#include "unitscpp/unitscpp.h"
+#include <iostream>
+
 namespace muan {
 
 template <class T>
