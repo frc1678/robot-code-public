@@ -1,7 +1,7 @@
 #ifndef SRC_ROBOTCODE_MOTIONPROFILE_H_
 #define SRC_ROBOTCODE_MOTIONPROFILE_H_
+#include "muan/utils/math_utils.h"
 #include "unitscpp/unitscpp.h"
-#include "utils/math_utils.h"
 #include <type_traits>
 
 namespace muan {

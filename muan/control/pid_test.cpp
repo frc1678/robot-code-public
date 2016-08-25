@@ -1,4 +1,4 @@
-#include "control/pid_controller.h"
+#include "pid_controller.h"
 #include "gtest/gtest.h"
 
 using namespace muan;

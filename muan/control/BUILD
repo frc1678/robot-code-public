@@ -27,7 +27,7 @@ cc_library(
   ],
   deps = [
     '@third_party//unitscpp',
-    '//utils:history'
+    '//muan/utils:history'
   ],
   linkstatic = 1
 )
@@ -61,7 +61,7 @@ cc_library(
   deps = [
     '@third_party//unitscpp',
     '@third_party//eigen',
-    '//utils:math_utils'
+    '//muan/utils:math_utils'
   ],
   linkopts = ['-lm'],
   linkstatic = 1
@@ -72,7 +72,7 @@ cc_test(
   srcs = ['motion_profile_test.cpp'],
   deps = [
     ':motion_profiles',
-    '//utils:math_utils',
+    '//muan/utils:math_utils',
     '@third_party//google/googletest:googletest'
   ]
 )

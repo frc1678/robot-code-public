@@ -4,7 +4,7 @@ cc_library(
   name = 'log_base',
   hdrs = ['log_manager.h', 'log.h'],
   srcs = ['log_manager.cpp', 'log.cpp'],
-  deps = ['//utils:timing'],
+  deps = ['//muan/utils:timing'],
   visibility = ['//visibility:private']
 )
 

@@ -4,7 +4,7 @@ cc_library(
   name = 'updateable',
   hdrs = ['updateable.h'],
   srcs = ['updateable.cpp'],
-  deps = ['//utils:timing'],
+  deps = ['//muan/utils:timing'],
   linkopts = ['-lpthread']
 )
 
