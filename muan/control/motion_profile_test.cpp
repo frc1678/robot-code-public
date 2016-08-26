@@ -1,6 +1,6 @@
 #include "muan/utils/math_utils.h"
+#include "third_party/unitscpp/unitscpp.h"
 #include "trapezoidal_motion_profile.h"
-#include "unitscpp/unitscpp.h"
 #include "gtest/gtest.h"
 
 using namespace muan::control;

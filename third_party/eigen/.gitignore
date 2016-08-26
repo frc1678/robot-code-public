@@ -1,0 +1,10 @@
+**/.git
+eigen/bench
+eigen/cmake
+eigen/debug
+eigen/demos
+eigen/doc
+eigen/scripts
+eigen/unsupported
+eigen/.hg*
+**/CMakeLists.txt

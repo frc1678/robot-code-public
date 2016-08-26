@@ -1,5 +1,5 @@
-#include "../multithreading/updateable.h"
-#include "../utils/timing_utils.h"
+#include "muan/utils/timing_utils.h"
+#include "updateable.h"
 #include "gtest/gtest.h"
 
 using namespace muan;

@@ -1,4 +1,4 @@
-load('@third_party//google/protobuf:protobuf.bzl', 'py_proto_library')
+load('//third_party/google/protobuf:protobuf.bzl', 'py_proto_library')
 
 action_listener(
   name = 'compilation_database',
@@ -21,6 +21,6 @@ extra_action(
 py_binary(
   name = 'gather_compilation_commands',
   srcs = ['gather_cdb.py'],
-  deps = ['@third_party//google/bazel:compile_info'],
+  deps = ['//third_party/google/bazel:compile_info'],
   main = 'gather_cdb.py'
 )
