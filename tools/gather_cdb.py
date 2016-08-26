@@ -1,4 +1,4 @@
-import external.third_party.google.bazel.src.main.protobuf.extra_actions_pb2 as extra_actions
+import third_party.google.bazel.src.main.protobuf.extra_actions_pb2 as extra_actions
 import os
 import sys
 
