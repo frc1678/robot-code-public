@@ -1,3 +1,6 @@
+#ifndef units
+#define units
+
 namespace muan {
 
 namespace units {
@@ -40,3 +43,5 @@ constexpr double pwm = 12 * V;
 }  // units
 
 }  // muan
+
+#endif
