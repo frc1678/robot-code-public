@@ -5,40 +5,48 @@ namespace muan {
 
 namespace units {
 
+using Seconds = double;
+using Meters = double;
+using MetersPerSecond = double;
+using Kilograms = double;
+using Radians = double;
+using RadiansPerSecond = double;
+using Amperes = double;
+using Volts = double;
+
 // Unitless
 constexpr double pi = 3.14159265358;
 
-// Time
-constexpr double s = 1 * s;
-constexpr double min = 60 * s;
-constexpr double ms = 1e-3 * s;
-constexpr double us = 1e-6 * s;
+constexpr Seconds s = 1;
+constexpr Seconds min = 60 * s;
+constexpr Seconds ms = 1e-3 * s;
+constexpr Seconds us = 1e-6 * s;
 
-// Lengths
-constexpr double m = 1;
-constexpr double cm = 1e-2 * m;
-constexpr double in = 2.54 * cm;
-constexpr double ft = 12 * in;
+constexpr Meters m = 1;
+constexpr Meters cm = 1e-2 * m;
+constexpr Meters in = 0.0254 * m;
+constexpr Meters ft = 0.3048 * m;
 
-// Mass
-constexpr double kg = 1;
-constexpr double g = 0.001 * kg;
-constexpr double mg = 0.001 * g;
+constexpr MetersPerSecond mps = 1 * m / s;
+constexpr MetersPerSecond fps = 1 * ft / s;
 
-// Angle
-constexpr double rad = 1;
-constexpr double deg = 1.74532925e-2 * rad;
-constexpr double rev = 2 * pi * rad;
+constexpr Kilograms kg = 1;
+constexpr Kilograms g = 0.001 * kg;
+constexpr Kilograms mg = 0.000001 * kg;
 
-// Angular Velocity
-constexpr double rpm = rev / min;
+constexpr Radians rad = 1;
+constexpr Radians deg = 1.74532925e-2 * rad;
+constexpr Radians rev = 2 * pi * rad;
 
-// Current
-constexpr double A = 1;
+constexpr RadiansPerSecond rps = 1 * rad / s;
+constexpr RadiansPerSecond dps = 1 * deg / s;
 
-// Voltage
-constexpr double V = kg * m * m / (A * s * s * s);
-constexpr double pwm = 12 * V;
+constexpr Amperes A = 1;
+
+constexpr Volts V = kg * m * m / (A * s * s * s);
+constexpr Volts pwm = 12 * V;
+
+double convert(double val, double unit) { return val / unit; }
 
 }  // units
 

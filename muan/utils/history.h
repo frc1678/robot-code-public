@@ -1,23 +1,25 @@
 #ifndef MUAN_CONTROL_HISTORY_H_
 #define MUAN_CONTROL_HISTORY_H_
 
-#include "third_party/unitscpp/unitscpp.h"
+#include "muan/units/units.h"
 #include <stdexcept>
 
 namespace muan {
 
-template <class T, int size>
+template <int size>
 class History {
+  using namespace muan::units;
+
  public:
-  History(Time time_step_) : current_pos_(0), time_step_(time_step_) {
-    hist_arr_ = new T[size];
+  History(Seconds time_step_) : current_pos_(0), time_step_(time_step_) {
+    hist_arr_ = new double[size];
   }
-  void Update(T val) {
+  void Update(double val) {
     hist_arr_[current_pos_] = val;
     current_pos_ = (current_pos_ + 1) % size;
   }
 
-  const T& GoBack(Time t) {
+  const double& GoBack(Seconds t) {
     if (t > time_step_ * size)
       throw std::out_of_range("Cannot go back to unrecorded history!");
     unsigned int element_pos =
@@ -25,13 +27,13 @@ class History {
     return hist_arr_[element_pos];
   }
 
-  T* begin() { return &hist_arr_[0]; }
-  T* end() { return &hist_arr_[size]; }
+  double* begin() { return &hist_arr_[0]; }
+  double* end() { return &hist_arr_[size]; }
 
  private:
   int current_pos_;
-  Time time_step_;
-  T* hist_arr_;
+  Seconds time_step_;
+  double* hist_arr_;
 };
 }
 

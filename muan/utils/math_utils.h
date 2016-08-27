@@ -2,14 +2,12 @@
 #define MUAN_UTILS_MATH_UTILS_H_
 
 #include "Eigen/Core"
-#include "third_party/unitscpp/unitscpp.h"
 #include <iostream>
 
 namespace muan {
 
-template <class T>
-T Cap(T val, T min, T max) {
-  T ret = val;
+double Cap(double val, double min, double max) {
+  double ret = val;
   if (val < min) {
     ret = min;
   } else if (val > max) {
@@ -31,17 +29,10 @@ Eigen::Matrix<double, A, B> CapMatrix(const Eigen::Matrix<double, A, B>& val,
   return ret;
 }
 
-template <class T>
-T abs(T val) {
+double abs(double val) {
   if (val < 0) val = -val;
   return val;
 }
-
-template <typename T>
-using TimeDerivative = std::remove_cv_t<decltype(T{0} / s)>;
-
-template <typename T>
-using TimeDerivative2 = std::remove_cv_t<decltype(T{0} / s / s)>;
 
 } /* muan */
 
