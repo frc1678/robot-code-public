@@ -3,10 +3,10 @@
 #include "muan/utils/timing_utils.h"
 #include "gtest/gtest.h"
 
-using namespace muan::units;
 using namespace muan;
 
 TEST(TimeUtils, TimerPositive) {
+  using namespace muan::units;
   Timer t;
   t.Start();
   for (int i = 0; i < 10000; i++) {
@@ -16,6 +16,7 @@ TEST(TimeUtils, TimerPositive) {
 }
 
 TEST(TimeUtils, TimerReset) {
+  using namespace muan::units;
   Timer t;
   t.Start();
   for (int i = 0; i < 10000; i++) {
@@ -26,20 +27,23 @@ TEST(TimeUtils, TimerReset) {
 }
 
 TEST(TimeUtils, TimerAndDelay) {
+  using namespace muan::units;
   Timer t;
   t.Start();
   sleep_for(.2 * s);
-  EXPECT_NEAR(t.Get().to(s), .2, .01);
+  EXPECT_NEAR(convert(t.Get(), s), .2, .01);
 }
 
 TEST(TimeUtils, SleepUntil) {
+  using namespace muan::units;
   Seconds start = now();
   sleep_until(start + .5 * s);
   EXPECT_NEAR(convert(now(), s), convert(start, s) + .5, .01);
 }
 
 TEST(History, WorksCorrectly) {
-  History<200> hist(.01 * s);
+  using namespace muan::units;
+  History<int, 200> hist(.01 * s);
   for (int i = 0; i < 100; i++) {
     hist.Update(i);
   }

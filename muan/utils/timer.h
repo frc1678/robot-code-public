@@ -5,16 +5,14 @@
 namespace muan {
 
 class Timer {
-  using namespace muan::units;
-
  public:
   Timer();
   void Start();
-  Seconds Reset();
-  Seconds Get();
+  muan::units::Seconds Reset();
+  muan::units::Seconds Get();
 
  private:
-  Seconds start_;
+  muan::units::Seconds start_;
 };
 }
 
