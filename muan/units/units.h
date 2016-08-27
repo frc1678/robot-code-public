@@ -1,5 +1,5 @@
-#ifndef units
-#define units
+#ifndef MUAN_UNITS_UNITS_H_
+#define MUAN_UNITS_UNITS_H_
 
 namespace muan {
 
@@ -46,7 +46,7 @@ constexpr Amperes A = 1;
 constexpr Volts V = kg * m * m / (A * s * s * s);
 constexpr Volts pwm = 12 * V;
 
-double convert(double val, double unit) { return val / unit; }
+constexpr double convert(double val, double unit) { return val / unit; }
 
 }  // units
 
