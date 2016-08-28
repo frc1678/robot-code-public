@@ -178,11 +178,13 @@ def c2d(A, B, dt, Q = None, R = None):
     """
     A = numpy.asmatrix(A)
     B = numpy.asmatrix(B)
+
     if Q is not None:
         Q = numpy.asmatrix(Q)
     if R is not None:
         R = numpy.asmatrix(R)
-    _validate_system(A, B, None, None, Q, R)
+
+    _validate_system(A, B, None, None, Q, None)
 
     n = A.shape[0]
     m = B.shape[1]
