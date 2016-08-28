@@ -7,11 +7,9 @@ namespace muan {
 
 namespace control {
 
-template <typename DistanceType>
-TrapezoidalMotionProfile<DistanceType>::TrapezoidalMotionProfile(
-    MotionProfileConstraints<DistanceType> constraints,
-    MotionProfilePosition<DistanceType> goal,
-    MotionProfilePosition<DistanceType> initial)
+TrapezoidalMotionProfile::TrapezoidalMotionProfile(
+    MotionProfileConstraints constraints, MotionProfilePosition goal,
+    MotionProfilePosition initial)
     : direction_{ShouldFlipAcceleration(initial, goal, constraints) ? -1 : 1},
       constraints_{constraints},
       initial_{Direct(initial)},
@@ -19,12 +17,12 @@ TrapezoidalMotionProfile<DistanceType>::TrapezoidalMotionProfile(
   // Deal with a possibly truncated motion profile (with nonzero initial or
   // final velocity) by calculating the parameters as if the profile began and
   // ended at zero velocity
-  Time cutoff_begin = initial_.velocity / constraints_.max_acceleration;
-  DistanceType cutoff_dist_begin =
+  Seconds cutoff_begin = initial_.velocity / constraints_.max_acceleration;
+  double cutoff_dist_begin =
       cutoff_begin * cutoff_begin * constraints_.max_acceleration / 2.0;
 
-  Time cutoff_end = goal_.velocity / constraints_.max_acceleration;
-  DistanceType cutoff_dist_end =
+  Seconds cutoff_end = goal_.velocity / constraints_.max_acceleration;
+  double cutoff_dist_end =
       cutoff_end * cutoff_end * constraints_.max_acceleration / 2.0;
 
   // Now we can calculate the parameters as if it was a full trapezoid instead
@@ -41,11 +39,10 @@ TrapezoidalMotionProfile<DistanceType>::TrapezoidalMotionProfile(
         acceleration_time * acceleration_time * constraints_.max_acceleration;
 
     // Handle the case where the profile never reaches full speed
-    if (full_speed_dist < DistanceType{0}) {
+    if (full_speed_dist < 0.0) {
       acceleration_time =
-          std::sqrt((full_trapezoid_dist / constraints_.max_acceleration)()) *
-          s;
-      full_speed_dist = DistanceType{0};
+          std::sqrt((full_trapezoid_dist / constraints_.max_acceleration)) * s;
+      full_speed_dist = 0.0;
     }
 
     end_accel_ = acceleration_time - cutoff_begin;
@@ -54,10 +51,8 @@ TrapezoidalMotionProfile<DistanceType>::TrapezoidalMotionProfile(
   }
 }
 
-template <typename DistanceType>
-MotionProfilePosition<DistanceType>
-TrapezoidalMotionProfile<DistanceType>::Calculate(Time t) const {
-  MotionProfilePosition<DistanceType> result = initial_;
+MotionProfilePosition TrapezoidalMotionProfile::Calculate(Seconds t) const {
+  MotionProfilePosition result = initial_;
 
   if (t < end_accel_) {
     result.velocity += t * constraints_.max_acceleration;
@@ -72,7 +67,7 @@ TrapezoidalMotionProfile<DistanceType>::Calculate(Time t) const {
   } else if (t <= end_deccel_) {
     result.velocity =
         goal_.velocity + (end_deccel_ - t) * constraints_.max_acceleration;
-    Time time_left = end_deccel_ - t;
+    Seconds time_left = end_deccel_ - t;
     result.position =
         goal_.position -
         (goal_.velocity + time_left * constraints_.max_acceleration / 2.0) *
