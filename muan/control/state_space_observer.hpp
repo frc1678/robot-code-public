@@ -19,10 +19,6 @@ StateSpaceObserver<kNumInputs, kNumStates, kNumOutputs>::StateSpaceObserver(
     : plant_{plant}, L_{L} {}
 
 template <uint32_t kNumInputs, uint32_t kNumStates, uint32_t kNumOutputs>
-StateSpaceObserver<kNumInputs, kNumStates, kNumOutputs>::~StateSpaceObserver() {
-}
-
-template <uint32_t kNumInputs, uint32_t kNumStates, uint32_t kNumOutputs>
 void StateSpaceObserver<kNumInputs, kNumStates, kNumOutputs>::Update(
     const Eigen::Matrix<double, kNumInputs, 1>& u,
     const Eigen::Matrix<double, kNumOutputs, 1>& y) {
@@ -89,8 +85,8 @@ double& StateSpaceObserver<kNumInputs, kNumStates, kNumOutputs>::L(uint32_t i,
   return L_(i, j);
 }
 
-} /* control */
+}  // namespace control
 
-} /* muan */
+}  // namespace muan
 
 #endif /* MUAN_CONTROL_STATE_SPACE_OBSERVER_HPP_ */

@@ -84,8 +84,8 @@ TrapezoidalMotionProfile<DistanceType>::Calculate(Time t) const {
   return Direct(result);
 }
 
-} /* control */
+}  // namespace control
 
-} /* muan */
+}  // namespace muan
 
 #endif /* MUAN_CONTROL_TRAPEZOIDAL_MOTION_PROFILE_HPP_ */

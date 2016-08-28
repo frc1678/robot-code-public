@@ -42,7 +42,7 @@ class StateSpacePlant {
                       Eigen::Matrix<double, kNumOutputs, kNumInputs>::Zeros(),
                   const Eigen::Matrix<double, kNumStates, 1>& x_0 =
                       Eigen::Matrix<double, kNumStates, 1>::Zeros());
-  virtual ~StateSpacePlant();
+  virtual ~StateSpacePlant() = default;
 
   // Updates the system by one timestep with a specified control signal and
   // difference equation:
@@ -86,9 +86,9 @@ class StateSpacePlant {
   Eigen::Matrix<double, kNumStates, 1> x_;
 };
 
-} /* control */
+}  // namespace control
 
-} /* muan */
+}  // namespace muan
 
 #include "state_space_plant.hpp"
 
