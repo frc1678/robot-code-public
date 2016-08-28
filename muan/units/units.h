@@ -6,6 +6,7 @@ namespace muan {
 namespace units {
 
 using Seconds = double;
+using Hertz = double;
 using Meters = double;
 using MetersPerSecond = double;
 using Kilograms = double;
@@ -21,6 +22,8 @@ constexpr Seconds s = 1;
 constexpr Seconds min = 60 * s;
 constexpr Seconds ms = 1e-3 * s;
 constexpr Seconds us = 1e-6 * s;
+
+constexpr Hertz hz = 1 / s;
 
 constexpr Meters m = 1;
 constexpr Meters cm = 1e-2 * m;
