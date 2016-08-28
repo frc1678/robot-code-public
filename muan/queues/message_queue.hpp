@@ -8,7 +8,7 @@ namespace muan {
 namespace queues {
 
 template <typename T, uint32_t size>
-MessageQueue<T, size>::MessageQueue(MessageQueue<T, size>&& move_from)
+MessageQueue<T, size>::MessageQueue(MessageQueue<T, size>&& move_from) noexcept
     : messages_(move_from.messages_),
       back_(static_cast<uint32_t>(move_from.back_)) {}
 
@@ -40,7 +40,9 @@ std::experimental::optional<T> MessageQueue<T, size>::NextMessage(
   if (next >= back_capture) {
     next = back_capture;
     return std::experimental::nullopt;
-  } else if (next < front_capture) {
+  }
+
+  if (next < front_capture) {
     next = front_capture;
   }
 
@@ -66,7 +68,7 @@ uint32_t MessageQueue<T, size>::front(uint32_t back) const {
 
 template <typename T, uint32_t size>
 MessageQueue<T, size>::QueueReader::QueueReader(
-    MessageQueue<T, size>::QueueReader&& move_from)
+    MessageQueue<T, size>::QueueReader&& move_from) noexcept
     : queue_{move_from.queue_} {
   next_message_ = std::move(move_from.next_message_);
 }
@@ -84,8 +86,8 @@ MessageQueue<T, size>::QueueReader::ReadMessage() {
   return queue_.NextMessage(next_message_);
 }
 
-} /* queues */
+}  // namespace queues
 
-} /* muan */
+}  // namespace muan
 
 #endif /* QUEUES_MESSAGE_QUEUE_HPP_ */
