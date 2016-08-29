@@ -7,16 +7,14 @@
  */
 
 #include "text_log.h"
-#include <string>
 #include "log_manager.h"
+#include <string>
 
 namespace muan {
 
 TextLog::TextLog(std::string name) : Log(name, GetExtension()) {}
 
 std::string TextLog::GetExtension() const { return "log"; }
-
-TextLog::~TextLog() {}
 
 /**
  * Write a message to the log with a tag.
@@ -32,16 +30,11 @@ void TextLog::Write(std::string message, std::string category,
   buffer_ << full_message << tid << "\n";
 }
 
-void TextLog::WriteToLog(std::string log, std::string message,
-                         std::string category, std::string code_stamp) {
-  reinterpret_cast<TextLog *>(LogManager::GetInstance()->GetLog(log))
-      ->Write(message, category, code_stamp);
-}
-
 void TextLog::FlushToFile() {
   std::lock_guard<std::mutex> lock(mutex_);
   file_ << buffer_.str();
   file_.flush();
   buffer_.str(std::string());
 }
-}
+
+}  // namespace muan

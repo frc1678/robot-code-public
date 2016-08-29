@@ -9,13 +9,13 @@
 #ifndef MUAN_LOGGING_LOG_H_
 #define MUAN_LOGGING_LOG_H_
 
-#include <thread>
-#include <iostream>
-#include <string>
-#include <sstream>
 #include <fstream>
-#include <mutex>
+#include <iostream>
 #include <map>
+#include <mutex>
+#include <sstream>
+#include <string>
+#include <thread>
 
 // #define LOG_VERBOSE
 
@@ -52,6 +52,7 @@ class Log {
   std::mutex mutex_;
   std::string name_;
 };
-}
+
+}  // namespace muan
 
 #endif  // MUAN_LOGGING_LOG_H_
