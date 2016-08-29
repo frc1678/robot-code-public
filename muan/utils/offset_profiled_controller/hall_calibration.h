@@ -16,8 +16,8 @@ namespace muan {
  */
 class HallCalibration {
  public:
-  HallCalibration(double magnet_position);
-  ~HallCalibration();
+  explicit HallCalibration(double magnet_position);
+  ~HallCalibration() = default;
   // Based on the raw sensor values, run calibration when calibration in not
   // complete, and return the offsetted sensor values if calibration is
   // complete. When calibration is not complete, the value returned is not
@@ -45,6 +45,7 @@ class HallCalibration {
   // The value that should be returned at the center of the magnet
   double magnet_position_;
 };
-}
+
+}  // namespace muan
 
 #endif  // MUAN_HALL_CALIBRATION_H_
