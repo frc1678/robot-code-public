@@ -160,9 +160,9 @@ class StateSpaceScenario(object):
     def _gain_generator_declarations(self):
         out_string = ''
         for gain in self.sys.gains:
-            out_string += 'namespace %s {' % gain.name
+            out_string += 'namespace %s {\n' % gain.name
             out_string += self._matrix_generator_declarations(gain.writable_matrices())
-            out_string += '} // namespace %s' % gain.name
+            out_string += '\n} // namespace %s' % gain.name
         return out_string
 
     def _gain_generator_definitions(self):
