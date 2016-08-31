@@ -10,7 +10,7 @@ A state-space controller class with support for feedforward control.
 """
 __author__ = 'Kyle Stachowicz (kylestach99@gmail.com)'
 
-class StateSpaceController:
+class StateSpaceController(object):
     def __init__(self, K, Kff, plant, u_min = None, u_max = None):
         if u_min is None:
             u_min = np.full(plant.x.shape, -np.inf)

@@ -37,7 +37,7 @@ def _plot_with_discontinuities(ax, x, y, name, i):
 
     ax.plot(t_copy, y_copy, label = name)
 
-class StateSpaceScenario:
+class StateSpaceScenario(object):
     def __init__(self, sys, x_initial, controller, observer, x_hat_initial, name = '', noise = None):
         self.sys = sys
 

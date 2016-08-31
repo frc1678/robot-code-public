@@ -7,7 +7,7 @@ A state-space observer class
 __author__ = 'Kyle Stachowicz (kylestach99@gmail.com)'
 
 
-class StateSpaceObserver:
+class StateSpaceObserver(object):
     def __init__(self, plant, L, x0 = None):
         if x0 is None:
             x0 = np.zeros(sys.A_d.shape[0])

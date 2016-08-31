@@ -7,7 +7,7 @@ class does not deal with all of the corner cases dealt with in the C++ version.
 """
 __author__ = 'Kyle Stachowicz (kylestach99@gmail.com)'
 
-class TrapezoidalMotionProfile:
+class TrapezoidalMotionProfile(object):
     def __init__(self, distance, max_speed, max_acceleration):
         self.total_distance = distance
         self.max_speed = max_speed
