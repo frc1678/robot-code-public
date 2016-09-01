@@ -10,14 +10,11 @@ template <int HistLength = 5>
 class AverageFilterPidController : public PidController {
  public:
   using namespace muan::units;
-  using ProportionalConstant = double;
-  using IntegralConstant = double* s;
-  using DerivativeConstant = double / s;
 
   using PidGains = PidController::PidGains;
 
-  AverageFilterPidController(ProportionalConstant kP, IntegralConstant kI,
-                             DerivativeConstant kD)
+  AverageFilterPidController(double kP, double kI,
+                             double kD)
       : PidController<InputType, OutputType>(kP, kI, kD), hist_(.005 * s) {}
   AverageFilterPidController(const PidGains& gains)
       : PidController<InputType, OutputType>(gains), hist_(.005 * s) {}

@@ -8,18 +8,15 @@ namespace muan {
 
 class PidController {
  public:
-  using ProportionalConstant = double;
-  using IntegralConstant = double;
-  using DerivativeConstant = double;
 
   struct PidGains {
-    ProportionalConstant kP;
-    IntegralConstant kI;
-    DerivativeConstant kD;
+    double kP;
+    double kI;
+    double kD;
   };
 
-  PidController(ProportionalConstant kP, IntegralConstant kI,
-                DerivativeConstant kD)
+  PidController(double kP, double kI,
+                double kD)
       : kP(kP), kI(kI), kD(kD), integral_(0), last_proportional_(0) {}
   PidController(const PidGains& gains)
       : PidController(gains.kP, gains.kI, gains.kD) {}
@@ -29,11 +26,11 @@ class PidController {
            (last_derivative_ = CalculateDerivative(dt, error)) * kD;
   }
 
-  void SetProportionalConstant(ProportionalConstant p) { kP = p; }
+  void SetProportionalConstant(double p) { kP = p; }
 
-  void SetIntegralConstant(IntegralConstant i) { kI = i; }
+  void SetDerivativeConstant(double i) { kI = i; }
 
-  void SetDerivativeConstant(DerivativeConstant d) { kD = d; }
+  void Setdouble(double d) { kD = d; }
 
   void SetGains(const PidGains& gains) {
     kP = gains.kP;
@@ -60,9 +57,9 @@ class PidController {
     return integral_;
   }
 
-  ProportionalConstant kP;
-  IntegralConstant kI;
-  DerivativeConstant kD;
+  double kP;
+  double kI;
+  double kD;
   double integral_;
   double last_proportional_;
   double last_derivative_;
