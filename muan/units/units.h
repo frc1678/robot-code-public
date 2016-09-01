@@ -9,6 +9,7 @@ using Time = double;
 using Frequency = double;
 using Length = double;
 using Velocity = double;
+using Acceleration = double;
 using Mass = double;
 using Angle = double;
 using AngularVelocity = double;
@@ -32,6 +33,9 @@ constexpr Length ft = 0.3048 * m;
 
 constexpr Velocity mps = 1 * m / s;
 constexpr Velocity fps = 1 * ft / s;
+
+constexpr Acceleration mps2 = 1 * m / s / s;
+constexpr Acceleration fps2 = 1 * ft / s / s;
 
 constexpr Mass kg = 1;
 constexpr Mass g = 0.001 * kg;

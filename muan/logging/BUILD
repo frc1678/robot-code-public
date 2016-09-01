@@ -19,7 +19,8 @@ cc_library(
   name = 'csv_log',
   hdrs = ['csv_log.h'],
   srcs = ['csv_log.cpp'],
-  deps = [':log_base']
+  deps = [':log_base',
+          '//muan/units:units']
 )
 
 cc_library(

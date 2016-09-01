@@ -41,8 +41,9 @@ void CSVLog::Write(std::string key, std::string value) {
  * Begin writing values on a new line.
  */
 void CSVLog::EndLine() {
+  using namespace muan::units;
   std::lock_guard<std::mutex> lock(mutex_);
-  buffer_ << muan::units::convert(timer.Get(), muan::units::s) << ",";
+  buffer_ << convert(timer.Get(), s) << ",";
   for (auto entry = entries_.begin(); entry != entries_.end(); entry++) {
     buffer_ << entry->second;
     if (entry + 1 != entries_.end()) {

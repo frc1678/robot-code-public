@@ -11,6 +11,7 @@
 
 #include "log.h"
 #include "muan/utils/timer.h"
+#include "muan/units/units.h"
 #include <string>
 #include <utility>
 #include <vector>

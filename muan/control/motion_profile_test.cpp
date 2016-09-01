@@ -27,7 +27,7 @@ class MotionProfileTest : public ::testing::Test {
                 1e-6);
 
     for (Time t = 0 * s; t <= profile.total_time(); t += dt) {
-      double estimated_acceleration =
+      Acceleration estimated_acceleration =
           (profile.Calculate(t).velocity - profile.Calculate(t - dt).velocity) /
           (dt);
       Velocity estimated_velocity =
