@@ -14,22 +14,22 @@ writing the constant matrices to files.
 __author__ = 'Kyle Stachowicz (kylestach99@gmail.com)'
 
 # Find the difference between two arrays of vectors
-def diff(vector_hist):
+def _diff(vector_hist):
     return [(np.zeros(vector_hist[0].shape) if i == 0 else vector_hist[i] - vector_hist[i - 1]) for i in range(len(vector_hist))]
 
 # Find discontinuities in an array of vectors
-def find_discontinuities(vector_hist, thresh = 2):
+def _find_discontinuities(vector_hist, thresh = 2):
     values = []
-    for i, d in enumerate(diff(vector_hist)):
+    for i, d in enumerate(_diff(vector_hist)):
         if np.linalg.norm(d) > thresh:
             values.append(i)
     return values
 
 # Plot an array of values without drawing a line at discontinuous points
-def plot_with_discontinuities(ax, x, y, name, i):
+def _plot_with_discontinuities(ax, x, y, name, i):
     t_copy = [t for t in np.nditer(x)]
     y_copy = [v[i, 0] for v in y]
-    disc_points = find_discontinuities(y_copy)
+    disc_points = _find_discontinuities(y_copy)
 
     for c, dp in enumerate(disc_points):
         y_copy.insert(dp + c, np.nan)
@@ -37,7 +37,7 @@ def plot_with_discontinuities(ax, x, y, name, i):
 
     ax.plot(t_copy, y_copy, label = name)
 
-class state_space_scenario:
+class StateSpaceScenario(object):
     def __init__(self, sys, x_initial, controller, observer, x_hat_initial, name = '', noise = None):
         self.sys = sys
 
@@ -102,7 +102,7 @@ class state_space_scenario:
             # TODO(Kyle) Insert np.nan where there are discontinuities
             for name in ['x', 'x_hat', 'r']:
                 hist = getattr(self, name + '_history')
-                plot_with_discontinuities(ax, self.t_history, hist, '{}[{}]'.format(name, i), i)
+                _plot_with_discontinuities(ax, self.t_history, hist, '{}[{}]'.format(name, i), i)
 
             ax.legend()
 
@@ -112,7 +112,7 @@ class state_space_scenario:
         for i in range(num_u_plots):
             ax = fig.add_subplot(plots_y, plots_x, num_x_plots + i + 1)
 
-            plot_with_discontinuities(ax, self.t_history, self.u_history, 'u[{}]'.format(i), i)
+            _plot_with_discontinuities(ax, self.t_history, self.u_history, 'u[{}]'.format(i), i)
 
             ax.legend()
 

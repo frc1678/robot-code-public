@@ -7,7 +7,7 @@ A state-space observer class
 __author__ = 'Kyle Stachowicz (kylestach99@gmail.com)'
 
 
-class state_space_observer:
+class StateSpaceObserver(object):
     def __init__(self, plant, L, x0 = None):
         if x0 is None:
             x0 = np.zeros(sys.A_d.shape[0])
@@ -24,8 +24,8 @@ class state_space_observer:
 
 def kalman(plant):
     L = controls.dkalman(plant.A_d, plant.C, plant.Q_d, plant.R_d)
-    return state_space_observer(plant, L, plant.x)
+    return StateSpaceObserver(plant, L, plant.x)
 
 def placement(plant, poles):
     L = controls.place(plant.A_d.T, plant.C.T, poles).T
-    return state_space_observer(plant, L, plant.x)
+    return StateSpaceObserver(plant, L, plant.x)

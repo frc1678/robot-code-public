@@ -10,7 +10,7 @@ A state-space controller class with support for feedforward control.
 """
 __author__ = 'Kyle Stachowicz (kylestach99@gmail.com)'
 
-class state_space_controller:
+class StateSpaceController(object):
     def __init__(self, K, Kff, plant, u_min = None, u_max = None):
         if u_min is None:
             u_min = np.full(plant.x.shape, -np.inf)
@@ -57,9 +57,9 @@ that there is some u_ff that satisfies the equation above.
 def placement(plant, poles, u_min = None, u_max = None):
     K = controls.place(plant.A_d, plant.B_d, poles)
     Kff = np.linalg.pinv(plant.B_d)
-    return state_space_controller(K, Kff, plant, u_min, u_max)
+    return StateSpaceController(K, Kff, plant, u_min, u_max)
 
 def lqr(plant, Q, R, u_min = None, u_max = None):
     K = controls.dlqr(plant.A_d, plant.B_d, Q, R)
     Kff = np.linalg.inv(plant.B_d.T * Q * plant.B_d) * plant.B_d.T * Q.T
-    return state_space_controller(K, Kff, plant, u_min, u_max)
+    return StateSpaceController(K, Kff, plant, u_min, u_max)
