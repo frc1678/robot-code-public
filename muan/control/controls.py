@@ -165,8 +165,8 @@ def c2d(A, B, dt, Q = None, R = None):
         Q = numpy.asmatrix(Q)
         R = numpy.asmatrix(R)
 
-        assert Q.shape == A.shape, "The dimensions of Q %s must match those of A %s" % (Q.shape, A.shape)
-        assert R.shape[0] == R.shape[1], "R must be square but is instead %ix%i" % (R.shape[0], R.shape[1])
+        assert Q.shape == A.shape, "The dimensions of Q %s must match those of A %s, and Q must be square" % (Q.shape, A.shape)
+        assert R.shape[0] == R.shape[1], "R must be square but is instead %ix%i, and R must be square" % (R.shape[0], R.shape[1])
 
         H = numpy.asmatrix(numpy.zeros((n+n, n+n)))
         H[:n, :n] = -A
@@ -198,8 +198,8 @@ def dlqr(A, B, Q, R):
     R = numpy.asmatrix(R)
 
     _validate_system(A, B, None, None)
-    assert Q.shape[0] == Q.shape[1] and Q.shape[0] == A.shape[0], "The dimensions of Q %s must match those of A %s" % (Q.shape, A.shape)
-    assert R.shape[0] == R.shape[1] and R.shape[0] == B.shape[1], "R %i must be square and must be compatible with B %i" % (R.shape, B.shape)
+    assert Q.shape[0] == Q.shape[1] and Q.shape[0] == A.shape[0], "The dimensions of Q %s must match those of A %s, and Q must be square" % (Q.shape, A.shape)
+    assert R.shape[0] == R.shape[1] and R.shape[0] == B.shape[1], "R %i must be square and must be compatible with B %i, and R must be square" % (R.shape, B.shape)
 
     assert numpy.linalg.matrix_rank(controllability(A, B)) == A.shape[0], "System must be completely controllable to do LQR."
 
@@ -229,8 +229,8 @@ def clqr(A, B, Q, R):
     R = numpy.asmatrix(R)
 
     _validate_system(A, B, None, None)
-    assert Q.shape[0] == Q.shape[1] and Q.shape[0] == A.shape[0], "The dimensions of Q %s must match those of A %s" % (Q.shape, A.shape)
-    assert R.shape[0] == R.shape[1] and R.shape[0] == B.shape[1], "R %i must be square and must be compatible with B %i" % (R.shape, B.shape)
+    assert Q.shape[0] == Q.shape[1] and Q.shape[0] == A.shape[0], "The dimensions of Q %s must match those of A %s, and Q must be square" % (Q.shape, A.shape)
+    assert R.shape[0] == R.shape[1] and R.shape[0] == B.shape[1], "R %i must be square and must be compatible with B %i, and R must be square" % (R.shape, B.shape)
 
     assert numpy.linalg.matrix_rank(controllability(A, B)) == A.shape[0], "System must be completely controllable to do LQR."
 
@@ -288,8 +288,8 @@ def ckalman(A, C, Q, R):
     R = numpy.asmatrix(R)
     _validate_system(A, None, C, None)
 
-    assert Q.shape[0] == Q.shape[1] and Q.shape[0] == A.shape[0], "The dimensions of Q %s must match those of A %s" % (Q.shape, A.shape)
-    assert R.shape[0] == R.shape[1] and R.shape[0] == C.shape[0], "R %i must be square and must be compatible with C %i" % (R.shape, B.shape)
+    assert Q.shape[0] == Q.shape[1] and Q.shape[0] == A.shape[0], "The dimensions of Q %s must match those of A %s, and Q must be square" % (Q.shape, A.shape)
+    assert R.shape[0] == R.shape[1] and R.shape[0] == C.shape[0], "R %i must be square and must be compatible with C %i, and R must be square" % (R.shape, B.shape)
 
     assert numpy.linalg.matrix_rank(observability(A, C)) == A.shape[0], "System must be completely observable to compute Kalman gains."
 
