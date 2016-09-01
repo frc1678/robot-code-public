@@ -330,11 +330,12 @@ TEST(StateSpace, ObserverRecoversFromIncorrectModel) {
   EXPECT_NEAR(plant.x(1), observer.x(1), 1e-1);
 }
 
+thread_local std::mt19937_64 rng;  // NOLINT
+
 double GaussianNoise() {
   // Only initialize the random number generator once, and keep it within the
   // scope of this function
-  static std::mt19937_64 rng;
-  static std::normal_distribution<double> dist;
+  std::normal_distribution<double> dist;
   return dist(rng);
 }
 

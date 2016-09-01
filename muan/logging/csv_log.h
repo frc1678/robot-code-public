@@ -36,7 +36,7 @@ class CSVLog : public Log {
   std::string GetExtension() const override;
 
   static void WriteToLog(std::string log, std::string key, std::string value);
-  virtual ~CSVLog();
+  ~CSVLog() override = default;
 
   const std::vector<std::pair<std::string, std::string>> GetEntries() const;
 
@@ -45,6 +45,7 @@ class CSVLog : public Log {
   std::vector<std::pair<std::string, std::string>> entries_;
   Timer timer;
 };
-}
+
+}  // namespace muan
 
 #endif /* MUAN_LOGGING_CSV_LOG_H_ */

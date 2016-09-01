@@ -30,12 +30,12 @@ class StateSpaceObserver {
   StateSpaceObserver();
 
   // Initializes the observer from a plant and discrete-time observer gains.
-  StateSpaceObserver(
+  explicit StateSpaceObserver(
       const muan::control::StateSpacePlant<kNumInputs, kNumStates, kNumOutputs>&
           plant,
       Eigen::Matrix<double, kNumStates, kNumOutputs> L =
           Eigen::Matrix<double, kNumStates, kNumOutputs>::Zero());
-  virtual ~StateSpaceObserver();
+  virtual ~StateSpaceObserver() = default;
 
   // Update the observer's estimate with new control signal data and measurement
   // data with a difference equation as follows:
@@ -63,9 +63,9 @@ class StateSpaceObserver {
   Eigen::Matrix<double, kNumStates, kNumOutputs> L_;
 };
 
-} /* control */
+}  // namespace control
 
-} /* muan  */
+}  // namespace muan
 
 #include "state_space_observer.hpp"
 

@@ -39,8 +39,8 @@ class MessageQueue {
   virtual ~MessageQueue() = default;
 
   // Enables moving, disables copying.
-  MessageQueue(MessageQueue&& move_from);
-  MessageQueue& operator=(MessageQueue&& move_from) = default;
+  MessageQueue(MessageQueue&& move_from) noexcept;
+  MessageQueue& operator=(MessageQueue&& move_from) = default;  // NOLINT
   MessageQueue(const MessageQueue&) = delete;
   const MessageQueue& operator=(const MessageQueue&) = delete;
 
@@ -56,7 +56,7 @@ class MessageQueue {
 
     // Allows move construction but not move assignment - it doesn't really make
     // sense to assign a queue to another queue.
-    QueueReader(QueueReader&& move_from);
+    QueueReader(QueueReader&& move_from) noexcept;
     QueueReader& operator=(QueueReader&& move_from) = delete;
 
     // Prevents copying.
@@ -67,7 +67,7 @@ class MessageQueue {
 
    private:
     // Creates a QueueReader from a MessageQueue.
-    QueueReader(const MessageQueue& queue);
+    explicit QueueReader(const MessageQueue& queue);
 
     const MessageQueue& queue_;
     uint32_t next_message_;
@@ -92,9 +92,9 @@ class MessageQueue {
   std::atomic<uint32_t> back_{0};
 };
 
-} /* queues */
+}  // namespace queues
 
-} /* muan */
+}  // namespace muan
 
 #include "message_queue.hpp"
 

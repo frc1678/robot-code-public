@@ -15,4 +15,5 @@ Time Timer::Reset() {
 }
 
 Time Timer::Get() { return now() - start_; }
-}
+
+}  // namespace muan

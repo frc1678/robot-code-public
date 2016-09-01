@@ -48,10 +48,6 @@ StateSpaceController<kNumInputs, kNumStates, kNumOutputs>::StateSpaceController(
       u_max_{u_max} {}
 
 template <uint32_t kNumInputs, uint32_t kNumStates, uint32_t kNumOutputs>
-StateSpaceController<kNumInputs, kNumStates,
-                     kNumOutputs>::~StateSpaceController() {}
-
-template <uint32_t kNumInputs, uint32_t kNumStates, uint32_t kNumOutputs>
 Eigen::Matrix<double, kNumInputs, 1>
 StateSpaceController<kNumInputs, kNumStates, kNumOutputs>::Update(
     const Eigen::Matrix<double, kNumStates, 1>& x) {
@@ -215,8 +211,8 @@ double& StateSpaceController<kNumInputs, kNumStates, kNumOutputs>::A(
   return A_(i, j);
 }
 
-} /* control */
+}  // namespace control
 
-} /* muan */
+}  // namespace muan
 
 #endif /* MUAN_CONTROL_STATE_SPACE_CONTROLLER_HPP_ */

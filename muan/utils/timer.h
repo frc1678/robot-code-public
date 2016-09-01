@@ -14,6 +14,7 @@ class Timer {
  private:
   Time start_;
 };
-}
+
+}  // namespace muan
 
 #endif

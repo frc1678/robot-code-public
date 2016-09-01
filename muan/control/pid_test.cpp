@@ -1,7 +1,7 @@
 #include "pid_controller.h"
 #include "gtest/gtest.h"
 
-using namespace muan;
+using muan::PidController;
 
 TEST(PidController, GoesToPosition) {
   PidController<Length, Voltage> p(1 * V / m, 1 * V / m / s, 0 * V * s / m);

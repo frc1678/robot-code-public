@@ -9,11 +9,11 @@
 #ifndef MUAN_LOGGING_LOG_MANAGER_H_
 #define MUAN_LOGGING_LOG_MANAGER_H_
 
-#include <thread>
+#include "log.h"
 #include <atomic>
 #include <map>
 #include <string>
-#include "log.h"
+#include <thread>
 
 namespace muan {
 
@@ -38,6 +38,7 @@ class LogManager {
   void Stop();
   virtual ~LogManager();
 };
-}
+
+}  // namespace muan
 
 #endif /* MUAN_LOGGING_LOG_MANAGER_H_ */
