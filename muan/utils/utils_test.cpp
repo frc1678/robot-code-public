@@ -36,7 +36,7 @@ TEST(TimeUtils, TimerAndDelay) {
 
 TEST(TimeUtils, SleepUntil) {
   using namespace muan::units;
-  Seconds start = now();
+  Time start = now();
   sleep_until(start + .5 * s);
   EXPECT_NEAR(convert(now(), s), convert(start, s) + .5, .01);
 }
@@ -48,7 +48,7 @@ TEST(History, WorksCorrectly) {
     hist.Update(i);
   }
   // We don't really care about off-by-one errors
-  for (Seconds t = .01 * s; t < 1 * s; t += .01 * s) {
+  for (Time t = .01 * s; t < 1 * s; t += .01 * s) {
     EXPECT_NEAR(hist.GoBack(t), 100 - static_cast<int>(convert(t, .01 * s)), 1);
   }
 }

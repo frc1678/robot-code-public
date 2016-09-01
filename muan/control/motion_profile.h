@@ -17,17 +17,17 @@ struct MotionProfilePosition {
 
 /*
  * A base class for a motion profile.
- * To use, implement Calculate(Seconds) and total_time()
+ * To use, implement Calculate(Time) and total_time()
  */
 class MotionProfile {
  public:
   MotionProfile() = default;
   virtual ~MotionProfile() = default;
 
-  virtual MotionProfilePosition Calculate(Seconds time) const = 0;
+  virtual MotionProfilePosition Calculate(Time time) const = 0;
 
-  virtual Seconds total_time() const = 0;
-  virtual bool finished(Seconds time) { return time > total_time(); }
+  virtual Time total_time() const = 0;
+  virtual bool finished(Time time) { return time > total_time(); }
 };
 
 } /* control */

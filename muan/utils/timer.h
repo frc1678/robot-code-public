@@ -8,11 +8,11 @@ class Timer {
  public:
   Timer();
   void Start();
-  muan::units::Seconds Reset();
-  muan::units::Seconds Get();
+  muan::units::Time Reset();
+  muan::units::Time Get();
 
  private:
-  muan::units::Seconds start_;
+  muan::units::Time start_;
 };
 }
 

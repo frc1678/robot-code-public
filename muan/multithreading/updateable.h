@@ -17,19 +17,19 @@ namespace muan {
 
 /*
  * A base class for an object that runs in a separate thread at a constant rate.
- * To use, implement the Update(Seconds dt) method.
+ * To use, implement the Update(Time dt) method.
  */
 class Updateable {
  public:
-  explicit Updateable(muan::units::Seconds tick_rate);
+  explicit Updateable(muan::units::Time tick_rate);
   ~Updateable();
-  virtual void Update(muan::units::Seconds dt) = 0;
+  virtual void Update(muan::units::Time dt) = 0;
   void Start();
   void Stop();
 
  private:
   void RunForever();
-  muan::units::Seconds loop_time;
+  muan::units::Time loop_time;
 
   std::thread main_;
   volatile std::atomic<bool> running_{false};

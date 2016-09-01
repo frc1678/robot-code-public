@@ -23,7 +23,7 @@ class AverageFilterPidController : public PidController {
       : PidController<InputType, OutputType>(gains), hist_(.005 * s) {}
 
  protected:
-  double CalculateDerivative(Seconds dt, InputType error) {
+  double CalculateDerivative(Time dt, InputType error) {
     double current_derivative_ = PidController::CalculateDerivative(dt, error);
     double total = 0;
     for (double d : hist_) {

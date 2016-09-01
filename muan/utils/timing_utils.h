@@ -8,9 +8,9 @@
 
 namespace muan {
 
-void sleep_for(muan::units::Seconds t);
-muan::units::Seconds now();
-void sleep_until(muan::units::Seconds t);
+void sleep_for(muan::units::Time t);
+muan::units::Time now();
+void sleep_until(muan::units::Time t);
 }
 
 #endif  // MUAN_UTILS_TIMING_UTILS_H_

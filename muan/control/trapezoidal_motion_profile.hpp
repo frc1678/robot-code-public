@@ -17,11 +17,11 @@ TrapezoidalMotionProfile::TrapezoidalMotionProfile(
   // Deal with a possibly truncated motion profile (with nonzero initial or
   // final velocity) by calculating the parameters as if the profile began and
   // ended at zero velocity
-  Seconds cutoff_begin = initial_.velocity / constraints_.max_acceleration;
+  Time cutoff_begin = initial_.velocity / constraints_.max_acceleration;
   double cutoff_dist_begin =
       cutoff_begin * cutoff_begin * constraints_.max_acceleration / 2.0;
 
-  Seconds cutoff_end = goal_.velocity / constraints_.max_acceleration;
+  Time cutoff_end = goal_.velocity / constraints_.max_acceleration;
   double cutoff_dist_end =
       cutoff_end * cutoff_end * constraints_.max_acceleration / 2.0;
 
@@ -51,7 +51,7 @@ TrapezoidalMotionProfile::TrapezoidalMotionProfile(
   }
 }
 
-MotionProfilePosition TrapezoidalMotionProfile::Calculate(Seconds t) const {
+MotionProfilePosition TrapezoidalMotionProfile::Calculate(Time t) const {
   MotionProfilePosition result = initial_;
 
   if (t < end_accel_) {
@@ -67,7 +67,7 @@ MotionProfilePosition TrapezoidalMotionProfile::Calculate(Seconds t) const {
   } else if (t <= end_deccel_) {
     result.velocity =
         goal_.velocity + (end_deccel_ - t) * constraints_.max_acceleration;
-    Seconds time_left = end_deccel_ - t;
+    Time time_left = end_deccel_ - t;
     result.position =
         goal_.position -
         (goal_.velocity + time_left * constraints_.max_acceleration / 2.0) *

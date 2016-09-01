@@ -39,9 +39,9 @@ class TrapezoidalMotionProfile : public MotionProfile {
 
   // Calculate the correct position and velocity for the profile at a time t
   // where the beginning of the profile was at time t=0
-  MotionProfilePosition Calculate(Seconds t) const override;
+  MotionProfilePosition Calculate(Time t) const override;
 
-  Seconds total_time() const override { return end_deccel_; }
+  Time total_time() const override { return end_deccel_; }
 
   MotionProfileConstraints& constraints() { return constraints_; }
 
@@ -58,7 +58,7 @@ class TrapezoidalMotionProfile : public MotionProfile {
 
     double distance_change = goal.position - initial.position;
 
-    Seconds t = muan::abs(velocity_change) / constraints.max_acceleration;
+    Time t = muan::abs(velocity_change) / constraints.max_acceleration;
     bool is_acceleration_flipped =
         t * (velocity_change / 2 + initial.velocity) > distance_change;
     return is_acceleration_flipped;
@@ -78,7 +78,7 @@ class TrapezoidalMotionProfile : public MotionProfile {
   MotionProfileConstraints constraints_;
   MotionProfilePosition initial_, goal_;
 
-  Seconds end_accel_, end_full_speed_, end_deccel_;
+  Time end_accel_, end_full_speed_, end_deccel_;
 };
 
 } /* control */

@@ -24,7 +24,7 @@ class PidController {
   PidController(const PidGains& gains)
       : PidController(gains.kP, gains.kI, gains.kD) {}
 
-  double Calculate(muan::units::Seconds dt, double error) {
+  double Calculate(muan::units::Time dt, double error) {
     return error * kP + CalculateIntegral(dt, error) * kI +
            (last_derivative_ = CalculateDerivative(dt, error)) * kD;
   }
@@ -49,13 +49,13 @@ class PidController {
   double GetDerivative() { return last_derivative_; }
 
  protected:
-  double CalculateDerivative(muan::units::Seconds dt, double error) {
+  double CalculateDerivative(muan::units::Time dt, double error) {
     auto ret = (error - last_proportional_) / dt;
     last_proportional_ = error;
     return ret;
   }
 
-  double CalculateIntegral(muan::units::Seconds dt, double error) {
+  double CalculateIntegral(muan::units::Time dt, double error) {
     integral_ += error * dt;
     return integral_;
   }

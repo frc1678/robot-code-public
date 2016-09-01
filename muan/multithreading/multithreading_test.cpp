@@ -18,7 +18,7 @@ class TestUpdateable : public Updateable, public testing::Test {
 
   void TearDown() {}
 
-  void Update(muan::units::Seconds dt) override {
+  void Update(muan::units::Time dt) override {
     if (_x > 0) _x--;
   }
   int _x = 100;

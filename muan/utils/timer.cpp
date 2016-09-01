@@ -7,12 +7,12 @@ Timer::Timer() { Start(); }
 
 void Timer::Start() { start_ = now(); }
 
-muan::units::Seconds Timer::Reset() {
+muan::units::Time Timer::Reset() {
   using namespace muan::units;
-  Seconds n = now();
+  Time n = now();
   std::swap(start_, n);
   return start_ - n;
 }
 
-muan::units::Seconds Timer::Get() { return now() - start_; }
+muan::units::Time Timer::Get() { return now() - start_; }
 }
