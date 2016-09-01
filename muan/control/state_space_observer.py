@@ -17,16 +17,16 @@ class StateSpaceObserver(object):
         if not isinstance(gains, list):
             gains = [gains]
         self.gains = gains
-        self.current_gains = 0
+        self.current_gains_idx = 0
 
         assert len(self.gains) > 0, "Must have at least one set of gains."
 
-    def set_gains(self, gains):
-        assert gains < len(self.gains), "Gains id must be in range."
-        self.current_gains = gains
+    def set_gains(self, gains_idx):
+        assert gains_idx < len(self.gains), "Gains id must be in range."
+        self.current_gains_idx = gains_idx
 
     def update(self, y, u):
-        gains = self.gains[self.current_gains]
+        gains = self.gains[self.current_gains_idx]
 
         self.x_hat = gains.A * self.x_hat +            \
                      gains.B * u +                     \
