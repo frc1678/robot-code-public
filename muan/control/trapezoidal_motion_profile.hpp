@@ -39,10 +39,10 @@ TrapezoidalMotionProfile::TrapezoidalMotionProfile(
         acceleration_time * acceleration_time * constraints_.max_acceleration;
 
     // Handle the case where the profile never reaches full speed
-    if (full_speed_dist < 0.0) {
+    if (full_speed_dist < 0.0 * m) {
       acceleration_time =
           std::sqrt(full_trapezoid_dist / constraints_.max_acceleration) * s;
-      full_speed_dist = 0.0;
+      full_speed_dist = 0.0 * m;
     }
 
     end_accel_ = acceleration_time - cutoff_begin;
