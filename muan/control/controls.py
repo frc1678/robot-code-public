@@ -296,3 +296,26 @@ def ckalman(A, C, Q, R):
     P = numpy.asmatrix(scipy.linalg.solve_continuous_are(A.T, C.T, Q, R))
 
     return numpy.asmatrix(P * C.T * numpy.linalg.inv(R))
+
+def feedforwards(A, B, Q = None):
+    """
+    The formula for Kff can be derived as follows:
+        r(n+1) = A*r(n) + B*u_ff
+        B*u_ff = r(n+1) - A*r(n)
+        u_ff = pinv(B)*(r(n+1) - A*r(n))
+        Kff = pinv(B)
+        u_ff = Kff*(r(n+1) - A*r(n))
+    There is also an LQR-weighted solution, but it gives the same u_ff assuming
+    that there is some u_ff that satisfies the equation above.
+
+    Args:
+        A: n*n discrete-time system dynamics matrix
+        B: n*m discrete-time control signal matrix
+        Q: n*n LQR feedforwards weight matrix (optional)
+    Returns:
+        Kff: m*n feedforwards matrix such that u_ff = Kff * (r(n+1) - A*r(n))
+    """
+    if Q is None:
+        return numpy.linalg.pinv(B)
+    else:
+        return numpy.linalg.inv(B.T * Q * B) * B * Q

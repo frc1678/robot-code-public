@@ -12,6 +12,13 @@ py_library(
   ],
 )
 
+py_binary(
+  name = 'python_controls_demo',
+  srcs = ['state_space_demo.py'],
+  main = 'state_space_demo.py',
+  deps = [':python_controls']
+)
+
 cc_library(
   name = 'pid_controller',
   hdrs = [
