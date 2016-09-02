@@ -3,14 +3,14 @@ package(default_visibility = ['//visibility:public'])
 cc_library(
   name = 'math_utils',
   hdrs = ['math_utils.h'],
-  deps = ['//third_party/unitscpp', '//third_party/eigen'],
+  deps = ['//muan/units:units', '//third_party/eigen'],
   linkstatic = 1
 )
 
 cc_library(
   name = 'history',
   hdrs = ['history.h'],
-  deps = ["//third_party/unitscpp"],
+  deps = ["//muan/units:units"],
   linkstatic = 1
 )
 
@@ -24,7 +24,7 @@ cc_library(
     'timing_utils.cpp',
     'timer.cpp'
   ],
-  deps = ["//third_party/unitscpp"]
+  deps = ["//muan/units:units"]
 )
 
 cc_test(

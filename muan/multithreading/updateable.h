@@ -9,7 +9,7 @@
 #ifndef MUAN_MULTITHREADING_UPDATEABLE_H_
 #define MUAN_MULTITHREADING_UPDATEABLE_H_
 
-#include "third_party/unitscpp/unitscpp.h"
+#include "muan/units/units.h"
 #include <atomic>
 #include <thread>
 
@@ -21,15 +21,15 @@ namespace muan {
  */
 class Updateable {
  public:
-  explicit Updateable(Frequency tick_rate);
+  explicit Updateable(muan::units::Time tick_rate);
   ~Updateable();
-  virtual void Update(Time dt) = 0;
+  virtual void Update(muan::units::Time dt) = 0;
   void Start();
   void Stop();
 
  private:
   void RunForever();
-  Time loop_time;
+  muan::units::Time loop_time;
 
   std::thread main_;
   volatile std::atomic<bool> running_{false};

@@ -13,10 +13,11 @@
 
 namespace muan {
 
-Updateable::Updateable(Frequency tick_rate) : loop_time(1.0 / tick_rate) {}
+Updateable::Updateable(muan::units::Time tick_rate)
+    : loop_time(1.0 / tick_rate) {}
 
 void Updateable::RunForever() {
-  Time until = now() + loop_time;
+  muan::units::Time until = now() + loop_time;
   while (this->running_) {
     // Capture the current time, adding 5 milliseconds to ensure exact timing
     Update(loop_time);
