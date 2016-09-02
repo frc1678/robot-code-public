@@ -5,6 +5,8 @@ py_library(
   srcs = [
     'controls.py',
     'state_space_controller.py',
+    'state_space_gains.py',
+    'state_space_writer.py',
     'state_space_observer.py',
     'state_space_plant.py',
     'state_space_scenario.py',

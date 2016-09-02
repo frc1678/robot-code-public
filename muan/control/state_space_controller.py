@@ -2,7 +2,6 @@
 
 import numpy as np
 import controls
-import matplotlib.pyplot as plt
 
 """
 A state-space controller class with support for feedforward control.
@@ -11,8 +10,12 @@ __author__ = 'Kyle Stachowicz (kylestach99@gmail.com)'
 
 class StateSpaceController(object):
     def __init__(self, gains, u_min, u_max):
-        self.u_min = np.asmatrix(u_min or np.full(plant.x.shape, -np.inf))
-        self.u_max = np.asmatrix(u_max or -u_min)
+        if u_min is None:
+            u_min = np.asmatrix(np.full(plant.x.shape, -np.inf))
+        if u_max is None:
+            u_max = np.asmatrix(-u_min)
+        self.u_min = u_min
+        self.u_max = u_max
 
         if not isinstance(gains, list):
             gains = [gains]
