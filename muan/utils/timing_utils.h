@@ -11,6 +11,7 @@ namespace muan {
 void sleep_for(Time t);
 Time now();
 void sleep_until(Time t);
-}
 
-#endif  // MUAN_UTILS_TIMING_UTILS_H_
+}  // namespace muan
+
+#endif /* MUAN_UTILS_TIMING_UTILS_H_ */

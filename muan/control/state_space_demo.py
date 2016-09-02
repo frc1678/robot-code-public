@@ -2,89 +2,58 @@
 
 import numpy as np
 import math
-import state_space_controller
-from state_space_plant import state_space_plant
-import state_space_observer
-from state_space_scenario import state_space_scenario
-import error_u
-from trapezoidal_profile import trapezoidal_profile
+
+import controls
+from state_space_gains import *
+from state_space_plant import *
+from state_space_controller import *
+from state_space_observer import *
+
+from state_space_scenario import StateSpaceScenario
+from trapezoidal_profile import TrapezoidalMotionProfile
 
 # Simple linear second-order system
-
 A = np.asmatrix([[0, 1],
                  [0, -1]])
 B = np.asmatrix([0, 1]).T
 C = np.asmatrix([1, 0])
+D = np.asmatrix([0])
 dt = .01
 
 x_initial = np.asmatrix([0, 0]).T
 
+# Controller weighting factors
 Q_c = np.asmatrix([[10, 0],
                    [0, 100]])
 R_c = np.asmatrix([[1]])
 
-Q_o = np.asmatrix([
-    [1, 0],
-    [0, 1]
-])
+# Noise properties
+Q_o = np.asmatrix([[1, 0],
+                   [0, 1]])
+R_o = np.asmatrix([[0.3]])
 
-R_o = np.asmatrix([
-    [0.3]
-])
+# Calculate gain matrices and discrete-time matrices
+A_d, B_d, Q_d, R_d = controls.c2d(A, B, dt, Q_o, R_o)
+K = controls.clqr(A, B, Q_c, R_c)
+Kff = controls.feedforwards(A_d, B_d)
+L = controls.dkalman(A_d, C, Q_d, R_d)
+
+# Create a single set of gains
+gains = StateSpaceGains('test_gains', dt, A_d, B_d, C, D, Q_d, R_o, K, Kff, L)
 
 u_max = np.asmatrix([[12]])
 
-plant = state_space_plant(dt, x_initial, A, B, C, Q = Q_o, R = R_o)
-controller = state_space_controller.lqr(plant, Q = Q_c, R = R_c, u_min = -u_max, u_max = u_max)
-observer = state_space_observer.kalman(plant)
+plant = StateSpacePlant(gains, x_initial)
+controller = StateSpaceController(gains, -u_max, u_max)
+observer = StateSpaceObserver(gains, x_initial)
 
-scenario = state_space_scenario(plant, x_initial, controller, observer, x_initial, 'test')
+# Create and run the scenario
+scenario = StateSpaceScenario(plant, x_initial, controller, observer, x_initial, 'test_controller')
 
-profile = trapezoidal_profile(10, 5, 5)
+profile = TrapezoidalMotionProfile(10, 5, 5)
 
 def goal(t):
     return np.asmatrix([profile.distance(t), profile.velocity(t)]).T
 
 scenario.run(goal, profile.total_time)
-scenario.write('test.h', 'test.cpp')
-
-# Nonlinear system with error-u controller
-
-class nonlinear_plant(state_space_plant):
-    def __init__(self, x_initial):
-        A = np.asmatrix([[0, 1, 0],
-                         [0, -1, 1],
-                         [0, 0, 0]])
-        B = np.asmatrix([0, 1, 0]).T
-        C = np.asmatrix([1, 0, 0])
-
-        state_space_plant.__init__(self, .01, x_initial, A, B, C)
-
-    def update(self, u):
-        self.x[2] = 3 * math.cos(self.x[0])
-        state_space_plant.update(self, u)
-
-Q_nl = np.asmatrix([[1e-4, 0, 0],
-                    [0, 1e-5, 0],
-                    [0, 0, 4e7]])
-R_nl = np.asmatrix([[1e-2]])
-
-x_initial_nl = np.asmatrix([0, 0, 0]).T
-plant_nl = nonlinear_plant(x_initial_nl)
-
-Au = np.asmatrix([[0, 1],
-                 [0, -1]])
-Bu = np.asmatrix([0, 1]).T
-Cu = np.asmatrix([1, 0])
-plant_lin = state_space_plant(.01, x_initial_nl[0:2, 0], Au, Bu, Cu)
-controller_nl = error_u.error_u_controller_poles(plant_lin, [.97, .98], -u_max, u_max)
-observer_nl = error_u.error_u_kalman(plant_lin, Q_c = Q_nl, R_c = R_nl)
-
-scenario = state_space_scenario(plant_nl, x_initial_nl, controller_nl, observer_nl, x_initial_nl, 'test')
-
-profile = trapezoidal_profile(10, 5, 5)
-
-def goal_nl(t):
-    return np.asmatrix([profile.distance(t), profile.velocity(t), 0]).T
-
-scenario.run(goal_nl, profile.total_time)
+scenario.write('/tmp/test.h', '/tmp/test.cpp')

@@ -26,7 +26,7 @@ class PidController {
   PidController(ProportionalConstant kP, IntegralConstant kI,
                 DerivativeConstant kD)
       : kP(kP), kI(kI), kD(kD), integral_(0), last_proportional_(0) {}
-  PidController(const PidGains& gains)
+  explicit PidController(const PidGains& gains)
       : PidController(gains.kP, gains.kI, gains.kD) {}
 
   OutputType Calculate(Time dt, InputType error) {
@@ -72,6 +72,7 @@ class PidController {
   InputType last_proportional_;
   typename std::remove_cv<decltype(InputType(0) / s)>::type last_derivative_;
 };
-}
+
+}  // namespace muan
 
 #endif

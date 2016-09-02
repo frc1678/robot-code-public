@@ -3,7 +3,11 @@
 #include "muan/utils/timing_utils.h"
 #include "gtest/gtest.h"
 
-using namespace muan;
+using muan::Timer;
+using muan::History;
+using muan::sleep_until;
+using muan::sleep_for;
+using muan::now;
 
 TEST(TimeUtils, TimerPositive) {
   Timer t;

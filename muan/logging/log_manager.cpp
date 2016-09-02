@@ -63,4 +63,5 @@ LogManager::~LogManager() {
     delete pair.second;
   }
 }
-}
+
+}  // namespace muan

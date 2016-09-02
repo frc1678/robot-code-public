@@ -7,24 +7,23 @@
  */
 
 #include "log.h"
-#include <sys/time.h>
-#include <sys/stat.h>
+#include "log_manager.h"
 #include <ctime>
 #include <string>
-#include "log_manager.h"
+#include <sys/stat.h>
+#include <sys/time.h>
 
 namespace muan {
 
-std::string Log::folder_path_ = "/home/lvuser/logs/" + Log::GetDateString() + "/";
+std::string Log::folder_path_ =
+    "/home/lvuser/logs/" + Log::GetDateString() + "/";
 std::once_flag Log::folder_created_;
 
 Log::Log(std::string name, std::string extension) {
   mkdir("/home/lvuser/logs/", 0777);
 
   name_ = name;
-  std::call_once(folder_created_, [=]() {
-    mkdir(folder_path_.c_str(), 0777);
-  });
+  std::call_once(folder_created_, [=]() { mkdir(folder_path_.c_str(), 0777); });
 
   std::string file_path = folder_path_ + name_ + "." + extension;
 
@@ -43,8 +42,8 @@ std::string Log::GetDateString() {
   char buffer[80];
   time(&rawtime);
   timeinfo = localtime(&rawtime);
-  strftime(buffer, 80, "%Y-%m-%d_%H-%M-%S", timeinfo);
-  return buffer;
+  strftime(static_cast<char*>(buffer), 80, "%Y-%m-%d_%H-%M-%S", timeinfo);
+  return static_cast<char*>(buffer);
 }
 
 /**
@@ -56,9 +55,10 @@ std::string Log::GetTimeString() {
   char buffer[80];
   time(&rawtime);
   timeinfo = localtime(&rawtime);
-  strftime(buffer, 80, "%H-%M-%S", timeinfo);
-  return buffer;
+  strftime(static_cast<char*>(buffer), 80, "%H-%M-%S", timeinfo);
+  return std::string(static_cast<char*>(buffer));
 }
 
 const std::string& Log::GetName() const { return name_; }
-}
+
+}  // namespace muan

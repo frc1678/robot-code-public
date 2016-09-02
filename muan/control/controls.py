@@ -17,7 +17,7 @@ Inspired by 971's control helpers library
 """
 __author__ = 'Kyle Stachowicz (kylestach99@gmail.com)'
 
-def _validate_system(A, B, C, D, Q, R):
+def _validate_system(A, B, C, D):
     if A is not None:
         A = numpy.asmatrix(A)
     if B is not None:
@@ -26,49 +26,18 @@ def _validate_system(A, B, C, D, Q, R):
         C = numpy.asmatrix(C)
     if D is not None:
         D = numpy.asmatrix(D)
-    if Q is not None:
-        Q = numpy.asmatrix(Q)
-    if R is not None:
-        R = numpy.asmatrix(R)
 
-    if A is None:
-        raise ValueError("A must not be None")
+    assert A is not None and A.shape[0] == A.shape[1], "A must be square"
 
-    if A.shape[0] != A.shape[1]:
-        raise ValueError("A must be square")
+    if B is not None:
+        assert B.shape[0] == A.shape[0], "A.shape %s and B.shape %s must be compatible" % (A.shape, B.shape)
 
-    if B is not None and B.shape[0] != A.shape[0]:
-        raise ValueError("B must be compatible with A")
-
-    if C is not None and C.shape[1] != A.shape[0]:
-        raise ValueError("C must be compatible with A")
+    if C is not None:
+        assert C.shape[1] == A.shape[0], "A.shape %s and C.shape %s must be compatible" % (A.shape, C.shape)
 
     if B is not None and C is not None and D is not None:
-        if D.shape[0] != C.shape[0]:
-            raise ValueError("D must be compatible with C")
-
-        if D.shape[1] != B.shape[1]:
-            raise ValueError("D must be compatible with B")
-
-    if Q is not None:
-        if Q.shape[0] != Q.shape[1]:
-            raise ValueError("Q must be square")
-
-        if Q.shape[0] != A.shape[0]:
-            raise ValueError("Q must be compatible with A")
-
-    if R is not None:
-        if R.shape[0] != R.shape[1]:
-            raise ValueError("R must be square!")
-
-        if B is not None:
-            if R.shape[0] != B.shape[1]:
-                raise ValueError("R must be compatible with B if B is defined")
-        elif C is not None:
-            if R.shape[0] != C.shape[0]:
-                raise ValueError("R must be compatible with C if C is defined")
-        else:
-            raise ValueError("R must not be defined if neither B or C is defined")
+        assert D.shape[0] == C.shape[0], "C.shape %s and D.shape %s must be compatible" % (C.shape, D.shape)
+        assert D.shape[1] == B.shape[1], "B.shape %s and D.shape %s must be compatible" % (B.shape, D.shape)
 
 def place(A, B, poles):
     """
@@ -89,11 +58,10 @@ def place(A, B, poles):
     """
     A = numpy.asmatrix(A)
     B = numpy.asmatrix(B)
-    _validate_system(A, B, None, None, None, None)
-    if len(poles) != A.shape[0]:
-        raise ValueError("Must be the same number of poles and states")
-    if numpy.linalg.matrix_rank(controllability(A, B)) != A.shape[0]:
-        raise ValueError("System must be completely controllable to perform pole placement")
+    _validate_system(A, B, None, None)
+
+    assert len(poles) == A.shape[0], "The number of poles (%i) must be equal to the rank of the system (%i)." % (len(poles), A.shape[0])
+    assert numpy.linalg.matrix_rank(controllability(A, B)) == A.shape[0], "System must be completely controllable to do pole placement."
 
     result = scipy.signal.place_poles(A, B, poles)
 
@@ -117,7 +85,7 @@ def controllability(A, B):
     """
     A = numpy.asmatrix(A)
     B = numpy.asmatrix(B)
-    _validate_system(A, B, None, None, None, None)
+    _validate_system(A, B, None, None)
 
     n = A.shape[0]
     m = B.shape[1]
@@ -147,7 +115,7 @@ def observability(A, C):
     """
     A = numpy.asmatrix(A)
     C = numpy.asmatrix(C)
-    _validate_system(A, None, C, None, None, None)
+    _validate_system(A, None, C, None)
 
     n = A.shape[0]
     q = C.shape[0]
@@ -176,15 +144,10 @@ def c2d(A, B, dt, Q = None, R = None):
         Q_d: n*n discrete-time process noise covariance matrix (None if no Q given)
         R_d: q*q discrete-time measurement noise covariance matrix (None if no R given)
     """
+    _validate_system(A, B, None, None)
+
     A = numpy.asmatrix(A)
     B = numpy.asmatrix(B)
-
-    if Q is not None:
-        Q = numpy.asmatrix(Q)
-    if R is not None:
-        R = numpy.asmatrix(R)
-
-    _validate_system(A, B, None, None, Q, None)
 
     n = A.shape[0]
     m = B.shape[1]
@@ -197,7 +160,14 @@ def c2d(A, B, dt, Q = None, R = None):
     B_d = G[:n, n:n+m]
 
     Q_d = R_d = None
-    if Q is not None:
+
+    if Q is not None and R is not None:
+        Q = numpy.asmatrix(Q)
+        R = numpy.asmatrix(R)
+
+        assert Q.shape == A.shape, "The dimensions of Q %s must match those of A %s, and Q must be square" % (Q.shape, A.shape)
+        assert R.shape[0] == R.shape[1], "R must be square but is instead %ix%i, and R must be square" % (R.shape[0], R.shape[1])
+
         H = numpy.asmatrix(numpy.zeros((n+n, n+n)))
         H[:n, :n] = -A
         H[n:n+n, n:n+n] = A
@@ -205,10 +175,7 @@ def c2d(A, B, dt, Q = None, R = None):
         I = numpy.asmatrix(scipy.linalg.expm(H * dt))
 
         Q_d = numpy.asmatrix(I[n:n+n, n:n+n].T * I[:n, n:n+n])
-    if R is not None:
         R_d = numpy.asmatrix(R / dt)
-
-    if Q is not None or R is not None:
         return (A_d, B_d, Q_d, R_d)
     else:
         return (A_d, B_d)
@@ -229,9 +196,13 @@ def dlqr(A, B, Q, R):
     B = numpy.asmatrix(B)
     Q = numpy.asmatrix(Q)
     R = numpy.asmatrix(R)
-    _validate_system(A, B, None, None, Q, R)
-    if numpy.linalg.matrix_rank(controllability(A, B)) != A.shape[0]:
-        raise ValueError("System must be completely controllable to perform LQR")
+
+    _validate_system(A, B, None, None)
+    assert Q.shape[0] == Q.shape[1] and Q.shape[0] == A.shape[0], "The dimensions of Q %s must match those of A %s, and Q must be square" % (Q.shape, A.shape)
+    assert R.shape[0] == R.shape[1] and R.shape[0] == B.shape[1], "R %i must be square and must be compatible with B %i, and R must be square" % (R.shape, B.shape)
+
+    assert numpy.linalg.matrix_rank(controllability(A, B)) == A.shape[0], "System must be completely controllable to do LQR."
+
     # TODO(Kyle): Ensure Q is positive-semidefninite and R is positive-definite
 
     # Solve the ARE for the cost-to-go matrix
@@ -256,9 +227,13 @@ def clqr(A, B, Q, R):
     B = numpy.asmatrix(B)
     Q = numpy.asmatrix(Q)
     R = numpy.asmatrix(R)
-    _validate_system(A, B, None, None, Q, R)
-    if numpy.linalg.matrix_rank(controllability(A, B)) != A.shape[0]:
-        raise ValueError("System must be completely controllable to perform LQR")
+
+    _validate_system(A, B, None, None)
+    assert Q.shape[0] == Q.shape[1] and Q.shape[0] == A.shape[0], "The dimensions of Q %s must match those of A %s, and Q must be square" % (Q.shape, A.shape)
+    assert R.shape[0] == R.shape[1] and R.shape[0] == B.shape[1], "R %i must be square and must be compatible with B %i, and R must be square" % (R.shape, B.shape)
+
+    assert numpy.linalg.matrix_rank(controllability(A, B)) == A.shape[0], "System must be completely controllable to do LQR."
+
     # TODO(Kyle): Ensure Q is positive-semidefninite and R is positive-definite
 
     # Solve the ARE for the cost-to-go matrix
@@ -283,9 +258,12 @@ def dkalman(A, C, Q, R):
     C = numpy.asmatrix(C)
     Q = numpy.asmatrix(Q)
     R = numpy.asmatrix(R)
-    _validate_system(A, None, C, None, Q, R)
-    if numpy.linalg.matrix_rank(observability(A, C)) != A.shape[0]:
-        raise ValueError("System must be completely observable to compute a Kalman filter")
+    _validate_system(A, None, C, None)
+
+    assert Q.shape[0] == Q.shape[1] and Q.shape[0] == A.shape[0], "The dimensions of Q %s must match those of A %s" % (Q.shape, A.shape)
+    assert R.shape[0] == R.shape[1] and R.shape[0] == C.shape[0], "R %i must be square and must be compatible with C %i" % (R.shape, B.shape)
+
+    assert numpy.linalg.matrix_rank(observability(A, C)) == A.shape[0], "System must be completely observable to compute Kalman gains."
 
     P = numpy.asmatrix(scipy.linalg.solve_discrete_are(A.T, C.T, Q, R))
 
@@ -308,10 +286,36 @@ def ckalman(A, C, Q, R):
     C = numpy.asmatrix(C)
     Q = numpy.asmatrix(Q)
     R = numpy.asmatrix(R)
-    _validate_system(A, None, C, None, Q, R)
-    if numpy.linalg.matrix_rank(observability(A, C)) != A.shape[0]:
-        raise ValueError("System must be completely observable to compute a Kalman filter")
+    _validate_system(A, None, C, None)
+
+    assert Q.shape[0] == Q.shape[1] and Q.shape[0] == A.shape[0], "The dimensions of Q %s must match those of A %s, and Q must be square" % (Q.shape, A.shape)
+    assert R.shape[0] == R.shape[1] and R.shape[0] == C.shape[0], "R %i must be square and must be compatible with C %i, and R must be square" % (R.shape, B.shape)
+
+    assert numpy.linalg.matrix_rank(observability(A, C)) == A.shape[0], "System must be completely observable to compute Kalman gains."
 
     P = numpy.asmatrix(scipy.linalg.solve_continuous_are(A.T, C.T, Q, R))
 
     return numpy.asmatrix(P * C.T * numpy.linalg.inv(R))
+
+def feedforwards(A, B, Q = None):
+    """
+    The formula for Kff can be derived as follows:
+        r(n+1) = A*r(n) + B*u_ff
+        B*u_ff = r(n+1) - A*r(n)
+        u_ff = pinv(B)*(r(n+1) - A*r(n))
+        Kff = pinv(B)
+        u_ff = Kff*(r(n+1) - A*r(n))
+    There is also an LQR-weighted solution, but it gives the same u_ff assuming
+    that there is some u_ff that satisfies the equation above.
+
+    Args:
+        A: n*n discrete-time system dynamics matrix
+        B: n*m discrete-time control signal matrix
+        Q: n*n LQR feedforwards weight matrix (optional)
+    Returns:
+        Kff: m*n feedforwards matrix such that u_ff = Kff * (r(n+1) - A*r(n))
+    """
+    if Q is None:
+        return numpy.linalg.pinv(B)
+    else:
+        return numpy.linalg.inv(B.T * Q * B) * B * Q

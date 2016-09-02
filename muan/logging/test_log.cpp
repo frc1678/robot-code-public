@@ -7,15 +7,16 @@
  */
 
 #include "test_log.h"
+#include "log_manager.h"
 #include <string>
 #include <vector>
-#include "log_manager.h"
 
 namespace muan {
 
-TestLog::TestLog(std::string filename, std::vector<std::string> keys)
-    : Log(filename, GetExtension()) {
-  if (file_.is_open()) file_.close();
+TestLog::TestLog(std::string filename) : Log(filename, GetExtension()) {
+  if (file_.is_open()) {
+    file_.close();
+  }
   folder_path_ = "./logs/tests/";
   file_.open(folder_path_ + name_ + ".csv");
 }
@@ -24,9 +25,9 @@ TestLog::TestLog(std::string filename, std::vector<std::string> keys)
  * Write a value to a key in the test log for the current test.
  */
 void TestLog::Write(std::string key, std::string value) {
-  for (auto entry = entries_.begin(); entry != entries_.end(); entry++) {
-    if (entry->first == key) {
-      entry->second = value;
+  for (auto& entry : entries_) {
+    if (entry.first == key) {
+      entry.second = value;
     }
   }
 }
@@ -60,22 +61,12 @@ void TestLog::FlushToFile() {
 
 std::string TestLog::GetExtension() const { return "csv"; }
 
-/**
- * Save the log to the disk.
- */
-void TestLog::WriteToLog(std::string log, std::string key, std::string value) {
-  reinterpret_cast<TestLog *>(LogManager::GetInstance()->GetLog(key))
-      ->Write(key, value);
-}
-
-std::string &TestLog::operator[](std::string key) {
-  for (auto it = entries_.begin(); it != entries_.end(); it++) {
-    if (it->first == key) {
-      return it->second;
+std::string& TestLog::operator[](std::string key) {
+  for (auto& entry : entries_) {
+    if (entry.first == key) {
+      return entry.second;
     }
   }
   return entries_.begin()->second;
 }
-
-TestLog::~TestLog() {}
-}
+}  // namespace muan

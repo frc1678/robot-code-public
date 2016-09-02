@@ -33,7 +33,9 @@ Eigen::Matrix<double, A, B> CapMatrix(const Eigen::Matrix<double, A, B>& val,
 
 template <class T>
 T abs(T val) {
-  if (val < 0) val = -val;
+  if (val < 0) {
+    val = -val;
+  }
   return val;
 }
 
@@ -43,6 +45,6 @@ using TimeDerivative = std::remove_cv_t<decltype(T{0} / s)>;
 template <typename T>
 using TimeDerivative2 = std::remove_cv_t<decltype(T{0} / s / s)>;
 
-} /* muan */
+}  // namespace muan
 
-#endif
+#endif /* MUAN_UTILS_MATH_UTILS_H_ */

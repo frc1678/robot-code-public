@@ -7,17 +7,19 @@ class HallCalibrationTest : public ::testing::Test {
   // Update the calibration assuming sensors are at the same position
   void UpdateTest(double position) {
     // The magnet's range is 100 to 200 exclusive
-    if (position > 100 && position < 200)
+    if (position > 100 && position < 200) {
       calibration_.Update(position, true);
-    else
+    } else {
       calibration_.Update(position, false);
+    }
   }
   // Update the calibration allowing for sensors being at different positions
   void UpdateTest(double main_sensor_position, double hall_sensor_position) {
-    if (hall_sensor_position > 100 && hall_sensor_position < 200)
+    if (hall_sensor_position > 100 && hall_sensor_position < 200) {
       calibration_.Update(main_sensor_position, true);
-    else
+    } else {
       calibration_.Update(main_sensor_position, false);
+    }
   }
   bool is_calibrated() { return calibration_.is_calibrated(); }
   // Get the offsetted value from a raw sensor value

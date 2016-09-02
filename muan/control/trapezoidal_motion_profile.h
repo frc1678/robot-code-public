@@ -37,7 +37,7 @@ class TrapezoidalMotionProfile : public MotionProfile<DistanceType> {
                            MotionProfilePosition<DistanceType> goal,
                            MotionProfilePosition<DistanceType> initial);
 
-  virtual ~TrapezoidalMotionProfile() = default;
+  ~TrapezoidalMotionProfile() override = default;
 
   // Calculate the correct position and velocity for the profile at a time t
   // where the beginning of the profile was at time t=0
@@ -86,9 +86,9 @@ class TrapezoidalMotionProfile : public MotionProfile<DistanceType> {
   Time end_accel_, end_full_speed_, end_deccel_;
 };
 
-} /* control */
+}  // namespace control
 
-} /* muan */
+}  // namespace muan
 
 #include "trapezoidal_motion_profile.hpp"
 

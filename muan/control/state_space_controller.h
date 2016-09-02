@@ -29,13 +29,14 @@ class StateSpaceController {
 
   // Initializes from a feedback gain and optional control signal constraints,
   // ignoring feedforward control.
-  StateSpaceController(const Eigen::Matrix<double, kNumInputs, kNumStates>& K,
-                       const Eigen::Matrix<double, kNumInputs, 1>& u_min =
-                           Eigen::Matrix<double, kNumInputs, 1>::Constant(
-                               -std::numeric_limits<double>::infinity()),
-                       const Eigen::Matrix<double, kNumInputs, 1>& u_max =
-                           Eigen::Matrix<double, kNumInputs, 1>::Constant(
-                               std::numeric_limits<double>::infinity()));
+  explicit StateSpaceController(
+      const Eigen::Matrix<double, kNumInputs, kNumStates>& K,
+      const Eigen::Matrix<double, kNumInputs, 1>& u_min =
+          Eigen::Matrix<double, kNumInputs, 1>::Constant(
+              -std::numeric_limits<double>::infinity()),
+      const Eigen::Matrix<double, kNumInputs, 1>& u_max =
+          Eigen::Matrix<double, kNumInputs, 1>::Constant(
+              std::numeric_limits<double>::infinity()));
 
   // Initializes from all relevant matrices, using both feedforward and
   // feedback. A should be a discrete-time system matrix.
@@ -49,7 +50,7 @@ class StateSpaceController {
                            Eigen::Matrix<double, kNumInputs, 1>::Constant(
                                std::numeric_limits<double>::infinity()));
 
-  virtual ~StateSpaceController();
+  virtual ~StateSpaceController() = default;
 
   // Calculates the control signal with a possibly time-variant goal. Uses r as
   // the new goal state, calculating feedforward signal to move from the prior
@@ -105,9 +106,9 @@ class StateSpaceController {
   Eigen::Matrix<double, kNumInputs, 1> u_min_, u_max_;
 };
 
-} /* control */
+}  // namespace control
 
-} /* muan */
+}  // namespace muan
 
 #include "state_space_controller.hpp"
 

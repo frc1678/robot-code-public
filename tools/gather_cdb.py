@@ -23,7 +23,6 @@ with open(sys.argv[1]) as in_proto:
     cpp_compile_info = compile_info.Extensions[extra_actions.CppCompileInfo.cpp_compile_info]
 
     descriptors = []
-    for source in cpp_compile_info.sources_and_headers:
-        descriptors.append(cppinfo_to_json(source, cpp_compile_info))
+    descriptors.append(cppinfo_to_json(cpp_compile_info.source_file, cpp_compile_info))
     with open(sys.argv[2], 'w') as out_json:
         out_json.write(','.join(descriptors))

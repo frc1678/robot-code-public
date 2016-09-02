@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import glob
 import subprocess as sp
 
 sp.call(['bazel', 'build', '--experimental_action_listener=//tools:compilation_database', '//...', '--', '-//third_party/...'])
-files = glob.iglob("bazel-out/local_linux-fastbuild/extra_actions/tools/cpp_compilation_commands_gatherer/*/*.json")
+files = glob.iglob("bazel-out/local_linux-fastbuild/extra_actions/tools/cpp_compilation_commands_gatherer/**/*.json", recursive=True)
 
 json_arr = []
 

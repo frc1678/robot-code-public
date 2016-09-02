@@ -9,10 +9,10 @@
 #ifndef MUAN_LOGGING_TEST_LOG_H_
 #define MUAN_LOGGING_TEST_LOG_H_
 
-#include <vector>
-#include <utility>
-#include <string>
 #include "log.h"
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace muan {
 
@@ -26,7 +26,7 @@ namespace muan {
  */
 class TestLog : public Log {
  public:
-  TestLog(std::string filename, std::vector<std::string> keys);
+  explicit TestLog(std::string filename);
   virtual void Write(std::string key, std::string value);
   virtual void EndTest();
   virtual std::string &operator[](std::string key);
@@ -35,12 +35,13 @@ class TestLog : public Log {
   std::string GetExtension() const override;
 
   static void WriteToLog(std::string log, std::string key, std::string value);
-  virtual ~TestLog();
+  ~TestLog() override = default;
 
  private:
   std::stringstream buffer_;
   std::vector<std::pair<std::string, std::string>> entries_;
 };
-}
+
+}  // namespace muan
 
 #endif /* MUAN_LOGGING_TEST_LOG_H_ */

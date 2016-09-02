@@ -2,7 +2,7 @@
 #include "gtest/gtest.h"
 #include <thread>
 
-using namespace muan::queues;
+using muan::queues::MessageQueue;
 
 // Ensure that the queue delivers a single message correctly
 TEST(MessageQueue, DeliversSingleMessage) {
@@ -22,7 +22,7 @@ TEST(MessageQueue, DeliversManyMessages) {
 
   uint32_t next = 0;
   std::experimental::optional<uint32_t> val;
-  while (val = reader.ReadMessage()) {
+  while ((val = reader.ReadMessage())) {
     EXPECT_EQ(*val, next);
     next++;
   }
@@ -40,7 +40,7 @@ TEST(MessageQueue, Wraparound) {
 
   uint64_t next = 0;
   std::experimental::optional<uint32_t> val;
-  while (val = reader.ReadMessage()) {
+  while ((val = reader.ReadMessage())) {
     EXPECT_EQ(*val, next);
     next++;
   }
@@ -49,7 +49,7 @@ TEST(MessageQueue, Wraparound) {
     int_queue.WriteMessage(i);
   }
 
-  while (val = reader.ReadMessage()) {
+  while ((val = reader.ReadMessage())) {
     EXPECT_EQ(*val, next);
     next++;
   }
@@ -70,13 +70,13 @@ TEST(MessageQueue, TwoReaders) {
 
   uint64_t next1 = 0;
   std::experimental::optional<uint32_t> val;
-  while (val = reader1.ReadMessage()) {
+  while ((val = reader1.ReadMessage())) {
     EXPECT_EQ(*val, next1);
     next1++;
   }
 
   uint64_t next2 = 0;
-  while (val = reader2.ReadMessage()) {
+  while ((val = reader2.ReadMessage())) {
     EXPECT_EQ(*val, next2);
     next2++;
   }
@@ -97,7 +97,7 @@ TEST(MessageQueue, SpeedTest) {
 
   uint64_t next = 0;
   std::experimental::optional<uint32_t> val;
-  while (val = reader.ReadMessage()) {
+  while ((val = reader.ReadMessage())) {
     EXPECT_EQ(*val, next);
     next++;
   }
@@ -110,7 +110,7 @@ TEST(MessageQueue, SpeedTest) {
 TEST(MessageQueue, Multithreading) {
   constexpr uint32_t num_messages = 10000;
   MessageQueue<uint32_t, num_messages> int_queue;
-  auto func = [&int_queue]() {
+  auto func = [&int_queue, num_messages]() {
     uint32_t next = 0;
     auto reader = int_queue.MakeReader();
     auto end_time =

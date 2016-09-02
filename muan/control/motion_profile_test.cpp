@@ -3,7 +3,10 @@
 #include "trapezoidal_motion_profile.h"
 #include "gtest/gtest.h"
 
-using namespace muan::control;
+using muan::control::MotionProfile;
+using muan::control::MotionProfilePosition;
+using muan::control::MotionProfileConstraints;
+using muan::control::TrapezoidalMotionProfile;
 
 class MotionProfileTest : public ::testing::Test {
  public:
