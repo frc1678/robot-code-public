@@ -42,7 +42,7 @@ constexpr Mass g = 0.001 * kg;
 constexpr Mass mg = 0.000001 * kg;
 
 constexpr Angle rad = 1;
-constexpr Angle deg = 1.74532925e-2 * rad;
+constexpr Angle deg = pi * rad / 180;
 constexpr Angle rev = 2 * pi * rad;
 
 constexpr AngularVelocity rps = 1 * rad / s;
