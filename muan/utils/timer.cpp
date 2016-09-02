@@ -1,5 +1,4 @@
 #include "timer.h"
-#include "third_party/unitscpp/unitscpp.h"
 #include "timing_utils.h"
 
 namespace muan {
@@ -8,12 +7,13 @@ Timer::Timer() { Start(); }
 
 void Timer::Start() { start_ = now(); }
 
-Time Timer::Reset() {
+muan::units::Time Timer::Reset() {
+  using namespace muan::units;
   Time n = now();
   std::swap(start_, n);
   return start_ - n;
 }
 
-Time Timer::Get() { return now() - start_; }
+muan::units::Time Timer::Get() { return now() - start_; }
 
 }  // namespace muan

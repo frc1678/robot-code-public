@@ -1,6 +1,6 @@
 #ifndef MUAN_UTILS_TIMER_H_
 #define MUAN_UTILS_TIMER_H_
-#include "third_party/unitscpp/unitscpp.h"
+#include "muan/units/units.h"
 
 namespace muan {
 
@@ -8,11 +8,11 @@ class Timer {
  public:
   Timer();
   void Start();
-  Time Reset();
-  Time Get();
+  muan::units::Time Reset();
+  muan::units::Time Get();
 
  private:
-  Time start_;
+  muan::units::Time start_;
 };
 
 }  // namespace muan
