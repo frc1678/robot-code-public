@@ -318,4 +318,4 @@ def feedforwards(A, B, Q = None):
     if Q is None:
         return numpy.linalg.pinv(B)
     else:
-        return numpy.linalg.inv(B.T * Q * B) * B * Q
+        return numpy.linalg.inv(B.T * Q * B) * B.T * Q
