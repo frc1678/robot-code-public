@@ -12,19 +12,20 @@ from muan.control.trapezoidal_profile import TrapezoidalMotionProfile
 
 dt = .005
 
-# x = | Distance travelled |
-#     |  Forward velocity  | |   Heading angle    |
-#     |  Angular velocity  |
-#
-# u = | Right voltage |
-#     | Left voltage  |
-#
-# y = | Right encoder |
-#     | Left encoder  |
-#     |  Gyro angle   |
-
 def make_gains(high_gear):
+    # x = | Distance travelled |
+    #     |  Forward velocity  |
+    #     |  Angular velocity  |
+    #     |   Heading angle    |
+    #
+    # u = | Right voltage |
+    #     | Left voltage  |
+    #
+    # y = | Right encoder |
+    #     | Left encoder  |
+    #     |  Gyro angle   |
     name = 'high_gear' if high_gear else 'low_gear'
+
     # System parameters (in SI units)
     mass = 40.8
     wheelbase_radius = 0.24
@@ -109,6 +110,14 @@ def make_gains(high_gear):
         [0., 0., .005]
     ])
 
+    # Ignore everything except for velocities in feedforward
+    Q_ff = np.asmatrix([
+        [0., 0., 0., 0.],
+        [0., 1., 0., 0.],
+        [0., 0., 0., 0.],
+        [0., 0., 0., 1.]
+    ])
+
     A_d, B_d, Q_d, R_d = c2d(A_c, B_c, dt, Q_noise, R_noise)
     K = clqr(A_c, B_c, Q_controller, R_controller)
     Kff = feedforwards(A_d, B_d)
@@ -116,12 +125,107 @@ def make_gains(high_gear):
     L[0:2, 2:3] = np.asmatrix(np.zeros((2, 1)))
     L[2:4, 0:2] = np.asmatrix(np.zeros((2, 2)))
 
-    return StateSpaceGains(name, dt, A_d, B_d, C, None, Q_d, R_noise, K, Kff, L)
+    gains = StateSpaceGains(name, dt, A_d, B_d, C, None, Q_d, R_noise, K, Kff, L)
+    gains.A_c = A_c
+    gains.B_c = B_c
+
+    return gains
+
+def make_augmented_gains(high_gear):
+    unaugmented_gains = make_gains(high_gear)
+
+    # The augmented controller adds three new states to x:
+    #
+    # x = | Distance travelled |
+    #     |  Forward velocity  |
+    #     |  Angular velocity  |
+    #     |   Heading angle    |
+    #     |Right voltage error |
+    #     | Left voltage error |
+    #     |Angular encoder slip|
+    #
+    # u = | Right voltage |
+    #     | Left voltage  |
+    #
+    # y = | Right encoder |
+    #     | Left encoder  |
+    #     |  Gyro angle   |
+    #
+    # The right and left voltage errors are estimates from the observer of how
+    # much voltage must be applied to each side of the drivetrain to compensate
+    # for external disturbances. The angular encoder slip is a measurement,
+    # also from the observer, of how much the encoders' measurement of the
+    # robot's angle is incorrect: (dL-dR)/2W = angle + angle_slip
+
+    dt = unaugmented_gains.dt
+
+    A_c = np.asmatrix(np.zeros((7, 7)))
+    A_c[:4, :4] = unaugmented_gains.A_c
+    A_c[:4, 4:6] = unaugmented_gains.B_c
+
+    B_c = np.asmatrix(np.zeros((7, 2)))
+    B_c[:4, :] = unaugmented_gains.B_c
+
+    C = np.asmatrix(np.zeros((3, 7)))
+    C[:, :4] = unaugmented_gains.C
+    C[:, 4:7] = np.asmatrix([[0., 0., C[0, 2]],
+                             [0., 0., C[1, 2]],
+                             [0., 0., 0.]])
+    D = np.asmatrix(np.zeros((3, 2)))
+
+    K = np.zeros((2, 7))
+    K[:, :4] = unaugmented_gains.K
+    K[0, 4] = 1.
+    K[1, 5] = 1.
+
+    Q_noise = np.zeros((7, 7))
+    Q_noise[:4, :4] = unaugmented_gains.Q
+    Q_noise[4:7, 4:7] = np.asmatrix([
+        [0., 0., 0.],
+        [0., 0., 0.],
+        [0., 0., 2.]
+    ])
+
+    Q_kalman = np.zeros((7, 7))
+    Q_kalman[:4, :4] = unaugmented_gains.Q
+    Q_kalman[4:6, 4:6] = np.asmatrix([
+        [10., 0.],
+        [0., 10.],
+    ])
+
+    R_noise = np.asmatrix([
+        [1e-2, 0., 0.],
+        [0., 1e-2, 0.],
+        [0., 0., 1e-5]
+    ])
+
+    # Ignore everything except for velocities in feedforward
+    Q_ff = np.asmatrix([
+        [0., 0., 0., 0., 0., 0., 0.],
+        [0., 1., 0., 0., 0., 0., 0.],
+        [0., 0., 0., 0., 0., 0., 0.],
+        [0., 0., 0., 1., 0., 0., 0.],
+        [0., 0., 0., 0., 0., 0., 0.],
+        [0., 0., 0., 0., 0., 0., 0.],
+        [0., 0., 0., 0., 0., 0., 0.]
+    ])
+
+    A_d, B_d, Q_d, R_d = c2d(A_c, B_c, dt, Q_noise, R_noise)
+    L = dkalman(A_d, C, Q_d, R_d)
+    Kff = feedforwards(A_d, B_d, Q_ff)
+
+    name = unaugmented_gains.name + '_integral'
+
+    gains = StateSpaceGains(name, dt, A_d, B_d, C, None, Q_d, R_noise, K, Kff, L)
+    gains.A_c = A_c
+    gains.B_c = B_c
+
+    return gains
 
 u_max = np.asmatrix([12., 12.]).T
-x0 = np.asmatrix([0., 0., 0., 0.]).T
+x0 = np.asmatrix([0., 0., 0., 0., 0., 0., 0.]).T
 
-gains = [make_gains(True), make_gains(False)]
+gains = [make_augmented_gains(True), make_augmented_gains(False)]
 
 plant = StateSpacePlant(gains, x0)
 controller = StateSpaceController(gains, -u_max, u_max)
@@ -135,9 +239,11 @@ def goal(t):
         [dprofile.distance(t)],
         [dprofile.velocity(t)],
         [aprofile.distance(t)],
-        [aprofile.velocity(t)]
+        [aprofile.velocity(t)],
+        [0.],
+        [0.],
+        [0.]
     ])
-
 
 if len(sys.argv) == 3:
     # The output files were specified
