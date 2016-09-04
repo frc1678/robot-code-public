@@ -135,7 +135,7 @@ def make_gains(high_gear):
 def make_augmented_gains(high_gear):
     unaugmented_gains = make_gains(high_gear)
 
-    # The augmented controller adds three new states to x:
+    # The augmented controller adds three new "exogenous" states to x:
     #
     # x = | Distance travelled |
     #     |  Forward velocity  |
@@ -152,11 +152,19 @@ def make_augmented_gains(high_gear):
     #     | Left encoder  |
     #     |  Gyro angle   |
     #
-    # The right and left voltage errors are estimates from the observer of how
-    # much voltage must be applied to each side of the drivetrain to compensate
-    # for external disturbances. The angular encoder slip is a measurement,
-    # also from the observer, of how much the encoders' measurement of the
-    # robot's angle is incorrect: (dL-dR)/2W = angle + angle_slip
+    # These exogenous states are computed by the observer and measure
+    # quantites that, while not a part of the system's dynamics, correspond to
+    # the unpredictable outside disturbances acting upon the system.
+    #
+    # The right and left voltage errors are estimates of how much voltage must
+    # be applied to each side of the drivetrain to compensate for external
+    # disturbances. The angular encoder slip is an estimate of how the
+    # encoders' measurement of the robot's angle is incorrect - in other words,
+    # by how much the encoders have slipped. This allows the encoders to be
+    # taken into account in the short-term while making sure that their slip
+    # doesn't affect the absolute gyro angle. The defining equation is as
+    # follows:
+    # (encoder_right - encoder_left)/(2*wheelbase_radius) = angle + angle_slip
 
     dt = unaugmented_gains.dt
 
