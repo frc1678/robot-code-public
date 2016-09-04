@@ -165,6 +165,9 @@ def make_augmented_gains(high_gear):
     # doesn't affect the absolute gyro angle. The defining equation is as
     # follows:
     # (encoder_right - encoder_left)/(2*wheelbase_radius) = angle + angle_slip
+    #
+    # Credit goes to 971 Spartan Robotics for the concept behind this augmented
+    # controller
 
     dt = unaugmented_gains.dt
 
