@@ -1,8 +1,17 @@
 cc_library(
+  name = 'drivetrain',
+  srcs = ['drivetrain_subsystem.cpp'],
+  hdrs = ['drivetrain_subsystem.h'],
+  deps = [':drivetrain_constants'],
+  visibility = ['//visibility:public']
+)
+
+cc_library(
   name = 'drivetrain_constants',
   srcs = ['drivetrain_constants.cpp'],
   hdrs = ['drivetrain_constants.h'],
-  deps = ['//third_party/eigen']
+  deps = ['//third_party/eigen'],
+  linkstatic=1
 )
 
 genrule(
