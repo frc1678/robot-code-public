@@ -85,10 +85,10 @@ def make_gains(high_gear):
 
     # Controller weighting factors
     Q_controller = np.asmatrix([
-        [17., 0., 0., 0.],
-        [0., 10., 0., 0.],
-        [0., 0., 30., 0.],
-        [0., 0., 0., 20.],
+        [370., 0., 0., 0.],
+        [0., 200., 0., 0.],
+        [0., 0., 800., 0.],
+        [0., 0., 0., 200.],
     ])
 
     R_controller = np.asmatrix([
@@ -98,10 +98,10 @@ def make_gains(high_gear):
 
     # Noise characteristics
     Q_noise = np.asmatrix([
-        [0., 0., 0., 0.],
-        [0., 0.05, 0., 0.],
-        [0., 0., 0., 0.],
-        [0., 0., 0., 0.05]
+        [1e-2, 0., 0., 0.],
+        [0., 1e-1, 0., 0.],
+        [0., 0., 1e-2, 0.],
+        [0., 0., 0., 1e-1]
     ])
 
     R_noise = np.asmatrix([
@@ -128,6 +128,7 @@ def make_gains(high_gear):
     gains = StateSpaceGains(name, dt, A_d, B_d, C, None, Q_d, R_noise, K, Kff, L)
     gains.A_c = A_c
     gains.B_c = B_c
+    gains.Q_c = Q_noise
 
     return gains
 
@@ -179,24 +180,28 @@ def make_augmented_gains(high_gear):
     K[1, 5] = 1.
 
     Q_noise = np.zeros((7, 7))
-    Q_noise[:4, :4] = unaugmented_gains.Q
+    Q_noise[:4, :4] = unaugmented_gains.Q_c
+    # Make the exogenous states noisy to simulate a rough environment
     Q_noise[4:7, 4:7] = np.asmatrix([
-        [0., 0., 0.],
-        [0., 0., 0.],
-        [0., 0., 2.]
-    ])
-
-    Q_kalman = np.zeros((7, 7))
-    Q_kalman[:4, :4] = unaugmented_gains.Q
-    Q_kalman[4:6, 4:6] = np.asmatrix([
-        [10., 0.],
-        [0., 10.],
+        [1., -1.5, 0.],
+        [1., 1.5, 0.],
+        [0., 0., 1.]
     ])
 
     R_noise = np.asmatrix([
         [1e-2, 0., 0.],
         [0., 1e-2, 0.],
         [0., 0., 1e-5]
+    ])
+
+    # Kalman noise matrix - have the estimator use the sensors heavily when
+    # calculating all of the exogenous states.
+    Q_kalman = np.zeros((7, 7))
+    Q_kalman[:4, :4] = unaugmented_gains.Q_c
+    Q_kalman[4:7, 4:7] = np.asmatrix([
+        [10., -5., 0.],
+        [10., 5., 0.],
+        [0., 0., 2.]
     ])
 
     # Ignore everything except for velocities in feedforward
@@ -211,7 +216,8 @@ def make_augmented_gains(high_gear):
     ])
 
     A_d, B_d, Q_d, R_d = c2d(A_c, B_c, dt, Q_noise, R_noise)
-    L = dkalman(A_d, C, Q_d, R_d)
+    _, _, Q_dkalman, R_dkalman = c2d(A_c, B_c, dt, Q_kalman, R_noise)
+    L = dkalman(A_d, C, Q_dkalman, R_dkalman)
     Kff = feedforwards(A_d, B_d, Q_ff)
 
     name = unaugmented_gains.name + '_integral'
@@ -231,7 +237,7 @@ plant = StateSpacePlant(gains, x0)
 controller = StateSpaceController(gains, -u_max, u_max)
 observer = StateSpaceObserver(gains, x0)
 
-dprofile = TrapezoidalMotionProfile(10., 3.0, 1.2)
+dprofile = TrapezoidalMotionProfile(10., 2.7, 1.2)
 aprofile = TrapezoidalMotionProfile(0.1, 1, .7)
 
 def goal(t):
