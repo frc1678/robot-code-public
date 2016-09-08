@@ -12,5 +12,5 @@ TEST(PidController, GoesToPosition) {
     Voltage volt = p.Calculate(dt, -h);
     h += convert(volt, V) * dt * (m / s);
   }
-  EXPECT_NEAR(convert(h, m), 0, .05);
+  EXPECT_NEAR(convert(h, m), 0 * m, .05 * m);
 }
