@@ -1,5 +1,5 @@
-#ifndef QUEUES_MESSAGE_QUEUE_HPP_
-#define QUEUES_MESSAGE_QUEUE_HPP_
+#ifndef MUAN_QUEUES_MESSAGE_QUEUE_HPP_
+#define MUAN_QUEUES_MESSAGE_QUEUE_HPP_
 
 #include "message_queue.h"
 
@@ -90,4 +90,4 @@ MessageQueue<T, size>::QueueReader::ReadMessage() {
 
 }  // namespace muan
 
-#endif /* QUEUES_MESSAGE_QUEUE_HPP_ */
+#endif /* MUAN_QUEUES_MESSAGE_QUEUE_HPP_ */
