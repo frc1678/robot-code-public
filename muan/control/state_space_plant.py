@@ -25,6 +25,8 @@ class StateSpacePlant(object):
 
         gains = self.get_current_gains()
 
+        assert self.x.shape[0] == gains.A.shape[0] and self.x.shape[1] == 1, "x0 must be a vector compatible with A"
+
         self.u = mat.zeros((gains.B.shape[1], 1))
         self.y = gains.C * self.x + gains.D * self.u
 

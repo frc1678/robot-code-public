@@ -24,6 +24,10 @@ class StateSpaceController(object):
 
         assert len(self.gains) > 0, "Must have at least one set of gains."
 
+        B = gains[self.current_gains_idx].B
+        assert u_min.shape[0] == B.shape[1] and u_min.shape[1] == 1, "u_min must be a vector compatible with B"
+        assert u_max.shape[0] == B.shape[1] and u_max.shape[1] == 1, "u_max must be a vector compatible with B"
+
         self.r = np.asmatrix(np.zeros(self.gains[0].B.shape[1]))
 
     def set_gains(self, gains_idx):
@@ -36,6 +40,8 @@ class StateSpaceController(object):
         # To use a moving goal, pass in a value for goal_next
         if goal_next is None:
             goal_next = self.r
+
+        assert goal_next.shape[0] == gains.A.shape[0] and goal_next.shape[1] == 1, "r must be a vector compatible with A"
 
         # u from the feed-forwards term
         uff = gains.Kff * (goal_next - gains.A * self.r)
