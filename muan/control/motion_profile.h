@@ -11,8 +11,8 @@ namespace control {
 using namespace muan::units;
 
 struct MotionProfilePosition {
-  double position;
-  double velocity;
+  Length position;
+  Velocity velocity;
 };
 
 /*

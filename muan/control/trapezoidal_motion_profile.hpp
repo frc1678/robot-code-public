@@ -18,23 +18,23 @@ TrapezoidalMotionProfile::TrapezoidalMotionProfile(
   // final velocity) by calculating the parameters as if the profile began and
   // ended at zero velocity
   Time cutoff_begin = initial_.velocity / constraints_.max_acceleration;
-  double cutoff_dist_begin =
+  Length cutoff_dist_begin =
       cutoff_begin * cutoff_begin * constraints_.max_acceleration / 2.0;
 
   Time cutoff_end = goal_.velocity / constraints_.max_acceleration;
-  double cutoff_dist_end =
+  Length cutoff_dist_end =
       cutoff_end * cutoff_end * constraints_.max_acceleration / 2.0;
 
   // Now we can calculate the parameters as if it was a full trapezoid instead
   // of a truncated one
   {
-    auto full_trapezoid_dist = cutoff_dist_begin +
+    Length full_trapezoid_dist = cutoff_dist_begin +
                                (goal_.position - initial_.position) +
                                cutoff_dist_end;
-    auto acceleration_time =
+    Time acceleration_time =
         constraints_.max_velocity / constraints_.max_acceleration;
 
-    auto full_speed_dist =
+    Length full_speed_dist =
         full_trapezoid_dist -
         acceleration_time * acceleration_time * constraints_.max_acceleration;
 
