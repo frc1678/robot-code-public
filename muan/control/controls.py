@@ -203,7 +203,12 @@ def dlqr(A, B, Q, R):
 
     assert numpy.linalg.matrix_rank(controllability(A, B)) == A.shape[0], "System must be completely controllable to do LQR."
 
-    # TODO(Kyle): Ensure Q is positive-semidefninite and R is positive-definite
+    # Ensure Q is positive-semidefninite and R is positive-definite
+    Q_eigvals = numpy.linalg.eigvalsh(Q)
+    assert numpy.all(Q_eigvals > -1e-8), "Q must be positive-semidefinite"
+
+    R_eigvals = numpy.linalg.eigvalsh(R)
+    assert numpy.all(R_eigvals > 0), "R must be positive-definite"
 
     # Solve the ARE for the cost-to-go matrix
     M = numpy.asmatrix(scipy.linalg.solve_discrete_are(A, B, Q, R))
@@ -234,7 +239,13 @@ def clqr(A, B, Q, R):
 
     assert numpy.linalg.matrix_rank(controllability(A, B)) == A.shape[0], "System must be completely controllable to do LQR."
 
-    # TODO(Kyle): Ensure Q is positive-semidefninite and R is positive-definite
+    # Ensure Q is positive-semidefninite and R is positive-definite
+    Q_eigvals = numpy.linalg.eigvalsh(Q)
+    # Allow for some tolerance on Q to avoid numerical stability issues
+    assert numpy.all(Q_eigvals > -1e-8), "Q must be positive-semidefinite"
+
+    R_eigvals = numpy.linalg.eigvalsh(R)
+    assert numpy.all(R_eigvals > 0), "R must be positive-definite"
 
     # Solve the ARE for the cost-to-go matrix
     M = numpy.asmatrix(scipy.linalg.solve_continuous_are(A, B, Q, R))
