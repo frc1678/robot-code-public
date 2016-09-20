@@ -27,9 +27,9 @@ class MotionProfileTest : public ::testing::Test {
         s;  // Discrete time differentiation leaves a bit of over/undershoot.
 
     EXPECT_NEAR(profile.Calculate(0 * s).position, initial_position.position,
-                1e-6);
+                1e-6 * m);
     EXPECT_NEAR(profile.Calculate(0 * s).velocity, initial_position.velocity,
-                1e-6);
+                1e-6 * m / s);
 
     for (Time t = 0 * s; t < profile.total_time(); t += dt) {  // NOLINT
       Acceleration estimated_acceleration =
@@ -50,9 +50,9 @@ class MotionProfileTest : public ::testing::Test {
     }
 
     EXPECT_NEAR(profile.Calculate(profile.total_time()).position, goal.position,
-                1e-5);
+                1e-5 * m);
     EXPECT_NEAR(profile.Calculate(profile.total_time()).velocity, goal.velocity,
-                1e-5);
+                1e-5 * m / s);
   }
 
   muan::control::MotionProfilePosition initial_position, result, goal;
