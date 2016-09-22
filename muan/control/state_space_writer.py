@@ -3,8 +3,7 @@ from functools import reduce
 from copy import copy
 
 """
-A class to handle the simulation and plotting of state space systems as well as
-writing the constant matrices to files.
+A class to handle writing state-space gains to files.
 """
 __author__ = 'Kyle Stachowicz (kylestach99@gmail.com)'
 
