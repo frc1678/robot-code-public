@@ -12,12 +12,14 @@ __author__ = 'Kyle Stachowicz (kylestach99@gmail.com)'
 
 class StateSpacePlant(object):
     def __init__(self, gains, x_initial = None):
+        assert (isinstance(gains, list) and isinstance(gains[0], StateSpaceGains))              \
+                or isinstance(gains, StateSpaceGains),                                          \
+                "gains must be a StateSpaceGains object or a list of StateSpaceGains objects"
+
         if not isinstance(gains, list):
             gains = [gains]
         self.gains = gains
         self.current_gains_idx = 0
-
-        assert len(self.gains) > 0, "Must have at least one set of gains."
 
         if x_initial is None:
             x_initial = mat.zeros((A.shape[0], 1))

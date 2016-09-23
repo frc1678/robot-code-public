@@ -2,6 +2,7 @@
 
 import numpy as np
 import controls
+from state_space_gains import *
 
 """
 A state-space controller class with support for feedforward control.
@@ -17,12 +18,14 @@ class StateSpaceController(object):
         self.u_min = u_min
         self.u_max = u_max
 
+        assert (isinstance(gains, list) and isinstance(gains[0], StateSpaceGains))              \
+                or isinstance(gains, StateSpaceGains),                                          \
+                "gains must be a StateSpaceGains object or a list of StateSpaceGains objects"
+
         if not isinstance(gains, list):
             gains = [gains]
         self.gains = gains
         self.current_gains_idx = 0
-
-        assert len(self.gains) > 0, "Must have at least one set of gains."
 
         B = gains[self.current_gains_idx].B
         assert u_min.shape[0] == B.shape[1] and u_min.shape[1] == 1, "u_min must be a vector compatible with B"
