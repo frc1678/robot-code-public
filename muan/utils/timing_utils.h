@@ -1,16 +1,16 @@
 #ifndef MUAN_UTILS_TIMING_UTILS_H_
 #define MUAN_UTILS_TIMING_UTILS_H_
 
-#include "third_party/unitscpp/unitscpp.h"
+#include "muan/units/units.h"
 #include <chrono>
 #include <iostream>
 #include <thread>
 
 namespace muan {
 
-void sleep_for(Time t);
-Time now();
-void sleep_until(Time t);
+void sleep_for(muan::units::Time t);
+muan::units::Time now();
+void sleep_until(muan::units::Time t);
 
 }  // namespace muan
 

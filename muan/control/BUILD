@@ -28,7 +28,7 @@ cc_library(
     'average_filter_pid.h'
   ],
   deps = [
-    '//third_party/unitscpp',
+    '//muan/units:units',
     '//muan/utils:history'
   ],
   linkstatic = 1
@@ -43,7 +43,7 @@ cc_library(
   srcs = [
     'trapezoidal_motion_profile.hpp'
   ],
-  deps = ['//third_party/unitscpp'],
+  deps = ['//muan/units:units'],
   linkopts = ['-lm'],
   linkstatic = 1
 )
@@ -61,7 +61,7 @@ cc_library(
     'state_space_controller.hpp',
   ],
   deps = [
-    '//third_party/unitscpp',
+    '//muan/units:units',
     '//third_party/eigen',
     '//muan/utils:math_utils'
   ],
