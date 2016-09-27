@@ -34,24 +34,25 @@ inline Eigen::Matrix<double, A, B> CapMatrix(
 // thread-safe
 thread_local std::mt19937_64 rng;  // NOLINT
 
-// Generate a single scalar value of gaussian noise with mean 0 and standard
-// deviation 1
-double GaussianNoise() {
-  std::normal_distribution<double> dist;
+// Generate a single scalar value of gaussian noise
+double GaussianNoise(double std_dev = 1.0, double mean = 0.0) {
+  std::normal_distribution<double> dist(mean, std_dev);
   return dist(rng);
 }
 
 // Generate a vector of gaussian noise with a given covariance matrix
 template <uint32_t A>
 Eigen::Matrix<double, A, 1> GaussianNoise(
-    const Eigen::Matrix<double, A, A>& covariance) {
+    const Eigen::Matrix<double, A, A>& covariance,
+    const Eigen::Matrix<double, A, 1> mean =
+        Eigen::Matrix<double, A, 1>::Zero()) {
   Eigen::Matrix<double, A, 1> ret;
 
   for (uint32_t i = 0; i < A; i++) {
     ret[i] = GaussianNoise();
   }
 
-  return covariance * ret;
+  return covariance * ret + mean;
 }
 
 }  // namespace muan
