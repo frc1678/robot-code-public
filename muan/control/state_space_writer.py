@@ -19,7 +19,8 @@ def _matrix_generator_declaration(name, mat):
     return format_string.format(n = mat.shape[0], m = mat.shape[1], name = name)
 
 def _matrix_generator_definition(name, mat):
-    entries = ', '.join([str(x) for x in np.nditer(mat)])
+    # Use C-order to traverse the matrix
+    entries = ', '.join([str(x) for x in np.nditer(mat, order='C')])
     format_string = \
 '''Eigen::Matrix<double, {n}, {m}> {name}() {{
     return (Eigen::Matrix<double, {n}, {m}>() << {entries}).finished();
