@@ -2,7 +2,8 @@
 #include "updateable.h"
 #include "gtest/gtest.h"
 
-using namespace muan;
+using muan::Updateable;
+using muan::sleep_for;
 
 class TestUpdateable : public Updateable, public testing::Test {
  public:
@@ -10,16 +11,18 @@ class TestUpdateable : public Updateable, public testing::Test {
   int x() { return _x; }
 
  protected:
-  void SetUp() {
+  void SetUp() override {
     using namespace muan::units;
     // Sleep for a bit to wait for the previous case to finish
     sleep_for(.1 * s);
   }
 
-  void TearDown() {}
+  void TearDown() override {}
 
-  void Update(muan::units::Time dt) override {
-    if (_x > 0) _x--;
+  void Update(muan::units::Time /*dt*/) override {
+    if (_x > 0) {
+      _x--;
+    }
   }
   int _x = 100;
 };

@@ -1,5 +1,5 @@
-#ifndef SRC_ROBOTCODE_MOTIONPROFILE_H_
-#define SRC_ROBOTCODE_MOTIONPROFILE_H_
+#ifndef MUAN_CONTROL_MOTION_PROFILE_H_
+#define MUAN_CONTROL_MOTION_PROFILE_H_
 #include "muan/utils/math_utils.h"
 #include "muan/units/units.h"
 #include <type_traits>
@@ -11,8 +11,8 @@ namespace control {
 using namespace muan::units;
 
 struct MotionProfilePosition {
-  double position;
-  double velocity;
+  Length position;
+  Velocity velocity;
 };
 
 /*
@@ -30,8 +30,8 @@ class MotionProfile {
   virtual bool finished(Time time) { return time > total_time(); }
 };
 
-} /* control */
+}  // namespace control
 
-} /* muan */
+}  // namespace muan
 
-#endif /* SRC_ROBOTCODE_MOTIONPROFILE_H_ */
+#endif /* MUAN_CONTROL_MOTION_PROFILE_H_ */

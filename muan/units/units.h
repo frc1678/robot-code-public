@@ -55,8 +55,8 @@ constexpr Voltage pwm = 12 * V;
 
 constexpr double convert(double val, double unit) { return val / unit; }
 
-}  // units
+}  // namespace units
 
-}  // muan
+}  // namespace muan
 
 #endif

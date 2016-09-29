@@ -10,8 +10,8 @@ namespace muan {
 namespace control {
 
 struct MotionProfileConstraints {
-  double max_velocity;
-  double max_acceleration;
+  Velocity max_velocity;
+  Acceleration max_acceleration;
 };
 
 /*
@@ -35,7 +35,7 @@ class TrapezoidalMotionProfile : public MotionProfile {
                            MotionProfilePosition goal,
                            MotionProfilePosition initial);
 
-  virtual ~TrapezoidalMotionProfile() = default;
+  ~TrapezoidalMotionProfile() override = default;
 
   // Calculate the correct position and velocity for the profile at a time t
   // where the beginning of the profile was at time t=0
@@ -54,11 +54,11 @@ class TrapezoidalMotionProfile : public MotionProfile {
     // Calculate the distance travelled by a linear velocity ramp
     // from the initial to the final velocity and compare it to the desired
     // distance. If it is smaller, invert the profile.
-    double velocity_change = goal.velocity - initial.velocity;
+    Velocity velocity_change = goal.velocity - initial.velocity;
 
-    double distance_change = goal.position - initial.position;
+    Length distance_change = goal.position - initial.position;
 
-    Time t = muan::abs(velocity_change) / constraints.max_acceleration;
+    Time t = std::abs(velocity_change) / constraints.max_acceleration;
     bool is_acceleration_flipped =
         t * (velocity_change / 2 + initial.velocity) > distance_change;
     return is_acceleration_flipped;
@@ -81,9 +81,9 @@ class TrapezoidalMotionProfile : public MotionProfile {
   Time end_accel_, end_full_speed_, end_deccel_;
 };
 
-} /* control */
+}  // namespace control
 
-} /* muan */
+}  // namespace muan
 
 #include "trapezoidal_motion_profile.hpp"
 

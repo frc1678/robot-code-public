@@ -14,6 +14,7 @@ class Timer {
  private:
   muan::units::Time start_;
 };
-}
+
+}  // namespace muan
 
 #endif

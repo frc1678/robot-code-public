@@ -37,4 +37,5 @@ void Updateable::Start() {
 }
 
 void Updateable::Stop() { running_ = false; }
-}
+
+}  // namespace muan

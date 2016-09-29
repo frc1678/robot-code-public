@@ -6,7 +6,7 @@
 
 namespace muan {
 
-double Cap(double val, double min, double max) {
+inline double Cap(double val, double min, double max) {
   double ret = val;
   if (val < min) {
     ret = min;
@@ -17,9 +17,10 @@ double Cap(double val, double min, double max) {
 }
 
 template <int A, int B>
-Eigen::Matrix<double, A, B> CapMatrix(const Eigen::Matrix<double, A, B>& val,
-                                      const Eigen::Matrix<double, A, B>& min,
-                                      const Eigen::Matrix<double, A, B>& max) {
+inline Eigen::Matrix<double, A, B> CapMatrix(
+    const Eigen::Matrix<double, A, B>& val,
+    const Eigen::Matrix<double, A, B>& min,
+    const Eigen::Matrix<double, A, B>& max) {
   Eigen::Matrix<double, A, B> ret;
   for (uint32_t i = 0; i < A; i++) {
     for (uint32_t j = 0; j < B; j++) {
@@ -29,11 +30,31 @@ Eigen::Matrix<double, A, B> CapMatrix(const Eigen::Matrix<double, A, B>& val,
   return ret;
 }
 
-double abs(double val) {
-  if (val < 0) val = -val;
-  return val;
+// Keep one random number generator per thread, as the implementation isn't
+// thread-safe
+thread_local std::mt19937_64 rng;  // NOLINT
+
+// Generate a single scalar value of gaussian noise
+double GaussianNoise(double std_dev = 1.0, double mean = 0.0) {
+  std::normal_distribution<double> dist(mean, std_dev);
+  return dist(rng);
 }
 
-} /* muan */
+// Generate a vector of gaussian noise with a given covariance matrix
+template <uint32_t A>
+Eigen::Matrix<double, A, 1> GaussianNoise(
+    const Eigen::Matrix<double, A, A>& covariance,
+    const Eigen::Matrix<double, A, 1> mean =
+        Eigen::Matrix<double, A, 1>::Zero()) {
+  Eigen::Matrix<double, A, 1> ret;
 
-#endif
+  for (uint32_t i = 0; i < A; i++) {
+    ret[i] = GaussianNoise();
+  }
+
+  return covariance * ret + mean;
+}
+
+}  // namespace muan
+
+#endif /* MUAN_UTILS_MATH_UTILS_H_ */

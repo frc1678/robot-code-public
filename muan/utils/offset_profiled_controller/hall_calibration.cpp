@@ -12,8 +12,6 @@ HallCalibration::HallCalibration(double magnet_position)
       offset_(0),
       magnet_position_(magnet_position) {}
 
-HallCalibration::~HallCalibration() {}
-
 double HallCalibration::Update(double main_sensor_value, bool hall_value) {
   if (hall_value) {
     // Update the max and min values for when the hall sensor is triggered. Set

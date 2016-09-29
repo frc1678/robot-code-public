@@ -25,9 +25,6 @@ StateSpacePlant<kNumInputs, kNumStates, kNumOutputs>::StateSpacePlant(
     : A_{A}, B_{B}, C_{C}, D_{D}, x_{x_0} {}
 
 template <uint32_t kNumInputs, uint32_t kNumStates, uint32_t kNumOutputs>
-StateSpacePlant<kNumInputs, kNumStates, kNumOutputs>::~StateSpacePlant() {}
-
-template <uint32_t kNumInputs, uint32_t kNumStates, uint32_t kNumOutputs>
 void StateSpacePlant<kNumInputs, kNumStates, kNumOutputs>::Update(
     const Eigen::Matrix<double, kNumInputs, 1>& u) {
   x_ = A_ * x_ + B_ * u;
@@ -164,8 +161,8 @@ double& StateSpacePlant<kNumInputs, kNumStates, kNumOutputs>::D(uint32_t i,
   return D_(i, j);
 }
 
-} /* control */
+}  // namespace control
 
-} /* muan  */
+}  // namespace muan
 
 #endif /* MUAN_CONTROL_STATE_SPACE_PLANT_HPP_ */

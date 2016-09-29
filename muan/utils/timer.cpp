@@ -15,4 +15,5 @@ muan::units::Time Timer::Reset() {
 }
 
 muan::units::Time Timer::Get() { return now() - start_; }
-}
+
+}  // namespace muan

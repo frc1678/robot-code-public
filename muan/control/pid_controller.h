@@ -18,7 +18,7 @@ class PidController {
   PidController(double kP, double kI,
                 double kD)
       : kP(kP), kI(kI), kD(kD), integral_(0), last_proportional_(0) {}
-  PidController(const PidGains& gains)
+  explicit PidController(const PidGains& gains)
       : PidController(gains.kP, gains.kI, gains.kD) {}
 
   double Calculate(muan::units::Time dt, double error) {
@@ -64,6 +64,7 @@ class PidController {
   double last_proportional_;
   double last_derivative_;
 };
-}
+
+}  // namespace muan
 
 #endif

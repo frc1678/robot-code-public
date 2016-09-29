@@ -1,4 +1,5 @@
 #include "Eigen/Dense"
+#include "muan/utils/math_utils.h"
 #include "state_space_controller.h"
 #include "state_space_observer.h"
 #include "state_space_plant.h"
@@ -330,27 +331,6 @@ TEST(StateSpace, ObserverRecoversFromIncorrectModel) {
   EXPECT_NEAR(plant.x(1), observer.x(1), 1e-1);
 }
 
-double GaussianNoise() {
-  // Only initialize the random number generator once, and keep it within the
-  // scope of this function
-  static std::mt19937_64 rng;
-  static std::normal_distribution<double> dist;
-  return dist(rng);
-}
-
-// Generate a vector of gaussian noise with a given covariance matrix
-template <uint32_t A>
-Eigen::Matrix<double, A, 1> NoiseVector(
-    const Eigen::Matrix<double, A, A>& covariance) {
-  Eigen::Matrix<double, A, 1> ret;
-
-  for (uint32_t i = 0; i < A; i++) {
-    ret[i] = GaussianNoise();
-  }
-
-  return covariance * ret;
-}
-
 // Ensure that the observer is able to compensate for a noisy signal
 TEST(StateSpace, ObserverRecoversFromNoise) {
   // Discrete-time Q matrix and continuous-time R matrix
@@ -378,9 +358,9 @@ TEST(StateSpace, ObserverRecoversFromNoise) {
   // Apply both process noise (Q) and measurement noise (R) to the simulation
   for (uint32_t t = 0; t < 1000; t++) {
     auto u = Eigen::Matrix<double, 1, 1>::Constant(1);
-    observer.Update(u, plant.y() + NoiseVector<1>(R));
+    observer.Update(u, plant.y() + muan::GaussianNoise<1>(R));
     plant.Update(u);
-    plant.x() += NoiseVector<2>(Q);
+    plant.x() += muan::GaussianNoise<2>(Q);
 
     EXPECT_NEAR(plant.x(0), observer.x(0), 2e-2);
     EXPECT_NEAR(plant.x(1), observer.x(1), 2e-1);

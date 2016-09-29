@@ -10,41 +10,40 @@ A state-space plant class with support for process and measurement noise
 """
 __author__ = 'Kyle Stachowicz (kylestach99@gmail.com)'
 
-class state_space_plant:
-    def __init__(self, dt, x_initial, A, B, C, D = np.asmatrix([[0]]), Q = None, R = None):
-        self.num_states = A.shape[0]
-        self.num_inputs = B.shape[1]
-        self.num_outputs = C.shape[0]
+class StateSpacePlant(object):
+    def __init__(self, gains, x_initial = None):
+        if not isinstance(gains, list):
+            gains = [gains]
+        self.gains = gains
+        self.current_gains_idx = 0
 
-        self.set_system(dt, A, B, C, D, Q, R)
+        assert len(self.gains) > 0, "Must have at least one set of gains."
+
+        if x_initial is None:
+            x_initial = mat.zeros((A.shape[0], 1))
         self.x = x_initial
-        self.u = mat.zeros((B.shape[1], 1))
-        self.y = self.C * self.x + self.D * self.u
+
+        gains = self.get_current_gains()
+
+        self.u = mat.zeros((gains.B.shape[1], 1))
+        self.y = gains.C * self.x + gains.D * self.u
+
+    def set_gains(self, gains_idx):
+        assert gains_idx < len(self.gains), "Gains id must be in range."
+        self.current_gains_idx = gains_idx
+
+    def get_current_gains(self):
+        return self.gains[self.current_gains_idx]
 
     def update(self, u):
+        gains = self.get_current_gains()
+
         # Calculate noise
-        process_noise = self.Q_d * np.random.randn(self.num_states, 1)
-        measurement_noise = self.R_c * np.random.randn(self.num_outputs, 1)
+        process_noise = gains.Q * np.random.randn(gains.A.shape[0], 1)
+        measurement_noise = gains.R * np.random.randn(gains.C.shape[0], 1)
 
         self.u = u
-        self.x = self.A_d * self.x + self.B_d * self.u + process_noise
-        self.y = self.C * self.x + self.D * self.u + measurement_noise
+        self.x = gains.A * self.x + gains.B * self.u + process_noise
+        self.y = gains.C * self.x + gains.D * self.u + measurement_noise
+
         return self.y
-
-    def set_system(self, dt, A, B, C, D = 0, Q = None, R = None):
-        self.A_c = np.asmatrix(A)
-        self.B_c = np.asmatrix(B)
-        self.C = np.asmatrix(C)
-        self.D = np.asmatrix(D)
-
-        if Q is None:
-            Q = np.zeros(self.A_c.shape)
-        self.Q_c = np.asmatrix(Q)
-
-        if R is None:
-            R = mat.zeros((self.num_outputs, self.num_outputs))
-        self.R_c = np.asmatrix(R)
-
-        self.dt = dt
-
-        self.A_d, self.B_d, self.Q_d, self.R_d = controls.c2d(self.A_c, self.B_c, dt, self.Q_c, self.R_c)

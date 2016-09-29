@@ -2,7 +2,7 @@ licenses(['permissive'])
 
 cc_library(
   name = 'googlemock',
-  srcs = glob(['googlemock/src/*.cc'], ['googlemock/src/gmock-all.cc']),
+  srcs = glob(['googlemock/src/*.cc'], exclude = ['googlemock/src/gmock-all.cc']),
   hdrs = glob([
     'googlemock/include/**/*.h'
   ]),
@@ -19,7 +19,7 @@ cc_library(
   srcs = glob([
     'googletest/src/*',
     'googletest/include/gtest/internal/**/*.h'
-  ], ['googletest/src/gtest-all.cc']),
+  ], exclude = ['googletest/src/gtest-all.cc']),
   hdrs = glob(['googletest/include/gtest/*.h']),
   includes = [
     'googletest/include',

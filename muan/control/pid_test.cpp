@@ -1,7 +1,7 @@
 #include "pid_controller.h"
 #include "gtest/gtest.h"
 
-using namespace muan;
+using muan::PidController;
 
 TEST(PidController, GoesToPosition) {
   using namespace muan::units;
@@ -12,5 +12,5 @@ TEST(PidController, GoesToPosition) {
     Voltage volt = p.Calculate(dt, -h);
     h += convert(volt, V) * dt * (m / s);
   }
-  EXPECT_NEAR(convert(h, m), 0, .05);
+  EXPECT_NEAR(convert(h, m), 0 * m, .05 * m);
 }

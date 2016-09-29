@@ -4,6 +4,7 @@ cc_library(
   name = 'math_utils',
   hdrs = ['math_utils.h'],
   deps = ['//muan/units:units', '//third_party/eigen'],
+  linkopts = ['-lm'],
   linkstatic = 1
 )
 

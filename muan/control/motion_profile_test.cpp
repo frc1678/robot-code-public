@@ -1,9 +1,14 @@
-#include "muan/utils/math_utils.h"
 #include "muan/units/units.h"
+#include "muan/utils/math_utils.h"
 #include "trapezoidal_motion_profile.h"
 #include "gtest/gtest.h"
 
-using namespace muan::control;
+using muan::control::MotionProfile;
+using muan::control::MotionProfilePosition;
+using muan::control::MotionProfileConstraints;
+using muan::control::TrapezoidalMotionProfile;
+
+using namespace muan::units;  // NOLINT
 
 class MotionProfileTest : public ::testing::Test {
  public:
@@ -22,11 +27,11 @@ class MotionProfileTest : public ::testing::Test {
         s;  // Discrete time differentiation leaves a bit of over/undershoot.
 
     EXPECT_NEAR(profile.Calculate(0 * s).position, initial_position.position,
-                1e-6);
+                1e-6 * m);
     EXPECT_NEAR(profile.Calculate(0 * s).velocity, initial_position.velocity,
-                1e-6);
+                1e-6 * m / s);
 
-    for (Time t = 0 * s; t <= profile.total_time(); t += dt) {
+    for (Time t = 0 * s; t < profile.total_time(); t += dt) {  // NOLINT
       Acceleration estimated_acceleration =
           (profile.Calculate(t).velocity - profile.Calculate(t - dt).velocity) /
           (dt);
@@ -35,9 +40,9 @@ class MotionProfileTest : public ::testing::Test {
           (dt);
 
       EXPECT_GE(constraints.max_velocity,
-                muan::abs(profile.Calculate(t).velocity));
+                std::abs(profile.Calculate(t).velocity));
       EXPECT_GE(constraints.max_acceleration + (discrete_error / s),
-                muan::abs(estimated_acceleration));
+                std::abs(estimated_acceleration));
       EXPECT_NEAR(profile.Calculate(t).velocity, estimated_velocity,
                   discrete_error);
 
@@ -45,9 +50,9 @@ class MotionProfileTest : public ::testing::Test {
     }
 
     EXPECT_NEAR(profile.Calculate(profile.total_time()).position, goal.position,
-                1e-5);
+                1e-5 * m);
     EXPECT_NEAR(profile.Calculate(profile.total_time()).velocity, goal.velocity,
-                1e-5);
+                1e-5 * m / s);
   }
 
   muan::control::MotionProfilePosition initial_position, result, goal;
