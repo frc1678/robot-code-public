@@ -234,6 +234,8 @@ def make_augmented_gains(high_gear):
     name = unaugmented_gains.name + '_integral'
 
     gains = StateSpaceGains(name, dt, A_d, B_d, C, None, Q_d, R_noise, K, Kff, L)
+    gains.add_writable_constant('A_c', A_c)
+    gains.add_writable_constant('B_c', B_c)
     gains.A_c = A_c
     gains.B_c = B_c
 
@@ -242,7 +244,12 @@ def make_augmented_gains(high_gear):
 u_max = np.asmatrix([12., 12.]).T
 x0 = np.asmatrix([0., 0., 0., 0., 0., 0., 0.]).T
 
-gains = [make_augmented_gains(True), make_augmented_gains(False)]
+gains = [
+    make_augmented_gains(True),
+    make_augmented_gains(False),
+    make_gains(True),
+    make_gains(False)
+]
 
 plant = StateSpacePlant(gains, x0)
 controller = StateSpaceController(gains, -u_max, u_max)
