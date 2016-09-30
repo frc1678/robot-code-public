@@ -53,6 +53,14 @@ py_binary(
   deps = ['//muan/control:python_controls']
 )
 
+cc_library(
+  name = 'drivetrain_queues',
+  srcs = ['drivetrain_queues.cpp'],
+  hdrs = ['drivetrain_queues.h'],
+  deps = ['drivetrain_protos', '//muan/queues'],
+  visibility = ['//visibility:public']
+)
+
 cc_proto_library(
   name = 'drivetrain_protos',
   srcs = ['drivetrain.proto'],
