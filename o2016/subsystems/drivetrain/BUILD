@@ -8,6 +8,28 @@ cc_library(
   visibility = ['//visibility:public']
 )
 
+cc_test(
+  name = 'drivetrain_test',
+  srcs = ['drivetrain_test.cpp'],
+  deps = [
+    ':drivetrain',
+    ':drivetrain_controller',
+    '//third_party/google/googletest'
+  ]
+)
+
+cc_library(
+  name = 'drivetrain_controller',
+  srcs = ['drivetrain_controller.cpp'],
+  hdrs = ['drivetrain_controller.h'],
+  deps = [
+    ':drivetrain_constants',
+    ':drivetrain_protos',
+    '//muan/control:state_space',
+    '//muan/control:motion_profiles'
+  ]
+)
+
 cc_library(
   name = 'drivetrain_constants',
   srcs = ['drivetrain_constants.cpp'],
