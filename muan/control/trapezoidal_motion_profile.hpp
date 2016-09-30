@@ -11,10 +11,10 @@ TrapezoidalMotionProfile::TrapezoidalMotionProfile(
     MotionProfileConstraints constraints, MotionProfilePosition goal,
     MotionProfilePosition initial, Time initial_time)
     : MotionProfile{initial_time},
-      direction_{ShouldFlipAcceleration(initial, goal, constraints) ? -1 : 1},
-      constraints_{constraints},
-      initial_{Direct(initial)},
-      goal_{Direct(goal)} {
+      direction_(ShouldFlipAcceleration(initial, goal, constraints) ? -1 : 1),
+      constraints_(constraints),
+      initial_(Direct(initial)),
+      goal_(Direct(goal)) {
   // Deal with a possibly truncated motion profile (with nonzero initial or
   // final velocity) by calculating the parameters as if the profile began and
   // ended at zero velocity
