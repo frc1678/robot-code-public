@@ -1,5 +1,6 @@
 #include "message_queue.h"
 #include "gtest/gtest.h"
+#include <iostream>
 #include <thread>
 
 using muan::queues::MessageQueue;
@@ -128,6 +129,42 @@ TEST(MessageQueue, Multithreading) {
   };
 
   std::array<std::thread, 5> threads;
+  for (auto& t : threads) {
+    t = std::thread{func};
+  }
+
+  for (uint32_t i = 0; i < num_messages; i++) {
+    int_queue.WriteMessage(i);
+  }
+
+  for (auto& t : threads) {
+    t.join();
+  }
+}
+
+// Ensure that the queue works correctly, even when only reading the most recent
+// message at any given point in time
+TEST(MessageQueue, LatestMessage) {
+  constexpr uint32_t num_messages = 10000;
+  MessageQueue<int, num_messages> int_queue;
+  auto func = [&int_queue, num_messages]() {
+    int last = -1;
+    auto reader = int_queue.MakeReader();
+    auto end_time =
+        std::chrono::steady_clock::now() + std::chrono::milliseconds(300);
+
+    // TODO(Kyle) Find a better termination condition for this
+    while (std::chrono::steady_clock::now() < end_time) {
+      auto val = reader.LatestMessage();
+      if (val) {
+        EXPECT_GE(*val, last);
+        last = *val;
+      }
+    }
+    EXPECT_EQ(last, num_messages - 1);
+  };
+
+  std::array<std::thread, 1> threads;
   for (auto& t : threads) {
     t = std::thread{func};
   }

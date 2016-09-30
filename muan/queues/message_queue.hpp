@@ -51,6 +51,17 @@ std::experimental::optional<T> MessageQueue<T, size>::NextMessage(
 }
 
 template <typename T, uint32_t size>
+std::experimental::optional<T> MessageQueue<T, size>::LastMessage(
+    uint32_t& next) const {
+  uint32_t back_capture = back_;
+  next = back_capture - 1;
+  if (back_capture == 0) {
+    return std::experimental::nullopt;
+  }
+  return messages_[next % size];
+}
+
+template <typename T, uint32_t size>
 typename MessageQueue<T, size>::QueueReader MessageQueue<T, size>::MakeReader()
     const {
   return MessageQueue<T, size>::QueueReader{*this};
@@ -84,6 +95,12 @@ template <typename T, uint32_t size>
 std::experimental::optional<T>
 MessageQueue<T, size>::QueueReader::ReadMessage() {
   return queue_.NextMessage(next_message_);
+}
+
+template <typename T, uint32_t size>
+std::experimental::optional<T>
+MessageQueue<T, size>::QueueReader::LatestMessage() {
+  return queue_.LastMessage(next_message_);
 }
 
 }  // namespace queues
