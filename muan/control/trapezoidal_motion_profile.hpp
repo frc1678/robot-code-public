@@ -9,8 +9,9 @@ namespace control {
 
 TrapezoidalMotionProfile::TrapezoidalMotionProfile(
     MotionProfileConstraints constraints, MotionProfilePosition goal,
-    MotionProfilePosition initial)
-    : direction_{ShouldFlipAcceleration(initial, goal, constraints) ? -1 : 1},
+    MotionProfilePosition initial, Time initial_time)
+    : MotionProfile{initial_time},
+      direction_{ShouldFlipAcceleration(initial, goal, constraints) ? -1 : 1},
       constraints_{constraints},
       initial_{Direct(initial)},
       goal_{Direct(goal)} {
@@ -29,8 +30,8 @@ TrapezoidalMotionProfile::TrapezoidalMotionProfile(
   // of a truncated one
   {
     Length full_trapezoid_dist = cutoff_dist_begin +
-                               (goal_.position - initial_.position) +
-                               cutoff_dist_end;
+                                 (goal_.position - initial_.position) +
+                                 cutoff_dist_end;
     Time acceleration_time =
         constraints_.max_velocity / constraints_.max_acceleration;
 
@@ -51,7 +52,8 @@ TrapezoidalMotionProfile::TrapezoidalMotionProfile(
   }
 }
 
-MotionProfilePosition TrapezoidalMotionProfile::Calculate(Time t) const {
+MotionProfilePosition TrapezoidalMotionProfile::CalculateFromElapsed(
+    Time t) const {
   MotionProfilePosition result = initial_;
 
   if (t < end_accel_) {
