@@ -1,3 +1,5 @@
+load('/third_party/google/protobuf/protobuf', 'cc_proto_library')
+
 cc_library(
   name = 'drivetrain',
   srcs = ['drivetrain_subsystem.cpp'],
@@ -27,4 +29,11 @@ py_binary(
   srcs = ['drivetrain.py'],
   main = 'drivetrain.py',
   deps = ['//muan/control:python_controls']
+)
+
+cc_proto_library(
+  name = 'drivetrain_protos',
+  srcs = ['drivetrain.proto'],
+  protoc = '//third_party/google/protobuf:protoc',
+  default_runtime = '//third_party/google/protobuf'
 )
