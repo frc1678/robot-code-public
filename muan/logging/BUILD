@@ -1,31 +1,39 @@
 package(default_visibility = ['//visibility:public'])
+load('//third_party/google/protobuf:protobuf.bzl', 'cc_proto_library')
 
 cc_library(
-  name = 'log_base',
-  hdrs = ['log_manager.h', 'log.h'],
-  srcs = ['log_manager.cpp', 'log.cpp'],
-  deps = ['//muan/utils:timing'],
-  visibility = ['//visibility:private']
+  name = 'logger',
+  srcs = ['logger.hpp'],
+  hdrs = ['logger.h'],
+  deps = ['filewriter',
+          '//muan/queues:queues',
+          '//muan/utils:proto_utils',
+          '//muan/multithreading:updateable',
+          '//third_party/google/protobuf',
+          '//third_party/optional']
+)
+
+cc_test(
+  name = 'logger_test',
+  srcs = ['logger_test.cpp'],
+  deps = ['//third_party/google/googletest',
+          '//third_party/google/googletest:googlemock',
+          'logger',
+          'filewriter',
+          'logger_test_protobufs',
+          '//muan/utils:timing']
+)
+
+cc_proto_library(
+  name = 'logger_test_protobufs',
+  srcs = ['logger_test.proto'],
+  protoc = '//third_party/google/protobuf:protoc',
+  default_runtime = '//third_party/google/protobuf'
 )
 
 cc_library(
-  name = 'text_log',
-  hdrs = ['text_log.h'],
-  srcs = ['text_log.cpp'],
-  deps = [':log_base']
-)
-
-cc_library(
-  name = 'csv_log',
-  hdrs = ['csv_log.h'],
-  srcs = ['csv_log.cpp'],
-  deps = [':log_base',
-          '//muan/units:units']
-)
-
-cc_library(
-  name = 'test_log',
-  hdrs = ['test_log.h'],
-  srcs = ['test_log.cpp'],
-  deps = [':log_base']
+  name = 'filewriter',
+  srcs = ['filewriter.hpp'],
+  hdrs = ['filewriter.h'],
+  deps = ['//third_party/boost:filesystem']
 )
