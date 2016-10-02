@@ -84,12 +84,17 @@ def make_gains(high_gear):
     ])
 
     # Controller weighting factors
-    Q_controller = np.asmatrix([
-        [370., 0., 0., 0.],
-        [0., 200., 0., 0.],
-        [0., 0., 800., 0.],
-        [0., 0., 0., 200.],
-    ])
+    Q_controller = np.asmatrix(np.zeros((4, 4)))
+    if high_gear:
+        Q_controller[0, 0] = 700.
+        Q_controller[1, 1] = 600.
+        Q_controller[2, 2] = 1400.
+        Q_controller[3, 3] = 600.
+    else:
+        Q_controller[0, 0] = 370.
+        Q_controller[1, 1] = 200.
+        Q_controller[2, 2] = 800.
+        Q_controller[3, 3] = 200.
 
     R_controller = np.asmatrix([
         [1., 0.],
