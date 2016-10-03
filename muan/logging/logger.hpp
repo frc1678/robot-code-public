@@ -23,9 +23,7 @@ void Logger::AddQueue(std::string name, T& queue_reader) {
 void Logger::Update(muan::units::Time dt) {
   for (auto const& log : all_logs_) {
     std::experimental::optional<std::string> message;
-    message = log->reader->GetMessageAsCSV();
-
-    if (message) {
+    while (message = log->reader->GetMessageAsCSV()) {
       writer_->WriteLine(log->name, message.value_or(""));
     }
   }

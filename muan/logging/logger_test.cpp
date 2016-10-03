@@ -57,7 +57,7 @@ TEST(Logger, LogsManyMessages) {
   logger.AddQueue("testqueue", mqr);
 
   logger.Start();
-  muan::sleep_for(1 * muan::units::s);
+  muan::sleep_for(0.1 * muan::units::s);
   logger.Stop();
   muan::sleep_for(1 * muan::units::s);
 }
@@ -90,5 +90,31 @@ TEST(Logger, LogsMultipleQueues) {
   logger.Start();
   muan::sleep_for(0.1 * muan::units::s);
   logger.Stop();
+  muan::sleep_for(1 * muan::units::s);
+}
+
+TEST(Logger, LogsManyMessagesPerTick) {
+  std::shared_ptr<MockFileWriter> mock_writer = std::make_shared<MockFileWriter>();
+
+  EXPECT_CALL(*mock_writer, WriteLine("testqueue", "42"))
+      .Times(10000);
+
+  std::shared_ptr<muan::logging::FileWriter> writer = mock_writer;
+  Logger logger(writer);
+
+  MessageQueue<logging_test::Test1, 20000> mq;
+  auto mqr = mq.MakeReader();
+  logger.AddQueue("testqueue", mqr);
+
+  for (int n = 1; n <= 10; n++) {
+    for (int i = 1; i <= 1000; i++) {
+      logging_test::Test1 msg;
+      msg.set_thing(42);
+      mq.WriteMessage(msg);
+    }
+    logger.Start();
+    muan::sleep_for(0.1 * muan::units::s);
+    logger.Stop();
+  }
   muan::sleep_for(1 * muan::units::s);
 }
