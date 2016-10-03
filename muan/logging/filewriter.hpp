@@ -16,16 +16,18 @@ FileWriter::FileWriter(std::string base_path) {
 
 void FileWriter::WriteLine(std::string filename, std::string line) {
   boost::filesystem::create_directories(filename);
-  std::ofstream outfile;
-  outfile.open(base_path_ + filename, std::ios::app);
-  outfile << line << "\n";
-  outfile.close();
+  if (open_files_.find(filename) == open_files_.end()) {
+    open_files_[filename].open(base_path_ + filename, std::ios::app);
+  }
+  open_files_[filename] << line << "\n";
+  open_files_[filename].flush();
 }
 
 std::string FileWriter::GetBasePath() {
   std::vector<std::string> paths = {
       "/mnt/something/logs/",  //TODO(Wesley) find actual path being used on the roborio
       "/home/lvuser/logs/",
+      "/home/wesley/logs/",
       "/logs",
       "/"};
 

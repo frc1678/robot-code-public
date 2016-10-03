@@ -5,6 +5,7 @@
 #include <ctime>
 #include <fstream>
 #include <iostream>
+#include <map>
 
 /*
  * This class deals with writing to files, making sure that the needed folders
@@ -32,6 +33,7 @@ class FileWriter {
  private:
   std::string GetBasePath();
   std::string base_path_ = "";
+  std::map<std::string, std::ofstream> open_files_;
 };
 
 }  // namespace logging
