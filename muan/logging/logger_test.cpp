@@ -112,6 +112,7 @@ TEST(Logger, LogsManyMessagesPerTick) {
       msg.set_thing(42);
       mq.WriteMessage(msg);
     }
+    muan::sleep_for(0.1 * muan::units::s);
     logger.Start();
     muan::sleep_for(0.1 * muan::units::s);
     logger.Stop();
