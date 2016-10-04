@@ -165,8 +165,8 @@ def c2d(A, B, dt, Q = None, R = None):
         Q = numpy.asmatrix(Q)
         R = numpy.asmatrix(R)
 
-        assert Q.shape == A.shape, "The dimensions of Q %s must match those of A %s, and Q must be square" % (Q.shape, A.shape)
-        assert R.shape[0] == R.shape[1], "R must be square but is instead %ix%i, and R must be square" % (R.shape[0], R.shape[1])
+        assert Q.shape == A.shape, "The dimensions of Q %s must match those of A %s" % (Q.shape, A.shape)
+        assert R.shape[0] == R.shape[1], "R must be square but is instead %ix%i" % (R.shape[0], R.shape[1])
 
         H = numpy.asmatrix(numpy.zeros((n+n, n+n)))
         H[:n, :n] = -A
@@ -198,12 +198,17 @@ def dlqr(A, B, Q, R):
     R = numpy.asmatrix(R)
 
     _validate_system(A, B, None, None)
-    assert Q.shape[0] == Q.shape[1] and Q.shape[0] == A.shape[0], "The dimensions of Q %s must match those of A %s, and Q must be square" % (Q.shape, A.shape)
-    assert R.shape[0] == R.shape[1] and R.shape[0] == B.shape[1], "R %i must be square and must be compatible with B %i, and R must be square" % (R.shape, B.shape)
+    assert Q.shape[0] == Q.shape[1] and Q.shape[0] == A.shape[0], "The dimensions of Q %s must match those of A %s" % (Q.shape, A.shape)
+    assert R.shape[0] == R.shape[1] and R.shape[0] == B.shape[1], "R %i must be square and must be compatible with B %i" % (R.shape, B.shape)
 
     assert numpy.linalg.matrix_rank(controllability(A, B)) == A.shape[0], "System must be completely controllable to do LQR."
 
-    # TODO(Kyle): Ensure Q is positive-semidefninite and R is positive-definite
+    # Ensure Q is positive-semidefninite and R is positive-definite
+    Q_eigvals = numpy.linalg.eigvalsh(Q)
+    assert numpy.all(Q_eigvals > -1e-8), "Q must be positive-semidefinite"
+
+    R_eigvals = numpy.linalg.eigvalsh(R)
+    assert numpy.all(R_eigvals > 0), "R must be positive-definite"
 
     # Solve the ARE for the cost-to-go matrix
     M = numpy.asmatrix(scipy.linalg.solve_discrete_are(A, B, Q, R))
@@ -229,12 +234,18 @@ def clqr(A, B, Q, R):
     R = numpy.asmatrix(R)
 
     _validate_system(A, B, None, None)
-    assert Q.shape[0] == Q.shape[1] and Q.shape[0] == A.shape[0], "The dimensions of Q %s must match those of A %s, and Q must be square" % (Q.shape, A.shape)
-    assert R.shape[0] == R.shape[1] and R.shape[0] == B.shape[1], "R %i must be square and must be compatible with B %i, and R must be square" % (R.shape, B.shape)
+    assert Q.shape[0] == Q.shape[1] and Q.shape[0] == A.shape[0], "The dimensions of Q %s must match those of A %s" % (Q.shape, A.shape)
+    assert R.shape[0] == R.shape[1] and R.shape[0] == B.shape[1], "R %i must be square and must be compatible with B %i" % (R.shape, B.shape)
 
     assert numpy.linalg.matrix_rank(controllability(A, B)) == A.shape[0], "System must be completely controllable to do LQR."
 
-    # TODO(Kyle): Ensure Q is positive-semidefninite and R is positive-definite
+    # Ensure Q is positive-semidefninite and R is positive-definite
+    Q_eigvals = numpy.linalg.eigvalsh(Q)
+    # Allow for some tolerance on Q to avoid numerical stability issues
+    assert numpy.all(Q_eigvals > -1e-8), "Q must be positive-semidefinite"
+
+    R_eigvals = numpy.linalg.eigvalsh(R)
+    assert numpy.all(R_eigvals > 0), "R must be positive-definite"
 
     # Solve the ARE for the cost-to-go matrix
     M = numpy.asmatrix(scipy.linalg.solve_continuous_are(A, B, Q, R))
@@ -288,8 +299,8 @@ def ckalman(A, C, Q, R):
     R = numpy.asmatrix(R)
     _validate_system(A, None, C, None)
 
-    assert Q.shape[0] == Q.shape[1] and Q.shape[0] == A.shape[0], "The dimensions of Q %s must match those of A %s, and Q must be square" % (Q.shape, A.shape)
-    assert R.shape[0] == R.shape[1] and R.shape[0] == C.shape[0], "R %i must be square and must be compatible with C %i, and R must be square" % (R.shape, B.shape)
+    assert Q.shape[0] == Q.shape[1] and Q.shape[0] == A.shape[0], "The dimensions of Q %s must match those of A %s" % (Q.shape, A.shape)
+    assert R.shape[0] == R.shape[1] and R.shape[0] == C.shape[0], "R %i must be square and must be compatible with C %i" % (R.shape, B.shape)
 
     assert numpy.linalg.matrix_rank(observability(A, C)) == A.shape[0], "System must be completely observable to compute Kalman gains."
 
@@ -318,4 +329,4 @@ def feedforwards(A, B, Q = None):
     if Q is None:
         return numpy.linalg.pinv(B)
     else:
-        return numpy.linalg.inv(B.T * Q * B) * B * Q
+        return numpy.linalg.inv(B.T * Q * B) * B.T * Q

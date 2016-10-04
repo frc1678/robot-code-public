@@ -3,3 +3,4 @@ bazel-*
 .DS_Store
 */__pycache__/*
 compile_commands.json
+*.pyc

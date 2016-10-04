@@ -11,6 +11,7 @@ from state_space_observer import *
 
 from state_space_scenario import StateSpaceScenario
 from trapezoidal_profile import TrapezoidalMotionProfile
+from state_space_writer import StateSpaceWriter
 
 # Simple linear second-order system
 A = np.asmatrix([[0, 1],
@@ -49,6 +50,7 @@ observer = StateSpaceObserver(gains, x_initial)
 
 # Create and run the scenario
 scenario = StateSpaceScenario(plant, x_initial, controller, observer, x_initial, 'test_controller')
+writer = StateSpaceWriter(gains, 'test_controller')
 
 profile = TrapezoidalMotionProfile(10, 5, 5)
 
@@ -56,4 +58,4 @@ def goal(t):
     return np.asmatrix([profile.distance(t), profile.velocity(t)]).T
 
 scenario.run(goal, profile.total_time)
-scenario.write('/tmp/test.h', '/tmp/test.cpp')
+writer.write('/tmp/test.h', '/tmp/test.cpp')
