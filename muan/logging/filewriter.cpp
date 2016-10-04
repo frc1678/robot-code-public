@@ -1,6 +1,3 @@
-#ifndef MUAN_LOGGING_FILEWRITER_HPP_
-#define MUAN_LOGGING_FILEWRITER_HPP_
-
 #include "filewriter.h"
 
 namespace muan {
@@ -47,5 +44,3 @@ std::string FileWriter::GetBasePath() {
 
 }  // namespace logging
 }  // namespace muan
-
-#endif /* MUAN_LOGGING_FILEWRITER_HPP_ */

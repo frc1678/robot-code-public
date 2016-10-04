@@ -33,7 +33,7 @@ cc_proto_library(
 
 cc_library(
   name = 'filewriter',
-  srcs = ['filewriter.hpp'],
+  srcs = ['filewriter.cpp'],
   hdrs = ['filewriter.h'],
   deps = ['//third_party/boost:filesystem']
 )

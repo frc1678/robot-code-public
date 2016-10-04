@@ -1,5 +1,5 @@
 #include "logger.hpp"
-#include "filewriter.hpp"
+#include "filewriter.h"
 #include "gmock/gmock.h"
 #include "muan/logging/logger_test.pb.h"
 #include "muan/units/units.h"

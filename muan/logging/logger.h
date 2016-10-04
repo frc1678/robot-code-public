@@ -1,7 +1,7 @@
 #ifndef MUAN_LOGGING_LOGGER_H_
 #define MUAN_LOGGING_LOGGER_H_
 
-#include "filewriter.hpp"
+#include "filewriter.h"
 #include "muan/multithreading/updateable.h"
 #include "muan/queues/message_queue.h"
 #include "muan/units/units.h"
