@@ -25,22 +25,24 @@ void FileWriter::WriteLine(std::string filename, std::string line) {
 
 std::string FileWriter::GetBasePath() {
   std::vector<std::string> paths = {
-      "/mnt/something/logs/",  //TODO(Wesley) find actual path being used on the roborio
-      "/home/lvuser/logs/",
-      "/home/wesley/logs/",
-      "/logs",
-      "/"};
+      "/mnt/something/",  //TODO(Wesley) find actual path being used on the roborio
+      "/home/lvuser/"};
 
-  //TODO(Wesley) Check for space and perms
+  //TODO(Wesley) Check for space
   for (auto const path : paths) {
     if (boost::filesystem::is_directory(path)) {
-      auto final_path = path + std::to_string(std::time(0)) + "/";
-      boost::filesystem::create_directories(final_path);
-      return final_path;
+      try {
+        auto final_path = path + "logs/" + std::to_string(std::time(0)) + "/";
+        boost::filesystem::create_directories(final_path);
+        return final_path;
+      } catch (const boost::filesystem::filesystem_error& e) {
+        std::cout << "Error opening path for logging:\n" << e.code().message() << "\n";
+      }
     }
   }
 
-  return "/";  //TODO(Wesley) error!
+  std::cout << "Could not find valid path for logging! Attempting to use /, but most likely no logs will be created.\n";
+  return "/";
 }
 
 }  // namespace logging
