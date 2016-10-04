@@ -29,11 +29,6 @@ void Logger::Update(muan::units::Time dt) {
   }
 }
 
-std::experimental::optional<std::string> Logger::GenericReader::GetMessageAsCSV() {
-  printf("Logger called GenericReader's GetMessageAsCSV function - something is very wrong...\n");
-  return std::experimental::nullopt;  // This should *never* happen
-}
-
 template <class T>
 std::experimental::optional<std::string> Logger::Reader<T>::GetMessageAsCSV() {
   auto message = reader_.ReadMessage();

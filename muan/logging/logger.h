@@ -51,7 +51,7 @@ class Logger : public muan::Updateable {
 
   class GenericReader {
    public:
-    virtual std::experimental::optional<std::string> GetMessageAsCSV();
+    virtual std::experimental::optional<std::string> GetMessageAsCSV() = 0;
   };
 
   template <class T>
