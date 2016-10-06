@@ -35,7 +35,7 @@ void Logger::Update(muan::units::Time dt) {
   }
 }
 
-TextLogger Logger::GetTextLogger(std::string name) { //TODO(Wesley) logs with same name? Threading bs with vector? (probably just add a mutex)
+TextLogger Logger::GetTextLogger(std::string name) { //TODO(Wesley) logs with same name?
   auto queue_ptr = std::make_shared<TextLogger::TextQueue>();
   auto queue_reader = std::make_shared<TextLogger::TextQueue::QueueReader>(queue_ptr->MakeReader());
   TextLog log_obj = {queue_reader, name, name + ".log"};
