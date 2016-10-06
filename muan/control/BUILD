@@ -96,3 +96,31 @@ cc_test(
     '//third_party/google/googletest:googletest'
   ]
 )
+
+py_binary(
+  name = 'cpp_test_generator',
+  srcs = ['cpp_generator_test.py'],
+  main = 'cpp_generator_test.py',
+  deps = ['python_controls']
+)
+
+genrule(
+  name = 'cpp_test_genrule',
+  srcs = [],
+  tools = [':cpp_test_generator'],
+  cmd = '$(location :cpp_test_generator) $(location cpp_test_constants.h) $(location cpp_test_constants.cpp)',
+  outs = ['cpp_test_constants.h', 'cpp_test_constants.cpp']
+)
+
+cc_test(
+  name = 'generated_cpp_test',
+  srcs = [
+    'generated_cpp_test.cpp',
+    'cpp_test_constants.cpp',
+    'cpp_test_constants.h'
+  ],
+  deps = [
+    ':state_space',
+    '//third_party/google/googletest:googletest',
+  ]
+)
