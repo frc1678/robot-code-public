@@ -7,7 +7,7 @@ FileWriter::FileWriter() {
   base_path_ = GetBasePath();
 }
 
-FileWriter::FileWriter(std::string base_path) {
+FileWriter::FileWriter(const ::std::string &base_path) {
   base_path_ = base_path;
 }
 
