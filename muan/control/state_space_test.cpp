@@ -39,6 +39,9 @@ TEST(StateSpace, Initialization) {
   // default
   EXPECT_EQ(controller.u_min(0), -std::numeric_limits<double>::infinity());
   EXPECT_EQ(controller.u_max(0), std::numeric_limits<double>::infinity());
+
+  // Use default parameters
+  muan::control::StateSpacePlant<1, 2, 1> plant2(plant.A(), plant.B(), plant.C());
 }
 
 // Ensure that a mathematically stable plant converges to zero
