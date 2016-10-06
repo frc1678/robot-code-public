@@ -38,7 +38,7 @@ std::string FileWriter::GetBasePath() {
     }
   }
 
-  std::cout << "Could not find valid path for logging! Attempting to use /, but most likely no logs will be created.\n";
+  std::cerr << "Could not find valid path for logging! Attempting to use /, but most likely no logs will be created.\n";
   return "/";
 }
 
