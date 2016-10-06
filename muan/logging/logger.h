@@ -44,6 +44,10 @@ namespace logging {
  *  - Creating a textlog
  * However, these operations should only happen in the beginning of the robot
  * code, when the subsystems are being initialized, this should not be a problem.
+ *
+ * Right now, textlog uses std::string, which is non-realtime if it needs to be
+ * expanded, so it is up to callers to ensure that the construction of the
+ * logging string is realtime.
  */
 class Logger : public muan::Updateable {
  public:
