@@ -2,6 +2,7 @@
 #define MUAN_LOGGING_LOGGER_H_
 
 #include "filewriter.h"
+#include "textlogger.h"
 #include "muan/multithreading/updateable.h"
 #include "muan/queues/message_queue.h"
 #include "muan/units/units.h"
@@ -21,16 +22,28 @@ namespace logging {
 
 /*
  * A logging class that takes QueueReader objects and logs them to disk as CSV
- * files.
+ * files. It also supports logging text.
  *
  * Simple use:
  *
  * Logger logger;
+ *
  * MessageQueue<protobuf_class, 100> mq;
  * logger.AddQueue("some_queue", mq.MakeReader());
  *
+ * auto textlog = logger.GetTextLogger("log_name");
+ * textlog("Everything is on fire! Send help.");
+ *
  * You only want to have one logger object running at a time. You should add
  * QueueReaders to it as needed.
+ *
+ * A note about realtime behavior - The Logger class is running in a thread
+ * that is not expected to be realtime. Logging messages is realtime, but the
+ * following operations are not realtime:
+ *  - Adding a Queue to be logged
+ *  - Creating a textlog
+ * However, these operations should only happen in the beginning of the robot
+ * code, when the subsystems are being initialized, this should not be a problem.
  */
 class Logger : public muan::Updateable {
  public:
@@ -46,6 +59,8 @@ class Logger : public muan::Updateable {
 
   void Update(muan::units::Time dt) override;
 
+  // Returns a TextLogger that can be used to log strings to a file.
+  TextLogger GetTextLogger(std::string name);
  private:
   std::shared_ptr<FileWriter> writer_;
 
@@ -67,9 +82,17 @@ class Logger : public muan::Updateable {
   struct QueueLog {
     std::unique_ptr<GenericReader> reader;
     std::string name;  // Human friendly name for this log
+    std::string filename;
   };
 
-  std::vector<std::unique_ptr<QueueLog>> all_logs_;
+  struct TextLog {
+    std::shared_ptr<TextLogger::TextQueue::QueueReader> queue;
+    std::string name;
+    std::string filename;
+  };
+
+  std::vector<std::unique_ptr<QueueLog>> queue_logs_;
+  std::vector<TextLog> text_logs_;
 
 };  // class Logger
 

@@ -19,7 +19,7 @@ class MockFileWriter : public muan::logging::FileWriter {
 TEST(Logger, LogsOneMessage) {
   std::shared_ptr<MockFileWriter> mock_writer = std::make_shared<MockFileWriter>();
 
-  EXPECT_CALL(*mock_writer, WriteLine("testqueue", "42"))
+  EXPECT_CALL(*mock_writer, WriteLine("testqueue.csv", "42"))
       .Times(1);
 
   std::shared_ptr<muan::logging::FileWriter> writer = mock_writer;
@@ -41,7 +41,7 @@ TEST(Logger, LogsOneMessage) {
 TEST(Logger, LogsManyMessages) {
   std::shared_ptr<MockFileWriter> mock_writer = std::make_shared<MockFileWriter>();
 
-  EXPECT_CALL(*mock_writer, WriteLine("testqueue", "42"))
+  EXPECT_CALL(*mock_writer, WriteLine("testqueue.csv", "42"))
       .Times(42);
 
   std::shared_ptr<muan::logging::FileWriter> writer = mock_writer;
@@ -65,9 +65,9 @@ TEST(Logger, LogsManyMessages) {
 TEST(Logger, LogsMultipleQueues) {
   std::shared_ptr<MockFileWriter> mock_writer = std::make_shared<MockFileWriter>();
 
-  EXPECT_CALL(*mock_writer, WriteLine("testqueue1", "42"))
+  EXPECT_CALL(*mock_writer, WriteLine("testqueue1.csv", "42"))
       .Times(1);
-  EXPECT_CALL(*mock_writer, WriteLine("testqueue2", "42"))
+  EXPECT_CALL(*mock_writer, WriteLine("testqueue2.csv", "42"))
       .Times(1);
 
   std::shared_ptr<muan::logging::FileWriter> writer = mock_writer;
@@ -96,7 +96,7 @@ TEST(Logger, LogsMultipleQueues) {
 TEST(Logger, LogsManyMessagesPerTick) {
   std::shared_ptr<MockFileWriter> mock_writer = std::make_shared<MockFileWriter>();
 
-  EXPECT_CALL(*mock_writer, WriteLine("testqueue", "42"))
+  EXPECT_CALL(*mock_writer, WriteLine("testqueue.csv", "42"))
       .Times(10000);
 
   std::shared_ptr<muan::logging::FileWriter> writer = mock_writer;
@@ -117,5 +117,21 @@ TEST(Logger, LogsManyMessagesPerTick) {
     muan::sleep_for(0.1 * muan::units::s);
     logger.Stop();
   }
+  muan::sleep_for(1 * muan::units::s);
+}
+
+TEST(Logger, TextLogger) {
+  std::shared_ptr<MockFileWriter> mock_writer = std::make_shared<MockFileWriter>();
+  std::shared_ptr<muan::logging::FileWriter> writer = mock_writer;
+
+  EXPECT_CALL(*mock_writer, WriteLine("name.log", "test"))
+      .Times(1);
+
+  Logger logger(writer);
+  auto textlog = logger.GetTextLogger("name");
+  textlog("test");
+  logger.Start();
+  muan::sleep_for(0.1 * muan::units::s);
+  logger.Stop();
   muan::sleep_for(1 * muan::units::s);
 }

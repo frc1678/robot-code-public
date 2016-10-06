@@ -6,6 +6,7 @@ cc_library(
   srcs = ['logger.hpp'],
   hdrs = ['logger.h'],
   deps = ['filewriter',
+          'textlogger',
           '//muan/queues:queues',
           '//muan/utils:proto_utils',
           '//muan/multithreading:updateable',
@@ -36,4 +37,18 @@ cc_library(
   srcs = ['filewriter.cpp'],
   hdrs = ['filewriter.h'],
   deps = ['//third_party/boost:filesystem']
+)
+
+cc_library(
+  name = 'textlogger',
+  srcs = ['textlogger.cpp'],
+  hdrs = ['textlogger.h'],
+  deps = ['//muan/queues:queues']
+)
+
+cc_test(
+  name = 'textlogger_test',
+  srcs = ['textlogger_test.cpp'],
+  deps = ['//third_party/google/googletest',
+          'textlogger']
 )
