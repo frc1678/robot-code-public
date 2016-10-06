@@ -22,7 +22,7 @@ void FileWriter::WriteLine(std::string filename, std::string line) {
 
 std::string FileWriter::GetBasePath() {
   std::vector<std::string> paths = {
-      "/mnt/something/",  //TODO(Wesley) find actual path being used on the roborio
+      "/mnt/sda1/",
       "/home/lvuser/"};
 
   //TODO(Wesley) Check for space
