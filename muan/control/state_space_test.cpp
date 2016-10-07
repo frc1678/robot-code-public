@@ -40,8 +40,26 @@ TEST(StateSpace, Initialization) {
   EXPECT_EQ(controller.u_min(0), -std::numeric_limits<double>::infinity());
   EXPECT_EQ(controller.u_max(0), std::numeric_limits<double>::infinity());
 
+  // Set matrix entries
+  for (uint32_t i = 0; i < 2; i++) {
+    for (uint32_t j = 0; j < 2; j++) {
+      plant.A(i, j) = 2 * i + j;
+    }
+    plant.B(i, 0) = i + 4;
+    plant.C(0, i) = i + 6;
+  }
+
   // Use default parameters
   muan::control::StateSpacePlant<1, 2, 1> plant2(plant.A(), plant.B(), plant.C());
+
+  // Ensure that the plant uses the gains given to it 
+  for (uint32_t i = 0; i < 2; i++) {
+    for (uint32_t j = 0; j < 2; j++) {
+      EXPECT_EQ(plant2.A(i, j), plant.A(i, j));
+    }
+    EXPECT_EQ(plant2.B(i, 0), plant.B(i, 0));
+    EXPECT_EQ(plant2.C(0, i), plant.C(0, i));
+  }
 }
 
 // Ensure that a mathematically stable plant converges to zero
