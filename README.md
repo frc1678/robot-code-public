@@ -44,9 +44,9 @@ Here's how to get your code into the main robot repository:
 ###Any time you want to make a change:
 1. Create and checkout a new branch.
   * `git checkout -b <your_branch_name>`, where <your_branch_name> is a descriptive name for your branch. For example `fix-shooter-wheel`, `two-ball-auto`, or `climbing`. Use dashes in the branch name, not underscores.
-2. Make whatever code changes you want/need/are being forced to make. Be sure to write tests for your changes!
+2. Make whatever code changes you want/need/ to make. Be sure to write tests for your changes!
 3. Commit your work locally.
-  * Try to make your commits as atomic (small) as possible.
+  * Try to make your commits as atomic (small) as possible. For example, moving functions around should be different from adding features, and changes to one subsystem should be in a different commit than changes to another subsystem.
   * Follow [these](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html) conventions for commit messages. Or else.
   * If you change is anything more than a few lines or small fixes, don't skip the extended description. If you are always using `git commit` with the `-m` option, stop doing that.
 4. Push to your forked repo.
