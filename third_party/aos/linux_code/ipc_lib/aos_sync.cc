@@ -18,6 +18,8 @@
 #include <assert.h>
 #include <pthread.h>
 #include <sched.h>
+#include <unistd.h>
+#include <stdio.h>
 
 #ifdef AOS_SANITIZER_thread
 #include <sanitizer/tsan_interface_atomic.h>
