@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include "aos/common/gtest_prod.h"
+#include "third_party/aos/common/gtest_prod.h"
 
 namespace aos {
 namespace testing {
@@ -64,6 +64,6 @@ class Once {
 
 }  // namespace aos
 
-#include "aos/common/once-tmpl.h"
+#include "third_party/aos/common/once-tmpl.h"
 
 #endif  // AOS_COMMON_ONCE_H_

@@ -1,10 +1,9 @@
-#include "aos/common/stl_mutex.h"
+#include "third_party/aos/common/stl_mutex.h"
 
 #include "gtest/gtest.h"
 
-#include "aos/testing/test_logging.h"
-#include "aos/common/util/thread.h"
-#include "aos/common/die.h"
+#include "third_party/aos/common/util/thread.h"
+#include "third_party/aos/common/die.h"
 
 namespace aos {
 namespace testing {
@@ -12,7 +11,6 @@ namespace testing {
 class StlMutexDeathTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    ::aos::testing::EnableTestLogging();
     SetDieTestMode(true);
   }
 };

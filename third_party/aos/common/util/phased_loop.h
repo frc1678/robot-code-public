@@ -1,9 +1,9 @@
 #ifndef AOS_COMMON_UTIL_PHASED_LOOP_H_
 #define AOS_COMMON_UTIL_PHASED_LOOP_H_
 
-#include "aos/common/time.h"
+#include "third_party/aos/common/time.h"
 
-#include "aos/common/logging/logging.h"
+#include "third_party/aos/common/check.h"
 
 namespace aos {
 namespace time {

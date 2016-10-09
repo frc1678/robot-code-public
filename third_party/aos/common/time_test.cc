@@ -1,11 +1,10 @@
-#include "aos/common/time.h"
+#include "third_party/aos/common/time.h"
 
 #include <thread>
 
 #include "gtest/gtest.h"
 
-#include "aos/common/macros.h"
-#include "aos/common/util/death_test_log_implementation.h"
+#include "third_party/aos/common/macros.h"
 
 namespace aos {
 namespace time {
@@ -32,16 +31,13 @@ TEST(TimeTest, timevalConversions) {
 }
 
 TEST(TimeDeathTest, ConstructorChecking) {
-  logging::Init();
   EXPECT_DEATH(
       {
-        logging::AddImplementation(new util::DeathTestLogImplementation());
         Time(0, -1);
       },
       ".*0 <= nsec\\(-1\\) < 10+ .*");
   EXPECT_DEATH(
       {
-        logging::AddImplementation(new util::DeathTestLogImplementation());
         Time(0, Time::kNSecInSec);
       },
       ".*0 <= nsec\\(10+\\) < 10+ .*");

@@ -1,4 +1,6 @@
-#include "aos/common/util/phased_loop.h"
+#include "third_party/aos/common/util/phased_loop.h"
+
+#include "third_party/aos/common/check.h"
 
 namespace aos {
 namespace time {
@@ -6,7 +8,7 @@ namespace time {
 void PhasedLoopXMS(int ms, int offset) {
   const Time frequency = Time::InMS(ms);
   SleepUntil((Time::Now() / static_cast<int32_t>(frequency.ToNSec())) *
-             static_cast<int32_t>(frequency.ToNSec()) +
+                 static_cast<int32_t>(frequency.ToNSec()) +
              frequency + Time::InUS(offset));
 }
 

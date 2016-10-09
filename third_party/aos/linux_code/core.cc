@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "aos/linux_code/init.h"
-#include "aos/common/util/run_command.h"
+#include "third_party/aos/linux_code/init.h"
+#include "third_party/aos/common/util/run_command.h"
 
 // Initializes shared memory. This is the only file that will create the shared
 // memory file if it doesn't already exist (and set everything up).

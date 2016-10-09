@@ -1,9 +1,9 @@
-#include "aos/linux_code/complex_thread_local.h"
+#include "third_party/aos/linux_code/complex_thread_local.h"
 
 #include <pthread.h>
 
-#include "aos/common/once.h"
-#include "aos/common/die.h"
+#include "third_party/aos/common/once.h"
+#include "third_party/aos/common/die.h"
 
 #define SIMPLE_CHECK(call)              \
   do {                                  \

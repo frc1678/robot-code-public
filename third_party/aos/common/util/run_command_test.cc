@@ -1,8 +1,8 @@
-#include "aos/common/util/run_command.h"
+#include "third_party/aos/common/util/run_command.h"
 
 #include "gtest/gtest.h"
 
-#include "aos/common/util/thread.h"
+#include "third_party/aos/common/util/thread.h"
 
 namespace aos {
 namespace util {

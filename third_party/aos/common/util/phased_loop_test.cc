@@ -1,8 +1,6 @@
-#include "aos/common/util/phased_loop.h"
+#include "third_party/aos/common/util/phased_loop.h"
 
 #include "gtest/gtest.h"
-
-#include "aos/testing/test_logging.h"
 
 namespace aos {
 namespace time {
@@ -11,7 +9,6 @@ namespace testing {
 class PhasedLoopTest : public ::testing::Test {
  protected:
   PhasedLoopTest() {
-    ::aos::testing::EnableTestLogging();
   }
 };
 

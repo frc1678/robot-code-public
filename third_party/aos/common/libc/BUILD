@@ -1,4 +1,5 @@
 package(default_visibility = ['//visibility:public'])
+licenses(['notice'])
 
 cc_library(
   name = 'aos_strsignal',
@@ -9,7 +10,7 @@ cc_library(
     'aos_strsignal.h',
   ],
   deps = [
-    '//aos/common/logging',
+    '//third_party/aos/common:check'
   ],
 )
 
@@ -20,8 +21,7 @@ cc_test(
   ],
   deps = [
     ':aos_strsignal',
-    '//aos/testing:googletest',
-    '//aos/common/logging',
+    '//third_party/aos/testing:googletest',
   ],
 )
 
@@ -42,7 +42,7 @@ cc_test(
   ],
   deps = [
     ':dirname',
-    '//aos/testing:googletest',
+    '//third_party/aos/testing:googletest',
   ],
 )
 
@@ -63,6 +63,6 @@ cc_test(
   ],
   deps = [
     ':aos_strerror',
-    '//aos/testing:googletest',
+    '//third_party/aos/testing:googletest',
   ],
 )

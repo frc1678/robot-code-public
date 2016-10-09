@@ -6,7 +6,7 @@
 
 #include <pthread.h>
 
-#include "aos/common/macros.h"
+#include "third_party/aos/common/macros.h"
 
 namespace aos {
 namespace util {

@@ -3,8 +3,8 @@
 
 #include <stdarg.h>
 
-#include "aos/common/macros.h"
-#include "aos/common/libc/aos_strerror.h"
+#include "third_party/aos/common/macros.h"
+#include "third_party/aos/common/libc/aos_strerror.h"
 
 namespace aos {
 

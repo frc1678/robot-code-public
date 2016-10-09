@@ -1,4 +1,4 @@
-#include "aos/common/type_traits.h"
+#include "third_party/aos/common/type_traits.h"
 
 #include "gtest/gtest.h"
 
