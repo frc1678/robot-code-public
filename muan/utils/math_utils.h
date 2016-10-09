@@ -3,6 +3,7 @@
 
 #include "Eigen/Core"
 #include <iostream>
+#include <random>
 
 namespace muan {
 
