@@ -23,17 +23,17 @@ filegroup(
 #   * all file groups that said cc_toolchain might refer to,
 # including the default_grte_top setting in the CROSSTOOL
 # protobuf.
-filegroup(
+cc_toolchain_suite(
     name = "toolchain",
-    srcs = [
-        ":cc-compiler-armeabi-v7a",
-        ":cc-compiler-darwin",
-        ":cc-compiler-freebsd",
-        ":cc-compiler-local",
-        ":cc-compiler-roborio",
-        ":cc-compiler-roborio-osxbuild",
-        ":empty",
-    ],
+    toolchains = {
+        'armeabi-v7a': ":cc-compiler-armeabi-v7a",
+        'darwin': ":cc-compiler-darwin",
+        'freebsd': ":cc-compiler-freebsd",
+        'local': ":cc-compiler-local",
+        'roborio': ":cc-compiler-roborio",
+        'roborio-osxbuild': ":cc-compiler-roborio-osxbuild",
+        'empty': ":empty",
+    },
 )
 
 cc_toolchain(
