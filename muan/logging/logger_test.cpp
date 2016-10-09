@@ -32,10 +32,7 @@ TEST(Logger, LogsOneMessage) {
   auto mqr = mq.MakeReader();
   logger.AddQueue("testqueue", mqr);
 
-  logger.Start();
-  muan::sleep_for(0.1 * muan::units::s);
-  logger.Stop();
-  muan::sleep_for(1 * muan::units::s);
+  logger.Update(0.005);
 }
 
 TEST(Logger, LogsManyMessages) {
@@ -56,10 +53,7 @@ TEST(Logger, LogsManyMessages) {
   auto mqr = mq.MakeReader();
   logger.AddQueue("testqueue", mqr);
 
-  logger.Start();
-  muan::sleep_for(0.1 * muan::units::s);
-  logger.Stop();
-  muan::sleep_for(1 * muan::units::s);
+  logger.Update(0.005);
 }
 
 TEST(Logger, LogsMultipleQueues) {
@@ -87,10 +81,7 @@ TEST(Logger, LogsMultipleQueues) {
   auto mqr2 = mq2.MakeReader();
   logger.AddQueue("testqueue2", mqr2);
 
-  logger.Start();
-  muan::sleep_for(0.1 * muan::units::s);
-  logger.Stop();
-  muan::sleep_for(1 * muan::units::s);
+  logger.Update(0.005);
 }
 
 TEST(Logger, LogsManyMessagesPerTick) {
@@ -112,11 +103,29 @@ TEST(Logger, LogsManyMessagesPerTick) {
       msg.set_thing(42);
       mq.WriteMessage(msg);
     }
-    muan::sleep_for(0.1 * muan::units::s);
-    logger.Start();
-    muan::sleep_for(0.1 * muan::units::s);
-    logger.Stop();
+    logger.Update(0.005);
   }
+}
+
+TEST(Logger, RunsAsThread) {
+  std::shared_ptr<MockFileWriter> mock_writer = std::make_shared<MockFileWriter>();
+
+  EXPECT_CALL(*mock_writer, WriteLine("testqueue.csv", "42"))
+      .Times(1);
+
+  std::shared_ptr<muan::logging::FileWriter> writer = mock_writer;
+  Logger logger(writer);
+
+  MessageQueue<logging_test::Test1, 100> mq;
+  logging_test::Test1 msg;
+  msg.set_thing(42);
+  mq.WriteMessage(msg);
+  auto mqr = mq.MakeReader();
+  logger.AddQueue("testqueue", mqr);
+
+  logger.Start();
+  muan::sleep_for(2 * muan::units::s);
+  logger.Stop();
   muan::sleep_for(1 * muan::units::s);
 }
 
@@ -130,8 +139,5 @@ TEST(Logger, TextLogger) {
   Logger logger(writer);
   auto textlog = logger.GetTextLogger("name");
   textlog("test");
-  logger.Start();
-  muan::sleep_for(0.1 * muan::units::s);
-  logger.Stop();
-  muan::sleep_for(1 * muan::units::s);
+  logger.Update(0.005);
 }
