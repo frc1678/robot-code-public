@@ -48,7 +48,7 @@ Here's how to get your code into the main robot repository:
 3. Commit your work locally.
   * Try to make your commits as atomic (small) as possible. For example, moving functions around should be different from adding features, and changes to one subsystem should be in a different commit than changes to another subsystem.
   * Follow [these](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html) conventions for commit messages. Or else.
-  * If you change is anything more than a few lines or small fixes, don't skip the extended description. If you are always using `git commit` with the `-m` option, stop doing that.
+  * If your change is anything more than a few lines or small fixes, don't skip the extended description. If you are always using `git commit` with the `-m` option, stop doing that.
 4. Push to your forked repo.
   * `git push origin <your_branch_name>`.
 5. Submit a pull request.
