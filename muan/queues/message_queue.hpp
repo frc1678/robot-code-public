@@ -10,7 +10,7 @@ namespace queues {
 template <typename T, uint32_t size>
 MessageQueue<T, size>::MessageQueue(MessageQueue<T, size>&& move_from) noexcept
     : messages_(move_from.messages_),
-      back_(static_cast<uint32_t>(move_from.back_)) {}
+      back_(move_from.back_) {}
 
 template <typename T, uint32_t size>
 void MessageQueue<T, size>::WriteMessage(const T& message) {
