@@ -12,12 +12,22 @@ PotCalibration::PotCalibration(int clicks_per_index, double clicks_per_pot,
 
   offset_ = 0;
   calibrated_ = false;
+  average_value_ = 0;
+  average_counter_ = 0;
 }
 
 PotCalibration::~PotCalibration() {}
 
 double PotCalibration::Update(int enc_value, double pot_value,
                               bool index_click) {
+  // Makes an average of the offset from the encoder and the potentiometer,
+  // hopefully taking care of the potentiometer noise
+  average_value_ = ((average_counter_ * average_value_) +
+                    ((pot_value * clicks_per_pot_) - enc_value)) /
+                   (average_counter_ + 1);
+  average_counter_++;
+
+  // Gets a more accurate reading off of the average to use in the calibration
   if (index_click && !calibrated_ && average_counter_ >= 50) {
     double filtered_offset = enc_value + average_value_;
     int unoffset_value = filtered_offset - 0.5 * clicks_per_index_;
@@ -31,6 +41,8 @@ double PotCalibration::Update(int enc_value, double pot_value,
 void PotCalibration::Reset() {
   calibrated_ = false;
   offset_ = 0;
+  average_value_ = 0;
+  average_counter_ = 0;
 }
 
 const bool PotCalibration::is_calibrated() { return calibrated_; }
