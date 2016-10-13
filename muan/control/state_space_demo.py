@@ -42,6 +42,9 @@ L = controls.dkalman(A_d, C, Q_d, R_d)
 # Create a single set of gains
 gains = StateSpaceGains('test_gains', dt, A_d, B_d, C, D, Q_d, R_o, K, Kff, L)
 
+gains.add_writable_constant('A_c', A)
+gains.add_writable_constant('B_c', B)
+
 u_max = np.asmatrix([[12]])
 
 plant = StateSpacePlant(gains, x_initial)

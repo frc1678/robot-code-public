@@ -272,7 +272,7 @@ def dkalman(A, C, Q, R):
     _validate_system(A, None, C, None)
 
     assert Q.shape[0] == Q.shape[1] and Q.shape[0] == A.shape[0], "The dimensions of Q %s must match those of A %s" % (Q.shape, A.shape)
-    assert R.shape[0] == R.shape[1] and R.shape[0] == C.shape[0], "R %i must be square and must be compatible with C %i" % (R.shape, B.shape)
+    assert R.shape[0] == R.shape[1] and R.shape[0] == C.shape[0], "R %i must be square and must be compatible with C %i" % (R.shape, C.shape)
 
     assert numpy.linalg.matrix_rank(observability(A, C)) == A.shape[0], "System must be completely observable to compute Kalman gains."
 
