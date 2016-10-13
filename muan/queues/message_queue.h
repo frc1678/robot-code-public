@@ -2,6 +2,7 @@
 #define MUAN_QUEUES_MESSAGE_QUEUE_H_
 
 #include "muan/utils/math_utils.h"
+#include "third_party/aos/common/mutex.h"
 #include "third_party/optional/optional.hpp"
 #include <array>
 #include <atomic>
@@ -90,6 +91,8 @@ class MessageQueue {
 
   std::array<T, size> messages_;
   std::atomic<uint32_t> back_{0};
+
+  mutable aos::Mutex queue_lock_;
 };
 
 }  // namespace queues

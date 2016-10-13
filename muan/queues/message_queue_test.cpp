@@ -140,3 +140,51 @@ TEST(MessageQueue, Multithreading) {
     t.join();
   }
 }
+
+// Ensure that the queues maintain correctness when being accessed by many
+// reader threads and multiple writer threads
+TEST(MessageQueue, MultipleWriters) {
+  constexpr uint32_t messages_per_thread = 2000;
+  constexpr uint32_t num_threads = 5;
+
+  MessageQueue<uint32_t, messages_per_thread * num_threads> int_queue;
+  auto reader_func = [&int_queue, messages_per_thread, num_threads]() {
+    auto reader = int_queue.MakeReader();
+
+    uint32_t num_read = 0;
+    auto end_time =
+        std::chrono::steady_clock::now() + std::chrono::milliseconds(600);
+
+    // TODO(Kyle) Find a better termination condition for this
+    while (std::chrono::steady_clock::now() < end_time) {
+      if (reader.ReadMessage()) {
+        num_read++;
+      }
+    }
+    EXPECT_EQ(num_read, messages_per_thread * num_threads);
+  };
+
+  auto writer_func = [&int_queue, messages_per_thread]() {
+    for (uint32_t i = 0; i < messages_per_thread; i++) {
+      int_queue.WriteMessage(i);
+    }
+  };
+
+  std::array<std::thread, num_threads> reader_threads;
+  for (auto& t : reader_threads) {
+    t = std::thread{reader_func};
+  }
+
+  std::array<std::thread, num_threads> writer_threads;
+  for (auto& t : writer_threads) {
+    t = std::thread{writer_func};
+  }
+
+  for (auto& t : reader_threads) {
+    t.join();
+  }
+
+  for (auto& t : writer_threads) {
+    t.join();
+  }
+}

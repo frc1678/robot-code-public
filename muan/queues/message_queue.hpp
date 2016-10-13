@@ -14,36 +14,27 @@ MessageQueue<T, size>::MessageQueue(MessageQueue<T, size>&& move_from) noexcept
 
 template <typename T, uint32_t size>
 void MessageQueue<T, size>::WriteMessage(const T& message) {
+  aos::MutexLocker locker_{&queue_lock_};
   // Push messages into the back
   messages_[back_ % size] = message;
 
-  // Increment the count after the emplacement into the array. This fixes the
-  // synchronization issue in which a reader interrupts the writer before it has
-  // finished copying the message into the buffer, but does not allow for
-  // multiple writers. At this point in time (July 2016) we do not need
-  // multiple-writer queues, but if we do need that feature a possible solution
-  // would be to increment a separate atomic index back_writer_ before the
-  // copying and increment back_ after the copying.
   back_++;
 }
 
 template <typename T, uint32_t size>
 std::experimental::optional<T> MessageQueue<T, size>::NextMessage(
     uint32_t& next) const {
-  // Capture the values of back_ and front() so that they cannot be changed
-  // during the execution of this function.
-  uint32_t back_capture = back_;
-  uint32_t front_capture = front(back_capture);
+  aos::MutexLocker locker_{&queue_lock_};
 
   // Make sure the reader's index is within the bounds of still-valid messages,
   // and if it is at the end of the queue return nullopt.
-  if (next >= back_capture) {
-    next = back_capture;
+  if (next >= back_) {
+    next = back_;
     return std::experimental::nullopt;
   }
 
-  if (next < front_capture) {
-    next = front_capture;
+  if (next < front()) {
+    next = front();
   }
 
   auto current = next++;
