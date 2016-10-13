@@ -5,7 +5,6 @@
 #include "third_party/aos/common/mutex.h"
 #include "third_party/optional/optional.hpp"
 #include <array>
-#include <atomic>
 #include <cstdint>
 
 namespace muan {
@@ -90,7 +89,7 @@ class MessageQueue {
   uint32_t front(uint32_t back) const;
 
   std::array<T, size> messages_;
-  std::atomic<uint32_t> back_{0};
+  uint32_t back_{0};
 
   mutable aos::Mutex queue_lock_;
 };
