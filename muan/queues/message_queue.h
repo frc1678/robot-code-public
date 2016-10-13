@@ -85,12 +85,18 @@ class MessageQueue {
   // of the next valid message.
   std::experimental::optional<T> NextMessage(uint32_t& next) const;
 
+  // Gets the "front" (where new messages get written) of the circular buffer,
+  // either from the current value of _back or from a known value of back.
   uint32_t front() const;
   uint32_t front(uint32_t back) const;
 
+  // A buffer and an index to implement a circular buffer. back_ is not in mod n
+  // - that is, it keeps incrementing and never jumps back around to 0.
   std::array<T, size> messages_;
   uint32_t back_{0};
 
+  // A lock for the entire queue. This mutex is used to protect access to back_
+  // and messages_ to allow access by multiple threads at the same time.
   mutable aos::Mutex queue_lock_;
 };
 
