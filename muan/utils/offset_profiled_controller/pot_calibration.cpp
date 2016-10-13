@@ -60,6 +60,8 @@ void PotCalibration::Reset() {
   average_counter_ = 0;
 }
 
-const bool PotCalibration::is_calibrated() { return calibrated_; }
+double PotCalibration::get_average_value() const { return average_value_; }
+
+bool PotCalibration::is_calibrated() const { return calibrated_; }
 
 }  // namespace muan

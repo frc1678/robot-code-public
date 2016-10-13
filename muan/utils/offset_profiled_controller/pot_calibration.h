@@ -12,7 +12,8 @@ class PotCalibration {
   double Update(int enc_value, double pot_value, bool index_click);
   void Reset();
 
-  const bool is_calibrated();
+  bool is_calibrated() const;
+  double get_average_value() const;
 
  private:
   double clicks_per_index_, clicks_per_pot_, units_per_click_, average_value_;
