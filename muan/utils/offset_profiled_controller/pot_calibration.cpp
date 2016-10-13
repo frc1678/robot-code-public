@@ -11,6 +11,7 @@ PotCalibration::PotCalibration(int clicks_per_index, double clicks_per_pot,
   clicks_per_index_ = clicks_per_index;
 
   offset_ = 0;
+  early_calibration_ = false;
   calibrated_ = false;
   average_value_ = 0;
   average_counter_ = 0;
@@ -35,11 +36,25 @@ double PotCalibration::Update(int enc_value, double pot_value,
     offset_ = -enc_value + section * clicks_per_index_;
     calibrated_ = true;
   }
+
+  if (index_click && !calibrated_ && average_counter_ < 50) {
+    logged_enc_value_ = enc_value;
+    early_calibration_ = true;
+  }
+
+  if (!calibrated_ && early_calibration_ && average_counter_ >= 50) {
+    double filtered_offset = logged_enc_value_ + average_value_;
+    int unoffset_value = filtered_offset - 0.5 * clicks_per_index_;
+    int section = std::ceil(unoffset_value / clicks_per_index_);
+    offset_ = -logged_enc_value_ + section * clicks_per_index_;
+    calibrated_ = true;
+  }
   return (enc_value + offset_) * units_per_click_;
 }
 
 void PotCalibration::Reset() {
   calibrated_ = false;
+  early_calibration_ = false;
   offset_ = 0;
   average_value_ = 0;
   average_counter_ = 0;
