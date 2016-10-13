@@ -116,7 +116,11 @@ TEST_F(PotCalibrationTest, UniversalCases) {
         UpdateTest(system_value, ending_difference, noise_range);
 
         // Logic for figuring out if the resulting movement from the initial
-        // value is going to result in getting calibrated.
+        // value is going to result in getting calibrated. If the system is in
+        // the same section of index clicks at the beginning and the end, then
+        // it shouldn't be calibrated. Alternatively, if the system value is
+        // calibrated at the beginning or the end of the iteration, it should be
+        // considered calibrated.
         if (std::floor(system_value / 10.0) !=
                 std::floor((system_value + ending_difference) / 10.0) ||
             muan::true_modulo(int(system_value + ending_difference), 10) == 0 ||
