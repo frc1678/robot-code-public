@@ -5,20 +5,20 @@ namespace muan {
 
 class PotCalibration {
  public:
-  PotCalibration(int clicks_per_index);
+  PotCalibration(int clicks_per_index, double clicks_per_pot,
+                 double unit_per_click);
   ~PotCalibration();
 
-  int Update(int enc_value, double pot_value, bool index_click);
+  double Update(int enc_value, double pot_value, bool index_click);
   void Reset();
 
   const bool is_calibrated();
 
  private:
-  double clicks_per_index_;
+  double clicks_per_index_, clicks_per_pot_, units_per_click_, average_value_;
 
-  int offset_;
-
-  bool calibrated_;
+  int offset_, average_counter_, logged_enc_value_;
+  bool calibrated_, early_calibration_;
 };
 }
 
