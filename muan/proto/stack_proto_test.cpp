@@ -74,4 +74,13 @@ TEST(StackProto, Queueable) {
   EXPECT_EQ(proto->test_uint(), 10);
 }
 
+TEST(StackProto, Reset) {
+  // Make sure calling Reset() resets the memory.
+  muan::proto::StackProto<TestProto, 128> proto;
+  EXPECT_FALSE(proto->has_test_uint());
+  proto->set_test_uint(3);
+  proto.Reset();
+  EXPECT_FALSE(proto->has_test_uint());
+}
+
 #endif  // MUAN_PROTO_STACK_PROTO_H_

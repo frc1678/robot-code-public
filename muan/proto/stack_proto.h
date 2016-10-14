@@ -75,6 +75,13 @@ class StackProto {
   T* get() { return proto_message_; }
   const T* get() const { return proto_message_; }
 
+  // Reset the underlying arena. This will reset the protobuf message to its
+  // default (empty) state.
+  void Reset() {
+    arena_.Reset();
+    proto_message_ = google::protobuf::Arena::CreateMessage<T>(&arena_);
+  }
+
  private:
   // Gets the options for the wrapped arena
   google::protobuf::ArenaOptions GetOptions() {
