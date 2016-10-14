@@ -16,7 +16,7 @@ void ProtoFailOnBlockFree(void*, size_t);
 /*
  * A stack-allocated arena for protobuf messages. This class supports allocating
  * a single protocol buffer per arena. You can access the protobuf with pointer
- * syntax(operator->) or via GetProto(). StackProto is templated with <T, size>,
+ * syntax(operator->) or via get(). StackProto is templated with <T, size>,
  * where T is the typename of a protobuf message type and size is the size of
  * the buffer - you have to know how big the message you're creating could
  * possibly be.
@@ -49,14 +49,14 @@ class StackProto {
   StackProto(const StackProto<T, other_size>& copy_from)
       : arena_{GetOptions()} {
     proto_message_ = google::protobuf::Arena::CreateMessage<T>(&arena_);
-    proto_message_->CopyFrom(*copy_from.GetProto());
+    proto_message_->CopyFrom(*copy_from.get());
   }
 
   // Allocate from a StackProto of the same size. This has to be templated
   // separately (I think because of how C++ recognizes copy constructors?)
   StackProto(const StackProto<T, size>& copy_from) : arena_{GetOptions()} {
     proto_message_ = google::protobuf::Arena::CreateMessage<T>(&arena_);
-    proto_message_->CopyFrom(*copy_from.GetProto());
+    proto_message_->CopyFrom(*copy_from.get());
   }
 
   const StackProto& operator=(const StackProto& copy_from) {
@@ -65,15 +65,15 @@ class StackProto {
     arena_.Reset();
 
     proto_message_ = google::protobuf::Arena::CreateMessage<T>(&arena_);
-    proto_message_->CopyFrom(*copy_from.GetProto());
+    proto_message_->CopyFrom(*copy_from.get());
     return *this;
   }
 
   // Access to the proto
   T* operator->() { return proto_message_; }
   const T* operator->() const { return proto_message_; }
-  T* GetProto() { return proto_message_; }
-  const T* GetProto() const { return proto_message_; }
+  T* get() { return proto_message_; }
+  const T* get() const { return proto_message_; }
 
  private:
   // Gets the options for the wrapped arena
