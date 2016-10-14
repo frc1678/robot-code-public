@@ -17,11 +17,14 @@ class Scoop {
   Angle get_angle() const;
   AngularVelocity get_angular_velocity() const;
   void set_angle(Angle theta);
-  // bool is_done() const;
+  bool is_done() const;
 
  private:
   muan::control::StateSpaceController<1, 2, 1> controller_;
   muan::control::StateSpaceObserver<1, 2, 1> observer_;
+  bool done;
+  const Angle angle_tolerance = 0.1 * rad;
+  const AngularVelocity velocity_tolerance = 0.1 * rad / s;
 };
 
 #endif // SCOOP_H_

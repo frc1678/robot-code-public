@@ -3,7 +3,6 @@
 #include "o2016/subsystems/superstructure/catapult/stop/stop_constants.h"
 #include "muan/control/state_space_plant.h"
 #include "muan/control/state_space_observer.h"
-#include <iostream>
 
 using namespace muan::control;
 using namespace frc1678::stop;
@@ -24,6 +23,7 @@ TEST(CatapultStop, converges) {
       }
       EXPECT_NEAR(s.get_angle(), goal, 0.01);
       EXPECT_NEAR(s.get_angular_velocity(), 0., 0.01);
+      EXPECT_TRUE(s.is_done());
     }
   }
   std::cout << controller::A() << std::endl;
