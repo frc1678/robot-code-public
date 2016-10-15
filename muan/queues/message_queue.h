@@ -32,7 +32,7 @@ namespace queues {
  * and never decreases. This allows the queue to understand the ordering of
  * positions much more easily.
  */
-template <typename T, uint32_t size = 100>
+template <typename T, uint64_t size = 100>
 class MessageQueue {
  public:
   MessageQueue() = default;
@@ -70,7 +70,7 @@ class MessageQueue {
     explicit QueueReader(const MessageQueue& queue);
 
     const MessageQueue& queue_;
-    uint32_t next_message_;
+    uint64_t next_message_;
 
     friend class MessageQueue;
   };
@@ -83,17 +83,17 @@ class MessageQueue {
   // Gets the next message (or nullopt if all messages have been read) from the
   // position passed in. The parameter's value will be changed to the position
   // of the next valid message.
-  std::experimental::optional<T> NextMessage(uint32_t& next) const;
+  std::experimental::optional<T> NextMessage(uint64_t& next) const;
 
   // Gets the "front" (where new messages get written) of the circular buffer,
   // either from the current value of _back or from a known value of back.
-  uint32_t front() const;
-  uint32_t front(uint32_t back) const;
+  uint64_t front() const;
+  uint64_t front(uint64_t back) const;
 
   // A buffer and an index to implement a circular buffer. back_ is not in mod n
   // - that is, it keeps incrementing and never jumps back around to 0.
   std::array<T, size> messages_;
-  uint32_t back_{0};
+  uint64_t back_{0};
 
   // A lock for the entire queue. This mutex is used to protect access to back_
   // and messages_ to allow access by multiple threads at the same time.

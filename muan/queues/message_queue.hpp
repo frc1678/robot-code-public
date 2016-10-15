@@ -7,12 +7,12 @@ namespace muan {
 
 namespace queues {
 
-template <typename T, uint32_t size>
+template <typename T, uint64_t size>
 MessageQueue<T, size>::MessageQueue(MessageQueue<T, size>&& move_from) noexcept
     : messages_(move_from.messages_),
       back_(move_from.back_) {}
 
-template <typename T, uint32_t size>
+template <typename T, uint64_t size>
 void MessageQueue<T, size>::WriteMessage(const T& message) {
   aos::MutexLocker locker_{&queue_lock_};
   // Push messages into the back
@@ -21,9 +21,9 @@ void MessageQueue<T, size>::WriteMessage(const T& message) {
   back_++;
 }
 
-template <typename T, uint32_t size>
+template <typename T, uint64_t size>
 std::experimental::optional<T> MessageQueue<T, size>::NextMessage(
-    uint32_t& next) const {
+    uint64_t& next) const {
   aos::MutexLocker locker_{&queue_lock_};
 
   // Make sure the reader's index is within the bounds of still-valid messages,
@@ -41,37 +41,37 @@ std::experimental::optional<T> MessageQueue<T, size>::NextMessage(
   return messages_[current % size];
 }
 
-template <typename T, uint32_t size>
+template <typename T, uint64_t size>
 typename MessageQueue<T, size>::QueueReader MessageQueue<T, size>::MakeReader()
     const {
   return MessageQueue<T, size>::QueueReader{*this};
 }
 
-template <typename T, uint32_t size>
-uint32_t MessageQueue<T, size>::front() const {
+template <typename T, uint64_t size>
+uint64_t MessageQueue<T, size>::front() const {
   return front(back_);
 }
 
-template <typename T, uint32_t size>
-uint32_t MessageQueue<T, size>::front(uint32_t back) const {
-  return std::max<uint32_t>(back, size) - size;
+template <typename T, uint64_t size>
+uint64_t MessageQueue<T, size>::front(uint64_t back) const {
+  return std::max<uint64_t>(back, size) - size;
 }
 
-template <typename T, uint32_t size>
+template <typename T, uint64_t size>
 MessageQueue<T, size>::QueueReader::QueueReader(
     MessageQueue<T, size>::QueueReader&& move_from) noexcept
     : queue_{move_from.queue_} {
   next_message_ = std::move(move_from.next_message_);
 }
 
-template <typename T, uint32_t size>
+template <typename T, uint64_t size>
 MessageQueue<T, size>::QueueReader::QueueReader(
     const MessageQueue<T, size>& queue)
     : queue_(queue) {
   next_message_ = queue_.front();
 }
 
-template <typename T, uint32_t size>
+template <typename T, uint64_t size>
 std::experimental::optional<T>
 MessageQueue<T, size>::QueueReader::ReadMessage() {
   return queue_.NextMessage(next_message_);
