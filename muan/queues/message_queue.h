@@ -87,6 +87,9 @@ class MessageQueue {
 
   // Gets the "front" (where new messages get written) of the circular buffer,
   // either from the current value of _back or from a known value of back.
+  // Note: before accessing front(), the caller should hold the queue_lock_, as
+  // back_ is not atomic. However, front(uint64_t) can be used without a lock
+  // because it uses some existing value of back_.
   uint64_t front() const;
   uint64_t front(uint64_t back) const;
 
