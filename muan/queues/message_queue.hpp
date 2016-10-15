@@ -37,7 +37,8 @@ std::experimental::optional<T> MessageQueue<T, size>::NextMessage(
     next = front();
   }
 
-  auto current = next++;
+  auto current = next;
+  next++;
   return messages_[current % size];
 }
 
