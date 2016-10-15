@@ -7,7 +7,7 @@ void* ProtoFailOnBlockAlloc(size_t) {
   // Fail loudly here - this should be caught quickly when it
   // happens! If this gets called, it means that a proto was too large for the
   // buffer that we provided it.
-  throw std::runtime_error("Buffer not big enough for proto!");
+  aos::Die("Buffer not big enough for proto!");
 }
 
 void ProtoFailOnBlockFree(void*, size_t) {

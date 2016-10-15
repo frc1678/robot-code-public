@@ -37,12 +37,12 @@ TEST(StackProto, NoDanglingPointers) {
 
 TEST(StackProto, DiesWhenTooSmall) {
   // When the buffer is too small for the protobuf, everything should die
-  // horribly (with an exception)
+  // (with the correct message)
   muan::proto::StackProto<TestProto, 128> proto_a;
   using ShortStackTestProto = muan::proto::StackProto<TestProto, 32>;
-  EXPECT_THROW({ ShortStackTestProto proto_b{proto_a}; }, std::exception)
-      << "Should generate an exception when the buffer doesn't have enough "
-         "room!";
+  EXPECT_DEATH({ ShortStackTestProto proto_b{proto_a}; },
+               "Buffer not big enough for proto!")
+      << "Should die when the buffer doesn't have enough room!";
 }
 
 TEST(StackProto, ResetsOnAssign) {
@@ -51,11 +51,11 @@ TEST(StackProto, ResetsOnAssign) {
   muan::proto::StackProto<TestProto, 128> proto_a;
   using SortaShortStackTestProto = muan::proto::StackProto<TestProto, 72>;
   SortaShortStackTestProto proto_b{proto_a};
-  EXPECT_NO_THROW({
-    for (size_t i = 0; i < 10; i++) {
-      proto_b = proto_a;
-    }
-  });
+
+  // No death should occur because it should free the old space
+  for (size_t i = 0; i < 10; i++) {
+    proto_b = proto_a;
+  }
 }
 
 TEST(StackProto, Queueable) {

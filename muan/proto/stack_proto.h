@@ -20,8 +20,7 @@ void ProtoFailOnBlockFree(void*, size_t);
  * where T is the typename of a protobuf message type and size is the size of
  * the buffer - you have to know how big the message you're creating could
  * possibly be.
- * Note: If you try to make a message bigger than the max, an
- * exception will be thrown.
+ * Note: If you try to make a message bigger than the max, the program will die
  * Note: Strings will be allocated on the heap instead of in the arena, so avoid
  * them.
  * Example:
@@ -34,7 +33,7 @@ void ProtoFailOnBlockFree(void*, size_t);
  *  use(copy_a->int_field());
  *  ...
  *  StackProto<ProtoClass, 10> copy_b = proto;
- *  // Throws std::runtime_error: "Buffer not big enough for proto!"
+ *  // Dies with "Buffer not big enough for proto!"
  */
 template <typename T, std::size_t size>
 class StackProto {
