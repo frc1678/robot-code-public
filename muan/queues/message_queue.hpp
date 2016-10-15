@@ -61,9 +61,8 @@ uint64_t MessageQueue<T, size>::front(uint64_t back) const {
 template <typename T, uint64_t size>
 MessageQueue<T, size>::QueueReader::QueueReader(
     MessageQueue<T, size>::QueueReader&& move_from) noexcept
-    : queue_{move_from.queue_} {
-  next_message_ = std::move(move_from.next_message_);
-}
+    : queue_{move_from.queue_},
+      next_message_{move_from.next_message_} {}
 
 template <typename T, uint64_t size>
 MessageQueue<T, size>::QueueReader::QueueReader(
