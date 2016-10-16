@@ -13,13 +13,20 @@ class PotCalibration {
   void Reset();
 
   bool is_calibrated() const;
-  double get_average_value() const;
+  bool index_error() const;
 
  private:
-  double clicks_per_index_, clicks_per_pot_, units_per_click_, average_value_;
+  double clicks_per_index_, clicks_per_pot_, units_per_click_;
 
-  int offset_, average_counter_, logged_enc_value_;
-  bool calibrated_, early_calibration_;
+  // For averaging
+  double offset_sum_;
+  int average_counter_;
+
+  int last_index_pulse_;
+  bool has_index_pulse_;
+
+  int offset_;
+  bool calibrated_, index_error_;
 };
 }
 
