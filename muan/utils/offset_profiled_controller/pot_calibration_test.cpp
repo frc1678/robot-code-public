@@ -88,12 +88,11 @@ class PotCalibrationTest : public ::testing::Test {
   }
 
   bool is_calibrated() { return calibration_.is_calibrated(); }
+  bool get_index_error() { return calibration_.index_error(); }
 
   std::tuple<double, double> get_final_values() {
     return std::make_tuple(calibrated_value_, system_value_);
   }
-
-  double get_average_value() { return calibration_.get_average_value(); }
 
   void ResetTest() { calibration_.Reset(); }
 
@@ -130,7 +129,7 @@ TEST_F(PotCalibrationTest, UniversalCases) {
         } else {
           EXPECT_FALSE(is_calibrated());
         }
-
+        EXPECT_FALSE(get_index_error());
         ResetTest();
       }
     }
@@ -181,4 +180,46 @@ TEST_F(PotCalibrationTest, Scaling) {
 
   EXPECT_TRUE(calibration_scaled.is_calibrated());
   EXPECT_NEAR(calibrated_value, system_value, 0.00001);
+  EXPECT_FALSE(calibration_scaled.index_error());
+}
+
+TEST_F(PotCalibrationTest, CalibrationError) {
+  muan::PotCalibration calibration_error(10, 1, 1);
+  double system_value = 19;
+  int uncalibrated_value;
+  bool index_click = false;
+
+  for (uncalibrated_value = 0; uncalibrated_value <= 60;
+       uncalibrated_value++, system_value++) {
+    // Check if it should be an index click
+    if (int(system_value) % 10 == 0) {
+      index_click = true;
+    } else {
+      index_click = false;
+    }
+
+    // Add noise to the potentiometer for the calibration.
+    double pot_value = system_value + muan::GaussianNoise(0, 0);
+
+    // Get the calibrated value.
+    calibrated_value_ =
+        calibration_error.Update(uncalibrated_value, pot_value, index_click);
+  }
+
+  for (uncalibrated_value; uncalibrated_value <= 150;
+       uncalibrated_value++, system_value++) {
+    if (int(system_value) % 10 == 0) {
+      index_click = true;
+    } else {
+      index_click = false;
+    }
+
+    double pot_value = system_value + 15 + muan::GaussianNoise(0, 0);
+
+    calibrated_value_ =
+        calibration_error.Update(uncalibrated_value, pot_value, index_click);
+  }
+
+  EXPECT_TRUE(calibration_error.is_calibrated());
+  EXPECT_TRUE(calibration_error.index_error());
 }
