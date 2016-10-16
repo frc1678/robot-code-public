@@ -13,13 +13,24 @@ cc_library(
 )
 
 cc_test(
-  name = 'calibration_test',
+  name = 'hall_calibration_test',
   srcs = [
     'hall_calibration_test.cpp',
-    'pot_calibration_test.cpp'
   ],
   deps = [
     ':hall_calibration',
+    '//third_party/google/googletest:googletest',
+    '//muan/utils:math_utils'
+  ],
+  linkopts = ['-lm']
+)
+
+cc_test(
+  name = 'pot_calibration_test',
+  srcs = [
+    'pot_calibration_test.cpp'
+    ],
+  deps = [
     ':pot_calibration',
     '//third_party/google/googletest:googletest',
     '//muan/utils:math_utils'
