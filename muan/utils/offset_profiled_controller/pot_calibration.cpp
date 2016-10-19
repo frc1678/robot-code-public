@@ -34,18 +34,20 @@ double PotCalibration::Update(int enc_value, double pot_value,
     last_index_pulse_ = enc_value;
   }
 
-  // Gets a more accurate reading off of the average to use in the calibration
+  // Only calibrate if the average has had time to accumulate a good offset
   if (has_index_pulse_ && average_counter_ >= 50) {
     double filtered_offset = last_index_pulse_ + average_offset;
     int unoffset_value = filtered_offset - 0.5 * clicks_per_index_;
     int section = std::ceil(unoffset_value / clicks_per_index_);
+
+    // Only runs if it hasn't calibrated before, then sets the offset to the
+    // newly calibrated offset
     if (!calibrated_) {
       offset_ = -last_index_pulse_ + section * clicks_per_index_;
       calibrated_ = true;
+
+      // Error checking, changes a boolean if there is a change in offset
     } else if (offset_ != -last_index_pulse_ + section * clicks_per_index_) {
-      std::cout << offset_ << " "
-                << -last_index_pulse_ + section * clicks_per_index_
-                << std::endl;
       index_error_ = true;
     }
   }
