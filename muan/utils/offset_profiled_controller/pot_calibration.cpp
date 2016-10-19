@@ -1,6 +1,5 @@
 #include "pot_calibration.h"
 #include <cmath>
-#include <iostream>
 
 namespace muan {
 
@@ -50,6 +49,7 @@ double PotCalibration::Update(int enc_value, double pot_value,
     } else if (offset_ != -last_index_pulse_ + section * clicks_per_index_) {
       index_error_ = true;
     }
+    has_index_pulse_ = false;
   }
   return (enc_value + offset_) * units_per_click_;
 }
