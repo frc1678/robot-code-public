@@ -16,7 +16,9 @@ void PdpWrapper::SendValues() {
   message->set_total_energy(pdp_.GetTotalEnergy());
   message->set_total_power(pdp_.GetTotalPower());
 
-  queue_->WriteMessage(message);
+  if (queue_ != nullptr) {
+    queue_->WriteMessage(message);
+  }
 }
 
 void PdpWrapper::SetQueue(Queue* pdp_queue) { queue_ = pdp_queue; }
