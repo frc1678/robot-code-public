@@ -22,6 +22,7 @@ cc_library(
     '//muan/queues',
     ':state_protos',
     '//muan/proto:stack_proto',
+    '//third_party/aos/common:die',
   ]
 )
 
