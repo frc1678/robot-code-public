@@ -1,6 +1,18 @@
 load('//third_party/google/protobuf:protobuf.bzl', 'cc_proto_library')
 
 cc_library(
+  name = 'pdp_wrapper',
+  srcs = ['pdp_wrapper.cpp'],
+  hdrs = ['pdp_wrapper.h'],
+  deps = [
+    '//third_party/wpilibsuite:wpilib',
+    '//muan/queues',
+    ':state_protos',
+    '//muan/proto:stack_proto',
+  ]
+)
+
+cc_library(
   name = 'pcm_wrapper',
   srcs = ['pcm_wrapper.cpp'],
   hdrs = ['pcm_wrapper.h'],
