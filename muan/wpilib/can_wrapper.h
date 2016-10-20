@@ -17,7 +17,7 @@ namespace wpilib {
  *  can.pcm()->CreateSolenoid(0);
  *  std::thread can_thread(can);
  *  ...
- *  can.GetPcm()->WriteSolenoid(0, true);
+ *  can.pcm()->WriteSolenoid(0, true);
  *  auto pdp_values = pdp_queue_reader.ReadMessage();
  */
 class CanWrapper {
