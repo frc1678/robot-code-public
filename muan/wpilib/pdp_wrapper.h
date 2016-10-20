@@ -15,14 +15,19 @@ class PdpWrapper {
   PdpWrapper() = default;
   ~PdpWrapper() = default;
 
-  void SendValues();
-
   using PdpMessage = muan::proto::StackProto<PdpStatus, 256>;
 
   using Queue = muan::queues::MessageQueue<PdpMessage, 100>;
   void SetQueue(Queue* pdp_queue);
 
  private:
+  friend class CanWrapper;
+
+  // Read values from the PDP. This is not realtime and should only be called
+  // from the CAN thread. It's private so it can only be called by friend
+  // classes, like CanWrapper.
+  void SendValues();
+
   PowerDistributionPanel pdp_;
   Queue* queue_{nullptr};
 };
