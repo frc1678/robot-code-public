@@ -3,12 +3,8 @@
 
 namespace muan {
 
-PotCalibration::PotCalibration(int clicks_per_index, double clicks_per_pot,
-                               double units_per_click) {
-  clicks_per_pot_ = clicks_per_pot;
-  units_per_click_ = units_per_click;
-
-  clicks_per_index_ = clicks_per_index;
+PotCalibration::PotCalibration(double units_per_index) {
+  units_per_index_ = units_per_index;
 
   offset_ = 0;
   has_index_pulse_ = false;
@@ -20,11 +16,11 @@ PotCalibration::PotCalibration(int clicks_per_index, double clicks_per_pot,
 
 PotCalibration::~PotCalibration() {}
 
-double PotCalibration::Update(int enc_value, double pot_value,
+double PotCalibration::Update(double enc_value, double pot_value,
                               bool index_click) {
   // Makes an average of the offset from the encoder and the potentiometer,
-  // hopefully taking care of the potentiometer noise
-  offset_sum_ += (pot_value * clicks_per_pot_ - enc_value);
+  // hopefully taking care of the poteniometer noise
+  offset_sum_ += (pot_value - enc_value);
   average_counter_++;
   double average_offset = offset_sum_ / average_counter_;
 
@@ -36,22 +32,22 @@ double PotCalibration::Update(int enc_value, double pot_value,
   // Only calibrate if the average has had time to accumulate a good offset
   if (has_index_pulse_ && average_counter_ >= 50) {
     double filtered_offset = last_index_pulse_ + average_offset;
-    int unoffset_value = filtered_offset - 0.5 * clicks_per_index_;
-    int section = std::ceil(unoffset_value / clicks_per_index_);
+    double unoffset_value = filtered_offset - 0.5 * units_per_index_;
+    int section = std::ceil(unoffset_value / units_per_index_);
 
     // Only runs if it hasn't calibrated before, then sets the offset to the
     // newly calibrated offset
     if (!calibrated_) {
-      offset_ = -last_index_pulse_ + section * clicks_per_index_;
+      offset_ = -last_index_pulse_ + section * units_per_index_;
       calibrated_ = true;
 
       // Error checking, changes a boolean if there is a change in offset
-    } else if (offset_ != -last_index_pulse_ + section * clicks_per_index_) {
+    } else if (offset_ != -last_index_pulse_ + section * units_per_index_) {
       index_error_ = true;
     }
     has_index_pulse_ = false;
   }
-  return (enc_value + offset_) * units_per_click_;
+  return (enc_value + offset_);
 }
 
 void PotCalibration::Reset() {

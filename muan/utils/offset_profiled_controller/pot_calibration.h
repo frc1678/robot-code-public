@@ -5,18 +5,17 @@ namespace muan {
 
 class PotCalibration {
  public:
-  PotCalibration(int clicks_per_index, double clicks_per_pot,
-                 double unit_per_click);
+  PotCalibration(double units_per_index);
   ~PotCalibration();
 
-  double Update(int enc_value, double pot_value, bool index_click);
+  double Update(double enc_value, double pot_value, bool index_click);
   void Reset();
 
   bool is_calibrated() const;
   bool index_error() const;
 
  private:
-  double clicks_per_index_, clicks_per_pot_, units_per_click_;
+  double units_per_index_;
 
   // For averaging
   double offset_sum_;
