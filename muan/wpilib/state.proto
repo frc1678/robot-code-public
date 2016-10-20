@@ -18,7 +18,7 @@ message DriverStationStatus {
 }
 
 message PdpStatus {
-  repeated double currents = 1;
+  repeated double current = 1;
   required double voltage_in = 2;
   required double temperature = 3;
 
