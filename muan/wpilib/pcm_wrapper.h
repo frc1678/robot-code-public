@@ -25,11 +25,13 @@ class PcmWrapper : private SolenoidBase {
   void WriteDoubleSolenoid(uint8_t channel_forward, uint8_t channel_reverse,
                            DoubleSolenoid::Value value);
 
-  // Flushes the current values to the CAN bus. This function is not realtime
-  // and should only be called from the CAN thread.
-  void Flush();
-
  private:
+  friend class CanWrapper;
+
+  // Flushes the current values to the CAN bus. This function is not realtime
+  // and should only be called from the CAN thread. It's private so it can only
+  // be called by friend classes, like CanWrapper.
+  void Flush();
   // Make sure the port is initialized, and die if it is not
   void CheckPortInitialized(uint8_t port);
 

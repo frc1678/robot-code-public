@@ -10,6 +10,12 @@ void PcmWrapper::CreateSolenoid(uint8_t port) {
   initialized_ |= (1 << port);
 }
 
+void PcmWrapper::CreateDoubleSolenoid(uint8_t channel_forward,
+                                      uint8_t channel_reverse) {
+  CreateSolenoid(channel_forward);
+  CreateSolenoid(channel_reverse);
+}
+
 void PcmWrapper::WriteDoubleSolenoid(uint8_t channel_forward,
                                      uint8_t channel_reverse,
                                      DoubleSolenoid::Value value) {
