@@ -1,4 +1,5 @@
 #include "pdp_wrapper.h"
+#include "third_party/aos/common/die.h"
 
 namespace muan {
 
@@ -18,6 +19,8 @@ void PdpWrapper::SendValues() {
 
   if (queue_ != nullptr) {
     queue_->WriteMessage(message);
+  } else {
+    aos::Die("PDP queue not set!");
   }
 }
 
