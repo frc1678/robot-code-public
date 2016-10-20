@@ -85,7 +85,7 @@ class MessageQueue {
   // of the next valid message.
   std::experimental::optional<T> NextMessage(uint64_t& next) const;
 
-  // Gets the "front" (where new messages get written) of the circular buffer,
+  // Gets the "front" (the oldest messages still kept) of the circular buffer,
   // either from the current value of _back or from a known value of back.
   // Note: before accessing front(), the caller should hold the queue_lock_, as
   // back_ is not atomic. However, front(uint64_t) can be used without a lock
