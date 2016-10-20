@@ -15,3 +15,47 @@ cc_proto_library(
   visibility = ['//visibility:public']
 )
 
+cc_test(
+  name = 'intake_test',
+  srcs = ['intake_test.cpp'],
+  deps = [
+    '//muan/control:state_space',
+    '//third_party/eigen',
+    '//third_party/google/googletest:googletest'
+  ]
+)
+
+cc_library(
+  name = 'intake',
+  srcs = ['intake.cpp'],
+  hdrs = ['intake.h'],
+  deps = [
+    '//muan/control:state_space',
+    '//muan/units:units',
+    '//third_party/eigen',
+    ':intake_constants',
+  ],
+  visibility = ['//visibility:public']
+)
+
+cc_library(
+  name = 'intake_constants',
+  srcs = [':intake_constants.cpp'],
+  hdrs = [':intake_constants.h'],
+  deps = ['//third_party/eigen'],
+)
+
+genrule(
+  name = 'intake_genrule',
+  srcs = [],
+  tools = [':intake_python'],
+  cmd = '$(location :intake_python) $(location intake_constants.h) $(location intake_constants.cpp)',
+  outs = ['intake_constants.h', 'intake_constants.cpp']
+)
+
+py_binary(
+  name= 'intake_python',
+  srcs = ['intake.py'],
+  main = 'intake.py',
+  deps = ['//muan/control:python_controls']
+)
