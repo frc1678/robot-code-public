@@ -12,8 +12,7 @@ namespace wpilib {
  * A class to keep CAN bus calls far, far away from anything that ever needs to
  * be realtime.
  * Example:
- *  CanWrapper can;
- *  can.pdp()->SetQueue(&pdp_queue);
+ *  CanWrapper can(&pdp_queue);
  *  can.pcm()->CreateSolenoid(0);
  *  std::thread can_thread(can);
  *  ...
@@ -22,7 +21,7 @@ namespace wpilib {
  */
 class CanWrapper {
  public:
-  CanWrapper() = default;
+  CanWrapper(PdpWrapper::Queue* pdp_queue = nullptr);
   ~CanWrapper() = default;
 
   // Call this to run the loop forever (or until Stop() is called)
