@@ -7,7 +7,8 @@ cc_library(
   deps = [
     '//third_party/google/protobuf',
     '//third_party/aos/common:die'
-  ]
+  ],
+  visibility = ['//visibility:public']
 )
 
 cc_proto_library(
