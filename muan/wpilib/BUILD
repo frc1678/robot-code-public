@@ -1,6 +1,19 @@
 load('//third_party/google/protobuf:protobuf.bzl', 'cc_proto_library')
 
 cc_library(
+  name = 'can_wrapper',
+  srcs = ['can_wrapper.cpp'],
+  hdrs = ['can_wrapper.h'],
+  deps = [
+    '//third_party/aos/linux_code:init',
+    '//third_party/aos/common/util:phased_loop',
+    '//third_party/aos/common:time',
+    ':pdp_wrapper',
+    ':pcm_wrapper',
+  ]
+)
+
+cc_library(
   name = 'pdp_wrapper',
   srcs = ['pdp_wrapper.cpp'],
   hdrs = ['pdp_wrapper.h'],
