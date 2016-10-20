@@ -4,7 +4,7 @@
 
 class PotCalibrationTest : public ::testing::Test {
  public:
-  PotCalibrationTest() : calibration_(10, 1, 1) { calibrated_value_ = 0; }
+  PotCalibrationTest() : calibration_(10.0) { calibrated_value_ = 0; }
 
   void UpdateTest(int initial_system_value, int ending_difference,
                   int noise_range) {
@@ -136,55 +136,8 @@ TEST_F(PotCalibrationTest, UniversalCases) {
   }
 }
 
-TEST_F(PotCalibrationTest, Scaling) {
-  // This is establishing the scaling factors for the code. clicks_per_index is
-  // the amount of encoder clicks per one index click, enc_per_pot is the amount
-  // of encoder clicks per one potentiometer "click", and sys_per_enc is the
-  // amount of system "clicks" per encoder clicks (the scaling factor for going
-  // from encoder clicks to the final unit output)
-  const int clicks_per_index = 6;
-  const double enc_per_pot = 3;
-  const double sys_per_enc = 0.3;
-  muan::PotCalibration calibration_scaled(clicks_per_index, enc_per_pot,
-                                          sys_per_enc);
-  double calibrated_value = 0;
-  double system_value = 12;
-  bool index_click = false;
-  int uncalibrated_enc_value;
-  double pot_value = 0;
-
-  for (uncalibrated_enc_value = 0; system_value < 24;
-       system_value += sys_per_enc, uncalibrated_enc_value++) {
-    // Convert system value to "calibrated encoder" value to find when there
-    // should be an index click
-    if (int(system_value / sys_per_enc) % clicks_per_index == 0) {
-      index_click = true;
-    } else {
-      index_click = false;
-    }
-
-    // Convert system value to pot value and add noise
-    pot_value =
-        system_value / (enc_per_pot * sys_per_enc) + muan::GaussianNoise(5, 0);
-    calibrated_value = calibration_scaled.Update(uncalibrated_enc_value,
-                                                 pot_value, index_click);
-  }
-
-  // Have the system sit there to accumulate a better average.
-  for (int i = 0; i < 50; i++) {
-    pot_value =
-        system_value / (enc_per_pot * sys_per_enc) + muan::GaussianNoise(5, 0);
-    calibrated_value =
-        calibration_scaled.Update(uncalibrated_enc_value, pot_value, false);
-  }
-
-  EXPECT_TRUE(calibration_scaled.is_calibrated());
-  EXPECT_NEAR(calibrated_value, system_value, 0.00001);
-  EXPECT_FALSE(calibration_scaled.index_error());
-}
-
 TEST_F(PotCalibrationTest, CalibrationError) {
-  muan::PotCalibration calibration_error(10, 1, 1);
+  muan::PotCalibration calibration_error(10);
   double system_value = 19;
   int uncalibrated_value;
   bool index_click = false;
