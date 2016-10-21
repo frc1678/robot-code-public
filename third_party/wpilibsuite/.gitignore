@@ -22,6 +22,7 @@ allwpilib/ni-libraries/*
 !allwpilib/ni-libraries/libNiRioSrv.so.15.0.0
 !allwpilib/ni-libraries/libspi.so.1.0.0
 !allwpilib/ni-libraries/libi2c.so.1.0.0
+!allwpilib/ni-libraries/libvisa.so
 
 ntcore/appveyor.yml
 ntcore/doc

@@ -164,3 +164,24 @@ double Timer::GetFPGATimestamp() {
   // Call the helper GetFPGATime() in Utility.cpp
   return GetFPGATime() * 1.0e-6;
 }
+
+/**
+ * Return the approximate match time.
+ *
+ * The FMS does not send an official match time to the robots, but does send an
+ * approximate match time.  The value will count down the time remaining in the
+ * current period (auto or teleop).
+ *
+ * Warning: This is not an official time (so it cannot be used to dispute ref
+ * calls or guarantee that a function will trigger before the match ends).
+ *
+ * The Practice Match function of the DS approximates the behaviour seen on the
+ * field.
+ *
+ * @return Time remaining in current match period (auto or teleop)
+ */
+double Timer::GetMatchTime() {
+  float matchTime;
+  HALGetMatchTime(&matchTime);
+  return (double)matchTime;
+}
