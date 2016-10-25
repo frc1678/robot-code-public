@@ -31,8 +31,18 @@ double PotCalibration::Update(double enc_value, double pot_value,
 
   // Only calibrate if the average has had time to accumulate a good offset
   if (has_index_pulse_ && average_counter_ >= 50) {
+    // Get a better approximation of the actual encoder value
     double filtered_offset = last_index_pulse_ + average_offset;
+
+    // Make it easier to think about by shifting the frame of reference to the
+    // space between each index
+    // Ex: I stands for index click, | demarcates the range
+    // |   I   |   I   |
+    // goes to
+    // |I      |I      |
     double unoffset_value = filtered_offset - 0.5 * units_per_index_;
+
+    // Find the amount of index clicks away from zero the current position is
     int section = std::ceil(unoffset_value / units_per_index_);
 
     // Only runs if it hasn't calibrated before, then sets the offset to the

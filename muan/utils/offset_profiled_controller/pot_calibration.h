@@ -11,6 +11,8 @@ class PotCalibration {
   double Update(double enc_value, double pot_value, bool index_click);
   void Reset();
 
+  // Getters for if it's calibrated and if the system miscalibrated after the
+  // initial calibration.
   bool is_calibrated() const;
   bool index_error() const;
 
