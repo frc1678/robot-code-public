@@ -124,8 +124,8 @@ TEST_F(PotCalibrationTest, UniversalCases) {
             muan::true_modulo(int(system_value + ending_difference), 10) == 0 ||
             muan::true_modulo(int(system_value), 10) == 0) {
           EXPECT_TRUE(is_calibrated());
-          EXPECT_EQ(std::get<0>(get_final_values()),
-                    std::get<1>(get_final_values()));
+          EXPECT_NEAR(std::get<0>(get_final_values()),
+                      std::get<1>(get_final_values()), 1e-5);
         } else {
           EXPECT_FALSE(is_calibrated());
         }
@@ -139,6 +139,7 @@ TEST_F(PotCalibrationTest, UniversalCases) {
 TEST_F(PotCalibrationTest, CalibrationError) {
   muan::PotCalibration calibration_error(10);
   double system_value = 19;
+  double calibrated_value = 0;
   int uncalibrated_value;
   bool index_click = false;
 
@@ -155,7 +156,7 @@ TEST_F(PotCalibrationTest, CalibrationError) {
     double pot_value = system_value + muan::GaussianNoise(0, 0);
 
     // Get the calibrated value.
-    calibrated_value_ =
+    calibrated_value =
         calibration_error.Update(uncalibrated_value, pot_value, index_click);
   }
 
@@ -169,7 +170,7 @@ TEST_F(PotCalibrationTest, CalibrationError) {
 
     double pot_value = system_value + 15 + muan::GaussianNoise(0, 0);
 
-    calibrated_value_ =
+    calibrated_value =
         calibration_error.Update(uncalibrated_value, pot_value, index_click);
   }
 
