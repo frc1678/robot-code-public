@@ -46,8 +46,8 @@ class PotCalibrationTest : public ::testing::Test {
         calibrated_value_ =
             calibration_.Update(ending_difference, pot_value, index_click);
       }
-      // This is neccesary because for some reason it incremented one too many
-      // times.
+      // This is neccesary because the loop increments after the updating of the
+      // calibration object and therefore is one too many.
       system_value_--;
     } else {
       // Have the system wait a little bit when the movement is too little,
@@ -81,8 +81,8 @@ class PotCalibrationTest : public ::testing::Test {
             calibration_.Update(ending_difference, pot_value, index_click);
       }
 
-      // This is neccesary because for some reason it incremented one too few
-      // times.
+      // This is neccesary because the loop increments after the updating of the
+      // calibration object and therefore is one too little.
       system_value_++;
     }
   }
@@ -153,7 +153,7 @@ TEST_F(PotCalibrationTest, CalibrationError) {
     }
 
     // Add noise to the potentiometer for the calibration.
-    double pot_value = system_value + muan::GaussianNoise(0, 0);
+    double pot_value = system_value + muan::GaussianNoise(5, 0);
 
     // Get the calibrated value.
     calibrated_value =
@@ -168,7 +168,9 @@ TEST_F(PotCalibrationTest, CalibrationError) {
       index_click = false;
     }
 
-    double pot_value = system_value + 15 + muan::GaussianNoise(0, 0);
+    // By adding a sudden offset that changes the index click's frame of
+    // reference, it should recognize the error.
+    double pot_value = system_value + 15 + muan::GaussianNoise(5, 0);
 
     calibrated_value =
         calibration_error.Update(uncalibrated_value, pot_value, index_click);
