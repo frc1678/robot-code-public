@@ -18,7 +18,8 @@ cc_library(
     '//muan/control:state_space',
     '//muan/units:units',
     '//third_party/eigen'
-  ]
+  ],
+  visibility = ['//visibility:public']
 )
 
 cc_library(
