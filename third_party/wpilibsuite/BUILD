@@ -38,7 +38,8 @@ cc_library(
     'allwpilib/hal/lib/athena'
   ],
   linkopts = [
-    '-lpthread'
+    '-lpthread',
+    '-lm'
   ],
   deps = [':ni_libraries']
 )
