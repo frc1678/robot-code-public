@@ -39,7 +39,7 @@ class PcmWrapper : private SolenoidBase {
 
   // Bitmasks of the initialized channels as well as the current values of each
   // solenoid
-  std::atomic<uint8_t> initialized_, current_values_;
+  std::atomic<uint8_t> initialized_{0}, current_values_{0};
 };
 
 }  // wpilib

@@ -54,10 +54,7 @@ Eigen::Matrix<double, A, 1> GaussianNoise(
 }
 
 // Perform a modulo operation that is relative to negative infinity, not 0
-uint32_t true_modulo(int a, int b) {
-  int signed_result = a % b;
-  return signed_result >= 0 ? signed_result : signed_result + std::abs(b);
-}
+uint32_t true_modulo(int a, int b);
 
 }  // namespace muan
 

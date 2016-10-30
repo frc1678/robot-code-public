@@ -11,4 +11,9 @@ double GaussianNoise(double std_dev, double mean) {
   return dist(rng);
 }
 
+uint32_t true_modulo(int a, int b) {
+  int signed_result = a % b;
+  return signed_result >= 0 ? signed_result : signed_result + std::abs(b);
+}
+
 }  // muan
