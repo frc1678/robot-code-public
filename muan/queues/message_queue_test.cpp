@@ -1,6 +1,5 @@
 #include "message_queue.h"
 #include "gtest/gtest.h"
-#include <iostream>
 #include <thread>
 
 using muan::queues::MessageQueue;
@@ -142,38 +141,50 @@ TEST(MessageQueue, Multithreading) {
   }
 }
 
-// Ensure that the queue works correctly, even when only reading the most recent
-// message at any given point in time
-TEST(MessageQueue, LatestMessage) {
-  constexpr uint32_t num_messages = 10000;
-  MessageQueue<int, num_messages> int_queue;
-  auto func = [&int_queue, num_messages]() {
-    int last = -1;
+// Ensure that the queues maintain correctness when being accessed by many
+// reader threads and multiple writer threads
+TEST(MessageQueue, MultipleWriters) {
+  constexpr uint32_t messages_per_thread = 2000;
+  constexpr uint32_t num_threads = 5;
+
+  MessageQueue<uint32_t, messages_per_thread * num_threads> int_queue;
+  auto reader_func = [&int_queue, messages_per_thread, num_threads]() {
     auto reader = int_queue.MakeReader();
+
+    uint32_t num_read = 0;
     auto end_time =
-        std::chrono::steady_clock::now() + std::chrono::milliseconds(300);
+        std::chrono::steady_clock::now() + std::chrono::milliseconds(600);
 
     // TODO(Kyle) Find a better termination condition for this
     while (std::chrono::steady_clock::now() < end_time) {
-      auto val = reader.LatestMessage();
-      if (val) {
-        EXPECT_GE(*val, last);
-        last = *val;
+      if (reader.ReadMessage()) {
+        num_read++;
       }
     }
-    EXPECT_EQ(last, num_messages - 1);
+    EXPECT_EQ(num_read, messages_per_thread * num_threads);
   };
 
-  std::array<std::thread, 1> threads;
-  for (auto& t : threads) {
-    t = std::thread{func};
+  auto writer_func = [&int_queue, messages_per_thread]() {
+    for (uint32_t i = 0; i < messages_per_thread; i++) {
+      int_queue.WriteMessage(i);
+    }
+  };
+
+  std::array<std::thread, num_threads> reader_threads;
+  for (auto& t : reader_threads) {
+    t = std::thread{reader_func};
   }
 
-  for (uint32_t i = 0; i < num_messages; i++) {
-    int_queue.WriteMessage(i);
+  std::array<std::thread, num_threads> writer_threads;
+  for (auto& t : writer_threads) {
+    t = std::thread{writer_func};
   }
 
-  for (auto& t : threads) {
+  for (auto& t : reader_threads) {
+    t.join();
+  }
+
+  for (auto& t : writer_threads) {
     t.join();
   }
 }
