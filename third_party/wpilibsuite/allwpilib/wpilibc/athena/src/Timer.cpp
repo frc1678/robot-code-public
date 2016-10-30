@@ -12,6 +12,7 @@
 #include <thread>
 #include "HAL/HAL.h"
 #include "Utility.h"
+#include "DriverStation.h"
 
 /**
  * Pause the task for a specified time.
