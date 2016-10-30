@@ -36,6 +36,12 @@ cc_library(
   ]
 )
 
+cc_test(
+  name = 'build_test',
+  srcs = ['wpilib_build_test.cpp'],
+  deps = [':can_wrapper'],
+)
+
 cc_proto_library(
   name = 'state_protos',
   srcs = ['state.proto'],

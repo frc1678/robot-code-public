@@ -15,4 +15,8 @@ cc_library(
     '//third_party/aos/common/util:compiler_memory_barrier',
     '//third_party/aos/common:die',
   ],
+  linkopts = [
+    '-lpthread',
+    '-pthread',
+  ]
 )
