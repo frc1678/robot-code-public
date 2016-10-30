@@ -37,6 +37,13 @@ cc_library(
 )
 
 cc_binary(
+  name = 'pdp_test',
+  srcs = ['pdp_test.cpp'],
+  deps = [':can_wrapper',
+          '//third_party/wpilibsuite:wpilib']
+)
+
+cc_binary(
   name = 'pcm_test',
   srcs = ['pcm_test.cpp'],
   deps = [':can_wrapper',
