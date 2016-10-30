@@ -2,6 +2,9 @@
 #include "o2016/subsystems/drivetrain/drivetrain_constants.h"
 #include "gtest/gtest.h"
 
+using namespace frc1678::drivetrain;
+using namespace frc1678::drivetrain::controller;
+
 class DrivetrainTest : public testing::Test {
  public:
   DrivetrainTest() = default;
@@ -10,44 +13,44 @@ class DrivetrainTest : public testing::Test {
  protected:
   void SetGear(Gear gear) {
     if (gear == Gear::kLowGear) {
-      plant_.A() = frc1678::drivetrain::controller::low_gear::A();
-      plant_.B() = frc1678::drivetrain::controller::low_gear::B();
-      plant_.C() = frc1678::drivetrain::controller::low_gear::C();
-      plant_.D() = frc1678::drivetrain::controller::low_gear::D();
+      plant_.A() = low_gear::A();
+      plant_.B() = low_gear::B();
+      plant_.C() = low_gear::C();
+      plant_.D() = low_gear::D();
     } else {
-      plant_.A() = frc1678::drivetrain::controller::high_gear::A();
-      plant_.B() = frc1678::drivetrain::controller::high_gear::B();
-      plant_.C() = frc1678::drivetrain::controller::high_gear::C();
-      plant_.D() = frc1678::drivetrain::controller::high_gear::D();
+      plant_.A() = high_gear::A();
+      plant_.B() = high_gear::B();
+      plant_.C() = high_gear::C();
+      plant_.D() = high_gear::D();
     }
 
     plant_.x(0) = plant_.x(1) = plant_.x(2) = plant_.x(3) = 0.0;
   }
 
-  DrivetrainInput GetSensors() const {
-    DrivetrainInput input;
-    input.set_right_encoder(plant_.y(0));
-    input.set_left_encoder(plant_.y(1));
-    input.set_gyro_angle(plant_.y(2));
+  StackDrivetrainInput GetSensors() const {
+    StackDrivetrainInput input;
+    input->set_right_encoder(plant_.y(0));
+    input->set_left_encoder(plant_.y(1));
+    input->set_gyro_angle(plant_.y(2));
     return input;
   }
 
-  frc1678::drivetrain::controller::DrivetrainController controller_;
+  DrivetrainController controller_;
   muan::control::StateSpacePlant<2, 4, 3> plant_;
 };
 
-Eigen::Matrix<double, 2, 1> CreateU(DrivetrainOutput output) {
-  return (Eigen::Matrix<double, 2, 1>() << output.right_voltage(),
-          output.left_voltage())
+Eigen::Matrix<double, 2, 1> CreateU(StackDrivetrainOutput output) {
+  return (Eigen::Matrix<double, 2, 1>() << output->right_voltage(),
+          output->left_voltage())
       .finished();
 }
 
-DrivetrainGoal CreateVelocityGoal(double forward, double angular,
-                                  Gear gear = Gear::kLowGear) {
-  DrivetrainGoal goal;
-  goal.mutable_velocity_command()->set_angular_velocity(angular);
-  goal.mutable_velocity_command()->set_forward_velocity(forward);
-  goal.set_gear(gear);
+StackDrivetrainGoal CreateVelocityGoal(double forward, double angular,
+                                       Gear gear = Gear::kLowGear) {
+  StackDrivetrainGoal goal;
+  goal->mutable_velocity_command()->set_angular_velocity(angular);
+  goal->mutable_velocity_command()->set_forward_velocity(forward);
+  goal->set_gear(gear);
   return goal;
 }
 
@@ -57,8 +60,7 @@ TEST_F(DrivetrainTest, PlantIsSane) {
     using namespace muan::units;
     Velocity last_velocity = 0.0;
     Length last_position = 0.0;
-    for (Time t = 0 * s; t < 1 * s;
-         t += frc1678::drivetrain::controller::low_gear::dt()) {
+    for (Time t = 0 * s; t < 1 * s; t += low_gear::dt()) {
       plant_.Update((Eigen::Matrix<double, 2, 1>() << 6, 6).finished());
 
       ASSERT_GE(plant_.x(0), last_position);
@@ -71,8 +73,7 @@ TEST_F(DrivetrainTest, PlantIsSane) {
       ASSERT_EQ(plant_.x(2), 0.0);
     }
 
-    for (Time t = 0 * s; t < 3 * s;
-         t += frc1678::drivetrain::controller::low_gear::dt()) {
+    for (Time t = 0 * s; t < 3 * s; t += low_gear::dt()) {
       plant_.Update(Eigen::Matrix<double, 2, 1>::Zero());
 
       ASSERT_GE(plant_.x(0), last_position);
@@ -92,8 +93,7 @@ TEST_F(DrivetrainTest, PlantIsSane) {
     using namespace muan::units;
     AngularVelocity last_angular_velocity = 0.0;
     Angle last_angle = 0.0;
-    for (Time t = 0 * s; t < 1 * s;
-         t += frc1678::drivetrain::controller::low_gear::dt()) {
+    for (Time t = 0 * s; t < 1 * s; t += low_gear::dt()) {
       plant_.Update((Eigen::Matrix<double, 2, 1>() << 6, -6).finished());
 
       ASSERT_GE(plant_.x(2), last_angle);
@@ -106,8 +106,7 @@ TEST_F(DrivetrainTest, PlantIsSane) {
       ASSERT_EQ(plant_.x(0), 0.0);
     }
 
-    for (Time t = 0 * s; t < 3 * s;
-         t += frc1678::drivetrain::controller::low_gear::dt()) {
+    for (Time t = 0 * s; t < 3 * s; t += low_gear::dt()) {
       plant_.Update(Eigen::Matrix<double, 2, 1>::Zero());
 
       ASSERT_GE(plant_.x(2), last_angle);
@@ -122,13 +121,12 @@ TEST_F(DrivetrainTest, PlantIsSane) {
 
 TEST_F(DrivetrainTest, TeleopVelocityDrive) {
   using namespace muan::units;
-  for (Time t = 0 * s; t < 2 * s;
-       t += frc1678::drivetrain::controller::low_gear::dt()) {
-    auto output =
-        controller_.Update(GetSensors(), CreateVelocityGoal(1.0, 1.0));
+  controller_.SetGoal(CreateVelocityGoal(1.0, 1.0));
+  for (Time t = 0 * s; t < 2 * s; t += low_gear::dt()) {
+    auto output = controller_.Update(GetSensors());
 
-    EXPECT_NEAR(output.left_voltage(), 0.0, 12.0);
-    EXPECT_NEAR(output.right_voltage(), 0.0, 12.0);
+    EXPECT_NEAR(output->left_voltage(), 0.0, 12.0);
+    EXPECT_NEAR(output->right_voltage(), 0.0, 12.0);
 
     plant_.Update(CreateU(output));
   }
@@ -139,17 +137,16 @@ TEST_F(DrivetrainTest, TeleopVelocityDrive) {
 
 TEST_F(DrivetrainTest, TeleopVelocityDriveLowVoltage) {
   using namespace muan::units;
-  for (Time t = 0 * s; t < 2 * s;
-       t += frc1678::drivetrain::controller::low_gear::dt()) {
-    auto output =
-        controller_.Update(GetSensors(), CreateVelocityGoal(1.0, 1.0));
+  controller_.SetGoal(CreateVelocityGoal(1.0, 1.0));
+  for (Time t = 0 * s; t < 2 * s; t += low_gear::dt()) {
+    auto output = controller_.Update(GetSensors());
 
-    EXPECT_NEAR(output.left_voltage(), 0.0, 12.0);
-    EXPECT_NEAR(output.right_voltage(), 0.0, 12.0);
+    EXPECT_NEAR(output->left_voltage(), 0.0, 12.0);
+    EXPECT_NEAR(output->right_voltage(), 0.0, 12.0);
 
     // Pretend one of the drivetrain motors is dead and the world is a sad place
-    output.set_left_voltage(output.left_voltage() * 1.0);
-    output.set_right_voltage(output.right_voltage() * 0.7);
+    output->set_left_voltage(output->left_voltage() * 1.0);
+    output->set_right_voltage(output->right_voltage() * 0.7);
 
     plant_.Update(CreateU(output));
   }
@@ -160,14 +157,13 @@ TEST_F(DrivetrainTest, TeleopVelocityDriveLowVoltage) {
 
 TEST_F(DrivetrainTest, TeleopShiftDuringDrive) {
   using namespace muan::units;
-  for (Time t = 0 * s; t < 2 * s;
-       t += frc1678::drivetrain::controller::low_gear::dt()) {
-    auto output =
-        controller_.Update(GetSensors(), CreateVelocityGoal(1.0, 1.0));
+  controller_.SetGoal(CreateVelocityGoal(1.0, 1.0));
+  for (Time t = 0 * s; t < 2 * s; t += low_gear::dt()) {
+    auto output = controller_.Update(GetSensors());
 
-    EXPECT_NEAR(output.left_voltage(), 0.0, 12.0);
-    EXPECT_NEAR(output.right_voltage(), 0.0, 12.0);
-    EXPECT_EQ(output.shifting(), false);
+    EXPECT_NEAR(output->left_voltage(), 0.0, 12.0);
+    EXPECT_NEAR(output->right_voltage(), 0.0, 12.0);
+    EXPECT_EQ(output->shifting(), false);
 
     plant_.Update(CreateU(output));
   }
@@ -175,14 +171,13 @@ TEST_F(DrivetrainTest, TeleopShiftDuringDrive) {
   // Run in high gear
   SetGear(Gear::kHighGear);
 
-  for (Time t = 0 * s; t < 4 * s;
-       t += frc1678::drivetrain::controller::low_gear::dt()) {
-    auto output = controller_.Update(
-        GetSensors(), CreateVelocityGoal(2.0, 2.0, Gear::kHighGear));
+  controller_.SetGoal(CreateVelocityGoal(2.0, 2.0, Gear::kHighGear));
+  for (Time t = 0 * s; t < 4 * s; t += low_gear::dt()) {
+    auto output = controller_.Update(GetSensors());
 
-    EXPECT_NEAR(output.left_voltage(), 0.0, 12.0);
-    EXPECT_NEAR(output.right_voltage(), 0.0, 12.0);
-    EXPECT_EQ(output.shifting(), true);
+    EXPECT_NEAR(output->left_voltage(), 0.0, 12.0);
+    EXPECT_NEAR(output->right_voltage(), 0.0, 12.0);
+    EXPECT_EQ(output->shifting(), true);
 
     plant_.Update(CreateU(output));
   }

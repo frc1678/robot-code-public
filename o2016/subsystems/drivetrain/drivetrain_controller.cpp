@@ -26,24 +26,55 @@ DrivetrainController::DrivetrainController()
   Shift(Gear::kLowGear);
 }
 
-DrivetrainOutput DrivetrainController::Update(const DrivetrainInput& input,
-                                              const DrivetrainGoal& goal) {
+StackDrivetrainOutput DrivetrainController::Update(
+    const StackDrivetrainInput& input) {
   using namespace muan::units;
   elapsed_time_ += frc1678::drivetrain::controller::high_gear_integral::dt();
 
-  Shift(goal.gear());
+  // Create the y vector from the input proto
+  Eigen::Matrix<double, 3, 1> y = Eigen::Matrix<double, 3, 1>::Zero();
+  {
+    y(0) = input->right_encoder();
+    y(1) = input->left_encoder();
+    y(2) = input->gyro_angle();
+  }
+
+  auto r = controller_.r();
+  if (drive_command_type_ == DriveType::kVelocityCommand) {
+    r(0) = observer_.x(0);
+    r(2) = observer_.x(2);
+  } else if (drive_command_type_ == DriveType::kDistanceCommand) {
+    r(0) = distance_profile_.Calculate(elapsed_time_).position;
+    r(1) = distance_profile_.Calculate(elapsed_time_).velocity;
+    r(2) = angle_profile_.Calculate(elapsed_time_).position;
+    r(3) = angle_profile_.Calculate(elapsed_time_).velocity;
+  }
+
+  // Run state-space calculations
+  auto u = controller_.Update(observer_.x(), r);
+  observer_.Update(u, y);
+
+  // Create the output proto from u
+  StackDrivetrainOutput out;
+  out->set_right_voltage(u(0));
+  out->set_left_voltage(u(1));
+  out->set_shifting(current_gear_ == Gear::kHighGear);
+
+  return out;
+}
+
+void DrivetrainController::SetGoal(const StackDrivetrainGoal& goal) {
+  Shift(goal->gear());
 
   // Create the r vector from the goal proto
   Eigen::Matrix<double, 7, 1> r = Eigen::Matrix<double, 7, 1>::Zero();
-  if (goal.has_velocity_command()) {
-    r(0) = observer_.x(0);
-    r(1) = goal.velocity_command().forward_velocity();
-    r(2) = observer_.x(2);
-    r(3) = goal.velocity_command().angular_velocity();
+  if (goal->has_velocity_command()) {
+    controller_.r(1) = goal->velocity_command().forward_velocity();
+    controller_.r(3) = goal->velocity_command().angular_velocity();
 
     drive_command_type_ = DriveType::kVelocityCommand;
-  } else if (goal.has_distance_command()) {
-    auto final_state = goal.distance_command().final_state();
+  } else if (goal->has_distance_command()) {
+    auto final_state = goal->distance_command().final_state();
 
     muan::control::MotionProfilePosition initial_distance{0.0, observer_.x(1)};
     muan::control::MotionProfilePosition goal_distance{
@@ -62,7 +93,7 @@ DrivetrainOutput DrivetrainController::Update(const DrivetrainInput& input,
 
     auto current_constraints =
         GenerateTMPConstraints(initial_distance, goal_distance, initial_angle,
-                               goal_angle, goal.gear());
+                               goal_angle, goal->gear());
 
     distance_profile_ = muan::control::TrapezoidalMotionProfile(
         current_constraints.distance_constraints_, initial_distance,
@@ -74,33 +105,6 @@ DrivetrainOutput DrivetrainController::Update(const DrivetrainInput& input,
 
     drive_command_type_ = DriveType::kDistanceCommand;
   }
-
-  if (drive_command_type_ == DriveType::kDistanceCommand) {
-    r(0) = distance_profile_.Calculate(elapsed_time_).position;
-    r(1) = distance_profile_.Calculate(elapsed_time_).velocity;
-    r(2) = angle_profile_.Calculate(elapsed_time_).position;
-    r(3) = angle_profile_.Calculate(elapsed_time_).velocity;
-  }
-
-  // Create the y vector from the input proto
-  Eigen::Matrix<double, 3, 1> y = Eigen::Matrix<double, 3, 1>::Zero();
-  {
-    y(0) = input.right_encoder();
-    y(1) = input.left_encoder();
-    y(2) = input.gyro_angle();
-  }
-
-  // Run state-space calculations
-  auto u = controller_.Update(observer_.x(), r);
-  observer_.Update(u, y);
-
-  // Create the output proto from u
-  DrivetrainOutput out;
-  out.set_right_voltage(u(0));
-  out.set_left_voltage(u(1));
-  out.set_shifting(current_gear_ == Gear::kHighGear);
-
-  return out;
 }
 
 void DrivetrainController::Shift(Gear new_gear) {
@@ -140,13 +144,13 @@ void DrivetrainController::Shift(Gear new_gear) {
   }
 }
 
-DrivetrainStatus DrivetrainController::GetStatus() const {
-  DrivetrainStatus status;
+StackDrivetrainStatus DrivetrainController::GetStatus() const {
+  StackDrivetrainStatus status;
 
-  status.set_current_driving_type(drive_command_type_);
-  status.set_current_gear(current_gear_);
-  status.set_filtered_distance(observer_.x(0));
-  status.set_filtered_angle(observer_.x(2));
+  status->set_current_driving_type(drive_command_type_);
+  status->set_current_gear(current_gear_);
+  status->set_filtered_distance(observer_.x(0));
+  status->set_filtered_angle(observer_.x(2));
 
   return status;
 }

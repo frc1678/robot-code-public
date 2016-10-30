@@ -4,10 +4,10 @@ namespace frc1678 {
 
 namespace drivetrain {
 
-muan::queues::MessageQueue<DrivetrainGoal> goal_queue;
-muan::queues::MessageQueue<DrivetrainInput> input_queue;
-muan::queues::MessageQueue<DrivetrainStatus> status_queue;
-muan::queues::MessageQueue<DrivetrainOutput> output_queue;
+muan::queues::MessageQueue<StackDrivetrainGoal> goal_queue;
+muan::queues::MessageQueue<StackDrivetrainInput> input_queue;
+muan::queues::MessageQueue<StackDrivetrainStatus> status_queue;
+muan::queues::MessageQueue<StackDrivetrainOutput> output_queue;
 
 } /* drivetrain */
 

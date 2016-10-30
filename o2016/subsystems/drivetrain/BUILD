@@ -25,6 +25,7 @@ cc_library(
   deps = [
     ':drivetrain_constants',
     ':drivetrain_protos',
+    ':drivetrain_queues',
     '//muan/control:state_space',
     '//muan/control:motion_profiles'
   ]
@@ -57,7 +58,7 @@ cc_library(
   name = 'drivetrain_queues',
   srcs = ['drivetrain_queues.cpp'],
   hdrs = ['drivetrain_queues.h'],
-  deps = ['drivetrain_protos', '//muan/queues'],
+  deps = ['drivetrain_protos', '//muan/queues', '//muan/proto:stack_proto'],
   visibility = ['//visibility:public']
 )
 

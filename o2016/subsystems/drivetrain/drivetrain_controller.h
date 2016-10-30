@@ -2,6 +2,7 @@
 #define O2016_SUBSYSTEMS_DRIVETRAIN_DRIVETRAIN_CONTROLLER_H_
 
 #include "Eigen/Core"
+#include "drivetrain_queues.h"
 #include "muan/control/state_space_controller.h"
 #include "muan/control/state_space_observer.h"
 #include "muan/control/trapezoidal_motion_profile.h"
@@ -28,13 +29,14 @@ class DrivetrainController {
  public:
   DrivetrainController();
 
-  void Shift(Gear new_gear);
+  StackDrivetrainOutput Update(const StackDrivetrainInput& input);
+  StackDrivetrainStatus GetStatus() const;
 
-  DrivetrainOutput Update(const DrivetrainInput& input,
-                          const DrivetrainGoal& goal);
-  DrivetrainStatus GetStatus() const;
+  void SetGoal(const StackDrivetrainGoal& goal);
 
  private:
+  void Shift(Gear new_gear);
+
   muan::control::StateSpaceObserver<2, 7, 3> observer_;
   muan::control::StateSpaceController<2, 7, 3> controller_;
 

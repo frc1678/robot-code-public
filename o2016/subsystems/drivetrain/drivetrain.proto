@@ -1,5 +1,7 @@
 syntax="proto2";
 
+option cc_enable_arenas = true;
+
 enum Gear {
   kLowGear = 0;
   kHighGear = 1;
