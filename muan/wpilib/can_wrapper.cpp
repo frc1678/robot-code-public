@@ -18,6 +18,8 @@ void CanWrapper::operator()() {
   aos::SetCurrentThreadRealtimePriority(10);
   aos::SetCurrentThreadName("CanWrapper");
 
+  running_ = true;
+
   while (running_) {
     int iterations_passed = phased_loop.SleepUntilNext();
     pdp_.SendValues();

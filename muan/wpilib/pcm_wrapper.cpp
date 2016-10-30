@@ -29,7 +29,7 @@ void PcmWrapper::WriteSolenoid(uint8_t channel, bool on) {
 
 void PcmWrapper::Flush() {
   // Write the cached values to CAN
-  SolenoidBase::Set(current_values_, 0xFF, m_moduleNumber);
+  SolenoidBase::Set(current_values_, initialized_, m_moduleNumber);
 }
 
 void PcmWrapper::CheckPortInitialized(uint8_t channel) {

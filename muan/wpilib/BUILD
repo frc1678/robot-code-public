@@ -36,10 +36,11 @@ cc_library(
   ]
 )
 
-cc_test(
-  name = 'build_test',
-  srcs = ['wpilib_build_test.cpp'],
-  deps = [':can_wrapper'],
+cc_binary(
+  name = 'pcm_test',
+  srcs = ['pcm_test.cpp'],
+  deps = [':can_wrapper',
+          '//third_party/wpilibsuite:wpilib']
 )
 
 cc_proto_library(
