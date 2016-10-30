@@ -1,0 +1,38 @@
+syntax = "proto2";
+
+message CatapultOutput {
+  required double scoop_output = 1;
+  required double stop_output = 2;
+  required bool cylinder_extend = 3;
+  required bool disc_brake_activate = 4;
+}
+
+message CatapultStatus {
+  required double scoop_angle = 1;
+  required double scoop_angular_velocity = 2;
+  required double stop_angle = 3;
+  required double stop_angular_velocity = 4;
+  required double scoop_goal = 5;
+  required double stop_goal = 6;
+  required bool cylinder_extended = 7;
+  required bool disk_brake_locked = 8;
+  required bool scoop_terminated = 9;
+  required bool stop_terminated = 10;
+  required bool can_shoot = 11;
+  required bool calibrated = 12;
+}
+
+message CatapultInput {
+  required double scoop_pot = 1;
+  required double stop_encoder = 2;
+  required double stop_pot = 3;
+  required double distance_to_target = 4;
+}
+
+message CatapultGoal {
+  enum Goal {
+    TUCK = 0;
+    SHOOT = 1;
+  }
+  required Goal goal = 1;
+}

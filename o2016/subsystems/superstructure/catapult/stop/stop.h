@@ -23,8 +23,8 @@ class CatapultStop {
   muan::control::StateSpaceController<1, 2, 1> controller_;
   muan::control::StateSpaceObserver<1, 2, 1> observer_;
   bool done;
-  const Angle angle_tolerance = 0.1 * rad;
-  const AngularVelocity velocity_tolerance = 0.1 * rad / s;
+  constexpr static Angle angle_tolerance = 0.1 * rad;
+  constexpr static AngularVelocity velocity_tolerance = 0.1 * rad / s;
 };
 
 #endif // STOP_H_
