@@ -7,9 +7,9 @@ TEST(QueueManager, Initalizes) {
 
 TEST(QueueManager, QueueWorks) {
   muan::proto::StackProto<PdpStatus, 512> p;
-  o2016::QueueManager::GetInstance().get_pdp_status_queue().WriteMessage(p);
+  o2016::QueueManager::GetInstance().pdp_status_queue().WriteMessage(p);
 
-  auto pdp_status_reader = o2016::QueueManager::GetInstance().get_pdp_status_queue().MakeReader();
+  auto pdp_status_reader = o2016::QueueManager::GetInstance().pdp_status_queue().MakeReader();
 
   ASSERT_TRUE(pdp_status_reader.ReadMessage());
   ASSERT_FALSE(pdp_status_reader.ReadMessage());
