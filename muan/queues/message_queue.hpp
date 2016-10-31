@@ -87,7 +87,7 @@ MessageQueue<T, size>::QueueReader::ReadMessage() {
 template <typename T, uint64_t size>
 std::experimental::optional<T>
 MessageQueue<T, size>::QueueReader::ReadLastMessage() {
-  next_message_ = (&queue_)->back_;
+  next_message_ = queue_.back_;
   return queue_.LastMessage();
 }
 
