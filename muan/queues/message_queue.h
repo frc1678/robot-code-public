@@ -54,6 +54,10 @@ class MessageQueue {
     // messages.
     std::experimental::optional<T> ReadMessage();
 
+    // Reads the last message from the queue or nullopt if there are no new
+    // messages. Also marks all previous messages as read.
+    std::experimental::optional<T> ReadLastMessage();
+
     // Allows move construction but not move assignment - it doesn't really make
     // sense to assign a queue to another queue.
     QueueReader(QueueReader&& move_from) noexcept;
@@ -84,6 +88,9 @@ class MessageQueue {
   // position passed in. The parameter's value will be changed to the position
   // of the next valid message.
   std::experimental::optional<T> NextMessage(uint64_t& next) const;
+
+  // Gets the most recent message from the queue.
+  std::experimental::optional<T> LastMessage() const;
 
   // Gets the "front" (the oldest messages still kept) of the circular buffer,
   // either from the current value of _back or from a known value of back.
