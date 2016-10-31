@@ -224,6 +224,7 @@ cc_library(
     ':die',
     ':check',
     ':type_traits',
+    '//linux_libraries:libpthread',
   ],
 )
 

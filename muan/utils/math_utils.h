@@ -32,14 +32,11 @@ inline Eigen::Matrix<double, A, B> CapMatrix(
 }
 
 // Keep one random number generator per thread, as the implementation isn't
-// thread-safe
-thread_local std::mt19937_64 rng;  // NOLINT
+// thread-safe. "extern" because it's defined in math_utils.cpp
+extern thread_local std::mt19937_64 rng;  // NOLINT
 
 // Generate a single scalar value of gaussian noise
-double GaussianNoise(double std_dev = 1.0, double mean = 0.0) {
-  std::normal_distribution<double> dist(mean, std_dev);
-  return dist(rng);
-}
+double GaussianNoise(double std_dev = 1.0, double mean = 0.0);
 
 // Generate a vector of gaussian noise with a given covariance matrix
 template <uint32_t A>
@@ -55,6 +52,9 @@ Eigen::Matrix<double, A, 1> GaussianNoise(
 
   return covariance * ret + mean;
 }
+
+// Perform a modulo operation that is relative to negative infinity, not 0
+uint32_t true_modulo(int a, int b);
 
 }  // namespace muan
 

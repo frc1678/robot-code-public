@@ -18,6 +18,7 @@ cc_library(
     'allwpilib/ni-libraries/libNiRioSrv.so.15.0.0',
     'allwpilib/ni-libraries/libspi.so.1.0.0',
     'allwpilib/ni-libraries/libi2c.so.1.0.0',
+    'allwpilib/ni-libraries/libvisa.so',
   ],
   linkstatic = 1
 )
@@ -37,7 +38,8 @@ cc_library(
     'allwpilib/hal/lib/athena'
   ],
   linkopts = [
-    '-lpthread'
+    '-lpthread',
+    '-lm'
   ],
   deps = [':ni_libraries']
 )
@@ -47,6 +49,10 @@ cc_library(
   srcs = glob([
     'allwpilib/wpilibc/athena/src/**/*.cpp',
     'allwpilib/wpilibc/shared/src/**/*.cpp'
+  ], exclude = [
+    'allwpilib/wpilibc/athena/src/Vision/*',
+    'allwpilib/wpilibc/athena/src/CameraServer.cpp',
+    'allwpilib/wpilibc/athena/src/USBCamera.cpp',
   ]),
   hdrs = glob([
     'allwpilib/wpilibc/athena/include/**/*.h',
@@ -54,6 +60,8 @@ cc_library(
     'allwpilib/wpilibc/shared/include/**/*.h',
     'allwpilib/wpilibc/shared/include/**/*.hpp',
     'allwpilib/wpilibc/shared/include/**/*.inc'
+  ], exclude = [
+    'allwpilib/wpilibc/athena/src/Vision/*',
   ]),
   includes = [
     'allwpilib/wpilibc/athena/include',

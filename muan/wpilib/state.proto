@@ -1,0 +1,28 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+enum RobotMode {
+  DISABLED = 0;
+  AUTONOMOUS = 1;
+  TELEOP = 2;
+  ESTOP = 3;
+}
+
+message DriverStationStatus {
+  required RobotMode mode = 1;
+  optional double battery_voltage = 2;
+
+  optional bool brownout = 3;
+  optional bool has_ds_connection = 4;
+}
+
+message PdpStatus {
+  repeated double current = 1;
+  required double voltage_in = 2;
+  required double temperature = 3;
+
+  optional double total_current = 4;
+  optional double total_energy = 5;
+  optional double total_power = 6;
+};
