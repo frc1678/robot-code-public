@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/frc1678/robot-code.svg?token=zuwbfFQzhVsdFka5YhYy&branch=master)](https://travis-ci.com/frc1678/robot-code)
+
 # 1678 Robot Code
 
 This repository holds all of our robot code, starting from the 2016 offseason.
