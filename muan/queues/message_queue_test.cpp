@@ -23,7 +23,7 @@ TEST(MessageQueue, ReadsLastMessage) {
   EXPECT_EQ(reader.ReadLastMessage().value(), 1678);
   // Check that ReadLastMessage will move the current message pointer to the
   // front.
-  EXPECT_EQ((bool)reader.ReadMessage(), false);
+  EXPECT_FALSE(reader.ReadMessage());
 }
 
 // Ensure that the queue delivers multiple messages correctly and in sequence
