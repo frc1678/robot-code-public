@@ -43,6 +43,13 @@ std::experimental::optional<T> MessageQueue<T, size>::NextMessage(
 }
 
 template <typename T, uint64_t size>
+std::experimental::optional<T> MessageQueue<T, size>::LastMessage() const {
+  aos::MutexLocker locker_{&queue_lock_};
+
+  return messages_[(back_ - 1) % size];
+}
+
+template <typename T, uint64_t size>
 typename MessageQueue<T, size>::QueueReader MessageQueue<T, size>::MakeReader()
     const {
   return MessageQueue<T, size>::QueueReader{*this};
@@ -75,6 +82,13 @@ template <typename T, uint64_t size>
 std::experimental::optional<T>
 MessageQueue<T, size>::QueueReader::ReadMessage() {
   return queue_.NextMessage(next_message_);
+}
+
+template <typename T, uint64_t size>
+std::experimental::optional<T>
+MessageQueue<T, size>::QueueReader::ReadLastMessage() {
+  next_message_ = queue_.back_;
+  return queue_.LastMessage();
 }
 
 }  // namespace queues

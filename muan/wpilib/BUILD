@@ -1,3 +1,4 @@
+package(default_visibility = ['//visibility:public'])
 load('//third_party/google/protobuf:protobuf.bzl', 'cc_proto_library')
 
 cc_library(
@@ -34,6 +35,13 @@ cc_library(
     '//third_party/wpilibsuite:wpilib',
     '//third_party/aos/common:die',
   ]
+)
+
+cc_binary(
+  name = 'pdp_test',
+  srcs = ['pdp_test.cpp'],
+  deps = [':can_wrapper',
+          '//third_party/wpilibsuite:wpilib']
 )
 
 cc_binary(
