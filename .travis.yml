@@ -1,5 +1,5 @@
 # Based on https://github.com/korfuri/bazel-travis
-language: cpp
+language: c
 
 sudo: required
 dist: trusty
