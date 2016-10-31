@@ -1,4 +1,7 @@
 # Based on https://github.com/korfuri/bazel-travis
+
+# Setting the language to java allows us to use the jdk option to easily
+# install Java 8, which is required by bazel.
 language: java
 
 sudo: required
@@ -23,9 +26,9 @@ addons:
       - python-numpy
       - python-scipy
 
-        # Eventually, Bazel will have binary packages and we'll be able to
-        # just download a prebuilt distribution of Bazel. For now, build it
-        # from source every time.
+# Eventually, Bazel will have binary packages and we'll be able to
+# just download a prebuilt distribution of Bazel. For now, build it
+# from source every time.
 install:
   # WPILib packages
   - sudo add-apt-repository ppa:wpilib/toolchain -y
@@ -37,7 +40,8 @@ install:
   - chmod +x bazel-0.2.1-installer-linux-x86_64.sh
   - ./bazel-0.2.1-installer-linux-x86_64.sh --user
 
+# TODO(Wesley) Add to pre-push git hook?
 script:
   - bazel test --test_output=all //muan/... -- -//muan/wpilib/...
-  - bazel test --test_output=all -- //o2016/...
-  - ./check-format.py
+  # - bazel test --test_output=all -- //o2016/...
+  # - ./check-format.py
