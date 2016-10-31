@@ -43,5 +43,6 @@ install:
 # TODO(Wesley) Add to pre-push git hook?
 script:
   - bazel test --test_output=all //muan/... -- -//muan/wpilib/...
+  - bazel build //muan/... --cpu=roborio
   - bazel test --test_output=all -- //o2016/...
   # - ./check-format.py
