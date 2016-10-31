@@ -14,8 +14,8 @@ addons:
       - clang-format-3.5
       - wget
         # Package list from http://bazel.io/docs/install.html
-      - openjdk-7-jdk
-      - openjdk-7-source
+      - openjdk-8-jdk
+      - openjdk-8-source
       - pkg-config
       - zip
       - zlib1g-dev
