@@ -4,6 +4,8 @@ language: generic
 sudo: required
 dist: trusty
 
+jdk: oraclejdk8
+
 addons:
   apt:
     sources:
