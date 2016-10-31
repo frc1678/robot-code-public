@@ -11,6 +11,8 @@ TEST(QueueManager, QueueWorks) {
 
   auto pdp_status_reader = o2016::QueueManager::GetInstance().pdp_status_queue().MakeReader();
 
+  // Test that it reads one message (the message we sent above), then that it
+  // doesn't have any new messages (because we just read the only message).
   ASSERT_TRUE(pdp_status_reader.ReadMessage());
   ASSERT_FALSE(pdp_status_reader.ReadMessage());
 }
