@@ -7,33 +7,32 @@ addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
-      - 
     packages:
       - gcc-4.9
       - g++-4.9
       - clang-format-3.5
       - wget
-      # Package list from http://bazel.io/docs/install.html
+        # Package list from http://bazel.io/docs/install.html
       - openjdk-7-jdk
       - openjdk-7-source
       - pkg-config
       - zip
       - zlib1g-dev
 
-# Eventually, Bazel will have binary packages and we'll be able to
-# just download a prebuilt distribution of Bazel. For now, build it
-# from source every time.
-before_install:
-# WPILib packages
-  - sudo add-apt-repository ppa:wpilib/toolchain -y
-  - sudo apt-get update
-  - sudo apt-get install frc-toolchain -y
-  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.9
-# Bazel
-  - wget 'https://github.com/bazelbuild/bazel/releases/download/0.2.1/bazel-0.2.1-installer-linux-x86_64.sh'
-  - chmod +x bazel-0.2.1-installer-linux-x86_64.sh
-  - ./bazel-0.2.1-installer-linux-x86_64.sh --user
+        # Eventually, Bazel will have binary packages and we'll be able to
+        # just download a prebuilt distribution of Bazel. For now, build it
+        # from source every time.
+    before_install:
+      # WPILib packages
+      - sudo add-apt-repository ppa:wpilib/toolchain -y
+      - sudo apt-get update
+      - sudo apt-get install frc-toolchain -y
+      - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.9
+        # Bazel
+      - wget 'https://github.com/bazelbuild/bazel/releases/download/0.2.1/bazel-0.2.1-installer-linux-x86_64.sh'
+      - chmod +x bazel-0.2.1-installer-linux-x86_64.sh
+      - ./bazel-0.2.1-installer-linux-x86_64.sh --user
 
-script:
-  - bazel test --test_output=all -- //muan/... -//muan/roborio/...
-- ./check-format.py
+    script:
+      - bazel test --test_output=all -- //muan/... -//muan/roborio/...
+      - ./check-format.py
