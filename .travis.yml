@@ -21,6 +21,7 @@ addons:
       - zlib1g-dev
         # Our code deps
       - python-numpy
+      - python-scipy
 
         # Eventually, Bazel will have binary packages and we'll be able to
         # just download a prebuilt distribution of Bazel. For now, build it
