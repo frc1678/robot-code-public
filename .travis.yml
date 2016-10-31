@@ -1,5 +1,5 @@
 # Based on https://github.com/korfuri/bazel-travis
-language: generic
+language: java
 
 sudo: required
 dist: trusty
