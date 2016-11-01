@@ -1,5 +1,7 @@
 syntax="proto2";
 
+option cc_enable_arenas = true;
+
 package turret;
 
 message TurretStatus {
@@ -13,7 +15,7 @@ message TurretOutput {
   required double voltage = 5;
 }
 
-message TurretPosition {
+message TurretInput {
   required double encoder_position = 6;
   required double pot_position = 7;
   required bool index_click = 8;
