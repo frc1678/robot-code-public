@@ -1,5 +1,7 @@
 syntax = "proto2";
 
+option cc_enable_arenas = true;
+
 message CatapultOutput {
   required double scoop_output = 1;
   required double stop_output = 2;
