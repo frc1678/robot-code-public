@@ -31,12 +31,12 @@ TEST_F(CatapultTest, Terminates) {
   input_.set_stop_pot(0 * rad);
   for(int i = 0; i < 3; i++) {
     goal_.set_goal(CatapultGoal::INTAKE);
-    for(int i = 0; i < 400; i++) { 
+    for(int i = 0; i < 400; i++) {
       UpdateTest(0 * m);
     }
     EXPECT_TRUE(status_.terminated());
     goal_.set_goal(CatapultGoal::PREP_SHOT);
-    for(int i = 0; i < 400; i++) { 
+    for(int i = 0; i < 400; i++) {
       UpdateTest(0 * m);
     }
     EXPECT_TRUE(status_.terminated());
