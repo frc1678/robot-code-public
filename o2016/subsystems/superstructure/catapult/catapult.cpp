@@ -4,7 +4,7 @@
 Catapult::Catapult() :
   stop_(CatapultStop()),
   scoop_(Scoop()),
-  cylinder_extended_(false) {}
+  cylinder_countdown_(0) {}
 
 void Catapult::Update(CatapultInput input, CatapultGoal goal) {
   // TODO(Lucas): Put calculations here
@@ -18,28 +18,42 @@ void Catapult::Update(CatapultInput input, CatapultGoal goal) {
 
   status_.set_scoop_terminated(scoop_.is_done());
   status_.set_stop_terminated(stop_.is_done());
+  status_.set_terminated(status_.stop_terminated() && status_.scoop_terminated());
 
-  status_.set_cylinder_extended(cylinder_extended_);
+  if(cylinder_countdown == 0) {
+  } else if(cylinder_countdown == extend_time) { 
+    status_.set_cylinder_status(CatapultStatus::EXTENDED);
+  } else { 
+    status_.set_cylinder_status(CatapultStatus::WAITING);
+  }
 
-  // TODO(Lucas): Make it calibrate
-  status_.set_calibrated(true); //stop.is_calibrated();
-  // TODO(Lucas): Put this on a timer
-  status_.set_disk_brake_locked(stop_.is_done());
-  status_.set_can_shoot(status_.scoop_terminated() && status_.stop_terminated() &&
-                     status_.disk_brake_locked() && status_.calibrated() &&
-                     !status_.cylinder_extended());
+  status_.set_disk_brake_locked(stop_.is_done() && goal.goal() == CatapultStatus::PREP_SHOT);
+  status_.set_can_shoot(status_.terminated() && status_.disk_brake_locked() &&
+                        (status_.cylinder_status() == CatapultStatus::RETRACTED ||
+                        status_.cylinder_status() == CatapultStatus::EXTENDING));
                      
   output_.set_scoop_output(scoop_.Update(status_.scoop_goal(), input.scoop_pot()));
-  // TODO(Lucas): Make it calibrate
-  output_.set_stop_output(stop_.Update(status_.stop_goal(), input.stop_encoder())); // , stop_pot
+  output_.set_stop_output(stop_.Update(status_.stop_goal(), input.stop_pot()));
   output_.set_disc_brake_activate(status_.stop_terminated());
-  // Tucking takes precedence over shooting
-  if(goal.goal() == CatapultGoal::TUCK) {
-    // TODO(Lucas): Put this on a timer
-    cylinder_extended_ = false;
+
+  if(goal.goal() == CatapultGoal::INTAKE || goal.goal() == CatapultGoal::PREP_SHOT) {
+    cylinder_countdown_--;
+    output_.set_cylinder_extend(false);
+    if(cylinder_countdown < 0) {
+      cylinder_countdown = 0;
+      status_.set_cylinder_status(CatapultStatus::RETRACTED);
+    } else { 
+      status_.set_cylinder_status(CatapultStatus::RETRACTING);
+    }
   } else if(goal.goal() == CatapultGoal::SHOOT && status_.can_shoot()) {
-    // TODO(Lucas): Put this on a timer
-    cylinder_extended_ = true;
+    cylinder_countdown_++;
+    output_.set_cylinder_extend(true);
+    if(cylinder_countdown > extend_time) { 
+      cylinder_countdown = extend_time;
+      status_.set_cylinder_status(CatapultStatus::EXTENDED);
+    } else { 
+      status_.set_cylinder_status(CatapultStatus::EXTENDING);
+    }
   }
 }
 

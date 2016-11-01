@@ -12,7 +12,6 @@ class CatapultTest : public ::testing::Test {
 
     input_.set_scoop_pot(status_.scoop_angle());
     input_.set_stop_pot(status_.stop_angle());
-    input_.set_stop_encoder(status_.stop_angle());
     input_.set_distance_to_target(distance_to_target);
 
     catapult_.Update(input_, goal_);
@@ -27,13 +26,19 @@ class CatapultTest : public ::testing::Test {
   Catapult catapult_;
 };
 
-TEST_F(CatapultTest, Calibrates) {
-  goal_.set_goal(CatapultGoal::TUCK);
+TEST_F(CatapultTest, Terminates) {
   input_.set_scoop_pot(0 * rad);
   input_.set_stop_pot(0 * rad);
-  input_.set_stop_encoder(0 * rad);
-  for(int i = 0; i < 400; i++) { 
-    UpdateTest(0 * m);
+  for(int i = 0; i < 3; i++) {
+    goal_.set_goal(CatapultGoal::INTAKE);
+    for(int i = 0; i < 400; i++) { 
+      UpdateTest(0 * m);
+    }
+    EXPECT_TRUE(status_.terminated());
+    goal_.set_goal(CatapultGoal::PREP_SHOT);
+    for(int i = 0; i < 400; i++) { 
+      UpdateTest(0 * m);
+    }
+    EXPECT_TRUE(status_.terminated());
   }
-  EXPECT_TRUE(status_.calibrated());
 }

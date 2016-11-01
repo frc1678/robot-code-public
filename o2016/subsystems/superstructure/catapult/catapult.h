@@ -19,9 +19,10 @@ public:
 protected:
   CatapultStop stop_;
   Scoop scoop_;
-  bool cylinder_extended_;
+  int cylinder_countdown_;
   CatapultOutput output_;
   CatapultStatus status_;
+  constexpr static int extend_time = 200;
 };
 
 #endif // O2016_SUBSYSTEMS_SUPERSTRUCTURE_CATAPULT_H_
