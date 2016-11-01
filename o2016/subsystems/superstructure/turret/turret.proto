@@ -1,0 +1,24 @@
+syntax="proto2";
+
+package turret;
+
+message TurretStatus {
+  required double filtered_position = 1;
+  required double filtered_velocity = 2;
+  required double filtered_goal = 3;
+  required bool at_goal = 4;
+}
+
+message TurretOutput {
+  required double voltage = 5;
+}
+
+message TurretPosition {
+  required double encoder_position = 6;
+  required double pot_position = 7;
+  required bool index_click = 8;
+}
+
+message TurretGoal {
+  required double goal_angle = 9;
+}
