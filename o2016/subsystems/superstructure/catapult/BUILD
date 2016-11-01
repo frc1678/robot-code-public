@@ -4,6 +4,6 @@ cc_proto_library(
   name = 'catapult_proto',
   srcs = ['catapult.proto'],
   protoc = '//third_party/google/protobuf:protoc',
-  default_runtime = '//third_party/google/protobuf'
+  default_runtime = '//third_party/google/protobuf',
   visibility = ['//visibility:public']
 )
