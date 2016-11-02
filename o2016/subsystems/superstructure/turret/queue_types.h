@@ -9,10 +9,10 @@ namespace frc1678 {
 
 namespace turret {
 
-using StackTurretGoal = muan::proto::StackProto<::turret::TurretGoal, 100>;
-using StackTurretInput = muan::proto::StackProto<::turret::TurretInput, 100>;
-using StackTurretStatus = muan::proto::StackProto<::turret::TurretStatus, 100>;
-using StackTurretOutput = muan::proto::StackProto<::turret::TurretOutput, 100>;
+using TurretGoalProto = muan::proto::StackProto<::turret::TurretGoal, 100>;
+using TurretInputProto = muan::proto::StackProto<::turret::TurretInput, 100>;
+using TurretStatusProto = muan::proto::StackProto<::turret::TurretStatus, 100>;
+using TurretOutputProto = muan::proto::StackProto<::turret::TurretOutput, 100>;
 
 using TurretInputQueue = muan::queues::MessageQueue<StackTurretInput, 200>;
 using TurretGoalQueue = muan::queues::MessageQueue<StackTurretGoal, 100>;
