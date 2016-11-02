@@ -1,0 +1,34 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+package o2016.intake;
+
+message IntakeInput {
+  required double encoder_position = 1;
+  required double pot_position = 2;
+}
+
+message IntakeGoal {
+  required double goal_angle = 1;
+  required Goal intake_goal = 2;
+}
+
+message IntakeOutput {
+  required double position_voltage = 1;
+  required double speed_voltage = 2;
+}
+
+message IntakeStatus {
+  required double intake_position = 1;
+  required double intake_velocity = 2;
+  required double filtered_goal = 3;
+  required bool at_goal = 4;
+  required Goal current_goal = 5;
+}
+
+enum Goal {
+  STOP = 0;
+  FORWARD = 1;
+  REVERSE = 2;
+}
