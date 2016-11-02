@@ -33,8 +33,10 @@ message DrivetrainGoal {
 
   required Gear gear = 2;
 
-  optional VelocityCommand velocity_command = 3;
-  optional DistanceCommand distance_command = 4;
+  oneof command {
+    VelocityCommand velocity_command = 3;
+    DistanceCommand distance_command = 4;
+  }
 }
 
 message DrivetrainStatus {
