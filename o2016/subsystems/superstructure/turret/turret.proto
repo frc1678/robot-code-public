@@ -1,0 +1,26 @@
+syntax="proto2";
+
+option cc_enable_arenas = true;
+
+package turret;
+
+message TurretStatus {
+  required double observed_position = 1;
+  required double observed_velocity = 2;
+  required double filtered_goal = 3;
+  required bool at_goal = 4;
+}
+
+message TurretOutput {
+  required double voltage = 5;
+}
+
+message TurretInput {
+  required double encoder_position = 6;
+  required double pot_position = 7;
+  required bool index_click = 8;
+}
+
+message TurretGoal {
+  required double goal_angle = 9;
+}
