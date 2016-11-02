@@ -1,0 +1,60 @@
+syntax = "proto2";
+
+package o2016.drivetrain;
+
+option cc_enable_arenas = true;
+
+enum Gear {
+  kLowGear = 0;
+  kHighGear = 1;
+}
+
+enum DriveType {
+  kDistanceCommand = 0;
+  kVelocityCommand = 1;
+}
+
+message DrivetrainState {
+  required double forward_distance = 1;
+  required double angular_distance = 2;
+  required double forward_velocity = 3;
+  required double angular_velocity = 4;
+}
+
+message DrivetrainGoal {
+  message VelocityCommand {
+    required double forward_velocity = 1;
+    required double angular_velocity = 2;
+  }
+
+  message DistanceCommand {
+    required DrivetrainState final_state = 1;
+  }
+
+  required Gear gear = 2;
+
+  optional VelocityCommand velocity_command = 3;
+  optional DistanceCommand distance_command = 4;
+}
+
+message DrivetrainStatus {
+  required DrivetrainState observed_state = 1;
+
+  required DriveType current_driving_type = 2;
+  required Gear current_gear = 3;
+}
+
+message DrivetrainInput {
+  // Encoders in meters
+  required double left_encoder = 1;
+  required double right_encoder = 2;
+
+  required double gyro_angle = 3;
+}
+
+message DrivetrainOutput {
+  required double left_voltage = 1;
+  required double right_voltage = 2;
+  // True is high gear
+  required bool shifting = 3;
+}
