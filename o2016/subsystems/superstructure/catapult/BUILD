@@ -1,5 +1,11 @@
 load('//third_party/google/protobuf:protobuf.bzl', 'cc_proto_library')
 
+cc_library(
+  name = 'catapult_queues',
+  hdrs = ['queue_types.h'],
+  deps = ['catapult_proto', '//muan/proto:stack_proto', '//muan/queues:queues'],
+  visibility = ['//visibility:public']
+)
 cc_proto_library(
   name = 'catapult_proto',
   srcs = ['catapult.proto'],
