@@ -2,6 +2,8 @@ syntax = "proto2";
 
 option cc_enable_arenas = true;
 
+package o2016.catapult;
+
 message CatapultOutput {
   required double scoop_output = 1;
   required double hardstop_output = 2;
