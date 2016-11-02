@@ -3,6 +3,7 @@
 
 #include "Eigen/Core"
 #include <iostream>
+#include <random>
 
 namespace muan {
 
@@ -29,6 +30,31 @@ inline Eigen::Matrix<double, A, B> CapMatrix(
   }
   return ret;
 }
+
+// Keep one random number generator per thread, as the implementation isn't
+// thread-safe. "extern" because it's defined in math_utils.cpp
+extern thread_local std::mt19937_64 rng;  // NOLINT
+
+// Generate a single scalar value of gaussian noise
+double GaussianNoise(double std_dev = 1.0, double mean = 0.0);
+
+// Generate a vector of gaussian noise with a given covariance matrix
+template <uint32_t A>
+Eigen::Matrix<double, A, 1> GaussianNoise(
+    const Eigen::Matrix<double, A, A>& covariance,
+    const Eigen::Matrix<double, A, 1> mean =
+        Eigen::Matrix<double, A, 1>::Zero()) {
+  Eigen::Matrix<double, A, 1> ret;
+
+  for (uint32_t i = 0; i < A; i++) {
+    ret[i] = GaussianNoise();
+  }
+
+  return covariance * ret + mean;
+}
+
+// Perform a modulo operation that is relative to negative infinity, not 0
+uint32_t true_modulo(int a, int b);
 
 }  // namespace muan
 

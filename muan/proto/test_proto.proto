@@ -1,0 +1,8 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+message TestProto {
+  optional uint64 test_uint = 2;
+  optional bool is_sane = 4;
+}

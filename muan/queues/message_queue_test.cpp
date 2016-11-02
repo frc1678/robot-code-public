@@ -12,6 +12,20 @@ TEST(MessageQueue, DeliversSingleMessage) {
   EXPECT_EQ(reader.ReadMessage().value(), 10);
 }
 
+// Ensure that the queue reader reads the last message correctly
+TEST(MessageQueue, ReadsLastMessage) {
+  MessageQueue<uint32_t, 10> int_queue;
+  int_queue.WriteMessage(254);
+  int_queue.WriteMessage(971);
+  int_queue.WriteMessage(1678);
+  auto reader = int_queue.MakeReader();
+  // Check that ReadLastMessage actually reads the last message
+  EXPECT_EQ(reader.ReadLastMessage().value(), 1678);
+  // Check that ReadLastMessage will move the current message pointer to the
+  // front.
+  EXPECT_FALSE(reader.ReadMessage());
+}
+
 // Ensure that the queue delivers multiple messages correctly and in sequence
 TEST(MessageQueue, DeliversManyMessages) {
   MessageQueue<uint32_t, 10> int_queue;
@@ -113,11 +127,11 @@ TEST(MessageQueue, Multithreading) {
   auto func = [&int_queue, num_messages]() {
     uint32_t next = 0;
     auto reader = int_queue.MakeReader();
-    auto end_time =
-        std::chrono::steady_clock::now() + std::chrono::milliseconds(300);
+    auto timeout_end =
+        std::chrono::steady_clock::now() + std::chrono::milliseconds(1000);
 
-    // TODO(Kyle) Find a better termination condition for this
-    while (std::chrono::steady_clock::now() < end_time) {
+    while (next < num_messages &&
+           std::chrono::steady_clock::now() < timeout_end) {
       auto val = reader.ReadMessage();
       if (val) {
         EXPECT_EQ(next, *val);
@@ -137,6 +151,54 @@ TEST(MessageQueue, Multithreading) {
   }
 
   for (auto& t : threads) {
+    t.join();
+  }
+}
+
+// Ensure that the queues maintain correctness when being accessed by many
+// reader threads and multiple writer threads
+TEST(MessageQueue, MultipleWriters) {
+  constexpr uint32_t messages_per_thread = 2000;
+  constexpr uint32_t num_threads = 5;
+
+  MessageQueue<uint32_t, messages_per_thread * num_threads> int_queue;
+  auto reader_func = [&int_queue, messages_per_thread, num_threads]() {
+    auto reader = int_queue.MakeReader();
+
+    uint32_t num_read = 0;
+    auto timeout_end =
+        std::chrono::steady_clock::now() + std::chrono::milliseconds(1000);
+
+    while (num_read < messages_per_thread * num_threads &&
+           std::chrono::steady_clock::now() < timeout_end) {
+      if (reader.ReadMessage()) {
+        num_read++;
+      }
+    }
+    EXPECT_EQ(num_read, messages_per_thread * num_threads);
+  };
+
+  auto writer_func = [&int_queue, messages_per_thread]() {
+    for (uint32_t i = 0; i < messages_per_thread; i++) {
+      int_queue.WriteMessage(i);
+    }
+  };
+
+  std::array<std::thread, num_threads> reader_threads;
+  for (auto& t : reader_threads) {
+    t = std::thread{reader_func};
+  }
+
+  std::array<std::thread, num_threads> writer_threads;
+  for (auto& t : writer_threads) {
+    t = std::thread{writer_func};
+  }
+
+  for (auto& t : reader_threads) {
+    t.join();
+  }
+
+  for (auto& t : writer_threads) {
     t.join();
   }
 }

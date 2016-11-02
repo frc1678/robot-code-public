@@ -4,7 +4,11 @@ cc_library(
   name = 'queues',
   srcs = ['message_queue.hpp'],
   hdrs = ['message_queue.h'],
-  deps = ['//muan/utils:math_utils', '//third_party/optional'],
+  deps = [
+    '//muan/utils:math_utils',
+    '//third_party/optional',
+    '//third_party/aos/common:mutex',
+  ],
   linkstatic = 1
 )
 

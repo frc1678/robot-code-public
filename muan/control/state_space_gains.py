@@ -25,7 +25,7 @@ class StateSpaceGains(object):
             Kff: Feedforwards gains matrix
             L: Observer gains matrix
         """
-        self.name = name 
+        self.name = name
         self.dt = dt
         self.A = np.asmatrix(A)
         self.B = np.asmatrix(B)
@@ -37,8 +37,13 @@ class StateSpaceGains(object):
         self.Kff = _matrix_or_zeros(Kff, K.shape)
         self.L = _matrix_or_zeros(L, (A.shape[0], C.shape[0]))
 
-    def writable_matrices(self):
-        return {
+        self.extra_constants = {}
+
+    def add_writable_constant(self, name, value):
+        self.extra_constants[name] = value
+
+    def writable_constants(self):
+        ret = {
             'A': self.A,
             'B': self.B,
             'C': self.C,
@@ -47,5 +52,8 @@ class StateSpaceGains(object):
             'R': self.R,
             'K': self.K,
             'Kff': self.Kff,
-            'L': self.L
+            'L': self.L,
+            'dt': self.dt
         }
+        ret.update(self.extra_constants)
+        return ret
