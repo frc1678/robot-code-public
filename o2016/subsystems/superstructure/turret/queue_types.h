@@ -14,10 +14,10 @@ using TurretInputProto = muan::proto::StackProto<::turret::TurretInput, 100>;
 using TurretStatusProto = muan::proto::StackProto<::turret::TurretStatus, 100>;
 using TurretOutputProto = muan::proto::StackProto<::turret::TurretOutput, 100>;
 
-using TurretInputQueue = muan::queues::MessageQueue<StackTurretInput, 200>;
-using TurretGoalQueue = muan::queues::MessageQueue<StackTurretGoal, 100>;
-using TurretOutputQueue = muan::queues::MessageQueue<StackTurretOutput, 200>;
-using TurretStatusQueue = muan::queues::MessageQueue<StackTurretStatus, 100>;
+using TurretInputQueue = muan::queues::MessageQueue<TurretInputProto, 200>;
+using TurretGoalQueue = muan::queues::MessageQueue<TurretGoalProto, 100>;
+using TurretOutputQueue = muan::queues::MessageQueue<TurretOutputProto, 200>;
+using TurretStatusQueue = muan::queues::MessageQueue<TurretStatusProto, 100>;
 }
 }
 
