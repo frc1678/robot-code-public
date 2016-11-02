@@ -4,7 +4,7 @@ option cc_enable_arenas = true;
 
 message CatapultOutput {
   required double scoop_output = 1;
-  required double stop_output = 2;
+  required double hardstop_output = 2;
   required bool cylinder_extend = 3;
   required bool disc_brake_activate = 4;
 }
@@ -12,10 +12,10 @@ message CatapultOutput {
 message CatapultStatus {
   required double scoop_angle = 1;
   required double scoop_angular_velocity = 2;
-  required double stop_angle = 3;
-  required double stop_angular_velocity = 4;
+  required double hardstop_angle = 3;
+  required double hardstop_angular_velocity = 4;
   required double scoop_goal = 5;
-  required double stop_goal = 6;
+  required double hardstop_goal = 6;
   required CylinderStatus catapult_status = 7;
   required bool disk_brake_locked = 8;
   required bool scoop_at_goal = 9;
@@ -26,7 +26,7 @@ message CatapultStatus {
 
 message CatapultInput {
   required double scoop_pot = 1;
-  required double stop_pot = 2;
+  required double hardstop_pot = 2;
 }
 
 message CatapultGoal {
