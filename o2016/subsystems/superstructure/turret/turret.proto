@@ -12,15 +12,15 @@ message TurretStatus {
 }
 
 message TurretOutput {
-  required double voltage = 5;
+  required double voltage = 1;
 }
 
 message TurretInput {
-  required double encoder_position = 6;
-  required double pot_position = 7;
-  required bool index_click = 8;
+  required double encoder_position = 1;
+  required double pot_position = 2;
+  required bool index_click = 3;
 }
 
 message TurretGoal {
-  required double goal_angle = 9;
+  required double goal_angle = 1;
 }
