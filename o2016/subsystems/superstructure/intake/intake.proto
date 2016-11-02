@@ -10,7 +10,7 @@ message IntakeInput {
 
 message IntakeGoal {
   required double goal_angle = 1;
-  required Goal intake_speed = 2;
+  required RollerGoal intake_speed = 2;
 }
 
 message IntakeOutput {
@@ -23,10 +23,10 @@ message IntakeStatus {
   required double intake_velocity = 2;
   required double filtered_angle_goal = 3;
   required bool at_goal = 4;
-  required Goal current_speed_goal = 5;
+  required RollerGoal current_roller_goal = 5;
 }
 
-enum SpeedGoal {
+enum RollerGoal {
   STOP = 0;
   FORWARD = 1;
   REVERSE = 2;
