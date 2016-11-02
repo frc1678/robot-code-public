@@ -5,7 +5,7 @@
 #include "muan/queues/message_queue.h"
 #include "o2016/subsystems/superstructure/turret/turret.pb.h"
 
-namespace frc1678 {
+namespace o2016 {
 
 namespace turret {
 
