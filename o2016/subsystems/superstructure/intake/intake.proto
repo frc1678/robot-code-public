@@ -6,6 +6,7 @@ package o2016.intake;
 
 message IntakeInput {
   required double encoder_position = 1;
+  required bool index_click = 2;
 }
 
 message IntakeGoal {
