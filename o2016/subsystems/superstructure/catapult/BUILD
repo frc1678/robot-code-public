@@ -4,23 +4,30 @@ cc_library(
   name = 'catapult',
   srcs = ['catapult.cpp'],
   hdrs = [
-    'catapult.h',
-    'catapult_messages.h'
+    'catapult.h'
   ],
   deps = [
     '//o2016/subsystems/superstructure/catapult/scoop:scoop',
     '//o2016/subsystems/superstructure/catapult/stop:stop',
     '//muan/units:units',
-    '//muan/queues:queues',
-    ':catapult_proto'
-  ]
+    ':catapult_queues'
+  ],
+  visibility = ['//visibility:public']
+)
+
+cc_library(
+  name = 'catapult_queues',
+  hdrs = ['queue_types.h'],
+  deps = ['catapult_proto', '//muan/proto:stack_proto', '//muan/queues:queues'],
+  visibility = ['//visibility:public']
 )
 
 cc_proto_library(
   name = 'catapult_proto',
   srcs = ['catapult.proto'],
   protoc = '//third_party/google/protobuf:protoc',
-  default_runtime = '//third_party/google/protobuf'
+  default_runtime = '//third_party/google/protobuf',
+  visibility = ['//visibility:public']
 )
 
 cc_test(
@@ -29,5 +36,14 @@ cc_test(
   deps = [
     ':catapult',
     '//third_party/google/googletest:googletest'
+  ]
+)
+
+cc_test(
+  name = 'catapult_queues_test',
+  srcs = ['queue_types_test.cpp'],
+  deps = [
+     '//third_party/google/googletest:googletest',
+     ':catapult_queues'
   ]
 )
