@@ -9,6 +9,7 @@ cc_library(
   deps = [
     '//o2016/queue_manager',
     '//o2016/subsystems/drivetrain:queue_types',
+    '//o2016/subsystems/superstructure/turret:turret_queues',
     '//muan/wpilib:can_wrapper',
     '//third_party/wpilibsuite:wpilib',
   ]

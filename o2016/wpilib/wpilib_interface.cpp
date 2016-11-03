@@ -20,6 +20,15 @@ constexpr uint32_t kShiftingA = 0, kShiftingB = 0;
 
 }  // drivetrain
 
+namespace turret {
+
+constexpr uint32_t kMotor = 0;
+constexpr uint32_t kEncoderA = 0, kEncoderB = 0;
+constexpr uint32_t kPotentiometer = 0;
+constexpr uint32_t kIndex = 0;
+
+}  // turret
+
 }  // ports
 
 constexpr double kMaxVoltage = 12.0;
@@ -82,6 +91,39 @@ void DrivetrainInterface::WriteActuators() {
   }
 }
 
+TurretInterface::TurretInterface()
+    : input_queue_(QueueManager::GetInstance().turret_input_queue()),
+      output_queue_(
+          QueueManager::GetInstance().turret_output_queue().MakeReader()),
+      motor_{ports::turret::kMotor},
+      encoder_{ports::turret::kEncoderA, ports::turret::kEncoderB},
+      potentiometer_{ports::turret::kPotentiometer},
+      index_{ports::turret::kIndex} {}
+
+void TurretInterface::WriteActuators() {
+  auto outputs = output_queue_.ReadLastMessage();
+  if (outputs) {
+    motor_.Set(muan::Cap((*outputs)->voltage(), -kMaxVoltage, kMaxVoltage) /
+               12.0);
+  } else {
+    motor_.Set(0.0);
+  }
+}
+
+void TurretInterface::ReadSensors() {
+  o2016::turret::TurretInputProto sensors;
+
+  // TODO(Kyle) figure these out for reals
+  constexpr double kPotentiometerScaling = 1.0;
+  constexpr double kEncoderScaling = 1.0;
+
+  sensors->set_encoder_position(encoder_.Get() * kEncoderScaling);
+  sensors->set_pot_position(potentiometer_.GetValue() * kPotentiometerScaling);
+  sensors->set_index_click(index_.Get());
+
+  input_queue_.WriteMessage(sensors);
+}
+
 WpilibInterface::WpilibInterface()
     : can_{&QueueManager::GetInstance().pdp_status_queue()},
       drivetrain_{&can_} {
@@ -91,10 +133,12 @@ WpilibInterface::WpilibInterface()
 
 void WpilibInterface::WriteActuators() {
   drivetrain_.WriteActuators();
+  turret_.WriteActuators();
 }
 
 void WpilibInterface::ReadSensors() {
   drivetrain_.ReadSensors();
+  turret_.ReadSensors();
 }
 
 }  // wpilib
