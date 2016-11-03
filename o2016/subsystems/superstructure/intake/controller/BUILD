@@ -26,9 +26,9 @@ cc_test(
 )
 
 cc_library(
-  name = 'intake',
-  srcs = ['intake.cpp'],
-  hdrs = ['intake.h'],
+  name = 'intake_controller',
+  srcs = ['intake_controller.cpp'],
+  hdrs = ['intake_controller.h'],
   deps = [
     '//muan/control:state_space',
     '//muan/units:units',
@@ -55,7 +55,7 @@ genrule(
 
 py_binary(
   name= 'intake_python',
-  srcs = ['intake.py'],
-  main = 'intake.py',
+  srcs = ['intake_controller.py'],
+  main = 'intake_controller.py',
   deps = ['//muan/control:python_controls']
 )

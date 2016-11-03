@@ -1,12 +1,11 @@
 import numpy as np
 import sys
  
-from muan.control.controls import *
-
 from muan.control.state_space_gains import StateSpaceGains
 from muan.control.state_space_plant import StateSpacePlant
 from muan.control.state_space_controller import StateSpaceController
 from muan.control.state_space_observer import StateSpaceObserver
+from muan.control.controls import *
 
 dt = 0.005
 
@@ -79,15 +78,14 @@ def make_gains():
         [0.1]
     ])
 
-    # Feed forward: everything but velocities
-    O_ff = np.asmatrix([
+    Q_ff = np.asmatrix([
         [0., 0.],
         [0., 1.]
     ])
 
     A_d, B_d, Q_d, R_d = c2d(A_c, B_c, dt, Q_noise, R_noise)
     K = clqr(A_c, B_c, Q_controller, R_controller)
-    Kff = feedforwards(A_d, B_d)
+    Kff = feedforwards(A_d, B_d, Q_ff)
     L = dkalman(A_d, C, Q_d, R_d)
 
     gains = StateSpaceGains(name, dt, A_d, B_d, C, None, Q_d, R_noise, K, Kff, L)
@@ -97,17 +95,69 @@ def make_gains():
 
     return gains
 
-u_max = np.asmatrix([12.]).T
-x0 = np.asmatrix([0., 0.]).T
+def make_augmented_gains():
+    unaugmented_gains = make_gains()
 
-gains = make_gains()
+    dt = unaugmented_gains.dt
+
+    A_c = np.asmatrix(np.zeros((3, 3)))
+    A_c[:2, :2] = unaugmented_gains.A_c
+    A_c[:2, 2:3] = unaugmented_gains.B_c
+
+    B_c = np.asmatrix(np.zeros((3, 1)))
+    B_c[:2, :] = unaugmented_gains.B_c
+
+    C = np.asmatrix(np.zeros((1, 3)))
+    C[:, :2] = unaugmented_gains.C
+    
+    D = np.asmatrix(np.zeros((1, 1)))
+
+    K = np.zeros((1, 3))
+    K[:, :2] = unaugmented_gains.K
+    K[0, 2] = 1.
+
+    Q_noise = np.zeros((3, 3))
+    Q_noise[:2, :2] = unaugmented_gains.Q_c
+    Q_noise[2, 2] = 1
+
+    R_noise = np.asmatrix([
+        [0.1]
+    ])
+
+    # Kalman noise matrix 
+    Q_kalman = np.zeros((3, 3))
+    Q_kalman[:2, :2] = unaugmented_gains.Q_c
+    Q_kalman[2, 2] = 2
+
+    Q_ff = np.asmatrix([
+        [0.0, 0.0, 0.0],
+        [0.0, 1.0, 0.0],
+        [0.0, 0.0, 0.0]
+    ])
+
+    A_d, B_d, Q_d, R_d = c2d(A_c, B_c, dt, Q_noise, R_noise)
+    _, _, Q_dkalman, R_dkalman = c2d(A_c, B_c, dt, Q_kalman, R_noise)
+    L = dkalman(A_d, C, Q_dkalman, R_dkalman)
+    Kff = feedforwards(A_d, B_d, Q_ff)
+
+    name = unaugmented_gains.name + '_integral'
+
+    gains = StateSpaceGains(name, dt, A_d, B_d, C, None, Q_d, R_noise, K, Kff, L)
+    
+    return gains
+
+
+u_max = np.asmatrix([12.]).T
+x0 = np.asmatrix([0., 0., 0.]).T
+
+gains = make_augmented_gains()
 
 plant = StateSpacePlant(gains, x0)
 controller = StateSpaceController(gains, -u_max, u_max)
 observer = StateSpaceObserver(gains, x0)
 
 def goal(t):
-    return np.asmatrix([1., 0.]).T
+    return np.asmatrix([1., 0., 0.]).T
 
 if len(sys.argv) == 3:
     from muan.control.state_space_writer import StateSpaceWriter
@@ -116,7 +166,5 @@ if len(sys.argv) == 3:
 else:
     from muan.control.state_space_scenario import StateSpaceScenario
 
-    scenario = StateSpaceSenario(plant, x0, controller, observer, x0, 'intake_controller')
+    scenario = StateSpaceScenario(plant, x0, controller, observer, x0, 'intake_controller')
     scenario.run(goal, 4)
-    
-

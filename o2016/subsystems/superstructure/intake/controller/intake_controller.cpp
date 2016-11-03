@@ -1,4 +1,4 @@
-#include "intake.h"
+#include "intake_controller.h"
 
 using namespace muan::control;
 using namespace muan::units;
@@ -9,30 +9,38 @@ namespace o2016 {
 
 namespace intake {
 
-Intake::Intake() {
+IntakeController::IntakeController() {
   using namespace frc1678::intake_controller;
+
   auto ss_plant = StateSpacePlant<1, 2, 1> (controller::A(), controller::B(), controller::C());
   controller_ = StateSpaceController<1, 2, 1> (controller::K());
   controller_.u_min() = Eigen::Matrix<double, 1, 1>::Ones() * -12.0;
   controller_.u_max() = Eigen::Matrix<double, 1, 1>::Ones() * 12.0;
   observer_ = StateSpaceObserver<1, 2, 1> (ss_plant, controller::L());
   done = false;
-}
-
-Voltage Intake::Update(Angle goal, Angle sensor_value) {
   
+  angle_tolerance_ = 1 * deg;
+  velocity_tolerance_ = 5 * deg / s;
+
 }
 
-Angle Intake::GetAngle() const {
-  
+Voltage IntakeController::Update(sensor_value) {
+  auto y = (Eigen::Matrix<double, 1, 1>() << 
+
+
+
 }
 
-void Intake::SetAngle(Angle theta) {
-  //observer_.x()(0,0) = theta;
+Angle IntakeController::GetAngle() const {
+  return observer_.x()(0, 0);
 }
 
-bool Intake::IsDone() const {
-  return done;
+void IntakeController::SetAngle(Angle theta) {
+  observer_.x()(0, 0) = theta;
+}
+
+bool IntakeController::AtGoal() const {
+  return at_goal_;
 }
 
 }
