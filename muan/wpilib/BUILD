@@ -1,3 +1,4 @@
+package(default_visibility = ['//visibility:public'])
 load('//third_party/google/protobuf:protobuf.bzl', 'cc_proto_library')
 
 cc_library(

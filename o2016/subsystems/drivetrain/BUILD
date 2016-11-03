@@ -55,9 +55,8 @@ py_binary(
 )
 
 cc_library(
-  name = 'drivetrain_queues',
-  srcs = ['drivetrain_queues.cpp'],
-  hdrs = ['drivetrain_queues.h'],
+  name = 'queue_types',
+  hdrs = ['queue_types.h'],
   deps = ['drivetrain_protos', '//muan/queues', '//muan/proto:stack_proto'],
   visibility = ['//visibility:public']
 )

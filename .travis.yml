@@ -1,0 +1,53 @@
+# Based on https://github.com/korfuri/bazel-travis
+
+# Setting the language to java allows us to use the jdk option to easily
+# install Java 8, which is required by bazel.
+language: java
+
+sudo: required
+dist: trusty
+
+jdk: oraclejdk8
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-4.9
+      - g++-4.9
+      - clang-format-3.5
+      - wget
+        # Package list from http://bazel.io/docs/install.html
+      - pkg-config
+      - zip
+      - zlib1g-dev
+        # Our code deps
+      - python-numpy
+      - python-scipy
+
+# Eventually, Bazel will have binary packages and we'll be able to
+# just download a prebuilt distribution of Bazel. For now, build it
+# from source every time.
+install:
+  # WPILib packages
+  - sudo add-apt-repository ppa:wpilib/toolchain -y
+  - sudo apt-get update
+  - sudo apt-get install frc-toolchain -y
+  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.9
+  # Bazel
+  - wget 'https://github.com/bazelbuild/bazel/releases/download/0.2.1/bazel-0.2.1-installer-linux-x86_64.sh'
+  - chmod +x bazel-0.2.1-installer-linux-x86_64.sh
+  - ./bazel-0.2.1-installer-linux-x86_64.sh --user
+
+# TODO(Wesley) Add to pre-push git hook?
+script:
+  - bazel test --test_output=errors //muan/... -- -//muan/wpilib/...
+  - bazel build //muan/... --cpu=roborio
+  - bazel test --test_output=errors -- //o2016/...
+  # - ./check-format.py
+
+notifications:
+  slack:
+    secure: KXEl4nh1859SwDZH8BsfKipNUjl/mLDwvgahQxfQp3A9sCsfK7PelOh6yNGNPQopWYD7U0wFSqdacIkPM3E+NWAdTtQBX4w4DnqlB3gBYzcEYqjHnjBV0oQPG47xkZOUFumqbpT4yqVxqvSitqHjLDv/HSv93ZyB1APq8mD+TEJWIrMmT6DMlQL7La3gSP0rQeUWD2C6FyMoGjblbwtwOwshDCwPM/2A66icjvQ9KaCJ3rqh94lkeoM0LDzKmBbtV+avcf+xvfRqmpkSvXwfBcSW+hnnCPvWhENMvHKxVUOR5Jy2qWhN9joEfqL0dlan5wHofLnq4Umrqhc+raBTA8Azdxw3mRvEwxSmjBHlN3QEDSqkxyFwmgEvYS/H8i2ZM1YqimXOWoj2StuR2P6hnxnxxa6gkvdLXnSF83KqthD/8bWW9kgKStZbIGVu7Fjj5fMSnW2VQbG1pdnG495nQNKgbBkf6+u5V+1z1Sb5KGTvdC9dSTVsPdowiK/0P2GwgZqdZXLrfSRiBD6WEteE9fbLHUfO/h2AfKW7ZOFL9nbJTWiLtcOS+claKOFUg+9Of/n76pHkHMqAtcyDE9mEwmxeJYqnaNMwcPXk1Q8LBDIewSuR9xxNGXM8jd0PRGzTsryBcY97kX0iwaB4wJ3Ft+oq/ckVEMKcQ0uCLRUl39A=
+    secure: GaRXYrAcBx/anzAdA5OBN++AU366RIVCxke0+qZmF+dZ4FW2bGA+TgOxbLk3trliJAHhYFtsXx+GJzyo05fTiMxftAtA6EUE2PXM2G2+OMFgPcSo/2fIHVuwxmTGa9mEBlD8fs6Dguc43qwedlJ9vqjlgk7d9w6mw+P9bzfJWWHPybaZXcZn28GM85Wsw+eIPj3j81raMXTNkXGPB8dUSC9HaK0pK97eD+4a+vxGgQZeLxq9e+G7nQDlIkSriHniCTAnBpO8AUhE5bR+QW9X8U6d44dBn+v+yWEZG0R19ZIHt/FnxQ7Y7yc1FrFLz/liQ4Zls1wbn8yKsIodCmu+jyz18aOd7R8kP7dWjNjpf9VO7ITPJqWOwk321jIa87GFrhwoapjmzddGjh0j9cRdDHm77ikPZJnPVFBdFmes2vWiDLrbluEp+ror4OZFl4Xf67jP0vL+RysEQJhmUO1OpqJbivuvAEBktbrYyxzvICcfX6F1hhWb1G8jUK7L3MIs963lmq7f2Y8cEnExFvjVBNgIpJEcmNhiZyJcVZzGWsmUEjPucg4hR1b1wPkcHR6uZKcH1ubcKf/fwoaKdmuQ+NoAfnYPI3C+0VnW8GL14UnHx6WLT9klQE7S6enhKD2pY9jjvw0nvxW/eLDXDhh+UQ+Kcmma8k274pzOIalDGYk=

@@ -127,11 +127,11 @@ TEST(MessageQueue, Multithreading) {
   auto func = [&int_queue, num_messages]() {
     uint32_t next = 0;
     auto reader = int_queue.MakeReader();
-    auto end_time =
-        std::chrono::steady_clock::now() + std::chrono::milliseconds(300);
+    auto timeout_end =
+        std::chrono::steady_clock::now() + std::chrono::milliseconds(1000);
 
-    // TODO(Kyle) Find a better termination condition for this
-    while (std::chrono::steady_clock::now() < end_time) {
+    while (next < num_messages &&
+           std::chrono::steady_clock::now() < timeout_end) {
       auto val = reader.ReadMessage();
       if (val) {
         EXPECT_EQ(next, *val);
@@ -166,11 +166,11 @@ TEST(MessageQueue, MultipleWriters) {
     auto reader = int_queue.MakeReader();
 
     uint32_t num_read = 0;
-    auto end_time =
-        std::chrono::steady_clock::now() + std::chrono::milliseconds(600);
+    auto timeout_end =
+        std::chrono::steady_clock::now() + std::chrono::milliseconds(1000);
 
-    // TODO(Kyle) Find a better termination condition for this
-    while (std::chrono::steady_clock::now() < end_time) {
+    while (num_read < messages_per_thread * num_threads &&
+           std::chrono::steady_clock::now() < timeout_end) {
       if (reader.ReadMessage()) {
         num_read++;
       }

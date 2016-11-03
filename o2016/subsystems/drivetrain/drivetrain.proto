@@ -1,4 +1,6 @@
-syntax="proto2";
+syntax = "proto2";
+
+package o2016.drivetrain;
 
 option cc_enable_arenas = true;
 
@@ -13,10 +15,10 @@ enum DriveType {
 }
 
 message DrivetrainState {
-    required double forward_distance = 1;
-    required double angular_distance = 2;
-    required double forward_velocity = 3;
-    required double angular_velocity = 4;
+  required double forward_distance = 1;
+  required double heading = 2;
+  required double forward_velocity = 3;
+  required double angular_velocity = 4;
 }
 
 message DrivetrainGoal {
@@ -30,17 +32,17 @@ message DrivetrainGoal {
   }
 
   required Gear gear = 2;
-
-  optional VelocityCommand velocity_command = 3;
-  optional DistanceCommand distance_command = 4;
+  oneof command {
+    VelocityCommand velocity_command = 3;
+    DistanceCommand distance_command = 4;
+  }
 }
 
 message DrivetrainStatus {
-  // The arc length the robot has traveled since the beginning of operation
-  required double filtered_distance = 1;
-  required double filtered_angle = 2;
-  required DriveType current_driving_type = 3;
-  required Gear current_gear = 4;
+  required DrivetrainState observed_state = 1;
+
+  required DriveType current_driving_type = 2;
+  required Gear current_gear = 3;
 }
 
 message DrivetrainInput {
@@ -54,6 +56,5 @@ message DrivetrainInput {
 message DrivetrainOutput {
   required double left_voltage = 1;
   required double right_voltage = 2;
-  // True is high gear
-  required bool shifting = 3;
+  required bool high_gear = 3;
 }
