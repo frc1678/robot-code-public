@@ -43,6 +43,11 @@ message DrivetrainStatus {
 
   required DriveType current_driving_type = 2;
   required Gear current_gear = 3;
+
+  optional DrivetrainState filtered_goal = 4;
+
+  // Sent out in a single message when a profile has been completed
+  optional bool just_finished_profile = 5;
 }
 
 message DrivetrainInput {

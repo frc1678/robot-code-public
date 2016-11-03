@@ -32,6 +32,8 @@ class DrivetrainController {
   StackDrivetrainOutput Update(const StackDrivetrainInput& input);
   StackDrivetrainStatus GetStatus() const;
 
+  DriveType drive_command_type() const;
+
   void SetGoal(const StackDrivetrainGoal& goal);
 
  private:
@@ -51,6 +53,8 @@ class DrivetrainController {
 
   DriveType drive_command_type_;
   Gear current_gear_;
+
+  bool just_finished_profile_{false};
 
   muan::units::Time elapsed_time_;
 };

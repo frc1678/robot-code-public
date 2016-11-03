@@ -55,6 +55,20 @@ StackDrivetrainGoal CreateVelocityGoal(double forward, double angular,
   return goal;
 }
 
+StackDrivetrainGoal CreateDistanceGoal(double forward_distance, double heading,
+                                       Gear gear = Gear::kLowGear,
+                                       double fv_final = 0.0,
+                                       double av_final = 0.0) {
+  StackDrivetrainGoal goal;
+  auto state = goal->mutable_distance_command()->mutable_final_state();
+  state->set_forward_distance(forward_distance);
+  state->set_heading(heading);
+  state->set_forward_velocity(fv_final);
+  state->set_angular_velocity(av_final);
+  goal->set_gear(gear);
+  return goal;
+}
+
 TEST_F(DrivetrainTest, PlantIsSane) {
   // Forwards
   {
@@ -186,10 +200,55 @@ TEST_F(DrivetrainTest, TeleopShiftDuringDrive) {
   ASSERT_NEAR(plant_.x(3), 2.0, 5e-2);
 }
 
+TEST_F(DrivetrainTest, AutoDriveDistance) {
+  using namespace muan::units;
+  controller_.SetGoal(CreateDistanceGoal(1.0, 0.0));
+
+  bool finished = false;
+  for (Time t = 0 * s; t < 20 * s; t += low_gear::dt()) {
+    auto output = controller_.Update(GetSensors());
+
+    EXPECT_NEAR(output->left_voltage(), 0.0, 12.0);
+    EXPECT_NEAR(output->right_voltage(), 0.0, 12.0);
+    EXPECT_EQ(output->high_gear(), false);
+
+    plant_.Update(CreateU(output));
+
+    auto status = controller_.GetStatus();
+    finished |= status->just_finished_profile();
+  }
+
+  ASSERT_TRUE(finished);
+  ASSERT_NEAR(plant_.x(0), 1.0, 5e-2);
+  ASSERT_NEAR(plant_.x(1), 0.0, 5e-2);
+}
+
+TEST_F(DrivetrainTest, AutoTurn) {
+  using namespace muan::units;
+  controller_.SetGoal(CreateDistanceGoal(0.0, 1.0));
+
+  bool finished = false;
+  for (Time t = 0 * s; t < 2 * s; t += low_gear::dt()) {
+    auto output = controller_.Update(GetSensors());
+
+    EXPECT_NEAR(output->left_voltage(), 0.0, 12.0);
+    EXPECT_NEAR(output->right_voltage(), 0.0, 12.0);
+    EXPECT_EQ(output->high_gear(), false);
+
+    plant_.Update(CreateU(output));
+
+    auto status = controller_.GetStatus();
+    finished |= status->just_finished_profile();
+  }
+
+  ASSERT_TRUE(finished);
+  ASSERT_NEAR(plant_.x(2), 1.0, 5e-2);
+  ASSERT_NEAR(plant_.x(3), 0.0, 5e-2);
+}
+
 /*
  * TODO(Kyle): Tests I need to write
  *  Auto
- *   - Drives distance
  *   - Distance with initial velocity
  *   - Carries out motion profile through disturbance
  *   - Obeys any extra constraints from the goal

@@ -11,7 +11,7 @@ namespace drivetrain {
 
 using StackDrivetrainInput = muan::proto::StackProto<DrivetrainInput, 80>;
 using StackDrivetrainGoal = muan::proto::StackProto<DrivetrainGoal, 210>;
-using StackDrivetrainStatus = muan::proto::StackProto<DrivetrainStatus, 130>;
+using StackDrivetrainStatus = muan::proto::StackProto<DrivetrainStatus, 210>;
 using StackDrivetrainOutput = muan::proto::StackProto<DrivetrainOutput, 80>;
 
 using DrivetrainInputQueue =

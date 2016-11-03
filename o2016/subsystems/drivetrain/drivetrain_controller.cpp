@@ -26,10 +26,21 @@ DrivetrainController::DrivetrainController()
   Shift(Gear::kLowGear);
 }
 
+// In an anonymous namespace because nothing outisde of this unit should ever
+// need to refer to it
+namespace {
+const Eigen::Matrix<double, 4, 1> termination =
+    (Eigen::Matrix<double, 4, 1>() << 0.01, 0.01, 0.01, 0.01).finished();
+}
+
 StackDrivetrainOutput DrivetrainController::Update(
     const StackDrivetrainInput& input) {
   using namespace muan::units;
   elapsed_time_ += frc1678::drivetrain::controller::high_gear_integral::dt();
+
+  // Reset just_finished_profile_ because if it's true, it happened last tick
+  // and we don't care anymore
+  just_finished_profile_ = false;
 
   // Create the y vector from the input proto
   Eigen::Matrix<double, 3, 1> y = Eigen::Matrix<double, 3, 1>::Zero();
@@ -44,10 +55,20 @@ StackDrivetrainOutput DrivetrainController::Update(
     r(0) = observer_.x(0);
     r(2) = observer_.x(2);
   } else if (drive_command_type_ == DriveType::kDistanceCommand) {
-    r(0) = distance_profile_.Calculate(elapsed_time_).position;
-    r(1) = distance_profile_.Calculate(elapsed_time_).velocity;
+    auto d = distance_profile_.Calculate(elapsed_time_);
+    r(0) = d.position;
+    r(1) = d.velocity;
     r(2) = angle_profile_.Calculate(elapsed_time_).position;
     r(3) = angle_profile_.Calculate(elapsed_time_).velocity;
+
+    auto e = r - observer_.x();
+    if (distance_profile_.finished(elapsed_time_) &&
+        angle_profile_.finished(elapsed_time_) &&
+        std::fabs(e(0)) < termination(0) && std::fabs(e(1)) < termination(1) &&
+        std::fabs(e(2)) < termination(2) && std::fabs(e(3)) < termination(3)) {
+      drive_command_type_ = DriveType::kVelocityCommand;
+      just_finished_profile_ = true;
+    }
   }
 
   // Run state-space calculations
@@ -81,8 +102,8 @@ void DrivetrainController::SetGoal(const StackDrivetrainGoal& goal) {
         final_state.forward_distance(), final_state.forward_velocity()};
 
     muan::control::MotionProfilePosition initial_angle{0.0, observer_.x(3)};
-    muan::control::MotionProfilePosition goal_angle{final_state.heading(),
-                                                    final_state.heading()};
+    muan::control::MotionProfilePosition goal_angle{
+        final_state.heading(), final_state.angular_velocity()};
 
     // If there was already a distance command running, use the current position
     // from that one to keep everything feed-forward
@@ -96,11 +117,11 @@ void DrivetrainController::SetGoal(const StackDrivetrainGoal& goal) {
                                goal_angle, goal->gear());
 
     distance_profile_ = muan::control::TrapezoidalMotionProfile(
-        current_constraints.distance_constraints_, initial_distance,
-        goal_distance, elapsed_time_);
+        current_constraints.distance_constraints_, goal_distance,
+        initial_distance, elapsed_time_);
 
     angle_profile_ = muan::control::TrapezoidalMotionProfile(
-        current_constraints.angular_constraints_, initial_angle, goal_angle,
+        current_constraints.angular_constraints_, goal_angle, initial_angle,
         elapsed_time_);
 
     drive_command_type_ = DriveType::kDistanceCommand;
@@ -149,10 +170,18 @@ StackDrivetrainStatus DrivetrainController::GetStatus() const {
 
   status->set_current_driving_type(drive_command_type_);
   status->set_current_gear(current_gear_);
+
   status->mutable_observed_state()->set_forward_distance(observer_.x(0));
   status->mutable_observed_state()->set_forward_velocity(observer_.x(1));
   status->mutable_observed_state()->set_heading(observer_.x(2));
   status->mutable_observed_state()->set_angular_velocity(observer_.x(3));
+
+  status->mutable_filtered_goal()->set_forward_distance(controller_.r(0));
+  status->mutable_filtered_goal()->set_forward_velocity(controller_.r(1));
+  status->mutable_filtered_goal()->set_heading(controller_.r(2));
+  status->mutable_filtered_goal()->set_angular_velocity(controller_.r(3));
+
+  status->set_just_finished_profile(just_finished_profile_);
 
   return status;
 }
@@ -162,30 +191,19 @@ DrivetrainConstraints DrivetrainController::GenerateTMPConstraints(
     muan::control::MotionProfilePosition final_distance,
     muan::control::MotionProfilePosition initial_angle,
     muan::control::MotionProfilePosition final_angle, Gear current_gear) {
+  DrivetrainConstraints constraints;
   if (current_gear == Gear::kHighGear) {
-    // Forward: x'' = a_f*x' + b_f*u
-    double a_f =
-        frc1678::drivetrain::controller::high_gear_integral::A_c()(1, 1);
-    double b_f = frc1678::drivetrain::controller::high_gear_integral::B_c()(1);
-
-    // Angular: theta'' = a_a*theta' + b_a*u
-    double a_a =
-        frc1678::drivetrain::controller::high_gear_integral::A_c()(3, 3);
-    double b_a = frc1678::drivetrain::controller::high_gear_integral::B_c()(3);
-
-    // u_max = u_aa + u_av + u_fa + u_fv
+    constraints.distance_constraints_.max_velocity = 1.0;
+    constraints.distance_constraints_.max_acceleration = 1.0;
+    constraints.angular_constraints_.max_velocity = 10.0;
+    constraints.angular_constraints_.max_acceleration = 10.0;
   } else {
-    // Forward: x'' = a_f*x' + b_f*u
-    double a_f =
-        frc1678::drivetrain::controller::low_gear_integral::A_c()(1, 1);
-    double b_f = frc1678::drivetrain::controller::low_gear_integral::B_c()(1);
-
-    // Angular: theta'' = a_a*theta' + b_a*u
-    double a_a =
-        frc1678::drivetrain::controller::low_gear_integral::A_c()(3, 3);
-    double b_a = frc1678::drivetrain::controller::low_gear_integral::B_c()(3);
+    constraints.distance_constraints_.max_velocity = 1.5;
+    constraints.distance_constraints_.max_acceleration = 1.3;
+    constraints.angular_constraints_.max_velocity = 6.0;
+    constraints.angular_constraints_.max_acceleration = 1.5;
   }
-  return DrivetrainConstraints();
+  return constraints;
 }
 
 }  // controller
