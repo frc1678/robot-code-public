@@ -4,6 +4,7 @@
 #include "WPILib.h"
 #include "muan/wpilib/can_wrapper.h"
 #include "o2016/subsystems/drivetrain/queue_types.h"
+#include "o2016/subsystems/superstructure/intake/queue_types.h"
 #include "o2016/subsystems/superstructure/turret/queue_types.h"
 
 namespace o2016 {
@@ -46,6 +47,22 @@ class TurretInterface {
   DigitalInput index_;
 };
 
+class IntakeInterface {
+ public:
+  IntakeInterface();
+
+  void WriteActuators();
+  void ReadSensors();
+
+ private:
+  o2016::intake::IntakeInputQueue& input_queue_;
+  o2016::intake::IntakeOutputQueue::QueueReader output_queue_;
+
+  VictorSP motor_pivot_, motor_roller_;
+  Encoder encoder_;
+  DigitalInput index_;
+};
+
 class WpilibInterface {
  public:
   WpilibInterface();
@@ -58,6 +75,7 @@ class WpilibInterface {
 
   DrivetrainInterface drivetrain_;
   TurretInterface turret_;
+  IntakeInterface intake_;
 };
 
 }  // wpilib

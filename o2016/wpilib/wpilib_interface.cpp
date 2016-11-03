@@ -29,6 +29,16 @@ constexpr uint32_t kIndex = 0;
 
 }  // turret
 
+namespace intake {
+
+constexpr uint32_t kPivotMotor = 0;
+constexpr uint32_t kEncoderA = 0, kEncoderB = 0;
+constexpr uint32_t kIndex = 0;
+
+constexpr uint32_t kRollerMotor = 0;
+
+}  // intake
+
 }  // ports
 
 constexpr double kMaxVoltage = 12.0;
@@ -124,6 +134,39 @@ void TurretInterface::ReadSensors() {
   input_queue_.WriteMessage(sensors);
 }
 
+IntakeInterface::IntakeInterface()
+    : input_queue_(QueueManager::GetInstance().intake_input_queue()),
+      output_queue_(
+          QueueManager::GetInstance().intake_output_queue().MakeReader()),
+      motor_pivot_{ports::intake::kPivotMotor},
+      motor_roller_{ports::intake::kRollerMotor},
+      encoder_{ports::intake::kEncoderA, ports::intake::kEncoderB},
+      index_{ports::intake::kIndex} {}
+
+void IntakeInterface::WriteActuators() {
+  auto outputs = output_queue_.ReadLastMessage();
+  if (outputs) {
+    motor_pivot_.Set(
+        muan::Cap((*outputs)->arm_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
+    motor_roller_.Set(
+        muan::Cap((*outputs)->roller_voltage(), -kMaxVoltage, kMaxVoltage) /
+        12.0);
+  } else {
+    motor_pivot_.Set(0.0);
+    motor_roller_.Set(0.0);
+  }
+}
+
+void IntakeInterface::ReadSensors() {
+  o2016::intake::IntakeInputProto sensors;
+
+  constexpr double kEncoderScaling = 0.0;
+  sensors->set_encoder_position(encoder_.Get() * kEncoderScaling);
+  sensors->set_index_click(index_.Get());
+
+  input_queue_.WriteMessage(sensors);
+}
+
 WpilibInterface::WpilibInterface()
     : can_{&QueueManager::GetInstance().pdp_status_queue()},
       drivetrain_{&can_} {
@@ -134,11 +177,13 @@ WpilibInterface::WpilibInterface()
 void WpilibInterface::WriteActuators() {
   drivetrain_.WriteActuators();
   turret_.WriteActuators();
+  intake_.WriteActuators();
 }
 
 void WpilibInterface::ReadSensors() {
   drivetrain_.ReadSensors();
   turret_.ReadSensors();
+  intake_.ReadSensors();
 }
 
 }  // wpilib
