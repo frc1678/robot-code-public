@@ -1,7 +1,7 @@
 #include "drivetrain_controller.h"
 #include "o2016/subsystems/drivetrain/drivetrain_constants.h"
 
-namespace frc1678 {
+namespace o2016 {
 
 namespace drivetrain {
 
@@ -58,7 +58,7 @@ StackDrivetrainOutput DrivetrainController::Update(
   StackDrivetrainOutput out;
   out->set_right_voltage(u(0));
   out->set_left_voltage(u(1));
-  out->set_shifting(current_gear_ == Gear::kHighGear);
+  out->set_high_gear(current_gear_ == Gear::kHighGear);
 
   return out;
 }
@@ -81,8 +81,8 @@ void DrivetrainController::SetGoal(const StackDrivetrainGoal& goal) {
         final_state.forward_distance(), final_state.forward_velocity()};
 
     muan::control::MotionProfilePosition initial_angle{0.0, observer_.x(3)};
-    muan::control::MotionProfilePosition goal_angle{
-        final_state.angular_distance(), final_state.angular_distance()};
+    muan::control::MotionProfilePosition goal_angle{final_state.heading(),
+                                                    final_state.heading()};
 
     // If there was already a distance command running, use the current position
     // from that one to keep everything feed-forward
@@ -149,8 +149,10 @@ StackDrivetrainStatus DrivetrainController::GetStatus() const {
 
   status->set_current_driving_type(drive_command_type_);
   status->set_current_gear(current_gear_);
-  status->set_filtered_distance(observer_.x(0));
-  status->set_filtered_angle(observer_.x(2));
+  status->mutable_observed_state()->set_forward_distance(observer_.x(0));
+  status->mutable_observed_state()->set_forward_velocity(observer_.x(1));
+  status->mutable_observed_state()->set_heading(observer_.x(2));
+  status->mutable_observed_state()->set_angular_velocity(observer_.x(3));
 
   return status;
 }
@@ -186,8 +188,8 @@ DrivetrainConstraints DrivetrainController::GenerateTMPConstraints(
   return DrivetrainConstraints();
 }
 
-} /* controller */
+}  // controller
 
-} /* drivetrain */
+}  // drivetrain
 
-} /* o2016 */
+}  // o2016

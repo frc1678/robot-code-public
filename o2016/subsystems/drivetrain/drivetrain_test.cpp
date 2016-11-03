@@ -2,8 +2,9 @@
 #include "o2016/subsystems/drivetrain/drivetrain_constants.h"
 #include "gtest/gtest.h"
 
-using namespace frc1678::drivetrain;
+using namespace o2016::drivetrain;
 using namespace frc1678::drivetrain::controller;
+using namespace o2016::drivetrain::controller;
 
 class DrivetrainTest : public testing::Test {
  public:
@@ -163,7 +164,7 @@ TEST_F(DrivetrainTest, TeleopShiftDuringDrive) {
 
     EXPECT_NEAR(output->left_voltage(), 0.0, 12.0);
     EXPECT_NEAR(output->right_voltage(), 0.0, 12.0);
-    EXPECT_EQ(output->shifting(), false);
+    EXPECT_EQ(output->high_gear(), false);
 
     plant_.Update(CreateU(output));
   }
@@ -177,7 +178,7 @@ TEST_F(DrivetrainTest, TeleopShiftDuringDrive) {
 
     EXPECT_NEAR(output->left_voltage(), 0.0, 12.0);
     EXPECT_NEAR(output->right_voltage(), 0.0, 12.0);
-    EXPECT_EQ(output->shifting(), true);
+    EXPECT_EQ(output->high_gear(), true);
 
     plant_.Update(CreateU(output));
   }

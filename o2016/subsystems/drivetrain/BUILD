@@ -25,7 +25,7 @@ cc_library(
   deps = [
     ':drivetrain_constants',
     ':drivetrain_protos',
-    ':drivetrain_queues',
+    ':queue_types',
     '//muan/control:state_space',
     '//muan/control:motion_profiles'
   ]

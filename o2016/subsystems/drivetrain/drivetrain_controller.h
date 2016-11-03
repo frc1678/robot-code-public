@@ -2,14 +2,14 @@
 #define O2016_SUBSYSTEMS_DRIVETRAIN_DRIVETRAIN_CONTROLLER_H_
 
 #include "Eigen/Core"
-#include "drivetrain_queues.h"
 #include "muan/control/state_space_controller.h"
 #include "muan/control/state_space_observer.h"
 #include "muan/control/trapezoidal_motion_profile.h"
 #include "muan/units/units.h"
 #include "o2016/subsystems/drivetrain/drivetrain.pb.h"
+#include "queue_types.h"
 
-namespace frc1678 {
+namespace o2016 {
 
 namespace drivetrain {
 
@@ -55,10 +55,10 @@ class DrivetrainController {
   muan::units::Time elapsed_time_;
 };
 
-} /* controller */
+}  // controller
 
-} /* drivetrain */
+}  // drivetrain
 
-} /* o2016 */
+}  // o2016
 
 #endif /* ifndef O2016_SUBSYSTEMS_DRIVETRAIN_DRIVETRAIN_CONTROLLER_H_ */
