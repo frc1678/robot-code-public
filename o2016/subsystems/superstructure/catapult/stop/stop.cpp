@@ -1,7 +1,11 @@
 #include "stop.h"
 
-using namespace muan::control;
-using namespace frc1678::stop;
+namespace o2016 {
+
+namespace catapult {
+
+using namespace ::muan::control;
+using namespace ::frc1678::stop;
 
 CatapultStop::CatapultStop() {
   auto plant = StateSpacePlant<1, 2, 1> (controller::A(), controller::B(), controller::C());
@@ -38,3 +42,7 @@ void CatapultStop::set_angle(Angle theta) {
 bool CatapultStop::is_done() const {
   return done;
 }
+
+} // catapult
+
+} // o2016

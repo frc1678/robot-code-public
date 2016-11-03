@@ -2,6 +2,9 @@
 #include "gtest/gtest.h"
 #include <iostream>
 
+using namespace muan::units;
+using namespace o2016::catapult;
+
 class CatapultTest : public ::testing::Test {
  public:
   CatapultTest() {}

@@ -1,7 +1,9 @@
 #include "catapult.h"
 #include <iostream>
 
-using namespace o2016::catapult;
+namespace o2016 {
+
+namespace catapult {
 
 Catapult::Catapult() :
   stop_(CatapultStop()),
@@ -55,3 +57,7 @@ void Catapult::Update(CatapultInput input, CatapultGoal goal) {
 CatapultOutput Catapult::get_output() const { return output_; }
 
 CatapultStatus Catapult::get_status() const { return status_; }
+
+} // catapult
+
+} // o2016

@@ -8,7 +8,9 @@
 #include "queue_types.h"
 #include <memory>
 
-using namespace o2016::catapult;
+namespace o2016 {
+
+namespace catapult {
 
 class Catapult {
 public:
@@ -26,5 +28,9 @@ protected:
   o2016::catapult::CatapultStatus status_;
   constexpr static int extend_time = 200;
 };
+
+} // catapult
+
+} //o2016
 
 #endif // O2016_SUBSYSTEMS_SUPERSTRUCTURE_CATAPULT_H_

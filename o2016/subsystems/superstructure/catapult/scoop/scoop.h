@@ -7,7 +7,11 @@
 #include "muan/control/state_space_controller.h"
 #include "muan/control/state_space_observer.h"
 
-using namespace muan::units;
+namespace o2016 {
+
+namespace catapult {
+
+using namespace ::muan::units;
 
 class Scoop {
  public:
@@ -26,5 +30,9 @@ class Scoop {
   constexpr static Angle angle_tolerance = 0.1 * rad;
   constexpr static AngularVelocity velocity_tolerance = 0.1 * rad / s;
 };
+
+} // catapult
+
+} // o2016
 
 #endif // SCOOP_H_

@@ -6,6 +6,7 @@
 
 using namespace muan::control;
 using namespace frc1678::scoop;
+using namespace o2016::catapult;
 
 TEST(Scoop, converges) {
   for (double initial = -2.; initial <= 2.; initial += .5) {

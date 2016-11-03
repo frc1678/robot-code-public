@@ -1,7 +1,11 @@
 #include "scoop.h"
 
-using namespace muan::control;
-using namespace frc1678::scoop;
+namespace o2016 {
+
+namespace catapult {
+
+using namespace ::muan::control;
+using namespace ::frc1678::scoop;
 
 Scoop::Scoop() {
   auto plant = StateSpacePlant<1, 2, 1> (controller::A(), controller::B(), controller::C());
@@ -38,3 +42,7 @@ void Scoop::set_angle(Angle theta) {
 bool Scoop::is_done() const {
   return done;
 }
+
+} // catapult
+
+} // o2016

@@ -6,6 +6,7 @@
 
 using namespace muan::control;
 using namespace frc1678::stop;
+using namespace o2016::catapult;
 
 TEST(CatapultStop, converges) {
   for (double initial = -100.; initial <= 100.; initial += 10.) {
