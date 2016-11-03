@@ -39,6 +39,20 @@ constexpr uint32_t kRollerMotor = 0;
 
 }  // intake
 
+namespace catapult {
+
+constexpr uint32_t kHardStopMotor = 0;
+constexpr uint32_t kHardStopPotentiometer = 0;
+constexpr uint32_t kHardStopCylinder = 0;
+
+constexpr uint32_t kScoopMotor = 0;
+constexpr uint32_t kScoopPotentiometer = 0;
+
+constexpr uint32_t kCatapultCylinderA = 0, kCatapultCylinderB = 0,
+                   kCatapultCylinderC = 0, kCatapultCylinderD = 0;
+
+}  // catapult
+
 }  // ports
 
 constexpr double kMaxVoltage = 12.0;
@@ -167,9 +181,72 @@ void IntakeInterface::ReadSensors() {
   input_queue_.WriteMessage(sensors);
 }
 
+CatapultInterface::CatapultInterface(muan::wpilib::CanWrapper* can)
+    : input_queue_(QueueManager::GetInstance().catapult_input_queue()),
+      output_queue_(
+          QueueManager::GetInstance().catapult_output_queue().MakeReader()),
+      pcm_{can->pcm()},
+      hard_stop_motor_{ports::catapult::kHardStopMotor},
+      hard_stop_pot_{ports::catapult::kHardStopPotentiometer},
+      scoop_motor_{ports::catapult::kScoopMotor},
+      scoop_pot_{ports::catapult::kScoopPotentiometer} {
+  pcm_->CreateSolenoid(ports::catapult::kCatapultCylinderA);
+  pcm_->CreateSolenoid(ports::catapult::kCatapultCylinderB);
+  pcm_->CreateSolenoid(ports::catapult::kCatapultCylinderC);
+  pcm_->CreateSolenoid(ports::catapult::kCatapultCylinderD);
+
+  pcm_->CreateSolenoid(ports::catapult::kHardStopCylinder);
+}
+
+void CatapultInterface::WriteActuators() {
+  auto outputs = output_queue_.ReadLastMessage();
+  if (outputs) {
+    hard_stop_motor_.Set(
+        muan::Cap((*outputs)->hardstop_output(), -kMaxVoltage, kMaxVoltage) /
+        12.0);
+    scoop_motor_.Set(
+        muan::Cap((*outputs)->scoop_output(), -kMaxVoltage, kMaxVoltage) /
+        12.0);
+
+    pcm_->WriteSolenoid(ports::catapult::kCatapultCylinderA,
+                        (*outputs)->cylinder_extend());
+    pcm_->WriteSolenoid(ports::catapult::kCatapultCylinderB,
+                        (*outputs)->cylinder_extend());
+    pcm_->WriteSolenoid(ports::catapult::kCatapultCylinderC,
+                        (*outputs)->cylinder_extend());
+    pcm_->WriteSolenoid(ports::catapult::kCatapultCylinderD,
+                        (*outputs)->cylinder_extend());
+
+    pcm_->WriteSolenoid(ports::catapult::kHardStopCylinder,
+                        (*outputs)->disc_brake_activate());
+  } else {
+    hard_stop_motor_.Set(0.0);
+    scoop_motor_.Set(0.0);
+    pcm_->WriteSolenoid(ports::catapult::kCatapultCylinderA, false);
+    pcm_->WriteSolenoid(ports::catapult::kCatapultCylinderB, false);
+    pcm_->WriteSolenoid(ports::catapult::kCatapultCylinderC, false);
+    pcm_->WriteSolenoid(ports::catapult::kCatapultCylinderD, false);
+
+    pcm_->WriteSolenoid(ports::catapult::kHardStopCylinder, false);
+  }
+}
+
+void CatapultInterface::ReadSensors() {
+  o2016::catapult::CatapultInputProto sensors;
+
+  constexpr double kScoopScaling = 1.0;
+  constexpr double kHardStopScaling = 1.0;
+
+  sensors->set_scoop_pot(scoop_pot_.GetValue() * kScoopScaling);
+  sensors->set_hardstop_pot(hard_stop_pot_.GetValue() * kHardStopScaling);
+
+  input_queue_.WriteMessage(sensors);
+}
+
 WpilibInterface::WpilibInterface()
     : can_{&QueueManager::GetInstance().pdp_status_queue()},
-      drivetrain_{&can_} {
+      drivetrain_{&can_},
+      catapult_{&can_} {
   std::thread can_thread(std::ref(can_));
   can_thread.detach();
 }
@@ -178,12 +255,14 @@ void WpilibInterface::WriteActuators() {
   drivetrain_.WriteActuators();
   turret_.WriteActuators();
   intake_.WriteActuators();
+  catapult_.WriteActuators();
 }
 
 void WpilibInterface::ReadSensors() {
   drivetrain_.ReadSensors();
   turret_.ReadSensors();
   intake_.ReadSensors();
+  catapult_.ReadSensors();
 }
 
 }  // wpilib

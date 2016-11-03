@@ -4,6 +4,7 @@
 #include "WPILib.h"
 #include "muan/wpilib/can_wrapper.h"
 #include "o2016/subsystems/drivetrain/queue_types.h"
+#include "o2016/subsystems/superstructure/catapult/queue_types.h"
 #include "o2016/subsystems/superstructure/intake/queue_types.h"
 #include "o2016/subsystems/superstructure/turret/queue_types.h"
 
@@ -63,6 +64,26 @@ class IntakeInterface {
   DigitalInput index_;
 };
 
+class CatapultInterface {
+ public:
+  CatapultInterface(muan::wpilib::CanWrapper* can);
+
+  void WriteActuators();
+  void ReadSensors();
+
+ private:
+  o2016::catapult::CatapultInputQueue& input_queue_;
+  o2016::catapult::CatapultOutputQueue::QueueReader output_queue_;
+
+  muan::wpilib::PcmWrapper* pcm_;
+
+  VictorSP hard_stop_motor_;
+  AnalogInput hard_stop_pot_;
+
+  VictorSP scoop_motor_;
+  AnalogInput scoop_pot_;
+};
+
 class WpilibInterface {
  public:
   WpilibInterface();
@@ -76,6 +97,7 @@ class WpilibInterface {
   DrivetrainInterface drivetrain_;
   TurretInterface turret_;
   IntakeInterface intake_;
+  CatapultInterface catapult_;
 };
 
 }  // wpilib
