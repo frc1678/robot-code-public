@@ -42,11 +42,12 @@ void GyroReader::RunCalibration() {
   aos::time::Time loop_time = aos::time::Time::InMS(5);
   aos::time::PhasedLoop phased_loop(loop_time);
 
+  // Calibrate for 15 seconds
   const aos::time::Time calib_time = aos::time::Time::InSeconds(15);
 
+  // Setup for averaging over calibration period
   size_t num_cycles;
   const size_t calib_cycles = calib_time / loop_time;
-
   double drift_sum = 0.0;
 
   if (calibration_state_ == GyroState::kInitialized) {
@@ -80,9 +81,11 @@ void GyroReader::RunReader() {
   while (calibration_state_ == GyroState::kRunning) {
     double reading = gyro_.ExtractAngle(gyro_.GetReading());
 
+    // Integrate the gyro readings - the drift rate is in radians per cycle
     angle_ += (gyro_.ExtractAngle(gyro_.GetReading()) + drift_rate_) *
               loop_time.InSeconds();
 
+    // Reset if the should_reset_ flag is set, then clear it.
     if (should_reset_.exchange(false)) {
       angle_ = 0.0;
     }
