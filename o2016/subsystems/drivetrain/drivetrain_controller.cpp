@@ -23,6 +23,8 @@ DrivetrainController::DrivetrainController()
   controller_.u_max(0) = 12.0 * V;
   controller_.u_max(1) = 12.0 * V;
 
+  elapsed_time_ = 0 * s;
+
   Shift(Gear::kLowGear);
 }
 
