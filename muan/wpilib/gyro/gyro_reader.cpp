@@ -77,10 +77,6 @@ void GyroReader::RunReader() {
   aos::time::Time loop_time = aos::time::Time::InMS(5);
   aos::time::PhasedLoop phased_loop(loop_time);
 
-  if (calibration_state_ == GyroState::kRunning) {
-    calibration_state_ = GyroState::kCalibrating;
-  }
-
   while (calibration_state_ == GyroState::kRunning) {
     double reading = gyro_.ExtractAngle(gyro_.GetReading());
 
@@ -103,6 +99,10 @@ void GyroReader::RunReader() {
     phased_loop.SleepUntilNext();
   }
 }
+
+void GyroReader::Quit() { calibration_state_ = GyroState::kKilled; }
+
+void GyroReader::Recalibrate() { calibration_state_ = GyroState::kInitialized; }
 
 }  // gyro
 

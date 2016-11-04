@@ -27,6 +27,7 @@ class GyroReader {
 
   void Reset();
   void Recalibrate();
+  void Quit();
 
   using StackGyroMessage = muan::proto::StackProto<GyroMessage, 128>;
   using GyroQueue = muan::queues::MessageQueue<StackGyroMessage, 200>;
