@@ -10,11 +10,13 @@ namespace ports {
 
 namespace drivetrain {
 
-constexpr uint32_t kMotorLeftA = 0, kMotorLeftB = 0;
-constexpr uint32_t kMotorRightA = 0, kMotorRightB = 0;
+//TODO(Wesley) Shifting
 
-constexpr uint32_t kEncoderLeftA = 0, kEncoderLeftB = 0;
-constexpr uint32_t kEncoderRightA = 0, kEncoderRightB = 0;
+constexpr uint32_t kMotorLeftA = 2, kMotorLeftB = 3;
+constexpr uint32_t kMotorRightA = 0, kMotorRightB = 1;
+
+constexpr uint32_t kEncoderLeftA = 10, kEncoderLeftB = 11;
+constexpr uint32_t kEncoderRightA = 12, kEncoderRightB = 13;
 
 constexpr uint32_t kShiftingA = 0, kShiftingB = 0;
 
@@ -22,16 +24,20 @@ constexpr uint32_t kShiftingA = 0, kShiftingB = 0;
 
 namespace turret {
 
-constexpr uint32_t kMotor = 0;
-constexpr uint32_t kEncoderA = 0, kEncoderB = 0;
-constexpr uint32_t kPotentiometer = 0;
+//TODO(Wesley) Index pulse
+
+constexpr uint32_t kMotor = 6;
+constexpr uint32_t kEncoderA = 14, kEncoderB = 15;
+constexpr uint32_t kPotentiometer = 4;
 constexpr uint32_t kIndex = 0;
 
 }  // turret
 
 namespace intake {
 
-constexpr uint32_t kPivotMotor = 0;
+//TODO(Wesley) Index pulse, encoder, and roller motor
+
+constexpr uint32_t kPivotMotor = 5;
 constexpr uint32_t kEncoderA = 0, kEncoderB = 0;
 constexpr uint32_t kIndex = 0;
 
@@ -41,12 +47,14 @@ constexpr uint32_t kRollerMotor = 0;
 
 namespace catapult {
 
-constexpr uint32_t kHardStopMotor = 0;
-constexpr uint32_t kHardStopPotentiometer = 0;
+//TODO(Wesley) Pnumatics
+
+constexpr uint32_t kHardStopMotor = 7;
+constexpr uint32_t kHardStopPotentiometer = 6;
 constexpr uint32_t kHardStopCylinder = 0;
 
-constexpr uint32_t kScoopMotor = 0;
-constexpr uint32_t kScoopPotentiometer = 0;
+constexpr uint32_t kScoopMotor = 4;
+constexpr uint32_t kScoopPotentiometer = 5;
 
 constexpr uint32_t kCatapultCylinderA = 0, kCatapultCylinderB = 0,
                    kCatapultCylinderC = 0, kCatapultCylinderD = 0;
@@ -137,12 +145,14 @@ void TurretInterface::WriteActuators() {
 void TurretInterface::ReadSensors() {
   o2016::turret::TurretInputProto sensors;
 
-  // TODO(Kyle) figure these out for reals
-  constexpr double kPotentiometerScaling = 1.0;
+  constexpr double kPotentiometerScaling = -360.0;
+  constexpr double kPotentiometerOffset = -0.5;
+
+  // TODO(Wesley) figure this out for realsies
   constexpr double kEncoderScaling = 1.0;
 
   sensors->set_encoder_position(encoder_.Get() * kEncoderScaling);
-  sensors->set_pot_position(potentiometer_.GetValue() * kPotentiometerScaling);
+  sensors->set_pot_position(((potentiometer_.GetValue() + kPotentiometerOffset) * kPotentiometerScaling) * muan::units::deg);
   sensors->set_index_click(index_.Get());
 
   input_queue_.WriteMessage(sensors);
@@ -234,11 +244,15 @@ void CatapultInterface::WriteActuators() {
 void CatapultInterface::ReadSensors() {
   o2016::catapult::CatapultInputProto sensors;
 
-  constexpr double kScoopScaling = 1.0;
-  constexpr double kHardStopScaling = 1.0;
+  constexpr double kScoopScaling = -216.66;
+  constexpr double kScoopOffset = -0.9;
 
-  sensors->set_scoop_pot(scoop_pot_.GetValue() * kScoopScaling);
-  sensors->set_hardstop_pot(hard_stop_pot_.GetValue() * kHardStopScaling);
+  //TODO(Wesley) Test real values
+  constexpr double kHardStopScaling = 1.0;
+  constexpr double kHardStopOffset = 0.0;
+
+  sensors->set_scoop_pot(((scoop_pot_.GetValue() + kScoopOffset) * kScoopScaling) * muan::units::deg);
+  sensors->set_hardstop_pot((hard_stop_pot_.GetValue() + kHardStopOffset) * kHardStopScaling);
 
   input_queue_.WriteMessage(sensors);
 }
