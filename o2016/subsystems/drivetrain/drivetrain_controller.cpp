@@ -59,6 +59,8 @@ StackDrivetrainOutput DrivetrainController::Update(
     r(2) = angle_profile_.Calculate(elapsed_time_).position;
     r(3) = angle_profile_.Calculate(elapsed_time_).velocity;
 
+    // Check if it's done. If it is then go to velocity mode: continue moving
+    // how it's currently moving.
     auto e = r - observer_.x();
     if (distance_profile_.finished(elapsed_time_) &&
         angle_profile_.finished(elapsed_time_) &&
