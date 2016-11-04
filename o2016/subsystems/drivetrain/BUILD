@@ -4,7 +4,7 @@ cc_library(
   name = 'drivetrain',
   srcs = ['drivetrain_subsystem.cpp'],
   hdrs = ['drivetrain_subsystem.h'],
-  deps = [':drivetrain_constants'],
+  deps = [':drivetrain_controller', ':queue_types', '//o2016/queue_manager'],
   visibility = ['//visibility:public']
 )
 

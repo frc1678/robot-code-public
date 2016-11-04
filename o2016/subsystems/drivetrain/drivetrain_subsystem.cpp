@@ -1,7 +1,53 @@
 #include "drivetrain_subsystem.h"
 
-namespace frc1678 {
+namespace o2016 {
 
-namespace drivetrain {} /* drivetrain */
+namespace drivetrain {
 
-} /* frc1678 */
+DrivetrainSubsystem::DrivetrainSubsystem()
+    : input_queue_(
+          QueueManager::GetInstance().drivetrain_input_queue().MakeReader()),
+      output_queue_(QueueManager::GetInstance().drivetrain_output_queue()),
+      goal_queue_(
+          QueueManager::GetInstance().drivetrain_goal_queue().MakeReader()),
+      status_queue_(QueueManager::GetInstance().drivetrain_status_queue()) {}
+
+void DrivetrainSubsystem::Update() {
+  UpdateGoals();
+
+  output_queue_.WriteMessage(
+      controller_.Update(*input_queue_.ReadLastMessage()));
+  auto status = controller_.GetStatus();
+
+  if (status->just_finished_profile()) {
+    current_goal_->clear_distance_command();
+  }
+
+  status_queue_.WriteMessage(status);
+}
+
+void DrivetrainSubsystem::UpdateGoals() {
+  bool goal_changed = false;
+  std::experimental::optional<StackDrivetrainGoal> goal;
+
+  while (goal = goal_queue_.ReadMessage()) {
+    goal_changed |= TrySetGoal(*goal);
+  }
+
+  if (goal_changed | current_goal_->has_velocity_command()) {
+    controller_.SetGoal(current_goal_);
+  }
+}
+
+bool DrivetrainSubsystem::TrySetGoal(const StackDrivetrainGoal& goal_new) {
+  if (!current_goal_->has_distance_command() |
+      goal_new->has_distance_command()) {
+    current_goal_ = goal_new;
+    return true;
+  }
+  return false;
+}
+
+}  // drivetrain
+
+}  // o2016
