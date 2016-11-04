@@ -5,7 +5,7 @@
 #include "scoop/scoop.h"
 #include "muan/units/units.h"
 #include "muan/queues/message_queue.h"
-#include "queue_types.h"
+#include "o2016/queue_manager/queue_manager.h"
 #include <memory>
 
 namespace o2016 {
@@ -16,17 +16,15 @@ class Catapult {
 public:
   Catapult();
   ~Catapult() = default;
-  void Update(o2016::catapult::CatapultInput input, o2016::catapult::CatapultGoal goal);
-  o2016::catapult::CatapultOutput get_output() const;
-  o2016::catapult::CatapultStatus get_status() const;
+  void Update();
 
 protected:
   CatapultStop stop_;
   Scoop scoop_;
   int catapult_countdown_;
-  o2016::catapult::CatapultOutput output_;
-  o2016::catapult::CatapultStatus status_;
   constexpr static int extend_time = 200;
+  CatapultInputQueue::QueueReader input_reader_;
+  CatapultGoalQueue::QueueReader goal_reader_;
 };
 
 } // catapult

@@ -10,7 +10,8 @@ cc_library(
     '//o2016/subsystems/superstructure/catapult/scoop:scoop',
     '//o2016/subsystems/superstructure/catapult/stop:stop',
     '//muan/units:units',
-    ':catapult_queues'
+    ':catapult_queues',
+    '//o2016/queue_manager:queue_manager'
   ],
   visibility = ['//visibility:public']
 )
