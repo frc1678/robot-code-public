@@ -80,8 +80,8 @@ void GyroReader::RunReader() {
   while (calibration_state_ == GyroState::kRunning) {
     double reading = gyro_.ExtractAngle(gyro_.GetReading());
 
-    angle_ += gyro_.ExtractAngle(gyro_.GetReading()) * loop_time.ToSeconds() +
-              drift_rate_;
+    angle_ += (gyro_.ExtractAngle(gyro_.GetReading()) + drift_rate_) *
+              loop_time.InSeconds();
 
     if (should_reset_.exchange(false)) {
       angle_ = 0.0;
