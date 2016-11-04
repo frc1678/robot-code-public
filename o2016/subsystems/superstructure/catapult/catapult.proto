@@ -22,11 +22,17 @@ message CatapultStatus {
   required double scoop_goal = 5;
   required double hardstop_goal = 6;
   required CylinderStatus catapult_status = 7;
-  required bool disk_brake_locked = 8;
+  required bool disc_brake_locked = 8;
   required bool scoop_at_goal = 9;
   required bool hardstop_at_goal = 10;
   required bool at_goal = 11;
   required bool can_shoot = 12;
+  enum CatapultState {
+    INTAKING = 0;
+    PREPING_SHOT = 1;
+    SHOOTING = 2;
+  }
+  required CatapultState state = 13;
 }
 
 message CatapultInput {

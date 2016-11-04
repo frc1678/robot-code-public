@@ -22,9 +22,8 @@ void Catapult::Update() {
   input = *(input_reader_.ReadLastMessage());
   goal = *(goal_reader_.ReadLastMessage());
 
-  // TODO(Lucas): Put calculations here
-  status->set_scoop_goal(0 * rad);
-  status->set_hardstop_goal(0 * rad);
+  Voltage scoop_output = scoop_.Update(status->scoop_goal(), input->scoop_pot());
+  Voltage hardstop_output = stop_.Update(status->hardstop_goal(), input->hardstop_pot());
 
   status->set_scoop_angle(scoop_.get_angle());
   status->set_scoop_angular_velocity(scoop_.get_angular_velocity());
@@ -35,34 +34,80 @@ void Catapult::Update() {
   status->set_hardstop_at_goal(stop_.is_done());
   status->set_at_goal(status->hardstop_at_goal() && status->scoop_at_goal());
 
-  status->set_disk_brake_locked(stop_.is_done() && goal->goal() == CatapultGoal::PREP_SHOT);
-  status->set_can_shoot(status->at_goal() && status->disk_brake_locked() &&
-                        (status->catapult_status() == RETRACTED ||
-                        status->catapult_status() == EXTENDING));
+  status->set_state(state_);
 
-  output->set_scoop_output(scoop_.Update(status->scoop_goal(), input->scoop_pot()));
-  output->set_hardstop_output(stop_.Update(status->hardstop_goal(), input->hardstop_pot()));
-  output->set_disc_brake_activate(status->hardstop_at_goal());
+  if(state_ == CatapultStatus::SHOOTING) { 
+    status->set_scoop_goal(status->scoop_angle());
+    status->set_hardstop_goal(status->hardstop_angle());
 
-  if(goal->goal() == CatapultGoal::INTAKE || goal->goal() == CatapultGoal::PREP_SHOT) {
-    catapult_countdown_--;
-    output->set_catapult_extend(false);
-    if(catapult_countdown_ < 0) {
-      catapult_countdown_ = 0;
-      status->set_catapult_status(RETRACTED);
-    } else {
-      status->set_catapult_status(RETRACTING);
-    }
-  } else if(goal->goal() == CatapultGoal::SHOOT && status->can_shoot()) {
-    catapult_countdown_++;
+    output->set_disc_brake_activate(true);
+    status->set_can_shoot(true);
+
+    output->set_scoop_output(0 * V);
+    output->set_hardstop_output(0 * V);
     output->set_catapult_extend(true);
-    if(catapult_countdown_ > extend_time) {
-      catapult_countdown_ = extend_time;
-      status->set_catapult_status(EXTENDED);
-    } else {
-      status->set_catapult_status(EXTENDING);
+
+    if(catapult_status_ == EXTENDED) {
+      state_ = CatapultStatus::PREPING_SHOT;
+    }
+
+  } else if(state_ == CatapultStatus::PREPING_SHOT) { 
+    // TODO(Lucas): Put calculations here
+    status->set_scoop_goal(0 * rad);
+    status->set_hardstop_goal(0 * rad);
+
+    output->set_disc_brake_activate(false);
+    status->set_can_shoot(status->at_goal() && catapult_status_ == RETRACTED);
+
+    output->set_scoop_output(scoop_output);
+    output->set_hardstop_output(hardstop_output);
+    output->set_catapult_extend(false);
+
+    if(goal->goal() == CatapultGoal::SHOOT && status->can_shoot()) {
+      state_ = CatapultStatus::SHOOTING;
+    }
+    if(goal->goal() == CatapultGoal::INTAKE && catapult_status_ == RETRACTED) {
+      state_ = CatapultStatus::INTAKING;
+    }
+
+  } else if(state_ == CatapultStatus::INTAKING) { 
+    status->set_scoop_goal(0 * rad);
+    status->set_hardstop_goal(status->hardstop_angle());
+
+    output->set_disc_brake_activate(true);
+    status->set_can_shoot(false);
+
+    output->set_scoop_output(scoop_output);
+    output->set_hardstop_output(hardstop_output);
+    output->set_catapult_extend(false);
+
+    if(goal->goal() != CatapultGoal::INTAKE) {
+      state_ = CatapultStatus::PREPING_SHOT;
     }
   }
+
+  // Time to lock is less than time to fire, so it can be assumed to be 0
+  status->set_disc_brake_locked(output->disc_brake_activate());
+
+  if(output->catapult_extend()) {
+    catapult_countdown_++;
+    if(catapult_countdown_ > extend_time) {
+      catapult_countdown_ = extend_time;
+      catapult_status_ = EXTENDED;
+    } else {
+      catapult_status_ = EXTENDING;
+    }
+  } else {
+    catapult_countdown_--;
+    if(catapult_countdown_ < 0) {
+      catapult_countdown_ = 0;
+      catapult_status_ = RETRACTED;
+    } else {
+      catapult_status_ = RETRACTING;
+    }
+  }
+
+  status->set_catapult_status(catapult_status_);
 
   ::o2016::QueueManager::GetInstance().catapult_output_queue().WriteMessage(output);
   ::o2016::QueueManager::GetInstance().catapult_status_queue().WriteMessage(status);

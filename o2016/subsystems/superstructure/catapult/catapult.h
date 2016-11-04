@@ -22,9 +22,11 @@ protected:
   CatapultStop stop_;
   Scoop scoop_;
   int catapult_countdown_;
+  CylinderStatus catapult_status_;
   constexpr static int extend_time = 200;
   CatapultInputQueue::QueueReader input_reader_;
   CatapultGoalQueue::QueueReader goal_reader_;
+  CatapultStatus_CatapultState state_;
 };
 
 } // catapult
