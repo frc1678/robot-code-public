@@ -12,10 +12,6 @@ DrivetrainController::DrivetrainController()
                         muan::control::MotionProfilePosition{0.0, 0.0}},
       angle_profile_{DrivetrainConstraints{}.angular_constraints_,
                      muan::control::MotionProfilePosition{0.0, 0.0}} {
-  // TODO(Kyle) Find a way to generate this in the python code (or maybe
-  // generate the constraints when the controller is told to follow a new
-  // profile to get the maximum efficiency?)
-
   using namespace muan::units;
 
   controller_.u_min(0) = -12.0 * V;
@@ -193,6 +189,9 @@ DrivetrainConstraints DrivetrainController::GenerateTMPConstraints(
     muan::control::MotionProfilePosition final_distance,
     muan::control::MotionProfilePosition initial_angle,
     muan::control::MotionProfilePosition final_angle, Gear current_gear) {
+  // TODO(Kyle) Find a way to generate this in the python code (or maybe
+  // generate the constraints when the controller is told to follow a new
+  // profile to get the maximum efficiency?)
   DrivetrainConstraints constraints;
   if (current_gear == Gear::kHighGear) {
     constraints.distance_constraints_.max_velocity = 1.0;
