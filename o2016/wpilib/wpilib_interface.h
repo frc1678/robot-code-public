@@ -45,7 +45,8 @@ class TurretInterface {
   VictorSP motor_;
   Encoder encoder_;
   AnalogInput potentiometer_;
-  DigitalInput index_;
+  Counter index_;
+  int last_index_ = 0;
 };
 
 class IntakeInterface {
@@ -61,7 +62,8 @@ class IntakeInterface {
 
   VictorSP motor_pivot_, motor_roller_;
   Encoder encoder_;
-  DigitalInput index_;
+  Counter index_;
+  int last_index_ = 0;
 };
 
 class CatapultInterface {

@@ -153,7 +153,8 @@ void TurretInterface::ReadSensors() {
 
   sensors->set_encoder_position(encoder_.Get() * kEncoderScaling);
   sensors->set_pot_position(((potentiometer_.GetValue() + kPotentiometerOffset) * kPotentiometerScaling) * muan::units::deg);
-  sensors->set_index_click(index_.Get());
+  sensors->set_index_click(last_index_ != index_.Get());
+  last_index_ = index_.Get();
 
   input_queue_.WriteMessage(sensors);
 }
@@ -186,7 +187,8 @@ void IntakeInterface::ReadSensors() {
 
   constexpr double kEncoderScaling = muan::units::rev / 512;
   sensors->set_encoder_position(encoder_.Get() * kEncoderScaling);
-  sensors->set_index_click(index_.Get());
+  sensors->set_index_click(last_index_ != index_.Get());
+  last_index_ = index_.Get();
 
   input_queue_.WriteMessage(sensors);
 }
