@@ -1,0 +1,26 @@
+syntax="proto2";
+
+option cc_enable_arenas = true;
+
+package o2016.secondaries;
+
+enum Direction {
+  FORWARD = 1;
+  IDLE = 2;
+  REVERSE = 3;
+}
+
+enum Position {
+  UP = 1;
+  DOWN = 2;
+}
+
+message SecondariesOutput {
+  required double voltage = 1;
+  required bool is_down = 2;
+}
+
+message SecondariesGoal {
+  required Direction direction = 1;
+  required Position position = 2;
+}
