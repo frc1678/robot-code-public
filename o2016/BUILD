@@ -4,5 +4,5 @@ cc_binary(
       "//third_party/wpilibsuite:wpilib",
       "//o2016/subsystem_runner:subsystem_runner"
   ],
-  srcs=glob(["*.cpp"])
+  srcs=["main.cpp"]
 )
