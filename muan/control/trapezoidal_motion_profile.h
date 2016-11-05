@@ -41,6 +41,8 @@ class TrapezoidalMotionProfile : public MotionProfile {
   Time total_time() const override { return end_deccel_; }
 
   MotionProfileConstraints& constraints() { return constraints_; }
+  MotionProfilePosition initial_position() const { return initial_; }
+  MotionProfilePosition goal_position() const { return goal_; }
 
  protected:
   // Calculate the correct position and velocity for the profile at a time t
