@@ -216,7 +216,7 @@ TEST_F(DrivetrainTest, AutoDriveDistance) {
     plant_.Update(CreateU(output));
 
     auto status = controller_.GetStatus();
-    finished |= status->just_finished_profile();
+    finished = finished || status->just_finished_profile();
   }
 
   ASSERT_TRUE(finished);
@@ -239,7 +239,7 @@ TEST_F(DrivetrainTest, AutoTurn) {
     plant_.Update(CreateU(output));
 
     auto status = controller_.GetStatus();
-    finished |= status->just_finished_profile();
+    finished = finished || status->just_finished_profile();
   }
 
   ASSERT_TRUE(finished);
