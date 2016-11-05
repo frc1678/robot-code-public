@@ -17,9 +17,13 @@ T LinearInterpolation<T>::operator()(double x) {
   // index of lowest x-value greater than x
   int upper_bounds_index = -1;
   for(int i = 0; i < data_.size(); i++) {
+    // If it is less than x, and either more than the current lower boundary
+    // or a lower boundary has not been set, set the lower boundary to this.
     if(data_[i].first <= x && (lower_bounds_index == -1 || data_[lower_bounds_index].first < data_[i].first)) {
       lower_bounds_index = i;
     }
+    // If it is more than x, and either less than the current upper boundary
+    // or an upper boundary has not been set, set the upper boundary to this.
     if(data_[i].first >= x && (upper_bounds_index == -1 || data_[upper_bounds_index].first > data_[i].first)) {
       upper_bounds_index = i;
     }
