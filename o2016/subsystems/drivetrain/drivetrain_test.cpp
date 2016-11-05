@@ -1,4 +1,5 @@
 #include "drivetrain_controller.h"
+#include "drivetrain_subsystem.h"
 #include "o2016/subsystems/drivetrain/drivetrain_constants.h"
 #include "gtest/gtest.h"
 
@@ -244,6 +245,96 @@ TEST_F(DrivetrainTest, AutoTurn) {
   ASSERT_TRUE(finished);
   ASSERT_NEAR(plant_.x(2), 1.0, 5e-2);
   ASSERT_NEAR(plant_.x(3), 0.0, 5e-2);
+}
+
+TEST(DrivetrainSubsystem, GoalInterrupts) {
+  // Write a single input at the beginning. Since we're not clearing the input
+  // queue, this will just remain forever as the last message. It's a sketchy
+  // hack but it works.
+  o2016::QueueManager::GetInstance().drivetrain_input_queue().WriteMessage(
+      DrivetrainInputProto());
+
+  {
+    // Velocity message should not interrupt distance messages
+    DrivetrainSubsystem subsystem;
+
+    o2016::QueueManager::GetInstance().drivetrain_goal_queue().Reset();
+
+    o2016::QueueManager::GetInstance().drivetrain_goal_queue().WriteMessage(
+        CreateDistanceGoal(1.0, 1.0));
+    subsystem.Update();
+
+    o2016::QueueManager::GetInstance().drivetrain_goal_queue().WriteMessage(
+        CreateVelocityGoal(1.0, 1.0));
+    subsystem.Update();
+
+    auto status = o2016::QueueManager::GetInstance()
+                      .drivetrain_status_queue()
+                      .MakeReader()
+                      .ReadLastMessage()
+                      .value();
+    EXPECT_EQ(status->current_driving_type(), DriveType::kDistanceCommand);
+  }
+
+  {
+    // Distance message should interrupt velocity message
+    DrivetrainSubsystem subsystem;
+
+    o2016::QueueManager::GetInstance().drivetrain_goal_queue().Reset();
+
+    o2016::QueueManager::GetInstance().drivetrain_goal_queue().WriteMessage(
+        CreateVelocityGoal(1.0, 0.0));
+    subsystem.Update();
+
+    // Make sure it did, in fact, start using the velocity goal
+    auto status = o2016::QueueManager::GetInstance()
+                      .drivetrain_status_queue()
+                      .MakeReader()
+                      .ReadLastMessage()
+                      .value();
+    EXPECT_EQ(status->current_driving_type(), DriveType::kVelocityCommand);
+
+    o2016::QueueManager::GetInstance().drivetrain_goal_queue().WriteMessage(
+        CreateDistanceGoal(1.0, 1.0));
+    subsystem.Update();
+
+    status = o2016::QueueManager::GetInstance()
+                 .drivetrain_status_queue()
+                 .MakeReader()
+                 .ReadLastMessage()
+                 .value();
+    EXPECT_EQ(status->current_driving_type(), DriveType::kDistanceCommand);
+  }
+  {
+    // New distance message should interrupt old distance message
+    DrivetrainSubsystem subsystem;
+
+    o2016::QueueManager::GetInstance().drivetrain_goal_queue().Reset();
+
+    o2016::QueueManager::GetInstance().drivetrain_goal_queue().WriteMessage(
+        CreateDistanceGoal(1.0, 0.0));
+    subsystem.Update();
+
+    auto status = o2016::QueueManager::GetInstance()
+                      .drivetrain_status_queue()
+                      .MakeReader()
+                      .ReadLastMessage()
+                      .value();
+    EXPECT_EQ(status->num_profiles_run(), 0);
+
+    o2016::QueueManager::GetInstance().drivetrain_goal_queue().WriteMessage(
+        CreateDistanceGoal(0.0, 1.0));
+    subsystem.Update();
+
+    status = o2016::QueueManager::GetInstance()
+                 .drivetrain_status_queue()
+                 .MakeReader()
+                 .ReadLastMessage()
+                 .value();
+    EXPECT_EQ(status->current_driving_type(), DriveType::kDistanceCommand);
+    EXPECT_EQ(status->num_profiles_run(), 1);
+    EXPECT_EQ(status->profile_goal().heading(), 1.0);
+  }
 }
 
 /*
