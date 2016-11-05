@@ -38,6 +38,7 @@ cc_library(
 cc_library(
   name = 'linear_interpolation',
   hdrs = ['linear_interpolation.h'],
+  srcs = ['linear_interpolation.hpp']
 )
 
 cc_test(
