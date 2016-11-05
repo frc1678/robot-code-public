@@ -62,18 +62,16 @@ TEST(History, WorksCorrectly) {
 
 TEST(LinearInterpolation, VerifiesListSize) {
   try {
-    LinearInterpolation<double> f({1, 2, 3, 4}, {1, 2});
-    FAIL();
-  } catch (...) {}
-
-  try {
-    LinearInterpolation<double> f({1}, {1});
+    LinearInterpolation<double> f({std::make_pair(1., 1.)});
     FAIL();
   } catch (...) {}
 }
 
 TEST(LinearInterpolation, CalculatesCorrectly) {
-  LinearInterpolation<double> f({3, 0, 1, 6}, {2, 0, 0, 8});
+  LinearInterpolation<double> f({std::make_pair(3., 2.),
+                                 std::make_pair(0., 0.),
+                                 std::make_pair(1., 0.),
+                                 std::make_pair(6., 8.)});
   EXPECT_EQ(f(0), 0);
   EXPECT_EQ(f(1), 0);
   EXPECT_EQ(f(2), 1);
