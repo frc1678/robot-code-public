@@ -55,6 +55,7 @@ class DrivetrainController {
   Gear current_gear_;
 
   bool just_finished_profile_{false};
+  uint32_t num_profiles_run_{0};
 
   muan::units::Time elapsed_time_;
 };

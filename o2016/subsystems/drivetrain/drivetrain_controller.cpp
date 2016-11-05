@@ -21,6 +21,8 @@ DrivetrainController::DrivetrainController()
 
   elapsed_time_ = 0 * s;
 
+  drive_command_type_ = DriveType::kVelocityCommand;
+
   Shift(Gear::kLowGear);
 }
 
@@ -71,6 +73,7 @@ DrivetrainOutputProto DrivetrainController::Update(
         std::fabs(e(2)) < termination(2) && std::fabs(e(3)) < termination(3)) {
       drive_command_type_ = DriveType::kVelocityCommand;
       just_finished_profile_ = true;
+      num_profiles_run_++;
     }
   }
 
@@ -89,6 +92,10 @@ DrivetrainOutputProto DrivetrainController::Update(
 
 void DrivetrainController::SetGoal(const DrivetrainGoalProto& goal) {
   Shift(goal->gear());
+
+  if (drive_command_type_ == DriveType::kDistanceCommand) {
+    num_profiles_run_++;
+  }
 
   // Create the r vector from the goal proto
   Eigen::Matrix<double, 7, 1> r = Eigen::Matrix<double, 7, 1>::Zero();
@@ -185,6 +192,7 @@ DrivetrainStatusProto DrivetrainController::GetStatus() const {
   status->mutable_filtered_goal()->set_angular_velocity(controller_.r(3));
 
   status->set_just_finished_profile(just_finished_profile_);
+  status->set_num_profiles_run(num_profiles_run_);
 
   return status;
 }

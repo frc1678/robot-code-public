@@ -46,9 +46,13 @@ message DrivetrainStatus {
 
   // The current goal state (either of a profile or of velocity)
   required DrivetrainState filtered_goal = 4;
+  // The final state of the currently-running profile
+  optional DrivetrainState profile_goal = 5;
 
   // Sent out in a single message when a profile has been completed successfully
-  optional bool just_finished_profile = 5;
+  optional bool just_finished_profile = 6;
+  // Increments every time a profile completes or is interrupted
+  optional uint32 num_profiles_run = 7;
 }
 
 message DrivetrainInput {
