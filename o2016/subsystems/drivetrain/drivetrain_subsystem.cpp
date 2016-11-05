@@ -31,16 +31,16 @@ void DrivetrainSubsystem::UpdateGoals() {
   std::experimental::optional<StackDrivetrainGoal> goal;
 
   while (goal = goal_queue_.ReadMessage()) {
-    goal_changed |= TrySetGoal(*goal);
+    goal_changed = goal_changed || TrySetGoal(*goal);
   }
 
-  if (goal_changed | current_goal_->has_velocity_command()) {
+  if (goal_changed || current_goal_->has_velocity_command()) {
     controller_.SetGoal(current_goal_);
   }
 }
 
 bool DrivetrainSubsystem::TrySetGoal(const StackDrivetrainGoal& goal_new) {
-  if (!current_goal_->has_distance_command() |
+  if (!current_goal_->has_distance_command() ||
       goal_new->has_distance_command()) {
     current_goal_ = goal_new;
     return true;
