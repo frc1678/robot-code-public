@@ -18,7 +18,7 @@ constexpr uint32_t kMotorRightA = 0, kMotorRightB = 1;
 constexpr uint32_t kEncoderLeftA = 10, kEncoderLeftB = 11;
 constexpr uint32_t kEncoderRightA = 12, kEncoderRightB = 13;
 
-constexpr uint32_t kShiftingA = 0, kShiftingB = 0;
+constexpr uint32_t kShiftingA = 2, kShiftingB = 3;
 
 }  // drivetrain
 
@@ -29,7 +29,7 @@ namespace turret {
 constexpr uint32_t kMotor = 6;
 constexpr uint32_t kEncoderA = 14, kEncoderB = 15;
 constexpr uint32_t kPotentiometer = 4;
-constexpr uint32_t kIndex = 0;
+constexpr uint32_t kIndex = 1;
 
 }  // turret
 
@@ -38,10 +38,10 @@ namespace intake {
 //TODO(Wesley) Index pulse, encoder, and roller motor
 
 constexpr uint32_t kPivotMotor = 5;
-constexpr uint32_t kEncoderA = 0, kEncoderB = 0;
-constexpr uint32_t kIndex = 0;
+constexpr uint32_t kEncoderA = 16, kEncoderB = 17;
+constexpr uint32_t kIndex = 2;
 
-constexpr uint32_t kRollerMotor = 0;
+constexpr uint32_t kRollerMotor = 8;
 
 }  // intake
 
@@ -56,14 +56,14 @@ constexpr uint32_t kHardStopCylinder = 0;
 constexpr uint32_t kScoopMotor = 4;
 constexpr uint32_t kScoopPotentiometer = 5;
 
-constexpr uint32_t kCatapultCylinderA = 0, kCatapultCylinderB = 0,
-                   kCatapultCylinderC = 0, kCatapultCylinderD = 0;
+constexpr uint32_t kCatapultCylinderA = 4, kCatapultCylinderB = 5,
+                   kCatapultCylinderC = 6, kCatapultCylinderD = 7;
 
 }  // catapult
 
 }  // ports
 
-constexpr double kMaxVoltage = 12.0;
+constexpr double kMaxVoltage = 4.0; // 4 volt bringup voltage
 
 DrivetrainInterface::DrivetrainInterface(muan::wpilib::CanWrapper* can_wrapper)
     : pcm_{can_wrapper->pcm()},
@@ -87,7 +87,7 @@ void DrivetrainInterface::ReadSensors() {
   constexpr double wheel_radius = 3 * muan::units::in;
   constexpr double kMetersPerClick = M_PI * 2.0 * wheel_radius / 360.0;
   sensors->set_left_encoder(encoder_left_.Get() * kMetersPerClick);
-  sensors->set_right_encoder(encoder_right_.Get() * kMetersPerClick);
+  sensors->set_right_encoder(-encoder_right_.Get() * kMetersPerClick);
 
   // TODO(Kyle) Use the actual gyro here
   sensors->set_gyro_angle(0.0);
@@ -98,10 +98,10 @@ void DrivetrainInterface::WriteActuators() {
   auto outputs = output_queue_.ReadLastMessage();
   if (outputs) {
     motor_left_a_.Set(
-        muan::Cap((*outputs)->left_voltage(), -kMaxVoltage, kMaxVoltage) /
+        -muan::Cap((*outputs)->left_voltage(), -kMaxVoltage, kMaxVoltage) /
         12.0);
     motor_left_b_.Set(
-        muan::Cap((*outputs)->left_voltage(), -kMaxVoltage, kMaxVoltage) /
+        -muan::Cap((*outputs)->left_voltage(), -kMaxVoltage, kMaxVoltage) /
         12.0);
 
     motor_right_a_.Set(
@@ -111,6 +111,7 @@ void DrivetrainInterface::WriteActuators() {
         muan::Cap((*outputs)->right_voltage(), -kMaxVoltage, kMaxVoltage) /
         12.0);
 
+    //TODO(Wesley) Verify high gear/low gear
     pcm_->WriteDoubleSolenoid(
         ports::drivetrain::kShiftingA, ports::drivetrain::kShiftingB,
         (*outputs)->high_gear() ? DoubleSolenoid::Value::kForward
@@ -135,7 +136,7 @@ TurretInterface::TurretInterface()
 void TurretInterface::WriteActuators() {
   auto outputs = output_queue_.ReadLastMessage();
   if (outputs) {
-    motor_.Set(muan::Cap((*outputs)->voltage(), -kMaxVoltage, kMaxVoltage) /
+    motor_.Set(-muan::Cap((*outputs)->voltage(), -kMaxVoltage, kMaxVoltage) /
                12.0);
   } else {
     motor_.Set(0.0);
@@ -148,8 +149,7 @@ void TurretInterface::ReadSensors() {
   constexpr double kPotentiometerScaling = -360.0;
   constexpr double kPotentiometerOffset = -0.5;
 
-  // TODO(Wesley) figure this out for realsies
-  constexpr double kEncoderScaling = 1.0;
+  constexpr double kEncoderScaling = 1.0 / (37.65 * 512.0) * muan::units::rev;
 
   sensors->set_encoder_position(encoder_.Get() * kEncoderScaling);
   sensors->set_pot_position(((potentiometer_.GetValue() + kPotentiometerOffset) * kPotentiometerScaling) * muan::units::deg);
@@ -173,7 +173,7 @@ void IntakeInterface::WriteActuators() {
     motor_pivot_.Set(
         muan::Cap((*outputs)->arm_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
     motor_roller_.Set(
-        muan::Cap((*outputs)->roller_voltage(), -kMaxVoltage, kMaxVoltage) /
+        -muan::Cap((*outputs)->roller_voltage(), -kMaxVoltage, kMaxVoltage) /
         12.0);
   } else {
     motor_pivot_.Set(0.0);
@@ -184,7 +184,7 @@ void IntakeInterface::WriteActuators() {
 void IntakeInterface::ReadSensors() {
   o2016::intake::IntakeInputProto sensors;
 
-  constexpr double kEncoderScaling = 0.0;
+  constexpr double kEncoderScaling = muan::units::rev / 512;
   sensors->set_encoder_position(encoder_.Get() * kEncoderScaling);
   sensors->set_index_click(index_.Get());
 
