@@ -206,3 +206,12 @@ TEST(MessageQueue, MultipleWriters) {
     t.join();
   }
 }
+
+TEST(MessageQueue, Reset) {
+  MessageQueue<uint32_t, 10> test_queue;
+  auto reader = test_queue.MakeReader();
+  test_queue.WriteMessage(0);
+  EXPECT_TRUE(reader.ReadLastMessage());
+  test_queue.Reset();
+  EXPECT_FALSE(reader.ReadLastMessage());
+}

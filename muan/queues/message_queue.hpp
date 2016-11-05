@@ -22,6 +22,11 @@ void MessageQueue<T, size>::WriteMessage(const T& message) {
 }
 
 template <typename T, uint64_t size>
+void MessageQueue<T, size>::Reset() {
+  back_ = 0;
+}
+
+template <typename T, uint64_t size>
 std::experimental::optional<T> MessageQueue<T, size>::NextMessage(
     uint64_t& next) const {
   aos::MutexLocker locker_{&queue_lock_};
