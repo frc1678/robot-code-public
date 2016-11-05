@@ -10,7 +10,7 @@ namespace wpilib {
 
 namespace gyro {
 
-void GyroReader::GyroReader(GyroQueue* queue) : gyro_queue_{queue} {}
+GyroReader::GyroReader(GyroQueue* queue) : gyro_queue_{queue} {}
 
 void GyroReader::Reset() { should_reset_ = true; }
 
@@ -80,16 +80,14 @@ void GyroReader::RunReader() {
   aos::time::Time loop_time = aos::time::Time::InMS(5);
   aos::time::PhasedLoop phased_loop(loop_time);
 
-  if (calibration_state_ == GyroState::kCalibrated) {
-    calibration_state_ = GyroState::kRunning;
-  }
+  calibration_state_ = GyroState::kRunning;
 
   while (calibration_state_ == GyroState::kRunning) {
     double reading = gyro_.ExtractAngle(gyro_.GetReading());
 
     // Integrate the gyro readings - the drift rate is in radians per cycle
     angle_ += (gyro_.ExtractAngle(gyro_.GetReading()) + drift_rate_) *
-              loop_time.InSeconds();
+              loop_time.ToSeconds();
 
     // Reset if the should_reset_ flag is set, then clear it.
     if (should_reset_.exchange(false)) {
