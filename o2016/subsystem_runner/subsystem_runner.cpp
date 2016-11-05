@@ -12,9 +12,9 @@ void SubsystemRunner::operator()() {
   running_ = true;
 
   while (running_) {
-    //wpilib_.ReadSensors();
+    wpilib_.ReadSensors();
     // Update subsystems here
-    //wpilib_.WriteActuators();
+    wpilib_.WriteActuators();
 
     phased_loop.SleepUntilNext();
   }
