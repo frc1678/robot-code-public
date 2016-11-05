@@ -12,6 +12,8 @@ class CatapultTest : public ::testing::Test {
     status_reader_(::o2016::QueueManager::GetInstance().catapult_status_queue().MakeReader()) {}
 
   void UpdateTest(Length distance_to_target) {
+    // Just feed it back the estimated value. Accuracy is tested
+    // in the individual controllers.
     input_->set_scoop_pot(status_->scoop_angle());
     input_->set_hardstop_pot(status_->hardstop_angle());
     // input_.set_distance_to_target(distance_to_target);
@@ -36,6 +38,7 @@ class CatapultTest : public ::testing::Test {
   Catapult catapult_;
 };
 
+// Move it a bunch and make sure it finished all the commands
 TEST_F(CatapultTest, Terminates) {
   input_->set_scoop_pot(0 * rad);
   input_->set_hardstop_pot(0 * rad);
@@ -55,6 +58,8 @@ TEST_F(CatapultTest, Terminates) {
   }
 }
 
+// Go intake -> shoot -> intake, make sure it fills in the transitions
+// and gets to each state.
 TEST_F(CatapultTest, ValidTransitions) {
   input_->set_scoop_pot(0 * rad);
   input_->set_hardstop_pot(0 * rad);

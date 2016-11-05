@@ -21,11 +21,13 @@ public:
 protected:
   CatapultStop stop_;
   Scoop scoop_;
+  // Timer for catapult
   int catapult_countdown_;
   CylinderStatus catapult_status_;
   CatapultStatus_CatapultState state_;
   CatapultInputQueue::QueueReader input_reader_;
   CatapultGoalQueue::QueueReader goal_reader_;
+  // Assume 1 second (200 ticks) to extend or retract
   constexpr static int extend_time = 200;
 };
 
