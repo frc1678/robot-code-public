@@ -28,8 +28,8 @@ class DrivetrainTest : public testing::Test {
     plant_.x(0) = plant_.x(1) = plant_.x(2) = plant_.x(3) = 0.0;
   }
 
-  StackDrivetrainInput GetSensors() const {
-    StackDrivetrainInput input;
+  DrivetrainInputProto GetSensors() const {
+    DrivetrainInputProto input;
     input->set_right_encoder(plant_.y(0));
     input->set_left_encoder(plant_.y(1));
     input->set_gyro_angle(plant_.y(2));
@@ -40,26 +40,26 @@ class DrivetrainTest : public testing::Test {
   muan::control::StateSpacePlant<2, 4, 3> plant_;
 };
 
-Eigen::Matrix<double, 2, 1> CreateU(StackDrivetrainOutput output) {
+Eigen::Matrix<double, 2, 1> CreateU(DrivetrainOutputProto output) {
   return (Eigen::Matrix<double, 2, 1>() << output->right_voltage(),
           output->left_voltage())
       .finished();
 }
 
-StackDrivetrainGoal CreateVelocityGoal(double forward, double angular,
+DrivetrainGoalProto CreateVelocityGoal(double forward, double angular,
                                        Gear gear = Gear::kLowGear) {
-  StackDrivetrainGoal goal;
+  DrivetrainGoalProto goal;
   goal->mutable_velocity_command()->set_angular_velocity(angular);
   goal->mutable_velocity_command()->set_forward_velocity(forward);
   goal->set_gear(gear);
   return goal;
 }
 
-StackDrivetrainGoal CreateDistanceGoal(double forward_distance, double heading,
+DrivetrainGoalProto CreateDistanceGoal(double forward_distance, double heading,
                                        Gear gear = Gear::kLowGear,
                                        double fv_final = 0.0,
                                        double av_final = 0.0) {
-  StackDrivetrainGoal goal;
+  DrivetrainGoalProto goal;
   auto state = goal->mutable_distance_command()->mutable_final_state();
   state->set_forward_distance(forward_distance);
   state->set_heading(heading);

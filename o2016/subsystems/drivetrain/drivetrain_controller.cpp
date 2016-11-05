@@ -31,8 +31,8 @@ const Eigen::Matrix<double, 4, 1> termination =
     (Eigen::Matrix<double, 4, 1>() << 0.01, 0.01, 0.01, 0.01).finished();
 }
 
-StackDrivetrainOutput DrivetrainController::Update(
-    const StackDrivetrainInput& input) {
+DrivetrainOutputProto DrivetrainController::Update(
+    const DrivetrainInputProto& input) {
   using namespace muan::units;
   elapsed_time_ += frc1678::drivetrain::controller::high_gear_integral::dt();
 
@@ -76,7 +76,7 @@ StackDrivetrainOutput DrivetrainController::Update(
   observer_.Update(u, y);
 
   // Create the output proto from u
-  StackDrivetrainOutput out;
+  DrivetrainOutputProto out;
   out->set_right_voltage(u(0));
   out->set_left_voltage(u(1));
   out->set_high_gear(current_gear_ == Gear::kHighGear);
@@ -84,7 +84,7 @@ StackDrivetrainOutput DrivetrainController::Update(
   return out;
 }
 
-void DrivetrainController::SetGoal(const StackDrivetrainGoal& goal) {
+void DrivetrainController::SetGoal(const DrivetrainGoalProto& goal) {
   Shift(goal->gear());
 
   // Create the r vector from the goal proto
@@ -165,8 +165,8 @@ void DrivetrainController::Shift(Gear new_gear) {
   }
 }
 
-StackDrivetrainStatus DrivetrainController::GetStatus() const {
-  StackDrivetrainStatus status;
+DrivetrainStatusProto DrivetrainController::GetStatus() const {
+  DrivetrainStatusProto status;
 
   status->set_current_driving_type(drive_command_type_);
   status->set_current_gear(current_gear_);

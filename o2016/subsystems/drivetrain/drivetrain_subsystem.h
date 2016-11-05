@@ -33,11 +33,11 @@ class DrivetrainSubsystem {
   //    (not implemented yet)
   // These rules are chosen because VelocityGoals are sent continuously and
   // DistanceGoals are sent one-at-a-time.
-  bool TrySetGoal(const StackDrivetrainGoal& goal);
+  bool TrySetGoal(const DrivetrainGoalProto& goal);
 
   controller::DrivetrainController controller_;
 
-  StackDrivetrainGoal current_goal_;
+  DrivetrainGoalProto current_goal_;
 };
 
 }  // drivetrain

@@ -29,12 +29,12 @@ class DrivetrainController {
  public:
   DrivetrainController();
 
-  StackDrivetrainOutput Update(const StackDrivetrainInput& input);
-  StackDrivetrainStatus GetStatus() const;
+  DrivetrainOutputProto Update(const DrivetrainInputProto& input);
+  DrivetrainStatusProto GetStatus() const;
 
   DriveType drive_command_type() const;
 
-  void SetGoal(const StackDrivetrainGoal& goal);
+  void SetGoal(const DrivetrainGoalProto& goal);
 
  private:
   void Shift(Gear new_gear);

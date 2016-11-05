@@ -9,19 +9,19 @@ namespace o2016 {
 
 namespace drivetrain {
 
-using StackDrivetrainInput = muan::proto::StackProto<DrivetrainInput, 80>;
-using StackDrivetrainGoal = muan::proto::StackProto<DrivetrainGoal, 210>;
-using StackDrivetrainStatus = muan::proto::StackProto<DrivetrainStatus, 210>;
-using StackDrivetrainOutput = muan::proto::StackProto<DrivetrainOutput, 80>;
+using DrivetrainInputProto = muan::proto::StackProto<DrivetrainInput, 80>;
+using DrivetrainGoalProto = muan::proto::StackProto<DrivetrainGoal, 210>;
+using DrivetrainStatusProto = muan::proto::StackProto<DrivetrainStatus, 210>;
+using DrivetrainOutputProto = muan::proto::StackProto<DrivetrainOutput, 80>;
 
 using DrivetrainInputQueue =
-    muan::queues::MessageQueue<StackDrivetrainInput, 200>;
+    muan::queues::MessageQueue<DrivetrainInputProto, 200>;
 using DrivetrainGoalQueue =
-    muan::queues::MessageQueue<StackDrivetrainGoal, 200>;
+    muan::queues::MessageQueue<DrivetrainGoalProto, 200>;
 using DrivetrainStatusQueue =
-    muan::queues::MessageQueue<StackDrivetrainStatus, 200>;
+    muan::queues::MessageQueue<DrivetrainStatusProto, 200>;
 using DrivetrainOutputQueue =
-    muan::queues::MessageQueue<StackDrivetrainOutput, 200>;
+    muan::queues::MessageQueue<DrivetrainOutputProto, 200>;
 
 }  // drivetrain
 
