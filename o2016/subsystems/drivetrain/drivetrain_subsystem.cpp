@@ -5,10 +5,10 @@ namespace o2016 {
 namespace drivetrain {
 
 DrivetrainSubsystem::DrivetrainSubsystem()
-    : input_queue_(
+    : input_queue_reader_(
           QueueManager::GetInstance().drivetrain_input_queue().MakeReader()),
       output_queue_(QueueManager::GetInstance().drivetrain_output_queue()),
-      goal_queue_(
+      goal_queue_reader_(
           QueueManager::GetInstance().drivetrain_goal_queue().MakeReader()),
       status_queue_(QueueManager::GetInstance().drivetrain_status_queue()) {}
 
@@ -16,7 +16,7 @@ void DrivetrainSubsystem::Update() {
   UpdateGoals();
 
   output_queue_.WriteMessage(
-      controller_.Update(*input_queue_.ReadLastMessage()));
+      controller_.Update(*input_queue_reader_.ReadLastMessage()));
   auto status = controller_.GetStatus();
 
   if (status->just_finished_profile()) {
@@ -30,7 +30,7 @@ void DrivetrainSubsystem::UpdateGoals() {
   bool goal_changed = false;
   std::experimental::optional<DrivetrainGoalProto> goal;
 
-  while (goal = goal_queue_.ReadMessage()) {
+  while (goal = goal_queue_reader_.ReadMessage()) {
     goal_changed = goal_changed || TrySetGoal(*goal);
   }
 

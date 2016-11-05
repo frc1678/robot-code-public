@@ -27,6 +27,9 @@ DrivetrainController::DrivetrainController()
 // In an anonymous namespace because nothing outisde of this unit should ever
 // need to refer to it
 namespace {
+// Termination thresholds for drivetrain (distance, forward velocity, heading,
+// angular velocity respectively). These are probably too tight and will need to
+// be tuned once we get this running on the actual robot.
 const Eigen::Matrix<double, 4, 1> termination =
     (Eigen::Matrix<double, 4, 1>() << 0.01, 0.01, 0.01, 0.01).finished();
 }

@@ -17,9 +17,9 @@ class DrivetrainSubsystem {
   void Update();
 
  private:
-  DrivetrainInputQueue::QueueReader input_queue_;
+  DrivetrainInputQueue::QueueReader input_queue_reader_;
   DrivetrainOutputQueue& output_queue_;
-  DrivetrainGoalQueue::QueueReader goal_queue_;
+  DrivetrainGoalQueue::QueueReader goal_queue_reader_;
   DrivetrainStatusQueue& status_queue_;
 
   // Tries to set all of the goals in the queue
