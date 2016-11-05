@@ -41,7 +41,8 @@ void DrivetrainSubsystem::UpdateGoals() {
 
 bool DrivetrainSubsystem::TrySetGoal(const DrivetrainGoalProto& goal_new) {
   if (!current_goal_->has_distance_command() ||
-      goal_new->has_distance_command()) {
+      goal_new->has_distance_command() ||
+      goal_new->velocity_command().should_override()) {
     current_goal_ = goal_new;
     return true;
   }

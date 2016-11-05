@@ -25,6 +25,11 @@ message DrivetrainGoal {
   message VelocityCommand {
     required double forward_velocity = 1;
     required double angular_velocity = 2;
+
+    // Should it override distance commands? True will cancel any
+    // currently-running command, false or unset will not interrupt distance
+    // commands.
+    optional bool should_override = 3;
   }
 
   message DistanceCommand {

@@ -335,6 +335,30 @@ TEST(DrivetrainSubsystem, GoalInterrupts) {
     EXPECT_EQ(status->num_profiles_run(), 1);
     EXPECT_EQ(status->profile_goal().heading(), 1.0);
   }
+  {
+    // Velocity message with "override" set should interrupt distance message
+    DrivetrainSubsystem subsystem;
+
+    o2016::QueueManager::GetInstance().drivetrain_goal_queue().Reset();
+
+    o2016::QueueManager::GetInstance().drivetrain_goal_queue().WriteMessage(
+        CreateDistanceGoal(1.0, 0.0));
+    subsystem.Update();
+
+    auto goal = CreateVelocityGoal(1.0, 0.0);
+    goal->mutable_velocity_command()->set_should_override(true);
+    o2016::QueueManager::GetInstance().drivetrain_goal_queue().WriteMessage(
+        goal);
+    subsystem.Update();
+
+    auto status = o2016::QueueManager::GetInstance()
+                      .drivetrain_status_queue()
+                      .MakeReader()
+                      .ReadLastMessage()
+                      .value();
+    EXPECT_EQ(status->current_driving_type(), DriveType::kVelocityCommand);
+    EXPECT_EQ(status->num_profiles_run(), 1);
+  }
 }
 
 /*
