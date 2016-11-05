@@ -48,6 +48,9 @@ class MessageQueue {
   // oldest message.
   void WriteMessage(const T& message);
 
+  // Reset the queue to the empty state
+  void Reset();
+
   class QueueReader {
    public:
     // Reads a single message from the queue or nullopt if there are no new

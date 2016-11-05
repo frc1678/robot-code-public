@@ -48,6 +48,10 @@ TEST(MessageQueue, DeliversManyMessages) {
 TEST(MessageQueue, Wraparound) {
   MessageQueue<uint32_t, 10> int_queue;
   auto reader = int_queue.MakeReader();
+
+  // Make sure that it doesn't have any messages, because it's empty
+  EXPECT_FALSE(reader.ReadLastMessage());
+
   for (uint32_t i = 0; i < 10; i++) {
     int_queue.WriteMessage(i);
   }
@@ -201,4 +205,13 @@ TEST(MessageQueue, MultipleWriters) {
   for (auto& t : writer_threads) {
     t.join();
   }
+}
+
+TEST(MessageQueue, Reset) {
+  MessageQueue<uint32_t, 10> test_queue;
+  auto reader = test_queue.MakeReader();
+  test_queue.WriteMessage(0);
+  EXPECT_TRUE(reader.ReadLastMessage());
+  test_queue.Reset();
+  EXPECT_FALSE(reader.ReadLastMessage());
 }
