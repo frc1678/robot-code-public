@@ -9,6 +9,8 @@ Catapult::Catapult() :
   stop_(CatapultStop()),
   scoop_(Scoop()),
   catapult_countdown_(0),
+  catapult_status_(RETRACTED),
+  state_(CatapultStatus::INTAKING),
   input_reader_(::o2016::QueueManager::GetInstance().catapult_input_queue().MakeReader()),
   goal_reader_(::o2016::QueueManager::GetInstance().catapult_goal_queue().MakeReader()) {}
 
@@ -34,8 +36,6 @@ void Catapult::Update() {
   status->set_hardstop_at_goal(stop_.is_done());
   status->set_at_goal(status->hardstop_at_goal() && status->scoop_at_goal());
 
-  status->set_state(state_);
-
   if(state_ == CatapultStatus::SHOOTING) { 
     status->set_scoop_goal(status->scoop_angle());
     status->set_hardstop_goal(status->hardstop_angle());
@@ -53,7 +53,7 @@ void Catapult::Update() {
 
   } else if(state_ == CatapultStatus::PREPING_SHOT) { 
     // TODO(Lucas): Put calculations here
-    status->set_scoop_goal(0 * rad);
+    status->set_scoop_goal(1 * rad);
     status->set_hardstop_goal(0 * rad);
 
     output->set_disc_brake_activate(false);
@@ -106,6 +106,8 @@ void Catapult::Update() {
       catapult_status_ = RETRACTING;
     }
   }
+
+  status->set_state(state_);
 
   status->set_catapult_status(catapult_status_);
 
