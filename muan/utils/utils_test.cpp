@@ -1,6 +1,7 @@
 #include "muan/utils/history.h"
 #include "muan/utils/timer.h"
 #include "muan/utils/timing_utils.h"
+#include "muan/utils/linear_interpolation.h"
 #include "gtest/gtest.h"
 
 using muan::Timer;
@@ -8,6 +9,7 @@ using muan::History;
 using muan::sleep_until;
 using muan::sleep_for;
 using muan::now;
+using muan::LinearInterpolation;
 
 TEST(TimeUtils, TimerPositive) {
   using namespace muan::units;
@@ -56,4 +58,31 @@ TEST(History, WorksCorrectly) {
   for (Time t = .01 * s; t < 1 * s; t += .01 * s) {  // NOLINT
     EXPECT_NEAR(hist.GoBack(t), 100 - static_cast<int>(convert(t, .01 * s)), 1);
   }
+}
+
+TEST(LinearInterpolation, VerifiesListSize) {
+  try {
+    LinearInterpolation<double> f({1, 2, 3, 4}, {1, 2});
+    FAIL();
+  } catch (...) {}
+
+  try {
+    LinearInterpolation<double> f({1}, {1});
+    FAIL();
+  } catch (...) {}
+}
+
+TEST(LinearInterpolation, CalculatesCorrectly) {
+  LinearInterpolation<double> f({3, 0, 1, 6}, {2, 0, 0, 8});
+  EXPECT_EQ(f(0), 0);
+  EXPECT_EQ(f(1), 0);
+  EXPECT_EQ(f(2), 1);
+  EXPECT_EQ(f(3), 2);
+  EXPECT_EQ(f(4), 4);
+  EXPECT_EQ(f(5), 6);
+  EXPECT_EQ(f(6), 8);
+  try{
+    f(100);
+    FAIL();
+  } catch(...) {}
 }

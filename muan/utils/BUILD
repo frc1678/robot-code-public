@@ -35,12 +35,18 @@ cc_library(
   deps = ['//muan/units:units']
 )
 
+cc_library(
+  name = 'linear_interpolation',
+  hdrs = ['linear_interpolation.h'],
+)
+
 cc_test(
   name = 'utils_test',
   srcs = ['utils_test.cpp'],
   deps = [
     ':timing',
-    'history',
+    ':history',
+    ':linear_interpolation',
     '//third_party/google/googletest:googletest'
   ]
 )
