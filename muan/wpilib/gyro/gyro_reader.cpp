@@ -78,6 +78,10 @@ void GyroReader::RunReader() {
   aos::time::Time loop_time = aos::time::Time::InMS(5);
   aos::time::PhasedLoop phased_loop(loop_time);
 
+  if (calibration_state_ == GyroState::kCalibrated) {
+    calibration_state_ = GyroState::kRunning;
+  }
+
   while (calibration_state_ == GyroState::kRunning) {
     double reading = gyro_.ExtractAngle(gyro_.GetReading());
 
