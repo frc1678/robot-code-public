@@ -61,10 +61,8 @@ TEST(History, WorksCorrectly) {
 }
 
 TEST(LinearInterpolation, VerifiesListSize) {
-  try {
-    LinearInterpolation<double> f({std::make_pair(1., 1.)});
-    FAIL();
-  } catch (...) {}
+  EXPECT_DEATH(LinearInterpolation<double> f({std::make_pair(1., 1.)}),
+               "Interpolate requires 2 or more control points");
 }
 
 TEST(LinearInterpolation, CalculatesCorrectly) {
@@ -79,8 +77,5 @@ TEST(LinearInterpolation, CalculatesCorrectly) {
   EXPECT_EQ(f(4), 4);
   EXPECT_EQ(f(5), 6);
   EXPECT_EQ(f(6), 8);
-  try{
-    f(100);
-    FAIL();
-  } catch(...) {}
+  EXPECT_DEATH(f(100), "An interpolation is only defined between the lowest and highest x-values");
 }

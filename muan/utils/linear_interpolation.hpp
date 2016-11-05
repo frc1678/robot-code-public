@@ -1,11 +1,11 @@
-#include <stdexcept>
+#include "third_party/aos/common/die.h"
 
 namespace muan {
 
 template <typename T>
 LinearInterpolation<T>::LinearInterpolation(std::vector<std::pair<double, T>> data) {
   if(data.size() < 2) {
-    throw std::invalid_argument("Interpolate requires 2 or more control points");
+    ::aos::Die("Interpolate requires 2 or more control points");
   }
   data_ = data;
 }
@@ -25,7 +25,7 @@ T LinearInterpolation<T>::operator()(double x) {
     }
   }
   if(lower_bounds_index == -1 || upper_bounds_index == -1) {
-    throw std::domain_error("An interpolation is only defined between the lowest and highest x-values");
+    ::aos::Die("An interpolation is only defined between the lowest and highest x-values");
   }
   double x0 = data_[lower_bounds_index].first;
   double x1 = data_[upper_bounds_index].first;
