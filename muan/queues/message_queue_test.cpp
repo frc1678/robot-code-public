@@ -48,6 +48,10 @@ TEST(MessageQueue, DeliversManyMessages) {
 TEST(MessageQueue, Wraparound) {
   MessageQueue<uint32_t, 10> int_queue;
   auto reader = int_queue.MakeReader();
+
+  // Make sure that it doesn't have any messages, because it's empty
+  EXPECT_FALSE(reader.ReadLastMessage());
+
   for (uint32_t i = 0; i < 10; i++) {
     int_queue.WriteMessage(i);
   }
