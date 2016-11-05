@@ -194,6 +194,17 @@ DrivetrainStatusProto DrivetrainController::GetStatus() const {
   status->set_just_finished_profile(just_finished_profile_);
   status->set_num_profiles_run(num_profiles_run_);
 
+  if (drive_command_type_ == DriveType::kDistanceCommand) {
+    status->mutable_profile_goal()->set_forward_distance(
+        distance_profile_.goal_position().position);
+    status->mutable_profile_goal()->set_forward_velocity(
+        distance_profile_.goal_position().velocity);
+    status->mutable_profile_goal()->set_heading(
+        angle_profile_.goal_position().position);
+    status->mutable_profile_goal()->set_angular_velocity(
+        angle_profile_.goal_position().velocity);
+  }
+
   return status;
 }
 
