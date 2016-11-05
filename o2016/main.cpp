@@ -4,7 +4,7 @@
 class WpilibRobot : public IterativeRobot
 {
   public:
-    WpilibRobot(void) {}
+    WpilibRobot() = default;
 
   private:
     o2016::SubsystemRunner subsystem_runner_;

@@ -1,6 +1,8 @@
 #ifndef O2016_SUBSYSTEMRUNNER_SUBSYSTEMRUNNER_H_
 #define O2016_SUBSYSTEMRUNNER_SUBSYSTEMRUNNER_H_
 
+#include <atomic>
+
 //#include "o2016/wpilib/wpilib_interface.h"
 #include "third_party/aos/common/time.h"
 #include "third_party/aos/common/util/phased_loop.h"
@@ -15,7 +17,7 @@ class SubsystemRunner {
     void operator()();
     void Stop();
   private:
-    bool running_;
+    std::atomic<bool> running_;
     //wpilib::WpilibInterface wpilib_;
 };
 
