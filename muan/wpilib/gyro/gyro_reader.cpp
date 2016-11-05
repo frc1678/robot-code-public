@@ -10,6 +10,8 @@ namespace wpilib {
 
 namespace gyro {
 
+void GyroReader::GyroReader(GyroQueue* queue) : gyro_queue_{queue} {}
+
 void GyroReader::Reset() { should_reset_ = true; }
 
 void GyroReader::operator()() {
@@ -30,7 +32,7 @@ void GyroReader::Init() {
          !gyro_.InitializeGyro()) {
     aos::time::SleepFor(aos::time::Time::InMS(100));
     if (gyro_queue_ != nullptr) {
-      StackGyroMessage gyro_message;
+      GyroMessageProto gyro_message;
       gyro_message->set_state(GyroState::kUninitialized);
       gyro_queue_->WriteMessage(gyro_message);
     }
@@ -61,7 +63,7 @@ void GyroReader::RunCalibration() {
 
     // Send out a GyroMessage if the queue exists
     if (gyro_queue_ != nullptr) {
-      StackGyroMessage gyro_message;
+      GyroMessageProto gyro_message;
       gyro_message->set_state(GyroState::kCalibrating);
       gyro_message->set_calibration_time_left((calib_cycles - num_cycles) *
                                               loop_time.ToSeconds());
@@ -96,7 +98,7 @@ void GyroReader::RunReader() {
 
     // Send out a GyroMessage if the queue exists
     if (gyro_queue_ != nullptr) {
-      StackGyroMessage gyro_message;
+      GyroMessageProto gyro_message;
       gyro_message->set_current_angle(angle_);
       gyro_message->set_current_angular_velocity(reading);
       gyro_message->set_state(GyroState::kRunning);
