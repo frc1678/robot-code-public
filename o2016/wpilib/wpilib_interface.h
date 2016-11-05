@@ -44,7 +44,7 @@ class TurretInterface {
 
   VictorSP motor_;
   Encoder encoder_;
-  AnalogInput potentiometer_;
+  AnalogPotentiometer potentiometer_;
   Counter index_;
   int last_index_ = 0;
 };
@@ -80,10 +80,10 @@ class CatapultInterface {
   muan::wpilib::PcmWrapper* pcm_;
 
   VictorSP hard_stop_motor_;
-  AnalogInput hard_stop_pot_;
+  AnalogPotentiometer hard_stop_pot_;
 
   VictorSP scoop_motor_;
-  AnalogInput scoop_pot_;
+  AnalogPotentiometer scoop_pot_;
 };
 
 class WpilibInterface {

@@ -152,7 +152,7 @@ void TurretInterface::ReadSensors() {
   constexpr double kEncoderScaling = 1.0 / (37.65 * 512.0) * muan::units::rev;
 
   sensors->set_encoder_position(encoder_.Get() * kEncoderScaling);
-  sensors->set_pot_position(((potentiometer_.GetValue() + kPotentiometerOffset) * kPotentiometerScaling) * muan::units::deg);
+  sensors->set_pot_position(((potentiometer_.Get() + kPotentiometerOffset) * kPotentiometerScaling) * muan::units::deg);
   sensors->set_index_click(last_index_ != index_.Get());
   last_index_ = index_.Get();
 
@@ -250,11 +250,11 @@ void CatapultInterface::ReadSensors() {
   constexpr double kScoopOffset = -0.9;
 
   //TODO(Wesley) Test real values
-  constexpr double kHardStopScaling = -3600;
+  constexpr double kHardStopScaling = -10.0;
   constexpr double kHardStopOffset = -0.44;
 
-  sensors->set_scoop_pot(((scoop_pot_.GetValue() + kScoopOffset) * kScoopScaling) * muan::units::deg);
-  sensors->set_hardstop_pot((hard_stop_pot_.GetValue() + kHardStopOffset) * kHardStopScaling * muan::units::deg);
+  sensors->set_scoop_pot(((scoop_pot_.Get() + kScoopOffset) * kScoopScaling) * muan::units::deg);
+  sensors->set_hardstop_pot((hard_stop_pot_.Get() + kHardStopOffset) * kHardStopScaling);
 
   input_queue_.WriteMessage(sensors);
 }
