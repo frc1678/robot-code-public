@@ -250,11 +250,11 @@ void CatapultInterface::ReadSensors() {
   constexpr double kScoopOffset = -0.9;
 
   //TODO(Wesley) Test real values
-  constexpr double kHardStopScaling = 1.0;
-  constexpr double kHardStopOffset = 0.0;
+  constexpr double kHardStopScaling = -3600;
+  constexpr double kHardStopOffset = -0.44;
 
   sensors->set_scoop_pot(((scoop_pot_.GetValue() + kScoopOffset) * kScoopScaling) * muan::units::deg);
-  sensors->set_hardstop_pot((hard_stop_pot_.GetValue() + kHardStopOffset) * kHardStopScaling);
+  sensors->set_hardstop_pot((hard_stop_pot_.GetValue() + kHardStopOffset) * kHardStopScaling * muan::units::deg);
 
   input_queue_.WriteMessage(sensors);
 }
