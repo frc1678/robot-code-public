@@ -13,15 +13,12 @@ void SubsystemRunner::operator()() {
 
   while (running_) {
     wpilib_.ReadSensors();
-    // Update subsystems here
+    drivetrain_.Update();
     wpilib_.WriteActuators();
 
     phased_loop.SleepUntilNext();
   }
 }
 
-void SubsystemRunner::Stop() {
-  running_ = false;
-}
-
+void SubsystemRunner::Stop() { running_ = false; }
 }
