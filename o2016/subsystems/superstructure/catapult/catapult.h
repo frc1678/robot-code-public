@@ -15,7 +15,7 @@ class Catapult {
 public:
   Catapult();
   ~Catapult() = default;
-  void Update(CatapultInputProto input, CatapultGoalProto goal);
+  void Update(CatapultInputProto input, CatapultGoalProto goal, Length dist_to_target);
   CatapultOutputProto output();
   CatapultStatusProto status();
 

@@ -18,9 +18,8 @@ class CatapultTest : public ::testing::Test {
   void UpdateTest(Length distance_to_target) {
     input_->set_scoop_pot(scoop_plant_.y(0));
     input_->set_hardstop_pot(stop_plant_.y(0));
-    // input_.set_distance_to_target(distance_to_target);
 
-    catapult_.Update(input_, goal_);
+    catapult_.Update(input_, goal_, distance_to_target);
 
     status_ = catapult_.status();
     output_ = catapult_.output();

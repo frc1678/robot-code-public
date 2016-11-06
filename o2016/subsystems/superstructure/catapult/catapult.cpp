@@ -13,7 +13,7 @@ Catapult::Catapult() :
   // Intaking is the default state to avoid collisions
   state_(CatapultStatus::INTAKING) {}
 
-void Catapult::Update(CatapultInputProto input, CatapultGoalProto goal) {
+void Catapult::Update(CatapultInputProto input, CatapultGoalProto goal, Length dist_to_target) {
 
   Voltage scoop_output = scoop_.Update(status_->scoop_goal(), input->scoop_pot());
   Voltage hardstop_output = stop_.Update(status_->hardstop_goal(), input->hardstop_pot());
