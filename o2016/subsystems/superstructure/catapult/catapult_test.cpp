@@ -91,3 +91,24 @@ TEST_F(CatapultTest, ValidTransitions) {
   }
   EXPECT_EQ(status_->state(), CatapultStatus::INTAKING);
 }
+
+TEST_F(CatapultTest, CanOverride) {
+  status_->set_scoop_angle(0 * rad);
+  status_->set_hardstop_angle(0 * rad);
+  // Should be angle to override scoop goal in intaking state
+  goal_->set_goal(CatapultGoal::INTAKE);
+  goal_->set_scoop_goal(0.5 * rad);
+  do {
+    UpdateTest(0 * m);
+  } while(!status_->at_goal());
+  EXPECT_NEAR(status_->scoop_angle(), 0.5 * rad, 0.015 * rad);
+  // Should be angle to override scoop and hardstop goals in preping_shot state
+  goal_->set_goal(CatapultGoal::PREP_SHOT);
+  goal_->set_scoop_goal(1.5 * rad);
+  goal_->set_hardstop_goal(6 * rad);
+  do {
+    UpdateTest(0 * m);
+  } while(!status_->at_goal());
+  EXPECT_NEAR(status_->scoop_angle(), 1.5 * rad, 0.015 * rad);
+  EXPECT_NEAR(status_->hardstop_angle(), 6 * rad, 0.015 * rad);
+}

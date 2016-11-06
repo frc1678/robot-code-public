@@ -41,12 +41,15 @@ message CatapultInput {
 }
 
 message CatapultGoal {
-  enum Goal {
+  enum GoalState {
     INTAKE = 0;
     PREP_SHOT = 1;
     SHOOT = 2;
   }
-  required Goal goal = 1;
+  required GoalState goal = 1;
+  // For overriding the goal provided by the state machine
+  optional double scoop_goal = 2;
+  optional double hardstop_goal = 3;
 }
 
 enum CylinderStatus {
