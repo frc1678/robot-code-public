@@ -10,7 +10,6 @@ Catapult::Catapult() :
   scoop_(Scoop()),
   catapult_countdown_(0),
   catapult_status_(RETRACTED),
-  // Intaking is the default state to avoid collisions
   state_(CatapultStatus::INTAKING) {}
 
 void Catapult::Update(CatapultInputProto input, CatapultGoalProto goal, Length dist_to_target) {
@@ -69,7 +68,7 @@ void Catapult::Update(CatapultInputProto input, CatapultGoalProto goal, Length d
     status_->set_scoop_goal(0 * rad);
     status_->set_hardstop_goal(status_->hardstop_angle());
 
-    output_->set_disc_brake_activate(true);
+    output_->set_disc_brake_activate(false);
     status_->set_can_shoot(false);
 
     output_->set_scoop_output(scoop_output);

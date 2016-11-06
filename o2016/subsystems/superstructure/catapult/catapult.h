@@ -11,6 +11,13 @@ namespace o2016 {
 
 namespace catapult {
 
+// Transitions:
+//   Goes from intaking to preping shot upon request
+//   Goes from preping shot to intaking upon request
+//   Goes from preping shot to shooting upon request if the control loops are done
+//   Goes from shooting to preping shot once it has fired the ball
+//
+//   If it is intaking and the goal is to shoot, it will go to preping shot.
 class Catapult {
 public:
   Catapult();
