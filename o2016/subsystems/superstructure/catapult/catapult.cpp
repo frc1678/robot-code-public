@@ -108,8 +108,6 @@ void Catapult::Update(CatapultInputProto input, CatapultGoalProto goal, Length d
   status_->set_state(state_);
 
   status_->set_catapult_status(catapult_status_);
-
-  std::cout<<status_->scoop_angle()<<" "<<status_->scoop_angular_velocity()<<std::endl;
 }
 
 CatapultOutputProto Catapult::output() { return output_; }
