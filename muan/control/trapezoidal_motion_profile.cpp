@@ -1,6 +1,3 @@
-#ifndef MUAN_CONTROL_TRAPEZOIDAL_MOTION_PROFILE_HPP_
-#define MUAN_CONTROL_TRAPEZOIDAL_MOTION_PROFILE_HPP_
-
 #include "trapezoidal_motion_profile.h"
 
 namespace muan {
@@ -84,5 +81,3 @@ MotionProfilePosition TrapezoidalMotionProfile::CalculateFromElapsed(
 }  // namespace control
 
 }  // namespace muan
-
-#endif /* MUAN_CONTROL_TRAPEZOIDAL_MOTION_PROFILE_HPP_ */

@@ -89,6 +89,4 @@ class TrapezoidalMotionProfile : public MotionProfile {
 
 }  // namespace muan
 
-#include "trapezoidal_motion_profile.hpp"
-
 #endif /* SRC_ROBOTCODE_TRAPEZOIDALMOTIONPROFILE_H_ */
