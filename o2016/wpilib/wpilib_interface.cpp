@@ -61,9 +61,16 @@ constexpr uint32_t kCatapultCylinderA = 4, kCatapultCylinderB = 5,
 
 }  // catapult
 
+namespace secondaries {
+
+constexpr uint32_t kSecondariesMotor = 9;
+constexpr uint32_t kSecondariesCylinder = 0;
+
+} // secondaries
+
 }  // ports
 
-constexpr double kMaxVoltage = 4.0; // 4 volt bringup voltage
+constexpr double kMaxVoltage = 4; // 4 volt bringup voltage
 
 DrivetrainInterface::DrivetrainInterface(muan::wpilib::CanWrapper* can_wrapper)
     : pcm_{can_wrapper->pcm()},
@@ -259,10 +266,34 @@ void CatapultInterface::ReadSensors() {
   input_queue_.WriteMessage(sensors);
 }
 
+SecondariesInterface::SecondariesInterface(muan::wpilib::CanWrapper* can)
+    : output_queue_(QueueManager::GetInstance().secondaries_output_queue().MakeReader()),
+      pcm_{can->pcm()},
+      secondaries_motor_{ports::secondaries::kSecondariesMotor} {
+
+  pcm_->CreateSolenoid(ports::secondaries::kSecondariesCylinder);
+}
+
+void SecondariesInterface::WriteActuators() {
+  auto outputs = output_queue_.ReadLastMessage();
+  if (outputs) {
+    secondaries_motor_.Set(
+        muan::Cap(-(*outputs)->voltage(), -kMaxVoltage, kMaxVoltage) /
+        12.0);
+
+    pcm_->WriteSolenoid(ports::secondaries::kSecondariesCylinder,
+                        (*outputs)->is_down());
+  } else {
+    secondaries_motor_.Set(0.0);
+    pcm_->WriteSolenoid(ports::secondaries::kSecondariesCylinder, false);
+  }
+}
+
 WpilibInterface::WpilibInterface()
     : can_{&QueueManager::GetInstance().pdp_status_queue()},
       drivetrain_{&can_},
-      catapult_{&can_} {
+      catapult_{&can_},
+      secondaries_{&can_} {
   std::thread can_thread(std::ref(can_));
   can_thread.detach();
 }
@@ -272,6 +303,7 @@ void WpilibInterface::WriteActuators() {
   turret_.WriteActuators();
   intake_.WriteActuators();
   catapult_.WriteActuators();
+  secondaries_.WriteActuators();
 }
 
 void WpilibInterface::ReadSensors() {

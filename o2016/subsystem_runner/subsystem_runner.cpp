@@ -14,6 +14,12 @@ void SubsystemRunner::operator()() {
   while (running_) {
     wpilib_.ReadSensors();
     // Update subsystems here
+
+    o2016::secondaries::SecondariesGoalProto secondaries_goal; // Temporary
+
+    QueueManager::GetInstance().secondaries_output_queue().WriteMessage(
+        secondaries_.Update(secondaries_goal));
+
     wpilib_.WriteActuators();
 
     phased_loop.SleepUntilNext();

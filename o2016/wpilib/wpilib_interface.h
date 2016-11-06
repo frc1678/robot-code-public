@@ -7,6 +7,7 @@
 #include "o2016/subsystems/superstructure/catapult/queue_types.h"
 #include "o2016/subsystems/superstructure/intake/queue_types.h"
 #include "o2016/subsystems/superstructure/turret/queue_types.h"
+#include "o2016/subsystems/superstructure/secondaries/queue_types.h"
 
 namespace o2016 {
 
@@ -86,6 +87,17 @@ class CatapultInterface {
   AnalogPotentiometer scoop_pot_;
 };
 
+class SecondariesInterface {
+ public:
+  SecondariesInterface(muan::wpilib::CanWrapper* can);
+
+  void WriteActuators();
+ private:
+  o2016::secondaries::SecondariesOutputQueue::QueueReader output_queue_;
+  muan::wpilib::PcmWrapper* pcm_;
+  VictorSP secondaries_motor_;
+};
+
 class WpilibInterface {
  public:
   WpilibInterface();
@@ -100,6 +112,7 @@ class WpilibInterface {
   TurretInterface turret_;
   IntakeInterface intake_;
   CatapultInterface catapult_;
+  SecondariesInterface secondaries_;
 };
 
 }  // wpilib
