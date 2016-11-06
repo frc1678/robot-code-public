@@ -4,8 +4,7 @@
 #include "stop/stop.h"
 #include "scoop/scoop.h"
 #include "muan/units/units.h"
-#include "muan/queues/message_queue.h"
-#include "o2016/queue_manager/queue_manager.h"
+#include "queue_types.h"
 #include <memory>
 
 namespace o2016 {
@@ -16,7 +15,9 @@ class Catapult {
 public:
   Catapult();
   ~Catapult() = default;
-  void Update();
+  void Update(CatapultInputProto input, CatapultGoalProto goal);
+  CatapultOutputProto output();
+  CatapultStatusProto status();
 
 protected:
   CatapultStop stop_;
@@ -25,8 +26,8 @@ protected:
   int catapult_countdown_;
   CylinderStatus catapult_status_;
   CatapultStatus_CatapultState state_;
-  CatapultInputQueue::QueueReader input_reader_;
-  CatapultGoalQueue::QueueReader goal_reader_;
+  CatapultOutputProto output_;
+  CatapultStatusProto status_;
   // Assume 1 second (200 ticks) to extend or retract
   constexpr static int extend_time = 200;
 };

@@ -11,7 +11,6 @@ cc_library(
     '//o2016/subsystems/superstructure/catapult/stop:stop',
     '//muan/units:units',
     ':catapult_queues',
-    '//o2016/queue_manager:queue_manager'
   ],
   visibility = ['//visibility:public']
 )
@@ -36,7 +35,7 @@ cc_test(
   srcs = ['catapult_test.cpp'],
   deps = [
     ':catapult',
-    '//third_party/google/googletest:googletest'
+    '//third_party/google/googletest:googletest',
   ]
 )
 

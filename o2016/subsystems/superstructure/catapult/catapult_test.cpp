@@ -1,5 +1,9 @@
 #include "catapult.h"
 #include "gtest/gtest.h"
+#include "o2016/subsystems/superstructure/catapult/scoop/scoop_constants.h"
+#include "o2016/subsystems/superstructure/catapult/stop/stop_constants.h"
+#include "muan/control/state_space_plant.h"
+#include "muan/control/state_space_observer.h"
 #include <iostream>
 
 using namespace muan::units;
@@ -8,23 +12,21 @@ using namespace o2016::catapult;
 class CatapultTest : public ::testing::Test {
  public:
   CatapultTest() :
-    output_reader_(::o2016::QueueManager::GetInstance().catapult_output_queue().MakeReader()),
-    status_reader_(::o2016::QueueManager::GetInstance().catapult_status_queue().MakeReader()) {}
+    scoop_plant_(muan::control::StateSpacePlant<1, 2, 1>(frc1678::scoop::controller::A(), frc1678::scoop::controller::B(), frc1678::scoop::controller::C())),
+    stop_plant_(muan::control::StateSpacePlant<1, 2, 1>(frc1678::stop::controller::A(), frc1678::stop::controller::B(), frc1678::stop::controller::C())) {}
 
   void UpdateTest(Length distance_to_target) {
-    // Just feed it back the estimated value. Accuracy is tested
-    // in the individual controllers.
-    input_->set_scoop_pot(status_->scoop_angle());
-    input_->set_hardstop_pot(status_->hardstop_angle());
+    input_->set_scoop_pot(scoop_plant_.y(0));
+    input_->set_hardstop_pot(stop_plant_.y(0));
     // input_.set_distance_to_target(distance_to_target);
 
-    ::o2016::QueueManager::GetInstance().catapult_input_queue().WriteMessage(input_);
-    ::o2016::QueueManager::GetInstance().catapult_goal_queue().WriteMessage(goal_);
+    catapult_.Update(input_, goal_);
 
-    catapult_.Update();
+    status_ = catapult_.status();
+    output_ = catapult_.output();
 
-    status_ = *(status_reader_.ReadLastMessage());
-    output_ = *(output_reader_.ReadLastMessage());
+    scoop_plant_.Update((Eigen::Matrix<double, 1, 1>() << output_->scoop_output()).finished());
+    stop_plant_.Update((Eigen::Matrix<double, 1, 1>() << output_->hardstop_output()).finished());
   }
 
   CatapultOutputProto output_;
@@ -33,15 +35,15 @@ class CatapultTest : public ::testing::Test {
   CatapultGoalProto goal_;
 
  protected:
-  CatapultOutputQueue::QueueReader output_reader_;
-  CatapultStatusQueue::QueueReader status_reader_;
   Catapult catapult_;
+  muan::control::StateSpacePlant<1, 2, 1> scoop_plant_;
+  muan::control::StateSpacePlant<1, 2, 1> stop_plant_;
 };
 
 // Move it a bunch and make sure it finished all the commands
 TEST_F(CatapultTest, Terminates) {
-  input_->set_scoop_pot(0 * rad);
-  input_->set_hardstop_pot(0 * rad);
+  status_->set_scoop_angle(0 * rad);
+  status_->set_hardstop_angle(0 * rad);
   for(int i = 0; i < 3; i++) {
     goal_->set_goal(CatapultGoal::INTAKE);
     for(int i = 0; i < 400; i++) {
@@ -54,15 +56,15 @@ TEST_F(CatapultTest, Terminates) {
     }
     // Use assert because the next test will be an
     // infinite loop if this doesn't pass
-    ASSERT_TRUE(status_->at_goal());
+    EXPECT_TRUE(status_->at_goal());
   }
 }
 
 // Go intake -> shoot -> intake, make sure it fills in the transitions
 // and gets to each state.
 TEST_F(CatapultTest, ValidTransitions) {
-  input_->set_scoop_pot(0 * rad);
-  input_->set_hardstop_pot(0 * rad);
+  status_->set_scoop_angle(0 * rad);
+  status_->set_hardstop_angle(0 * rad);
   // First, make sure it gets to intake position
   goal_->set_goal(CatapultGoal::INTAKE);
   do {

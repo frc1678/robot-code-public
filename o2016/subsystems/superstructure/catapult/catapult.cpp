@@ -11,43 +11,33 @@ Catapult::Catapult() :
   catapult_countdown_(0),
   catapult_status_(RETRACTED),
   // Intaking is the default state to avoid collisions
-  state_(CatapultStatus::INTAKING),
-  input_reader_(::o2016::QueueManager::GetInstance().catapult_input_queue().MakeReader()),
-  goal_reader_(::o2016::QueueManager::GetInstance().catapult_goal_queue().MakeReader()) {}
+  state_(CatapultStatus::INTAKING) {}
 
-void Catapult::Update() {
+void Catapult::Update(CatapultInputProto input, CatapultGoalProto goal) {
 
-  CatapultOutputProto output;
-  CatapultStatusProto status;
-  CatapultInputProto input;
-  CatapultGoalProto goal;
+  Voltage scoop_output = scoop_.Update(status_->scoop_goal(), input->scoop_pot());
+  Voltage hardstop_output = stop_.Update(status_->hardstop_goal(), input->hardstop_pot());
 
-  input = *(input_reader_.ReadLastMessage());
-  goal = *(goal_reader_.ReadLastMessage());
+  status_->set_scoop_angle(scoop_.get_angle());
+  status_->set_scoop_angular_velocity(scoop_.get_angular_velocity());
+  status_->set_hardstop_angle(stop_.get_angle());
+  status_->set_hardstop_angular_velocity(stop_.get_angular_velocity());
 
-  Voltage scoop_output = scoop_.Update(status->scoop_goal(), input->scoop_pot());
-  Voltage hardstop_output = stop_.Update(status->hardstop_goal(), input->hardstop_pot());
-
-  status->set_scoop_angle(scoop_.get_angle());
-  status->set_scoop_angular_velocity(scoop_.get_angular_velocity());
-  status->set_hardstop_angle(stop_.get_angle());
-  status->set_hardstop_angular_velocity(stop_.get_angular_velocity());
-
-  status->set_scoop_at_goal(scoop_.is_done());
-  status->set_hardstop_at_goal(stop_.is_done());
-  status->set_at_goal(status->hardstop_at_goal() && status->scoop_at_goal());
+  status_->set_scoop_at_goal(scoop_.is_done());
+  status_->set_hardstop_at_goal(stop_.is_done());
+  status_->set_at_goal(status_->hardstop_at_goal() && status_->scoop_at_goal());
 
   if(state_ == CatapultStatus::SHOOTING) { 
     // We just want it to stay where it is when shooting
-    status->set_scoop_goal(status->scoop_angle());
-    status->set_hardstop_goal(status->hardstop_angle());
+    status_->set_scoop_goal(status_->scoop_angle());
+    status_->set_hardstop_goal(status_->hardstop_angle());
 
-    output->set_disc_brake_activate(true);
-    status->set_can_shoot(true);
+    output_->set_disc_brake_activate(true);
+    status_->set_can_shoot(true);
 
-    output->set_scoop_output(0 * V);
-    output->set_hardstop_output(0 * V);
-    output->set_catapult_extend(true);
+    output_->set_scoop_output(0 * V);
+    output_->set_hardstop_output(0 * V);
+    output_->set_catapult_extend(true);
 
     // After firing, go to preping_shot
     if(catapult_status_ == EXTENDED) {
@@ -56,18 +46,18 @@ void Catapult::Update() {
 
   } else if(state_ == CatapultStatus::PREPING_SHOT) { 
     // TODO: Put calculations here
-    status->set_scoop_goal(1 * rad);
-    status->set_hardstop_goal(0 * rad);
+    status_->set_scoop_goal(1 * rad);
+    status_->set_hardstop_goal(0 * rad);
 
-    output->set_disc_brake_activate(false);
+    output_->set_disc_brake_activate(false);
     // Don't shoot if control loops aren't done or if catapult isn't down
-    status->set_can_shoot(status->at_goal() && catapult_status_ == RETRACTED);
+    status_->set_can_shoot(status_->at_goal() && catapult_status_ == RETRACTED);
 
-    output->set_scoop_output(scoop_output);
-    output->set_hardstop_output(hardstop_output);
-    output->set_catapult_extend(false);
+    output_->set_scoop_output(scoop_output);
+    output_->set_hardstop_output(hardstop_output);
+    output_->set_catapult_extend(false);
 
-    if(goal->goal() == CatapultGoal::SHOOT && status->can_shoot()) {
+    if(goal->goal() == CatapultGoal::SHOOT && status_->can_shoot()) {
       state_ = CatapultStatus::SHOOTING;
     }
     // Can't be in intake state if catapult is up, that could cause collisions
@@ -76,15 +66,15 @@ void Catapult::Update() {
     }
 
   } else if(state_ == CatapultStatus::INTAKING) { 
-    status->set_scoop_goal(0 * rad);
-    status->set_hardstop_goal(status->hardstop_angle());
+    status_->set_scoop_goal(0 * rad);
+    status_->set_hardstop_goal(status_->hardstop_angle());
 
-    output->set_disc_brake_activate(true);
-    status->set_can_shoot(false);
+    output_->set_disc_brake_activate(true);
+    status_->set_can_shoot(false);
 
-    output->set_scoop_output(scoop_output);
-    output->set_hardstop_output(hardstop_output);
-    output->set_catapult_extend(false);
+    output_->set_scoop_output(scoop_output);
+    output_->set_hardstop_output(hardstop_output);
+    output_->set_catapult_extend(false);
 
     // Not possible to fire without aiming first
     if(goal->goal() != CatapultGoal::INTAKE) {
@@ -93,11 +83,11 @@ void Catapult::Update() {
   }
 
   // Time to lock is less than time to fire, so it can be assumed to be 0
-  status->set_disc_brake_locked(output->disc_brake_activate());
+  status_->set_disc_brake_locked(output_->disc_brake_activate());
 
   // Count up when extending, down when retracting.
   // If an endpoint is reached the cylinder has stopped moving.
-  if(output->catapult_extend()) {
+  if(output_->catapult_extend()) {
     catapult_countdown_++;
     if(catapult_countdown_ > extend_time) {
       catapult_countdown_ = extend_time;
@@ -115,13 +105,16 @@ void Catapult::Update() {
     }
   }
 
-  status->set_state(state_);
+  status_->set_state(state_);
 
-  status->set_catapult_status(catapult_status_);
+  status_->set_catapult_status(catapult_status_);
 
-  ::o2016::QueueManager::GetInstance().catapult_output_queue().WriteMessage(output);
-  ::o2016::QueueManager::GetInstance().catapult_status_queue().WriteMessage(status);
+  std::cout<<status_->scoop_angle()<<" "<<status_->scoop_angular_velocity()<<std::endl;
 }
+
+CatapultOutputProto Catapult::output() { return output_; }
+
+CatapultStatusProto Catapult::status() { return status_; }
 
 } // catapult
 
