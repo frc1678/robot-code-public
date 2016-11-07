@@ -228,13 +228,13 @@ void CatapultInterface::WriteActuators() {
         12.0);
 
     pcm_->WriteSolenoid(ports::catapult::kCatapultCylinderA,
-                        (*outputs)->cylinder_extend());
+                        (*outputs)->catapult_extend());
     pcm_->WriteSolenoid(ports::catapult::kCatapultCylinderB,
-                        (*outputs)->cylinder_extend());
+                        (*outputs)->catapult_extend());
     pcm_->WriteSolenoid(ports::catapult::kCatapultCylinderC,
-                        (*outputs)->cylinder_extend());
+                        (*outputs)->catapult_extend());
     pcm_->WriteSolenoid(ports::catapult::kCatapultCylinderD,
-                        (*outputs)->cylinder_extend());
+                        (*outputs)->catapult_extend());
 
     pcm_->WriteSolenoid(ports::catapult::kHardStopCylinder,
                         (*outputs)->disc_brake_activate());
