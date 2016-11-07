@@ -42,11 +42,7 @@ install:
 
 # TODO(Wesley) Add to pre-push git hook?
 script:
-  - bazel test --test_output=errors //muan/... -- -//muan/wpilib/...
-  - bazel build //muan/... --cpu=roborio
-  - bazel test --test_output=errors -- //o2016/...
-  # - ./check-format.py
-
+  - ./tests.sh
 notifications:
   slack:
     secure: KXEl4nh1859SwDZH8BsfKipNUjl/mLDwvgahQxfQp3A9sCsfK7PelOh6yNGNPQopWYD7U0wFSqdacIkPM3E+NWAdTtQBX4w4DnqlB3gBYzcEYqjHnjBV0oQPG47xkZOUFumqbpT4yqVxqvSitqHjLDv/HSv93ZyB1APq8mD+TEJWIrMmT6DMlQL7La3gSP0rQeUWD2C6FyMoGjblbwtwOwshDCwPM/2A66icjvQ9KaCJ3rqh94lkeoM0LDzKmBbtV+avcf+xvfRqmpkSvXwfBcSW+hnnCPvWhENMvHKxVUOR5Jy2qWhN9joEfqL0dlan5wHofLnq4Umrqhc+raBTA8Azdxw3mRvEwxSmjBHlN3QEDSqkxyFwmgEvYS/H8i2ZM1YqimXOWoj2StuR2P6hnxnxxa6gkvdLXnSF83KqthD/8bWW9kgKStZbIGVu7Fjj5fMSnW2VQbG1pdnG495nQNKgbBkf6+u5V+1z1Sb5KGTvdC9dSTVsPdowiK/0P2GwgZqdZXLrfSRiBD6WEteE9fbLHUfO/h2AfKW7ZOFL9nbJTWiLtcOS+claKOFUg+9Of/n76pHkHMqAtcyDE9mEwmxeJYqnaNMwcPXk1Q8LBDIewSuR9xxNGXM8jd0PRGzTsryBcY97kX0iwaB4wJ3Ft+oq/ckVEMKcQ0uCLRUl39A=

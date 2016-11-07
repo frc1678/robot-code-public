@@ -1,0 +1,22 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+package muan.wpilib.gyro;
+
+enum GyroState {
+  kUninitialized = 0;
+  kInitialized = 1;
+  kCalibrating = 2;
+  kRunning = 4;
+  kKilled = 5;
+}
+
+message GyroMessage {
+  required GyroState state = 1;
+
+  optional double current_angle = 2;
+  optional double current_angular_velocity = 3;
+
+  optional double calibration_time_left = 4;
+}

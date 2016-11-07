@@ -3,7 +3,7 @@
 
 #include "muan/units/units.h"
 #include <array>
-#include <stdexcept>
+#include "third_party/aos/common/die.h"
 
 namespace muan {
 
@@ -20,7 +20,7 @@ class History {
 
   const T& GoBack(muan::units::Time t) {
     if (t > time_step_ * size) {
-      throw std::out_of_range("Cannot go back to unrecorded history!");
+      ::aos::Die("Cannot go back to unrecorded history!");
     }
     unsigned int element_pos =
         (current_pos_ - static_cast<int>(muan::units::convert(t, time_step_)) +
