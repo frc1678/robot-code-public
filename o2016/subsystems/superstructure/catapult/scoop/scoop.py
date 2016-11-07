@@ -7,8 +7,6 @@ from muan.control.state_space_gains import StateSpaceGains
 from muan.control.state_space_plant import StateSpacePlant
 from muan.control.state_space_controller import StateSpaceController
 from muan.control.state_space_observer import StateSpaceObserver
-from muan.control.state_space_scenario import StateSpaceScenario
-from muan.control.state_space_writer import StateSpaceWriter
 
 dt = .005
 
@@ -105,12 +103,13 @@ observer = StateSpaceObserver(gains, x0)
 def goal(t):
     return np.asmatrix([1., 0.]).T
 
-
 if len(sys.argv) == 3:
     # The output files were specified
+    from muan.control.state_space_writer import StateSpaceWriter
     writer = StateSpaceWriter(gains, 'scoop')
     writer.write(sys.argv[1], sys.argv[2])
 else:
     # No outputs were specified, so we can assume we just want to graph things
+    from muan.control.state_space_scenario import StateSpaceScenario
     scenario = StateSpaceScenario(plant, x0, controller, observer, x0, 'scoop')
     scenario.run(goal, 4)
