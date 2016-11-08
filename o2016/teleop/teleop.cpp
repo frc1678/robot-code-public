@@ -1,4 +1,6 @@
 #include "o2016/teleop/teleop.h"
+#include "WPILib.h"
+#include "muan/wpilib/queue_types.h"
 #include "o2016/queue_manager/queue_manager.h"
 
 namespace o2016 {
@@ -47,6 +49,28 @@ void Teleop::Update() {
     o2016::QueueManager::GetInstance().drivetrain_goal_queue().WriteMessage(
         drivetrain_goal);
   }
+  SendDSMessage();
+}
+
+void Teleop::SendDSMessage() {
+  muan::wpilib::DriverStationProto status;
+
+  if (DriverStation::GetInstance().IsDisabled()) {
+    status->set_mode(RobotMode::DISABLED);
+  } else if (DriverStation::GetInstance().IsAutonomous()) {
+    status->set_mode(RobotMode::AUTONOMOUS);
+  } else if (DriverStation::GetInstance().IsOperatorControl()) {
+    status->set_mode(RobotMode::TELEOP);
+  } else {
+    status->set_mode(RobotMode::ESTOP);
+  }
+
+  status->set_battery_voltage(DriverStation::GetInstance().GetBatteryVoltage());
+  status->set_brownout(DriverStation::GetInstance().IsBrownedOut());
+  status->set_has_ds_connection(DriverStation::GetInstance().IsDSAttached());
+
+  o2016::QueueManager::GetInstance().driver_station_queue().WriteMessage(
+      status);
 }
 
 }  // teleop

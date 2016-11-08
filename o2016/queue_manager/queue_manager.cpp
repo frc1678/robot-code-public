@@ -12,6 +12,10 @@ QueueManager::pdp_status_queue() {
   return pdp_status_queue_;
 }
 
+muan::wpilib::DriverStationQueue& QueueManager::driver_station_queue() {
+  return driver_station_queue_;
+}
+
 o2016::turret::TurretInputQueue& QueueManager::turret_input_queue() {
   return turret_input_queue_;
 }
@@ -79,7 +83,8 @@ o2016::intake::IntakeOutputQueue& QueueManager::intake_output_queue() {
   return intake_output_queue_;
 }
 
-o2016::secondaries::SecondariesOutputQueue& QueueManager::secondaries_output_queue() {
+o2016::secondaries::SecondariesOutputQueue&
+QueueManager::secondaries_output_queue() {
   return secondaries_output_queue_;
 }
 

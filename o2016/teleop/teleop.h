@@ -21,6 +21,8 @@ class Teleop {
   bool high_gear_;
   muan::teleop::Button *shifting_high_, *shifting_low_;
   muan::teleop::Button* quickturn_;
+
+  void SendDSMessage();
 };
 
 }  // teleop
