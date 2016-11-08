@@ -4,6 +4,7 @@
 #include "muan/control/state_space_plant.h"
 #include "muan/control/state_space_controller.h"
 #include <iostream>
+#include <fstream>
 
 using namespace muan::control;
 using namespace frc1678::intake_controller;
@@ -22,11 +23,13 @@ TEST(IntakeController, Universal) {
   auto plant = StateSpacePlant<1, 3, 1>(controller::A(), controller::B(), controller::C());
 
   plant.x(0) = 0.5;
+  plant.x(1) = 0.0;
+  plant.x(2) = 0.0;
+
   
-  for(int i = 0; i <= 100000000; i++) {
+  for(int i = 0; i <= 100000; i++) {
     // This is hacky
     index_click = plant.x(0) > 0.3 && plant.x(0) < 0.31;
-    printf("%d\t%f\n", index_click, plant.x(0));
 
     input->set_encoder_position(plant.x(0) + 10.);
     input->set_index_click(index_click);
@@ -39,12 +42,15 @@ TEST(IntakeController, Universal) {
 
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->arm_voltage()).finished());
 
+
     EXPECT_NEAR(output->arm_voltage(), 0., 12.);
     EXPECT_NEAR(output->roller_voltage(), 0, 12.);
   }
+
 
   EXPECT_TRUE(status->is_calibrated());
   EXPECT_TRUE(status->at_goal());
   EXPECT_NEAR(status->intake_position(), 1.0, 0.05);
   EXPECT_EQ(status->current_roller_goal(), RollerGoal::FORWARD);
 }
+

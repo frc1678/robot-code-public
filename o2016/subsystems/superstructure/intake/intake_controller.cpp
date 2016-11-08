@@ -31,17 +31,16 @@ muan::units::Voltage IntakeController::Update(muan::units::Angle goal, muan::uni
   auto y = (Eigen::Matrix<double, 1, 1>() << sensor_input).finished();
   r_ = (Eigen::Matrix<double, 3, 1>() << goal, 0.0, 0.0).finished();
   
-  
-  calibration_.Update(sensor_input, index_click);
+  y(0) = calibration_.Update(sensor_input, index_click) - .31;
   
   auto u = calibration_.is_calibrated() ? controller_.Update(observer_.x(), r_)(0, 0) : -1.0 * V;
+
   observer_.Update((Eigen::Matrix<double, 1, 1>() << u).finished(), y);
 
   auto absolute_error = (r_ - observer_.x()).cwiseAbs();
 
   at_goal_ = (absolute_error(0, 0) < angle_tolerance_) && (absolute_error(1, 0) < velocity_tolerance_);
 
-  printf("%f\n", u);
   return u;
 }
 

@@ -31,7 +31,7 @@ IntakeOutputProto Intake::Update(IntakeInputProto input, IntakeGoalProto goal) {
   output->set_arm_voltage(arm_voltage);
   output->set_roller_voltage(roller_voltage);
   
-  status->set_intake_position(input->encoder_position());
+  status->set_intake_position(controller_.GetAngle());
   status->set_at_goal(controller_.AtGoal());
   status->set_filtered_angle_goal(controller_.GetAngle());
   status->set_current_roller_goal(roller_goal_);
