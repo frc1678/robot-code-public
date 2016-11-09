@@ -5,7 +5,7 @@ cc_library(
   deps = [
     '//muan/queues:queues',
     '//muan/proto:stack_proto',
-    '//muan/wpilib:state_protos',
+    '//muan/wpilib:wpilib_queues',
     '//o2016/subsystems/drivetrain:queue_types',
     '//o2016/subsystems/superstructure/turret:turret_queues',
     '//o2016/subsystems/superstructure/intake:intake_queues',
