@@ -23,6 +23,7 @@ class Teleop {
   muan::teleop::Button* quickturn_;
 
   void SendDSMessage();
+  void SendDrivetrainMessage();
 };
 
 }  // teleop
