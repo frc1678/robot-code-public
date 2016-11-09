@@ -79,4 +79,8 @@ o2016::intake::IntakeOutputQueue& QueueManager::intake_output_queue() {
   return intake_output_queue_;
 }
 
+o2016::secondaries::SecondariesOutputQueue& QueueManager::secondaries_output_queue() {
+  return secondaries_output_queue_;
+}
+
 }  // o2016

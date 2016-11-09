@@ -15,7 +15,10 @@ cc_library(
 cc_library(
   name = 'history',
   hdrs = ['history.h'],
-  deps = ["//muan/units:units"],
+  deps = [
+    '//muan/units:units',
+    '//third_party/aos/common:die'
+  ],
   linkstatic = 1
 )
 
@@ -29,7 +32,7 @@ cc_library(
     'timing_utils.cpp',
     'timer.cpp'
   ],
-  deps = ["//muan/units:units"]
+  deps = ['//muan/units:units']
 )
 
 cc_test(
