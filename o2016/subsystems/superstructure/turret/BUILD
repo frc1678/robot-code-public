@@ -7,6 +7,16 @@ cc_library(
   deps = ['turret_proto', '//muan/queues', '//muan/proto:stack_proto']
 )
 
+cc_library(
+  name = 'pid_turret_controller',
+  hdrs = ['pid_turret_controller.h'],
+  srcs = ['pid_turret_controller.cpp'],
+  deps = [':turret_proto',
+          ':turret_queues',
+          '//muan/control:pid_controller',
+          '//muan/utils/offset_profiled_controller:pot_calibration']
+)
+
 cc_proto_library(
   name = 'turret_proto',
   srcs = ['turret.proto'],
