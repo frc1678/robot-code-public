@@ -1,20 +1,20 @@
 #include "third_party/aos/linux_code/init.h"
 
+#include <errno.h>
+#include <malloc.h>
+#include <sched.h>
+#include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
-#include <errno.h>
-#include <sched.h>
+#include <sys/prctl.h>
 #include <sys/resource.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <sys/prctl.h>
-#include <malloc.h>
 
-#include "third_party/aos/common/die.h"
 #include "third_party/aos/common/check.h"
+#include "third_party/aos/common/die.h"
 
 namespace FLAG__namespace_do_not_use_directly_use_DECLARE_double_instead {
 extern double FLAGS_tcmalloc_release_rate __attribute__((weak));
@@ -30,8 +30,8 @@ void SetSoftRLimit(int resource, rlim64_t soft, bool set_for_root) {
   if (set_for_root || !am_root) {
     struct rlimit64 rlim;
     if (getrlimit64(resource, &rlim) == -1) {
-      PDie("%s-init: getrlimit64(%d) failed",
-           program_invocation_short_name, resource);
+      PDie("%s-init: getrlimit64(%d) failed", program_invocation_short_name,
+           resource);
     }
     rlim.rlim_cur = soft;
     rlim.rlim_max = ::std::max(rlim.rlim_max, soft);
@@ -46,9 +46,7 @@ void SetSoftRLimit(int resource, rlim64_t soft, bool set_for_root) {
 
 // Common stuff that needs to happen at the beginning of both the realtime and
 // non-realtime initialization sequences. May be called twice.
-void InitStart() {
-  WriteCoreDumps();
-}
+void InitStart() { WriteCoreDumps(); }
 
 const char *const kNoRealtimeEnvironmentVariable = "AOS_NO_REALTIME";
 
@@ -109,13 +107,16 @@ void Init(int relative_priority) {
     // Set our process to the appropriate priority.
     struct sched_param param;
     param.sched_priority = 30 + relative_priority;
+    /*
     if (sched_setscheduler(0, SCHED_FIFO, &param) != 0) {
       PDie("%s-init: setting SCHED_FIFO failed", program_invocation_short_name);
     }
+    */
   } else {
-    fprintf(stderr, "%s not doing realtime initialization because environment"
-            " variable %s is set\n", program_invocation_short_name,
-            kNoRealtimeEnvironmentVariable);
+    fprintf(stderr,
+            "%s not doing realtime initialization because environment"
+            " variable %s is set\n",
+            program_invocation_short_name, kNoRealtimeEnvironmentVariable);
     printf("no realtime for %s. see stderr\n", program_invocation_short_name);
   }
 
@@ -123,8 +124,7 @@ void Init(int relative_priority) {
   // LOG(INFO, "%s initialized realtime\n", program_invocation_short_name);
 }
 
-void Cleanup() {
-}
+void Cleanup() {}
 
 void WriteCoreDumps() {
   // Do create core files of unlimited size.
@@ -137,9 +137,11 @@ void SetCurrentThreadRealtimePriority(int priority) {
 
   struct sched_param param;
   param.sched_priority = priority;
+  /*
   if (sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
     ::aos::Die("sched_setscheduler(0, SCHED_FIFO, %d) failed", priority);
   }
+  */
 }
 
 void PinCurrentThreadToCPU(int number) {

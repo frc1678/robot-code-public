@@ -60,8 +60,8 @@ def make_gains():
 
     # Controller weighting 
     Q_controller = np.asmatrix([
-        [1e4, 0.],
-        [0., 1e2]
+        [1e5, 0.],
+        [0., 1e0]
     ])
 
     R_controller = np.asmatrix([

@@ -33,6 +33,7 @@ muan::units::Voltage IntakeController::Update(muan::units::Angle goal,
   r_ = (Eigen::Matrix<double, 3, 1>() << goal, 0.0, 0.0).finished();
 
   y(0) = calibration_.Update(sensor_input, index_click) - .31;
+  printf("%f\n", y(0));
 
   auto u = calibration_.is_calibrated()
                ? controller_.Update(observer_.x(), r_)(0, 0)
