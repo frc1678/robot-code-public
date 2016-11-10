@@ -101,20 +101,12 @@ void Teleop::SendIntakeMessage() {
     goal->set_goal_angle(0);
     goal->set_intake_speed(o2016::intake::RollerGoal::FORWARD);
     o2016::QueueManager::GetInstance().intake_goal_queue().WriteMessage(goal);
-    o2016::secondaries::SecondariesGoalProto secondaries;
-    secondaries->set_direction(o2016::secondaries::Direction::FORWARD);
-    o2016::QueueManager::GetInstance().secondaries_goal_queue().WriteMessage(
-        secondaries);
   } else if (intake_->was_released()) {
     o2016::intake::IntakeGoalProto goal;
     goal->set_goal_angle(0);
     goal->set_intake_speed(o2016::intake::RollerGoal::STOP);
     o2016::QueueManager::GetInstance().intake_goal_queue().WriteMessage(goal);
 
-    o2016::secondaries::SecondariesGoalProto secondaries;
-    secondaries->set_direction(o2016::secondaries::Direction::IDLE);
-    o2016::QueueManager::GetInstance().secondaries_goal_queue().WriteMessage(
-        secondaries);
   } else if (tucknroll_->was_clicked()) {
     o2016::intake::IntakeGoalProto goal;
     goal->set_goal_angle(-.2);
@@ -126,15 +118,7 @@ void Teleop::SendIntakeMessage() {
     goal->set_intake_speed(o2016::intake::RollerGoal::STOP);
     o2016::QueueManager::GetInstance().intake_goal_queue().WriteMessage(goal);
   } else if (settledown_->is_pressed()) {
-    o2016::secondaries::SecondariesGoalProto secondaries;
-    secondaries->set_direction(o2016::secondaries::Direction::FORWARD);
-    o2016::QueueManager::GetInstance().secondaries_goal_queue().WriteMessage(
-        secondaries);
   } else {
-    o2016::secondaries::SecondariesGoalProto secondaries;
-    secondaries->set_direction(o2016::secondaries::Direction::IDLE);
-    o2016::QueueManager::GetInstance().secondaries_goal_queue().WriteMessage(
-        secondaries);
   }
 }
 

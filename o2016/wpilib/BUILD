@@ -12,7 +12,6 @@ cc_library(
     '//o2016/subsystems/superstructure/turret:turret_queues',
     '//o2016/subsystems/superstructure/intake:intake_queues',
     '//o2016/subsystems/superstructure/catapult:catapult_queues',
-    '//o2016/subsystems/superstructure/secondaries:secondaries_queues',
     '//muan/wpilib:can_wrapper',
     '//third_party/wpilibsuite:wpilib',
   ],

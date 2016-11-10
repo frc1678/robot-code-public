@@ -17,6 +17,7 @@ message IntakeGoal {
 message IntakeOutput {
   required double arm_voltage = 1;
   required double roller_voltage = 2;
+  required double secondaries_voltage = 3;
 }
 
 message IntakeStatus {

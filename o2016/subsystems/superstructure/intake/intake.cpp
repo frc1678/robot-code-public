@@ -17,13 +17,17 @@ IntakeOutputProto Intake::Update(IntakeInputProto input, IntakeGoalProto goal,
 
   Voltage arm_voltage;
   Voltage roller_voltage;
+  Voltage secondaries_voltage;
 
   if (roller_goal_ == RollerGoal::FORWARD) {
-    roller_voltage = -12.0 * V;
-  } else if (roller_goal_ == RollerGoal::REVERSE) {
     roller_voltage = 12.0 * V;
+    secondaries_voltage = 4.0 * V;
+  } else if (roller_goal_ == RollerGoal::REVERSE) {
+    roller_voltage = -12.0 * V;
+    secondaries_voltage = -4.0 * V;
   } else if (roller_goal_ == RollerGoal::STOP) {
     roller_voltage = 0.0 * V;
+    secondaries_voltage = 0.0 * V;
   }
 
   arm_voltage =
@@ -32,6 +36,7 @@ IntakeOutputProto Intake::Update(IntakeInputProto input, IntakeGoalProto goal,
 
   output->set_arm_voltage(arm_voltage);
   output->set_roller_voltage(roller_voltage);
+  output->set_secondaries_voltage(secondaries_voltage);
 
   status->set_intake_position(controller_.GetAngle());
   status->set_at_goal(controller_.AtGoal());

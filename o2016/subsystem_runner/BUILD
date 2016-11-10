@@ -4,7 +4,6 @@ cc_library(
   hdrs = ['subsystem_runner.h'],
   deps = [
     '//o2016/wpilib:wpilib_interface',
-    '//o2016/subsystems/superstructure/secondaries:secondaries',
     '//o2016/subsystems/superstructure/catapult:catapult',
     '//o2016/subsystems/superstructure/turret:pid_turret_controller',
     '//o2016/subsystems/superstructure/intake',
