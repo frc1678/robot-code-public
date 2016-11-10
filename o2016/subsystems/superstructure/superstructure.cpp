@@ -92,7 +92,51 @@ void SuperstructureStateMachine::SendGoals(
 }
 
 bool SuperstructureStateMachine::SetGoal(SuperstructureGoalProto goal) {
-  goal_ = goal; //TODO(Wesley) check urself b4 u reck urself
+  using o2016::superstructure::State;
+
+  switch (goal->goal_state()) {
+    case State::DISABLED:
+      goal_ = goal;
+      break;
+    case State::IDLE:
+      goal_ = goal;
+      break;
+    case State::INTAKE:
+      if (goal_->goal_state() == State::IDLE ||
+          goal_->goal_state() == State::SPIT) {
+        goal_ = goal;
+      } else {
+        return false;
+      }
+      break;
+    case State::SPIT:
+      if (goal_->goal_state() == State::IDLE ||
+          goal_->goal_state() == State::INTAKE) {
+        goal_ = goal;
+      } else {
+        return false;
+      }
+      break;
+    case State::AIMING:
+      if (goal_->goal_state() == State::IDLE) {
+        goal_ = goal;
+      } else {
+        return false;
+      }
+      break;
+    case State::FIRING:
+      if (goal_->goal_state() == State::AIMING) {
+        goal_ = goal;
+      } else {
+        return false;
+      }
+      break;
+    default:
+      // This'll *never* happen, /right/?
+      goal_ = goal;
+      break;
+
+  }
   return true;
 }
 
