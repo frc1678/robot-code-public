@@ -23,11 +23,12 @@ class Teleop {
   muan::teleop::Button* quickturn_;
 
   muan::teleop::Button* intake_;
-  muan::teleop::Button* outtake_;
-  muan::teleop::Button* tucknroll_;
-  muan::teleop::Button* thisisadorable_;
-  muan::teleop::Button* settledown_;
-  muan::teleop::Button* snap_;
+  muan::teleop::Button* spit_;
+  muan::teleop::Button* prep_shot_;
+  muan::teleop::Button* shoot_;
+  muan::teleop::Button* vision_fail_toggle_;
+
+  bool vision_fail_ = true; // I cry
 
   void SendDSMessage();
   void SendDrivetrainMessage();

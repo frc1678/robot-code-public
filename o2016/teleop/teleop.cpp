@@ -12,12 +12,12 @@ Teleop::Teleop() : throttle_{1}, wheel_{0}, gamepad_{2} {
   shifting_high_ = throttle_.MakeButton(5);
   quickturn_ = throttle_.MakeButton(5);
 
-  intake_ = gamepad_.MakeButton(6);
-  outtake_ = gamepad_.MakeButton(4);
-  tucknroll_ = throttle_.MakeButton(2);
-  thisisadorable_ = gamepad_.MakeButton(2);
-  settledown_ = gamepad_.MakeButton(5);
-  snap_ = gamepad_.MakeButton(3);
+  intake_ = gamepad_.MakeButton(6); // R bumper?
+  spit_ = gamepad_.MakeButton(5); // L bumper?
+  prep_shot_ = gamepad_.MakeButton(2); // B?
+  vision_fail_toggle_ = gamepad_.MakeButton(7); // L joystick press?
+
+  shoot_ = throttle_.MakeButton(3); // Center button?
 
   Update();
 }
@@ -86,7 +86,31 @@ void Teleop::SendDrivetrainMessage() {
 }
 
 void Teleop::SendSuperstructureMessage() {
+  o2016::SuperstructureGoalProto goal;
 
+  if (intake_->was_clicked()) {
+    goal->set_goal_state(o2016::superstructure::INTAKE);
+  }
+
+  if (spit_->was_clicked()) {
+    goal->set_goal_state(o2016::superstructure::SPIT);
+  }
+
+  if (prep_shot_->was_clicked()) {
+    goal->set_goal_state(o2016::superstructure::AIMING);
+  }
+
+  if (shoot_->was_clicked()) {
+    goal->set_goal_state(o2016::superstructure::FIRING);
+  }
+
+  if (vision_fail_toggle_->was_clicked()) {
+    vision_fail_ = !vision_fail_;
+  }
+
+  goal->set_vision_override(vision_fail_);
+
+  o2016::QueueManager::GetInstance().superstructure_goal_queue().WriteMessage(goal);
 }
 
 }  // teleop
