@@ -14,6 +14,7 @@ Teleop::Teleop() : throttle_{1}, wheel_{0}, gamepad_{2} {
 
   intake_ = gamepad_.MakeButton(6); // R bumper?
   spit_ = gamepad_.MakeButton(5); // L bumper?
+  defense_ = gamepad_.MakeButton(1); // A?
   prep_shot_ = gamepad_.MakeButton(2); // B?
   vision_fail_toggle_ = gamepad_.MakeButton(7); // L joystick press?
 
@@ -94,6 +95,10 @@ void Teleop::SendSuperstructureMessage() {
 
   if (spit_->was_clicked()) {
     goal->set_goal_state(o2016::superstructure::SPIT);
+  }
+
+  if (defense_->was_clicked()) {
+    goal->set_goal_state(o2016::superstructure::IDLE);
   }
 
   if (prep_shot_->was_clicked()) {

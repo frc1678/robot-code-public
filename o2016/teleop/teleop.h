@@ -24,6 +24,7 @@ class Teleop {
 
   muan::teleop::Button* intake_;
   muan::teleop::Button* spit_;
+  muan::teleop::Button* defense_;
   muan::teleop::Button* prep_shot_;
   muan::teleop::Button* shoot_;
   muan::teleop::Button* vision_fail_toggle_;
