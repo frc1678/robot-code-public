@@ -23,12 +23,6 @@ void SubsystemRunner::operator()() {
                       //.MakeReader()
                       //.ReadLastMessage();
 
-    SuperstructureGoalProto ss_goal;
-
-    ss_goal->set_goal_state(o2016::superstructure::AIMING);
-
-    superstructure_.SetGoal(ss_goal);
-
     superstructure_.Update();
     drivetrain_.Update();
 

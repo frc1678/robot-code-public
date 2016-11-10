@@ -19,8 +19,8 @@ class SuperstructureStateMachine {
   public:
     SuperstructureStateMachine() = default;
     void Update();
-    bool SetGoal(SuperstructureGoalProto goal);
   private:
+    bool SetGoal(SuperstructureGoalProto goal);
     void SendGoals(
       o2016::turret::TurretGoalProto turret_goal,
       o2016::intake::IntakeGoalProto intake_goal,
