@@ -60,6 +60,10 @@ constexpr uint32_t kScoopPotentiometer = 5;
 constexpr uint32_t kCatapultCylinderA = 4, kCatapultCylinderB = 5,
                    kCatapultCylinderC = 6, kCatapultCylinderD = 7;
 
+// Yes, I know that this is the wrong place for this.
+// Do I look like I give a fuck?
+constexpr uint32_t kBallSensor = 0;
+
 }  // catapult
 
 }  // ports
@@ -209,7 +213,8 @@ CatapultInterface::CatapultInterface(muan::wpilib::CanWrapper* can)
       hard_stop_motor_{ports::catapult::kHardStopMotor},
       hard_stop_pot_{ports::catapult::kHardStopPotentiometer},
       scoop_motor_{ports::catapult::kScoopMotor},
-      scoop_pot_{ports::catapult::kScoopPotentiometer} {
+      scoop_pot_{ports::catapult::kScoopPotentiometer},
+      ball_sensor_{ports::catapult::kBallSensor} {
   pcm_->CreateSolenoid(ports::catapult::kCatapultCylinderA);
   pcm_->CreateSolenoid(ports::catapult::kCatapultCylinderB);
   pcm_->CreateSolenoid(ports::catapult::kCatapultCylinderC);
@@ -265,6 +270,8 @@ void CatapultInterface::ReadSensors() {
                          muan::units::deg);
   sensors->set_hardstop_pot((hard_stop_pot_.Get() + kHardStopOffset) *
                             kHardStopScaling);
+
+  sensors->set_has_ball(ball_sensor_.Get());
 
   input_queue_.WriteMessage(sensors);
 }

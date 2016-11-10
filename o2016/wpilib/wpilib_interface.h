@@ -84,6 +84,8 @@ class CatapultInterface {
 
   VictorSP scoop_motor_;
   AnalogPotentiometer scoop_pot_;
+
+  DigitalInput ball_sensor_;
 };
 
 class WpilibInterface {

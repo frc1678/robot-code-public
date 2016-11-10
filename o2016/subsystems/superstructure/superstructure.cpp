@@ -16,6 +16,8 @@ void SuperstructureStateMachine::Update() {
   constexpr double kIntakeDownAngle = 0.0;
   constexpr double kIntakeUpAngle = 0.8;
 
+  bool has_ball = catapult_input_reader_.ReadLastMessage().value()->has_ball();
+
   switch (goal_->goal_state()) {
     case o2016::superstructure::State::DISABLED:
       use_turret_goal = false;
@@ -25,7 +27,7 @@ void SuperstructureStateMachine::Update() {
     case o2016::superstructure::State::IDLE:
       use_turret_goal = false;
       use_catapult_goal = false;
-      intake_goal->set_goal_angle(goal_->has_ball() ?
+      intake_goal->set_goal_angle(has_ball ?
                                   kIntakeDownAngle
                                   : kIntakeUpAngle);
       break;

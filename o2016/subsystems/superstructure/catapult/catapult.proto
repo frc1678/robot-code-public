@@ -38,6 +38,7 @@ message CatapultStatus {
 message CatapultInput {
   required double scoop_pot = 1;
   required double hardstop_pot = 2;
+  required bool has_ball = 3; // Should be moved to it's own proto later
 }
 
 message CatapultGoal {

@@ -16,5 +16,5 @@ enum State {
 message SuperstructureGoal {
   required State goal_state = 1;
   required bool vision_override = 2;
-  required bool has_ball = 3;
+  /*required bool has_ball = 3;*/
 }
