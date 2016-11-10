@@ -12,7 +12,7 @@ Scoop::Scoop() {
   controller_ = StateSpaceController<1, 2, 1> (controller::K());
   controller_.u_min() = Eigen::Matrix<double, 1, 1>::Ones() * -12;
   controller_.u_max() = Eigen::Matrix<double, 1, 1>::Ones() * 12;
-  observer_ = StateSpaceObserver<1, 2, 1> (plant, controller::L());
+  observer_ = StateSpaceObserver<1, 2, 1> (plant, Eigen::Matrix<double, 1, 2>::Zero());
   done = false;
 }
 

@@ -9,8 +9,8 @@ using namespace frc1678::stop;
 using namespace o2016::catapult;
 
 TEST(CatapultStop, converges) {
-  for (double initial = -100.; initial <= 100.; initial += 10.) {
-    for (double goal = -100.; goal <= 100.; goal += 10.) {
+  for (double initial = -10.; initial <= 10.; initial += 10.) {
+    for (double goal = -10.; goal <= 10.; goal += 10.) {
       auto plant = StateSpacePlant<1, 2, 1> (controller::A(), controller::B(), controller::C());
       plant.x(0) = initial;
 

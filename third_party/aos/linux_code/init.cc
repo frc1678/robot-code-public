@@ -110,7 +110,8 @@ void Init(int relative_priority) {
     struct sched_param param;
     param.sched_priority = 30 + relative_priority;
     if (sched_setscheduler(0, SCHED_FIFO, &param) != 0) {
-      PDie("%s-init: setting SCHED_FIFO failed", program_invocation_short_name);
+      // This was making the code not run
+      //PDie("%s-init: setting SCHED_FIFO failed", program_invocation_short_name);
     }
   } else {
     fprintf(stderr, "%s not doing realtime initialization because environment"
@@ -138,7 +139,8 @@ void SetCurrentThreadRealtimePriority(int priority) {
   struct sched_param param;
   param.sched_priority = priority;
   if (sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-    ::aos::Die("sched_setscheduler(0, SCHED_FIFO, %d) failed", priority);
+    // This was making the code not run
+    //::aos::Die("sched_setscheduler(0, SCHED_FIFO, %d) failed", priority);
   }
 }
 

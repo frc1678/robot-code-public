@@ -70,7 +70,7 @@ constexpr uint32_t kSecondariesCylinder = 0;
 
 }  // ports
 
-constexpr double kMaxVoltage = 4; // 4 volt bringup voltage
+constexpr double kMaxVoltage = 12; // 4 volt bringup voltage
 
 DrivetrainInterface::DrivetrainInterface(muan::wpilib::CanWrapper* can_wrapper)
     : pcm_{can_wrapper->pcm()},

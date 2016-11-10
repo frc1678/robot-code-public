@@ -6,8 +6,8 @@ namespace o2016 {
 namespace catapult {
 
 Catapult::Catapult() :
-  stop_(CatapultStop()),
-  scoop_(Scoop()),
+  stop_(StopPid()),
+  scoop_(ScoopPid()),
   catapult_countdown_(0),
   catapult_status_(RETRACTED),
   state_(CatapultStatus::INTAKING) {}
@@ -19,6 +19,7 @@ void Catapult::Update(CatapultInputProto input, CatapultGoalProto goal, Length d
   status_->set_hardstop_angle(stop_.get_angle());
   status_->set_hardstop_angular_velocity(stop_.get_angular_velocity());
 
+  goal->set_hardstop_goal(hardstop_goal);
   if(state_ == CatapultStatus::SHOOTING) { 
     // We just want it to stay where it is when shooting
     status_->set_scoop_goal(status_->scoop_angle());
@@ -80,7 +81,11 @@ void Catapult::Update(CatapultInputProto input, CatapultGoalProto goal, Length d
     } else {
       status_->set_scoop_goal(0 * rad);
     }
-    status_->set_hardstop_goal(status_->hardstop_angle());
+    if(goal->has_hardstop_goal()) {
+      status_->set_hardstop_goal(goal->hardstop_goal());
+    } else {
+      status_->set_hardstop_goal(0 * rad);
+    }
 
     output_->set_disc_brake_activate(false);
     status_->set_can_shoot(false);

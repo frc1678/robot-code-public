@@ -11,11 +11,12 @@ cc_test(
 
 cc_library(
   name = 'scoop',
-  srcs = ['scoop.cpp'],
-  hdrs = ['scoop.h'],
+  srcs = ['scoop.cpp', 'scoop_pid.cpp'],
+  hdrs = ['scoop.h', 'scoop_pid.h'],
   deps = [
     ':scoop_constants',
     '//muan/control:state_space',
+    '//muan/control:pid_controller',
     '//muan/units:units',
     '//third_party/eigen'
   ],

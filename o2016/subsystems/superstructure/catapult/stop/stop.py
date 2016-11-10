@@ -20,7 +20,7 @@ def make_gains():
     name = 'gains'
 
     # System parameters (in SI units)
-    inertia_moment = .3 # Needs to be measured
+    inertia_moment = 1. # Needs to be measured
     gear_ratio = 1. / 138.89
     efficiency = .8 # Needs to be measured
 
@@ -57,7 +57,7 @@ def make_gains():
     ])
 
     C = np.asmatrix([
-        [sensor_ratio, 0.]
+        [1, 0.]
     ])
 
     # Controller weighting factors

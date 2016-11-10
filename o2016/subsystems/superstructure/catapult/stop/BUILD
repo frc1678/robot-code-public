@@ -11,11 +11,12 @@ cc_test(
 
 cc_library(
   name = 'stop',
-  srcs = ['stop.cpp'],
-  hdrs = ['stop.h'],
+  srcs = ['stop.cpp', 'stop_pid.cpp'],
+  hdrs = ['stop.h', 'stop_pid.h'],
   deps = [
     ':stop_constants',
     '//muan/control:state_space',
+    '//muan/control:pid_controller',
     '//muan/units:units',
     '//third_party/eigen'
   ],

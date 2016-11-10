@@ -7,6 +7,8 @@
 #include "o2016/queue_manager/queue_manager.h"
 #include "o2016/subsystems/superstructure/secondaries/secondaries.h"
 #include "o2016/subsystems/superstructure/secondaries/queue_types.h"
+#include "o2016/subsystems/superstructure/catapult/catapult.h"
+#include "o2016/subsystems/superstructure/catapult/queue_types.h"
 #include "third_party/aos/common/time.h"
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/aos/linux_code/init.h"
@@ -15,13 +17,15 @@ namespace o2016 {
 
 class SubsystemRunner {
   public:
-    SubsystemRunner() = default;
+    SubsystemRunner();
     ~SubsystemRunner() = default;
     void operator()();
     void Stop();
   private:
     std::atomic<bool> running_;
     secondaries::Secondaries secondaries_;
+    catapult::Catapult catapult_;
+    catapult::CatapultInputQueue::QueueReader catapult_input_reader_;
     wpilib::WpilibInterface wpilib_;
 };
 

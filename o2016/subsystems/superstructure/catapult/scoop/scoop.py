@@ -22,7 +22,7 @@ def make_gains():
     # System parameters (in SI units)
     inertia_moment = 1. # Needs to be measured
     gear_ratio = 1. / 130.
-    efficiency = .8 #Needs to be measured
+    efficiency = .1 #Needs to be measured
 
     # Motor characteristics (775pro)
     free_speed = 18700.
@@ -57,7 +57,7 @@ def make_gains():
     ])
 
     C = np.asmatrix([
-        [sensor_ratio, 0.]
+        [1., 0.]
     ])
 
     # Controller weighting factors
@@ -72,8 +72,8 @@ def make_gains():
 
     # Noise characteristics
     Q_noise = np.asmatrix([
-        [1e-2, 0.],
-        [0., 1e-1]
+        [1e0, 0.],
+        [0., 1e1]
     ])
 
     R_noise = np.asmatrix([
@@ -83,6 +83,7 @@ def make_gains():
     A_d, B_d, Q_d, R_d = c2d(A_c, B_c, dt, Q_noise, R_noise)
     K = clqr(A_c, B_c, Q_controller, R_controller)
     L = dkalman(A_d, C, Q_d, R_d)
+    K = K * 30.
 
     gains = StateSpaceGains(name, dt, A_d, B_d, C, None, Q_d, R_noise, K, None, L)
     gains.A_c = A_c

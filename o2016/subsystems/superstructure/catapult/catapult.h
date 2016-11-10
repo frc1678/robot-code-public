@@ -1,8 +1,8 @@
 #ifndef O2016_SUBSYSTEMS_SUPERSTRUCTURE_CATAPULT_H_
 #define O2016_SUBSYSTEMS_SUPERSTRUCTURE_CATAPULT_H_
 
-#include "stop/stop.h"
-#include "scoop/scoop.h"
+#include "stop/stop_pid.h"
+#include "scoop/scoop_pid.h"
 #include "muan/units/units.h"
 #include "queue_types.h"
 #include <memory>
@@ -27,8 +27,8 @@ public:
   CatapultStatusProto status();
 
 protected:
-  CatapultStop stop_;
-  Scoop scoop_;
+  StopPid stop_;
+  ScoopPid scoop_;
   // Timer for catapult
   int catapult_countdown_;
   CylinderStatus catapult_status_;
@@ -37,6 +37,7 @@ protected:
   CatapultStatusProto status_;
   // Assume 1 second (200 ticks) to extend or retract
   constexpr static int extend_time = 200;
+  constexpr static double hardstop_goal = 1.8 * muan::units::rad;
 };
 
 } // catapult
