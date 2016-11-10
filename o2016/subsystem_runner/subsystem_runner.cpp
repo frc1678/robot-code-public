@@ -15,8 +15,8 @@ void SubsystemRunner::operator()() {
     wpilib_.ReadSensors();
     // Update subsystems here
 
-    o2016::secondaries::SecondariesGoalProto secondaries_goal; // Temporary
-    o2016::turret::TurretGoalProto turret_goal; // Temporary
+    o2016::secondaries::SecondariesGoalProto secondaries_goal;  // Temporary
+    o2016::turret::TurretGoalProto turret_goal;                 // Temporary
 
     turret_goal->set_goal_angle(0);
     turret_.SetGoal(turret_goal);
@@ -26,14 +26,12 @@ void SubsystemRunner::operator()() {
     QueueManager::GetInstance().turret_output_queue().WriteMessage(
         turret_.Update(turret_input_.ReadLastMessage().value()));
 
+    drivetrain_.Update();
     wpilib_.WriteActuators();
 
     phased_loop.SleepUntilNext();
   }
 }
 
-void SubsystemRunner::Stop() {
-  running_ = false;
-}
-
+void SubsystemRunner::Stop() { running_ = false; }
 }

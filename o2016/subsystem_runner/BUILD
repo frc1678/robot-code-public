@@ -8,7 +8,9 @@ cc_library(
     '//o2016/subsystems/superstructure/turret:pid_turret_controller',
     '//third_party/aos/linux_code:init',
     '//third_party/aos/common/util:phased_loop',
-    '//third_party/aos/common:time'],
+    '//third_party/aos/common:time',
+    '//o2016/subsystems/drivetrain',
+  ],
   visibility = ['//visibility:public']
 )
 

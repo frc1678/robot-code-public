@@ -45,7 +45,7 @@ void Teleop::SendDSMessage() {
 }
 
 void Teleop::SendDrivetrainMessage() {
-  o2016::drivetrain::StackDrivetrainGoal drivetrain_goal;
+  o2016::drivetrain::DrivetrainGoalProto drivetrain_goal;
 
   double throttle = -throttle_.wpilib_joystick()->GetRawAxis(1);
   double wheel = -wheel_.wpilib_joystick()->GetRawAxis(0);
