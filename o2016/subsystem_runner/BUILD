@@ -6,6 +6,7 @@ cc_library(
     '//o2016/wpilib:wpilib_interface',
     '//o2016/subsystems/superstructure/secondaries:secondaries',
     '//o2016/subsystems/superstructure/turret:pid_turret_controller',
+    '//o2016/subsystems/superstructure/intake',
     '//third_party/aos/linux_code:init',
     '//third_party/aos/common/util:phased_loop',
     '//third_party/aos/common:time',
@@ -13,4 +14,3 @@ cc_library(
   ],
   visibility = ['//visibility:public']
 )
-

@@ -5,6 +5,8 @@
 
 #include "o2016/queue_manager/queue_manager.h"
 #include "o2016/subsystems/drivetrain/drivetrain_subsystem.h"
+#include "o2016/subsystems/superstructure/intake/intake.h"
+#include "o2016/subsystems/superstructure/intake/intake.h"
 #include "o2016/subsystems/superstructure/secondaries/queue_types.h"
 #include "o2016/subsystems/superstructure/secondaries/secondaries.h"
 #include "o2016/subsystems/superstructure/turret/pid_turret_controller.h"
@@ -30,7 +32,9 @@ class SubsystemRunner {
   o2016::turret::TurretInputQueue::QueueReader turret_input_ =
       QueueManager::GetInstance().turret_input_queue().MakeReader();
   wpilib::WpilibInterface wpilib_;
+
   o2016::drivetrain::DrivetrainSubsystem drivetrain_;
+  intake::Intake intake_;
 };
 }
 #endif

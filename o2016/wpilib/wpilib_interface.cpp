@@ -96,6 +96,8 @@ void DrivetrainInterface::ReadSensors() {
   sensors->set_left_encoder(encoder_left_.Get() * kMetersPerClick);
   sensors->set_right_encoder(-encoder_right_.Get() * kMetersPerClick);
 
+  printf("%d\n", encoder_left_.Get());
+
   // TODO(Kyle) Use the actual gyro here
   sensors->set_gyro_angle(0.0);
   input_queue_.WriteMessage(sensors);
@@ -165,6 +167,8 @@ void TurretInterface::ReadSensors() {
   sensors->set_index_click(last_index_ != index_.Get());
   last_index_ = index_.Get();
 
+  printf("%d\n", index_.Get());
+
   input_queue_.WriteMessage(sensors);
 }
 
@@ -198,6 +202,8 @@ void IntakeInterface::ReadSensors() {
   sensors->set_encoder_position(encoder_.Get() * kEncoderScaling);
   sensors->set_index_click(last_index_ != index_.Get());
   last_index_ = index_.Get();
+
+  /* printf("%d\n", index_.Get()); */
 
   input_queue_.WriteMessage(sensors);
 }
@@ -287,7 +293,7 @@ void SecondariesInterface::WriteActuators() {
     pcm_->WriteSolenoid(ports::secondaries::kSecondariesCylinder,
                         (*outputs)->is_down());
   } else {
-    secondaries_motor_.Set(0.0);
+    secondaries_motor_.Set(1.0);
     pcm_->WriteSolenoid(ports::secondaries::kSecondariesCylinder, false);
   }
 }
