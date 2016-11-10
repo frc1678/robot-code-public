@@ -12,6 +12,13 @@ Teleop::Teleop() : throttle_{1}, wheel_{0}, gamepad_{2} {
   shifting_high_ = throttle_.MakeButton(5);
   quickturn_ = throttle_.MakeButton(5);
 
+  intake_ = gamepad_.MakeButton(6);
+  outtake_ = gamepad_.MakeButton(4);
+  tucknroll_ = throttle_.MakeButton(2);
+  thisisadorable_ = gamepad_.MakeButton(2);
+  settledown_ = gamepad_.MakeButton(5);
+  snap_ = gamepad_.MakeButton(3);
+
   Update();
 }
 
@@ -23,6 +30,8 @@ void Teleop::Update() {
 
   SendDSMessage();
   SendDrivetrainMessage();
+  SendTurretMessage();
+  SendIntakeMessage();
 }
 
 void Teleop::SendDSMessage() {
@@ -75,6 +84,39 @@ void Teleop::SendDrivetrainMessage() {
 
   o2016::QueueManager::GetInstance().drivetrain_goal_queue().WriteMessage(
       drivetrain_goal);
+}
+
+void Teleop::SendTurretMessage() {
+  if (snap_->was_clicked() || intake_->is_pressed() ||
+      thisisadorable_->was_clicked()) {
+    o2016::turret::TurretGoalProto goal;
+    goal->set_goal_angle(0);
+    o2016::QueueManager::GetInstance().turret_goal_queue().WriteMessage(goal);
+  }
+}
+
+void Teleop::SendIntakeMessage() {
+  if (intake_->is_pressed()) {
+    o2016::intake::IntakeGoalProto goal;
+    goal->set_goal_angle(0);
+    goal->set_intake_speed(o2016::intake::RollerGoal::FORWARD);
+    o2016::QueueManager::GetInstance().intake_goal_queue().WriteMessage(goal);
+  } else if (intake_->was_released()) {
+    o2016::intake::IntakeGoalProto goal;
+    goal->set_goal_angle(0);
+    goal->set_intake_speed(o2016::intake::RollerGoal::STOP);
+    o2016::QueueManager::GetInstance().intake_goal_queue().WriteMessage(goal);
+  } else if (tucknroll_->was_clicked()) {
+    o2016::intake::IntakeGoalProto goal;
+    goal->set_goal_angle(-.2);
+    goal->set_intake_speed(o2016::intake::RollerGoal::STOP);
+    o2016::QueueManager::GetInstance().intake_goal_queue().WriteMessage(goal);
+  } else if (thisisadorable_->was_clicked()) {
+    o2016::intake::IntakeGoalProto goal;
+    goal->set_goal_angle(.4);
+    goal->set_intake_speed(o2016::intake::RollerGoal::STOP);
+    o2016::QueueManager::GetInstance().intake_goal_queue().WriteMessage(goal);
+  }
 }
 
 }  // teleop

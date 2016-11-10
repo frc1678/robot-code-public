@@ -22,8 +22,17 @@ class Teleop {
   muan::teleop::Button *shifting_high_, *shifting_low_;
   muan::teleop::Button* quickturn_;
 
+  muan::teleop::Button* intake_;
+  muan::teleop::Button* outtake_;
+  muan::teleop::Button* tucknroll_;
+  muan::teleop::Button* thisisadorable_;
+  muan::teleop::Button* settledown_;
+  muan::teleop::Button* snap_;
+
   void SendDSMessage();
   void SendDrivetrainMessage();
+  void SendTurretMessage();
+  void SendIntakeMessage();
 };
 
 }  // teleop
