@@ -7,6 +7,7 @@ cc_library(
     '//muan/proto:stack_proto',
     '//muan/wpilib:wpilib_queues',
     '//o2016/subsystems/drivetrain:queue_types',
+    '//o2016/subsystems/superstructure:queue_types',
     '//o2016/subsystems/superstructure/turret:turret_queues',
     '//o2016/subsystems/superstructure/intake:intake_queues',
     '//o2016/subsystems/superstructure/catapult:catapult_queues',

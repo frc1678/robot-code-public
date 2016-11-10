@@ -31,8 +31,7 @@ class Teleop {
 
   void SendDSMessage();
   void SendDrivetrainMessage();
-  void SendTurretMessage();
-  void SendIntakeMessage();
+  void SendSuperstructureMessage();
 };
 
 }  // teleop

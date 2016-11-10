@@ -7,6 +7,7 @@
 #include "o2016/subsystems/superstructure/turret/queue_types.h"
 #include "o2016/subsystems/superstructure/intake/queue_types.h"
 #include "o2016/subsystems/superstructure/catapult/queue_types.h"
+#include "o2016/subsystems/superstructure/queue_types.h"
 
 #include "o2016/subsystems/superstructure/turret/pid_turret_controller.h"
 #include "o2016/subsystems/superstructure/intake/intake.h"
@@ -40,6 +41,7 @@ class SuperstructureStateMachine {
     o2016::turret::TurretInputQueue::QueueReader turret_input_reader_ = QueueManager::GetInstance().turret_input_queue().MakeReader();
     o2016::intake::IntakeInputQueue::QueueReader intake_input_reader_ = QueueManager::GetInstance().intake_input_queue().MakeReader();
     o2016::catapult::CatapultInputQueue::QueueReader catapult_input_reader_ = QueueManager::GetInstance().catapult_input_queue().MakeReader();
+    o2016::SuperstructureGoalQueue::QueueReader goal_reader_ = QueueManager::GetInstance().superstructure_goal_queue().MakeReader();
 };
 
 }

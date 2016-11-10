@@ -9,6 +9,7 @@ namespace o2016 {
 
 using SuperstructureGoalProto = muan::proto::StackProto<::o2016::superstructure::SuperstructureGoal, 100>;
 
+using SuperstructureGoalQueue = muan::queues::MessageQueue<SuperstructureGoalProto, 100>;
 }
 
 #endif  // O2016_SUBSYSTEMS_SUPERSTRUCTURE_TURRET_QUEUETYPES_H_

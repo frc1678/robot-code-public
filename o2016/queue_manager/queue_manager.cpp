@@ -83,4 +83,8 @@ o2016::intake::IntakeOutputQueue& QueueManager::intake_output_queue() {
   return intake_output_queue_;
 }
 
+o2016::SuperstructureGoalQueue& QueueManager::superstructure_goal_queue() {
+  return superstructure_goal_queue_;
+}
+
 }  // o2016
