@@ -32,7 +32,7 @@ def make_gains():
     velocity_constant = (12. -free_current * resistance) / free_speed
 
     num_motors = 1
-    sensor_ratio = 2.13
+    sensor_ratio = 1.0
 
     # back emf torque
     emf = -(torque_constant * velocity_constant) / (num_motors * resistance * gear_ratio**2.)
@@ -61,7 +61,7 @@ def make_gains():
     # Controller weighting 
     Q_controller = np.asmatrix([
         [1e5, 0.],
-        [0., 1e0]
+        [0., 0.]
     ])
 
     R_controller = np.asmatrix([
@@ -114,6 +114,7 @@ def make_augmented_gains():
 
     K = np.zeros((1, 3))
     K[:, :2] = unaugmented_gains.K
+    print(K)
     K[0, 2] = 1.
 
     Q_noise = np.zeros((3, 3))
@@ -127,7 +128,12 @@ def make_augmented_gains():
     # Kalman noise matrix 
     Q_kalman = np.zeros((3, 3))
     Q_kalman[:2, :2] = unaugmented_gains.Q_c
-    Q_kalman[2, 2] = 2
+    Q_kalman[2, 2] = 5e2
+    Q_kalman = np.asmatrix([
+        [1.0, 0.0, 0.0],
+        [0.0, 2.0, 0.0],
+        [0.0, 0.0, 500]
+    ])
 
     Q_ff = np.asmatrix([
         [0.0, 0.0, 0.0],

@@ -35,8 +35,6 @@ void SubsystemRunner::operator()() {
     intake::IntakeGoalProto intake_goal;
     intake_goal->set_goal_angle(0);
 
-    o2016::secondaries::SecondariesGoalProto secondaries_goal;  // Temporary
-
     QueueManager::GetInstance().secondaries_output_queue().WriteMessage(
         secondaries_.Update(secondaries_goal));
     QueueManager::GetInstance().turret_output_queue().WriteMessage(
