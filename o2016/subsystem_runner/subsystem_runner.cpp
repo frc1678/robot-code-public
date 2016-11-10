@@ -11,12 +11,14 @@ void SubsystemRunner::operator()() {
 
   running_ = true;
 
+  QueueManager::GetInstance().intake_goal_queue().WriteMessage(
+      o2016::intake::IntakeGoalProto{});
+
   while (running_) {
     wpilib_.ReadSensors();
     // Update subsystems here
 
-    o2016::secondaries::SecondariesGoalProto secondaries_goal;  // Temporary
-    o2016::turret::TurretGoalProto turret_goal;                 // Temporary
+    o2016::turret::TurretGoalProto turret_goal;  // Temporary
 
     auto status = QueueManager::GetInstance()
                       .driver_station_queue()
@@ -29,16 +31,26 @@ void SubsystemRunner::operator()() {
                              .ReadLastMessage()
                              .value();
 
-    turret_goal->set_goal_angle(0);
-    turret_.SetGoal(turret_goal);
+    auto secondaries_goal = QueueManager::GetInstance()
+                                .secondaries_goal_queue()
+                                .MakeReader()
+                                .ReadLastMessage();
 
-    intake::IntakeGoalProto intake_goal;
-    intake_goal->set_goal_angle(0);
+    /* turret_goal->set_goal_angle(0); */
+    /* turret_.SetGoal(turret_goal); */
 
-    QueueManager::GetInstance().secondaries_output_queue().WriteMessage(
-        secondaries_.Update(secondaries_goal));
-    QueueManager::GetInstance().turret_output_queue().WriteMessage(
-        turret_.Update(turret_input_.ReadLastMessage().value()));
+    auto intake_goal = QueueManager::GetInstance()
+                           .intake_goal_queue()
+                           .MakeReader()
+                           .ReadLastMessage()
+                           .value();
+
+    if (secondaries_goal) {
+      QueueManager::GetInstance().secondaries_output_queue().WriteMessage(
+          secondaries_.Update(*secondaries_goal));
+    }
+    /* QueueManager::GetInstance().turret_output_queue().WriteMessage( */
+    /*     turret_.Update(turret_input_.ReadLastMessage().value())); */
 
     drivetrain_.Update();
 

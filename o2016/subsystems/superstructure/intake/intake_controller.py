@@ -60,8 +60,8 @@ def make_gains():
 
     # Controller weighting 
     Q_controller = np.asmatrix([
-        [1e5, 0.],
-        [0., 0.]
+        [1e3, 0.],
+        [0., 5e0]
     ])
 
     R_controller = np.asmatrix([
@@ -126,13 +126,10 @@ def make_augmented_gains():
     ])
 
     # Kalman noise matrix 
-    Q_kalman = np.zeros((3, 3))
-    Q_kalman[:2, :2] = unaugmented_gains.Q_c
-    Q_kalman[2, 2] = 5e2
     Q_kalman = np.asmatrix([
         [1.0, 0.0, 0.0],
         [0.0, 2.0, 0.0],
-        [0.0, 0.0, 500]
+        [0.0, 0.0, 30]
     ])
 
     Q_ff = np.asmatrix([

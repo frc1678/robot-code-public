@@ -9,13 +9,12 @@ SecondariesOutputProto Secondaries::Update(SecondariesGoalProto goal) {
   double voltage = 0;
 
   if (goal->direction() == Direction::FORWARD) {
-    voltage = 12;
+    voltage = 4;
   } else if (goal->direction() == Direction::REVERSE) {
-    voltage = -12;
+    voltage = -4;
   } else {
     voltage = 0;
   }
-
 
   output->set_voltage(voltage);
   output->set_is_down(goal->position() == Position::DOWN);
@@ -23,5 +22,5 @@ SecondariesOutputProto Secondaries::Update(SecondariesGoalProto goal) {
   return output;
 }
 
-} // o2016
-} // secondaries
+}  // o2016
+}  // secondaries

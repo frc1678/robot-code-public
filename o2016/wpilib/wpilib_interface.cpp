@@ -70,7 +70,7 @@ constexpr uint32_t kSecondariesCylinder = 0;
 
 }  // ports
 
-constexpr double kMaxVoltage = 4.0;  // 4 volt bringup voltage
+constexpr double kMaxVoltage = 12.0;  // 4 volt bringup voltage
 
 DrivetrainInterface::DrivetrainInterface(muan::wpilib::CanWrapper* can_wrapper)
     : pcm_{can_wrapper->pcm()},
@@ -183,7 +183,7 @@ void IntakeInterface::WriteActuators() {
     motor_pivot_.Set(
         muan::Cap((*outputs)->arm_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
     motor_roller_.Set(
-        -muan::Cap((*outputs)->roller_voltage(), -kMaxVoltage, kMaxVoltage) /
+        muan::Cap((*outputs)->roller_voltage(), -kMaxVoltage, kMaxVoltage) /
         12.0);
   } else {
     motor_pivot_.Set(0.0);

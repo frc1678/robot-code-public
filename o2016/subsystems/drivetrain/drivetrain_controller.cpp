@@ -153,7 +153,9 @@ void DrivetrainController::Shift(Gear new_gear) {
     observer_.L() = frc1678::drivetrain::controller::high_gear_integral::L();
 
     controller_.A() = frc1678::drivetrain::controller::high_gear_integral::A();
-    controller_.K() = frc1678::drivetrain::controller::high_gear_integral::K();
+    // controller_.K() =
+    // frc1678::drivetrain::controller::high_gear_integral::K();
+    controller_.K() = Eigen::Matrix<double, 2, 7>::Zero();
     controller_.Kff() =
         frc1678::drivetrain::controller::high_gear_integral::Kff();
   } else {
@@ -169,7 +171,9 @@ void DrivetrainController::Shift(Gear new_gear) {
     observer_.L() = frc1678::drivetrain::controller::low_gear_integral::L();
 
     controller_.A() = frc1678::drivetrain::controller::low_gear_integral::A();
-    controller_.K() = frc1678::drivetrain::controller::low_gear_integral::K();
+    // controller_.K() =
+    // frc1678::drivetrain::controller::low_gear_integral::K();
+    controller_.K() = Eigen::Matrix<double, 2, 7>::Zero();
     controller_.Kff() =
         frc1678::drivetrain::controller::low_gear_integral::Kff();
   }
