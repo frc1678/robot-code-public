@@ -15,7 +15,6 @@ class PidTurretController {
     TurretOutputProto Update(const TurretInputProto& input);
     void SetGoal(const TurretGoalProto& goal);
   private:
-    muan::PotCalibration calibration_;
     muan::PidController pid_;
     TurretGoalProto goal_;
     double current_position_ = 0;
