@@ -89,12 +89,16 @@ void Teleop::SendDrivetrainMessage() {
 void Teleop::SendSuperstructureMessage() {
   o2016::SuperstructureGoalProto goal;
 
-  if (intake_->was_clicked()) {
+  if (intake_->is_pressed()) {
+    goal->set_goal_state(o2016::superstructure::INTAKE);
+  } else if (intake_->was_released()) {
     goal->set_goal_state(o2016::superstructure::INTAKE);
   }
 
-  if (spit_->was_clicked()) {
+  if (spit_->is_pressed()) {
     goal->set_goal_state(o2016::superstructure::SPIT);
+  } else if (spit_->was_released()) {
+    goal->set_goal_state(o2016::superstructure::INTAKE);
   }
 
   if (defense_->was_clicked()) {
