@@ -2,7 +2,7 @@
 
 namespace o2016 {
 
-void SuperstructureStateMachine::Update() {
+void SuperstructureStateMachine::Update(bool enabled) {
 
   SetGoal(goal_reader_.ReadLastMessage().value_or(goal_));
 
@@ -59,7 +59,7 @@ void SuperstructureStateMachine::Update() {
   }
 
   SendGoals(turret_goal, intake_goal, catapult_goal,
-            use_turret_goal, use_intake_goal, use_catapult_goal);
+            use_turret_goal, use_intake_goal, use_catapult_goal, enabled);
 }
 
 // Yes, I know that I should use an optional, except actually you're wrong
@@ -69,7 +69,8 @@ void SuperstructureStateMachine::SendGoals(
     o2016::catapult::CatapultGoalProto catapult_goal,
     bool use_turret_goal,
     bool use_intake_goal,
-    bool use_catapult_goal) {
+    bool use_catapult_goal,
+    bool enabled) {
 
   if (use_turret_goal) {
     turret_.SetGoal(turret_goal);
@@ -80,7 +81,7 @@ void SuperstructureStateMachine::SendGoals(
   if (use_intake_goal) {
     last_intake_goal_ = intake_goal;
   }
-  auto intake_output = intake_.Update(intake_input_reader_.ReadLastMessage().value(), last_intake_goal_, true); //TODO(Wesley) correct enabled value
+  auto intake_output = intake_.Update(intake_input_reader_.ReadLastMessage().value(), last_intake_goal_, enabled);
   QueueManager::GetInstance().intake_output_queue().WriteMessage(intake_output);
 
   if (use_catapult_goal) {

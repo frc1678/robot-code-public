@@ -15,22 +15,16 @@ void SubsystemRunner::operator()() {
 
   while (running_) {
     wpilib_.ReadSensors();
-    // Update subsystems here
 
-    // Commented because WHAT THE FUCK IS THIS
-    //auto status = QueueManager::GetInstance()
-                      //.driver_station_queue()
-                      //.MakeReader()
-                      //.ReadLastMessage();
+    auto status = ds_reader_.ReadLastMessage();
+    auto enabled = false;
+    if (status) {
+      enabled = status.value()->mode() == RobotMode::AUTONOMOUS ||
+                status.value()->mode() == RobotMode::TELEOP;
+    }
 
-    superstructure_.Update();
+    superstructure_.Update(enabled);
     drivetrain_.Update();
-
-    //auto enabled = false;
-    //if (status) {
-      //enabled = status.value()->mode() == RobotMode::AUTONOMOUS ||
-                //status.value()->mode() == RobotMode::TELEOP;
-    //}
 
     wpilib_.WriteActuators();
 

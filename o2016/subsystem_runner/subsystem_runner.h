@@ -29,6 +29,7 @@ class SubsystemRunner {
     std::atomic<bool> running_;
     o2016::SuperstructureStateMachine superstructure_;
     o2016::drivetrain::DrivetrainSubsystem drivetrain_;
+    muan::wpilib::DriverStationQueue::QueueReader ds_reader_ = QueueManager::GetInstance().driver_station_queue().MakeReader();
     wpilib::WpilibInterface wpilib_;
 };
 }

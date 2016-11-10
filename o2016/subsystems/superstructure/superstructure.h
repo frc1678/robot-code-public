@@ -18,7 +18,7 @@ namespace o2016 {
 class SuperstructureStateMachine {
   public:
     SuperstructureStateMachine() = default;
-    void Update();
+    void Update(bool enabled);
   private:
     bool SetGoal(SuperstructureGoalProto goal);
     void SendGoals(
@@ -27,7 +27,8 @@ class SuperstructureStateMachine {
       o2016::catapult::CatapultGoalProto catapult_goal,
       bool use_turret_goal,
       bool use_intake_goal,
-      bool use_catapult_goal);
+      bool use_catapult_goal,
+      bool enabled);
 
     SuperstructureGoalProto goal_;
 
