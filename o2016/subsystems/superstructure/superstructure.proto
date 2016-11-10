@@ -1,0 +1,20 @@
+syntax="proto2";
+
+option cc_enable_arenas = true;
+
+package o2016.superstructure;
+
+enum State {
+  DISABLED = 0;
+  IDLE = 1;
+  INTAKE = 2;
+  SPIT = 3;
+  AIMING = 4;
+  FIRING = 5;
+}
+
+message SuperstructureGoal {
+  required State goal_state = 1;
+  required bool vision_override = 2;
+  required bool has_ball = 3;
+}
