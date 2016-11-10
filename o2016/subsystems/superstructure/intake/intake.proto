@@ -21,10 +21,10 @@ message IntakeOutput {
 
 message IntakeStatus {
   required double intake_position = 1;
-  required double intake_velocity = 2;
   required double filtered_angle_goal = 3;
   required bool at_goal = 4;
-  required RollerGoal current_roller_goal = 5;
+  required bool is_calibrated = 5;
+  required RollerGoal current_roller_goal = 6;
 }
 
 enum RollerGoal {

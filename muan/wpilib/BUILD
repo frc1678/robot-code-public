@@ -51,6 +51,16 @@ cc_binary(
           '//third_party/wpilibsuite:wpilib']
 )
 
+cc_library(
+  name = 'wpilib_queues',
+  hdrs = ['queue_types.h'],
+  deps = [
+    '//muan/proto:stack_proto',
+    '//muan/queues',
+    ':state_protos'
+  ]
+)
+
 cc_proto_library(
   name = 'state_protos',
   srcs = ['state.proto'],

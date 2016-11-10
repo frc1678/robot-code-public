@@ -25,6 +25,11 @@ message DrivetrainGoal {
   message VelocityCommand {
     required double forward_velocity = 1;
     required double angular_velocity = 2;
+
+    // Should it override distance commands? True will cancel any
+    // currently-running command, false or unset will not interrupt distance
+    // commands.
+    optional bool should_override = 3;
   }
 
   message DistanceCommand {
@@ -32,7 +37,6 @@ message DrivetrainGoal {
   }
 
   required Gear gear = 2;
-
   oneof command {
     VelocityCommand velocity_command = 3;
     DistanceCommand distance_command = 4;
@@ -44,6 +48,16 @@ message DrivetrainStatus {
 
   required DriveType current_driving_type = 2;
   required Gear current_gear = 3;
+
+  // The current goal state (either of a profile or of velocity)
+  required DrivetrainState filtered_goal = 4;
+  // The final state of the currently-running profile
+  optional DrivetrainState profile_goal = 5;
+
+  // Sent out in a single message when a profile has been completed successfully
+  optional bool just_finished_profile = 6;
+  // Increments every time a profile completes or is interrupted
+  optional uint32 num_profiles_run = 7;
 }
 
 message DrivetrainInput {

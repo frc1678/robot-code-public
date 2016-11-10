@@ -4,12 +4,12 @@
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
 
-#include "muan/wpilib/state.pb.h"
+#include "muan/wpilib/queue_types.h"
 
 #include "o2016/subsystems/drivetrain/queue_types.h"
-#include "o2016/subsystems/superstructure/secondaries/queue_types.h"
 #include "o2016/subsystems/superstructure/catapult/queue_types.h"
 #include "o2016/subsystems/superstructure/intake/queue_types.h"
+#include "o2016/subsystems/superstructure/secondaries/queue_types.h"
 #include "o2016/subsystems/superstructure/turret/queue_types.h"
 
 using muan::queues::MessageQueue;
@@ -28,6 +28,7 @@ class QueueManager {
   // PdpWrapper class. If you change that, you will need to change this.
   // It is like this to avoid making QueueManager rely on WPILib.
   MessageQueue<muan::proto::StackProto<PdpStatus, 512>>& pdp_status_queue();
+  muan::wpilib::DriverStationQueue& driver_station_queue();
 
   o2016::turret::TurretInputQueue& turret_input_queue();
   o2016::turret::TurretGoalQueue& turret_goal_queue();
@@ -49,12 +50,15 @@ class QueueManager {
   o2016::intake::IntakeStatusQueue& intake_status_queue();
   o2016::intake::IntakeOutputQueue& intake_output_queue();
 
+  o2016::secondaries::SecondariesGoalQueue& secondaries_goal_queue();
   o2016::secondaries::SecondariesOutputQueue& secondaries_output_queue();
+
  private:
   QueueManager() = default;
   ~QueueManager() = default;
 
   MessageQueue<muan::proto::StackProto<PdpStatus, 512>> pdp_status_queue_;
+  muan::wpilib::DriverStationQueue driver_station_queue_;
 
   o2016::turret::TurretInputQueue turret_input_queue_;
   o2016::turret::TurretGoalQueue turret_goal_queue_;
@@ -77,6 +81,7 @@ class QueueManager {
   o2016::intake::IntakeOutputQueue intake_output_queue_;
 
   o2016::secondaries::SecondariesOutputQueue secondaries_output_queue_;
+  o2016::secondaries::SecondariesGoalQueue secondaries_goal_queue_;
 };
 
 }  // o2016
