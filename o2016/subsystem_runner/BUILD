@@ -8,6 +8,7 @@ cc_library(
     '//o2016/subsystems/superstructure/catapult:catapult',
     '//o2016/subsystems/superstructure/turret:pid_turret_controller',
     '//o2016/subsystems/superstructure/intake',
+    '//o2016/subsystems/superstructure:superstructure',
     '//third_party/aos/linux_code:init',
     '//third_party/aos/common/util:phased_loop',
     '//third_party/aos/common:time',

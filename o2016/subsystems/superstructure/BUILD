@@ -11,6 +11,9 @@ cc_library(
           "//o2016/subsystems/superstructure/turret:turret_queues",
           "//o2016/subsystems/superstructure/intake:intake_queues",
           "//o2016/subsystems/superstructure/catapult:catapult_queues",
+          "//o2016/subsystems/superstructure/turret:pid_turret_controller",
+          "//o2016/subsystems/superstructure/intake:intake",
+          "//o2016/subsystems/superstructure/catapult:catapult",
           "//o2016/queue_manager:queue_manager"]
 )
 

@@ -16,11 +16,13 @@ void SuperstructureStateMachine::Update() {
 
   switch (goal_->goal_state()) {
     case o2016::superstructure::State::DISABLED:
+      std::cout << "1\n";
       use_turret_goal = false;
       use_intake_goal = false;
       use_catapult_goal = false;
       break;
     case o2016::superstructure::State::IDLE:
+      std::cout << "2\n";
       use_turret_goal = false;
       use_catapult_goal = false;
       intake_goal->set_goal_angle(goal_->has_ball() ?
@@ -28,28 +30,33 @@ void SuperstructureStateMachine::Update() {
                                   : kIntakeUpAngle);
       break;
     case o2016::superstructure::State::INTAKE:
+      std::cout << "3\n";
       turret_goal->set_goal_angle(0);
       catapult_goal->set_goal(o2016::catapult::CatapultGoal::INTAKE);
       intake_goal->set_goal_angle(kIntakeDownAngle);
       intake_goal->set_intake_speed(o2016::intake::RollerGoal::FORWARD);
       break;
     case o2016::superstructure::State::SPIT:
+      std::cout << "4\n";
       turret_goal->set_goal_angle(0);
       catapult_goal->set_goal(o2016::catapult::CatapultGoal::INTAKE);
       intake_goal->set_goal_angle(kIntakeDownAngle);
       intake_goal->set_intake_speed(o2016::intake::RollerGoal::REVERSE);
       break;
     case o2016::superstructure::State::AIMING:
+      std::cout << "5\n";
       turret_goal->set_goal_angle(0); //TODO Vision. I should not be writing this the day before madtown, but here I am...
       catapult_goal->set_goal(o2016::catapult::CatapultGoal::PREP_SHOT);
       intake_goal->set_goal_angle(kIntakeDownAngle);
       break;
     case o2016::superstructure::State::FIRING:
+      std::cout << "6\n";
       use_turret_goal = false;
       catapult_goal->set_goal(o2016::catapult::CatapultGoal::SHOOT);
       intake_goal->set_goal_angle(kIntakeDownAngle);
       break;
     default:
+      std::cout << "7\n";
       // Cry because wesley fucked up
       break;
   }
@@ -66,11 +73,29 @@ void SuperstructureStateMachine::SendGoals(
     bool use_turret_goal,
     bool use_intake_goal,
     bool use_catapult_goal) {
-  //TODO(Wesley) this
+
+  if (use_turret_goal) {
+    turret_.SetGoal(turret_goal);
+  }
+  auto turret_output = turret_.Update(turret_input_reader_.ReadLastMessage().value());
+  QueueManager::GetInstance().turret_output_queue().WriteMessage(turret_output);
+
+  if (use_intake_goal) {
+    last_intake_goal_ = intake_goal;
+  }
+  auto intake_output = intake_.Update(intake_input_reader_.ReadLastMessage().value(), last_intake_goal_, true); //TODO(Wesley) correct enabled value
+  QueueManager::GetInstance().intake_output_queue().WriteMessage(intake_output);
+
+  if (use_catapult_goal) {
+    last_catapult_goal_ = catapult_goal;
+  }
+  catapult_.Update(catapult_input_reader_.ReadLastMessage().value(), last_catapult_goal_, 0);
+  QueueManager::GetInstance().catapult_output_queue().WriteMessage(catapult_.output());
 }
 
 bool SuperstructureStateMachine::SetGoal(SuperstructureGoalProto goal) {
-  return false; //TODO(Wesley) this
+  goal_ = goal; //TODO(Wesley) check urself b4 u reck urself
+  return true;
 }
 
 }

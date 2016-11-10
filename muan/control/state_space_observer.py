@@ -1,6 +1,6 @@
 import numpy as np
-import controls
-from state_space_gains import *
+import muan.control.controls
+from muan.control.state_space_gains import *
 
 """
 A state-space observer class
