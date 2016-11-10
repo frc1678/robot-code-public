@@ -1,6 +1,3 @@
-#ifndef MUAN_CONTROL_TRAPEZOIDAL_MOTION_PROFILE_HPP_
-#define MUAN_CONTROL_TRAPEZOIDAL_MOTION_PROFILE_HPP_
-
 #include "trapezoidal_motion_profile.h"
 
 namespace muan {
@@ -9,8 +6,9 @@ namespace control {
 
 TrapezoidalMotionProfile::TrapezoidalMotionProfile(
     MotionProfileConstraints constraints, MotionProfilePosition goal,
-    MotionProfilePosition initial)
-    : direction_{ShouldFlipAcceleration(initial, goal, constraints) ? -1 : 1},
+    MotionProfilePosition initial, Time initial_time)
+    : MotionProfile{initial_time},
+      direction_(ShouldFlipAcceleration(initial, goal, constraints) ? -1 : 1),
       constraints_(constraints),
       initial_(Direct(initial)),
       goal_(Direct(goal)) {
@@ -51,7 +49,8 @@ TrapezoidalMotionProfile::TrapezoidalMotionProfile(
   }
 }
 
-MotionProfilePosition TrapezoidalMotionProfile::Calculate(Time t) const {
+MotionProfilePosition TrapezoidalMotionProfile::CalculateFromElapsed(
+    Time t) const {
   MotionProfilePosition result = initial_;
 
   if (t < end_accel_) {
@@ -82,5 +81,3 @@ MotionProfilePosition TrapezoidalMotionProfile::Calculate(Time t) const {
 }  // namespace control
 
 }  // namespace muan
-
-#endif /* MUAN_CONTROL_TRAPEZOIDAL_MOTION_PROFILE_HPP_ */

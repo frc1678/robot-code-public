@@ -27,7 +27,8 @@ bool Mutex::Lock() {
   } else if (ret == 1) {
     return true;
   } else {
-    ::aos::Die("mutex_grab(%p(=%" PRIu32 ")) failed with %d\n", &impl_,
+    // TODO find out what was making it not compile before
+    ::aos::Die("mutex_grab(%p(=%" "PRIu32" ")) failed with %d\n", &impl_,
                impl_.futex, ret);
   }
 }
@@ -44,7 +45,8 @@ Mutex::State Mutex::TryLock() {
     case 4:
       return State::kLockFailed;
     default:
-      ::aos::Die("mutex_trylock(%p(=%" PRIu32 ")) failed with %d\n", &impl_,
+      // TODO find out what was making it not compile before
+      ::aos::Die("mutex_trylock(%p(=%" "PRIu32" ")) failed with %d\n", &impl_,
                  impl_.futex, ret);
   }
 }

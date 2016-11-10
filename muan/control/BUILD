@@ -41,9 +41,9 @@ cc_library(
     'trapezoidal_motion_profile.h',
   ],
   srcs = [
-    'trapezoidal_motion_profile.hpp'
+    'trapezoidal_motion_profile.cpp'
   ],
-  deps = ['//muan/units:units'],
+  deps = ['//muan/units:units', '//muan/utils:math_utils'],
   linkopts = ['-lm'],
   linkstatic = 1
 )

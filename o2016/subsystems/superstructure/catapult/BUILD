@@ -1,6 +1,21 @@
 load('//third_party/google/protobuf:protobuf.bzl', 'cc_proto_library')
 
 cc_library(
+  name = 'catapult',
+  srcs = ['catapult.cpp'],
+  hdrs = [
+    'catapult.h'
+  ],
+  deps = [
+    '//o2016/subsystems/superstructure/catapult/scoop:scoop',
+    '//o2016/subsystems/superstructure/catapult/stop:stop',
+    '//muan/units:units',
+    ':catapult_queues',
+  ],
+  visibility = ['//visibility:public']
+)
+
+cc_library(
   name = 'catapult_queues',
   hdrs = ['queue_types.h'],
   deps = ['catapult_proto', '//muan/proto:stack_proto', '//muan/queues:queues'],
@@ -13,6 +28,15 @@ cc_proto_library(
   protoc = '//third_party/google/protobuf:protoc',
   default_runtime = '//third_party/google/protobuf',
   visibility = ['//visibility:public']
+)
+
+cc_test(
+  name = 'catapult_test',
+  srcs = ['catapult_test.cpp'],
+  deps = [
+    ':catapult',
+    '//third_party/google/googletest:googletest',
+  ]
 )
 
 cc_test(

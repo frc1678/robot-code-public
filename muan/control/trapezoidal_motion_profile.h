@@ -33,17 +33,21 @@ class TrapezoidalMotionProfile : public MotionProfile {
 
   TrapezoidalMotionProfile(MotionProfileConstraints constraints,
                            MotionProfilePosition goal,
-                           MotionProfilePosition initial);
+                           MotionProfilePosition initial,
+                           Time initial_time = 0.0 * s);
 
   ~TrapezoidalMotionProfile() override = default;
-
-  // Calculate the correct position and velocity for the profile at a time t
-  // where the beginning of the profile was at time t=0
-  MotionProfilePosition Calculate(Time t) const override;
 
   Time total_time() const override { return end_deccel_; }
 
   MotionProfileConstraints& constraints() { return constraints_; }
+  MotionProfilePosition initial_position() const { return initial_; }
+  MotionProfilePosition goal_position() const { return goal_; }
+
+ protected:
+  // Calculate the correct position and velocity for the profile at a time t
+  // where the beginning of the profile was at time t=0
+  MotionProfilePosition CalculateFromElapsed(Time t) const override;
 
  private:
   // Is the profile inverted? In other words, does it need to increase or
@@ -84,7 +88,5 @@ class TrapezoidalMotionProfile : public MotionProfile {
 }  // namespace control
 
 }  // namespace muan
-
-#include "trapezoidal_motion_profile.hpp"
 
 #endif /* SRC_ROBOTCODE_TRAPEZOIDALMOTIONPROFILE_H_ */

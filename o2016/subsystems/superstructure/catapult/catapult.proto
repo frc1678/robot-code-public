@@ -7,7 +7,7 @@ package o2016.catapult;
 message CatapultOutput {
   required double scoop_output = 1;
   required double hardstop_output = 2;
-  required bool cylinder_extend = 3;
+  required bool catapult_extend = 3;
   required bool disc_brake_activate = 4;
 }
 
@@ -22,11 +22,17 @@ message CatapultStatus {
   required double scoop_goal = 5;
   required double hardstop_goal = 6;
   required CylinderStatus catapult_status = 7;
-  required bool disk_brake_locked = 8;
+  required bool disc_brake_locked = 8;
   required bool scoop_at_goal = 9;
   required bool hardstop_at_goal = 10;
   required bool at_goal = 11;
   required bool can_shoot = 12;
+  enum CatapultState {
+    INTAKING = 0;
+    PREPING_SHOT = 1;
+    SHOOTING = 2;
+  }
+  required CatapultState state = 13;
 }
 
 message CatapultInput {
@@ -35,12 +41,15 @@ message CatapultInput {
 }
 
 message CatapultGoal {
-  enum Goal {
+  enum GoalState {
     INTAKE = 0;
     PREP_SHOT = 1;
     SHOOT = 2;
   }
-  required Goal goal = 1;
+  required GoalState goal = 1;
+  // For overriding the goal provided by the state machine
+  optional double scoop_goal = 2;
+  optional double hardstop_goal = 3;
 }
 
 enum CylinderStatus {

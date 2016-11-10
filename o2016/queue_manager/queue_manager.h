@@ -50,6 +50,7 @@ class QueueManager {
   o2016::intake::IntakeStatusQueue& intake_status_queue();
   o2016::intake::IntakeOutputQueue& intake_output_queue();
 
+  o2016::secondaries::SecondariesGoalQueue& secondaries_goal_queue();
   o2016::secondaries::SecondariesOutputQueue& secondaries_output_queue();
 
  private:
@@ -80,6 +81,7 @@ class QueueManager {
   o2016::intake::IntakeOutputQueue intake_output_queue_;
 
   o2016::secondaries::SecondariesOutputQueue secondaries_output_queue_;
+  o2016::secondaries::SecondariesGoalQueue secondaries_goal_queue_;
 };
 
 }  // o2016

@@ -43,7 +43,7 @@ class PidController {
     integral_ = 0;
   }
 
-  double GetDerivative() { return last_derivative_; }
+  double GetDerivative() const { return last_derivative_; }
 
  protected:
   double CalculateDerivative(muan::units::Time dt, double error) {
