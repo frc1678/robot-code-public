@@ -1,16 +1,16 @@
 #include "frc971/control_loops/drivetrain/polydrivetrain.h"
 
-#include "aos/common/commonmath.h"
-#include "aos/common/controls/polytope.h"
-#include "aos/common/logging/logging.h"
-#include "aos/common/logging/matrix_logging.h"
-#include "aos/common/logging/queue_logging.h"
+#include "third_party/aos/common/commonmath.h"
+#include "third_party/aos/common/controls/polytope.h"
+#include "third_party/aos/common/logging/logging.h"
+#include "third_party/aos/common/logging/matrix_logging.h"
+#include "third_party/aos/common/logging/queue_logging.h"
 
-#include "aos/common/messages/robot_state.q.h"
 #include "frc971/control_loops/coerce_goal.h"
 #include "frc971/control_loops/drivetrain/drivetrain.q.h"
 #include "frc971/control_loops/drivetrain/drivetrain_config.h"
 #include "frc971/control_loops/state_feedback_loop.h"
+#include "third_party/aos/common/messages/robot_state.q.h"
 
 namespace frc971 {
 namespace control_loops {

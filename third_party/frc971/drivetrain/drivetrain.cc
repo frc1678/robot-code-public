@@ -6,9 +6,9 @@
 #include <sched.h>
 #include <stdio.h>
 
-#include "aos/common/logging/logging.h"
-#include "aos/common/logging/matrix_logging.h"
-#include "aos/common/logging/queue_logging.h"
+#include "third_party/aos/common/logging/logging.h"
+#include "third_party/aos/common/logging/matrix_logging.h"
+#include "third_party/aos/common/logging/queue_logging.h"
 
 #include "frc971/control_loops/drivetrain/down_estimator.h"
 #include "frc971/control_loops/drivetrain/drivetrain.q.h"

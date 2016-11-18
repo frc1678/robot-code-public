@@ -1,7 +1,7 @@
 #ifndef FRC971_CONTROL_LOOPS_DRIVETRAIN_POLYDRIVETRAIN_H_
 #define FRC971_CONTROL_LOOPS_DRIVETRAIN_POLYDRIVETRAIN_H_
 
-#include "aos/common/controls/polytope.h"
+#include "third_party/aos/common/controls/polytope.h"
 
 #include "frc971/control_loops/drivetrain/drivetrain.q.h"
 #include "frc971/control_loops/drivetrain/drivetrain_config.h"

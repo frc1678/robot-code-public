@@ -1,5 +1,5 @@
-#include "aos/common/controls/replay_control_loop.h"
-#include "aos/linux_code/init.h"
+#include "third_party/aos/common/controls/replay_control_loop.h"
+#include "third_party/aos/linux_code/init.h"
 
 #include "frc971/control_loops/drivetrain/drivetrain.q.h"
 #include "frc971/queues/gyro.q.h"

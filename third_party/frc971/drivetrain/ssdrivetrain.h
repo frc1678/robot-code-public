@@ -1,11 +1,11 @@
 #ifndef FRC971_CONTROL_LOOPS_DRIVETRAIN_SSDRIVETRAIN_H_
 #define FRC971_CONTROL_LOOPS_DRIVETRAIN_SSDRIVETRAIN_H_
 
-#include "aos/common/commonmath.h"
-#include "aos/common/controls/control_loop.h"
-#include "aos/common/controls/polytope.h"
-#include "aos/common/logging/matrix_logging.h"
-#include "aos/common/util/trapezoid_profile.h"
+#include "third_party/aos/common/commonmath.h"
+#include "third_party/aos/common/controls/control_loop.h"
+#include "third_party/aos/common/controls/polytope.h"
+#include "third_party/aos/common/logging/matrix_logging.h"
+#include "third_party/aos/common/util/trapezoid_profile.h"
 
 #include "frc971/control_loops/coerce_goal.h"
 #include "frc971/control_loops/drivetrain/drivetrain.q.h"

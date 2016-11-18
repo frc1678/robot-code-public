@@ -1,6 +1,6 @@
 package(default_visibility = ['//visibility:public'])
 
-load('/aos/build/queues', 'queue_library')
+load('/third_party/aos/build/queues', 'queue_library')
 
 cc_binary(
   name = 'replay_drivetrain',
@@ -9,8 +9,8 @@ cc_binary(
   ],
   deps = [
     ':drivetrain_queue',
-    '//aos/common/controls:replay_control_loop',
-    '//aos/linux_code:init',
+    '//third_party/aos/common/controls:replay_control_loop',
+    '//third_party/aos/linux_code:init',
     '//frc971/queues:gyro',
   ],
 )
@@ -21,7 +21,7 @@ queue_library(
     'drivetrain.q',
   ],
   deps = [
-    '//aos/common/controls:control_loop_queues',
+    '//third_party/aos/common/controls:control_loop_queues',
     '//frc971/control_loops:queues',
   ],
 )
@@ -56,14 +56,14 @@ cc_library(
     ':drivetrain_queue',
     ':drivetrain_config',
     ':gear',
-    '//aos/common/controls:control_loop',
-    '//aos/common/controls:polytope',
-    '//aos/common/logging:matrix_logging',
-    '//aos/common/logging:queue_logging',
-    '//aos/common/messages:robot_state',
-    '//aos/common/util:log_interval',
-    '//aos/common/util:trapezoid_profile',
-    '//aos/common:math',
+    '//third_party/aos/common/controls:control_loop',
+    '//third_party/aos/common/controls:polytope',
+    '//third_party/aos/common/logging:matrix_logging',
+    '//third_party/aos/common/logging:queue_logging',
+    '//third_party/aos/common/messages:robot_state',
+    '//third_party/aos/common/util:log_interval',
+    '//third_party/aos/common/util:trapezoid_profile',
+    '//third_party/aos/common:math',
     '//frc971/control_loops:coerce_goal',
     '//frc971/control_loops:state_feedback_loop',
     '//frc971:shifter_hall_effect',
@@ -82,14 +82,14 @@ cc_library(
     ':drivetrain_queue',
     ':drivetrain_config',
     ':gear',
-    '//aos/common/controls:polytope',
-    '//aos/common:math',
-    '//aos/common/messages:robot_state',
+    '//third_party/aos/common/controls:polytope',
+    '//third_party/aos/common:math',
+    '//third_party/aos/common/messages:robot_state',
     '//frc971/control_loops:state_feedback_loop',
     '//frc971/control_loops:coerce_goal',
-    '//aos/common/util:log_interval',
-    '//aos/common/logging:queue_logging',
-    '//aos/common/logging:matrix_logging',
+    '//third_party/aos/common/util:log_interval',
+    '//third_party/aos/common/logging:queue_logging',
+    '//third_party/aos/common/logging:matrix_logging',
   ],
 )
 
@@ -133,30 +133,11 @@ cc_library(
     ':gear',
     ':polydrivetrain',
     ':ssdrivetrain',
-    '//aos/common/controls:control_loop',
+    '//third_party/aos/common/controls:control_loop',
     '//frc971/queues:gyro',
     '//frc971/wpilib:imu_queue',
-    '//aos/common/util:log_interval',
-    '//aos/common/logging:queue_logging',
-    '//aos/common/logging:matrix_logging',
-  ],
-)
-
-cc_test(
-  name = 'drivetrain_lib_test',
-  srcs = [
-    'drivetrain_lib_test.cc',
-  ],
-  deps = [
-    '//aos/testing:googletest',
-    ':drivetrain_queue',
-    ':drivetrain_lib',
-    ':drivetrain_config',
-    '//aos/common/controls:control_loop_test',
-    '//frc971/control_loops:state_feedback_loop',
-    '//frc971/queues:gyro',
-    '//aos/common:queues',
-    '//y2016:constants',
-    '//y2016/control_loops/drivetrain:polydrivetrain_plants',
+    '//third_party/aos/common/util:log_interval',
+    '//third_party/aos/common/logging:queue_logging',
+    '//third_party/aos/common/logging:matrix_logging',
   ],
 )
