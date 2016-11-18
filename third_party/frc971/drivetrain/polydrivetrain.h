@@ -3,10 +3,10 @@
 
 #include "aos/common/controls/polytope.h"
 
-#include "frc971/control_loops/drivetrain/gear.h"
 #include "frc971/control_loops/drivetrain/drivetrain.q.h"
-#include "frc971/control_loops/state_feedback_loop.h"
 #include "frc971/control_loops/drivetrain/drivetrain_config.h"
+#include "frc971/control_loops/drivetrain/gear.h"
+#include "frc971/control_loops/state_feedback_loop.h"
 
 namespace frc971 {
 namespace control_loops {

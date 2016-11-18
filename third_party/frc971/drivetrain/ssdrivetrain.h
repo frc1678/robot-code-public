@@ -7,10 +7,10 @@
 #include "aos/common/logging/matrix_logging.h"
 #include "aos/common/util/trapezoid_profile.h"
 
-#include "frc971/control_loops/state_feedback_loop.h"
 #include "frc971/control_loops/coerce_goal.h"
 #include "frc971/control_loops/drivetrain/drivetrain.q.h"
 #include "frc971/control_loops/drivetrain/drivetrain_config.h"
+#include "frc971/control_loops/state_feedback_loop.h"
 
 namespace frc971 {
 namespace control_loops {

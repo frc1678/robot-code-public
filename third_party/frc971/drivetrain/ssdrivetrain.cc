@@ -1,13 +1,13 @@
 #include "frc971/control_loops/drivetrain/ssdrivetrain.h"
 
-#include "aos/common/controls/polytope.h"
 #include "aos/common/commonmath.h"
+#include "aos/common/controls/polytope.h"
 #include "aos/common/logging/matrix_logging.h"
 
-#include "frc971/control_loops/state_feedback_loop.h"
 #include "frc971/control_loops/coerce_goal.h"
 #include "frc971/control_loops/drivetrain/drivetrain.q.h"
 #include "frc971/control_loops/drivetrain/drivetrain_config.h"
+#include "frc971/control_loops/state_feedback_loop.h"
 
 namespace frc971 {
 namespace control_loops {
@@ -46,7 +46,6 @@ void DrivetrainMotorsSS::PolyCapU(Eigen::Matrix<double, 2, 1> *U) {
   Eigen::Matrix<double, 2, 1> velocity_error;
   velocity_error << error(1, 0), error(3, 0);
   LOG_MATRIX(DEBUG, "error", error);
-
 
   Eigen::Matrix<double, 2, 1> U_integral;
   U_integral << kf_->X_hat(4, 0), kf_->X_hat(5, 0);
@@ -104,8 +103,8 @@ void DrivetrainMotorsSS::PolyCapU(Eigen::Matrix<double, 2, 1> *U) {
     }
   }
 
-  *U = -U_integral + velocity_K *velocity_error +
-       position_K *T_ *adjusted_pos_error + kf_->ff_U();
+  *U = -U_integral + velocity_K * velocity_error +
+       position_K * T_ * adjusted_pos_error + kf_->ff_U();
 
   if (!output_was_capped_) {
     if ((*U - kf_->U_uncapped()).norm() > 0.0001) {
@@ -122,13 +121,16 @@ DrivetrainMotorsSS::DrivetrainMotorsSS(const DrivetrainConfig &dt_config,
       U_poly_((Eigen::Matrix<double, 4, 2>() << /*[[*/ 1, 0 /*]*/,
                /*[*/ -1, 0 /*]*/,
                /*[*/ 0, 1 /*]*/,
-               /*[*/ 0, -1 /*]]*/).finished(),
+               /*[*/ 0, -1 /*]]*/)
+                  .finished(),
               (Eigen::Matrix<double, 4, 1>() << /*[[*/ 12 /*]*/,
                /*[*/ 12 /*]*/,
                /*[*/ 12 /*]*/,
-               /*[*/ 12 /*]]*/).finished(),
+               /*[*/ 12 /*]]*/)
+                  .finished(),
               (Eigen::Matrix<double, 2, 4>() << /*[[*/ 12, 12, -12, -12 /*]*/,
-               /*[*/ -12, 12, 12, -12 /*]*/).finished()),
+               /*[*/ -12, 12, 12, -12 /*]*/)
+                  .finished()),
       linear_profile_(::aos::controls::kLoopFrequency),
       angular_profile_(::aos::controls::kLoopFrequency),
       integrated_kf_heading_(integrated_kf_heading) {

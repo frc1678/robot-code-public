@@ -1,16 +1,16 @@
 #include "frc971/control_loops/drivetrain/polydrivetrain.h"
 
-#include "aos/common/logging/logging.h"
-#include "aos/common/controls/polytope.h"
 #include "aos/common/commonmath.h"
-#include "aos/common/logging/queue_logging.h"
+#include "aos/common/controls/polytope.h"
+#include "aos/common/logging/logging.h"
 #include "aos/common/logging/matrix_logging.h"
+#include "aos/common/logging/queue_logging.h"
 
 #include "aos/common/messages/robot_state.q.h"
-#include "frc971/control_loops/state_feedback_loop.h"
 #include "frc971/control_loops/coerce_goal.h"
 #include "frc971/control_loops/drivetrain/drivetrain.q.h"
 #include "frc971/control_loops/drivetrain/drivetrain_config.h"
+#include "frc971/control_loops/state_feedback_loop.h"
 
 namespace frc971 {
 namespace control_loops {
@@ -22,13 +22,16 @@ PolyDrivetrain::PolyDrivetrain(const DrivetrainConfig &dt_config,
       U_Poly_((Eigen::Matrix<double, 4, 2>() << /*[[*/ 1, 0 /*]*/,
                /*[*/ -1, 0 /*]*/,
                /*[*/ 0, 1 /*]*/,
-               /*[*/ 0, -1 /*]]*/).finished(),
+               /*[*/ 0, -1 /*]]*/)
+                  .finished(),
               (Eigen::Matrix<double, 4, 1>() << /*[[*/ 12 /*]*/,
                /*[*/ 12 /*]*/,
                /*[*/ 12 /*]*/,
-               /*[*/ 12 /*]]*/).finished(),
+               /*[*/ 12 /*]]*/)
+                  .finished(),
               (Eigen::Matrix<double, 2, 4>() << /*[[*/ 12, 12, -12, -12 /*]*/,
-               /*[*/ -12, 12, 12, -12 /*]*/).finished()),
+               /*[*/ -12, 12, 12, -12 /*]*/)
+                  .finished()),
       loop_(new StateFeedbackLoop<2, 2, 2>(dt_config.make_v_drivetrain_loop())),
       ttrust_(1.1),
       wheel_(0.0),

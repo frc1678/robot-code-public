@@ -3,8 +3,8 @@
 
 #include <functional>
 
-#include "frc971/shifter_hall_effect.h"
 #include "frc971/control_loops/state_feedback_loop.h"
+#include "frc971/shifter_hall_effect.h"
 
 namespace frc971 {
 namespace control_loops {
@@ -79,8 +79,7 @@ struct DrivetrainConfig {
   Eigen::Matrix<double, 4, 1> AngularLinearToLeftRight(
       const Eigen::Matrix<double, 2, 1> &linear,
       const Eigen::Matrix<double, 2, 1> &angular) const {
-    Eigen::Matrix<double, 2, 1> scaled_angle =
-        angular * this->robot_radius;
+    Eigen::Matrix<double, 2, 1> scaled_angle = angular * this->robot_radius;
     Eigen::Matrix<double, 4, 1> state;
     state(0, 0) = linear(0, 0) - scaled_angle(0, 0);
     state(1, 0) = linear(1, 0) - scaled_angle(1, 0);

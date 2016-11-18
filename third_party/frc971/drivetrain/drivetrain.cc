@@ -1,20 +1,20 @@
 #include "frc971/control_loops/drivetrain/drivetrain.h"
 
-#include <stdio.h>
-#include <sched.h>
+#include "Eigen/Dense"
 #include <cmath>
 #include <memory>
-#include "Eigen/Dense"
+#include <sched.h>
+#include <stdio.h>
 
 #include "aos/common/logging/logging.h"
-#include "aos/common/logging/queue_logging.h"
 #include "aos/common/logging/matrix_logging.h"
+#include "aos/common/logging/queue_logging.h"
 
+#include "frc971/control_loops/drivetrain/down_estimator.h"
 #include "frc971/control_loops/drivetrain/drivetrain.q.h"
+#include "frc971/control_loops/drivetrain/drivetrain_config.h"
 #include "frc971/control_loops/drivetrain/polydrivetrain.h"
 #include "frc971/control_loops/drivetrain/ssdrivetrain.h"
-#include "frc971/control_loops/drivetrain/down_estimator.h"
-#include "frc971/control_loops/drivetrain/drivetrain_config.h"
 #include "frc971/queues/gyro.q.h"
 #include "frc971/shifter_hall_effect.h"
 #include "frc971/wpilib/imu.q.h"
