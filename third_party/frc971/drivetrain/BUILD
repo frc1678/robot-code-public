@@ -58,8 +58,8 @@ cc_library(
     ':gear',
     '//third_party/aos/common/controls:control_loop',
     '//third_party/aos/common/controls:polytope',
-    '//third_party/aos/common/logging:matrix_logging',
-    '//third_party/aos/common/logging:queue_logging',
+   # '//third_party/aos/common/logging:matrix_logging',
+   # '//third_party/aos/common/logging:queue_logging',
     '//third_party/aos/common/messages:robot_state',
     '//third_party/aos/common/util:log_interval',
     '//third_party/aos/common/util:trapezoid_profile',
@@ -88,8 +88,6 @@ cc_library(
     '//frc971/control_loops:state_feedback_loop',
     '//frc971/control_loops:coerce_goal',
     '//third_party/aos/common/util:log_interval',
-    '//third_party/aos/common/logging:queue_logging',
-    '//third_party/aos/common/logging:matrix_logging',
   ],
 )
 
@@ -137,7 +135,7 @@ cc_library(
     '//frc971/queues:gyro',
     '//frc971/wpilib:imu_queue',
     '//third_party/aos/common/util:log_interval',
-    '//third_party/aos/common/logging:queue_logging',
-    '//third_party/aos/common/logging:matrix_logging',
+#    '//third_party/aos/common/logging:queue_logging',
+#    '//third_party/aos/common/logging:matrix_logging',
   ],
 )

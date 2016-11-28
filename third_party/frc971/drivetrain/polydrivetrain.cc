@@ -2,9 +2,9 @@
 
 #include "third_party/aos/common/commonmath.h"
 #include "third_party/aos/common/controls/polytope.h"
-#include "third_party/aos/common/logging/logging.h"
-#include "third_party/aos/common/logging/matrix_logging.h"
-#include "third_party/aos/common/logging/queue_logging.h"
+/* #include "third_party/aos/common/logging/logging.h" */
+/* #include "third_party/aos/common/logging/matrix_logging.h" */
+/* #include "third_party/aos/common/logging/queue_logging.h" */
 
 #include "frc971/control_loops/coerce_goal.h"
 #include "frc971/control_loops/drivetrain/drivetrain.q.h"
@@ -113,6 +113,8 @@ void PolyDrivetrain::SetGoal(
   const bool quickturn = goal.quickturn;
   const bool highgear = goal.highgear;
 
+  // TODO (Finn) Make this a tan function in a separate commit - Avery prefers
+  // driving with that
   // Apply a sin function that's scaled to make it feel better.
   const double angular_range = M_PI_2 * dt_config_.wheel_non_linearity;
 
@@ -281,19 +283,20 @@ void PolyDrivetrain::Update() {
                    current_right_velocity, right_gear_);
 
     {
-      CIMLogging logging;
+      /* CIMLogging logging; */
 
-      // Reset the CIM model to the current conditions to be ready for when we
-      // shift.
-      logging.left_in_gear = IsInGear(left_gear_);
-      logging.left_motor_speed = left_motor_speed;
-      logging.left_velocity = current_left_velocity;
+      /*       // Reset the CIM model to the current conditions to be ready for
+       * when we */
+      /*       // shift. */
+      /*       logging.left_in_gear = IsInGear(left_gear_); */
+      /*       logging.left_motor_speed = left_motor_speed; */
+      /*       logging.left_velocity = current_left_velocity; */
 
-      logging.right_in_gear = IsInGear(right_gear_);
-      logging.right_motor_speed = right_motor_speed;
-      logging.right_velocity = current_right_velocity;
+      /*       logging.right_in_gear = IsInGear(right_gear_); */
+      /*       logging.right_motor_speed = right_motor_speed; */
+      /*       logging.right_velocity = current_right_velocity; */
 
-      LOG_STRUCT(DEBUG, "currently", logging);
+      /* LOG_STRUCT(DEBUG, "currently", logging); */
     }
     goal_left_velocity_ = current_left_velocity;
     goal_right_velocity_ = current_right_velocity;

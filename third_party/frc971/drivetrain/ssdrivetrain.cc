@@ -2,7 +2,7 @@
 
 #include "third_party/aos/common/commonmath.h"
 #include "third_party/aos/common/controls/polytope.h"
-#include "third_party/aos/common/logging/matrix_logging.h"
+/* #include "third_party/aos/common/logging/matrix_logging.h" */
 
 #include "frc971/control_loops/coerce_goal.h"
 #include "frc971/control_loops/drivetrain/drivetrain.q.h"
@@ -32,7 +32,7 @@ void DrivetrainMotorsSS::PolyCapU(Eigen::Matrix<double, 2, 1> *U) {
 
   const Eigen::Matrix<double, 7, 1> error = kf_->R() - kf_->X_hat();
 
-  LOG_MATRIX(DEBUG, "U_uncapped", *U);
+  /* LOG_MATRIX(DEBUG, "U_uncapped", *U); */
 
   Eigen::Matrix<double, 2, 2> position_K;
   position_K << kf_->K(0, 0), kf_->K(0, 2), kf_->K(1, 0), kf_->K(1, 2);
@@ -45,7 +45,7 @@ void DrivetrainMotorsSS::PolyCapU(Eigen::Matrix<double, 2, 1> *U) {
   const auto drive_error = T_inverse_ * position_error;
   Eigen::Matrix<double, 2, 1> velocity_error;
   velocity_error << error(1, 0), error(3, 0);
-  LOG_MATRIX(DEBUG, "error", error);
+  /* LOG_MATRIX(DEBUG, "error", error); */
 
   Eigen::Matrix<double, 2, 1> U_integral;
   U_integral << kf_->X_hat(4, 0), kf_->X_hat(5, 0);
@@ -108,7 +108,7 @@ void DrivetrainMotorsSS::PolyCapU(Eigen::Matrix<double, 2, 1> *U) {
 
   if (!output_was_capped_) {
     if ((*U - kf_->U_uncapped()).norm() > 0.0001) {
-      LOG(FATAL, "U unnecessarily capped\n");
+      ::aos::die;
     }
   }
 }
@@ -221,7 +221,7 @@ void DrivetrainMotorsSS::Update(bool enable_control_loop) {
       // coordinates.  Convert back...
       linear_profile_.MoveCurrentState(dt_config_.LeftRightToLinear(kf_->R()));
 
-      LOG(DEBUG, "Saturated while moving\n");
+      /* LOG(DEBUG, "Saturated while moving\n"); */
 
       Eigen::Matrix<double, 2, 1> absolute_angular =
           dt_config_.LeftRightToAngular(kf_->R());

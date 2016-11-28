@@ -4,7 +4,7 @@
 #include "third_party/aos/common/commonmath.h"
 #include "third_party/aos/common/controls/control_loop.h"
 #include "third_party/aos/common/controls/polytope.h"
-#include "third_party/aos/common/logging/matrix_logging.h"
+/* #include "third_party/aos/common/logging/matrix_logging.h" */
 #include "third_party/aos/common/util/trapezoid_profile.h"
 
 #include "frc971/control_loops/coerce_goal.h"

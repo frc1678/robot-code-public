@@ -6,9 +6,9 @@
 #include <sched.h>
 #include <stdio.h>
 
-#include "third_party/aos/common/logging/logging.h"
-#include "third_party/aos/common/logging/matrix_logging.h"
-#include "third_party/aos/common/logging/queue_logging.h"
+/* #include "third_party/aos/common/logging/logging.h" */
+/* #include "third_party/aos/common/logging/matrix_logging.h" */
+/* #include "third_party/aos/common/logging/queue_logging.h" */
 
 #include "frc971/control_loops/drivetrain/down_estimator.h"
 #include "frc971/control_loops/drivetrain/drivetrain.q.h"
@@ -113,13 +113,13 @@ void DrivetrainLoop::RunIteration(
 
   kf_.set_controller_index(ControllerIndexFromGears());
   {
-    GearLogging gear_logging;
-    gear_logging.left_state = static_cast<uint32_t>(left_gear_);
-    gear_logging.right_state = static_cast<uint32_t>(right_gear_);
-    gear_logging.left_loop_high = MaybeHigh(left_gear_);
-    gear_logging.right_loop_high = MaybeHigh(right_gear_);
-    gear_logging.controller_index = kf_.controller_index();
-    LOG_STRUCT(DEBUG, "state", gear_logging);
+    /* GearLogging gear_logging; */
+    /* gear_logging.left_state = static_cast<uint32_t>(left_gear_); */
+    /* gear_logging.right_state = static_cast<uint32_t>(right_gear_); */
+    /* gear_logging.left_loop_high = MaybeHigh(left_gear_); */
+    /* gear_logging.right_loop_high = MaybeHigh(right_gear_); */
+    /* gear_logging.controller_index = kf_.controller_index(); */
+    /* LOG_STRUCT(DEBUG, "state", gear_logging); */
   }
 
   if (::frc971::imu_values.FetchLatest()) {
@@ -134,7 +134,7 @@ void DrivetrainLoop::RunIteration(
                                       ::frc971::imu_values->accelerometer_z) +
                          0.008;
     if (accel_squared > 1.03 || accel_squared < 0.97) {
-      LOG(DEBUG, "New IMU value, rejecting reading\n");
+      /* LOG(DEBUG, "New IMU value, rejecting reading\n"); */
     } else {
       // -y is our gyro.
       // z accel is down
@@ -144,18 +144,18 @@ void DrivetrainLoop::RunIteration(
       down_estimator_.Correct(Y);
     }
 
-    LOG(DEBUG,
+    /* LOG(DEBUG, */
         "New IMU value from ADIS16448, rate is %f, angle %f, fused %f, bias "
         "%f\n",
         rate, angle, down_estimator_.X_hat(0, 0), down_estimator_.X_hat(1, 0));
-    down_U_(0, 0) = rate;
+        down_U_(0, 0) = rate;
   }
   down_estimator_.UpdateObserver(down_U_);
 
   // TODO(austin): Signal the current gear to both loops.
 
   if (gyro_reading.FetchLatest()) {
-    LOG_STRUCT(DEBUG, "using", *gyro_reading.get());
+    /* LOG_STRUCT(DEBUG, "using", *gyro_reading.get()); */
     last_gyro_heading_ = gyro_reading->angle;
     last_gyro_rate_ = gyro_reading->velocity;
   }
