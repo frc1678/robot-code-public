@@ -1,0 +1,9 @@
+cc_binary(
+  name="frc1678",
+  deps=[
+      "//third_party/wpilibsuite:wpilib",
+      "//o2016/subsystem_runner:subsystem_runner",
+      "//o2016/teleop"
+  ],
+  srcs=["main.cpp"]
+)

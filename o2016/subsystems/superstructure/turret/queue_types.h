@@ -5,14 +5,14 @@
 #include "muan/queues/message_queue.h"
 #include "o2016/subsystems/superstructure/turret/turret.pb.h"
 
-namespace frc1678 {
+namespace o2016 {
 
 namespace turret {
 
-using TurretGoalProto = muan::proto::StackProto<::turret::TurretGoal, 100>;
-using TurretInputProto = muan::proto::StackProto<::turret::TurretInput, 100>;
-using TurretStatusProto = muan::proto::StackProto<::turret::TurretStatus, 100>;
-using TurretOutputProto = muan::proto::StackProto<::turret::TurretOutput, 100>;
+using TurretGoalProto = muan::proto::StackProto<::o2016::turret::TurretGoal, 100>;
+using TurretInputProto = muan::proto::StackProto<::o2016::turret::TurretInput, 100>;
+using TurretStatusProto = muan::proto::StackProto<::o2016::turret::TurretStatus, 100>;
+using TurretOutputProto = muan::proto::StackProto<::o2016::turret::TurretOutput, 100>;
 
 using TurretInputQueue = muan::queues::MessageQueue<TurretInputProto, 200>;
 using TurretGoalQueue = muan::queues::MessageQueue<TurretGoalProto, 200>;

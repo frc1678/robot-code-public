@@ -22,6 +22,11 @@ void MessageQueue<T, size>::WriteMessage(const T& message) {
 }
 
 template <typename T, uint64_t size>
+void MessageQueue<T, size>::Reset() {
+  back_ = 0;
+}
+
+template <typename T, uint64_t size>
 std::experimental::optional<T> MessageQueue<T, size>::NextMessage(
     uint64_t& next) const {
   aos::MutexLocker locker_{&queue_lock_};
@@ -46,7 +51,12 @@ template <typename T, uint64_t size>
 std::experimental::optional<T> MessageQueue<T, size>::LastMessage() const {
   aos::MutexLocker locker_{&queue_lock_};
 
-  return messages_[(back_ - 1) % size];
+  if (back_ == 0) {
+    // Nothing has ever been written to the queue! Return nullopt!
+    return std::experimental::nullopt;
+  } else {
+    return messages_[(back_ - 1) % size];
+  }
 }
 
 template <typename T, uint64_t size>
