@@ -1,8 +1,8 @@
 #include "third_party/aos/common/controls/replay_control_loop.h"
 #include "third_party/aos/linux_code/init.h"
 
-#include "frc971/control_loops/drivetrain/drivetrain.q.h"
-#include "frc971/queues/gyro.q.h"
+#include "third_party/frc971/drivetrain/drivetrain.q.h"
+#include "third_party/frc971/queues/gyro.q.h"
 
 // Reads one or more log files and sends out all the queue messages (in the
 // correct order and at the correct time) to feed a "live" drivetrain process.

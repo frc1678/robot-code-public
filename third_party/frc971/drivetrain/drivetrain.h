@@ -3,13 +3,13 @@
 
 #include "Eigen/Dense"
 
-#include "frc971/control_loops/drivetrain/drivetrain.q.h"
-#include "frc971/control_loops/drivetrain/drivetrain_config.h"
-#include "frc971/control_loops/drivetrain/gear.h"
-#include "frc971/control_loops/drivetrain/polydrivetrain.h"
-#include "frc971/control_loops/drivetrain/ssdrivetrain.h"
 #include "third_party/aos/common/controls/control_loop.h"
 #include "third_party/aos/common/controls/polytope.h"
+#include "third_party/frc971/drivetrain/drivetrain.q.h"
+#include "third_party/frc971/drivetrain/drivetrain_config.h"
+#include "third_party/frc971/drivetrain/gear.h"
+#include "third_party/frc971/drivetrain/polydrivetrain.h"
+#include "third_party/frc971/drivetrain/ssdrivetrain.h"
 /* #include "third_party/aos/common/util/log_interval.h" */
 
 namespace frc971 {

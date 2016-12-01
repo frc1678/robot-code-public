@@ -1,4 +1,4 @@
-#include "frc971/control_loops/drivetrain/drivetrain.h"
+#include "third_party/frc971/drivetrain/drivetrain.h"
 
 #include "Eigen/Dense"
 #include <cmath>
@@ -10,14 +10,14 @@
 /* #include "third_party/aos/common/logging/matrix_logging.h" */
 /* #include "third_party/aos/common/logging/queue_logging.h" */
 
-#include "frc971/control_loops/drivetrain/down_estimator.h"
-#include "frc971/control_loops/drivetrain/drivetrain.q.h"
-#include "frc971/control_loops/drivetrain/drivetrain_config.h"
-#include "frc971/control_loops/drivetrain/polydrivetrain.h"
-#include "frc971/control_loops/drivetrain/ssdrivetrain.h"
-#include "frc971/queues/gyro.q.h"
-#include "frc971/shifter_hall_effect.h"
-#include "frc971/wpilib/imu.q.h"
+#include "third_party/frc971/drivetrain/down_estimator.h"
+#include "third_party/frc971/drivetrain/drivetrain.q.h"
+#include "third_party/frc971/drivetrain/drivetrain_config.h"
+#include "third_party/frc971/drivetrain/polydrivetrain.h"
+#include "third_party/frc971/drivetrain/ssdrivetrain.h"
+#include "third_party/frc971/queues/gyro.q.h"
+#include "third_party/frc971/shifter_hall_effect.h"
+#include "third_party/frc971/wpilib/imu.q.h"
 
 using frc971::sensors::gyro_reading;
 

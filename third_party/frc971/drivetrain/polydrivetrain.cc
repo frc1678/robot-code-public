@@ -6,11 +6,11 @@
 /* #include "third_party/aos/common/logging/matrix_logging.h" */
 /* #include "third_party/aos/common/logging/queue_logging.h" */
 
-#include "frc971/control_loops/coerce_goal.h"
-#include "frc971/control_loops/drivetrain/drivetrain.q.h"
-#include "frc971/control_loops/drivetrain/drivetrain_config.h"
-#include "frc971/control_loops/state_feedback_loop.h"
 #include "third_party/aos/common/messages/robot_state.q.h"
+#include "third_party/frc971/coerce_goal.h"
+#include "third_party/frc971/drivetrain/drivetrain.q.h"
+#include "third_party/frc971/drivetrain/drivetrain_config.h"
+#include "third_party/frc971/state_feedback_loop.h"
 
 namespace frc971 {
 namespace control_loops {

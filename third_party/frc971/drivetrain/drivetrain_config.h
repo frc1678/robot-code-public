@@ -3,8 +3,8 @@
 
 #include <functional>
 
-#include "frc971/control_loops/state_feedback_loop.h"
-#include "frc971/shifter_hall_effect.h"
+#include "third_party/frc971/shifter_hall_effect.h"
+#include "third_party/frc971/state_feedback_loop.h"
 
 namespace frc971 {
 namespace control_loops {
