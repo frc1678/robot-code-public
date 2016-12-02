@@ -49,8 +49,12 @@ T LinearInterpolation<T>::operator()(double x) const {
 
 template<typename T>
 void LinearInterpolation<T>::AddControlPoint(std::pair<double, T> point) {
-  data_.push_back(point);
-  std::sort(data_.begin(), data_.end(), compare_points_);
+  if(point.first > data_[data_.size() - 1]) {
+    data_.push_back(point);
+  } else {
+    auto location = std::upper_bound(data_.begin(), data_.end(), point, compare_points_) - 1;
+    data_.insert(location, point);
+  }
 }
 
 template<typename T>
