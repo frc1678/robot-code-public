@@ -2,6 +2,22 @@ package(default_visibility = ['//visibility:public'])
 licenses(['notice'])
 
 cc_library(
+  name = 'trapezoid_profile',
+  srcs = [
+    'trapezoid_profile.cc',
+  ],
+  hdrs = [
+    'trapezoid_profile.h',
+  ],
+  deps = [
+    '//third_party/eigen',
+    '//aos/common:time',
+    '//aos/common/logging',
+    '//debian:libm',
+  ],
+)
+
+cc_library(
   name = 'run_command',
   srcs = [
     'run_command.cc',
