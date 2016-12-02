@@ -9,7 +9,9 @@ cc_library(
           'textlogger',
           '//muan/queues:queues',
           '//muan/utils:proto_utils',
-          '//muan/multithreading:updateable',
+          '//third_party/aos/linux_code:init',
+          '//third_party/aos/common/util:phased_loop',
+          '//third_party/aos/common:time',
           '//third_party/google/protobuf',
           '//third_party/optional']
 )

@@ -3,7 +3,9 @@
 
 #include "filewriter.h"
 #include "textlogger.h"
-#include "muan/multithreading/updateable.h"
+#include "third_party/aos/common/time.h"
+#include "third_party/aos/common/util/phased_loop.h"
+#include "third_party/aos/linux_code/init.h"
 #include "muan/queues/message_queue.h"
 #include "muan/units/units.h"
 #include "muan/utils/proto_utils.h"
@@ -49,24 +51,29 @@ namespace logging {
  * expanded, so it is up to callers to ensure that the construction of the
  * logging string is realtime.
  */
-class Logger : public muan::Updateable {
+class Logger {
  public:
   Logger();
-  Logger(std::shared_ptr<FileWriter> writer);
+  Logger(std::unique_ptr<FileWriter>&& writer);
   virtual ~Logger() = default;
 
   // Adds a QueueReader<protobuf_class> to the list of queues to be logged,
   // under the name "name". The name will determine the file that it logs to,
   // as well as serving as a human-readable name in other places.
   template <class T>
-  void AddQueue(std::string name, T& queue_reader);
+  void AddQueue(const std::string& name, T* queue_reader);
 
-  void Update(muan::units::Time dt) override;
+  void operator()();
+
+  void Update();
+  void Start();
+  void Stop();
 
   // Returns a TextLogger that can be used to log strings to a file.
   TextLogger GetTextLogger(std::string name);
  private:
-  std::shared_ptr<FileWriter> writer_;
+  std::unique_ptr<FileWriter> writer_;
+  std::atomic<bool> running_{false};
 
   class GenericReader {
    public:
@@ -76,11 +83,11 @@ class Logger : public muan::Updateable {
   template <class T>
   class Reader : public GenericReader {
    public:
-    Reader(T& reader);
+    Reader(T* reader);
     std::experimental::optional<std::string> GetMessageAsCSV() override;
 
    private:
-    T& reader_;
+    T* reader_;
   };
 
   struct QueueLog {

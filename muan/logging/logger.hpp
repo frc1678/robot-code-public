@@ -6,21 +6,32 @@
 namespace muan {
 namespace logging {
 
-Logger::Logger() : muan::Updateable(200 * muan::units::hz) {
-  writer_ = std::make_shared<FileWriter>();
+Logger::Logger() {
+  writer_ = std::make_unique<FileWriter>();
 }
 
-Logger::Logger(std::shared_ptr<FileWriter> writer) : muan::Updateable(200 * muan::units::hz) {
-  writer_ = writer;
-}
+Logger::Logger(std::unique_ptr<FileWriter>&& writer) : writer_(std::move(writer))  {}
 
 template <class T>
-void Logger::AddQueue(std::string name, T& queue_reader) { //TODO(Wesley) Queues with same name
+void Logger::AddQueue(const std::string& name, T* queue_reader) { //TODO(Wesley) Queues with same name
   QueueLog queue_log = {std::make_unique<Reader<T>>(queue_reader), name, name + ".csv"};
   queue_logs_.push_back(std::make_unique<QueueLog>(std::move(queue_log)));
 }
 
-void Logger::Update(muan::units::Time dt) {
+void Logger::operator()() {
+  aos::time::PhasedLoop phased_loop(aos::time::Time::InMS(20));
+
+  aos::SetCurrentThreadRealtimePriority(10);
+  aos::SetCurrentThreadName("Logger");
+
+  running_ = true;
+
+  while (running_) {
+    Update();
+  }
+}
+
+void Logger::Update() { //TODO(Wesley) remove this
   for (auto const& log : queue_logs_) {
     std::experimental::optional<std::string> message;
     while (message = log->reader->GetMessageAsCSV()) {
@@ -35,6 +46,14 @@ void Logger::Update(muan::units::Time dt) {
   }
 }
 
+void Logger::Start() {
+  running_ = true;
+}
+
+void Logger::Stop() {
+  running_ = false;
+}
+
 TextLogger Logger::GetTextLogger(std::string name) { //TODO(Wesley) logs with same name?
   auto queue_ptr = std::make_shared<TextLogger::TextQueue>();
   auto queue_reader = std::make_shared<TextLogger::TextQueue::QueueReader>(queue_ptr->MakeReader());
@@ -46,7 +65,7 @@ TextLogger Logger::GetTextLogger(std::string name) { //TODO(Wesley) logs with sa
 
 template <class T>
 std::experimental::optional<std::string> Logger::Reader<T>::GetMessageAsCSV() {
-  auto message = reader_.ReadMessage();
+  auto message = reader_->ReadMessage();
   if (message) {
     return muan::util::ProtoToCSV(*message);
   } else {
@@ -55,7 +74,7 @@ std::experimental::optional<std::string> Logger::Reader<T>::GetMessageAsCSV() {
 }
 
 template <class T>
-Logger::Reader<T>::Reader(T& reader) : reader_{reader} {}
+Logger::Reader<T>::Reader(T* reader) : reader_{reader} {}
 
 }  // namespace logging
 }  // namespace muan

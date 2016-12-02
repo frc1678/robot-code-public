@@ -17,32 +17,30 @@ class MockFileWriter : public muan::logging::FileWriter {
 };
 
 TEST(Logger, LogsOneMessage) {
-  std::shared_ptr<MockFileWriter> mock_writer = std::make_shared<MockFileWriter>();
+  std::unique_ptr<MockFileWriter> writer = std::make_unique<MockFileWriter>();
 
-  EXPECT_CALL(*mock_writer, WriteLine("testqueue.csv", "42"))
+  EXPECT_CALL(*writer, WriteLine("testqueue.csv", "42"))
       .Times(1);
 
-  std::shared_ptr<muan::logging::FileWriter> writer = mock_writer;
-  Logger logger(writer);
+  Logger logger(std::move(writer));
 
   MessageQueue<logging_test::Test1, 100> mq;
   logging_test::Test1 msg;
   msg.set_thing(42);
   mq.WriteMessage(msg);
   auto mqr = mq.MakeReader();
-  logger.AddQueue("testqueue", mqr);
+  logger.AddQueue("testqueue", &mqr);
 
-  logger.Update(0.005);
+  logger.Update();
 }
 
 TEST(Logger, LogsManyMessages) {
-  std::shared_ptr<MockFileWriter> mock_writer = std::make_shared<MockFileWriter>();
+  std::unique_ptr<MockFileWriter> writer = std::make_unique<MockFileWriter>();
 
-  EXPECT_CALL(*mock_writer, WriteLine("testqueue.csv", "42"))
+  EXPECT_CALL(*writer, WriteLine("testqueue.csv", "42"))
       .Times(42);
 
-  std::shared_ptr<muan::logging::FileWriter> writer = mock_writer;
-  Logger logger(writer);
+  Logger logger(std::move(writer));
 
   MessageQueue<logging_test::Test1, 100> mq;
   for (int i = 1; i <= 42; i++) {
@@ -51,51 +49,49 @@ TEST(Logger, LogsManyMessages) {
     mq.WriteMessage(msg);
   }
   auto mqr = mq.MakeReader();
-  logger.AddQueue("testqueue", mqr);
+  logger.AddQueue("testqueue", &mqr);
 
-  logger.Update(0.005);
+  logger.Update();
 }
 
 TEST(Logger, LogsMultipleQueues) {
-  std::shared_ptr<MockFileWriter> mock_writer = std::make_shared<MockFileWriter>();
+  std::unique_ptr<MockFileWriter> writer = std::make_unique<MockFileWriter>();
 
-  EXPECT_CALL(*mock_writer, WriteLine("testqueue1.csv", "42"))
+  EXPECT_CALL(*writer, WriteLine("testqueue1.csv", "42"))
       .Times(1);
-  EXPECT_CALL(*mock_writer, WriteLine("testqueue2.csv", "42"))
+  EXPECT_CALL(*writer, WriteLine("testqueue2.csv", "42"))
       .Times(1);
 
-  std::shared_ptr<muan::logging::FileWriter> writer = mock_writer;
-  Logger logger(writer);
+  Logger logger(std::move(writer));
 
   MessageQueue<logging_test::Test1, 100> mq1;
   logging_test::Test1 msg1;
   msg1.set_thing(42);
   mq1.WriteMessage(msg1);
   auto mqr1 = mq1.MakeReader();
-  logger.AddQueue("testqueue1", mqr1);
+  logger.AddQueue("testqueue1", &mqr1);
 
   MessageQueue<logging_test::Test1, 100> mq2;
   logging_test::Test1 msg2;
   msg2.set_thing(42);
   mq2.WriteMessage(msg2);
   auto mqr2 = mq2.MakeReader();
-  logger.AddQueue("testqueue2", mqr2);
+  logger.AddQueue("testqueue2", &mqr2);
 
-  logger.Update(0.005);
+  logger.Update();
 }
 
 TEST(Logger, LogsManyMessagesPerTick) {
-  std::shared_ptr<MockFileWriter> mock_writer = std::make_shared<MockFileWriter>();
+  std::unique_ptr<MockFileWriter> writer = std::make_unique<MockFileWriter>();
 
-  EXPECT_CALL(*mock_writer, WriteLine("testqueue.csv", "42"))
+  EXPECT_CALL(*writer, WriteLine("testqueue.csv", "42"))
       .Times(10000);
 
-  std::shared_ptr<muan::logging::FileWriter> writer = mock_writer;
-  Logger logger(writer);
+  Logger logger(std::move(writer));
 
   MessageQueue<logging_test::Test1, 20000> mq;
   auto mqr = mq.MakeReader();
-  logger.AddQueue("testqueue", mqr);
+  logger.AddQueue("testqueue", &mqr);
 
   for (int n = 1; n <= 10; n++) {
     for (int i = 1; i <= 1000; i++) {
@@ -103,41 +99,18 @@ TEST(Logger, LogsManyMessagesPerTick) {
       msg.set_thing(42);
       mq.WriteMessage(msg);
     }
-    logger.Update(0.005);
+    logger.Update();
   }
 }
 
-TEST(Logger, RunsAsThread) {
-  std::shared_ptr<MockFileWriter> mock_writer = std::make_shared<MockFileWriter>();
-
-  EXPECT_CALL(*mock_writer, WriteLine("testqueue.csv", "42"))
-      .Times(1);
-
-  std::shared_ptr<muan::logging::FileWriter> writer = mock_writer;
-  Logger logger(writer);
-
-  MessageQueue<logging_test::Test1, 100> mq;
-  logging_test::Test1 msg;
-  msg.set_thing(42);
-  mq.WriteMessage(msg);
-  auto mqr = mq.MakeReader();
-  logger.AddQueue("testqueue", mqr);
-
-  logger.Start();
-  muan::sleep_for(2 * muan::units::s);
-  logger.Stop();
-  muan::sleep_for(1 * muan::units::s);
-}
-
 TEST(Logger, TextLogger) {
-  std::shared_ptr<MockFileWriter> mock_writer = std::make_shared<MockFileWriter>();
-  std::shared_ptr<muan::logging::FileWriter> writer = mock_writer;
+  std::unique_ptr<MockFileWriter> writer = std::make_unique<MockFileWriter>();
 
-  EXPECT_CALL(*mock_writer, WriteLine("name.log", "test"))
+  EXPECT_CALL(*writer, WriteLine("name.log", "test"))
       .Times(1);
 
-  Logger logger(writer);
+  Logger logger(std::move(writer));
   auto textlog = logger.GetTextLogger("name");
   textlog("test");
-  logger.Update(0.005);
+  logger.Update();
 }
