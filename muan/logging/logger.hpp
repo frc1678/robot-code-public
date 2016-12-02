@@ -28,6 +28,7 @@ void Logger::operator()() {
 
   while (running_) {
     Update();
+    phased_loop.SleepUntilNext();
   }
 }
 
