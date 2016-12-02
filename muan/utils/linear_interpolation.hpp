@@ -15,9 +15,6 @@ LinearInterpolation<T>::LinearInterpolation(std::vector<std::pair<double, T>> da
   };
   // sort the points for speed later
   std::sort(data_.begin(), data_.end(), compare_points_);
-  for(int i=0; i<data_.size(); i++) {
-  std::cout<<data_[i].first<<" "<<data_[i].second<<std::endl;
-  }
 }
 
 template<typename T>
