@@ -1,6 +1,5 @@
 #include "third_party/aos/common/die.h"
 #include <algorithm>
-#include <iostream>
 
 namespace muan {
 
@@ -52,7 +51,7 @@ void LinearInterpolation<T>::AddControlPoint(std::pair<double, T> point) {
   if(point.first > data_[data_.size() - 1].first) {
     data_.push_back(point);
   } else {
-    auto location = std::upper_bound(data_.begin(), data_.end(), point, compare_points_) - 1;
+    auto location = std::upper_bound(data_.begin(), data_.end(), point, compare_points_);
     data_.insert(location, point);
   }
 }

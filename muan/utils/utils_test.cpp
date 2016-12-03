@@ -72,7 +72,7 @@ TEST(LinearInterpolation, CalculatesCorrectly) {
   f.AddControlPoint(std::make_pair(7., 7.));
   f.AddControlPoint(std::make_pair(6., 8.));
   EXPECT_EQ(f.lower_boundary(), 0.);
-  EXPECT_EQ(f.upper_boundary(), 6.);
+  EXPECT_EQ(f.upper_boundary(), 7.);
   EXPECT_EQ(f(0), 0);
   EXPECT_EQ(f(1), 0);
   EXPECT_EQ(f(2), 1);
