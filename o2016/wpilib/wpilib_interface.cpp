@@ -66,11 +66,11 @@ namespace secondaries {
 constexpr uint32_t kSecondariesMotor = 9;
 constexpr uint32_t kSecondariesCylinder = 0;
 
-} // secondaries
+}  // secondaries
 
 }  // ports
 
-constexpr double kMaxVoltage = 4; // 4 volt bringup voltage
+constexpr double kMaxVoltage = 4;  // 4 volt bringup voltage
 
 DrivetrainInterface::DrivetrainInterface(muan::wpilib::CanWrapper* can_wrapper)
     : pcm_{can_wrapper->pcm()},
@@ -270,7 +270,6 @@ SecondariesInterface::SecondariesInterface(muan::wpilib::CanWrapper* can)
     : output_queue_(QueueManager::GetInstance().secondaries_output_queue().MakeReader()),
       pcm_{can->pcm()},
       secondaries_motor_{ports::secondaries::kSecondariesMotor} {
-
   pcm_->CreateSolenoid(ports::secondaries::kSecondariesCylinder);
 }
 

@@ -1,7 +1,7 @@
 #include "gyro_interface.h"
 
-#include <inttypes.h>
 #include <cstring>
+#include <inttypes.h>
 #include <unistd.h>
 
 #ifndef M_PI

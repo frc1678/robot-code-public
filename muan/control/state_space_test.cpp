@@ -52,7 +52,7 @@ TEST(StateSpace, Initialization) {
   // Use default parameters
   muan::control::StateSpacePlant<1, 2, 1> plant2(plant.A(), plant.B(), plant.C());
 
-  // Ensure that the plant uses the gains given to it 
+  // Ensure that the plant uses the gains given to it
   for (uint32_t i = 0; i < 2; i++) {
     for (uint32_t j = 0; j < 2; j++) {
       EXPECT_EQ(plant2.A(i, j), plant.A(i, j));

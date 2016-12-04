@@ -7,7 +7,7 @@
 
 namespace o2016 {
 
-namespace catapult{
+namespace catapult {
 
 using CatapultOutputProto = muan::proto::StackProto<CatapultOutput, 1024>;
 using CatapultStatusProto = muan::proto::StackProto<CatapultStatus, 1024>;
@@ -19,8 +19,8 @@ using CatapultStatusQueue = muan::queues::MessageQueue<CatapultStatusProto, 100>
 using CatapultInputQueue = muan::queues::MessageQueue<CatapultInputProto, 100>;
 using CatapultGoalQueue = muan::queues::MessageQueue<CatapultGoalProto, 100>;
 
-} // catapult
+}  // catapult
 
-} // o2016
+}  // o2016
 
-#endif // O2016_SUBSYSTEMS_SUPERSTRUCTURE_CATAPULT_QUEUETYPES_H_
+#endif  // O2016_SUBSYSTEMS_SUPERSTRUCTURE_CATAPULT_QUEUETYPES_H_

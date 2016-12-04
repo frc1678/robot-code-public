@@ -1,6 +1,6 @@
-#include "gtest/gtest.h"
-#include "secondaries.h"
 #include "queue_types.h"
+#include "secondaries.h"
+#include "gtest/gtest.h"
 
 using namespace o2016::secondaries;
 
@@ -63,4 +63,3 @@ TEST(Secondaries, Reverse) {
 
   ASSERT_EQ(output->voltage(), -12);
 }
-

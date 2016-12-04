@@ -1,11 +1,11 @@
-#include <WPILib.h>
 #include "can_wrapper.h"
 #include "third_party/aos/common/time.h"
 #include "third_party/aos/common/util/phased_loop.h"
+#include <WPILib.h>
 
 class BuildTestRobot : public RobotBase {
  public:
-  void StartCompetition() override{
+  void StartCompetition() override {
     muan::wpilib::PdpWrapper::Queue pdp_queue;
     auto pdp_reader = pdp_queue.MakeReader();
     muan::wpilib::CanWrapper can{&pdp_queue};

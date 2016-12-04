@@ -2,8 +2,8 @@
 #define MUAN_UTILS_HISTORY_H_
 
 #include "muan/units/units.h"
-#include <array>
 #include "third_party/aos/common/die.h"
+#include <array>
 
 namespace muan {
 

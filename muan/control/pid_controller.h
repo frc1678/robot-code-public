@@ -8,7 +8,6 @@ namespace muan {
 
 class PidController {
  public:
-
   struct PidGains {
     double kP;
     double kI;
