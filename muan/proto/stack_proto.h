@@ -1,10 +1,10 @@
 #ifndef MUAN_PROTO_STACK_PROTO_H_
 #define MUAN_PROTO_STACK_PROTO_H_
 
-#include "google/protobuf/arena.h"
-#include "third_party/aos/common/die.h"
 #include <array>
 #include <cstdint>
+#include "google/protobuf/arena.h"
+#include "third_party/aos/common/die.h"
 
 namespace muan {
 namespace proto {

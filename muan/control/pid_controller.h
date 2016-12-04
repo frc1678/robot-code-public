@@ -1,8 +1,8 @@
 #ifndef MUAN_CONTROL_PID_CONTROLLER_H_
 #define MUAN_CONTROL_PID_CONTROLLER_H_
 
-#include "muan/units/units.h"
 #include <type_traits>
+#include "muan/units/units.h"
 
 namespace muan {
 

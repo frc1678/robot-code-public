@@ -1,10 +1,10 @@
+#include <random>
 #include "Eigen/Dense"
+#include "gtest/gtest.h"
 #include "muan/utils/math_utils.h"
 #include "state_space_controller.h"
 #include "state_space_observer.h"
 #include "state_space_plant.h"
-#include "gtest/gtest.h"
-#include <random>
 
 // Ensure that all state-space objects are properly zero-initialized
 TEST(StateSpace, Initialization) {

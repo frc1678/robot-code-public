@@ -9,12 +9,12 @@
 #ifndef MUAN_LOGGING_CSV_LOG_H_
 #define MUAN_LOGGING_CSV_LOG_H_
 
-#include "log.h"
-#include "muan/units/units.h"
-#include "muan/utils/timer.h"
 #include <string>
 #include <utility>
 #include <vector>
+#include "log.h"
+#include "muan/units/units.h"
+#include "muan/utils/timer.h"
 
 namespace muan {
 

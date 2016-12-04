@@ -7,9 +7,9 @@
  */
 
 #include "csv_log.h"
-#include "log_manager.h"
 #include <string>
 #include <vector>
+#include "log_manager.h"
 
 namespace muan {
 

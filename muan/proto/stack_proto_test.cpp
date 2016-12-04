@@ -2,9 +2,9 @@
 #define MUAN_PROTO_STACK_PROTO_TEST_H_
 
 #include "muan/proto/stack_proto.h"
+#include "gtest/gtest.h"
 #include "muan/proto/test_proto.pb.h"
 #include "muan/queues/message_queue.h"
-#include "gtest/gtest.h"
 
 TEST(StackProto, Construct) {
   // Can we construct a single instance?

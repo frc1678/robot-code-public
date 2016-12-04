@@ -7,8 +7,8 @@
  */
 
 #include "text_log.h"
-#include "log_manager.h"
 #include <string>
+#include "log_manager.h"
 
 namespace muan {
 

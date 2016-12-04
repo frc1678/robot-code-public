@@ -1,6 +1,6 @@
 #include "message_queue.h"
-#include "gtest/gtest.h"
 #include <thread>
+#include "gtest/gtest.h"
 
 using muan::queues::MessageQueue;
 

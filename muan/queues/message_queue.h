@@ -1,11 +1,11 @@
 #ifndef MUAN_QUEUES_MESSAGE_QUEUE_H_
 #define MUAN_QUEUES_MESSAGE_QUEUE_H_
 
+#include <array>
+#include <cstdint>
 #include "muan/utils/math_utils.h"
 #include "third_party/aos/common/mutex.h"
 #include "third_party/optional/optional.hpp"
-#include <array>
-#include <cstdint>
 
 namespace muan {
 

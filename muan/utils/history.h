@@ -1,9 +1,9 @@
 #ifndef MUAN_UTILS_HISTORY_H_
 #define MUAN_UTILS_HISTORY_H_
 
+#include <array>
 #include "muan/units/units.h"
 #include "third_party/aos/common/die.h"
-#include <array>
 
 namespace muan {
 

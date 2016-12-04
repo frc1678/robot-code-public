@@ -1,8 +1,8 @@
 #ifndef MUAN_CONTROL_STATE_SPACE_CONTROLLER_H_
 #define MUAN_CONTROL_STATE_SPACE_CONTROLLER_H_
 
-#include "Eigen/Core"
 #include <cstdint>
+#include "Eigen/Core"
 
 namespace muan {
 

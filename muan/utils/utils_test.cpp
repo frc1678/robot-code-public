@@ -1,7 +1,7 @@
+#include "gtest/gtest.h"
 #include "muan/utils/history.h"
 #include "muan/utils/timer.h"
 #include "muan/utils/timing_utils.h"
-#include "gtest/gtest.h"
 
 using muan::Timer;
 using muan::History;

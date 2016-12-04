@@ -1,8 +1,8 @@
 #ifndef MUAN_CONTROL_MOTION_PROFILE_H_
 #define MUAN_CONTROL_MOTION_PROFILE_H_
+#include <type_traits>
 #include "muan/units/units.h"
 #include "muan/utils/math_utils.h"
-#include <type_traits>
 
 namespace muan {
 

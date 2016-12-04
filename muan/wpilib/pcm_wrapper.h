@@ -1,9 +1,9 @@
 #ifndef MUAN_WPILIB_PCM_WRAPPER_H_
 #define MUAN_WPILIB_PCM_WRAPPER_H_
 
-#include "WPILib.h"
 #include <atomic>
 #include <cstdint>
+#include "WPILib.h"
 
 namespace muan {
 

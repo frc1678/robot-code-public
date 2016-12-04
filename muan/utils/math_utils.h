@@ -1,9 +1,9 @@
 #ifndef MUAN_UTILS_MATH_UTILS_H_
 #define MUAN_UTILS_MATH_UTILS_H_
 
-#include "Eigen/Core"
 #include <iostream>
 #include <random>
+#include "Eigen/Core"
 
 namespace muan {
 

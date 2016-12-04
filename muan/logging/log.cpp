@@ -7,11 +7,11 @@
  */
 
 #include "log.h"
-#include "log_manager.h"
-#include <ctime>
-#include <string>
 #include <sys/stat.h>
 #include <sys/time.h>
+#include <ctime>
+#include <string>
+#include "log_manager.h"
 
 namespace muan {
 

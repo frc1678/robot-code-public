@@ -1,6 +1,6 @@
 #include "pot_calibration.h"
-#include "muan/utils/math_utils.h"
 #include "gtest/gtest.h"
+#include "muan/utils/math_utils.h"
 
 class PotCalibrationTest : public ::testing::Test {
  public:

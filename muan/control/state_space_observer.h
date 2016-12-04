@@ -1,9 +1,9 @@
 #ifndef MUAN_CONTROL_STATE_SPACE_OBSERVER_H_
 #define MUAN_CONTROL_STATE_SPACE_OBSERVER_H_
 
+#include <cstdint>
 #include "Eigen/Core"
 #include "state_space_plant.h"
-#include <cstdint>
 
 namespace muan {
 

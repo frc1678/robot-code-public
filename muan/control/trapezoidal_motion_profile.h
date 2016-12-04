@@ -1,9 +1,9 @@
 #ifndef MUAN_CONTROL_TRAPEZOIDALMOTIONPROFILE_H_
 #define MUAN_CONTROL_TRAPEZOIDALMOTIONPROFILE_H_
 
-#include "motion_profile.h"
 #include <cmath>
 #include <type_traits>
+#include "motion_profile.h"
 
 namespace muan {
 

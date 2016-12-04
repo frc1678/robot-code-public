@@ -9,8 +9,8 @@
 #ifndef MUAN_LOGGING_TEXT_LOG_H_
 #define MUAN_LOGGING_TEXT_LOG_H_
 
-#include "log.h"
 #include <string>
+#include "log.h"
 
 namespace muan {
 

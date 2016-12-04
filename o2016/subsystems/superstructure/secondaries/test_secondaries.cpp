@@ -1,6 +1,6 @@
+#include "gtest/gtest.h"
 #include "queue_types.h"
 #include "secondaries.h"
-#include "gtest/gtest.h"
 
 using namespace o2016::secondaries;
 
