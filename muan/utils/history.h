@@ -10,8 +10,7 @@ namespace muan {
 template <class T, int size>
 class History {
  public:
-  explicit History(muan::units::Time time_step_)
-      : current_pos_(0), time_step_(time_step_) {}
+  explicit History(muan::units::Time time_step_) : current_pos_(0), time_step_(time_step_) {}
 
   void Update(T val) {
     hist_arr_[current_pos_] = val;
@@ -23,9 +22,7 @@ class History {
       ::aos::Die("Cannot go back to unrecorded history!");
     }
     unsigned int element_pos =
-        (current_pos_ - static_cast<int>(muan::units::convert(t, time_step_)) +
-         size) %
-        size;
+        (current_pos_ - static_cast<int>(muan::units::convert(t, time_step_)) + size) % size;
     return hist_arr_[element_pos];
   }
 

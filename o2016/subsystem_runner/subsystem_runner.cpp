@@ -26,7 +26,5 @@ void SubsystemRunner::operator()() {
   }
 }
 
-void SubsystemRunner::Stop() {
-  running_ = false;
-}
+void SubsystemRunner::Stop() { running_ = false; }
 }

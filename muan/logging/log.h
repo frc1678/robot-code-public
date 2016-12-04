@@ -20,9 +20,8 @@
 // #define LOG_VERBOSE
 
 #ifdef LOG_VERBOSE
-#define CODE_STAMP                                              \
-  " (at line " + std::to_string(__LINE__) + " of " + __FILE__ + \
-      " in function " + __PRETTY_FUNCTION__ + ")"
+#define CODE_STAMP \
+  " (at line " + std::to_string(__LINE__) + " of " + __FILE__ + " in function " + __PRETTY_FUNCTION__ + ")"
 #else
 #define CODE_STAMP ""
 #endif

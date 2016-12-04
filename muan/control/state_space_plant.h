@@ -35,13 +35,13 @@ class StateSpacePlant {
   StateSpacePlant();
 
   // Initializes the system from predefined discrete-time system matrices
-  StateSpacePlant(const Eigen::Matrix<double, kNumStates, kNumStates>& A,
-                  const Eigen::Matrix<double, kNumStates, kNumInputs>& B,
-                  const Eigen::Matrix<double, kNumOutputs, kNumStates>& C,
-                  const Eigen::Matrix<double, kNumOutputs, kNumInputs>& D =
-                      Eigen::Matrix<double, kNumOutputs, kNumInputs>::Zero(),
-                  const Eigen::Matrix<double, kNumStates, 1>& x_0 =
-                      Eigen::Matrix<double, kNumStates, 1>::Zero());
+  StateSpacePlant(
+      const Eigen::Matrix<double, kNumStates, kNumStates>& A,
+      const Eigen::Matrix<double, kNumStates, kNumInputs>& B,
+      const Eigen::Matrix<double, kNumOutputs, kNumStates>& C,
+      const Eigen::Matrix<double, kNumOutputs, kNumInputs>& D =
+          Eigen::Matrix<double, kNumOutputs, kNumInputs>::Zero(),
+      const Eigen::Matrix<double, kNumStates, 1>& x_0 = Eigen::Matrix<double, kNumStates, 1>::Zero());
   virtual ~StateSpacePlant() = default;
 
   // Updates the system by one timestep with a specified control signal and

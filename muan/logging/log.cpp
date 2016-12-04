@@ -15,8 +15,7 @@
 
 namespace muan {
 
-std::string Log::folder_path_ =
-    "/home/lvuser/logs/" + Log::GetDateString() + "/";
+std::string Log::folder_path_ = "/home/lvuser/logs/" + Log::GetDateString() + "/";
 std::once_flag Log::folder_created_;
 
 Log::Log(std::string name, std::string extension) {

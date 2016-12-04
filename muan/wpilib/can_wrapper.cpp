@@ -7,9 +7,7 @@ namespace muan {
 
 namespace wpilib {
 
-CanWrapper::CanWrapper(PdpWrapper::Queue* pdp_queue) {
-  pdp_.SetQueue(pdp_queue);
-}
+CanWrapper::CanWrapper(PdpWrapper::Queue* pdp_queue) { pdp_.SetQueue(pdp_queue); }
 
 void CanWrapper::operator()() {
   aos::time::PhasedLoop phased_loop(aos::time::Time::InMS(20));
