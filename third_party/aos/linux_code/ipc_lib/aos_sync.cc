@@ -491,7 +491,9 @@ void Init() {
                reinterpret_cast<void *>(robust_head.next), sizeof(robust_head));
   }
   if (kRobustListDebug) {
-    printf("%" PRId32 ": init done\n", get_tid());
+    // TODO Why doesn't this build correctly?
+    // printf("%" PRId32 ": init done\n", get_tid());
+    printf("%" "PRId32" ": init done\n", get_tid());
   }
 }
 
@@ -523,7 +525,9 @@ class Adder {
   Adder(aos_mutex *m) : m_(m) {
     assert(robust_head.pending_next == 0);
     if (kRobustListDebug) {
-      printf("%" PRId32 ": maybe add %p\n", get_tid(), m_);
+      // TODO Why doesn't this build correctly?
+      // printf("%" PRId32 ": maybe add %p\n", get_tid(), m_);
+      printf("%" "PRId32" ": maybe add %p\n", get_tid(), m_);
     }
     robust_head.pending_next = mutex_to_next(m);
     aos_compiler_memory_barrier();
@@ -531,7 +535,10 @@ class Adder {
   ~Adder() {
     assert(robust_head.pending_next == mutex_to_next(m_));
     if (kRobustListDebug) {
-      printf("%" PRId32 ": done maybe add %p, n=%p p=%p\n", get_tid(), m_,
+      // TODO Why doesn't this build correctly?
+      // printf("%" PRId32 ": done maybe add %p, n=%p p=%p\n", get_tid(), m_,
+      //        next_to_mutex(m_->next), m_->previous);
+      printf("%" "PRId32" ": done maybe add %p, n=%p p=%p\n", get_tid(), m_,
              next_to_mutex(m_->next), m_->previous);
     }
     aos_compiler_memory_barrier();
@@ -541,7 +548,9 @@ class Adder {
   void Add() {
     assert(robust_head.pending_next == mutex_to_next(m_));
     if (kRobustListDebug) {
-      printf("%" PRId32 ": adding %p\n", get_tid(), m_);
+      // TODO Why doesn't this build correctly?
+      // printf("%" PRId32 ": adding %p\n", get_tid(), m_);
+      printf("%" "PRId32" ": adding %p\n", get_tid(), m_);
     }
     const uintptr_t old_head_next_value = robust_head.next;
 
@@ -556,7 +565,9 @@ class Adder {
     }
     aos_compiler_memory_barrier();
     if (kRobustListDebug) {
-      printf("%" PRId32 ": done adding %p\n", get_tid(), m_);
+      // TODO Why doesn't this build correctly?
+      // printf("%" PRId32 ": done adding %p\n", get_tid(), m_);
+      printf("%" "PRId32" ": done adding %p\n", get_tid(), m_);
     }
   }
 
@@ -574,7 +585,10 @@ class Remover {
   Remover(aos_mutex *m) {
     assert(robust_head.pending_next == 0);
     if (kRobustListDebug) {
-      printf("%" PRId32 ": beginning to remove %p, n=%p p=%p\n", get_tid(), m,
+      // TODO Why doesn't this build correctly?
+      // printf("%" PRId32 ": beginning to remove %p, n=%p p=%p\n", get_tid(), m,
+      //        next_to_mutex(m->next), m->previous);
+      printf("%" "PRId32" ": beginning to remove %p, n=%p p=%p\n", get_tid(), m,
              next_to_mutex(m->next), m->previous);
     }
     robust_head.pending_next = mutex_to_next(m);
@@ -590,7 +604,9 @@ class Remover {
     }
 
     if (kRobustListDebug) {
-      printf("%" PRId32 ": done removing %p\n", get_tid(), m);
+      // TODO Why doesn't this build correctly?
+      // printf("%" PRId32 ": done removing %p\n", get_tid(), m);
+      printf("%" "PRId32" ": done removing %p\n", get_tid(), m);
     }
   }
   ~Remover() {
@@ -598,7 +614,9 @@ class Remover {
     aos_compiler_memory_barrier();
     robust_head.pending_next = 0;
     if (kRobustListDebug) {
-      printf("%" PRId32 ": done with removal\n", get_tid());
+      // TODO Why doesn't this build correctly?
+      // printf("%" PRId32 ": done with removal\n", get_tid());
+      printf("%" "PRId32" ": done with removal\n", get_tid());
     }
   }
 
@@ -667,7 +685,9 @@ inline int mutex_do_get(aos_mutex *m, bool signals_fail,
                         const struct timespec *timeout, uint32_t tid) {
   RunObservers run_observers(m, true);
   if (kPrintOperations) {
-    printf("%" PRId32 ": %p do_get\n", tid, m);
+    // TODO Why doesn't this build correctly?
+    // printf("%" PRId32 ": %p do_get\n", tid, m);
+    printf("%" "PRId32" ": %p do_get\n", tid, m);
   }
 
   while (true) {
@@ -689,20 +709,29 @@ inline int mutex_do_get(aos_mutex *m, bool signals_fail,
         }
         my_robust_list::robust_head.pending_next = 0;
         if (ret == -EDEADLK) {
-          ::aos::Die("multiple lock of %p by %" PRId32 "\n", m, tid);
+          // TODO Why doesn't this build correctly?
+          // ::aos::Die("multiple lock of %p by %" PRId32 "\n", m, tid);
+          ::aos::Die("multiple lock of %p by %" "PRId32" "\n", m, tid);
         }
-        ::aos::Die("FUTEX_LOCK_PI(%p(=%" PRIu32 "), 1, %p) failed", &m->futex,
+        // TODO Why doesn't this build correctly?
+        // ::aos::Die("FUTEX_LOCK_PI(%p(=%" PRIu32 "), 1, %p) failed", &m->futex,
+        //            __atomic_load_n(&m->futex, __ATOMIC_SEQ_CST), timeout);
+        ::aos::Die("FUTEX_LOCK_PI(%p(=%" "PRIu32" "), 1, %p) failed", &m->futex,
                    __atomic_load_n(&m->futex, __ATOMIC_SEQ_CST), timeout);
       } else {
         if (kLockDebug) {
-          printf("%" PRId32 ": %p kernel lock done\n", tid, m);
+          // TODO Why doesn't this build correctly?
+          // printf("%" PRId32 ": %p kernel lock done\n", tid, m);
+          printf("%" "PRId32" ": %p kernel lock done\n", tid, m);
         }
         // The kernel already handled setting the value to our TID (ish).
         break;
       }
     } else {
       if (kLockDebug) {
-        printf("%" PRId32 ": %p fast lock done\n", tid, m);
+        // TODO Why doesn't this build correctly?
+        // printf("%" PRId32 ": %p fast lock done\n", tid, m);
+        printf("%" "PRId32" ": %p fast lock done\n", tid, m);
       }
       lock_pthread_mutex(m);
       // Fastpath succeeded, so no need to call into the kernel.
@@ -789,7 +818,9 @@ void mutex_unlock(aos_mutex *m) {
   RunObservers run_observers(m, true);
   const uint32_t tid = get_tid();
   if (kPrintOperations) {
-    printf("%" PRId32 ": %p unlock\n", tid, m);
+    // TODO Why doesn't this build correctly?
+    // printf("%" PRId32 ": %p unlock\n", tid, m);
+    printf("%" "PRId32" ": %p unlock\n", tid, m);
   }
 
   const uint32_t value = __atomic_load_n(&m->futex, __ATOMIC_SEQ_CST);
@@ -797,9 +828,14 @@ void mutex_unlock(aos_mutex *m) {
     my_robust_list::robust_head.pending_next = 0;
     check_cached_tid(tid);
     if ((value & FUTEX_TID_MASK) == 0) {
-      ::aos::Die("multiple unlock of aos_mutex %p by %" PRId32 "\n", m, tid);
+      // TODO Why doesn't this build correctly?
+      // ::aos::Die("multiple unlock of aos_mutex %p by %" PRId32 "\n", m, tid);
+      ::aos::Die("multiple unlock of aos_mutex %p by %" "PRId32" "\n", m, tid);
     } else {
-      ::aos::Die("aos_mutex %p is locked by %" PRId32 ", not %" PRId32 "\n", m,
+      // TODO Why doesn't this build correctly?
+      // ::aos::Die("aos_mutex %p is locked by %" PRId32 ", not %" PRId32 "\n", m,
+      //            value & FUTEX_TID_MASK, tid);
+      ::aos::Die("aos_mutex %p is locked by %" "PRId32" ", not %"" PRId32" "\n", m,
                  value & FUTEX_TID_MASK, tid);
     }
   }
@@ -824,7 +860,9 @@ int mutex_trylock(aos_mutex *m) {
   RunObservers run_observers(m, true);
   const uint32_t tid = get_tid();
   if (kPrintOperations) {
-    printf("%" PRId32 ": %p trylock\n", tid, m);
+    // TODO Why doesn't this build correctly?
+    // printf("%" PRId32 ": %p trylock\n", tid, m);
+    printf("%" "PRId32" ": %p trylock\n", tid, m);
   }
   my_robust_list::Adder adder(m);
 
@@ -905,10 +943,16 @@ int condition_wait(aos_condition *c, aos_mutex *m) {
       if (__builtin_expect(ret == -EINTR, true)) continue;
       my_robust_list::robust_head.pending_next = 0;
       if (USE_REQUEUE_PI) {
-        ::aos::Die("FUTEX_WAIT_REQUEUE_PI(%p, %" PRIu32 ", %p) failed", c,
+        // TODO Why doesn't this build correctly?
+        // ::aos::Die("FUTEX_WAIT_REQUEUE_PI(%p, %" PRIu32 ", %p) failed", c,
+        //            wait_start, &m->futex);
+        ::aos::Die("FUTEX_WAIT_REQUEUE_PI(%p, %" "PRIu32" ", %p) failed", c,
                    wait_start, &m->futex);
       } else {
-        ::aos::Die("FUTEX_WAIT(%p, %" PRIu32 ", nullptr) failed", c,
+        // TODO Why doesn't this build correctly?
+        // ::aos::Die("FUTEX_WAIT(%p, %" PRIu32 ", nullptr) failed", c,
+        //            wait_start);
+        ::aos::Die("FUTEX_WAIT(%p, %" "PRIu32" ", nullptr) failed", c,
                    wait_start);
       }
     } else {

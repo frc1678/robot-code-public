@@ -132,7 +132,10 @@ Time Time::Now(clockid_t clock) {
 
 void Time::CheckImpl(int32_t nsec) {
   if (nsec >= kNSecInSec || nsec < 0) {
-    ::aos::Die( "0 <= nsec(%" PRId32 ") < %" PRId32 " isn't true.\n",
+    // TODO Why doesn't this build correctly?
+    // ::aos::Die( "0 <= nsec(%" PRId32 ") < %" PRId32 " isn't true.\n",
+    //     nsec, kNSecInSec);
+    ::aos::Die( "0 <= nsec(%" "PRId32" ") < %" "PRId32" " isn't true.\n",
         nsec, kNSecInSec);
   }
 }
