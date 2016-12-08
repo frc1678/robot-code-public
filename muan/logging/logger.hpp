@@ -18,7 +18,7 @@ void Logger::AddQueue(const std::string& name, T* queue_reader) { //TODO(Wesley)
   queue_logs_.push_back(std::make_unique<QueueLog>(std::move(queue_log)));
 }
 
-void Logger::operator()() {
+void Logger::Run() {
   aos::time::PhasedLoop phased_loop(aos::time::Time::InMS(20));
 
   aos::SetCurrentThreadRealtimePriority(10);
@@ -55,7 +55,7 @@ void Logger::Stop() {
   running_ = false;
 }
 
-TextLogger Logger::GetTextLogger(std::string name) { //TODO(Wesley) logs with same name?
+TextLogger Logger::MakeTextLogger(const std::string &name) { //TODO(Wesley) logs with same name?
   auto queue_ptr = std::make_shared<TextLogger::TextQueue>();
   auto queue_reader = std::make_shared<TextLogger::TextQueue::QueueReader>(queue_ptr->MakeReader());
   TextLog log_obj = {queue_reader, name, name + ".log"};

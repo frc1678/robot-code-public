@@ -7,11 +7,11 @@ FileWriter::FileWriter() {
   base_path_ = GetBasePath();
 }
 
-FileWriter::FileWriter(const ::std::string &base_path) {
+FileWriter::FileWriter(const std::string &base_path) {
   base_path_ = base_path;
 }
 
-void FileWriter::WriteLine(std::string filename, std::string line) {
+void FileWriter::WriteLine(const std::string &filename, const std::string &line) {
   if (open_files_.find(filename) == open_files_.end()) {
     boost::filesystem::create_directories(filename);
     open_files_[filename].open(base_path_ + filename, std::ios::app);
@@ -33,7 +33,7 @@ std::string FileWriter::GetBasePath() {
         boost::filesystem::create_directories(final_path);
         return final_path;
       } catch (const boost::filesystem::filesystem_error& e) {
-        std::cout << "Error opening path for logging:\n" << e.code().message() << "\n";
+        std::cerr << "Error opening path for logging:\n" << e.code().message() << "\n";
       }
     }
   }

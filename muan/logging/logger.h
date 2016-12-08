@@ -63,14 +63,23 @@ class Logger {
   template <class T>
   void AddQueue(const std::string& name, T* queue_reader);
 
-  void operator()();
+  // This is designed to be used with std::thread to run the logger. It will
+  // run forever, calling the Update function.
+  void Run();
 
+  // This should not be directly called, use Run instead.
   void Update();
+
+  // This starts the logger if you have previously stopped it by calling Stop().
+  // You do not need to call this if you have just called Run() - Run() will
+  // automatically start the logger.
   void Start();
+
+  // This stops the logger from running. It can be resumed calling Start().
   void Stop();
 
   // Returns a TextLogger that can be used to log strings to a file.
-  TextLogger GetTextLogger(std::string name);
+  TextLogger MakeTextLogger(const std::string &name);
  private:
   std::unique_ptr<FileWriter> writer_;
   std::atomic<bool> running_{false};

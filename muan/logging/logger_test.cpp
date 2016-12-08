@@ -13,7 +13,7 @@ using namespace ::testing;
 class MockFileWriter : public muan::logging::FileWriter {
  public:
   MockFileWriter() : muan::logging::FileWriter("/"){};
-  MOCK_METHOD2(WriteLine, void(std::string filename, std::string line));
+  MOCK_METHOD2(WriteLine, void(const std::string &filename, const std::string &line));
 };
 
 TEST(Logger, LogsOneMessage) {
@@ -110,7 +110,7 @@ TEST(Logger, TextLogger) {
       .Times(1);
 
   Logger logger(std::move(writer));
-  auto textlog = logger.GetTextLogger("name");
+  auto textlog = logger.MakeTextLogger("name");
   textlog("test");
   logger.Update();
 }
