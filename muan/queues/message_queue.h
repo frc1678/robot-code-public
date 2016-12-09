@@ -48,7 +48,8 @@ class MessageQueue {
   // oldest message.
   void WriteMessage(const T& message);
 
-  std::experimental::optional<T> ReadLastMessage();
+  // Gets the most recent message from the queue.
+  std::experimental::optional<T> ReadLastMessage() const;
 
   // Reset the queue to the empty state
   void Reset();
@@ -94,8 +95,6 @@ class MessageQueue {
   // of the next valid message.
   std::experimental::optional<T> NextMessage(uint64_t& next) const;
 
-  // Gets the most recent message from the queue.
-  std::experimental::optional<T> LastMessage() const;
 
   // Gets the "front" (the oldest messages still kept) of the circular buffer,
   // either from the current value of _back or from a known value of back.
