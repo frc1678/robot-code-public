@@ -48,6 +48,8 @@ class MessageQueue {
   // oldest message.
   void WriteMessage(const T& message);
 
+  std::experimental::optional<T> ReadLastMessage();
+
   // Reset the queue to the empty state
   void Reset();
 

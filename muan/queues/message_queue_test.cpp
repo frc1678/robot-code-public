@@ -12,8 +12,16 @@ TEST(MessageQueue, DeliversSingleMessage) {
   EXPECT_EQ(reader.ReadMessage().value(), 10);
 }
 
+TEST(MessageQueue, QueueReadsLastMessage) {
+  MessageQueue<uint32_t, 10> int_queue;
+  int_queue.WriteMessage(254);
+  int_queue.WriteMessage(971);
+  int_queue.WriteMessage(1678);
+  EXPECT_EQ(int_queue.ReadLastMessage().value(), 1678);
+}
+
 // Ensure that the queue reader reads the last message correctly
-TEST(MessageQueue, ReadsLastMessage) {
+TEST(MessageQueue, ReaderReadsLastMessage) {
   MessageQueue<uint32_t, 10> int_queue;
   int_queue.WriteMessage(254);
   int_queue.WriteMessage(971);

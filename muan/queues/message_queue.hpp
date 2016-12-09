@@ -22,6 +22,11 @@ void MessageQueue<T, size>::WriteMessage(const T& message) {
 }
 
 template <typename T, uint64_t size>
+std::experimental::optional<T> MessageQueue<T, size>::ReadLastMessage() {
+  return LastMessage();
+}
+
+template <typename T, uint64_t size>
 void MessageQueue<T, size>::Reset() {
   back_ = 0;
 }
