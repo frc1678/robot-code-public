@@ -12,11 +12,16 @@ TEST(MessageQueue, DeliversSingleMessage) {
   EXPECT_EQ(reader.ReadMessage().value(), 10);
 }
 
+// Ensure that the queue reads the last message correctly through it's public API
 TEST(MessageQueue, QueueReadsLastMessage) {
   MessageQueue<uint32_t, 10> int_queue;
+  // We haven't written anything, so expect nullopt
+  EXPECT_EQ(int_queue.ReadLastMessage(), std::experimental::nullopt);
   int_queue.WriteMessage(254);
   int_queue.WriteMessage(971);
   int_queue.WriteMessage(1678);
+  // Expect reading the last value, but not "consuming" it (unlike a QueueReader)
+  EXPECT_EQ(int_queue.ReadLastMessage().value(), 1678);
   EXPECT_EQ(int_queue.ReadLastMessage().value(), 1678);
 }
 
