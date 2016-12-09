@@ -3,6 +3,7 @@
 #include <atomic>
 
 #include <string.h>
+#define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 
 #include "third_party/aos/common/die.h"
@@ -132,10 +133,7 @@ Time Time::Now(clockid_t clock) {
 
 void Time::CheckImpl(int32_t nsec) {
   if (nsec >= kNSecInSec || nsec < 0) {
-    // TODO Why doesn't this build correctly?
-    // ::aos::Die( "0 <= nsec(%" PRId32 ") < %" PRId32 " isn't true.\n",
-    //     nsec, kNSecInSec);
-    ::aos::Die( "0 <= nsec(%" "PRId32" ") < %" "PRId32" " isn't true.\n",
+    ::aos::Die( "0 <= nsec(%" PRId32 ") < %" PRId32 " isn't true.\n",
         nsec, kNSecInSec);
   }
 }
