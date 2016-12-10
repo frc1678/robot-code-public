@@ -17,6 +17,7 @@ addons:
       - gcc-4.9
       - g++-4.9
       - clang-format-3.5
+      - clang-3.6
       - wget
         # Package list from http://bazel.io/docs/install.html
       - pkg-config
@@ -36,9 +37,9 @@ install:
   - sudo apt-get install frc-toolchain -y
   - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.9
   # Bazel
-  - wget 'https://github.com/bazelbuild/bazel/releases/download/0.2.1/bazel-0.2.1-installer-linux-x86_64.sh'
-  - chmod +x bazel-0.2.1-installer-linux-x86_64.sh
-  - ./bazel-0.2.1-installer-linux-x86_64.sh --user
+  - wget 'https://github.com/bazelbuild/bazel/releases/download/0.4.1/bazel-0.4.1-installer-linux-x86_64.sh'
+  - chmod +x bazel-0.4.1-installer-linux-x86_64.sh
+  - ./bazel-0.4.1-installer-linux-x86_64.sh --user
 
 # TODO(Wesley) Add to pre-push git hook?
 script:
