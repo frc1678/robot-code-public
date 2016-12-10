@@ -1,25 +1,7 @@
 import numpy as np
-import sys
+import re
 
-"""
-Regression for state space systems. Given a .csv log file (noise is
-acceptable), the A and B matrices are generated. The csv file must be
-in the following form:
-
-    | x1' u1' |
-    | x2' u2' |
-    | x3' u3' |
-    | ....... |
-    | xn' un' |
-
-"""
-
-# least-squares approximation of Ax = b
-def least_squares(A, b):
-    assert np.linalg.cond(A) < 1 / sys.float_info.epsilon, "A.T * A is singular."
-    return np.linalg.inv(A.T.dot(A)).dot(A.T).dot(b)
-
-def state_space_regression(data, numstates):
+def state_space_regression(xt, ut):
 
     """
     The equation we want to solve is:
@@ -31,11 +13,32 @@ def state_space_regression(data, numstates):
         | xn-1' un-1' |           | xn' |
 
     """
-    A = data[:-1, :]
-    b = data[1:, :numstates]
-    x = least_squares(A, b)
+    solver_A = np.hstack((xt, ut))[:-1, :]
+    solver_b = xt[1:, :]
+    solution = np.linalg.lstsq(solver_A, solver_b)[0]
+    
 
-    gains_A = x[:numstates, :].T
-    gains_B = x[numstates:, :].T
+    gains_A = solution[:xt.shape[1], :].T
+    gains_B = solution[xt.shape[1]:, :].T
 
     return gains_A, gains_B
+
+
+def seperate_data(data, labels):
+    """
+    Given a data file such as
+
+        | x11 u11 x12 other x13 |
+	| x21 u21 x22 other x23 |
+	| ..................... |
+    
+    And labels for each column such as
+
+          'x' 'u' 'x' '_'   'x'
+
+    Split the data into x' and u'
+
+    """
+    xt = data[:, [m.start() for m in re.finditer("x", labels)]]
+    ut = data[:, [m.start() for m in re.finditer("u", labels)]]
+    return xt, ut

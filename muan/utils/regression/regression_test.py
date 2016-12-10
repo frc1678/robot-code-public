@@ -9,8 +9,10 @@ data = np.matrix([[1,  1,   2,   3,  0],
                   [16, 81,  13,  1, -1],
                   [32, 243, 14,  0, -1],
                   [64, 729, 14, -1,  0]])
-numstates = 4
-A, B = regression.state_space_regression(data, numstates)
+
+xt, ut = regression.seperate_data(data, labels)
+A, B = regression.state_space_regression(xt, ut)
+
 goal_A = np.matrix([[2, 0, 0, 0],
                     [0, 3, 0, 0],
                     [0, 0, 1, 1],
