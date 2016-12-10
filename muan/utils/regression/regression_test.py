@@ -1,27 +1,53 @@
 import regression
 import numpy as np
 
-labels =          'x' 'x'  'x'  'x' 'u'
-data = np.matrix([[1,  1,   2,   3,  0],
-                  [2,  3,   5,   3, -1],
-                  [4,  9,   8,   2,  1],
-                  [8,  27,  10,  3, -2],
-                  [16, 81,  13,  1, -1],
-                  [32, 243, 14,  0, -1],
-                  [64, 729, 14, -1,  0]])
+def test_simple_system():
+    labels =          'x' 'x'  'x'  'x' 'u'
+    data = np.matrix([[1,  1,   2,   3,  0],
+                      [2,  3,   5,   3, -1],
+                      [4,  9,   8,   2,  1],
+                      [8,  27,  10,  3, -2],
+                      [16, 81,  13,  1, -1],
+                      [32, 243, 14,  0, -1],
+                      [64, 729, 14, -1,  0]])
 
-xt, ut = regression.seperate_data(data, labels)
-A, B = regression.state_space_regression(xt, ut)
+    xt, ut = regression.seperate_data(data, labels)
+    A, B = regression.state_space_regression(xt, ut)
 
-goal_A = np.matrix([[2, 0, 0, 0],
-                    [0, 3, 0, 0],
-                    [0, 0, 1, 1],
-                    [0, 0, 0, 1]])
+    goal_A = np.matrix([[2, 0, 0, 0],
+                        [0, 3, 0, 0],
+                        [0, 0, 1, 1],
+                        [0, 0, 0, 1]])
 
-goal_B = np.matrix([[0],
-                    [0],
-                    [0],
-                    [1]])
+    goal_B = np.matrix([[0],
+                        [0],
+                        [0],
+                        [1]])
 
-np.testing.assert_array_almost_equal(A, goal_A)
-np.testing.assert_array_almost_equal(B, goal_B)
+    np.testing.assert_array_almost_equal(A, goal_A)
+    np.testing.assert_array_almost_equal(B, goal_B)
+
+def test_organizing():
+    labels =          'x'  'u' '_' 'x' 'u'
+    data = np.matrix([[1,   1,  4,  3,  0],
+                      [2,   3,  5,  3, -1],
+                      [5,   1,  8,  1,  1],
+                      [6,   1,  2,  3, -2],
+                      [7,   5, 13, -1, -1],
+                      [12, -6, 14, -3, -1],
+                      [6,   0, 14, -5,  0]])
+
+    xt, ut = regression.seperate_data(data, labels)
+    A, B = regression.state_space_regression(xt, ut)
+
+    goal_A = np.matrix([[1, 0],
+                        [0, 1]])
+
+    goal_B = np.matrix([[1, 0],
+                        [0, 2]])
+
+    np.testing.assert_array_almost_equal(A, goal_A)
+    np.testing.assert_array_almost_equal(B, goal_B)
+
+test_simple_system()
+test_organizing()
