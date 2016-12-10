@@ -21,5 +21,5 @@ u = csv[:, [m.start() for m in re.finditer("u", order)]]
 data = np.hstack((x, u))
 numstates = len([m.start() for m in re.finditer("x", order)])
 
-A, B, Q_noise = regression.state_space_regression(data, numstates)
-np.savez("system_matrices", A=A, B=B, Q_noise=Q_noise)
+A, B = regression.state_space_regression(data, numstates)
+np.savez("system_matrices", A=A, B=B)

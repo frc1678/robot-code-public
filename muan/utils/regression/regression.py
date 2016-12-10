@@ -38,7 +38,4 @@ def state_space_regression(data, numstates):
     gains_A = x[:numstates, :].T
     gains_B = x[numstates:, :].T
 
-    error = A.dot(x) - b
-    Q_noise = np.diag(error.std(0))
-
-    return gains_A, gains_B, Q_noise
+    return gains_A, gains_B
