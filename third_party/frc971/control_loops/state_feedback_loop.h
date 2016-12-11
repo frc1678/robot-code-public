@@ -3,14 +3,13 @@
 
 #include <assert.h>
 
-#include <vector>
-#include <memory>
 #include <iostream>
+#include <memory>
+#include <vector>
 
 #include "Eigen/Dense"
 
-#include "aos/common/logging/logging.h"
-#include "aos/common/macros.h"
+#include "third_party/aos/common/macros.h"
 
 // For everything in this file, "inputs" and "outputs" are defined from the
 // perspective of the plant. This means U is an input and Y is an output
@@ -85,8 +84,8 @@ class StateFeedbackPlant {
 
   StateFeedbackPlant(
       ::std::vector<::std::unique_ptr<StateFeedbackPlantCoefficients<
-          number_of_states, number_of_inputs, number_of_outputs>>> *
-          coefficients)
+          number_of_states, number_of_inputs, number_of_outputs>>>
+          *coefficients)
       : coefficients_(::std::move(*coefficients)), plant_index_(0) {
     Reset();
   }
@@ -141,8 +140,8 @@ class StateFeedbackPlant {
   double &mutable_U(int i, int j) { return mutable_U()(i, j); }
 
   const StateFeedbackPlantCoefficients<number_of_states, number_of_inputs,
-                                       number_of_outputs> &
-  coefficients() const {
+                                       number_of_outputs>
+      &coefficients() const {
     return *coefficients_[plant_index_];
   }
 
@@ -188,7 +187,8 @@ class StateFeedbackPlant {
   Eigen::Matrix<double, number_of_inputs, 1> U_;
 
   ::std::vector<::std::unique_ptr<StateFeedbackPlantCoefficients<
-      number_of_states, number_of_inputs, number_of_outputs>>> coefficients_;
+      number_of_states, number_of_inputs, number_of_outputs>>>
+      coefficients_;
 
   int plant_index_;
 
@@ -207,7 +207,8 @@ struct StateFeedbackController final {
   const Eigen::Matrix<double, number_of_inputs, number_of_states> Kff;
   const Eigen::Matrix<double, number_of_states, number_of_states> A_inv;
   StateFeedbackPlantCoefficients<number_of_states, number_of_inputs,
-                                 number_of_outputs> plant;
+                                 number_of_outputs>
+      plant;
 
   StateFeedbackController(
       const Eigen::Matrix<double, number_of_states, number_of_outputs> &L,
@@ -238,8 +239,9 @@ class StateFeedbackLoop {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 
-  StateFeedbackLoop(const StateFeedbackController<
-      number_of_states, number_of_inputs, number_of_outputs> &controller)
+  StateFeedbackLoop(
+      const StateFeedbackController<number_of_states, number_of_inputs,
+                                    number_of_outputs> &controller)
       : controller_index_(0) {
     controllers_.emplace_back(
         new StateFeedbackController<number_of_states, number_of_inputs,
@@ -247,8 +249,9 @@ class StateFeedbackLoop {
     Reset();
   }
 
-  StateFeedbackLoop(::std::vector<::std::unique_ptr<StateFeedbackController<
-      number_of_states, number_of_inputs, number_of_outputs>>> *controllers)
+  StateFeedbackLoop(
+      ::std::vector<::std::unique_ptr<StateFeedbackController<
+          number_of_states, number_of_inputs, number_of_outputs>>> *controllers)
       : controllers_(::std::move(*controllers)), controller_index_(0) {
     Reset();
   }
@@ -348,14 +351,14 @@ class StateFeedbackLoop {
   }
 
   const StateFeedbackController<number_of_states, number_of_inputs,
-                                number_of_outputs> &
-  controller() const {
+                                number_of_outputs>
+      &controller() const {
     return *controllers_[controller_index_];
   }
 
   const StateFeedbackController<number_of_states, number_of_inputs,
-                                number_of_outputs> &
-  controller(int index) const {
+                                number_of_outputs>
+      &controller(int index) const {
     return *controllers_[index];
   }
 
@@ -443,7 +446,8 @@ class StateFeedbackLoop {
 
  protected:
   ::std::vector<::std::unique_ptr<StateFeedbackController<
-      number_of_states, number_of_inputs, number_of_outputs>>> controllers_;
+      number_of_states, number_of_inputs, number_of_outputs>>>
+      controllers_;
 
   // These are accessible from non-templated subclasses.
   static constexpr int kNumStates = number_of_states;

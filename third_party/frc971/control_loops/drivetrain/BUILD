@@ -1,28 +1,45 @@
 package(default_visibility = ['//visibility:public'])
+licenses(['notice'])
 
-load('/aos/build/queues', 'queue_library')
+load('//third_party/google/protobuf:protobuf.bzl', 'cc_proto_library')
 
-cc_binary(
-  name = 'replay_drivetrain',
-  srcs = [
-    'replay_drivetrain.cc',
-  ],
-  deps = [
-    ':drivetrain_queue',
-    '//aos/common/controls:replay_control_loop',
-    '//aos/linux_code:init',
-    '//frc971/queues:gyro',
-  ],
+# cc_binary(
+#   name = 'replay_drivetrain',
+#   srcs = [
+#     'replay_drivetrain.cc',
+#   ],
+#   deps = [
+#     ':drivetrain_queue',
+#     '//aos/common/controls:replay_control_loop',
+#     '//aos/linux_code:init',
+#   ],
+# )
+
+# queue_library(
+#   name = 'drivetrain_queue',
+#   srcs = [
+#     'drivetrain.q',
+#   ],
+#   deps = [
+#     '//aos/common/controls:control_loop_queues',
+#     '//frc971/control_loops:queues',
+#   ],
+# )
+
+cc_proto_library(
+  name = 'drivetrain_protos',
+  srcs = ['drivetrain.proto'],
+  protoc = '//third_party/google/protobuf:protoc',
+  default_runtime = '//third_party/google/protobuf'
 )
 
-queue_library(
-  name = 'drivetrain_queue',
-  srcs = [
-    'drivetrain.q',
-  ],
+cc_library(
+  name = 'drivetrain_queues',
+  hdrs = ['queue_types.h'],
   deps = [
-    '//aos/common/controls:control_loop_queues',
-    '//frc971/control_loops:queues',
+    ':drivetrain_protos',
+    '//muan/proto:stack_proto',
+    '//muan/queues',
   ],
 )
 
@@ -32,15 +49,7 @@ cc_library(
     'drivetrain_config.h',
   ],
   deps = [
-    '//frc971/control_loops:state_feedback_loop',
-    '//frc971:shifter_hall_effect',
-  ],
-)
-
-cc_library(
-  name = 'gear',
-  hdrs = [
-    'gear.h',
+    '//third_party/frc971/control_loops:state_feedback_loop',
   ],
 )
 
@@ -53,20 +62,16 @@ cc_library(
     'ssdrivetrain.h',
   ],
   deps = [
-    ':drivetrain_queue',
+    ':drivetrain_queues',
     ':drivetrain_config',
-    ':gear',
-    '//aos/common/controls:control_loop',
-    '//aos/common/controls:polytope',
-    '//aos/common/logging:matrix_logging',
-    '//aos/common/logging:queue_logging',
-    '//aos/common/messages:robot_state',
-    '//aos/common/util:log_interval',
-    '//aos/common/util:trapezoid_profile',
-    '//aos/common:math',
-    '//frc971/control_loops:coerce_goal',
-    '//frc971/control_loops:state_feedback_loop',
-    '//frc971:shifter_hall_effect',
+    # '//third_party/aos/common/controls:control_loop',
+    '//third_party/aos/common/controls:polytope',
+    # '//third_party/aos/common/messages:robot_state',
+    '//third_party/aos/common/util:trapezoid_profile',
+    '//third_party/aos/common:math',
+    '//third_party/frc971/control_loops:coerce_goal',
+    '//third_party/frc971/control_loops:state_feedback_loop',
+    # '//third_party/frc971:shifter_hall_effect',
   ],
 )
 
@@ -79,43 +84,13 @@ cc_library(
     'polydrivetrain.h',
   ],
   deps = [
-    ':drivetrain_queue',
+    ':drivetrain_queues',
     ':drivetrain_config',
-    ':gear',
-    '//aos/common/controls:polytope',
-    '//aos/common:math',
-    '//aos/common/messages:robot_state',
-    '//frc971/control_loops:state_feedback_loop',
-    '//frc971/control_loops:coerce_goal',
-    '//aos/common/util:log_interval',
-    '//aos/common/logging:queue_logging',
-    '//aos/common/logging:matrix_logging',
-  ],
-)
-
-genrule(
-  name = 'genrule_down_estimator',
-  visibility = ['//visibility:private'],
-  cmd = '$(location //frc971/control_loops/python:down_estimator) $(OUTS)',
-  tools = [
-    '//frc971/control_loops/python:down_estimator',
-  ],
-  outs = [
-    'down_estimator.h',
-    'down_estimator.cc',
-  ],
-)
-
-cc_library(
-  name = 'down_estimator',
-  hdrs = [
-    'down_estimator.h',
-  ],
-  srcs = [
-    'down_estimator.cc',
-  ],
-  deps = [
-    '//frc971/control_loops:state_feedback_loop',
+    '//third_party/aos/common/controls:polytope',
+    '//third_party/aos/common:math',
+    # '//third_party/aos/common/messages:robot_state',
+    '//third_party/frc971/control_loops:state_feedback_loop',
+    '//third_party/frc971/control_loops:coerce_goal',
   ],
 )
 
@@ -128,17 +103,11 @@ cc_library(
     'drivetrain.h',
   ],
   deps = [
-    ':down_estimator',
-    ':drivetrain_queue',
-    ':gear',
+    ':drivetrain_queues',
     ':polydrivetrain',
     ':ssdrivetrain',
-    '//aos/common/controls:control_loop',
-    '//frc971/queues:gyro',
-    '//frc971/wpilib:imu_queue',
-    '//aos/common/util:log_interval',
-    '//aos/common/logging:queue_logging',
-    '//aos/common/logging:matrix_logging',
+    '//muan/wpilib/gyro:gyro_queues',
+    '//muan/wpilib:wpilib_queues'
   ],
 )
 
@@ -148,15 +117,15 @@ cc_test(
     'drivetrain_lib_test.cc',
   ],
   deps = [
-    '//aos/testing:googletest',
-    ':drivetrain_queue',
+    '//third_party/aos/testing:googletest',
+    ':drivetrain_queues',
     ':drivetrain_lib',
     ':drivetrain_config',
-    '//aos/common/controls:control_loop_test',
-    '//frc971/control_loops:state_feedback_loop',
-    '//frc971/queues:gyro',
-    '//aos/common:queues',
-    '//y2016:constants',
-    '//y2016/control_loops/drivetrain:polydrivetrain_plants',
+    # '//third_party/aos/common/controls:control_loop_test',
+    '//third_party/frc971/control_loops:state_feedback_loop',
+    '//muan/wpilib/gyro:gyro_queues',
+    # '//third_party/aos/common:queues',
+    # '//third_party/frc971/control_loops/drivetrain/y2016:constants',
+    '//third_party/frc971/control_loops/drivetrain/y2016:polydrivetrain_plants',
   ],
 )

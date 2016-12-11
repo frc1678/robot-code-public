@@ -3,8 +3,7 @@
 
 #include <functional>
 
-#include "frc971/shifter_hall_effect.h"
-#include "frc971/control_loops/state_feedback_loop.h"
+#include "third_party/frc971/control_loops/state_feedback_loop.h"
 
 namespace frc971 {
 namespace control_loops {
@@ -40,10 +39,6 @@ struct DrivetrainConfig {
   // Gear ratios, from wheel to motor shaft.
   double high_gear_ratio;
   double low_gear_ratio;
-
-  // Hall effect constants. Unused if not applicable to shifter type.
-  constants::ShifterHallEffect left_drive;
-  constants::ShifterHallEffect right_drive;
 
   // Variable that holds the default gear ratio. We use this in ZeroOutputs().
   // (ie. true means high gear is default).

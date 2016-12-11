@@ -1,13 +1,13 @@
-#include "frc971/control_loops/drivetrain/ssdrivetrain.h"
+#include "third_party/frc971/control_loops/drivetrain/ssdrivetrain.h"
 
-#include "aos/common/controls/polytope.h"
-#include "aos/common/commonmath.h"
-#include "aos/common/logging/matrix_logging.h"
+#include "third_party/aos/common/commonmath.h"
+#include "third_party/aos/common/controls/polytope.h"
 
-#include "frc971/control_loops/state_feedback_loop.h"
-#include "frc971/control_loops/coerce_goal.h"
-#include "frc971/control_loops/drivetrain/drivetrain.q.h"
-#include "frc971/control_loops/drivetrain/drivetrain_config.h"
+#include "third_party/frc971/control_loops/coerce_goal.h"
+#include "third_party/frc971/control_loops/drivetrain/drivetrain_config.h"
+#include "third_party/frc971/control_loops/state_feedback_loop.h"
+
+#include "third_party/aos/common/time.h"
 
 namespace frc971 {
 namespace control_loops {
@@ -34,7 +34,7 @@ void DrivetrainMotorsSS::PolyCapU(Eigen::Matrix<double, 2, 1> *U) {
 
   const Eigen::Matrix<double, 7, 1> error = kf_->R() - kf_->X_hat();
 
-  LOG_MATRIX(DEBUG, "U_uncapped", *U);
+  // LOG_MATRIX(DEBUG, "U_uncapped", *U);
 
   Eigen::Matrix<double, 2, 2> position_K;
   position_K << kf_->K(0, 0), kf_->K(0, 2), kf_->K(1, 0), kf_->K(1, 2);
@@ -47,8 +47,7 @@ void DrivetrainMotorsSS::PolyCapU(Eigen::Matrix<double, 2, 1> *U) {
   const auto drive_error = T_inverse_ * position_error;
   Eigen::Matrix<double, 2, 1> velocity_error;
   velocity_error << error(1, 0), error(3, 0);
-  LOG_MATRIX(DEBUG, "error", error);
-
+  // LOG_MATRIX(DEBUG, "error", error);
 
   Eigen::Matrix<double, 2, 1> U_integral;
   U_integral << kf_->X_hat(4, 0), kf_->X_hat(5, 0);
@@ -100,12 +99,12 @@ void DrivetrainMotorsSS::PolyCapU(Eigen::Matrix<double, 2, 1> *U) {
     }
   }
 
-  *U = -U_integral + velocity_K *velocity_error +
-       position_K *T_ *adjusted_pos_error + kf_->ff_U();
+  *U = -U_integral + velocity_K * velocity_error +
+       position_K * T_ * adjusted_pos_error + kf_->ff_U();
 
   if (!output_was_capped_) {
     if ((*U - kf_->U_uncapped()).norm() > 0.0001) {
-      LOG(FATAL, "U unnecessarily capped\n");
+      // LOG(FATAL, "U unnecessarily capped\n");
     }
   }
 }
@@ -116,11 +115,11 @@ DrivetrainMotorsSS::DrivetrainMotorsSS(const DrivetrainConfig &dt_config,
     : dt_config_(dt_config),
       kf_(kf),
       U_poly_(
-          (Eigen::Matrix<double, 4, 2>() << 1, 0, -1, 0, 0, 1, 0, -1)
-              .finished(),
+          (Eigen::Matrix<double, 4, 2>() << 1, 0, -1, 0, 0, 1, 0,
+           -1).finished(),
           (Eigen::Matrix<double, 4, 1>() << 12.0, 12.0, 12.0, 12.0).finished()),
-      linear_profile_(::aos::controls::kLoopFrequency),
-      angular_profile_(::aos::controls::kLoopFrequency),
+      linear_profile_(::aos::time::Time::InSeconds(0.005)),
+      angular_profile_(::aos::time::Time::InSeconds(0.005)),
       integrated_kf_heading_(integrated_kf_heading) {
   ::aos::controls::HPolytope<0>::Init();
   T_ << 1, 1, 1, -1;
@@ -129,19 +128,33 @@ DrivetrainMotorsSS::DrivetrainMotorsSS(const DrivetrainConfig &dt_config,
 }
 
 void DrivetrainMotorsSS::SetGoal(
-    const ::frc971::control_loops::DrivetrainQueue::Goal &goal) {
-  unprofiled_goal_ << goal.left_goal, goal.left_velocity_goal, goal.right_goal,
-      goal.right_velocity_goal, 0.0, 0.0, 0.0;
+    const ::frc971::control_loops::drivetrain::GoalProto &goal) {
+  // This is only valid if we're actually using a distance goal
+  if (!goal->has_distance_command()) {
+    return;
+  }
+  auto distance_goal = goal->distance_command();
+  unprofiled_goal_ << distance_goal.left_goal(),
+      distance_goal.left_velocity_goal(), distance_goal.right_goal(),
+      distance_goal.right_velocity_goal(), 0.0, 0.0, 0.0;
 
   use_profile_ =
       !kf_->Kff().isZero(0) &&
-      (goal.linear.max_velocity != 0.0 && goal.linear.max_acceleration != 0.0 &&
-       goal.angular.max_velocity != 0.0 &&
-       goal.angular.max_acceleration != 0.0);
-  linear_profile_.set_maximum_velocity(goal.linear.max_velocity);
-  linear_profile_.set_maximum_acceleration(goal.linear.max_acceleration);
-  angular_profile_.set_maximum_velocity(goal.angular.max_velocity);
-  angular_profile_.set_maximum_acceleration(goal.angular.max_acceleration);
+      (goal->has_linear_constraints() && goal->has_angular_constraints() &&
+       goal->linear_constraints().max_velocity() != 0.0 &&
+       goal->linear_constraints().max_acceleration() != 0.0 &&
+       goal->angular_constraints().max_velocity() != 0.0 &&
+       goal->angular_constraints().max_acceleration() != 0.0);
+  if (use_profile_) {
+    linear_profile_.set_maximum_velocity(
+        goal->linear_constraints().max_velocity());
+    linear_profile_.set_maximum_acceleration(
+        goal->linear_constraints().max_acceleration());
+    angular_profile_.set_maximum_velocity(
+        goal->angular_constraints().max_velocity());
+    angular_profile_.set_maximum_acceleration(
+        goal->angular_constraints().max_acceleration());
+  }
 }
 
 // (left + right) / 2 = linear
@@ -210,7 +223,8 @@ void DrivetrainMotorsSS::Update(bool enable_control_loop) {
         AngularLinearToLeftRight(next_linear, next_angular);
 
     kf_->mutable_next_R().block<3, 1>(4, 0) =
-        unprofiled_goal_.block<3, 1>(4, 0);
+        Eigen::Matrix<double, 3, 1>::Zero();
+    /* unprofiled_goal_.block<3, 1>(4, 0); */
 
     kf_->mutable_next_R(0, 0) -= wheel_compensation_offset;
     kf_->mutable_next_R(2, 0) += wheel_compensation_offset;
@@ -238,7 +252,7 @@ void DrivetrainMotorsSS::Update(bool enable_control_loop) {
       // coordinates.  Convert back...
       linear_profile_.MoveCurrentState(LeftRightToLinear(kf_->R()));
 
-      LOG(DEBUG, "Saturated while moving\n");
+      // LOG(DEBUG, "Saturated while moving\n");
 
       Eigen::Matrix<double, 2, 1> absolute_angular =
           LeftRightToAngular(kf_->R());
@@ -265,17 +279,16 @@ void DrivetrainMotorsSS::Update(bool enable_control_loop) {
 }
 
 void DrivetrainMotorsSS::SetOutput(
-    ::frc971::control_loops::DrivetrainQueue::Output *output) const {
+    ::frc971::control_loops::drivetrain::OutputProto *output) const {
   if (output) {
-    output->left_voltage = kf_->U(0, 0);
-    output->right_voltage = kf_->U(1, 0);
-    output->left_high = true;
-    output->right_high = true;
+    (*output)->set_left_voltage(kf_->U(0, 0));
+    (*output)->set_right_voltage(kf_->U(1, 0));
+    (*output)->set_high_gear(true);
   }
 }
 
 void DrivetrainMotorsSS::PopulateStatus(
-    ::frc971::control_loops::DrivetrainQueue::Status *status) const {
+    ::frc971::control_loops::drivetrain::StatusProto *status) const {
   Eigen::Matrix<double, 2, 1> profiled_linear =
       LeftRightToLinear(kf_->next_R());
   Eigen::Matrix<double, 2, 1> profiled_angular =
@@ -286,10 +299,10 @@ void DrivetrainMotorsSS::PopulateStatus(
   Eigen::Matrix<double, 4, 1> profiled_gyro_left_right =
       AngularLinearToLeftRight(profiled_linear, profiled_angular);
 
-  status->profiled_left_position_goal = profiled_gyro_left_right(0, 0);
-  status->profiled_left_velocity_goal = profiled_gyro_left_right(1, 0);
-  status->profiled_right_position_goal = profiled_gyro_left_right(2, 0);
-  status->profiled_right_velocity_goal = profiled_gyro_left_right(3, 0);
+  (*status)->set_profiled_left_position_goal(profiled_gyro_left_right(0, 0));
+  (*status)->set_profiled_left_velocity_goal(profiled_gyro_left_right(1, 0));
+  (*status)->set_profiled_right_position_goal(profiled_gyro_left_right(2, 0));
+  (*status)->set_profiled_right_velocity_goal(profiled_gyro_left_right(3, 0));
 }
 
 }  // namespace drivetrain

@@ -3,8 +3,8 @@
 
 #include <memory>
 
-#include "aos/common/controls/control_loop.h"
-#include "frc971/control_loops/state_feedback_loop.h"
+#include "third_party/aos/common/controls/control_loop.h"
+#include "third_party/frc971/control_loops/state_feedback_loop.h"
 
 namespace frc971 {
 namespace control_loops {

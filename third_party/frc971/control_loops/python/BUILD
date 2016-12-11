@@ -1,4 +1,5 @@
 package(default_visibility = ['//visibility:public'])
+licenses(['notice'])
 
 py_library(
   name = 'controls',
@@ -7,10 +8,6 @@ py_library(
     'controls.py',
     'polytope.py',
     'libcdd.py',
-  ],
-  deps = [
-    '//external:python-glog',
-    '//external:slycot',
   ],
   data = [
     '//third_party/cddlib:_cddlib.so',

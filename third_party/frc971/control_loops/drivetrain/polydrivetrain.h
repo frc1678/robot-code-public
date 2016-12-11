@@ -1,12 +1,11 @@
 #ifndef FRC971_CONTROL_LOOPS_DRIVETRAIN_POLYDRIVETRAIN_H_
 #define FRC971_CONTROL_LOOPS_DRIVETRAIN_POLYDRIVETRAIN_H_
 
-#include "aos/common/controls/polytope.h"
+#include "third_party/aos/common/controls/polytope.h"
 
-#include "frc971/control_loops/drivetrain/gear.h"
-#include "frc971/control_loops/drivetrain/drivetrain.q.h"
-#include "frc971/control_loops/state_feedback_loop.h"
-#include "frc971/control_loops/drivetrain/drivetrain_config.h"
+#include "third_party/frc971/control_loops/drivetrain/drivetrain_config.h"
+#include "third_party/frc971/control_loops/drivetrain/queue_types.h"
+#include "third_party/frc971/control_loops/state_feedback_loop.h"
 
 namespace frc971 {
 namespace control_loops {
@@ -21,13 +20,12 @@ class PolyDrivetrain {
 
   // Computes the speed of the motor given the hall effect position and the
   // speed of the robot.
-  double MotorSpeed(const constants::ShifterHallEffect &hall_effect,
-                    double shifter_position, double velocity, Gear gear);
+  double MotorSpeed(double velocity, Gear gear);
 
-  void SetGoal(const ::frc971::control_loops::DrivetrainQueue::Goal &goal);
+  void SetGoal(const ::frc971::control_loops::drivetrain::GoalProto &goal);
 
   void SetPosition(
-      const ::frc971::control_loops::DrivetrainQueue::Position *position,
+      const ::frc971::control_loops::drivetrain::InputProto *position,
       Gear left_gear, Gear right_gear);
 
   double FilterVelocity(double throttle) const;
@@ -36,9 +34,9 @@ class PolyDrivetrain {
 
   void Update();
 
-  void SetOutput(::frc971::control_loops::DrivetrainQueue::Output *output);
+  void SetOutput(::frc971::control_loops::drivetrain::OutputProto *output);
 
-  void PopulateStatus(::frc971::control_loops::DrivetrainQueue::Status *status);
+  void PopulateStatus(::frc971::control_loops::drivetrain::StatusProto *status);
 
   // Computes the next state of a shifter given the current state and the
   // requested state.
@@ -59,8 +57,8 @@ class PolyDrivetrain {
   Gear left_gear_;
   Gear right_gear_;
 
-  ::frc971::control_loops::DrivetrainQueue::Position last_position_;
-  ::frc971::control_loops::DrivetrainQueue::Position position_;
+  ::frc971::control_loops::drivetrain::InputProto last_position_;
+  ::frc971::control_loops::drivetrain::InputProto position_;
   int counter_;
   DrivetrainConfig dt_config_;
 

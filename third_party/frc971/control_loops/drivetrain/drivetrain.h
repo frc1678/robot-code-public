@@ -3,41 +3,55 @@
 
 #include "Eigen/Dense"
 
-#include "aos/common/controls/control_loop.h"
-#include "aos/common/controls/polytope.h"
-#include "aos/common/controls/polytope.h"
-#include "aos/common/util/log_interval.h"
-#include "frc971/control_loops/drivetrain/drivetrain.q.h"
-#include "frc971/control_loops/drivetrain/drivetrain_config.h"
-#include "frc971/control_loops/drivetrain/gear.h"
-#include "frc971/control_loops/drivetrain/polydrivetrain.h"
-#include "frc971/control_loops/drivetrain/ssdrivetrain.h"
+#include "muan/wpilib/gyro/queue_types.h"
+#include "muan/wpilib/queue_types.h"
+
+#include "third_party/aos/common/controls/polytope.h"
+#include "third_party/aos/common/controls/polytope.h"
+#include "third_party/frc971/control_loops/drivetrain/drivetrain_config.h"
+#include "third_party/frc971/control_loops/drivetrain/polydrivetrain.h"
+#include "third_party/frc971/control_loops/drivetrain/queue_types.h"
+#include "third_party/frc971/control_loops/drivetrain/ssdrivetrain.h"
 
 namespace frc971 {
 namespace control_loops {
 namespace drivetrain {
 
-class DrivetrainLoop : public aos::controls::ControlLoop<
-                           ::frc971::control_loops::DrivetrainQueue> {
+class DrivetrainLoop {
  public:
   // Constructs a control loop which can take a Drivetrain or defaults to the
   // drivetrain at frc971::control_loops::drivetrain
   explicit DrivetrainLoop(
-      const DrivetrainConfig &dt_config,
-      ::frc971::control_loops::DrivetrainQueue *my_drivetrain =
-          &::frc971::control_loops::drivetrain_queue);
+      const DrivetrainConfig& dt_config,
+      ::frc971::control_loops::drivetrain::GoalQueue* goal_queue,
+      ::frc971::control_loops::drivetrain::InputQueue* input_queue,
+      ::frc971::control_loops::drivetrain::OutputQueue* output_queue,
+      ::frc971::control_loops::drivetrain::StatusQueue* status_queue,
+      ::muan::wpilib::DriverStationQueue* driver_station_queue,
+      ::muan::wpilib::gyro::GyroQueue* gyro_queue);
 
   int ControllerIndexFromGears();
+
+  // Executes one cycle, pulling messages from the relevant queues
+  void Update();
 
  protected:
   // Executes one cycle of the control loop.
   void RunIteration(
-      const ::frc971::control_loops::DrivetrainQueue::Goal *goal,
-      const ::frc971::control_loops::DrivetrainQueue::Position *position,
-      ::frc971::control_loops::DrivetrainQueue::Output *output,
-      ::frc971::control_loops::DrivetrainQueue::Status *status) override;
+      const ::frc971::control_loops::drivetrain::GoalProto* goal,
+      const ::frc971::control_loops::drivetrain::InputProto* input,
+      ::frc971::control_loops::drivetrain::OutputProto* output,
+      ::frc971::control_loops::drivetrain::StatusProto* status);
 
-  void Zero(::frc971::control_loops::DrivetrainQueue::Output *output) override;
+  void Zero(::frc971::control_loops::drivetrain::OutputProto* output);
+
+  ::frc971::control_loops::drivetrain::GoalQueue::QueueReader goal_queue_;
+  ::frc971::control_loops::drivetrain::InputQueue::QueueReader input_queue_;
+  ::frc971::control_loops::drivetrain::OutputQueue* output_queue_;
+  ::frc971::control_loops::drivetrain::StatusQueue* status_queue_;
+
+  ::muan::wpilib::DriverStationQueue::QueueReader driver_station_queue_;
+  ::muan::wpilib::gyro::GyroQueue::QueueReader gyro_queue_;
 
   double last_gyro_heading_ = 0.0;
   double last_gyro_rate_ = 0.0;
@@ -47,9 +61,6 @@ class DrivetrainLoop : public aos::controls::ControlLoop<
   StateFeedbackLoop<7, 2, 3> kf_;
   PolyDrivetrain dt_openloop_;
   DrivetrainMotorsSS dt_closedloop_;
-
-  StateFeedbackLoop<2, 1, 1> down_estimator_;
-  Eigen::Matrix<double, 1, 1> down_U_;
 
   // Current gears for each drive side.
   Gear left_gear_;

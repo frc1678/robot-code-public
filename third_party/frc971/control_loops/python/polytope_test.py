@@ -4,7 +4,7 @@ import numpy
 from numpy.testing import *
 import unittest
 
-import frc971.control_loops.python.polytope as polytope
+import third_party.frc971.control_loops.python.polytope as polytope
 
 __author__ = 'Austin Schuh (austin.linux@gmail.com)'
 

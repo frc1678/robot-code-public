@@ -1,20 +1,5 @@
 package(default_visibility = ['//visibility:public'])
-
-load('/aos/build/queues', 'queue_library')
-
-cc_library(
-  name = 'team_number_test_environment',
-  srcs = [
-    'team_number_test_environment.cc',
-  ],
-  hdrs = [
-    'team_number_test_environment.h',
-  ],
-  deps = [
-    '//aos/common/network:team_number',
-    '//aos/testing:googletest',
-  ],
-)
+licenses(['notice'])
 
 cc_test(
   name = 'state_feedback_loop_test',
@@ -23,54 +8,7 @@ cc_test(
   ],
   deps = [
     ':state_feedback_loop',
-    '//aos/testing:googletest',
-  ],
-)
-
-cc_library(
-  name = 'hall_effect_tracker',
-  hdrs = [
-    'hall_effect_tracker.h',
-  ],
-  deps = [
-    ':queues',
-  ],
-)
-
-queue_library(
-  name = 'queues',
-  srcs = [
-    'control_loops.q',
-  ],
-)
-
-cc_test(
-  name = 'position_sensor_sim_test',
-  srcs = [
-    'position_sensor_sim_test.cc',
-  ],
-  deps = [
-    ':queues',
-    ':position_sensor_sim',
-    '//aos/testing:googletest',
-    '//aos/common/logging',
-  ],
-)
-
-cc_library(
-  name = 'position_sensor_sim',
-  testonly = True,
-  srcs = [
-    'position_sensor_sim.cc',
-  ],
-  hdrs = [
-    'position_sensor_sim.h',
-  ],
-  deps = [
-    ':queues',
-    ':gaussian_noise',
-    '//debian:libm',
-    '//aos/testing:random_seed',
+    '//third_party/aos/testing:googletest',
   ],
 )
 
@@ -83,7 +21,7 @@ cc_library(
     'gaussian_noise.h',
   ],
   deps = [
-    '//debian:libm',
+    '//linux_libraries:libm',
   ],
 )
 
@@ -97,8 +35,8 @@ cc_library(
   ],
   deps = [
     '//third_party/eigen',
-    '//aos/common/controls:polytope',
-    '//debian:libm',
+    '//third_party/aos/common/controls:polytope',
+    '//linux_libraries:libm',
   ],
 )
 
@@ -109,8 +47,8 @@ cc_library(
   ],
   deps = [
     '//third_party/eigen',
-    '//aos/common/logging',
-    '//aos/common:macros',
+    # '//third_party/aos/common/logging',
+    '//third_party/aos/common:macros',
   ],
 )
 

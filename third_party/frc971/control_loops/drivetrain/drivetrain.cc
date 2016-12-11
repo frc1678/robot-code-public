@@ -1,88 +1,97 @@
-#include "frc971/control_loops/drivetrain/drivetrain.h"
+#include "third_party/frc971/control_loops/drivetrain/drivetrain.h"
 
-#include <sched.h>
-#include <stdio.h>
+#include "Eigen/Dense"
 #include <cmath>
 #include <memory>
-#include "Eigen/Dense"
+#include <sched.h>
+#include <stdio.h>
 
-#include "aos/common/logging/logging.h"
-#include "aos/common/logging/matrix_logging.h"
-#include "aos/common/logging/queue_logging.h"
-
-#include "frc971/control_loops/drivetrain/down_estimator.h"
-#include "frc971/control_loops/drivetrain/drivetrain.q.h"
-#include "frc971/control_loops/drivetrain/drivetrain_config.h"
-#include "frc971/control_loops/drivetrain/polydrivetrain.h"
-#include "frc971/control_loops/drivetrain/ssdrivetrain.h"
-#include "frc971/queues/gyro.q.h"
-#include "frc971/shifter_hall_effect.h"
-#include "frc971/wpilib/imu.q.h"
-
-using frc971::sensors::gyro_reading;
+#include "third_party/frc971/control_loops/drivetrain/drivetrain_config.h"
+#include "third_party/frc971/control_loops/drivetrain/polydrivetrain.h"
+#include "third_party/frc971/control_loops/drivetrain/ssdrivetrain.h"
 
 namespace frc971 {
 namespace control_loops {
 namespace drivetrain {
 
 DrivetrainLoop::DrivetrainLoop(
-    const DrivetrainConfig &dt_config,
-    ::frc971::control_loops::DrivetrainQueue *my_drivetrain)
-    : aos::controls::ControlLoop<::frc971::control_loops::DrivetrainQueue>(
-          my_drivetrain),
+    const DrivetrainConfig& dt_config,
+    ::frc971::control_loops::drivetrain::GoalQueue* goal_queue,
+    ::frc971::control_loops::drivetrain::InputQueue* input_queue,
+    ::frc971::control_loops::drivetrain::OutputQueue* output_queue,
+    ::frc971::control_loops::drivetrain::StatusQueue* status_queue,
+    ::muan::wpilib::DriverStationQueue* driver_station_queue,
+    ::muan::wpilib::gyro::GyroQueue* gyro_queue)
+    : goal_queue_(goal_queue->MakeReader()),
+      input_queue_(input_queue->MakeReader()),
+      output_queue_(output_queue),
+      status_queue_(status_queue),
+      driver_station_queue_(driver_station_queue->MakeReader()),
+      gyro_queue_(gyro_queue->MakeReader()),
       dt_config_(dt_config),
       kf_(dt_config_.make_kf_drivetrain_loop()),
       dt_openloop_(dt_config_, &kf_),
       dt_closedloop_(dt_config_, &kf_, &integrated_kf_heading_),
-      down_estimator_(MakeDownEstimatorLoop()),
-      left_gear_(dt_config_.default_high_gear ? Gear::HIGH : Gear::LOW),
-      right_gear_(dt_config_.default_high_gear ? Gear::HIGH : Gear::LOW),
+      left_gear_(dt_config_.default_high_gear ? Gear::kHighGear
+                                              : Gear::kLowGear),
+      right_gear_(dt_config_.default_high_gear ? Gear::kHighGear
+                                               : Gear::kLowGear),
       left_high_requested_(dt_config_.default_high_gear),
       right_high_requested_(dt_config_.default_high_gear) {
   ::aos::controls::HPolytope<0>::Init();
-  down_U_.setZero();
 }
 
 int DrivetrainLoop::ControllerIndexFromGears() {
-  if (MaybeHigh(left_gear_)) {
-    if (MaybeHigh(right_gear_)) {
-      return 3;
-    } else {
-      return 2;
-    }
-  } else {
-    if (MaybeHigh(right_gear_)) {
-      return 1;
-    } else {
-      return 0;
-    }
-  }
+  // 3 is high gear, 0 is low
+  return left_gear_ ? 3 : 0;
 }
 
-Gear ComputeGear(double shifter_position,
-                 const constants::ShifterHallEffect &shifter_config,
-                 bool high_requested) {
-  if (shifter_position < shifter_config.clear_low) {
-    return Gear::LOW;
-  } else if (shifter_position > shifter_config.clear_high) {
-    return Gear::HIGH;
-  } else {
-    if (high_requested) {
-      return Gear::SHIFTING_UP;
-    } else {
-      return Gear::SHIFTING_DOWN;
-    }
+void DrivetrainLoop::Update() {
+  // Pull in the relevant queues and call RunIteration()
+  auto input = input_queue_.ReadMessage();
+  auto goal = goal_queue_.ReadLastMessage();
+
+  ::frc971::control_loops::drivetrain::GoalProto* goal_ptr = nullptr;
+  if (goal) {
+    goal_ptr = &(goal.value());
   }
+
+  ::frc971::control_loops::drivetrain::InputProto* input_ptr = nullptr;
+  if (input) {
+    input_ptr = &(input.value());
+  }
+
+  ::frc971::control_loops::drivetrain::OutputProto output;
+  ::frc971::control_loops::drivetrain::StatusProto status;
+
+  bool enable_outputs = true;
+
+  auto driver_station = driver_station_queue_.ReadLastMessage();
+  if (driver_station) {
+    enable_outputs = (*driver_station)->mode() == RobotMode::TELEOP ||
+                     (*driver_station)->mode() == RobotMode::AUTONOMOUS;
+  }
+
+  if (enable_outputs) {
+    RunIteration(goal_ptr, input_ptr, &output, &status);
+  } else {
+    RunIteration(goal_ptr, input_ptr, nullptr, &status);
+    output->set_left_voltage(0.0);
+    output->set_right_voltage(0.0);
+    output->set_high_gear(dt_config_.default_high_gear);
+  }
+
+  output_queue_->WriteMessage(output);
+  status_queue_->WriteMessage(status);
 }
 
 void DrivetrainLoop::RunIteration(
-    const ::frc971::control_loops::DrivetrainQueue::Goal *goal,
-    const ::frc971::control_loops::DrivetrainQueue::Position *position,
-    ::frc971::control_loops::DrivetrainQueue::Output *output,
-    ::frc971::control_loops::DrivetrainQueue::Status *status) {
+    const ::frc971::control_loops::drivetrain::GoalProto* goal,
+    const ::frc971::control_loops::drivetrain::InputProto* input,
+    ::frc971::control_loops::drivetrain::OutputProto* output,
+    ::frc971::control_loops::drivetrain::StatusProto* status) {
   if (!has_been_enabled_ && output) {
     has_been_enabled_ = true;
-    down_estimator_.mutable_X_hat(1, 0) = 0.0;
   }
 
   // TODO(austin): Put gear detection logic here.
@@ -91,25 +100,20 @@ void DrivetrainLoop::RunIteration(
       // Force the right controller for simple shifters since we assume that
       // gear switching is instantaneous.
       if (left_high_requested_) {
-        left_gear_ = Gear::HIGH;
+        left_gear_ = Gear::kHighGear;
       } else {
-        left_gear_ = Gear::LOW;
+        left_gear_ = Gear::kLowGear;
       }
       if (right_high_requested_) {
-        right_gear_ = Gear::HIGH;
+        right_gear_ = Gear::kHighGear;
       } else {
-        right_gear_ = Gear::LOW;
+        right_gear_ = Gear::kLowGear;
       }
-      break;
-    case ShifterType::HALL_EFFECT_SHIFTER:
-      left_gear_ = ComputeGear(position->left_shifter_position,
-                               dt_config_.left_drive, left_high_requested_);
-      right_gear_ = ComputeGear(position->right_shifter_position,
-                                dt_config_.right_drive, right_high_requested_);
       break;
   }
 
   kf_.set_controller_index(ControllerIndexFromGears());
+  /*
   {
     GearLogging gear_logging;
     gear_logging.left_state = static_cast<uint32_t>(left_gear_);
@@ -119,48 +123,21 @@ void DrivetrainLoop::RunIteration(
     gear_logging.controller_index = kf_.controller_index();
     LOG_STRUCT(DEBUG, "state", gear_logging);
   }
-
-  if (::frc971::imu_values.FetchLatest()) {
-    const double rate = -::frc971::imu_values->gyro_y;
-    const double accel_squared = ::frc971::imu_values->accelerometer_x *
-                                     ::frc971::imu_values->accelerometer_x +
-                                 ::frc971::imu_values->accelerometer_y *
-                                     ::frc971::imu_values->accelerometer_y +
-                                 ::frc971::imu_values->accelerometer_z *
-                                     ::frc971::imu_values->accelerometer_z;
-    const double angle = ::std::atan2(::frc971::imu_values->accelerometer_x,
-                                      ::frc971::imu_values->accelerometer_z) +
-                         0.008;
-    if (accel_squared > 1.03 || accel_squared < 0.97) {
-      LOG(DEBUG, "New IMU value, rejecting reading\n");
-    } else {
-      // -y is our gyro.
-      // z accel is down
-      // x accel is the front of the robot pointed down.
-      Eigen::Matrix<double, 1, 1> Y;
-      Y << angle;
-      down_estimator_.Correct(Y);
-    }
-
-    LOG(DEBUG,
-        "New IMU value from ADIS16448, rate is %f, angle %f, fused %f, bias "
-        "%f\n",
-        rate, angle, down_estimator_.X_hat(0, 0), down_estimator_.X_hat(1, 0));
-    down_U_ << rate;
-  }
-  down_estimator_.UpdateObserver(down_U_);
+  */
 
   // TODO(austin): Signal the current gear to both loops.
 
-  if (gyro_reading.FetchLatest()) {
-    LOG_STRUCT(DEBUG, "using", *gyro_reading.get());
-    last_gyro_heading_ = gyro_reading->angle;
-    last_gyro_rate_ = gyro_reading->velocity;
+  auto gyro_message = gyro_queue_.ReadLastMessage();
+  if (gyro_message) {
+    // LOG_STRUCT(DEBUG, "using", *gyro_reading.get());
+    last_gyro_heading_ = (*gyro_message)->current_angle();
+    last_gyro_rate_ = (*gyro_message)->current_angular_velocity();
   }
 
   {
     Eigen::Matrix<double, 3, 1> Y;
-    Y << position->left_encoder, position->right_encoder, last_gyro_rate_;
+    Y << (*input)->left_encoder(), (*input)->right_encoder(), last_gyro_rate_;
+
     kf_.Correct(Y);
     integrated_kf_heading_ += dt_config_.dt *
                               (kf_.X_hat(3, 0) - kf_.X_hat(1, 0)) /
@@ -175,11 +152,12 @@ void DrivetrainLoop::RunIteration(
     // gyro_goal + wheel_heading - gyro_heading = wheel_goal
   }
 
-  dt_openloop_.SetPosition(position, left_gear_, right_gear_);
+  dt_openloop_.SetPosition(input, left_gear_, right_gear_);
 
   bool control_loop_driving = false;
   if (goal) {
-    control_loop_driving = goal->control_loop_driving;
+    // TODO(Kyle) Check this condition
+    control_loop_driving = (*goal)->has_distance_command();
 
     dt_closedloop_.SetGoal(*goal);
     dt_openloop_.SetGoal(*goal);
@@ -200,7 +178,7 @@ void DrivetrainLoop::RunIteration(
 
   // set the output status of the control loop state
   if (status) {
-    status->robot_speed = (kf_.X_hat(1, 0) + kf_.X_hat(3, 0)) / 2.0;
+    (*status)->set_forward_velocity((kf_.X_hat(1, 0) + kf_.X_hat(3, 0)) / 2.0);
 
     Eigen::Matrix<double, 2, 1> linear =
         dt_closedloop_.LeftRightToLinear(kf_.X_hat());
@@ -212,20 +190,19 @@ void DrivetrainLoop::RunIteration(
     Eigen::Matrix<double, 4, 1> gyro_left_right =
         dt_closedloop_.AngularLinearToLeftRight(linear, angular);
 
-    status->estimated_left_position = gyro_left_right(0, 0);
-    status->estimated_right_position = gyro_left_right(2, 0);
+    (*status)->set_estimated_left_position(gyro_left_right(0, 0));
+    (*status)->set_estimated_right_position(gyro_left_right(2, 0));
 
-    status->estimated_left_velocity = gyro_left_right(1, 0);
-    status->estimated_right_velocity = gyro_left_right(3, 0);
-    status->output_was_capped = dt_closedloop_.output_was_capped();
-    status->uncapped_left_voltage = kf_.U_uncapped(0, 0);
-    status->uncapped_right_voltage = kf_.U_uncapped(1, 0);
+    (*status)->set_estimated_left_velocity(gyro_left_right(1, 0));
+    (*status)->set_estimated_right_velocity(gyro_left_right(3, 0));
+    (*status)->set_output_was_capped(dt_closedloop_.output_was_capped());
+    (*status)->set_uncapped_left_voltage(kf_.U_uncapped(0, 0));
+    (*status)->set_uncapped_right_voltage(kf_.U_uncapped(1, 0));
 
-    status->left_voltage_error = kf_.X_hat(4, 0);
-    status->right_voltage_error = kf_.X_hat(5, 0);
-    status->estimated_angular_velocity_error = kf_.X_hat(6, 0);
-    status->estimated_heading = integrated_kf_heading_;
-    status->ground_angle = down_estimator_.X_hat(0, 0) + dt_config_.down_offset;
+    (*status)->set_left_voltage_error(kf_.X_hat(4, 0));
+    (*status)->set_right_voltage_error(kf_.X_hat(5, 0));
+    (*status)->set_estimated_angular_velocity_error(kf_.X_hat(6, 0));
+    (*status)->set_estimated_heading(integrated_kf_heading_);
 
     dt_openloop_.PopulateStatus(status);
     dt_closedloop_.PopulateStatus(status);
@@ -234,13 +211,12 @@ void DrivetrainLoop::RunIteration(
   double left_voltage = 0.0;
   double right_voltage = 0.0;
   if (output) {
-    left_voltage = output->left_voltage;
-    right_voltage = output->right_voltage;
-    left_high_requested_ = output->left_high;
-    right_high_requested_ = output->right_high;
+    left_voltage = (*output)->left_voltage();
+    right_voltage = (*output)->right_voltage();
+    left_high_requested_ = right_high_requested_ = (*output)->high_gear();
   }
 
-  const double scalar = ::aos::robot_state->voltage_battery / 12.0;
+  const double scalar = 1.0;  // ::aos::robot_state->voltage_battery / 12.0;
 
   left_voltage *= scalar;
   right_voltage *= scalar;
@@ -262,11 +238,10 @@ void DrivetrainLoop::RunIteration(
 }
 
 void DrivetrainLoop::Zero(
-    ::frc971::control_loops::DrivetrainQueue::Output *output) {
-  output->left_voltage = 0;
-  output->right_voltage = 0;
-  output->left_high = dt_config_.default_high_gear;
-  output->right_high = dt_config_.default_high_gear;
+    ::frc971::control_loops::drivetrain::OutputProto* output) {
+  (*output)->set_left_voltage(0);
+  (*output)->set_right_voltage(0);
+  (*output)->set_high_gear(dt_config_.default_high_gear);
 }
 
 }  // namespace drivetrain

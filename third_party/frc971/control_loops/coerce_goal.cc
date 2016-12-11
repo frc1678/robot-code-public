@@ -1,8 +1,8 @@
-#include "frc971/control_loops/coerce_goal.h"
+#include "third_party/frc971/control_loops/coerce_goal.h"
 
 #include "Eigen/Dense"
 
-#include "aos/common/controls/polytope.h"
+#include "third_party/aos/common/controls/polytope.h"
 
 namespace frc971 {
 namespace control_loops {
@@ -55,7 +55,8 @@ Eigen::Matrix<double, 2, 1> DoCoerceGoal(
     }
     if (is_inside) *is_inside = false;
     return (Eigen::Matrix<double, 2, 1>() << region_vertices(0, closest_i),
-            region_vertices(1, closest_i)).finished();
+            region_vertices(1, closest_i))
+        .finished();
   }
 }
 

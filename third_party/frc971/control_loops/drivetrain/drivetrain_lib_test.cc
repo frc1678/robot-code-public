@@ -2,22 +2,19 @@
 
 #include <memory>
 
-#include "aos/common/controls/control_loop_test.h"
-#include "aos/common/controls/polytope.h"
-#include "aos/common/network/team_number.h"
-#include "aos/common/time.h"
+#include "third_party/aos/common/controls/polytope.h"
+#include "third_party/aos/common/time.h"
 #include "gtest/gtest.h"
 
-#include "frc971/control_loops/coerce_goal.h"
-#include "frc971/control_loops/drivetrain/drivetrain.h"
-#include "frc971/control_loops/drivetrain/drivetrain.q.h"
-#include "frc971/control_loops/drivetrain/drivetrain_config.h"
-#include "frc971/control_loops/state_feedback_loop.h"
-#include "frc971/queues/gyro.q.h"
-#include "y2016/constants.h"
-#include "y2016/control_loops/drivetrain/drivetrain_dog_motor_plant.h"
-#include "y2016/control_loops/drivetrain/kalman_drivetrain_motor_plant.h"
-#include "y2016/control_loops/drivetrain/polydrivetrain_dog_motor_plant.h"
+#include "third_party/frc971/control_loops/coerce_goal.h"
+#include "third_party/frc971/control_loops/drivetrain/drivetrain.h"
+#include "third_party/frc971/control_loops/drivetrain/drivetrain_config.h"
+#include "third_party/frc971/control_loops/drivetrain/y2016/drivetrain_dog_motor_plant.h"
+#include "third_party/frc971/control_loops/drivetrain/y2016/kalman_drivetrain_motor_plant.h"
+#include "third_party/frc971/control_loops/drivetrain/y2016/polydrivetrain_dog_motor_plant.h"
+#include "third_party/frc971/control_loops/state_feedback_loop.h"
+
+#include "third_party/aos/common/time.h"
 
 namespace frc971 {
 namespace control_loops {
@@ -26,44 +23,43 @@ namespace testing {
 
 using ::aos::time::Time;
 
-using ::y2016::control_loops::drivetrain::MakeDrivetrainPlant;
+using ::third_party::frc971::control_loops::drivetrain::y2016::
+    MakeDrivetrainPlant;
 
-// TODO(Comran): Make one that doesn't depend on the actual values for a
-// specific robot.
-const constants::ShifterHallEffect kThreeStateDriveShifter{0.0, 0.0,  0.0,
-                                                           0.0, 0.25, 0.75};
-
-const DrivetrainConfig &GetDrivetrainConfig() {
+const DrivetrainConfig& GetDrivetrainConfig() {
   static DrivetrainConfig kDrivetrainConfig{
       ::frc971::control_loops::drivetrain::ShifterType::HALL_EFFECT_SHIFTER,
       ::frc971::control_loops::drivetrain::LoopType::CLOSED_LOOP,
 
-      ::y2016::control_loops::drivetrain::MakeDrivetrainLoop,
-      ::y2016::control_loops::drivetrain::MakeVelocityDrivetrainLoop,
-      ::y2016::control_loops::drivetrain::MakeKFDrivetrainLoop,
+      ::third_party::frc971::control_loops::drivetrain::y2016::
+          MakeDrivetrainLoop,
+      ::third_party::frc971::control_loops::drivetrain::y2016::
+          MakeVelocityDrivetrainLoop,
+      ::third_party::frc971::control_loops::drivetrain::y2016::
+          MakeKFDrivetrainLoop,
 
-      ::y2016::control_loops::drivetrain::kDt,
-      ::y2016::control_loops::drivetrain::kRobotRadius,
-      ::y2016::control_loops::drivetrain::kWheelRadius,
-      ::y2016::control_loops::drivetrain::kV,
+      ::third_party::frc971::control_loops::drivetrain::y2016::kDt,
+      ::third_party::frc971::control_loops::drivetrain::y2016::kRobotRadius,
+      ::third_party::frc971::control_loops::drivetrain::y2016::kWheelRadius,
+      ::third_party::frc971::control_loops::drivetrain::y2016::kV,
 
-      ::y2016::control_loops::drivetrain::kHighGearRatio,
-      ::y2016::control_loops::drivetrain::kLowGearRatio,
-      kThreeStateDriveShifter, kThreeStateDriveShifter, false, 0};
+      ::third_party::frc971::control_loops::drivetrain::y2016::kHighGearRatio,
+      ::third_party::frc971::control_loops::drivetrain::y2016::kLowGearRatio,
+      false, 0};
 
   return kDrivetrainConfig;
 };
 
 class DrivetrainPlant : public StateFeedbackPlant<4, 2, 2> {
  public:
-  explicit DrivetrainPlant(StateFeedbackPlant<4, 2, 2> &&other)
+  explicit DrivetrainPlant(StateFeedbackPlant<4, 2, 2>&& other)
       : StateFeedbackPlant<4, 2, 2>(::std::move(other)) {}
 
   void CheckU() override {
-    assert(U(0, 0) <= U_max(0, 0) + 0.00001 + left_voltage_offset_);
-    assert(U(0, 0) >= U_min(0, 0) - 0.00001 + left_voltage_offset_);
-    assert(U(1, 0) <= U_max(1, 0) + 0.00001 + right_voltage_offset_);
-    assert(U(1, 0) >= U_min(1, 0) - 0.00001 + right_voltage_offset_);
+    ASSERT_LE(U(0, 0), U_max(0, 0) + 0.00001 + left_voltage_offset_);
+    ASSERT_GE(U(0, 0), U_min(0, 0) - 0.00001 + left_voltage_offset_);
+    ASSERT_LE(U(1, 0), U_max(1, 0) + 0.00001 + right_voltage_offset_);
+    ASSERT_GE(U(1, 0), U_min(1, 0) - 0.00001 + right_voltage_offset_);
   }
 
   double left_voltage_offset() const { return left_voltage_offset_; }
@@ -87,15 +83,14 @@ class DrivetrainSimulation {
  public:
   // Constructs a motor simulation.
   // TODO(aschuh) Do we want to test the clutch one too?
-  DrivetrainSimulation()
-      : drivetrain_plant_(
-            new DrivetrainPlant(MakeDrivetrainPlant())),
-        my_drivetrain_queue_(".frc971.control_loops.drivetrain", 0x8a8dde77,
-                             ".frc971.control_loops.drivetrain.goal",
-                             ".frc971.control_loops.drivetrain.position",
-                             ".frc971.control_loops.drivetrain.output",
-                             ".frc971.control_loops.drivetrain.status"),
-        gyro_reading_(::frc971::sensors::gyro_reading.name()) {
+  DrivetrainSimulation(
+      ::frc971::control_loops::drivetrain::InputQueue* input_queue,
+      ::frc971::control_loops::drivetrain::OutputQueue* output_queue,
+      ::muan::wpilib::gyro::GyroQueue* gyro_queue)
+      : drivetrain_plant_(new DrivetrainPlant(MakeDrivetrainPlant())),
+        input_queue_(input_queue),
+        output_queue_(output_queue->MakeReader()),
+        gyro_queue_(gyro_queue) {
     Reinitialize();
     last_U_.setZero();
   }
@@ -120,25 +115,24 @@ class DrivetrainSimulation {
     const double right_encoder = GetRightPosition();
 
     {
-      ::aos::ScopedMessagePtr<
-          ::frc971::control_loops::DrivetrainQueue::Position> position =
-          my_drivetrain_queue_.position.MakeMessage();
-      position->left_encoder = left_encoder;
-      position->right_encoder = right_encoder;
-      position->left_shifter_position = left_gear_high_ ? 1.0 : 0.0;
-      position->right_shifter_position = right_gear_high_ ? 1.0 : 0.0;
-      position.Send();
+      ::frc971::control_loops::drivetrain::InputProto position;
+      position->set_left_encoder(left_encoder);
+      position->set_right_encoder(right_encoder);
+      input_queue_->WriteMessage(position);
     }
 
     {
-      ::aos::ScopedMessagePtr<::frc971::sensors::GyroReading> gyro =
-          gyro_reading_.MakeMessage();
-      gyro->angle = (right_encoder - left_encoder) /
-                    (::y2016::control_loops::drivetrain::kRobotRadius * 2.0);
-      gyro->velocity =
+      ::muan::wpilib::gyro::GyroMessageProto gyro;
+      gyro->set_current_angle((right_encoder - left_encoder) /
+                              (::third_party::frc971::control_loops::
+                                   drivetrain::y2016::kRobotRadius *
+                               2.0));
+      gyro->set_current_angular_velocity(
           (drivetrain_plant_->X(3, 0) - drivetrain_plant_->X(1, 0)) /
-          (::y2016::control_loops::drivetrain::kRobotRadius * 2.0);
-      gyro.Send();
+          (::third_party::frc971::control_loops::drivetrain::y2016::
+               kRobotRadius *
+           2.0));
+      gyro_queue_->WriteMessage(gyro);
     }
   }
 
@@ -146,16 +140,17 @@ class DrivetrainSimulation {
   void Simulate() {
     last_left_position_ = drivetrain_plant_->Y(0, 0);
     last_right_position_ = drivetrain_plant_->Y(1, 0);
-    EXPECT_TRUE(my_drivetrain_queue_.output.FetchLatest());
+    auto output = output_queue_.ReadLastMessage();
     drivetrain_plant_->mutable_U() = last_U_;
-    last_U_ << my_drivetrain_queue_.output->left_voltage,
-        my_drivetrain_queue_.output->right_voltage;
+    if (output) {
+      last_U_ << (*output)->left_voltage(), (*output)->right_voltage();
+      left_gear_high_ = (*output)->high_gear();
+      right_gear_high_ = (*output)->high_gear();
+    }
     {
-      const double scalar = ::aos::robot_state->voltage_battery / 12.0;
+      const double scalar = 1.0;  // ::aos::robot_state->voltage_battery / 12.0;
       last_U_ *= scalar;
     }
-    left_gear_high_ = my_drivetrain_queue_.output->left_high;
-    right_gear_high_ = my_drivetrain_queue_.output->right_high;
 
     if (left_gear_high_) {
       if (right_gear_high_) {
@@ -188,8 +183,10 @@ class DrivetrainSimulation {
   ::std::unique_ptr<DrivetrainPlant> drivetrain_plant_;
 
  private:
-  ::frc971::control_loops::DrivetrainQueue my_drivetrain_queue_;
-  ::aos::Queue<::frc971::sensors::GyroReading> gyro_reading_;
+  ::frc971::control_loops::drivetrain::InputQueue* input_queue_;
+  ::frc971::control_loops::drivetrain::OutputQueue::QueueReader output_queue_;
+
+  ::muan::wpilib::gyro::GyroQueue* gyro_queue_;
 
   double last_left_position_;
   double last_right_position_;
@@ -200,95 +197,135 @@ class DrivetrainSimulation {
   bool right_gear_high_ = false;
 };
 
-class DrivetrainTest : public ::aos::testing::ControlLoopTest {
+class DrivetrainTest : public ::testing::Test {
  protected:
   // Create a new instance of the test queue so that it invalidates the queue
   // that it points to.  Otherwise, we will have a pointer to shared memory that
   // is no longer valid.
-  ::frc971::control_loops::DrivetrainQueue my_drivetrain_queue_;
+  ::frc971::control_loops::drivetrain::GoalQueue goal_queue_;
+  ::frc971::control_loops::drivetrain::InputQueue input_queue_;
+  ::frc971::control_loops::drivetrain::StatusQueue status_queue_;
+  ::frc971::control_loops::drivetrain::OutputQueue output_queue_;
+
+  ::muan::wpilib::gyro::GyroQueue gyro_queue_;
+  ::muan::wpilib::DriverStationQueue driver_station_queue_;
 
   // Create a loop and simulation plant.
   DrivetrainLoop drivetrain_motor_;
   DrivetrainSimulation drivetrain_motor_plant_;
 
+  ::aos::time::Time current_time_ = ::aos::time::Time::InSeconds(0);
+
   DrivetrainTest()
-      : my_drivetrain_queue_(".frc971.control_loops.drivetrain", 0x8a8dde77,
-                             ".frc971.control_loops.drivetrain.goal",
-                             ".frc971.control_loops.drivetrain.position",
-                             ".frc971.control_loops.drivetrain.output",
-                             ".frc971.control_loops.drivetrain.status"),
-        drivetrain_motor_(GetDrivetrainConfig(), &my_drivetrain_queue_),
-        drivetrain_motor_plant_() {
-    ::frc971::sensors::gyro_reading.Clear();
-    set_battery_voltage(12.0);
+      : drivetrain_motor_(GetDrivetrainConfig(), &goal_queue_, &input_queue_,
+                          &output_queue_, &status_queue_,
+                          &driver_station_queue_, &gyro_queue_),
+        drivetrain_motor_plant_(&input_queue_, &output_queue_, &gyro_queue_) {}
+
+  void SetUp() override {
+    ::aos::time::Time::EnableMockTime();
+    current_time_ = ::aos::time::Time::InSeconds(0);
+    ::aos::time::Time::SetMockTime(current_time_);
   }
 
   void RunIteration() {
     drivetrain_motor_plant_.SendPositionMessage();
-    drivetrain_motor_.Iterate();
+    drivetrain_motor_.Update();
     drivetrain_motor_plant_.Simulate();
     SimulateTimestep(true);
   }
 
-  void RunForTime(const Time run_for) {
-    const auto end_time = Time::Now() + run_for;
-    while (Time::Now() < end_time) {
+  void RunForTime(const aos::time::Time run_for) {
+    ::aos::time::Time::SetMockTime(current_time_);
+    const auto end_time = aos::time::Time::Now() + run_for;
+    while (aos::time::Time::Now() < end_time) {
       RunIteration();
     }
   }
 
+  void SimulateTimestep(bool enabled) {
+    {
+      ::muan::wpilib::DriverStationProto ds_state;
+      ds_state->set_mode(enabled ? RobotMode::TELEOP : RobotMode::DISABLED);
+      ds_state->set_brownout(false);
+      ds_state->set_battery_voltage(12.0);
+      ds_state->set_has_ds_connection(true);
+      driver_station_queue_.WriteMessage(ds_state);
+    }
+    constexpr ::aos::time::Time kTimeTick = ::aos::time::Time::InMS(5);
+    ::aos::time::Time::SetMockTime(current_time_ += kTimeTick);
+  }
+
   void VerifyNearGoal() {
-    my_drivetrain_queue_.goal.FetchLatest();
-    my_drivetrain_queue_.position.FetchLatest();
-    EXPECT_NEAR(my_drivetrain_queue_.goal->left_goal,
+    auto goal = goal_queue_.MakeReader().ReadLastMessage();
+    auto position = input_queue_.MakeReader().ReadLastMessage();
+
+    EXPECT_TRUE(goal);
+    EXPECT_TRUE((*goal)->has_distance_command());
+    EXPECT_TRUE(position);
+
+    EXPECT_NEAR((*goal)->distance_command().left_goal(),
                 drivetrain_motor_plant_.GetLeftPosition(), 1e-3);
-    EXPECT_NEAR(my_drivetrain_queue_.goal->right_goal,
+    EXPECT_NEAR((*goal)->distance_command().right_goal(),
                 drivetrain_motor_plant_.GetRightPosition(), 1e-3);
   }
 
-  virtual ~DrivetrainTest() { ::frc971::sensors::gyro_reading.Clear(); }
+  virtual ~DrivetrainTest() {}
 };
 
 // Tests that the drivetrain converges on a goal.
 TEST_F(DrivetrainTest, ConvergesCorrectly) {
-  my_drivetrain_queue_.goal.MakeWithBuilder()
-      .control_loop_driving(true)
-      .left_goal(-1.0)
-      .right_goal(1.0)
-      .Send();
-  RunForTime(Time::InSeconds(2.0));
+  ::frc971::control_loops::drivetrain::GoalProto goal;
+  goal->mutable_distance_command()->set_left_goal(-1.0);
+  goal->mutable_distance_command()->set_right_goal(1.0);
+
+  goal_queue_.WriteMessage(goal);
+
+  RunForTime(aos::time::Time::InSeconds(2.0));
+
   VerifyNearGoal();
 }
 
 // Tests that the drivetrain converges on a goal when under the effect of a
 // voltage offset/disturbance.
 TEST_F(DrivetrainTest, ConvergesWithVoltageError) {
-  my_drivetrain_queue_.goal.MakeWithBuilder()
-      .control_loop_driving(true)
-      .left_goal(-1.0)
-      .right_goal(1.0)
-      .Send();
+  ::frc971::control_loops::drivetrain::GoalProto goal;
+  goal->mutable_distance_command()->set_left_goal(-1.0);
+  goal->mutable_distance_command()->set_right_goal(1.0);
+
+  goal_queue_.WriteMessage(goal);
+
   drivetrain_motor_plant_.set_left_voltage_offset(1.0);
   drivetrain_motor_plant_.set_right_voltage_offset(1.0);
-  RunForTime(Time::InSeconds(1.5));
+  RunForTime(aos::time::Time::InSeconds(1.5));
   VerifyNearGoal();
 }
 
 // Tests that it survives disabling.
 TEST_F(DrivetrainTest, SurvivesDisabling) {
-  my_drivetrain_queue_.goal.MakeWithBuilder()
-      .control_loop_driving(true)
-      .left_goal(-1.0)
-      .right_goal(1.0)
-      .Send();
+  ::frc971::control_loops::drivetrain::GoalProto goal;
+  goal->mutable_distance_command()->set_left_goal(-1.0);
+  goal->mutable_distance_command()->set_right_goal(1.0);
+
+  goal_queue_.WriteMessage(goal);
+
   for (int i = 0; i < 500; ++i) {
     drivetrain_motor_plant_.SendPositionMessage();
-    drivetrain_motor_.Iterate();
+    drivetrain_motor_.Update();
     drivetrain_motor_plant_.Simulate();
     if (i > 20 && i < 200) {
       SimulateTimestep(false);
     } else {
       SimulateTimestep(true);
+    }
+
+    // It takes one cycle for disabling to set in
+    if (i > 21 && i < 201) {
+      // It's disabled, so everything should be 0
+      auto output = output_queue_.MakeReader().ReadLastMessage();
+      ASSERT_TRUE(output);
+      EXPECT_NEAR((*output)->left_voltage(), 0, 1e-7);
+      EXPECT_NEAR((*output)->right_voltage(), 0, 1e-7);
     }
   }
   VerifyNearGoal();
@@ -298,7 +335,7 @@ TEST_F(DrivetrainTest, SurvivesDisabling) {
 TEST_F(DrivetrainTest, NoGoalStart) {
   for (int i = 0; i < 20; ++i) {
     drivetrain_motor_plant_.SendPositionMessage();
-    drivetrain_motor_.Iterate();
+    drivetrain_motor_.Update();
     drivetrain_motor_plant_.Simulate();
   }
 }
@@ -306,24 +343,25 @@ TEST_F(DrivetrainTest, NoGoalStart) {
 // Tests that never having a goal, but having driver's station messages, doesn't
 // break.
 TEST_F(DrivetrainTest, NoGoalWithRobotState) {
-  RunForTime(Time::InSeconds(0.1));
+  RunForTime(aos::time::Time::InSeconds(0.1));
 }
 
 // Tests that the robot successfully drives straight forward.
 // This used to not work due to a U-capping bug.
 TEST_F(DrivetrainTest, DriveStraightForward) {
-  my_drivetrain_queue_.goal.MakeWithBuilder()
-      .control_loop_driving(true)
-      .left_goal(4.0)
-      .right_goal(4.0)
-      .Send();
+  ::frc971::control_loops::drivetrain::GoalProto goal;
+  goal->mutable_distance_command()->set_left_goal(4.0);
+  goal->mutable_distance_command()->set_right_goal(4.0);
+
+  goal_queue_.WriteMessage(goal);
+
   for (int i = 0; i < 500; ++i) {
     RunIteration();
-    ASSERT_TRUE(my_drivetrain_queue_.output.FetchLatest());
-    EXPECT_NEAR(my_drivetrain_queue_.output->left_voltage,
-                my_drivetrain_queue_.output->right_voltage, 1e-4);
-    EXPECT_GT(my_drivetrain_queue_.output->left_voltage, -11);
-    EXPECT_GT(my_drivetrain_queue_.output->right_voltage, -11);
+    auto output = output_queue_.MakeReader().ReadLastMessage();
+    ASSERT_TRUE(output);
+    EXPECT_NEAR((*output)->left_voltage(), (*output)->right_voltage(), 1e-4);
+    EXPECT_GT((*output)->left_voltage(), -11);
+    EXPECT_GT((*output)->right_voltage(), -11);
   }
   VerifyNearGoal();
 }
@@ -331,16 +369,18 @@ TEST_F(DrivetrainTest, DriveStraightForward) {
 // Tests that the robot successfully drives close to straight.
 // This used to fail in simulation due to libcdd issues with U-capping.
 TEST_F(DrivetrainTest, DriveAlmostStraightForward) {
-  my_drivetrain_queue_.goal.MakeWithBuilder()
-      .control_loop_driving(true)
-      .left_goal(4.0)
-      .right_goal(3.9)
-      .Send();
+  ::frc971::control_loops::drivetrain::GoalProto goal;
+  goal->mutable_distance_command()->set_left_goal(4.0);
+  goal->mutable_distance_command()->set_right_goal(3.9);
+
+  goal_queue_.WriteMessage(goal);
+
   for (int i = 0; i < 500; ++i) {
     RunIteration();
-    ASSERT_TRUE(my_drivetrain_queue_.output.FetchLatest());
-    EXPECT_GT(my_drivetrain_queue_.output->left_voltage, -11);
-    EXPECT_GT(my_drivetrain_queue_.output->right_voltage, -11);
+    auto output = output_queue_.MakeReader().ReadLastMessage();
+    ASSERT_TRUE(output);
+    EXPECT_GT((*output)->left_voltage(), -11);
+    EXPECT_GT((*output)->right_voltage(), -11);
   }
   VerifyNearGoal();
 }
@@ -378,29 +418,30 @@ TEST_F(DrivetrainTest, LinearToAngularAndBack) {
 // Tests that a linear motion profile succeeds.
 TEST_F(DrivetrainTest, ProfileStraightForward) {
   {
-    ::aos::ScopedMessagePtr<::frc971::control_loops::DrivetrainQueue::Goal>
-        goal = my_drivetrain_queue_.goal.MakeMessage();
-    goal->control_loop_driving = true;
-    goal->left_goal = 4.0;
-    goal->right_goal = 4.0;
-    goal->left_velocity_goal = 0.0;
-    goal->right_velocity_goal = 0.0;
-    goal->linear.max_velocity = 1.0;
-    goal->linear.max_acceleration = 3.0;
-    goal->angular.max_velocity = 1.0;
-    goal->angular.max_acceleration = 3.0;
-    goal.Send();
+    ::frc971::control_loops::drivetrain::GoalProto goal;
+    goal->mutable_distance_command()->set_left_goal(4.0);
+    goal->mutable_distance_command()->set_right_goal(4.0);
+    goal->mutable_distance_command()->set_left_velocity_goal(0.0);
+    goal->mutable_distance_command()->set_right_velocity_goal(0.0);
+    goal->mutable_linear_constraints()->set_max_velocity(1.0);
+    goal->mutable_linear_constraints()->set_max_acceleration(3.0);
+    goal->mutable_angular_constraints()->set_max_velocity(1.0);
+    goal->mutable_angular_constraints()->set_max_acceleration(3.0);
+    goal_queue_.WriteMessage(goal);
   }
 
-  while (Time::Now() < Time::InSeconds(6)) {
+  while (aos::time::Time::Now() < aos::time::Time::InSeconds(6)) {
     RunIteration();
-    ASSERT_TRUE(my_drivetrain_queue_.output.FetchLatest());
-    EXPECT_NEAR(my_drivetrain_queue_.output->left_voltage,
-                my_drivetrain_queue_.output->right_voltage, 1e-4);
-    EXPECT_GT(my_drivetrain_queue_.output->left_voltage, -6);
-    EXPECT_GT(my_drivetrain_queue_.output->right_voltage, -6);
-    EXPECT_LT(my_drivetrain_queue_.output->left_voltage, 6);
-    EXPECT_LT(my_drivetrain_queue_.output->right_voltage, 6);
+
+    auto output = output_queue_.MakeReader().ReadLastMessage();
+    ASSERT_TRUE(output);
+    EXPECT_GT((*output)->left_voltage(), -11);
+    EXPECT_GT((*output)->right_voltage(), -11);
+    EXPECT_NEAR((*output)->left_voltage(), (*output)->right_voltage(), 1e-4);
+    EXPECT_GT((*output)->left_voltage(), -6);
+    EXPECT_GT((*output)->right_voltage(), -6);
+    EXPECT_LT((*output)->left_voltage(), 6);
+    EXPECT_LT((*output)->right_voltage(), 6);
   }
   VerifyNearGoal();
 }
@@ -408,29 +449,30 @@ TEST_F(DrivetrainTest, ProfileStraightForward) {
 // Tests that an angular motion profile succeeds.
 TEST_F(DrivetrainTest, ProfileTurn) {
   {
-    ::aos::ScopedMessagePtr<::frc971::control_loops::DrivetrainQueue::Goal>
-        goal = my_drivetrain_queue_.goal.MakeMessage();
-    goal->control_loop_driving = true;
-    goal->left_goal = -1.0;
-    goal->right_goal = 1.0;
-    goal->left_velocity_goal = 0.0;
-    goal->right_velocity_goal = 0.0;
-    goal->linear.max_velocity = 1.0;
-    goal->linear.max_acceleration = 3.0;
-    goal->angular.max_velocity = 1.0;
-    goal->angular.max_acceleration = 3.0;
-    goal.Send();
+    ::frc971::control_loops::drivetrain::GoalProto goal;
+    goal->mutable_distance_command()->set_left_goal(-1.0);
+    goal->mutable_distance_command()->set_right_goal(1.0);
+    goal->mutable_distance_command()->set_left_velocity_goal(0.0);
+    goal->mutable_distance_command()->set_right_velocity_goal(0.0);
+    goal->mutable_linear_constraints()->set_max_velocity(1.0);
+    goal->mutable_linear_constraints()->set_max_acceleration(3.0);
+    goal->mutable_angular_constraints()->set_max_velocity(1.0);
+    goal->mutable_angular_constraints()->set_max_acceleration(3.0);
+    goal_queue_.WriteMessage(goal);
   }
 
-  while (Time::Now() < Time::InSeconds(6)) {
+  while (aos::time::Time::Now() < aos::time::Time::InSeconds(6)) {
     RunIteration();
-    ASSERT_TRUE(my_drivetrain_queue_.output.FetchLatest());
-    EXPECT_NEAR(my_drivetrain_queue_.output->left_voltage,
-                -my_drivetrain_queue_.output->right_voltage, 1e-4);
-    EXPECT_GT(my_drivetrain_queue_.output->left_voltage, -6);
-    EXPECT_GT(my_drivetrain_queue_.output->right_voltage, -6);
-    EXPECT_LT(my_drivetrain_queue_.output->left_voltage, 6);
-    EXPECT_LT(my_drivetrain_queue_.output->right_voltage, 6);
+
+    auto output = output_queue_.MakeReader().ReadLastMessage();
+    ASSERT_TRUE(output);
+    EXPECT_GT((*output)->left_voltage(), -11);
+    EXPECT_GT((*output)->right_voltage(), -11);
+    EXPECT_NEAR((*output)->left_voltage(), -(*output)->right_voltage(), 1e-4);
+    EXPECT_GT((*output)->left_voltage(), -6);
+    EXPECT_GT((*output)->right_voltage(), -6);
+    EXPECT_LT((*output)->left_voltage(), 6);
+    EXPECT_LT((*output)->right_voltage(), 6);
   }
   VerifyNearGoal();
 }
@@ -438,23 +480,21 @@ TEST_F(DrivetrainTest, ProfileTurn) {
 // Tests that a mixed turn drive saturated profile succeeds.
 TEST_F(DrivetrainTest, SaturatedTurnDrive) {
   {
-    ::aos::ScopedMessagePtr<::frc971::control_loops::DrivetrainQueue::Goal>
-        goal = my_drivetrain_queue_.goal.MakeMessage();
-    goal->control_loop_driving = true;
-    goal->left_goal = 5.0;
-    goal->right_goal = 4.0;
-    goal->left_velocity_goal = 0.0;
-    goal->right_velocity_goal = 0.0;
-    goal->linear.max_velocity = 6.0;
-    goal->linear.max_acceleration = 4.0;
-    goal->angular.max_velocity = 2.0;
-    goal->angular.max_acceleration = 4.0;
-    goal.Send();
+    ::frc971::control_loops::drivetrain::GoalProto goal;
+    goal->mutable_distance_command()->set_left_goal(5.0);
+    goal->mutable_distance_command()->set_right_goal(4.0);
+    goal->mutable_distance_command()->set_left_velocity_goal(0.0);
+    goal->mutable_distance_command()->set_right_velocity_goal(0.0);
+    goal->mutable_linear_constraints()->set_max_velocity(6.0);
+    goal->mutable_linear_constraints()->set_max_acceleration(4.0);
+    goal->mutable_angular_constraints()->set_max_velocity(2.0);
+    goal->mutable_angular_constraints()->set_max_acceleration(4.0);
+    goal_queue_.WriteMessage(goal);
   }
 
-  while (Time::Now() < Time::InSeconds(3)) {
+  while (aos::time::Time::Now() < aos::time::Time::InSeconds(3)) {
     RunIteration();
-    ASSERT_TRUE(my_drivetrain_queue_.output.FetchLatest());
+    ASSERT_TRUE(output_queue_.MakeReader().ReadLastMessage());
   }
   VerifyNearGoal();
 }
@@ -462,62 +502,68 @@ TEST_F(DrivetrainTest, SaturatedTurnDrive) {
 // Tests that being in teleop drive for a bit and then transitioning to closed
 // drive profiles nicely.
 TEST_F(DrivetrainTest, OpenLoopThenClosed) {
-  my_drivetrain_queue_.goal.MakeWithBuilder()
-      .control_loop_driving(false)
-      .steering(0.0)
-      .throttle(1.0)
-      .highgear(true)
-      .quickturn(false)
-      .Send();
-
-  RunForTime(Time::InSeconds(1.0));
-
-  my_drivetrain_queue_.goal.MakeWithBuilder()
-      .control_loop_driving(false)
-      .steering(0.0)
-      .throttle(-0.3)
-      .highgear(true)
-      .quickturn(false)
-      .Send();
-
-  RunForTime(Time::InSeconds(1.0));
-
-  my_drivetrain_queue_.goal.MakeWithBuilder()
-      .control_loop_driving(false)
-      .steering(0.0)
-      .throttle(0.0)
-      .highgear(true)
-      .quickturn(false)
-      .Send();
-
-  RunForTime(Time::InSeconds(10.0));
-
   {
-    ::aos::ScopedMessagePtr<::frc971::control_loops::DrivetrainQueue::Goal>
-        goal = my_drivetrain_queue_.goal.MakeMessage();
-    goal->control_loop_driving = true;
-    goal->left_goal = 5.0;
-    goal->right_goal = 4.0;
-    goal->left_velocity_goal = 0.0;
-    goal->right_velocity_goal = 0.0;
-    goal->linear.max_velocity = 1.0;
-    goal->linear.max_acceleration = 2.0;
-    goal->angular.max_velocity = 1.0;
-    goal->angular.max_acceleration = 2.0;
-    goal.Send();
+    ::frc971::control_loops::drivetrain::GoalProto goal;
+    goal->mutable_teleop_command()->set_closed_loop(true);
+    goal->mutable_teleop_command()->set_steering(0.0);
+    goal->mutable_teleop_command()->set_throttle(1.0);
+    goal->set_gear(Gear::kHighGear);
+    goal->mutable_teleop_command()->set_quick_turn(false);
+    goal_queue_.WriteMessage(goal);
   }
 
-  const auto end_time = Time::Now() + Time::InSeconds(4);
-  while (Time::Now() < end_time) {
+  RunForTime(aos::time::Time::InSeconds(1.0));
+
+  {
+    ::frc971::control_loops::drivetrain::GoalProto goal;
+    goal->mutable_teleop_command()->set_closed_loop(true);
+    goal->mutable_teleop_command()->set_steering(0.0);
+    goal->mutable_teleop_command()->set_throttle(-0.3);
+    goal->set_gear(Gear::kHighGear);
+    goal->mutable_teleop_command()->set_quick_turn(false);
+    goal_queue_.WriteMessage(goal);
+  }
+
+  RunForTime(aos::time::Time::InSeconds(1.0));
+
+  {
+    ::frc971::control_loops::drivetrain::GoalProto goal;
+    goal->mutable_teleop_command()->set_closed_loop(true);
+    goal->mutable_teleop_command()->set_steering(0.0);
+    goal->mutable_teleop_command()->set_throttle(0.0);
+    goal->set_gear(Gear::kHighGear);
+    goal->mutable_teleop_command()->set_quick_turn(false);
+    goal_queue_.WriteMessage(goal);
+  }
+
+  RunForTime(aos::time::Time::InSeconds(10.0));
+
+  {
+    ::frc971::control_loops::drivetrain::GoalProto goal;
+    goal->mutable_distance_command()->set_left_goal(5.0);
+    goal->mutable_distance_command()->set_right_goal(4.0);
+    goal->mutable_distance_command()->set_left_velocity_goal(0.0);
+    goal->mutable_distance_command()->set_left_velocity_goal(0.0);
+    goal->mutable_linear_constraints()->set_max_velocity(1.0);
+    goal->mutable_linear_constraints()->set_max_acceleration(2.0);
+    goal->mutable_angular_constraints()->set_max_velocity(1.0);
+    goal->mutable_angular_constraints()->set_max_acceleration(2.0);
+    goal_queue_.WriteMessage(goal);
+  }
+
+  const auto end_time = aos::time::Time::Now() + aos::time::Time::InSeconds(4);
+  while (aos::time::Time::Now() < end_time) {
     drivetrain_motor_plant_.SendPositionMessage();
-    drivetrain_motor_.Iterate();
+    drivetrain_motor_.Update();
     drivetrain_motor_plant_.Simulate();
     SimulateTimestep(true);
-    ASSERT_TRUE(my_drivetrain_queue_.output.FetchLatest());
-    EXPECT_GT(my_drivetrain_queue_.output->left_voltage, -6);
-    EXPECT_GT(my_drivetrain_queue_.output->right_voltage, -6);
-    EXPECT_LT(my_drivetrain_queue_.output->left_voltage, 6);
-    EXPECT_LT(my_drivetrain_queue_.output->right_voltage, 6);
+
+    auto output = output_queue_.MakeReader().ReadLastMessage();
+    ASSERT_TRUE(output);
+    EXPECT_GT((*output)->left_voltage(), -6);
+    EXPECT_GT((*output)->right_voltage(), -6);
+    EXPECT_LT((*output)->left_voltage(), 6);
+    EXPECT_LT((*output)->right_voltage(), 6);
   }
   VerifyNearGoal();
 }

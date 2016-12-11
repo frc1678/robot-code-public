@@ -10,7 +10,7 @@ Currently it only supports direct pole placement.
 __author__ = 'Austin Schuh (austin.linux@gmail.com)'
 
 import numpy
-import slycot
+import scipy.signal
 import scipy.signal.cont2discrete
 import glog
 
@@ -54,15 +54,9 @@ def dplace(A, B, poles, alpha=1e-6):
   if num_poles > n:
     raise ValueError("Trying to place more poles than states.")
 
-  out = slycot.sb01bd(n=n,
-                      m=m,
-                      np=num_poles,
-                      alpha=alpha,
-                      A=A,
-                      B=B,
-                      w=numpy.array(poles),
-                      dico='D')
+  result = scipy.signal.place_poles(A, B, poles)
 
+  """
   A_z = numpy.matrix(out[0])
   num_too_small_eigenvalues = out[2]
   num_assigned_eigenvalues = out[3]
@@ -81,8 +75,9 @@ def dplace(A, B, poles, alpha=1e-6):
   if num_uncontrollable_eigenvalues != 0:
     raise PolePlacementError("Found %d uncontrollable eigenvlaues." %
                              num_uncontrollable_eigenvalues)
+  """
 
-  return K
+  return result.gain_matrix
 
 
 def c2d(A, B, dt):
@@ -115,11 +110,11 @@ def dlqr(A, B, Q, R):
 
   # P = (A.T * P * A) - (A.T * P * B * numpy.linalg.inv(R + B.T * P *B) * (A.T * P.T * B).T + Q
 
-  P, rcond, w, S, T = slycot.sb02od(
-      n=A.shape[0], m=B.shape[1], A=A, B=B, Q=Q, R=R, dico='D')
+  # Solve the ARE for the cost-to-go matrix
+  M = numpy.asmatrix(scipy.linalg.solve_discrete_are(A, B, Q, R))
 
-  F = numpy.linalg.inv(R + B.T * P *B) * B.T * P * A
-  return F
+  # Finally, solve for the optimal gain matrix using the cost-to-go matrix
+  return numpy.asmatrix(numpy.linalg.inv(R) * B.T * M)
 
 def kalman(A, B, C, Q, R):
   """Solves for the steady state kalman gain and covariance matricies.
@@ -132,23 +127,14 @@ def kalman(A, B, C, Q, R):
     Returns:
       KalmanGain, Covariance.
   """
-  I = numpy.matrix(numpy.eye(Q.shape[0]))
-  Z = numpy.matrix(numpy.zeros(Q.shape[0]))
-  n = A.shape[0]
-  m = C.shape[0]
 
-  controllability_rank = numpy.linalg.matrix_rank(ctrb(A.T, C.T))
-  if controllability_rank != n:
-    glog.warning('Observability of %d != %d, unobservable state',
-                 controllability_rank, n)
-
-  # Compute the steady state covariance matrix.
-  P_prior, rcond, w, S, T = slycot.sb02od(n=n, m=m, A=A.T, B=C.T, Q=Q, R=R, dico='D')
+  P_prior = numpy.asmatrix(scipy.linalg.solve_discrete_are(A.T, C.T, Q, R))
   S = C * P_prior * C.T + R
-  K = numpy.linalg.lstsq(S.T, (P_prior * C.T).T)[0].T
-  P = (I - K * C) * P_prior
+  L = numpy.linalg.lstsq(S.T, (P_prior * C.T).T)[0].T
+  P = (numpy.eye(Q.shape[0]) - L * C) * P_prior
 
-  return K, P
+  return L, P
+
 
 def TwoStateFeedForwards(B, Q):
   """Computes the feed forwards constant for a 2 state controller.

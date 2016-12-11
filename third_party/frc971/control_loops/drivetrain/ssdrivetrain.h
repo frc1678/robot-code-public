@@ -1,16 +1,14 @@
 #ifndef FRC971_CONTROL_LOOPS_DRIVETRAIN_SSDRIVETRAIN_H_
 #define FRC971_CONTROL_LOOPS_DRIVETRAIN_SSDRIVETRAIN_H_
 
-#include "aos/common/commonmath.h"
-#include "aos/common/controls/control_loop.h"
-#include "aos/common/controls/polytope.h"
-#include "aos/common/logging/matrix_logging.h"
-#include "aos/common/util/trapezoid_profile.h"
+#include "third_party/aos/common/commonmath.h"
+#include "third_party/aos/common/controls/polytope.h"
+#include "third_party/aos/common/util/trapezoid_profile.h"
 
-#include "frc971/control_loops/state_feedback_loop.h"
-#include "frc971/control_loops/coerce_goal.h"
-#include "frc971/control_loops/drivetrain/drivetrain.q.h"
-#include "frc971/control_loops/drivetrain/drivetrain_config.h"
+#include "third_party/frc971/control_loops/coerce_goal.h"
+#include "third_party/frc971/control_loops/drivetrain/drivetrain_config.h"
+#include "third_party/frc971/control_loops/drivetrain/queue_types.h"
+#include "third_party/frc971/control_loops/state_feedback_loop.h"
 
 namespace frc971 {
 namespace control_loops {
@@ -22,7 +20,7 @@ class DrivetrainMotorsSS {
                      StateFeedbackLoop<7, 2, 3> *kf,
                      double *integrated_kf_heading);
 
-  void SetGoal(const ::frc971::control_loops::DrivetrainQueue::Goal &goal);
+  void SetGoal(const ::frc971::control_loops::drivetrain::GoalProto &goal);
 
   // Computes the power to send out as part of the controller.  Should be called
   // when disabled (with enable_control_loop false) so the profiles get computed
@@ -34,9 +32,9 @@ class DrivetrainMotorsSS {
   bool output_was_capped() const { return output_was_capped_; }
 
   void SetOutput(
-      ::frc971::control_loops::DrivetrainQueue::Output *output) const;
+      ::frc971::control_loops::drivetrain::OutputProto *output) const;
   void PopulateStatus(
-      ::frc971::control_loops::DrivetrainQueue::Status *status) const;
+      ::frc971::control_loops::drivetrain::StatusProto *status) const;
 
   // Converts the robot state to a linear distance position, velocity.
   Eigen::Matrix<double, 2, 1> LeftRightToLinear(

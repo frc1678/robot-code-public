@@ -1,4 +1,5 @@
 package(default_visibility = ['//visibility:public'])
+licenses(['notice'])
 
 cc_library(
   name = 'voltage_cap',
@@ -17,7 +18,6 @@ cc_test(
   ],
   deps = [
     ':voltage_cap',
-    '//aos/testing:googletest',
-    '//aos/testing:test_shm',
+    '//third_party/aos/testing:googletest',
   ],
 )

@@ -1,4 +1,4 @@
-#include "frc971/control_loops/state_feedback_loop.h"
+#include "third_party/frc971/control_loops/state_feedback_loop.h"
 
 #include "gtest/gtest.h"
 
@@ -19,7 +19,7 @@ TEST(StateFeedbackLoopTest, UnequalSizes) {
       Eigen::Matrix<double, 4, 1>::Constant(-1));
 
   {
-    ::std::vector< ::std::unique_ptr<StateFeedbackPlantCoefficients<2, 4, 7>>> v;
+    ::std::vector<::std::unique_ptr<StateFeedbackPlantCoefficients<2, 4, 7>>> v;
     v.emplace_back(new StateFeedbackPlantCoefficients<2, 4, 7>(coefficients));
     StateFeedbackPlant<2, 4, 7> plant(&v);
     plant.Update();

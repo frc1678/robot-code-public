@@ -1,11 +1,8 @@
 #include <unistd.h>
 
-#include "frc971/control_loops/voltage_cap/voltage_cap.h"
+#include "third_party/frc971/control_loops/voltage_cap/voltage_cap.h"
 
 #include "gtest/gtest.h"
-
-#include "aos/common/queue.h"
-#include "aos/testing/test_shm.h"
 
 using ::aos::time::Time;
 
@@ -15,8 +12,6 @@ namespace testing {
 
 class VoltageTest : public ::testing::Test {
  protected:
-  // Bring up and down Core.
-  ::aos::testing::TestSharedMemory my_shm_;
 };
 
 // Tests that voltage inputs return the same if inside the box.
@@ -112,7 +107,7 @@ TEST_F(VoltageTest, QuadrantOneToTwo12) {
   EXPECT_EQ(12.0, voltage_one);
   EXPECT_EQ(-10.0, voltage_two);
 }
-TEST_F(VoltageTest, QuadrantOneToFour12){
+TEST_F(VoltageTest, QuadrantOneToFour12) {
   // Point in Quadrant 1 intersects box in Quadrant 4.
   double voltage_one, voltage_two;
   VoltageCap(12.0, 11.0, 33.0, &voltage_one, &voltage_two);
@@ -227,7 +222,7 @@ TEST_F(VoltageTest, QuadrantOneToTwo6) {
   EXPECT_EQ(6.0, voltage_one);
   EXPECT_EQ(-5.0, voltage_two);
 }
-TEST_F(VoltageTest, QuadrantOneToFour6){
+TEST_F(VoltageTest, QuadrantOneToFour6) {
   // Point in Quadrant 1 intersects box in Quadrant 4.
   double voltage_one, voltage_two;
   VoltageCap(6.0, 22.0, 33.0, &voltage_one, &voltage_two);
