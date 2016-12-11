@@ -1,6 +1,13 @@
 package(default_visibility = ['//visibility:public'])
 licenses(['notice'])
 
+py_library(
+  name = 'py_trapezoid_profile',
+  srcs = [
+    'trapezoid_profile.py',
+  ],
+)
+
 cc_library(
   name = 'run_command',
   srcs = [
@@ -11,6 +18,7 @@ cc_library(
   ],
   deps = [
     '//third_party/aos/common:die',
+    '//third_party/aos/common:check',
   ],
 )
 
@@ -84,6 +92,33 @@ cc_library(
     '//third_party/aos/common:macros',
     '//third_party/aos/common:die',
     '//third_party/aos/common:check',
+  ],
+)
+
+cc_library(
+  name = 'trapezoid_profile',
+  srcs = [
+    'trapezoid_profile.cc',
+  ],
+  hdrs = [
+    'trapezoid_profile.h',
+  ],
+  deps = [
+    '//third_party/eigen',
+    '//third_party/aos/common:time',
+    # '//aos/common/logging',
+    '//linux_libraries:libm',
+  ],
+)
+
+cc_test(
+  name = 'trapezoid_profile_test',
+  srcs = [
+    'trapezoid_profile_test.cc',
+  ],
+  deps = [
+    ':trapezoid_profile',
+    '//aos/testing:googletest',
   ],
 )
 
