@@ -32,7 +32,7 @@ void Logger::Run() {
   }
 }
 
-void Logger::Update() { //TODO(Wesley) remove this
+void Logger::Update() {
   for (auto const& log : queue_logs_) {
     std::experimental::optional<std::string> message;
     while (message = log->reader->GetMessageAsCSV()) {

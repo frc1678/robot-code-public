@@ -2,6 +2,7 @@
 #define MUAN_LOGGING_LOGGER_H_
 
 #include "filewriter.h"
+#include "gtest/gtest_prod.h"
 #include "textlogger.h"
 #include "third_party/aos/common/time.h"
 #include "third_party/aos/common/util/phased_loop.h"
@@ -52,6 +53,11 @@ namespace logging {
  * logging string is realtime.
  */
 class Logger {
+FRIEND_TEST(Logger, LogsOneMessage);
+FRIEND_TEST(Logger, LogsManyMessages);
+FRIEND_TEST(Logger, LogsMultipleQueues);
+FRIEND_TEST(Logger, LogsManyMessagesPerTick);
+FRIEND_TEST(Logger, TextLogger);
  public:
   Logger();
   Logger(std::unique_ptr<FileWriter>&& writer);
@@ -67,9 +73,6 @@ class Logger {
   // run forever, calling the Update function.
   void Run();
 
-  // This should not be directly called, use Run instead.
-  void Update();
-
   // This starts the logger if you have previously stopped it by calling Stop().
   // You do not need to call this if you have just called Run() - Run() will
   // automatically start the logger.
@@ -83,6 +86,8 @@ class Logger {
  private:
   std::unique_ptr<FileWriter> writer_;
   std::atomic<bool> running_{false};
+
+  void Update();
 
   class GenericReader {
    public:

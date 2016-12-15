@@ -10,6 +10,9 @@ using muan::logging::Logger;
 using muan::queues::MessageQueue;
 using namespace ::testing;
 
+namespace muan {
+namespace logging {
+
 class MockFileWriter : public muan::logging::FileWriter {
  public:
   MockFileWriter() : muan::logging::FileWriter("/"){};
@@ -17,7 +20,7 @@ class MockFileWriter : public muan::logging::FileWriter {
 };
 
 TEST(Logger, LogsOneMessage) {
-  std::unique_ptr<MockFileWriter> writer = std::make_unique<MockFileWriter>();
+  std::unique_ptr<muan::logging::MockFileWriter> writer = std::make_unique<muan::logging::MockFileWriter>();
 
   EXPECT_CALL(*writer, WriteLine("testqueue.csv", "42"))
       .Times(1);
@@ -35,7 +38,7 @@ TEST(Logger, LogsOneMessage) {
 }
 
 TEST(Logger, LogsManyMessages) {
-  std::unique_ptr<MockFileWriter> writer = std::make_unique<MockFileWriter>();
+  std::unique_ptr<muan::logging::MockFileWriter> writer = std::make_unique<muan::logging::MockFileWriter>();
 
   EXPECT_CALL(*writer, WriteLine("testqueue.csv", "42"))
       .Times(42);
@@ -55,7 +58,7 @@ TEST(Logger, LogsManyMessages) {
 }
 
 TEST(Logger, LogsMultipleQueues) {
-  std::unique_ptr<MockFileWriter> writer = std::make_unique<MockFileWriter>();
+  std::unique_ptr<muan::logging::MockFileWriter> writer = std::make_unique<muan::logging::MockFileWriter>();
 
   EXPECT_CALL(*writer, WriteLine("testqueue1.csv", "42"))
       .Times(1);
@@ -82,7 +85,7 @@ TEST(Logger, LogsMultipleQueues) {
 }
 
 TEST(Logger, LogsManyMessagesPerTick) {
-  std::unique_ptr<MockFileWriter> writer = std::make_unique<MockFileWriter>();
+  std::unique_ptr<muan::logging::MockFileWriter> writer = std::make_unique<muan::logging::MockFileWriter>();
 
   EXPECT_CALL(*writer, WriteLine("testqueue.csv", "42"))
       .Times(10000);
@@ -104,7 +107,7 @@ TEST(Logger, LogsManyMessagesPerTick) {
 }
 
 TEST(Logger, TextLogger) {
-  std::unique_ptr<MockFileWriter> writer = std::make_unique<MockFileWriter>();
+  std::unique_ptr<muan::logging::MockFileWriter> writer = std::make_unique<muan::logging::MockFileWriter>();
 
   EXPECT_CALL(*writer, WriteLine("name.log", "test"))
       .Times(1);
@@ -113,4 +116,7 @@ TEST(Logger, TextLogger) {
   auto textlog = logger.MakeTextLogger("name");
   textlog("test");
   logger.Update();
+}
+
+}
 }
