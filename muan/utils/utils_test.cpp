@@ -2,6 +2,7 @@
 #include "muan/utils/timer.h"
 #include "muan/utils/timing_utils.h"
 #include "muan/utils/linear_interpolation.h"
+#include "muan/utils/disk_brake.h"
 #include "gtest/gtest.h"
 
 using muan::Timer;
@@ -10,6 +11,8 @@ using muan::sleep_until;
 using muan::sleep_for;
 using muan::now;
 using muan::LinearInterpolation;
+using muan::DiskBrake;
+using muan::units::s;
 
 TEST(TimeUtils, TimerPositive) {
   using namespace muan::units;
@@ -82,4 +85,18 @@ TEST(LinearInterpolation, CalculatesCorrectly) {
   EXPECT_EQ(f(6), 8);
   EXPECT_EQ(f(7), 7);
   EXPECT_DEATH(f(100), "An interpolation is only defined between the lowest and highest x-values");
+}
+
+TEST(DiskBrake, Works) {
+  aos::time::Time::EnableMockTime();
+  DiskBrake brake;
+  // Locking it for more that .2s should lock it
+  aos::time::Time::IncrementMockTime(aos::time::Time{1, 0});
+  EXPECT_EQ(brake.Update(true), DiskBrake::LOCKED);
+  // Unlocking it for more that .2s should unlock it
+  aos::time::Time::IncrementMockTime(aos::time::Time{1, 0});
+  EXPECT_EQ(brake.Update(false), DiskBrake::UNLOCKED);
+  // Changing it for less that .2s should leave it in between
+  aos::time::Time::IncrementMockTime(aos::time::Time{0, 20000});
+  EXPECT_EQ(brake.Update(true), DiskBrake::CHANGING);
 }
