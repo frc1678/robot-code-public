@@ -34,8 +34,8 @@ def seperate_data(data, labels):
     Given a data file such as
 
         | x11 u11 x12 other x13 |
-	| x21 u21 x22 other x23 |
-	| ..................... |
+        | x21 u21 x22 other x23 |
+        | ..................... |
     
     And labels for each column such as
 
