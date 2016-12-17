@@ -23,9 +23,7 @@ class HallCalibrationTest : public ::testing::Test {
   }
   bool is_calibrated() { return calibration_.is_calibrated(); }
   // Get the offsetted value from a raw sensor value
-  double ValueAt(double position) {
-    return calibration_.Update(position, false);
-  }
+  double ValueAt(double position) { return calibration_.Update(position, false); }
   muan::HallCalibration calibration_;
 };
 

@@ -16,12 +16,11 @@ SecondariesOutputProto Secondaries::Update(SecondariesGoalProto goal) {
     voltage = 0;
   }
 
-
   output->set_voltage(voltage);
   output->set_is_down(goal->position() == Position::DOWN);
 
   return output;
 }
 
-} // o2016
-} // secondaries
+}  // o2016
+}  // secondaries

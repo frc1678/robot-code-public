@@ -9,8 +9,8 @@
 #ifndef MUAN_LOGGING_TEXT_LOG_H_
 #define MUAN_LOGGING_TEXT_LOG_H_
 
-#include "log.h"
 #include <string>
+#include "log.h"
 
 namespace muan {
 
@@ -28,12 +28,10 @@ class TextLog : public Log {
 
  public:
   explicit TextLog(std::string name);
-  virtual void Write(std::string message, std::string category,
-                     std::string code_stamp);
+  virtual void Write(std::string message, std::string category, std::string code_stamp);
   void FlushToFile() override;
   std::string GetExtension() const override;
-  static void WriteToLog(std::string log, std::string message,
-                         std::string category, std::string code_stamp);
+  static void WriteToLog(std::string log, std::string message, std::string category, std::string code_stamp);
   ~TextLog() override;
 };
 

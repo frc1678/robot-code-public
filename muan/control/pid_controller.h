@@ -1,25 +1,22 @@
 #ifndef MUAN_CONTROL_PID_CONTROLLER_H_
 #define MUAN_CONTROL_PID_CONTROLLER_H_
 
-#include "muan/units/units.h"
 #include <type_traits>
+#include "muan/units/units.h"
 
 namespace muan {
 
 class PidController {
  public:
-
   struct PidGains {
     double kP;
     double kI;
     double kD;
   };
 
-  PidController(double kP, double kI,
-                double kD)
+  PidController(double kP, double kI, double kD)
       : kP(kP), kI(kI), kD(kD), integral_(0), last_proportional_(0) {}
-  explicit PidController(const PidGains& gains)
-      : PidController(gains.kP, gains.kI, gains.kD) {}
+  explicit PidController(const PidGains& gains) : PidController(gains.kP, gains.kI, gains.kD) {}
 
   double Calculate(muan::units::Time dt, double error) {
     return error * kP + CalculateIntegral(dt, error) * kI +
