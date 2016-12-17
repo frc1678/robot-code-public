@@ -106,6 +106,19 @@ TEST(Logger, LogsManyMessagesPerTick) {
   }
 }
 
+TEST(Logger, DiesOnDuplicateQueues) {
+  std::unique_ptr<muan::logging::MockFileWriter> writer = std::make_unique<muan::logging::MockFileWriter>();
+  Logger logger(std::move(writer));
+
+  MessageQueue<logging_test::Test1, 10> mq1;
+  auto mqr1 = mq1.MakeReader();
+  logger.AddQueue("testqueue", &mqr1);
+
+  MessageQueue<logging_test::Test1, 25> mq2;
+  auto mqr2 = mq2.MakeReader();
+  ASSERT_DEATH(logger.AddQueue("testqueue", &mqr2), "with same name \"testqueue\"");
+}
+
 TEST(Logger, TextLogger) {
   std::unique_ptr<muan::logging::MockFileWriter> writer = std::make_unique<muan::logging::MockFileWriter>();
 

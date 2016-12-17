@@ -13,15 +13,21 @@ Logger::Logger() {
 Logger::Logger(std::unique_ptr<FileWriter>&& writer) : writer_(std::move(writer))  {}
 
 template <class T>
-void Logger::AddQueue(const std::string& name, T* queue_reader) { //TODO(Wesley) Queues with same name
+void Logger::AddQueue(const std::string& name, T* queue_reader) {
+  for (const auto& log : queue_logs_) {
+    if (log->name == name) {
+      aos::Die("Two queues with same name \"%s\"", name.c_str());
+    }
+  }
   QueueLog queue_log = {std::make_unique<Reader<T>>(queue_reader), name, name + ".csv"};
+
   queue_logs_.push_back(std::make_unique<QueueLog>(std::move(queue_log)));
 }
 
 void Logger::Run() {
   aos::time::PhasedLoop phased_loop(aos::time::Time::InMS(20));
 
-  aos::SetCurrentThreadRealtimePriority(10);
+  aos::SetCurrentThreadRealtimePriority(20);
   aos::SetCurrentThreadName("Logger");
 
   running_ = true;
@@ -33,13 +39,13 @@ void Logger::Run() {
 }
 
 void Logger::Update() {
-  for (auto const& log : queue_logs_) {
+  for (const auto& log : queue_logs_) {
     std::experimental::optional<std::string> message;
     while (message = log->reader->GetMessageAsCSV()) {
       writer_->WriteLine(log->filename, message.value());
     }
   }
-  for (auto const& log : text_logs_) {
+  for (const auto& log : text_logs_) {
     std::experimental::optional<std::string> message;
     while (message = log.queue->ReadMessage()) {
       writer_-> WriteLine(log.filename, message.value());
