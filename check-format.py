@@ -7,7 +7,7 @@ import re
 import distutils.spawn
 
 # Allow this script to not cause CI checks to fail
-if ("--no-fail" in sys.argv):
+if "--no-fail" in sys.argv:
     failcode = 0
 else:
     failcode = 1
