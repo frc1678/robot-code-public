@@ -73,12 +73,12 @@ void PolyDrivetrain::SetGoal(
   const bool quickturn = teleop_goal.quick_turn();
   const bool highgear = goal->gear() == Gear::kHighGear;
 
-  const double kWheelNonLinearity = highgear ? 0.6 : 0.5;
+  const double kWheelNonLinearity = highgear ? 0.25 : 0.2;
   // Apply a sin function that's scaled to make it feel better.
   const double angular_range = M_PI_2 * kWheelNonLinearity;
 
-  wheel_ = tan(angular_range * wheel) / tan(angular_range);
-  wheel_ = tan(angular_range * wheel_) / tan(angular_range);
+  wheel_ = sin(angular_range * wheel) / sin(angular_range);
+  wheel_ = sin(angular_range * wheel_) / sin(angular_range);
   wheel_ = 2.0 * wheel - wheel_;
   quickturn_ = quickturn;
 
@@ -157,7 +157,6 @@ void PolyDrivetrain::Update() {
   if (dt_config_.loop_type == LoopType::CLOSED_LOOP) {
     loop_->mutable_X_hat()(0, 0) = kf_->X_hat()(1, 0);
     loop_->mutable_X_hat()(1, 0) = kf_->X_hat()(3, 0);
-    std::cout << loop_->mutable_X_hat() << std::endl;
   }
 
   // TODO(austin): Observer for the current velocity instead of difference
