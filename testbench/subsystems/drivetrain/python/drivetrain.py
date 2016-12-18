@@ -202,7 +202,7 @@ class KFDrivetrain(Drivetrain):
 
     q_pos = 0.05
     q_vel = 1.00
-    q_voltage = 10.0
+    q_voltage = 1.0
     q_encoder_uncertainty = 2.00
 
     self.Q = numpy.matrix([[(q_pos ** 2.0), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
