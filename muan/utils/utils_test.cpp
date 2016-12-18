@@ -60,6 +60,13 @@ TEST(History, WorksCorrectly) {
   }
 }
 
+TEST(History, FailsOnOldHistroy) {
+  using namespace muan::units;
+  History<int, 200> hist(.01 * s);
+
+  EXPECT_DEATH(hist.GoBack(250 * 0.01 * s), "unrecorded history");
+}
+
 TEST(LinearInterpolation, VerifiesListSize) {
   EXPECT_DEATH(LinearInterpolation<double> f({std::make_pair(1., 1.)}),
                "Interpolate requires 2 or more control points");
