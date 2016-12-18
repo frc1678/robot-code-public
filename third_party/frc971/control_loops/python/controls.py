@@ -114,7 +114,8 @@ def dlqr(A, B, Q, R):
   M = numpy.asmatrix(scipy.linalg.solve_discrete_are(A, B, Q, R))
 
   # Finally, solve for the optimal gain matrix using the cost-to-go matrix
-  return numpy.asmatrix(numpy.linalg.inv(R) * B.T * M)
+  K = numpy.linalg.inv(R + B.T * M * B) * B.T * M * A
+  return K
 
 def kalman(A, B, C, Q, R):
   """Solves for the steady state kalman gain and covariance matricies.
