@@ -60,7 +60,7 @@ TEST(History, WorksCorrectly) {
   }
 }
 
-TEST(History, FailsOnOldHistroy) {
+TEST(History, FailsOnOldHistory) {
   using namespace muan::units;
   History<int, 200> hist(.01 * s);
 
