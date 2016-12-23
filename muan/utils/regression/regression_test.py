@@ -53,10 +53,10 @@ def test_dense_matrix():
     labels =           'x' 'x' 'x'
     data = np.matrix([[ 2,  3,  0],
                       [-1,  5,  3],
-		      [-3,  4,  8],
-		      [ 1,  1, 12],
-		      [12,  2, 13],
-		      [23, 14, 15]])
+                      [-3,  4,  8],
+                      [ 1,  1, 12],
+                      [12,  2, 13],
+                      [23, 14, 15]])
 
     xt, ut = regression.seperate_data(data, labels)
     A, B = regression.state_space_regression(xt, ut)
@@ -67,6 +67,28 @@ def test_dense_matrix():
 
     np.testing.assert_array_almost_equal(A, goal_A)
 
+def test_velocity_missing():
+    labels =          'x''u'
+    data = np.matrix([[0, 1],
+                      [0, 1],
+                      [1, 1],
+                      [3, 1],
+                      [6, 1]])
+
+    position, ut = regression.seperate_data(data, labels)
+    xt = regression.calculate_state(position, 1)
+    A, B = regression.state_space_regression(xt, ut)
+
+    goal_A = np.matrix([[1, 1],
+                        [0, 1]])
+
+    goal_B = np.matrix([[0],
+                        [1]])
+
+    np.testing.assert_array_almost_equal(A, goal_A)
+    np.testing.assert_array_almost_equal(B, goal_B)
+
 test_simple_system()
 test_organizing()
 test_dense_matrix()
+test_velocity_missing()
