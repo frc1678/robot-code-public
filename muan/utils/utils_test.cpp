@@ -2,6 +2,7 @@
 #include "muan/utils/history.h"
 #include "muan/utils/linear_interpolation.h"
 #include "muan/utils/timer.h"
+#include "muan/utils/timing_utils.h"
 
 using muan::Timer;
 using muan::History;

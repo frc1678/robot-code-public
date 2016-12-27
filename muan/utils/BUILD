@@ -25,9 +25,11 @@ cc_library(
 cc_library(
   name = 'timing',
   hdrs = [
+    'timing_utils.h',
     'timer.h'
   ],
   srcs = [
+    'timing_utils.cpp',
     'timer.cpp'
   ],
   deps = ['//muan/units:units']
