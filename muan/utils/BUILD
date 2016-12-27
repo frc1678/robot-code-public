@@ -36,6 +36,17 @@ cc_library(
 )
 
 cc_library(
+  name = 'disk_brake',
+  hdrs = ['disk_brake.h'],
+  srcs = ['disk_brake.cpp'],
+  deps = [
+    '//muan/units:units',
+    ':math_utils',
+    '//third_party/aos/common:time'
+  ]
+)
+
+cc_library(
   name = 'linear_interpolation',
   hdrs = ['linear_interpolation.h'],
   srcs = ['linear_interpolation.hpp'],
@@ -49,6 +60,7 @@ cc_test(
     ':timing',
     ':history',
     ':linear_interpolation',
+    ':disk_brake',
     '//third_party/google/googletest:googletest'
   ]
 )
