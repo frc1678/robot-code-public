@@ -1,5 +1,9 @@
 load('//third_party/google/protobuf:protobuf.bzl', 'py_proto_library')
 
+package(default_visibility = ['//visibility:public'])
+
+exports_files(['test_sharding_compliant'])
+
 action_listener(
   name = 'compilation_database',
   mnemonics = [
