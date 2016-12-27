@@ -37,6 +37,7 @@ install:
   - wget 'https://github.com/bazelbuild/bazel/releases/download/0.4.1/bazel-0.4.1-installer-linux-x86_64.sh'
   - chmod +x bazel-0.4.1-installer-linux-x86_64.sh
   - ./bazel-0.4.1-installer-linux-x86_64.sh --user
+  - sudo ln -s /usr/bin/clang-3.6 /usr/bin/clang
   # Numpy and Scipy don't work from the deb packages for some reason
   - pip install -U numpy
   - pip install -U scipy
