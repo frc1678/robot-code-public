@@ -45,7 +45,10 @@ cc_library(
   name = 'textlogger',
   srcs = ['textlogger.cpp'],
   hdrs = ['textlogger.h'],
-  deps = ['//muan/queues:queues']
+  deps = [
+      '//muan/queues:queues',
+      '//third_party/aos/common:time'
+      ]
 )
 
 cc_test(

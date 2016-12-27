@@ -2,13 +2,14 @@
 #define MUAN_LOGGING_TEXTLOGGER_H_
 
 #include "muan/queues/message_queue.h"
+#include "third_party/aos/common/time.h"
 #include <memory>
 #include <string>
 
 namespace muan {
 namespace logging {
 
-//TODO(Wesley) Use c style strings 
+//TODO(Wesley) Use c style strings
 
 class TextLogger {
   public:
@@ -16,7 +17,7 @@ class TextLogger {
     typedef std::shared_ptr<TextQueue> TextQueuePtr;
     TextLogger(TextQueuePtr log_queue) :
       log_queue_(log_queue) {}
-    void operator () (std::string text);
+    void operator () (const std::string &text);
   private:
     TextQueuePtr log_queue_;
 };
