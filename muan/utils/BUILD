@@ -41,6 +41,7 @@ cc_library(
   srcs = ['disk_brake.cpp'],
   deps = [
     '//muan/units:units',
+    ':math_utils',
     '//third_party/aos/common:time'
   ]
 )

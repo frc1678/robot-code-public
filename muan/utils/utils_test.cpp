@@ -1,9 +1,9 @@
+#include "gtest/gtest.h"
+#include "muan/utils/disk_brake.h"
 #include "muan/utils/history.h"
 #include "muan/utils/timer.h"
 #include "muan/utils/timing_utils.h"
 #include "muan/utils/linear_interpolation.h"
-#include "muan/utils/disk_brake.h"
-#include "gtest/gtest.h"
 
 using muan::Timer;
 using muan::History;
@@ -89,14 +89,19 @@ TEST(LinearInterpolation, CalculatesCorrectly) {
 
 TEST(DiskBrake, Works) {
   aos::time::Time::EnableMockTime();
-  DiskBrake brake;
-  // Locking it for more that .2s should lock it
-  aos::time::Time::IncrementMockTime(aos::time::Time{1, 0});
+  // Start unlocked, 2s to lock
+  DiskBrake brake(false, 2 * s);
+  EXPECT_EQ(brake.Update(true), DiskBrake::UNLOCKED);
+  // Locking it for more that 2s should lock it
+  aos::time::Time::IncrementMockTime(aos::time::Time{3, 0});
   EXPECT_EQ(brake.Update(true), DiskBrake::LOCKED);
-  // Unlocking it for more that .2s should unlock it
+  // Changing it for less that 2s should leave it in between
   aos::time::Time::IncrementMockTime(aos::time::Time{1, 0});
+  EXPECT_EQ(brake.Update(false), DiskBrake::CHANGING);
+  // 2 more seconds should complete the change
+  aos::time::Time::IncrementMockTime(aos::time::Time{2, 0});
   EXPECT_EQ(brake.Update(false), DiskBrake::UNLOCKED);
-  // Changing it for less that .2s should leave it in between
-  aos::time::Time::IncrementMockTime(aos::time::Time{0, 20000});
-  EXPECT_EQ(brake.Update(true), DiskBrake::CHANGING);
+  // More time shouldn't change it
+  aos::time::Time::IncrementMockTime(aos::time::Time{2, 0});
+  EXPECT_EQ(brake.Update(false), DiskBrake::UNLOCKED);
 }

@@ -1,14 +1,15 @@
-#ifndef _MUAN_UTILS_DISK_BRAKE_H
-#define _MUAN_UTILS_DISK_BRAKE_H
+#ifndef MUAN_UTILS_DISK_BRAKE_H_
+#define MUAN_UTILS_DISK_BRAKE_H_
 
-#include "muan/units/units.h"
 #include "third_party/aos/common/time.h"
+#include "muan/units/units.h"
 
 namespace muan {
 
 class DiskBrake {
  public:
-  DiskBrake();
+  DiskBrake(bool locked);
+  DiskBrake(bool locked, units::Time change_state_time);
   enum BrakeState {
     LOCKED,
     UNLOCKED,
@@ -19,7 +20,9 @@ class DiskBrake {
  protected:
   // 1 is locked, 0 is unlocked, in between is changing
   double position_;
+  // Time from locked to unlocked, or unlocked to locked.
   aos::time::Time change_state_time_;
+  // When Update() was last called
   aos::time::Time last_update_;
 };
 

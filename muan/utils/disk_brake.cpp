@@ -1,11 +1,21 @@
 #include "disk_brake.h"
+#include "math_utils.h"
 
 namespace muan {
 
-DiskBrake::DiskBrake() {
+DiskBrake::DiskBrake(bool locked) {
   // 1/5th of a second is a good default, rounding up won't break anything.
   change_state_time_ = aos::time::Time::InMS(200);
-  position_ = 1;
+  if(locked) position_ = 1;
+  else position_ = 0;
+  last_update_ = aos::time::Time::Now();
+}
+
+DiskBrake::DiskBrake(bool locked, units::Time change_state_time) {
+  change_state_time_ = aos::time::Time::InMS(units::convert(
+        change_state_time, units::ms));
+  if(locked) position_ = 1;
+  else position_ = 0;
   last_update_ = aos::time::Time::Now();
 }
 
@@ -19,12 +29,7 @@ DiskBrake::BrakeState DiskBrake::Update(bool locking) {
     position_ -= dt / change_state_time_;
   }
 
-  if (position_ > 1) {
-    position_ = 1;
-  }
-  if(position_ < 0) {
-    position_ = 0;
-  }
+  position_ = Cap(position_, 0, 1);
 
   last_update_ = this_update;
 
