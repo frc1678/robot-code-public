@@ -6,7 +6,25 @@
 #include <thread>
 
 // Whether to output to a file (1) or to a window (0)
-#define VIDEO_OUTPUT 1
+#define VIDEO_OUTPUT 0
+
+double CalculateDistance(std::vector<cv::Point> points, int rows) {
+  double kFovY = 1; // vertical vield of view
+  double kCameraAngle = 0.2; // angle above horizontal
+  double kHeightDifference = 2; // goal height - camera height, in meters
+
+  // Average together height of each point
+  double angle = 0;
+  for (auto& p : points) {
+    angle += p.y;
+  }
+  angle /= points.size();
+  // Scale angle from -fov/2 to fov/2
+  angle = (angle / rows - 0.5) * kFovY;
+
+  double distance = kHeightDifference / std::tan(angle + kCameraAngle);
+  return distance;
+}
 
 double CalculateSkew(std::vector<cv::Point> contour,
                      std::vector<cv::Point>& out) {
@@ -33,18 +51,23 @@ double CalculateSkew(std::vector<cv::Point> contour,
   auto bottom = quad[1] - quad[2];
 
   // Find their slopes and average the values together to get a goal angle
-  if (top.x == 0 || bottom.x == 0) {
+  return (std::atan2(top.y, top.x) + std::atan2(bottom.y, bottom.x)) / 2;
+  /*if (top.x == 0 || bottom.x == 0) {
     return std::atan(1) * 2; // pi / 2
   } else {
     double slope = ((double) top.y / top.x + bottom.y / bottom.x) / 2;
     return std::atan(slope);
-  }
+  }*/
 }
 
-int main() {
+int main(int n, char** args) {
   // Read from captured.avi
   cv::VideoCapture cap;
-  cap.open("captured.avi");
+  if(n > 1) {
+    cap.open(args[1]);
+  } else {
+    return -1;
+  }
 
 #if VIDEO_OUTPUT
   cv::VideoWriter output{"output.avi", CV_FOURCC('M', 'J', 'P', 'G'), 30,
@@ -131,6 +154,9 @@ int main() {
       if (target == best_target) {
         color = cv::Scalar(0, 255, 0);
         last_pos = best_pos;
+        std::vector<cv::Point> skewbox;
+        std::cout << CalculateSkew(contours[target], skewbox) << " \tradians\t" <<
+                     CalculateDistance(contours[target], image.rows) << "\tmeters" << std::endl;
       }
 
       cv::drawContours(image_canvas, contours, target, color, 8);
@@ -156,6 +182,5 @@ int main() {
     auto count = std::chrono::duration_cast<std::chrono::milliseconds>(
                      std::chrono::steady_clock::now() - last_time).count();
 
-    std::cout << count << std::endl;
   }
 }
