@@ -28,4 +28,4 @@ class DiskBrake {
 
 } // namespace muan
 
-#endif // _MUAN_UTILS_BRAKE_H
+#endif // MUAN_UTILS_DISK_BRAKE_H_
