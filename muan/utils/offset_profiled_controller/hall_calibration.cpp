@@ -37,9 +37,7 @@ double HallCalibration::Update(double main_sensor_value, bool hall_value) {
   // the event that calibrated_ is true, do not set it to false even if the
   // condition is not currently met, as that could reset any portions of code
   // that assume calibration is complete.
-  if ((magnet_found_ && max_overall_ > max_hall_true_ &&
-       min_overall_ < min_hall_true_) ||
-      calibrated_) {
+  if ((magnet_found_ && max_overall_ > max_hall_true_ && min_overall_ < min_hall_true_) || calibrated_) {
     // The center of the magnet's range is magnet_position_, so the offset if
     // magnet_position_ - the raw value of the center of the magnet
     offset_ = magnet_position_ - (max_hall_true_ + min_hall_true_) / 2;

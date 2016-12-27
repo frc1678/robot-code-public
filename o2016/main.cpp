@@ -1,6 +1,6 @@
+#include <WPILib.h>
 #include "o2016/teleop/teleop.h"
 #include "subsystem_runner/subsystem_runner.h"
-#include <WPILib.h>
 
 class WpilibRobot : public IterativeRobot {
  public:

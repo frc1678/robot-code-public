@@ -9,10 +9,10 @@
 #ifndef MUAN_LOGGING_TEST_LOG_H_
 #define MUAN_LOGGING_TEST_LOG_H_
 
-#include "log.h"
 #include <string>
 #include <utility>
 #include <vector>
+#include "log.h"
 
 namespace muan {
 

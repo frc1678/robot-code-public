@@ -18,8 +18,6 @@ using IntakeOutputQueue = muan::queues::MessageQueue<IntakeOutputProto, 100>;
 using IntakeInputQueue = muan::queues::MessageQueue<IntakeInputProto, 100>;
 using IntakeStatusQueue = muan::queues::MessageQueue<IntakeStatusProto, 100>;
 using IntakeGoalQueue = muan::queues::MessageQueue<IntakeGoalProto, 100>;
-
 }
-
 }
 #endif

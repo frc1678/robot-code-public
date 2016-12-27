@@ -28,8 +28,7 @@ void GyroReader::operator()() {
 
 void GyroReader::Init() {
   // Try to initialize repeatedly every 100ms until it works.
-  while (calibration_state_ == GyroState::kUninitialized &&
-         !gyro_.InitializeGyro()) {
+  while (calibration_state_ == GyroState::kUninitialized && !gyro_.InitializeGyro()) {
     aos::time::SleepFor(aos::time::Time::InMS(100));
     if (gyro_queue_ != nullptr) {
       GyroMessageProto gyro_message;
@@ -56,8 +55,7 @@ void GyroReader::RunCalibration() {
     calibration_state_ = GyroState::kCalibrating;
   }
 
-  for (num_cycles = 0; num_cycles < calib_cycles &&
-                       calibration_state_ == GyroState::kCalibrating;
+  for (num_cycles = 0; num_cycles < calib_cycles && calibration_state_ == GyroState::kCalibrating;
        num_cycles++) {
     drift_sum += gyro_.ExtractAngle(gyro_.GetReading());
 
@@ -65,8 +63,7 @@ void GyroReader::RunCalibration() {
     if (gyro_queue_ != nullptr) {
       GyroMessageProto gyro_message;
       gyro_message->set_state(GyroState::kCalibrating);
-      gyro_message->set_calibration_time_left((calib_cycles - num_cycles) *
-                                              loop_time.ToSeconds());
+      gyro_message->set_calibration_time_left((calib_cycles - num_cycles) * loop_time.ToSeconds());
       gyro_queue_->WriteMessage(gyro_message);
     }
 
@@ -86,8 +83,7 @@ void GyroReader::RunReader() {
     double reading = gyro_.ExtractAngle(gyro_.GetReading());
 
     // Integrate the gyro readings - the drift rate is in radians per cycle
-    angle_ += (gyro_.ExtractAngle(gyro_.GetReading()) + drift_rate_) *
-              loop_time.ToSeconds();
+    angle_ += (gyro_.ExtractAngle(gyro_.GetReading()) + drift_rate_) * loop_time.ToSeconds();
 
     // Reset if the should_reset_ flag is set, then clear it.
     if (should_reset_.exchange(false)) {

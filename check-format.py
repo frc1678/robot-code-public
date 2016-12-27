@@ -2,8 +2,15 @@
 
 import subprocess as sp
 import os
+import sys
 import re
 import distutils.spawn
+
+# Allow this script to not cause CI checks to fail
+if "--no-fail" in sys.argv:
+    failcode = 0
+else:
+    failcode = 1
 
 p = sp.Popen('git ls-files', shell=True, stdin=sp.PIPE, stdout=sp.PIPE, stderr=sp.STDOUT, close_fds=True)
 
@@ -37,6 +44,6 @@ for f in to_format:
     if len(s) > 0:
         print("Formatting error in file %s" % f)
         print(s)
-        exit(1)
+        exit(failcode)
 
 exit(0)

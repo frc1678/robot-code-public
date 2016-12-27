@@ -1,9 +1,9 @@
 #include "gtest/gtest.h"
 #include "muan/utils/disk_brake.h"
 #include "muan/utils/history.h"
+#include "muan/utils/linear_interpolation.h"
 #include "muan/utils/timer.h"
 #include "muan/utils/timing_utils.h"
-#include "muan/utils/linear_interpolation.h"
 
 using muan::Timer;
 using muan::History;
@@ -61,6 +61,13 @@ TEST(History, WorksCorrectly) {
   for (Time t = .01 * s; t < 1 * s; t += .01 * s) {  // NOLINT
     EXPECT_NEAR(hist.GoBack(t), 100 - static_cast<int>(convert(t, .01 * s)), 1);
   }
+}
+
+TEST(History, FailsOnOldHistory) {
+  using namespace muan::units;
+  History<int, 200> hist(.01 * s);
+
+  EXPECT_DEATH(hist.GoBack(250 * 0.01 * s), "unrecorded history");
 }
 
 TEST(LinearInterpolation, VerifiesListSize) {
