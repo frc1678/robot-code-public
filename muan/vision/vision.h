@@ -2,6 +2,7 @@
 #define MUAN_VISION_VISION_H_
 
 #include <cmath>
+#include <memory>
 #include <vector>
 #include "third_party/opencv/include/opencv2/opencv.hpp"
 
@@ -43,7 +44,7 @@ class Vision {
     int colorspace;
   };
 
-  Vision(ColorRange range, VisionScorer* scorer, VisionConstants k);
+  Vision(ColorRange range, std::shared_ptr<VisionScorer> scorer, VisionConstants k);
   VisionStatus Update(cv::Mat raw);
 
  protected:
@@ -51,7 +52,7 @@ class Vision {
   double CalculateSkew(std::vector<cv::Point> contour,
                        std::vector<cv::Point>& out);
   // The formula to score the targets
-  VisionScorer* scorer_;
+  std::shared_ptr<VisionScorer> scorer_;
   // Robot constants relavent to vision
   VisionConstants constants_;
   // Last place the goal was

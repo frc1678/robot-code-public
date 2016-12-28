@@ -46,7 +46,7 @@ double Vision::CalculateSkew(std::vector<cv::Point> contour,
   return (std::atan2(top.y, top.x) + std::atan2(bottom.y, bottom.x)) / 2;
 }
 
-Vision::Vision(ColorRange range, VisionScorer* scorer, VisionConstants k) {
+Vision::Vision(ColorRange range, std::shared_ptr<VisionScorer> scorer, VisionConstants k) {
   range_ = range;
   scorer_ = scorer;
   constants_ = k;

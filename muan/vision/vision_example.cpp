@@ -37,7 +37,7 @@ int main() {
                                    cv::Scalar(100, 255, 255),
                                    CV_BGR2HSV };
 
-  muan::Vision vision(range, new ExampleVisionScorer, constants);
+  muan::Vision vision(range, std::make_shared<ExampleVisionScorer>(), constants);
 
   while(cap.isOpened()) {
     cv::Mat raw;
