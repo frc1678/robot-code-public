@@ -46,9 +46,9 @@ void Logger::Update() {
     }
   }
   for (const auto& log : text_logs_) {
-    std::experimental::optional<std::string> message;
+    std::experimental::optional<std::array<char, 1024>> message;
     while (message = log.queue->ReadMessage()) {
-      writer_-> WriteLine(log.filename, message.value());
+      writer_-> WriteLine(log.filename, std::string(&message.value()[0]));
     }
   }
 }

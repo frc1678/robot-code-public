@@ -3,9 +3,10 @@
 namespace muan {
 namespace logging {
 
-void TextLogger::operator () (const std::string &text) {
+void TextLogger::operator () (const char *text) {
   auto time = aos::time::Time::Now().ToMSec();
-  log_queue_->WriteMessage(std::to_string(time) + "," + text);
+  snprintf(&buffer_[0], 1024, "%ld,%s", time, text);
+  log_queue_->WriteMessage(buffer_);
 }
 
 }
