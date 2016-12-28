@@ -46,12 +46,8 @@ double Vision::CalculateSkew(std::vector<cv::Point> contour,
   return (std::atan2(top.y, top.x) + std::atan2(bottom.y, bottom.x)) / 2;
 }
 
-Vision::Vision(cv::Scalar lower_bound,
-               cv::Scalar upper_bound,
-               VisionScorer* scorer,
-               VisionConstants k) {
-  lower_bound_ = lower_bound;
-  upper_bound_ = upper_bound;
+Vision::Vision(ColorRange range, VisionScorer* scorer, VisionConstants k) {
+  range_ = range;
   scorer_ = scorer;
   constants_ = k;
   last_pos_  = cv::Point2f();
@@ -67,8 +63,8 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
   retval.distance_to_target = 0;
   retval.angle_to_target = 0;
 
-  cv::cvtColor(raw, image, CV_BGR2HSV);
-  cv::inRange(image, lower_bound_, upper_bound_, image);
+  cv::cvtColor(raw, image, range_.colorspace);
+  cv::inRange(image, range_.lower_bound, range_.upper_bound, image);
 
   std::vector<std::vector<cv::Point>> contours;
   std::vector<cv::Vec4i> hierarchy;

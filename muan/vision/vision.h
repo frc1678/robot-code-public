@@ -34,26 +34,29 @@ class Vision {
     cv::Mat image_canvas; // Display of what exactly the robot thinks it's seeing
   };
 
-  Vision(cv::Scalar lower_bound,
-         cv::Scalar upper_bound,
-         VisionScorer* scorer,
-         VisionConstants k);
+  struct ColorRange {
+    // Lower end of color range
+    cv::Scalar lower_bound;
+    // Upper end of color range
+    cv::Scalar upper_bound;
+    // Colorspace used for in_range (CV_BGR2___)
+    int colorspace;
+  };
+
+  Vision(ColorRange range, VisionScorer* scorer, VisionConstants k);
   VisionStatus Update(cv::Mat raw);
 
  protected:
   double CalculateDistance(std::vector<cv::Point> points, int rows);
   double CalculateSkew(std::vector<cv::Point> contour,
                        std::vector<cv::Point>& out);
-  // Lower end of color range
-  cv::Scalar lower_bound_;
-  // Upper end of color range
-  cv::Scalar upper_bound_;
   // The formula to score the targets
   VisionScorer* scorer_;
   // Robot constants relavent to vision
   VisionConstants constants_;
   // Last place the goal was
   cv::Point2f last_pos_;
+  ColorRange range_;
 };
 
 }

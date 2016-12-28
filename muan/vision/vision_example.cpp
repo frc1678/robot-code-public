@@ -28,12 +28,16 @@ int main() {
   cv::namedWindow("vision", cv::WINDOW_AUTOSIZE);
 #endif
 
-  muan::Vision::VisionConstants constants;
-  constants.kFovX = 1;
-  constants.kFovY = 1;
-  constants.kCameraAngle = 0.3;
-  constants.kFullness = 0.2;
-  muan::Vision vision(cv::Scalar(50, 0, 60), cv::Scalar(100, 255, 255), new ExampleVisionScorer, constants);
+  muan::Vision::VisionConstants constants { 1, // kFovX
+                                            1, // kFovY
+                                            0.3, // kCameraAngle
+                                            0.2 }; // kFullness
+
+  muan::Vision::ColorRange range { cv::Scalar(50, 0, 60),
+                                   cv::Scalar(100, 255, 255),
+                                   CV_BGR2HSV };
+
+  muan::Vision vision(range, new ExampleVisionScorer, constants);
 
   while(cap.isOpened()) {
     cv::Mat raw;
