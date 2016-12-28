@@ -100,11 +100,11 @@ void DrivetrainInterface::ReadSensors() {
 void DrivetrainInterface::WriteActuators() {
   auto outputs = output_queue_.ReadLastMessage();
   if (outputs) {
-    motor_left_a_.Set(-muan::Cap((*outputs)->left_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
-    motor_left_b_.Set(-muan::Cap((*outputs)->left_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
+    motor_left_a_.Set(-muan::utils::Cap((*outputs)->left_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
+    motor_left_b_.Set(-muan::utils::Cap((*outputs)->left_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
 
-    motor_right_a_.Set(muan::Cap((*outputs)->right_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
-    motor_right_b_.Set(muan::Cap((*outputs)->right_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
+    motor_right_a_.Set(muan::utils::Cap((*outputs)->right_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
+    motor_right_b_.Set(muan::utils::Cap((*outputs)->right_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
 
     // TODO(Wesley) Verify high gear/low gear
     pcm_->WriteDoubleSolenoid(
@@ -129,7 +129,7 @@ TurretInterface::TurretInterface()
 void TurretInterface::WriteActuators() {
   auto outputs = output_queue_.ReadLastMessage();
   if (outputs) {
-    motor_.Set(-muan::Cap((*outputs)->voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
+    motor_.Set(-muan::utils::Cap((*outputs)->voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
   } else {
     motor_.Set(0.0);
   }
@@ -163,8 +163,8 @@ IntakeInterface::IntakeInterface()
 void IntakeInterface::WriteActuators() {
   auto outputs = output_queue_.ReadLastMessage();
   if (outputs) {
-    motor_pivot_.Set(muan::Cap((*outputs)->arm_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
-    motor_roller_.Set(-muan::Cap((*outputs)->roller_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
+    motor_pivot_.Set(muan::utils::Cap((*outputs)->arm_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
+    motor_roller_.Set(-muan::utils::Cap((*outputs)->roller_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
   } else {
     motor_pivot_.Set(0.0);
     motor_roller_.Set(0.0);
@@ -201,8 +201,8 @@ CatapultInterface::CatapultInterface(muan::wpilib::CanWrapper* can)
 void CatapultInterface::WriteActuators() {
   auto outputs = output_queue_.ReadLastMessage();
   if (outputs) {
-    hard_stop_motor_.Set(muan::Cap((*outputs)->hardstop_output(), -kMaxVoltage, kMaxVoltage) / 12.0);
-    scoop_motor_.Set(muan::Cap((*outputs)->scoop_output(), -kMaxVoltage, kMaxVoltage) / 12.0);
+    hard_stop_motor_.Set(muan::utils::Cap((*outputs)->hardstop_output(), -kMaxVoltage, kMaxVoltage) / 12.0);
+    scoop_motor_.Set(muan::utils::Cap((*outputs)->scoop_output(), -kMaxVoltage, kMaxVoltage) / 12.0);
 
     pcm_->WriteSolenoid(ports::catapult::kCatapultCylinderA, (*outputs)->cylinder_extend());
     pcm_->WriteSolenoid(ports::catapult::kCatapultCylinderB, (*outputs)->cylinder_extend());
@@ -248,7 +248,7 @@ SecondariesInterface::SecondariesInterface(muan::wpilib::CanWrapper* can)
 void SecondariesInterface::WriteActuators() {
   auto outputs = output_queue_.ReadLastMessage();
   if (outputs) {
-    secondaries_motor_.Set(muan::Cap(-(*outputs)->voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
+    secondaries_motor_.Set(muan::utils::Cap(-(*outputs)->voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
 
     pcm_->WriteSolenoid(ports::secondaries::kSecondariesCylinder, (*outputs)->is_down());
   } else {
