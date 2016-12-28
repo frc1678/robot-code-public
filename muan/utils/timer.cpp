@@ -2,6 +2,7 @@
 #include "timing_utils.h"
 
 namespace muan {
+namespace utils {
 
 Timer::Timer() { Start(); }
 
@@ -16,4 +17,5 @@ muan::units::Time Timer::Reset() {
 
 muan::units::Time Timer::Get() { return now() - start_; }
 
-}  // namespace muan
+}  // utils
+}  // muan

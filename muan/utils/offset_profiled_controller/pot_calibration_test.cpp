@@ -16,7 +16,7 @@ class PotCalibrationTest : public ::testing::Test {
       // Have the system wait a little bit when the system's movement is too
       // little to allow it to get a better average
       for (int i = 0; i < std::max(0, 5 - ending_difference); i++) {
-        double pot_value = initial_system_value + muan::GaussianNoise(noise_range, 0);
+        double pot_value = initial_system_value + muan::utils::GaussianNoise(noise_range, 0);
         calibrated_value_ = calibration_.Update(0, pot_value, false);
       }
 
@@ -31,14 +31,14 @@ class PotCalibrationTest : public ::testing::Test {
         }
 
         // Add noise to the potentiometer for the calibration.
-        double pot_value = system_value_ + muan::GaussianNoise(noise_range, 0);
+        double pot_value = system_value_ + muan::utils::GaussianNoise(noise_range, 0);
 
         // Get the calibrated value.
         calibrated_value_ = calibration_.Update(uncalibrated_value, pot_value, index_click);
       }
 
       for (int i = 0; i < 50; i++) {
-        double pot_value = initial_system_value + ending_difference + muan::GaussianNoise(noise_range, 0);
+        double pot_value = initial_system_value + ending_difference + muan::utils::GaussianNoise(noise_range, 0);
         calibrated_value_ = calibration_.Update(ending_difference, pot_value, index_click);
       }
       // This is neccesary because the loop increments after the updating of the
@@ -48,7 +48,7 @@ class PotCalibrationTest : public ::testing::Test {
       // Have the system wait a little bit when the movement is too little,
       // allowing the calibration to accumulate a better average
       for (int i = 0; i < std::max(0, 50 + ending_difference); i++) {
-        double pot_value = initial_system_value + muan::GaussianNoise(noise_range, 0);
+        double pot_value = initial_system_value + muan::utils::GaussianNoise(noise_range, 0);
         calibrated_value_ = calibration_.Update(0, pot_value, false);
       }
       // Simulate a potentiometer and encoder moving in the negative
@@ -63,12 +63,12 @@ class PotCalibrationTest : public ::testing::Test {
         }
 
         // Add noise to the potentiometer for the calibration.
-        double pot_value = system_value_ + muan::GaussianNoise(noise_range, 0);
+        double pot_value = system_value_ + muan::utils::GaussianNoise(noise_range, 0);
         calibrated_value_ = calibration_.Update(uncalibrated_value, pot_value, index_click);
       }
 
       for (int i = 0; i < 50; i++) {
-        double pot_value = initial_system_value + ending_difference + muan::GaussianNoise(noise_range, 0);
+        double pot_value = initial_system_value + ending_difference + muan::utils::GaussianNoise(noise_range, 0);
         calibrated_value_ = calibration_.Update(ending_difference, pot_value, index_click);
       }
 
@@ -85,7 +85,7 @@ class PotCalibrationTest : public ::testing::Test {
 
   void ResetTest() { calibration_.Reset(); }
 
-  muan::PotCalibration calibration_;
+  muan::utils::PotCalibration calibration_;
   double system_value_, calibrated_value_;
 };
 
@@ -107,8 +107,8 @@ TEST_F(PotCalibrationTest, UniversalCases) {
         // calibrated at the beginning or the end of the iteration, it should be
         // considered calibrated.
         if (std::floor(system_value / 10.0) != std::floor((system_value + ending_difference) / 10.0) ||
-            muan::true_modulo(int(system_value + ending_difference), 10) == 0 ||
-            muan::true_modulo(int(system_value), 10) == 0) {
+            muan::utils::true_modulo(int(system_value + ending_difference), 10) == 0 ||
+            muan::utils::true_modulo(int(system_value), 10) == 0) {
           EXPECT_TRUE(is_calibrated());
           EXPECT_NEAR(std::get<0>(get_final_values()), std::get<1>(get_final_values()), 1e-5);
         } else {
@@ -122,7 +122,7 @@ TEST_F(PotCalibrationTest, UniversalCases) {
 }
 
 TEST_F(PotCalibrationTest, CalibrationError) {
-  muan::PotCalibration calibration_error(10);
+  muan::utils::PotCalibration calibration_error(10);
   double system_value = 19;
   double calibrated_value = 0;
   int uncalibrated_value;
@@ -137,7 +137,7 @@ TEST_F(PotCalibrationTest, CalibrationError) {
     }
 
     // Add noise to the potentiometer for the calibration.
-    double pot_value = system_value + muan::GaussianNoise(5, 0);
+    double pot_value = system_value + muan::utils::GaussianNoise(5, 0);
 
     // Get the calibrated value.
     calibrated_value = calibration_error.Update(uncalibrated_value, pot_value, index_click);
@@ -152,7 +152,7 @@ TEST_F(PotCalibrationTest, CalibrationError) {
 
     // By adding a sudden offset that changes the index click's frame of
     // reference, it should recognize the error.
-    double pot_value = system_value + 15 + muan::GaussianNoise(5, 0);
+    double pot_value = system_value + 15 + muan::utils::GaussianNoise(5, 0);
 
     calibrated_value = calibration_error.Update(uncalibrated_value, pot_value, index_click);
   }

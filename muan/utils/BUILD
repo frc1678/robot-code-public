@@ -43,12 +43,28 @@ cc_library(
 )
 
 cc_test(
-  name = 'utils_test',
-  srcs = ['utils_test.cpp'],
+  name = 'linear_interpolation_test',
+  srcs = ['linear_interpolation_test.cpp'],
+  deps = [
+    ':linear_interpolation',
+    '//third_party/google/googletest:googletest'
+  ]
+)
+
+cc_test(
+  name = 'history_test',
+  srcs = ['history_test.cpp'],
+  deps = [
+    ':history',
+    '//third_party/google/googletest:googletest'
+  ]
+)
+
+cc_test(
+  name = 'time_test',
+  srcs = ['time_test.cpp'],
   deps = [
     ':timing',
-    ':history',
-    ':linear_interpolation',
     '//third_party/google/googletest:googletest'
   ]
 )

@@ -6,6 +6,7 @@
 #include "third_party/aos/common/die.h"
 
 namespace muan {
+namespace utils {
 
 template <class T, int size>
 class History {
@@ -35,6 +36,7 @@ class History {
   std::array<T, size> hist_arr_;
 };
 
-}  // namespace muan
+}  // utils
+}  // muan
 
 #endif /* MUAN_UTILS_HISTORY_H_ */

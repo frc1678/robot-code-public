@@ -7,11 +7,13 @@
 #include "muan/units/units.h"
 
 namespace muan {
+namespace utils {
 
 void sleep_for(muan::units::Time t);
 muan::units::Time now();
 void sleep_until(muan::units::Time t);
 
-}  // namespace muan
+}  // utils
+}  // muan
 
 #endif /* MUAN_UTILS_TIMING_UTILS_H_ */

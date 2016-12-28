@@ -2,6 +2,7 @@
 #include <cstdint>
 
 namespace muan {
+namespace utils {
 
 using std::chrono::system_clock;
 using std::chrono::duration_cast;
@@ -27,4 +28,5 @@ void sleep_until(muan::units::Time t) {
   std::this_thread::sleep_until(as_time_point);
 }
 
-}  // namespace muan
+}  // utils
+}  // muan

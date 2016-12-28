@@ -1,6 +1,8 @@
 #include "hall_calibration.h"
 namespace muan {
 
+namespace utils {
+
 HallCalibration::HallCalibration(double magnet_position)
     : max_hall_true_(0),
       min_hall_true_(0),
@@ -51,5 +53,7 @@ double HallCalibration::Update(double main_sensor_value, bool hall_value) {
 bool HallCalibration::is_calibrated() const { return calibrated_; }
 
 double HallCalibration::offset() const { return offset_; }
+
+}  // namespace utils
 
 }  // namespace muan

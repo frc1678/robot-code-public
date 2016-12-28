@@ -2,6 +2,7 @@
 #include <algorithm>
 
 namespace muan {
+namespace utils {
 
 template <typename T>
 LinearInterpolation<T>::LinearInterpolation(std::vector<std::pair<double, T>> data) {
@@ -62,10 +63,11 @@ template<typename T>
 double LinearInterpolation<T>::lower_boundary() const {
   return data_[0].first;
 }
-  
+
 template<typename T>
 double LinearInterpolation<T>::upper_boundary() const {
   return data_[data_.size() - 1].first;
 }
 
+} // utils
 } // muan

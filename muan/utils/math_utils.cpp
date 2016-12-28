@@ -1,6 +1,7 @@
 #include "math_utils.h"
 
 namespace muan {
+namespace utils {
 
 // Keep one random number generator per thread, as the implementation isn't
 // thread-safe
@@ -16,4 +17,5 @@ uint32_t true_modulo(int a, int b) {
   return signed_result >= 0 ? signed_result : signed_result + std::abs(b);
 }
 
+}  // utils
 }  // muan

@@ -3,6 +3,7 @@
 #include "muan/units/units.h"
 
 namespace muan {
+namespace utils {
 
 class Timer {
  public:
@@ -15,6 +16,7 @@ class Timer {
   muan::units::Time start_;
 };
 
-}  // namespace muan
+}  // utils
+}  // muan
 
-#endif
+#endif //MUAN_UTILS_TIMER_H_

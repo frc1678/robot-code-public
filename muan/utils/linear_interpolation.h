@@ -6,7 +6,8 @@
 #include <functional>
 
 namespace muan {
-
+namespace utils {
+  
 template <typename T>
 class LinearInterpolation {
  public:
@@ -21,7 +22,9 @@ class LinearInterpolation {
   std::function<bool(const std::pair<double, T>&, const std::pair<double, T>&)> compare_points_;
 };
 
+} // utils
 } // muan
+
 
 #include "linear_interpolation.hpp"
 
