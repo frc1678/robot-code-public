@@ -9,11 +9,7 @@ LinearInterpolation<T>::LinearInterpolation(std::vector<std::pair<double, T>> da
     ::aos::Die("Interpolate requires 2 or more control points");
   }
   data_ = data;
-  compare_points_ = [](const std::pair<double, T> &a, const std::pair<double, T> &b) {
-    return a.first < b.first;
-  };
-  // sort the points for speed later
-  std::sort(data_.begin(), data_.end(), compare_points_);
+  std::sort(data_.begin(), data_.end(), ComparePoints);
 }
 
 template<typename T>
@@ -24,9 +20,9 @@ T LinearInterpolation<T>::operator()(double x) const {
   temp.first = x;
   // Upper bound returns the smallest number > x. Subtracting 1 gives the greatest
   // number <= x.
-  auto lower_bounds_index = std::upper_bound(data_.begin(), data_.end(), temp, compare_points_) - 1;
+  auto lower_bounds_index = std::upper_bound(data_.begin(), data_.end(), temp, ComparePoints) - 1;
   // Lower bound returns the smallest number >= x, for some reason.
-  auto upper_bounds_index = std::lower_bound(data_.begin(), data_.end(), temp, compare_points_);
+  auto upper_bounds_index = std::lower_bound(data_.begin(), data_.end(), temp, ComparePoints);
 
   if(lower_bounds_index == data_.end() || upper_bounds_index == data_.end()) {
     ::aos::Die("An interpolation is only defined between the lowest and highest x-values");
@@ -53,7 +49,7 @@ void LinearInterpolation<T>::AddControlPoint(std::pair<double, T> point) {
   } else if(point.first > data_[data_.size() - 1].first) {
     data_.push_back(point);
   } else {
-    auto location = std::upper_bound(data_.begin(), data_.end(), point, compare_points_);
+    auto location = std::upper_bound(data_.begin(), data_.end(), point, ComparePoints);
     data_.insert(location, point);
   }
 }
@@ -66,6 +62,12 @@ double LinearInterpolation<T>::lower_boundary() const {
 template<typename T>
 double LinearInterpolation<T>::upper_boundary() const {
   return data_[data_.size() - 1].first;
+}
+
+template <typename T>
+bool LinearInterpolation<T>::ComparePoints(const std::pair<double, T> &a,
+                                           const std::pair<double, T> &b) {
+  return a.first < b.first;
 }
 
 } // muan
