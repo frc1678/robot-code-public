@@ -74,17 +74,17 @@ std::string ProtoToCSV(const google::protobuf::Message& message) {
 std::string FieldToCSVHeader(
     const google::protobuf::Message& message,
     const google::protobuf::FieldDescriptor* const descriptor,
-    const google::protobuf::Reflection* const reflection) {
+    const google::protobuf::Reflection* const reflection,
+    const std::string& prefix) {
   if (descriptor->is_repeated()) {
-    // Unsupported!
-    // TODO(Kyle) Throw an error here
+    aos::Die("Logging protos with repeated messages is not supported!");
   } else {
     if (descriptor->cpp_type() ==
         google::protobuf::FieldDescriptor::CPPTYPE_MESSAGE) {
       auto& submessage = reflection->GetMessage(message, descriptor);
-      return ProtoToCSVHeader(submessage);
+      return ProtoToCSVHeader(submessage, prefix + descriptor->name() + ".");
     } else {
-      return descriptor->name();
+      return prefix + descriptor->name();
     }
   }
   return "";
@@ -97,7 +97,22 @@ std::string ProtoToCSVHeader(const google::protobuf::Message& message) {
   std::ostringstream ss;
   for (uint32_t i = 0; i < fields.size(); i++) {
     auto descriptor = fields[i];
-    ss << FieldToCSVHeader(message, descriptor, reflection);
+    ss << FieldToCSVHeader(message, descriptor, reflection, "");
+    if (i != fields.size() - 1) {
+      ss << ',';
+    }
+  }
+  return ss.str();
+}
+
+std::string ProtoToCSVHeader(const google::protobuf::Message& message, const std::string& prefix) {
+  auto reflection = message.GetReflection();
+  std::vector<const google::protobuf::FieldDescriptor*> fields;
+  reflection->ListFields(message, &fields);
+  std::ostringstream ss;
+  for (uint32_t i = 0; i < fields.size(); i++) {
+    auto descriptor = fields[i];
+    ss << FieldToCSVHeader(message, descriptor, reflection, prefix);
     if (i != fields.size() - 1) {
       ss << ',';
     }

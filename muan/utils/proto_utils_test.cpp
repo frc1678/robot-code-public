@@ -12,7 +12,7 @@ TEST(ProtoUtils, ProtoToCSV) {
   p.mutable_sub_message()->set_num(3.14159);
   p.set_is_sane(false);
   ASSERT_EQ(muan::util::ProtoToCSVHeader(p),
-            "test_string,test_uint,id,num,is_sane");
+            "test_string,test_uint,sub_message.id,sub_message.num,is_sane");
   ASSERT_EQ(muan::util::ProtoToCSV(p), "Citrus Circuits,1678,100,3.141590,0");
 }
 
