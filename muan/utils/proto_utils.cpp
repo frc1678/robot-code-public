@@ -17,8 +17,7 @@ std::string FieldToCSV(
     const google::protobuf::FieldDescriptor* const descriptor,
     const google::protobuf::Reflection* const reflection) {
   if (descriptor->is_repeated()) {
-    // Unsupported!
-    // TODO(Kyle) Throw an error here
+    aos::Die("Logging protos with repeated messages is not supported!");
   } else {
     switch (descriptor->cpp_type()) {
       case google::protobuf::FieldDescriptor::CPPTYPE_BOOL:

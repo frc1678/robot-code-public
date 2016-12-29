@@ -1,5 +1,6 @@
 #include "proto_utils.h"
 #include "muan/utils/test_proto.pb.h"
+#include "muan/utils/test_death_proto.pb.h"
 #include "gtest/gtest.h"
 #include <iostream>
 
@@ -13,4 +14,11 @@ TEST(ProtoUtils, ProtoToCSV) {
   ASSERT_EQ(muan::util::ProtoToCSVHeader(p),
             "test_string,test_uint,id,num,is_sane");
   ASSERT_EQ(muan::util::ProtoToCSV(p), "Citrus Circuits,1678,100,3.141590,0");
+}
+
+TEST(ProtoUtils, Repeated) {
+  //Test that we die on repeated fields
+  TestDeathProto p;
+  p.add_test_string("aaa");
+  EXPECT_DEATH(muan::util::ProtoToCSV(p), "repeated message");
 }

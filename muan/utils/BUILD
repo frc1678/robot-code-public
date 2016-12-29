@@ -44,12 +44,22 @@ cc_library(
   srcs = [
     'proto_utils.cpp'
   ],
-  deps = ['//third_party/google/protobuf']
+  deps = [
+      '//third_party/google/protobuf',
+      '//third_party/aos/common:die'
+      ]
 )
 
 cc_proto_library(
   name = 'test_proto',
   srcs = ['test_proto.proto'],
+  protoc = '//third_party/google/protobuf:protoc',
+  default_runtime = '//third_party/google/protobuf'
+)
+
+cc_proto_library(
+  name = 'test_death_proto',
+  srcs = ['test_death_proto.proto'],
   protoc = '//third_party/google/protobuf:protoc',
   default_runtime = '//third_party/google/protobuf'
 )
@@ -60,6 +70,7 @@ cc_test(
   deps = [
     ':proto_utils',
     ':test_proto',
+    ':test_death_proto',
     '//third_party/google/googletest'
   ]
 )

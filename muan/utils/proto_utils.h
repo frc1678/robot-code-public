@@ -1,6 +1,7 @@
 #ifndef MUAN_UTILS_PROTO_UTILS_H_
 #define MUAN_UTILS_PROTO_UTILS_H_
 
+#include "third_party/aos/common/die.h"
 #include "google/protobuf/message.h"
 #include <string>
 
