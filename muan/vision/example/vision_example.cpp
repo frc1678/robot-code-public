@@ -1,5 +1,5 @@
 #include <cmath>
-#include "third_party/opencv/include/opencv2/opencv.hpp"
+#include <opencv2/opencv.hpp>
 #include "muan/vision/vision.h"
 
 #define VIDEO_OUTPUT 0

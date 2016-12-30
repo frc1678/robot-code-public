@@ -97,7 +97,6 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
 
     // Check anything with area at least .2% of the image
     if (base_score > 0.002) {
-      std::cout << base_score << std::endl;
       targets.push_back(i);
 
       std::vector<cv::Point> skewbox;

@@ -19,6 +19,7 @@ addons:
       - clang-format-3.5
       - clang-3.6
       - wget
+      - libopencv-dev
         # Package list from http://bazel.io/docs/install.html
       - pkg-config
       - zip

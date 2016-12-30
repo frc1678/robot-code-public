@@ -4,7 +4,7 @@
 #include <cmath>
 #include <memory>
 #include <vector>
-#include "third_party/opencv/include/opencv2/opencv.hpp"
+#include <opencv2/opencv.hpp>
 
 namespace muan {
 
