@@ -23,19 +23,6 @@ cc_library(
 )
 
 cc_library(
-  name = 'timing',
-  hdrs = [
-    'timing_utils.h',
-    'timer.h'
-  ],
-  srcs = [
-    'timing_utils.cpp',
-    'timer.cpp'
-  ],
-  deps = ['//muan/units:units']
-)
-
-cc_library(
   name = 'linear_interpolation',
   hdrs = ['linear_interpolation.h'],
   srcs = ['linear_interpolation.hpp'],
@@ -56,15 +43,6 @@ cc_test(
   srcs = ['history_test.cpp'],
   deps = [
     ':history',
-    '//third_party/google/googletest:googletest'
-  ]
-)
-
-cc_test(
-  name = 'time_test',
-  srcs = ['time_test.cpp'],
-  deps = [
-    ':timing',
     '//third_party/google/googletest:googletest'
   ]
 )
