@@ -151,7 +151,7 @@ DrivetrainAction DrivetrainAction::SwoopTurn(
       DrivetrainProperties{max_angular_velocity, max_angular_acceleration,
                            max_forward_velocity, max_forward_acceleration,
                            properties.wheelbase_radius},
-      high_gear, left_offset + right_distance, right_offset + left_distance, 0,
+      high_gear, left_offset + left_distance, right_offset + right_distance, 0,
       0, termination_distance, termination_velocity, gq, sq);
 }
 
