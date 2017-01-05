@@ -108,6 +108,7 @@ DrivetrainAction DrivetrainAction::SwoopTurn(
     frc971::control_loops::drivetrain::GoalQueue* gq,
     frc971::control_loops::drivetrain::StatusQueue* sq,
     double termination_distance, double termination_velocity) {
+  // Get offsets
   double left_offset = 0, right_offset = 0;
   auto maybe_status = sq->MakeReader().ReadLastMessage();
   if (maybe_status) {
@@ -116,9 +117,12 @@ DrivetrainAction DrivetrainAction::SwoopTurn(
     right_offset = status->estimated_right_position();
   }
 
+  // Calculate the distance that each side of the drivetrain must travel
   double right_distance = distance + angle * properties.wheelbase_radius;
   double left_distance = distance - angle * properties.wheelbase_radius;
 
+  // The faster side of the drivetrain will go at full speed, the slower side
+  // will be slower by a factor of the ratio of the distances
   double rv_max = 0, ra_max = 0, lv_max = 0, la_max = 0;
   if (std::abs(right_distance) > std::abs(left_distance)) {
     double ratio = std::abs(right_distance / left_distance);
@@ -134,6 +138,8 @@ DrivetrainAction DrivetrainAction::SwoopTurn(
     ra_max = la_max / ratio;
   }
 
+  // Calculate the constraints in terms angular and forward (instead of
+  // left/right)
   double max_forward_velocity = (rv_max + lv_max) / 2;
   double max_forward_acceleration = (ra_max + la_max) / 2;
   double max_angular_velocity =
@@ -141,7 +147,6 @@ DrivetrainAction DrivetrainAction::SwoopTurn(
   double max_angular_acceleration =
       std::abs(ra_max - la_max) / properties.wheelbase_radius / 2;
 
-  double angular_distance = angle * properties.wheelbase_radius;
   return DrivetrainAction(
       DrivetrainProperties{max_angular_velocity, max_angular_acceleration,
                            max_forward_velocity, max_forward_acceleration,
@@ -160,6 +165,7 @@ DriveSCurveAction::DriveSCurveAction(
                        termination_velocity, gq, sq),
       end_left_(distance),
       end_right_(distance) {
+  // Get offsets
   double left_offset = 0, right_offset = 0;
   auto maybe_status = sq->MakeReader().ReadLastMessage();
   if (maybe_status) {
@@ -168,9 +174,12 @@ DriveSCurveAction::DriveSCurveAction(
     right_offset = status->estimated_right_position();
   }
 
+  // Calculate the distance that each side of the drivetrain must travel
   double right_distance = distance / 2 + angle * properties.wheelbase_radius;
   double left_distance = distance / 2 - angle * properties.wheelbase_radius;
 
+  // The faster side of the drivetrain will go at full speed, the slower side
+  // will be slower by a factor of the ratio of the distances
   double rv_max = 0, ra_max = 0, lv_max = 0, la_max = 0;
   if (std::abs(right_distance) > std::abs(left_distance)) {
     double ratio = std::abs(right_distance / left_distance);
@@ -186,6 +195,8 @@ DriveSCurveAction::DriveSCurveAction(
     ra_max = la_max / ratio;
   }
 
+  // Calculate the constraints in terms angular and forward (instead of
+  // left/right)
   double max_forward_velocity = (rv_max + lv_max) / 2;
   double max_forward_acceleration = (ra_max + la_max) / 2;
   double max_angular_velocity =
@@ -193,13 +204,12 @@ DriveSCurveAction::DriveSCurveAction(
   double max_angular_acceleration =
       std::abs(ra_max - la_max) / properties.wheelbase_radius / 2;
 
-  double angular_distance = angle * properties.wheelbase_radius;
-
   goal_left_ = left_distance + left_offset;
   goal_right_ = right_distance + right_offset;
   goal_velocity_left_ = 0;
   goal_velocity_right_ = 0;
 
+  // Remember to add the offset to the final position!
   end_left_ += left_offset;
   end_right_ += right_offset;
 
