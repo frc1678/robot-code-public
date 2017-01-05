@@ -147,7 +147,7 @@ DrivetrainAction DrivetrainAction::SwoopTurn(
                            max_forward_velocity, max_forward_acceleration,
                            properties.wheelbase_radius},
       high_gear, left_offset + right_distance, right_offset + left_distance, 0,
-      0, 2e-2, 1e-2, gq, sq);
+      0, termination_distance, termination_velocity, gq, sq);
 }
 
 DriveSCurveAction::DriveSCurveAction(
@@ -214,8 +214,6 @@ bool DriveSCurveAction::FinishedFirst() {
     auto status = maybe_status.value();
     // Now we want to check against the profiled goal instead of position
     // estimate, because it should all be open-loop
-    printf("%f %f | %f %f\n", status->profiled_left_position_goal(),
-           status->profiled_right_position_goal(), goal_left_, goal_right_);
     return (
         std::abs(status->profiled_left_position_goal() - goal_left_) < 1e-4 &&
         std::abs(status->profiled_right_position_goal() - goal_right_) < 1e-4);
