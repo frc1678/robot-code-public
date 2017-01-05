@@ -1,11 +1,11 @@
 #ifndef MUAN_LOGGING_FILEWRITER_H_
 #define MUAN_LOGGING_FILEWRITER_H_
 
-#include "boost/filesystem.hpp"
 #include <ctime>
 #include <fstream>
 #include <iostream>
 #include <map>
+#include "boost/filesystem.hpp"
 
 /*
  * This class deals with writing to files, making sure that the needed folders

@@ -6,11 +6,9 @@
 namespace muan {
 namespace logging {
 
-Logger::Logger() {
-  writer_ = std::make_unique<FileWriter>();
-}
+Logger::Logger() { writer_ = std::make_unique<FileWriter>(); }
 
-Logger::Logger(std::unique_ptr<FileWriter>&& writer) : writer_(std::move(writer))  {}
+Logger::Logger(std::unique_ptr<FileWriter>&& writer) : writer_(std::move(writer)) {}
 
 template <class T>
 void Logger::AddQueue(const std::string& name, T* queue_reader) {
@@ -48,20 +46,16 @@ void Logger::Update() {
   for (const auto& log : text_logs_) {
     std::experimental::optional<std::array<char, 1024>> message;
     while (message = log.queue->ReadMessage()) {
-      writer_-> WriteLine(log.filename, std::string(&message.value()[0]));
+      writer_->WriteLine(log.filename, std::string(&message.value()[0]));
     }
   }
 }
 
-void Logger::Start() {
-  running_ = true;
-}
+void Logger::Start() { running_ = true; }
 
-void Logger::Stop() {
-  running_ = false;
-}
+void Logger::Stop() { running_ = false; }
 
-TextLogger Logger::MakeTextLogger(const std::string &name) { //TODO(Wesley) logs with same name?
+TextLogger Logger::MakeTextLogger(const std::string& name) {  // TODO(Wesley) logs with same name?
   auto queue_ptr = std::make_shared<TextLogger::TextQueue>();
   auto queue_reader = std::make_shared<TextLogger::TextQueue::QueueReader>(queue_ptr->MakeReader());
   TextLog log_obj = {queue_reader, name, name + ".log"};

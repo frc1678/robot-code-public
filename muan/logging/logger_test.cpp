@@ -1,10 +1,10 @@
 #include "logger.hpp"
 #include "filewriter.h"
 #include "gmock/gmock.h"
+#include "gtest/gtest.h"
 #include "muan/logging/logger_test.pb.h"
 #include "muan/units/units.h"
 #include "muan/utils/timing_utils.h"
-#include "gtest/gtest.h"
 
 using muan::logging::Logger;
 using muan::queues::MessageQueue;
@@ -22,8 +22,7 @@ class MockFileWriter : public muan::logging::FileWriter {
 TEST(Logger, LogsOneMessage) {
   std::unique_ptr<muan::logging::MockFileWriter> writer = std::make_unique<muan::logging::MockFileWriter>();
 
-  EXPECT_CALL(*writer, WriteLine("testqueue.csv", "42"))
-      .Times(1);
+  EXPECT_CALL(*writer, WriteLine("testqueue.csv", "42")).Times(1);
 
   Logger logger(std::move(writer));
 
@@ -40,8 +39,7 @@ TEST(Logger, LogsOneMessage) {
 TEST(Logger, LogsManyMessages) {
   std::unique_ptr<muan::logging::MockFileWriter> writer = std::make_unique<muan::logging::MockFileWriter>();
 
-  EXPECT_CALL(*writer, WriteLine("testqueue.csv", "42"))
-      .Times(42);
+  EXPECT_CALL(*writer, WriteLine("testqueue.csv", "42")).Times(42);
 
   Logger logger(std::move(writer));
 
@@ -60,10 +58,8 @@ TEST(Logger, LogsManyMessages) {
 TEST(Logger, LogsMultipleQueues) {
   std::unique_ptr<muan::logging::MockFileWriter> writer = std::make_unique<muan::logging::MockFileWriter>();
 
-  EXPECT_CALL(*writer, WriteLine("testqueue1.csv", "42"))
-      .Times(1);
-  EXPECT_CALL(*writer, WriteLine("testqueue2.csv", "42"))
-      .Times(1);
+  EXPECT_CALL(*writer, WriteLine("testqueue1.csv", "42")).Times(1);
+  EXPECT_CALL(*writer, WriteLine("testqueue2.csv", "42")).Times(1);
 
   Logger logger(std::move(writer));
 
@@ -87,8 +83,7 @@ TEST(Logger, LogsMultipleQueues) {
 TEST(Logger, LogsManyMessagesPerTick) {
   std::unique_ptr<muan::logging::MockFileWriter> writer = std::make_unique<muan::logging::MockFileWriter>();
 
-  EXPECT_CALL(*writer, WriteLine("testqueue.csv", "42"))
-      .Times(10000);
+  EXPECT_CALL(*writer, WriteLine("testqueue.csv", "42")).Times(10000);
 
   Logger logger(std::move(writer));
 
@@ -123,8 +118,7 @@ TEST(Logger, TextLogger) {
   aos::time::Time::EnableMockTime();
   std::unique_ptr<muan::logging::MockFileWriter> writer = std::make_unique<muan::logging::MockFileWriter>();
 
-  EXPECT_CALL(*writer, WriteLine("name.log", "1000,test"))
-      .Times(1);
+  EXPECT_CALL(*writer, WriteLine("name.log", "1000,test")).Times(1);
 
   Logger logger(std::move(writer));
   auto textlog = logger.MakeTextLogger("name");
@@ -132,6 +126,5 @@ TEST(Logger, TextLogger) {
   textlog("test");
   logger.Update();
 }
-
 }
 }

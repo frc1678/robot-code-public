@@ -3,13 +3,13 @@
 
 #include "filewriter.h"
 #include "gtest/gtest_prod.h"
+#include "muan/queues/message_queue.h"
+#include "muan/units/units.h"
+#include "muan/utils/proto_utils.h"
 #include "textlogger.h"
 #include "third_party/aos/common/time.h"
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/aos/linux_code/init.h"
-#include "muan/queues/message_queue.h"
-#include "muan/units/units.h"
-#include "muan/utils/proto_utils.h"
 #include "third_party/optional/optional.hpp"
 
 #include <iostream>
@@ -53,11 +53,12 @@ namespace logging {
  * logging string is realtime.
  */
 class Logger {
-FRIEND_TEST(Logger, LogsOneMessage);
-FRIEND_TEST(Logger, LogsManyMessages);
-FRIEND_TEST(Logger, LogsMultipleQueues);
-FRIEND_TEST(Logger, LogsManyMessagesPerTick);
-FRIEND_TEST(Logger, TextLogger);
+  FRIEND_TEST(Logger, LogsOneMessage);
+  FRIEND_TEST(Logger, LogsManyMessages);
+  FRIEND_TEST(Logger, LogsMultipleQueues);
+  FRIEND_TEST(Logger, LogsManyMessagesPerTick);
+  FRIEND_TEST(Logger, TextLogger);
+
  public:
   Logger();
   Logger(std::unique_ptr<FileWriter>&& writer);
@@ -82,7 +83,8 @@ FRIEND_TEST(Logger, TextLogger);
   void Stop();
 
   // Returns a TextLogger that can be used to log strings to a file.
-  TextLogger MakeTextLogger(const std::string &name);
+  TextLogger MakeTextLogger(const std::string& name);
+
  private:
   std::unique_ptr<FileWriter> writer_;
   std::atomic<bool> running_{false};
