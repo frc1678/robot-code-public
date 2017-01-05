@@ -11,6 +11,7 @@ cc_library(
     'googlemock'
   ],
   deps = [':googletest'],
+  linkopts = ['-lpthread'],
   visibility = ['//visibility:public']
 )
 
