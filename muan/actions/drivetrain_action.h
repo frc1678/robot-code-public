@@ -14,7 +14,6 @@ struct DrivetrainProperties {
   double wheelbase_radius;
 };
 
-// TODO(Kyle) Add support for high/low gear
 class DrivetrainAction {
  public:
   // Update the action, sending a new message to the queue and returning true if
