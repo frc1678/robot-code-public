@@ -3,7 +3,7 @@
 
 class Robot : public IterativeRobot {
 public:
-    Drivetrain drivetrain;
+    Drivetrain drivetrain();
     RobotDrive drive = RobotDrive(0,1);
     Joystick throttle = Joystick(1);
     Joystick wheel = Joystick(0);
