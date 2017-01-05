@@ -87,7 +87,7 @@ class PotCalibrationTest : public ::testing::Test {
 
   void ResetTest() { calibration_.Reset(); }
 
-  muan::PotCalibration calibration_;
+  muan::control::PotCalibration calibration_;
   double system_value_, calibrated_value_;
 };
 
@@ -124,7 +124,7 @@ TEST_F(PotCalibrationTest, UniversalCases) {
 }
 
 TEST_F(PotCalibrationTest, CalibrationError) {
-  muan::PotCalibration calibration_error(10);
+  muan::control::PotCalibration calibration_error(10);
   double system_value = 19;
   double calibrated_value = 0;
   int uncalibrated_value;
