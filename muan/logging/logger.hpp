@@ -39,13 +39,13 @@ void Logger::Run() {
 void Logger::Update() {
   for (const auto& log : queue_logs_) {
     std::experimental::optional<std::string> message;
-    while (message = log->reader->GetMessageAsCSV()) {
+    while ((message = log->reader->GetMessageAsCSV())) {
       writer_->WriteLine(log->filename, message.value());
     }
   }
   for (const auto& log : text_logs_) {
     std::experimental::optional<std::array<char, 1024>> message;
-    while (message = log.queue->ReadMessage()) {
+    while ((message = log.queue->ReadMessage())) {
       writer_->WriteLine(log.filename, std::string(&message.value()[0]));
     }
   }
