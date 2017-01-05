@@ -3,8 +3,6 @@
 
 namespace muan {
 
-namespace utils {
-
 class PotCalibration {
  public:
   PotCalibration(double units_per_index);
@@ -33,9 +31,6 @@ class PotCalibration {
   int offset_;
   bool calibrated_, index_error_;
 };
-
-}
-
 }
 
 #endif  // MUAN_UTILS_OFFSET_PROFILED_CONTROLLER_POT_CALIBRATION_H_

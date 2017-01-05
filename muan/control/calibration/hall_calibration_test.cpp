@@ -3,7 +3,7 @@
 
 class HallCalibrationTest : public ::testing::Test {
  public:
-  HallCalibrationTest() : calibration_(muan::utils::HallCalibration(0)) {}
+  HallCalibrationTest() : calibration_(muan::HallCalibration(0)) {}
   // Update the calibration assuming sensors are at the same position
   void UpdateTest(double position) {
     // The magnet's range is 100 to 200 exclusive
@@ -24,14 +24,14 @@ class HallCalibrationTest : public ::testing::Test {
   bool is_calibrated() { return calibration_.is_calibrated(); }
   // Get the offsetted value from a raw sensor value
   double ValueAt(double position) { return calibration_.Update(position, false); }
-  muan::utils::HallCalibration calibration_;
+  muan::HallCalibration calibration_;
 };
 
 /*
  * Make sure that it initializes to not calibrated
  */
 TEST_F(HallCalibrationTest, Initializes) {
-  calibration_ = muan::utils::HallCalibration(0);
+  calibration_ = muan::HallCalibration(0);
   EXPECT_FALSE(is_calibrated());
 }
 
@@ -39,7 +39,7 @@ TEST_F(HallCalibrationTest, Initializes) {
  * Test that it calibrates going up, using all increasing values
  */
 TEST_F(HallCalibrationTest, CalibratesGoingUp) {
-  calibration_ = muan::utils::HallCalibration(0);
+  calibration_ = muan::HallCalibration(0);
   for (int i = 0; i < 200; i++) {
     UpdateTest(i);
     EXPECT_FALSE(is_calibrated());
@@ -52,7 +52,7 @@ TEST_F(HallCalibrationTest, CalibratesGoingUp) {
  * Test that it calibrates going down, using all decreasing values
  */
 TEST_F(HallCalibrationTest, CalibratesGoingDown) {
-  calibration_ = muan::utils::HallCalibration(0);
+  calibration_ = muan::HallCalibration(0);
   for (int i = 300; i > 100; i--) {
     UpdateTest(i);
     EXPECT_FALSE(is_calibrated());
@@ -67,7 +67,7 @@ TEST_F(HallCalibrationTest, CalibratesGoingDown) {
  * through the magnet's range after that successfully calibrates it.
  */
 TEST_F(HallCalibrationTest, ReverseFromOutside) {
-  calibration_ = muan::utils::HallCalibration(0);
+  calibration_ = muan::HallCalibration(0);
   for (int i = 0; i < 150; i++) {
     UpdateTest(i);
     EXPECT_FALSE(is_calibrated());
@@ -90,7 +90,7 @@ TEST_F(HallCalibrationTest, ReverseFromOutside) {
  * calibrates it.
  */
 TEST_F(HallCalibrationTest, ReverseFromInside) {
-  calibration_ = muan::utils::HallCalibration(0);
+  calibration_ = muan::HallCalibration(0);
   for (int i = 150; i > 0; i--) {
     UpdateTest(i);
     EXPECT_FALSE(is_calibrated());
@@ -108,7 +108,7 @@ TEST_F(HallCalibrationTest, ReverseFromInside) {
  * under normal conditions.
  */
 TEST_F(HallCalibrationTest, FindsMagnetCenter) {
-  calibration_ = muan::utils::HallCalibration(0);
+  calibration_ = muan::HallCalibration(0);
   for (int i = 0; i < 200; i++) {
     UpdateTest(i);
   }
@@ -121,7 +121,7 @@ TEST_F(HallCalibrationTest, FindsMagnetCenter) {
  * Test that a nonzero value can be used as the center of the magnet
  */
 TEST_F(HallCalibrationTest, UsesMagnetPosition) {
-  calibration_ = muan::utils::HallCalibration(1000);
+  calibration_ = muan::HallCalibration(1000);
   for (int i = 0; i < 200; i++) {
     UpdateTest(i);
   }
@@ -140,7 +140,7 @@ TEST_F(HallCalibrationTest, UsesMagnetPosition) {
  * magnet and the main sensor doesn't, calibration is not affected
  */
 TEST_F(HallCalibrationTest, SensorInaccuracies1) {
-  calibration_ = muan::utils::HallCalibration(0);
+  calibration_ = muan::HallCalibration(0);
   for (int i = 0; i < 195; i++) {
     UpdateTest(i, i);
   }
@@ -166,7 +166,7 @@ TEST_F(HallCalibrationTest, SensorInaccuracies1) {
  * range of the magnet, calibration is not significantly affected
  */
 TEST_F(HallCalibrationTest, SensorInaccuracies2) {
-  calibration_ = muan::utils::HallCalibration(0);
+  calibration_ = muan::HallCalibration(0);
   for (int i = 0; i < 95; i++) {
     UpdateTest(i, i);
   }
@@ -192,7 +192,7 @@ TEST_F(HallCalibrationTest, SensorInaccuracies2) {
  * not become uncalibrated.
  */
 TEST_F(HallCalibrationTest, DoesntUncalibrate) {
-  muan::utils::HallCalibration calibration(0);
+  muan::HallCalibration calibration(0);
   // Calibrate normally
   // Don't use the fixture because this doesn't really follow any model
   for (int i = 0; i < 100; i++) {

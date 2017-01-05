@@ -3,8 +3,6 @@
 
 namespace muan {
 
-namespace utils {
-
 PotCalibration::PotCalibration(double units_per_index) {
   units_per_index_ = units_per_index;
 
@@ -73,7 +71,5 @@ void PotCalibration::Reset() {
 bool PotCalibration::is_calibrated() const { return calibrated_; }
 
 bool PotCalibration::index_error() const { return index_error_; }
-
-}  // namespace utils
 
 }  // namespace muan

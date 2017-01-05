@@ -38,7 +38,8 @@ class PotCalibrationTest : public ::testing::Test {
       }
 
       for (int i = 0; i < 50; i++) {
-        double pot_value = initial_system_value + ending_difference + muan::utils::GaussianNoise(noise_range, 0);
+        double pot_value =
+            initial_system_value + ending_difference + muan::utils::GaussianNoise(noise_range, 0);
         calibrated_value_ = calibration_.Update(ending_difference, pot_value, index_click);
       }
       // This is neccesary because the loop increments after the updating of the
@@ -68,7 +69,8 @@ class PotCalibrationTest : public ::testing::Test {
       }
 
       for (int i = 0; i < 50; i++) {
-        double pot_value = initial_system_value + ending_difference + muan::utils::GaussianNoise(noise_range, 0);
+        double pot_value =
+            initial_system_value + ending_difference + muan::utils::GaussianNoise(noise_range, 0);
         calibrated_value_ = calibration_.Update(ending_difference, pot_value, index_click);
       }
 
@@ -85,7 +87,7 @@ class PotCalibrationTest : public ::testing::Test {
 
   void ResetTest() { calibration_.Reset(); }
 
-  muan::utils::PotCalibration calibration_;
+  muan::PotCalibration calibration_;
   double system_value_, calibrated_value_;
 };
 
@@ -122,7 +124,7 @@ TEST_F(PotCalibrationTest, UniversalCases) {
 }
 
 TEST_F(PotCalibrationTest, CalibrationError) {
-  muan::utils::PotCalibration calibration_error(10);
+  muan::PotCalibration calibration_error(10);
   double system_value = 19;
   double calibrated_value = 0;
   int uncalibrated_value;
