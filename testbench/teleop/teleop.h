@@ -1,6 +1,7 @@
 #ifndef TESTBENCH_TELEOP_TELEOP_H_
 #define TESTBENCH_TELEOP_TELEOP_H_
 
+#include "muan/actions/drivetrain_action.h"
 #include "muan/teleop/joystick.h"
 
 namespace testbench {
@@ -21,6 +22,10 @@ class Teleop {
   muan::teleop::Button *shifting_high_, *shifting_low_;
   muan::teleop::Button* quickturn_;
   muan::teleop::Button* drive_profile_;
+
+  muan::actions::DrivetrainProperties properties_;
+  bool running_action_{false};
+  muan::actions::DriveSCurveAction action_;
 
   void SendDSMessage();
   void SendDrivetrainMessage();
