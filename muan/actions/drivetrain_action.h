@@ -22,25 +22,28 @@ class DrivetrainAction {
   static DrivetrainAction DriveStraight(
       double distance, DrivetrainProperties properties,
       frc971::control_loops::drivetrain::GoalQueue* goal_queue,
-      frc971::control_loops::drivetrain::StatusQueue* status_queue);
+      frc971::control_loops::drivetrain::StatusQueue* status_queue,
+      double termination_distance = 2e-2, double termination_velocity = 1e-2);
 
   static DrivetrainAction PointTurn(
       double angle, DrivetrainProperties properties,
       frc971::control_loops::drivetrain::GoalQueue* goal_queue,
-      frc971::control_loops::drivetrain::StatusQueue* status_queue);
+      frc971::control_loops::drivetrain::StatusQueue* status_queue,
+      double termination_distance = 2e-2, double termination_velocity = 1e-2);
 
   static DrivetrainAction SwoopTurn(
       double distance, double angle, DrivetrainProperties properties,
       frc971::control_loops::drivetrain::GoalQueue* goal_queue,
-      frc971::control_loops::drivetrain::StatusQueue* status_queue);
+      frc971::control_loops::drivetrain::StatusQueue* status_queue,
+      double termination_distance = 2e-2, double termination_velocity = 1e-2);
 
  protected:
   DrivetrainAction(DrivetrainProperties properties, double gl, double gr,
                    double gvl, double gvr, double td, double tv,
                    frc971::control_loops::drivetrain::GoalQueue* gq,
-                   frc971::control_loops::drivetrain::StatusQueue* sq);
+                   frc971::control_loops::drivetrain::StatusQueue* sq)
 
-  void SendMessage();
+      void SendMessage();
   bool IsTerminated() const;
 
   DrivetrainProperties properties_;
@@ -57,7 +60,9 @@ class DriveSCurveAction : public DrivetrainAction {
   DriveSCurveAction(double distance, double angle,
                     DrivetrainProperties properties,
                     frc971::control_loops::drivetrain::GoalQueue* gq,
-                    frc971::control_loops::drivetrain::StatusQueue* sq);
+                    frc971::control_loops::drivetrain::StatusQueue* sq,
+                    double termination_distance = 2e-2,
+                    double termination_velocity = 1e-2);
   bool Update() override;
 
  private:

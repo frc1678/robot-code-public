@@ -65,7 +65,8 @@ bool DrivetrainAction::IsTerminated() const {
 DrivetrainAction DrivetrainAction::DriveStraight(
     double distance, DrivetrainProperties properties,
     frc971::control_loops::drivetrain::GoalQueue* gq,
-    frc971::control_loops::drivetrain::StatusQueue* sq) {
+    frc971::control_loops::drivetrain::StatusQueue* sq,
+    double termination_distance, double termination_velocity) {
   double left_offset = 0, right_offset = 0;
   auto maybe_status = sq->MakeReader().ReadLastMessage();
   if (maybe_status) {
@@ -75,13 +76,15 @@ DrivetrainAction DrivetrainAction::DriveStraight(
   }
 
   return DrivetrainAction(properties, left_offset + distance,
-                          right_offset + distance, 0, 0, 2e-2, 1e-2, gq, sq);
+                          right_offset + distance, 0, 0, termination_distance,
+                          termination_velocity, gq, sq);
 }
 
 DrivetrainAction DrivetrainAction::PointTurn(
     double angle, DrivetrainProperties properties,
     frc971::control_loops::drivetrain::GoalQueue* gq,
-    frc971::control_loops::drivetrain::StatusQueue* sq) {
+    frc971::control_loops::drivetrain::StatusQueue* sq,
+    double termination_distance, double termination_velocity) {
   double left_offset = 0, right_offset = 0;
   auto maybe_status = sq->MakeReader().ReadLastMessage();
   if (maybe_status) {
@@ -92,13 +95,15 @@ DrivetrainAction DrivetrainAction::PointTurn(
 
   double distance = angle * properties.wheelbase_radius;
   return DrivetrainAction(properties, left_offset - distance,
-                          right_offset + distance, 0, 0, 2e-2, 1e-2, gq, sq);
+                          right_offset + distance, 0, 0, termination_distance,
+                          termination_velocity, gq, sq);
 }
 
 DrivetrainAction DrivetrainAction::SwoopTurn(
     double distance, double angle, DrivetrainProperties properties,
     frc971::control_loops::drivetrain::GoalQueue* gq,
-    frc971::control_loops::drivetrain::StatusQueue* sq) {
+    frc971::control_loops::drivetrain::StatusQueue* sq,
+    double termination_distance, double termination_velocity) {
   double left_offset = 0, right_offset = 0;
   auto maybe_status = sq->MakeReader().ReadLastMessage();
   if (maybe_status) {
@@ -144,8 +149,10 @@ DrivetrainAction DrivetrainAction::SwoopTurn(
 DriveSCurveAction::DriveSCurveAction(
     double distance, double angle, DrivetrainProperties properties,
     frc971::control_loops::drivetrain::GoalQueue* gq,
-    frc971::control_loops::drivetrain::StatusQueue* sq)
-    : DrivetrainAction(properties, 0, 0, 0, 0, 2e-2, 1e-2, gq, sq),
+    frc971::control_loops::drivetrain::StatusQueue* sq,
+    double termination_distance, double termination_velocity)
+    : DrivetrainAction(properties, 0, 0, 0, 0, termination_distance,
+                       termination_velocity, gq, sq),
       end_left_(distance),
       end_right_(distance) {
   double left_offset = 0, right_offset = 0;
