@@ -7,43 +7,52 @@ namespace muan {
 
 namespace actions {
 
+// Drivetrain properties we use in actions
 struct DrivetrainProperties {
   double max_angular_velocity, max_angular_acceleration;
   double max_forward_velocity, max_forward_acceleration;
   double wheelbase_radius;
 };
 
+// TODO(Kyle) Add support for high/low gear
 class DrivetrainAction {
  public:
   // Update the action, sending a new message to the queue and returning true if
   // the action is still running.
   virtual bool Update();
 
+  // Create an action that drives straight
   static DrivetrainAction DriveStraight(
-      double distance, DrivetrainProperties properties,
+      double distance, bool high_gear, DrivetrainProperties properties,
       frc971::control_loops::drivetrain::GoalQueue* goal_queue,
       frc971::control_loops::drivetrain::StatusQueue* status_queue,
       double termination_distance = 2e-2, double termination_velocity = 1e-2);
 
+  // Create an action that does a point turn
   static DrivetrainAction PointTurn(
-      double angle, DrivetrainProperties properties,
+      double angle, bool high_gear, DrivetrainProperties properties,
       frc971::control_loops::drivetrain::GoalQueue* goal_queue,
       frc971::control_loops::drivetrain::StatusQueue* status_queue,
       double termination_distance = 2e-2, double termination_velocity = 1e-2);
 
+  // Create an action to do a swoop turn
   static DrivetrainAction SwoopTurn(
-      double distance, double angle, DrivetrainProperties properties,
+      double distance, double angle, bool high_gear,
+      DrivetrainProperties properties,
       frc971::control_loops::drivetrain::GoalQueue* goal_queue,
       frc971::control_loops::drivetrain::StatusQueue* status_queue,
       double termination_distance = 2e-2, double termination_velocity = 1e-2);
 
  protected:
-  DrivetrainAction(DrivetrainProperties properties, double gl, double gr,
-                   double gvl, double gvr, double td, double tv,
+  DrivetrainAction(DrivetrainProperties properties, bool high_gear, double gl,
+                   double gr, double gvl, double gvr, double td, double tv,
                    frc971::control_loops::drivetrain::GoalQueue* gq,
-                   frc971::control_loops::drivetrain::StatusQueue* sq)
+                   frc971::control_loops::drivetrain::StatusQueue* sq);
 
-      void SendMessage();
+  // Send a goal message into the queue
+  void SendMessage();
+
+  // Is the action done yet?
   bool IsTerminated() const;
 
   DrivetrainProperties properties_;
@@ -51,13 +60,15 @@ class DrivetrainAction {
   double goal_left_, goal_velocity_left_, goal_right_, goal_velocity_right_;
   double threshold_distance_, threshold_velocity_;
 
+  bool high_gear_;
+
   frc971::control_loops::drivetrain::GoalQueue* goal_queue_;
   frc971::control_loops::drivetrain::StatusQueue* status_queue_;
 };
 
 class DriveSCurveAction : public DrivetrainAction {
  public:
-  DriveSCurveAction(double distance, double angle,
+  DriveSCurveAction(double distance, double angle, bool high_gear,
                     DrivetrainProperties properties,
                     frc971::control_loops::drivetrain::GoalQueue* gq,
                     frc971::control_loops::drivetrain::StatusQueue* sq,

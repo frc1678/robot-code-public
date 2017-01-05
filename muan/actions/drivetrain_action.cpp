@@ -5,8 +5,8 @@ namespace muan {
 namespace actions {
 
 DrivetrainAction::DrivetrainAction(
-    DrivetrainProperties properties, double gl, double gr, double gvl,
-    double gvr, double td, double tv,
+    DrivetrainProperties properties, bool high_gear, double gl, double gr,
+    double gvl, double gvr, double td, double tv,
     frc971::control_loops::drivetrain::GoalQueue* gq,
     frc971::control_loops::drivetrain::StatusQueue* sq)
     : properties_(properties),
@@ -42,6 +42,9 @@ void DrivetrainAction::SendMessage() {
   goal->mutable_distance_command()->set_left_velocity_goal(goal_velocity_left_);
   goal->mutable_distance_command()->set_right_velocity_goal(
       goal_velocity_right_);
+  goal->set_gear(high_gear_
+                     ? frc971::control_loops::drivetrain::Gear::kHighGear
+                     : frc971::control_loops::drivetrain::Gear::kLowGear);
   goal_queue_->WriteMessage(goal);
 }
 
@@ -63,7 +66,7 @@ bool DrivetrainAction::IsTerminated() const {
 }
 
 DrivetrainAction DrivetrainAction::DriveStraight(
-    double distance, DrivetrainProperties properties,
+    double distance, bool high_gear, DrivetrainProperties properties,
     frc971::control_loops::drivetrain::GoalQueue* gq,
     frc971::control_loops::drivetrain::StatusQueue* sq,
     double termination_distance, double termination_velocity) {
@@ -75,13 +78,13 @@ DrivetrainAction DrivetrainAction::DriveStraight(
     right_offset = status->estimated_right_position();
   }
 
-  return DrivetrainAction(properties, left_offset + distance,
+  return DrivetrainAction(properties, high_gear, left_offset + distance,
                           right_offset + distance, 0, 0, termination_distance,
                           termination_velocity, gq, sq);
 }
 
 DrivetrainAction DrivetrainAction::PointTurn(
-    double angle, DrivetrainProperties properties,
+    double angle, bool high_gear, DrivetrainProperties properties,
     frc971::control_loops::drivetrain::GoalQueue* gq,
     frc971::control_loops::drivetrain::StatusQueue* sq,
     double termination_distance, double termination_velocity) {
@@ -94,13 +97,14 @@ DrivetrainAction DrivetrainAction::PointTurn(
   }
 
   double distance = angle * properties.wheelbase_radius;
-  return DrivetrainAction(properties, left_offset - distance,
+  return DrivetrainAction(properties, high_gear, left_offset - distance,
                           right_offset + distance, 0, 0, termination_distance,
                           termination_velocity, gq, sq);
 }
 
 DrivetrainAction DrivetrainAction::SwoopTurn(
-    double distance, double angle, DrivetrainProperties properties,
+    double distance, double angle, bool high_gear,
+    DrivetrainProperties properties,
     frc971::control_loops::drivetrain::GoalQueue* gq,
     frc971::control_loops::drivetrain::StatusQueue* sq,
     double termination_distance, double termination_velocity) {
@@ -142,16 +146,17 @@ DrivetrainAction DrivetrainAction::SwoopTurn(
       DrivetrainProperties{max_angular_velocity, max_angular_acceleration,
                            max_forward_velocity, max_forward_acceleration,
                            properties.wheelbase_radius},
-      left_offset + right_distance, right_offset + left_distance, 0, 0, 2e-2,
-      1e-2, gq, sq);
+      high_gear, left_offset + right_distance, right_offset + left_distance, 0,
+      0, 2e-2, 1e-2, gq, sq);
 }
 
 DriveSCurveAction::DriveSCurveAction(
-    double distance, double angle, DrivetrainProperties properties,
+    double distance, double angle, bool high_gear,
+    DrivetrainProperties properties,
     frc971::control_loops::drivetrain::GoalQueue* gq,
     frc971::control_loops::drivetrain::StatusQueue* sq,
     double termination_distance, double termination_velocity)
-    : DrivetrainAction(properties, 0, 0, 0, 0, termination_distance,
+    : DrivetrainAction(properties, high_gear, 0, 0, 0, 0, termination_distance,
                        termination_velocity, gq, sq),
       end_left_(distance),
       end_right_(distance) {

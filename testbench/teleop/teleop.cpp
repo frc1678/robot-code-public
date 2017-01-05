@@ -17,10 +17,10 @@ Teleop::Teleop()
                   testbench::drivetrain::GetDrivetrainConfig().robot_radius},
       throttle_{1},
       wheel_{0},
-      action_{
-          0, 0, properties_,
+      action_(
+          0, 0, true, properties_,
           testbench::QueueManager::GetInstance()->drivetrain_goal_queue(),
-          testbench::QueueManager::GetInstance()->drivetrain_status_queue()} {
+          testbench::QueueManager::GetInstance()->drivetrain_status_queue()) {
   shifting_low_ = throttle_.MakeButton(4);
   shifting_high_ = throttle_.MakeButton(5);
   quickturn_ = wheel_.MakeButton(5);
@@ -60,7 +60,7 @@ void Teleop::SendDSMessage() {
 void Teleop::SendDrivetrainMessage() {
   if (drive_profile_->was_clicked()) {
     action_ = muan::actions::DriveSCurveAction(
-        1, 0.5, properties_,
+        1, 0.5, true, properties_,
         testbench::QueueManager::GetInstance()->drivetrain_goal_queue(),
         testbench::QueueManager::GetInstance()->drivetrain_status_queue());
     running_action_ = true;
