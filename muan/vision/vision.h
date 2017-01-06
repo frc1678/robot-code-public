@@ -10,12 +10,13 @@ namespace muan {
 
 class VisionScorer {
  public:
-  virtual double GetScore(double distance_to_target,
-                          double distance_from_previous,
-                          double skew,
-                          double width,
-                          double height,
-                          double fullness) = 0;
+  virtual double GetScore(double distance_to_target, // in meters
+                          double distance_from_previous, // in pixels
+                          double skew, // of bounding box, in radians
+                          double width, // in pixels
+                          double height, // in pixels
+                          double fullness // area / bounding box area
+                          ) = 0;
 };
 
 class Vision {
