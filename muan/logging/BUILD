@@ -23,8 +23,7 @@ cc_test(
           '//third_party/google/googletest:googlemock',
           'logger',
           'filewriter',
-          'logger_test_protobufs',
-          '//muan/utils:timing']
+          'logger_test_protobufs']
 )
 
 cc_proto_library(

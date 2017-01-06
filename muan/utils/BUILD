@@ -24,19 +24,6 @@ cc_library(
 )
 
 cc_library(
-  name = 'timing',
-  hdrs = [
-    'timing_utils.h',
-    'timer.h'
-  ],
-  srcs = [
-    'timing_utils.cpp',
-    'timer.cpp'
-  ],
-  deps = ['//muan/units:units']
-)
-
-cc_library(
   name = 'disk_brake',
   hdrs = ['disk_brake.h'],
   srcs = ['disk_brake.cpp'],
@@ -94,13 +81,20 @@ cc_test(
 )
 
 cc_test(
-  name = 'utils_test',
-  srcs = ['utils_test.cpp'],
+  name = 'linear_interpolation_test',
+  srcs = ['linear_interpolation_test.cpp'],
   deps = [
-    ':timing',
-    ':history',
     ':linear_interpolation',
     ':disk_brake',
+    '//third_party/google/googletest:googletest'
+  ]
+)
+
+cc_test(
+  name = 'history_test',
+  srcs = ['history_test.cpp'],
+  deps = [
+    ':history',
     '//third_party/google/googletest:googletest'
   ]
 )
