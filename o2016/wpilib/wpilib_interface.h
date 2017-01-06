@@ -6,8 +6,8 @@
 #include "o2016/subsystems/drivetrain/queue_types.h"
 #include "o2016/subsystems/superstructure/catapult/queue_types.h"
 #include "o2016/subsystems/superstructure/intake/queue_types.h"
-#include "o2016/subsystems/superstructure/turret/queue_types.h"
 #include "o2016/subsystems/superstructure/secondaries/queue_types.h"
+#include "o2016/subsystems/superstructure/turret/queue_types.h"
 
 namespace o2016 {
 
@@ -92,6 +92,7 @@ class SecondariesInterface {
   SecondariesInterface(muan::wpilib::CanWrapper* can);
 
   void WriteActuators();
+
  private:
   o2016::secondaries::SecondariesOutputQueue::QueueReader output_queue_;
   muan::wpilib::PcmWrapper* pcm_;

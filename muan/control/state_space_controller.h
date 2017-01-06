@@ -1,8 +1,8 @@
 #ifndef MUAN_CONTROL_STATE_SPACE_CONTROLLER_H_
 #define MUAN_CONTROL_STATE_SPACE_CONTROLLER_H_
 
-#include "Eigen/Core"
 #include <cstdint>
+#include "Eigen/Core"
 
 namespace muan {
 
@@ -32,23 +32,20 @@ class StateSpaceController {
   explicit StateSpaceController(
       const Eigen::Matrix<double, kNumInputs, kNumStates>& K,
       const Eigen::Matrix<double, kNumInputs, 1>& u_min =
-          Eigen::Matrix<double, kNumInputs, 1>::Constant(
-              -std::numeric_limits<double>::infinity()),
+          Eigen::Matrix<double, kNumInputs, 1>::Constant(-std::numeric_limits<double>::infinity()),
       const Eigen::Matrix<double, kNumInputs, 1>& u_max =
-          Eigen::Matrix<double, kNumInputs, 1>::Constant(
-              std::numeric_limits<double>::infinity()));
+          Eigen::Matrix<double, kNumInputs, 1>::Constant(std::numeric_limits<double>::infinity()));
 
   // Initializes from all relevant matrices, using both feedforward and
   // feedback. A should be a discrete-time system matrix.
-  StateSpaceController(const Eigen::Matrix<double, kNumInputs, kNumStates>& K,
-                       const Eigen::Matrix<double, kNumInputs, kNumStates>& Kff,
-                       const Eigen::Matrix<double, kNumStates, kNumStates>& A,
-                       const Eigen::Matrix<double, kNumInputs, 1>& u_min =
-                           Eigen::Matrix<double, kNumInputs, 1>::Constant(
-                               -std::numeric_limits<double>::infinity()),
-                       const Eigen::Matrix<double, kNumInputs, 1>& u_max =
-                           Eigen::Matrix<double, kNumInputs, 1>::Constant(
-                               std::numeric_limits<double>::infinity()));
+  StateSpaceController(
+      const Eigen::Matrix<double, kNumInputs, kNumStates>& K,
+      const Eigen::Matrix<double, kNumInputs, kNumStates>& Kff,
+      const Eigen::Matrix<double, kNumStates, kNumStates>& A,
+      const Eigen::Matrix<double, kNumInputs, 1>& u_min =
+          Eigen::Matrix<double, kNumInputs, 1>::Constant(-std::numeric_limits<double>::infinity()),
+      const Eigen::Matrix<double, kNumInputs, 1>& u_max =
+          Eigen::Matrix<double, kNumInputs, 1>::Constant(std::numeric_limits<double>::infinity()));
 
   virtual ~StateSpaceController() = default;
 
@@ -58,16 +55,14 @@ class StateSpaceController {
   // u(n) = K*(r(n) - x(n)) + Kff*(r(n+1) - A*r(n))
   // This control law should be used when the goal follows a continuous,
   // dynamically-feasible motion profile.
-  Eigen::Matrix<double, kNumInputs, 1> Update(
-      const Eigen::Matrix<double, kNumStates, 1>& x,
-      const Eigen::Matrix<double, kNumStates, 1>& r);
+  Eigen::Matrix<double, kNumInputs, 1> Update(const Eigen::Matrix<double, kNumStates, 1>& x,
+                                              const Eigen::Matrix<double, kNumStates, 1>& r);
 
   // Calculates the control signal assuming a static goal with the control law:
   // u(n) = K*(r - x(n)) + Kff*(r - A*r)
   // This control law should be used when the goal does not follow a motion
   // profile but instead changes as a step function.
-  Eigen::Matrix<double, kNumInputs, 1> Update(
-      const Eigen::Matrix<double, kNumStates, 1>& x);
+  Eigen::Matrix<double, kNumInputs, 1> Update(const Eigen::Matrix<double, kNumStates, 1>& x);
 
   const Eigen::Matrix<double, kNumStates, 1>& r() const;
   Eigen::Matrix<double, kNumStates, 1>& r();

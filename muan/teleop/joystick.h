@@ -1,11 +1,11 @@
 #ifndef MUAN_TELEOP_JOYSTICK_H_
 #define MUAN_TELEOP_JOYSTICK_H_
 
-#include "WPILib.h"
-#include "button.h"
 #include <cstdint>
 #include <memory>
 #include <vector>
+#include "WPILib.h"
+#include "button.h"
 
 namespace muan {
 

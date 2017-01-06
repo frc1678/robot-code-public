@@ -1,6 +1,6 @@
 #include "message_queue.h"
-#include "gtest/gtest.h"
 #include <thread>
+#include "gtest/gtest.h"
 
 using muan::queues::MessageQueue;
 
@@ -12,8 +12,21 @@ TEST(MessageQueue, DeliversSingleMessage) {
   EXPECT_EQ(reader.ReadMessage().value(), 10);
 }
 
+// Ensure that the queue reads the last message correctly through it's public API
+TEST(MessageQueue, QueueReadsLastMessage) {
+  MessageQueue<uint32_t, 10> int_queue;
+  // We haven't written anything, so expect nullopt
+  EXPECT_EQ(int_queue.ReadLastMessage(), std::experimental::nullopt);
+  int_queue.WriteMessage(254);
+  int_queue.WriteMessage(971);
+  int_queue.WriteMessage(1678);
+  // Expect reading the last value, but not "consuming" it (unlike a QueueReader)
+  EXPECT_EQ(int_queue.ReadLastMessage().value(), 1678);
+  EXPECT_EQ(int_queue.ReadLastMessage().value(), 1678);
+}
+
 // Ensure that the queue reader reads the last message correctly
-TEST(MessageQueue, ReadsLastMessage) {
+TEST(MessageQueue, ReaderReadsLastMessage) {
   MessageQueue<uint32_t, 10> int_queue;
   int_queue.WriteMessage(254);
   int_queue.WriteMessage(971);
@@ -131,11 +144,9 @@ TEST(MessageQueue, Multithreading) {
   auto func = [&int_queue, num_messages]() {
     uint32_t next = 0;
     auto reader = int_queue.MakeReader();
-    auto timeout_end =
-        std::chrono::steady_clock::now() + std::chrono::milliseconds(1000);
+    auto timeout_end = std::chrono::steady_clock::now() + std::chrono::milliseconds(1000);
 
-    while (next < num_messages &&
-           std::chrono::steady_clock::now() < timeout_end) {
+    while (next < num_messages && std::chrono::steady_clock::now() < timeout_end) {
       auto val = reader.ReadMessage();
       if (val) {
         EXPECT_EQ(next, *val);
@@ -170,11 +181,9 @@ TEST(MessageQueue, MultipleWriters) {
     auto reader = int_queue.MakeReader();
 
     uint32_t num_read = 0;
-    auto timeout_end =
-        std::chrono::steady_clock::now() + std::chrono::milliseconds(1000);
+    auto timeout_end = std::chrono::steady_clock::now() + std::chrono::milliseconds(1000);
 
-    while (num_read < messages_per_thread * num_threads &&
-           std::chrono::steady_clock::now() < timeout_end) {
+    while (num_read < messages_per_thread * num_threads && std::chrono::steady_clock::now() < timeout_end) {
       if (reader.ReadMessage()) {
         num_read++;
       }

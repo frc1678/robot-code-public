@@ -1,11 +1,11 @@
 #ifndef MUAN_QUEUES_MESSAGE_QUEUE_H_
 #define MUAN_QUEUES_MESSAGE_QUEUE_H_
 
+#include <array>
+#include <cstdint>
 #include "muan/utils/math_utils.h"
 #include "third_party/aos/common/mutex.h"
 #include "third_party/optional/optional.hpp"
-#include <array>
-#include <cstdint>
 
 namespace muan {
 
@@ -47,6 +47,9 @@ class MessageQueue {
   // Writes a message to the queue. If the queue is full, it will overwrite the
   // oldest message.
   void WriteMessage(const T& message);
+
+  // Gets the most recent message from the queue.
+  std::experimental::optional<T> ReadLastMessage() const;
 
   // Reset the queue to the empty state
   void Reset();
@@ -92,8 +95,6 @@ class MessageQueue {
   // of the next valid message.
   std::experimental::optional<T> NextMessage(uint64_t& next) const;
 
-  // Gets the most recent message from the queue.
-  std::experimental::optional<T> LastMessage() const;
 
   // Gets the "front" (the oldest messages still kept) of the circular buffer,
   // either from the current value of _back or from a known value of back.

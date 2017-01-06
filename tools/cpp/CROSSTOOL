@@ -994,7 +994,7 @@ toolchain {
   tool_path { name: "compat-ld" path: "/usr/bin/ld" }
   tool_path { name: "cpp" path: "/usr/bin/cpp" }
   tool_path { name: "dwp" path: "/usr/bin/dwp" }
-  tool_path { name: "gcc" path: "/usr/bin/clang-3.6" }
+  tool_path { name: "gcc" path: "/usr/bin/clang" }
   tool_path { name: "gcov" path: "/usr/bin/gcov" }
   # C(++) compiles invoke the compiler (as that is the one knowing where
   # to find libraries), but we provide LD so other rules can invoke the linker.
@@ -1011,19 +1011,9 @@ toolchain {
   # used by gcc. That works because bazel currently doesn't track files at
   # absolute locations and has no remote execution, yet. However, this will need
   # to be fixed, maybe with auto-detection?
-  cxx_builtin_include_directory: '/usr/include/c++/4.9'
-  cxx_builtin_include_directory: '/usr/include/x86_64-linux-gnu/c++/4.9'
-  cxx_builtin_include_directory: '/usr/include/c++/4.9/backward'
   cxx_builtin_include_directory: '/usr/local/include'
-  cxx_builtin_include_directory: '/usr/lib/llvm-3.6/lib/clang/3.6.2/include'
-  cxx_builtin_include_directory: '/usr/include/x86_64-linux-gnu'
+  cxx_builtin_include_directory: '/usr/lib'
   cxx_builtin_include_directory: '/usr/include'
-  cxx_builtin_include_directory: '/usr/lib/clang/3.6.2/include'
-
-  # Needed for Travis build
-  cxx_builtin_include_directory: '/usr/lib/llvm-3.6/lib/clang/3.6.0/include'
-  cxx_builtin_include_directory: '/usr/lib/clang/3.6.0/include'
-  cxx_builtin_include_directory: '/usr/lib/gcc/x86_64-linux-gnu/4.9/include'
 
   linker_flag: "-lstdc++"
   linker_flag: "-B/usr/bin/"

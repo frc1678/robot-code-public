@@ -1,9 +1,9 @@
 #ifndef MUAN_CONTROL_TRAPEZOIDALMOTIONPROFILE_H_
 #define MUAN_CONTROL_TRAPEZOIDALMOTIONPROFILE_H_
 
-#include "motion_profile.h"
 #include <cmath>
 #include <type_traits>
+#include "motion_profile.h"
 
 namespace muan {
 
@@ -26,13 +26,10 @@ struct MotionProfileConstraints {
  */
 class TrapezoidalMotionProfile : public MotionProfile {
  public:
-  TrapezoidalMotionProfile(MotionProfileConstraints constraints,
-                           MotionProfilePosition goal)
-      : TrapezoidalMotionProfile{constraints, goal,
-                                 MotionProfilePosition{0, 0}} {}
+  TrapezoidalMotionProfile(MotionProfileConstraints constraints, MotionProfilePosition goal)
+      : TrapezoidalMotionProfile{constraints, goal, MotionProfilePosition{0, 0}} {}
 
-  TrapezoidalMotionProfile(MotionProfileConstraints constraints,
-                           MotionProfilePosition goal,
+  TrapezoidalMotionProfile(MotionProfileConstraints constraints, MotionProfilePosition goal,
                            MotionProfilePosition initial);
 
   ~TrapezoidalMotionProfile() override = default;
@@ -48,9 +45,8 @@ class TrapezoidalMotionProfile : public MotionProfile {
  private:
   // Is the profile inverted? In other words, does it need to increase or
   // decrease the velocity to get to the peak from the initial velocity?
-  bool ShouldFlipAcceleration(
-      const MotionProfilePosition& initial, const MotionProfilePosition& goal,
-      const MotionProfileConstraints& constraints) const {
+  bool ShouldFlipAcceleration(const MotionProfilePosition& initial, const MotionProfilePosition& goal,
+                              const MotionProfileConstraints& constraints) const {
     // Calculate the distance travelled by a linear velocity ramp
     // from the initial to the final velocity and compare it to the desired
     // distance. If it is smaller, invert the profile.
@@ -59,8 +55,7 @@ class TrapezoidalMotionProfile : public MotionProfile {
     Length distance_change = goal.position - initial.position;
 
     Time t = std::abs(velocity_change) / constraints.max_acceleration;
-    bool is_acceleration_flipped =
-        t * (velocity_change / 2 + initial.velocity) > distance_change;
+    bool is_acceleration_flipped = t * (velocity_change / 2 + initial.velocity) > distance_change;
     return is_acceleration_flipped;
   }
 

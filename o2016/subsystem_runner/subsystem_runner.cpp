@@ -15,7 +15,7 @@ void SubsystemRunner::operator()() {
     wpilib_.ReadSensors();
     // Update subsystems here
 
-    o2016::secondaries::SecondariesGoalProto secondaries_goal; // Temporary
+    o2016::secondaries::SecondariesGoalProto secondaries_goal;  // Temporary
 
     QueueManager::GetInstance().secondaries_output_queue().WriteMessage(
         secondaries_.Update(secondaries_goal));
@@ -26,8 +26,5 @@ void SubsystemRunner::operator()() {
   }
 }
 
-void SubsystemRunner::Stop() {
-  running_ = false;
-}
-
+void SubsystemRunner::Stop() { running_ = false; }
 }

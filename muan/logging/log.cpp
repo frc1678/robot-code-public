@@ -7,16 +7,15 @@
  */
 
 #include "log.h"
-#include "log_manager.h"
-#include <ctime>
-#include <string>
 #include <sys/stat.h>
 #include <sys/time.h>
+#include <ctime>
+#include <string>
+#include "log_manager.h"
 
 namespace muan {
 
-std::string Log::folder_path_ =
-    "/home/lvuser/logs/" + Log::GetDateString() + "/";
+std::string Log::folder_path_ = "/home/lvuser/logs/" + Log::GetDateString() + "/";
 std::once_flag Log::folder_created_;
 
 Log::Log(std::string name, std::string extension) {

@@ -18,11 +18,27 @@ message DriverStationStatus {
 }
 
 message PdpStatus {
-  repeated double current = 1;
-  required double voltage_in = 2;
-  required double temperature = 3;
+  required double current0 = 1;
+  required double current1 = 2;
+  required double current2 = 3;
+  required double current3 = 4;
+  required double current4 = 5;
+  required double current5 = 6;
+  required double current6 = 7;
+  required double current7 = 8;
+  required double current8 = 9;
+  required double current9 = 10;
+  required double current10 = 11;
+  required double current11 = 12;
+  required double current12 = 13;
+  required double current13 = 14;
+  required double current14 = 15;
+  required double current15 = 16;
 
-  optional double total_current = 4;
-  optional double total_energy = 5;
-  optional double total_power = 6;
+  required double voltage_in = 17;
+  required double temperature = 18;
+
+  optional double total_current = 19;
+  optional double total_energy = 20;
+  optional double total_power = 21;
 };

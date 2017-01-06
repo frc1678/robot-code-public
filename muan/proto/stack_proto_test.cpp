@@ -2,9 +2,9 @@
 #define MUAN_PROTO_STACK_PROTO_TEST_H_
 
 #include "muan/proto/stack_proto.h"
+#include "gtest/gtest.h"
 #include "muan/proto/test_proto.pb.h"
 #include "muan/queues/message_queue.h"
-#include "gtest/gtest.h"
 
 TEST(StackProto, Construct) {
   // Can we construct a single instance?
@@ -40,8 +40,7 @@ TEST(StackProto, DiesWhenTooSmall) {
   // (with the correct message)
   muan::proto::StackProto<TestProto, 128> proto_a;
   using ShortStackTestProto = muan::proto::StackProto<TestProto, 32>;
-  EXPECT_DEATH({ ShortStackTestProto proto_b{proto_a}; },
-               "Buffer not big enough for proto!")
+  EXPECT_DEATH({ ShortStackTestProto proto_b{proto_a}; }, "Buffer not big enough for proto!")
       << "Should die when the buffer doesn't have enough room!";
 }
 
@@ -60,8 +59,7 @@ TEST(StackProto, ResetsOnAssign) {
 
 TEST(StackProto, Queueable) {
   // Make sure it works in a queue.
-  muan::queues::MessageQueue<muan::proto::StackProto<TestProto, 128>, 100>
-      test_queue;
+  muan::queues::MessageQueue<muan::proto::StackProto<TestProto, 128>, 100> test_queue;
   auto reader = test_queue.MakeReader();
 
   {

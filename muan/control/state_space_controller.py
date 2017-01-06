@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 import numpy as np
-import controls
-from state_space_gains import *
+import muan.control.controls
+from muan.control.state_space_gains import *
 
 """
 A state-space controller class with support for feedforward control.

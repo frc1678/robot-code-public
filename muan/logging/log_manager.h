@@ -9,11 +9,11 @@
 #ifndef MUAN_LOGGING_LOG_MANAGER_H_
 #define MUAN_LOGGING_LOG_MANAGER_H_
 
-#include "log.h"
 #include <atomic>
 #include <map>
 #include <string>
 #include <thread>
+#include "log.h"
 
 namespace muan {
 

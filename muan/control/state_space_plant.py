@@ -3,8 +3,8 @@
 import numpy as np
 import numpy.matlib as mat
 import scipy as sci
-import controls
-from state_space_gains import *
+import muan.control.controls
+from muan.control.state_space_gains import *
 
 """
 A state-space plant class with support for process and measurement noise

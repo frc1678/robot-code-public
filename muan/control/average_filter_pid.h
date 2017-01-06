@@ -13,8 +13,7 @@ class AverageFilterPidController : public PidController {
 
   using PidGains = PidController::PidGains;
 
-  AverageFilterPidController(double kP, double kI,
-                             double kD)
+  AverageFilterPidController(double kP, double kI, double kD)
       : PidController<InputType, OutputType>(kP, kI, kD), hist_(.005 * s) {}
   AverageFilterPidController(const PidGains& gains)
       : PidController<InputType, OutputType>(gains), hist_(.005 * s) {}

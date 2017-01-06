@@ -1,5 +1,6 @@
 #include "third_party/aos/common/mutex.h"
 
+#define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 #include <stdio.h>
 #include <string.h>

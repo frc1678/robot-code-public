@@ -7,8 +7,8 @@
  */
 
 #include "text_log.h"
-#include "log_manager.h"
 #include <string>
+#include "log_manager.h"
 
 namespace muan {
 
@@ -20,10 +20,9 @@ std::string TextLog::GetExtension() const { return "log"; }
  * Write a message to the log with a tag.
  * Syntax: Write("My message.", "TAG", CODE_STAMP)
  */
-void TextLog::Write(std::string message, std::string category,
-                    std::string code_stamp) {
-  std::string full_message = "[" + category + "@" + Log::GetTimeString() +
-                             "] " + message + code_stamp + " in thread ";
+void TextLog::Write(std::string message, std::string category, std::string code_stamp) {
+  std::string full_message =
+      "[" + category + "@" + Log::GetTimeString() + "] " + message + code_stamp + " in thread ";
   std::thread::id tid = std::this_thread::get_id();
 
   std::lock_guard<std::mutex> lock(mutex_);

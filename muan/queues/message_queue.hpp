@@ -27,8 +27,7 @@ void MessageQueue<T, size>::Reset() {
 }
 
 template <typename T, uint64_t size>
-std::experimental::optional<T> MessageQueue<T, size>::NextMessage(
-    uint64_t& next) const {
+std::experimental::optional<T> MessageQueue<T, size>::NextMessage(uint64_t& next) const {
   aos::MutexLocker locker_{&queue_lock_};
 
   // Make sure the reader's index is within the bounds of still-valid messages,
@@ -48,7 +47,7 @@ std::experimental::optional<T> MessageQueue<T, size>::NextMessage(
 }
 
 template <typename T, uint64_t size>
-std::experimental::optional<T> MessageQueue<T, size>::LastMessage() const {
+std::experimental::optional<T> MessageQueue<T, size>::ReadLastMessage() const {
   aos::MutexLocker locker_{&queue_lock_};
 
   if (back_ == 0) {
@@ -60,8 +59,7 @@ std::experimental::optional<T> MessageQueue<T, size>::LastMessage() const {
 }
 
 template <typename T, uint64_t size>
-typename MessageQueue<T, size>::QueueReader MessageQueue<T, size>::MakeReader()
-    const {
+typename MessageQueue<T, size>::QueueReader MessageQueue<T, size>::MakeReader() const {
   return MessageQueue<T, size>::QueueReader{*this};
 }
 
@@ -76,29 +74,24 @@ uint64_t MessageQueue<T, size>::front(uint64_t back) const {
 }
 
 template <typename T, uint64_t size>
-MessageQueue<T, size>::QueueReader::QueueReader(
-    MessageQueue<T, size>::QueueReader&& move_from) noexcept
+MessageQueue<T, size>::QueueReader::QueueReader(MessageQueue<T, size>::QueueReader&& move_from) noexcept
     : queue_{move_from.queue_},
       next_message_{move_from.next_message_} {}
 
 template <typename T, uint64_t size>
-MessageQueue<T, size>::QueueReader::QueueReader(
-    const MessageQueue<T, size>& queue)
-    : queue_(queue) {
+MessageQueue<T, size>::QueueReader::QueueReader(const MessageQueue<T, size>& queue) : queue_(queue) {
   next_message_ = queue_.front();
 }
 
 template <typename T, uint64_t size>
-std::experimental::optional<T>
-MessageQueue<T, size>::QueueReader::ReadMessage() {
+std::experimental::optional<T> MessageQueue<T, size>::QueueReader::ReadMessage() {
   return queue_.NextMessage(next_message_);
 }
 
 template <typename T, uint64_t size>
-std::experimental::optional<T>
-MessageQueue<T, size>::QueueReader::ReadLastMessage() {
+std::experimental::optional<T> MessageQueue<T, size>::QueueReader::ReadLastMessage() {
   next_message_ = queue_.back_;
-  return queue_.LastMessage();
+  return queue_.ReadLastMessage();
 }
 
 }  // namespace queues
