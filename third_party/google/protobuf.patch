@@ -36,3 +36,8 @@ index 0941d8c..9fc64d4 100644
  # This is a placeholder for python headers. Projects needing to use
  # fast cpp protos in protobuf's python interface should build with
  # --define=use_fast_cpp_protos=true, and in addition, provide
+--- a/protobuf.bzl
++++ b/protobuf.bzl
+@@ -194,7 +194,7 @@ includes=includes,
++       copts=["-Wno-unused-parameter"],
+       **kargs)
