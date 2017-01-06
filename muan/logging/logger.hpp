@@ -68,7 +68,7 @@ template <class T>
 std::experimental::optional<std::string> Logger::Reader<T>::GetMessageAsCSV() {
   auto message = reader_->ReadMessage();
   if (message) {
-    return muan::util::ProtoToCSV(*message);
+    return muan::util::ProtoToCSV(*message.value().get());
   } else {
     return std::experimental::nullopt;
   }
