@@ -3,7 +3,9 @@ build --crosstool_top=//tools/cpp:toolchain
 # Don't switch HOST compilers.
 build --host_crosstool_top=//tools/cpp:toolchain
 
-build --analysis_warnings_as_errors
+build --copt -Werror
+# Turn off warnings from third_party
+build --per_file_copt=//third_party.*@-w
 
 # Always include debug information in the non-.stripped binaries.
 build --strip=never
