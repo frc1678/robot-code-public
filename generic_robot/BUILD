@@ -3,7 +3,7 @@ cc_binary(
   deps=[
       "//third_party/wpilibsuite:wpilib",
       "//generic_robot/subsystem_runner:subsystem_runner",
-      "//generic_robot/teleop"
+      "//generic_robot/wpilib_update:main"
   ],
   srcs=["main.cpp"]
 )
