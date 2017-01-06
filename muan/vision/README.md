@@ -23,7 +23,8 @@ number of factors:
 * The fullness, or area of the target divided by area of the bounding rectangle
 
 Some of these parameters may be used or not used depending on what the target is. For
-an example see `muan/vision/example/vision_example.cpp`.
+an example see `muan/vision/example/vision_example.cpp`. A value of -1 or less means
+that it cannot be a target.
 
 ### `muan::Vision`
 **A class that tracks a target based on values passed to the constructor.**
@@ -71,7 +72,11 @@ VisionStatus Update(cv::Mat raw);
 ```
 Given the raw image, find any targets based on the scorer passed to the constructor.
 Returns whether the target exists, the distance and angle to the target, and the
-processed image in the form of a VisionStatus struct.
+processed image in the form of a VisionStatus struct. First, it thresholds the image based
+on the color range and colorspace it was given. It then finds all contours. The contours
+that are less that .2% of the image are treated as noise and are ignored immediately. For
+the remaining ones, the skew, fullness, and distances are calculated and passed to the
+VisionScorer. The contour with the highest score is selected if the score is more than -1.
 
 ### What are colorspaces?
 
