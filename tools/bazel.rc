@@ -6,6 +6,7 @@ build --host_crosstool_top=//tools/cpp:toolchain
 build --copt -Werror
 # Turn off warnings from third_party
 build --per_file_copt=//third_party.*@-w
+build --output_filter='^//(?!third_party).*'
 
 # Always include debug information in the non-.stripped binaries.
 build --strip=never
