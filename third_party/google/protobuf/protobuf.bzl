@@ -192,6 +192,7 @@ def cc_proto_library(
       srcs=outs,
       deps=cc_libs + deps,
       includes=includes,
+      copts=["-Wno-unused-parameter"],
       **kargs)
 
 
