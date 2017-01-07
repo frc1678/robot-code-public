@@ -11,9 +11,9 @@
 #include <cstddef>
 
 #include "nt_Value.h"
-#include "leb128.h"
+#include "support/leb128.h"
+#include "support/raw_istream.h"
 //#include "Log.h"
-#include "raw_istream.h"
 
 namespace nt {
 
@@ -26,7 +26,7 @@ namespace nt {
  */
 class WireDecoder {
  public:
-  explicit WireDecoder(raw_istream& is, unsigned int proto_rev);
+  explicit WireDecoder(wpi::raw_istream& is, unsigned int proto_rev);
   ~WireDecoder();
 
   void set_proto_rev(unsigned int proto_rev) { m_proto_rev = proto_rev; }
@@ -52,7 +52,7 @@ class WireDecoder {
   bool Read(const char** buf, std::size_t len) {
     if (len > m_allocated) Realloc(len);
     *buf = m_buf;
-    bool rv = m_is.read(m_buf, len);
+    m_is.read(m_buf, len);
 #if 0
     nt::Logger& logger = nt::Logger::GetInstance();
     if (logger.min_level() <= NT_LOG_DEBUG4 && logger.HasLogger()) {
@@ -67,7 +67,7 @@ class WireDecoder {
       logger.Log(NT_LOG_DEBUG4, __FILE__, __LINE__, oss.str().c_str());
     }
 #endif
-    return rv;
+    return !m_is.has_error();
   }
 
   /* Reads a single byte. */
@@ -112,9 +112,7 @@ class WireDecoder {
   bool ReadDouble(double* val);
 
   /* Reads an ULEB128-encoded unsigned integer. */
-  bool ReadUleb128(unsigned long* val) {
-    return nt::ReadUleb128(m_is, val);
-  }
+  bool ReadUleb128(unsigned long* val) { return wpi::ReadUleb128(m_is, val); }
 
   bool ReadType(NT_Type* type);
   bool ReadString(std::string* str);
@@ -135,7 +133,7 @@ class WireDecoder {
   void Realloc(std::size_t len);
 
   /* input stream */
-  raw_istream& m_is;
+  wpi::raw_istream& m_is;
 
   /* temporary buffer */
   char* m_buf;

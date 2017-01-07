@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2014-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2014-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,24 +7,27 @@
 
 #pragma once
 
+#include <string>
+
+#include <gazebo/transport/transport.hh>
+
+#include "SpeedController.h"
+
 #ifdef _WIN32
 // Ensure that Winsock2.h is included before Windows.h, which can get
 // pulled in by anybody (e.g., Boost).
 #include <Winsock2.h>
 #endif
 
-#include <gazebo/transport/transport.hh>
-#include "SpeedController.h"
-
-using namespace gazebo;
+namespace frc {
 
 class SimContinuousOutput {
  private:
-  transport::PublisherPtr pub;
-  float speed;
+  gazebo::transport::PublisherPtr pub;
+  double speed;
 
  public:
-  SimContinuousOutput(std::string topic);
+  explicit SimContinuousOutput(std::string topic);
 
   /**
    * Set the output value.
@@ -34,10 +37,12 @@ class SimContinuousOutput {
    *
    * @param value The value between -1.0 and 1.0 to set.
    */
-  void Set(float value);
+  void Set(double value);
 
   /**
    * @return The most recently set value.
    */
-  float Get();
+  double Get();
 };
+
+}  // namespace frc

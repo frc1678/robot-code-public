@@ -169,15 +169,32 @@ fi
 # Setup the driver station to enable automatically in 10 seconds without waiting for the function to excecute.
 enableIn10Seconds&
 
+# Get the serial number and FPGADeviceCode for this rio
+export serialnum=`/sbin/fw_printenv -n serial#`
+export eval `/sbin/fw_printenv DeviceCode FPGADeviceCode DeviceDesc TargetClass`
+
 # Store the run command for the language
 RUN_COMMAND=none
 if [[ ${LANGUAGE} = java ]]; then
 	chmod a+x ${DEFAULT_JAVA_TEST_NAME}
-	RUN_COMMAND="env LD_LIBRARY_PATH=/usr/local/frc/rpath-lib/ ${DEFAULT_PATH_TO_JRE} -ea -jar ${DEFAULT_JAVA_TEST_NAME} ${TEST_RUN_ARGS}"
+	RUN_COMMAND="env LD_LIBRARY_PATH=/opt/GenICam_v3_0_NI/bin/Linux32_ARM/:/usr/local/frc/lib ${DEFAULT_PATH_TO_JRE} -ea -jar ${DEFAULT_JAVA_TEST_NAME} ${TEST_RUN_ARGS}"
 elif [[ ${LANGUAGE} = cpp ]]; then
 	chmod a+x ${DEFAULT_CPP_TEST_NAME}
 	RUN_COMMAND="./${DEFAULT_CPP_TEST_NAME} ${TEST_RUN_ARGS}"
 fi
 
 printf "Running: %s\n\n" "${RUN_COMMAND}"
+COREDUMP_DIR=${DEFAULT_DESTINATION_TEST_RESULTS_DIR}/coredump
+mkdir -p ${COREDUMP_DIR}
+CORE_LOCATION=${COREDUMP_DIR}/core
+echo ${CORE_LOCATION} > /proc/sys/kernel/core_pattern
+ulimit -c unlimited
 eval ${RUN_COMMAND}
+if [[ $? -gt 127 && -e ${CORE_LOCATION} ]]; then
+	mv ${CORE_LOCATION} ${COREDUMP_DIR}/core.${LANGUAGE}
+	if [[ ${LANGUAGE} = java ]]; then
+		cp -p ${DEFAULT_JAVA_TEST_NAME} ${COREDUMP_DIR}/
+	elif [[ ${LANGUAGE} = cpp ]]; then
+		cp -p ${DEFAULT_CPP_TEST_NAME} ${COREDUMP_DIR}/
+	fi
+fi

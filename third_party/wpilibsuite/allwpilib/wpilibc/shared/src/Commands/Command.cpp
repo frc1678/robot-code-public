@@ -1,17 +1,21 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2011-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2011-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
 #include "Commands/Command.h"
+
 #include <typeinfo>
+
 #include "Commands/CommandGroup.h"
 #include "Commands/Scheduler.h"
 #include "RobotState.h"
 #include "Timer.h"
 #include "WPIErrors.h"
+
+using namespace frc;
 
 static const std::string kName = "name";
 static const std::string kRunning = "running";
@@ -184,6 +188,38 @@ bool Command::Run() {
   return !IsFinished();
 }
 
+/**
+ * The initialize method is called the first time this Command is run after
+ * being started.
+ */
+void Command::Initialize() {}
+
+/**
+ * The execute method is called repeatedly until this Command either finishes
+ * or is canceled.
+ */
+void Command::Execute() {}
+
+/**
+ * Called when the command ended peacefully.  This is where you may want
+ * to wrap up loose ends, like shutting off a motor that was being used
+ * in the command.
+ */
+void Command::End() {}
+
+/**
+ * Called when the command ends because somebody called
+ * {@link Command#cancel() cancel()} or another command shared the same
+ * requirements as this one, and booted it out.
+ *
+ * <p>This is where you may want to wrap up loose ends, like shutting off a
+ * motor that was being used in the command.</p>
+ *
+ * <p>Generally, it is useful to simply call the {@link Command#end() end()}
+ * method within this method, as done here.</p>
+ */
+void Command::Interrupted() { End(); }
+
 void Command::_Initialize() {}
 
 void Command::_Interrupted() {}
@@ -266,6 +302,13 @@ void Command::SetParent(CommandGroup* parent) {
     }
   }
 }
+
+/**
+ * Clears list of subsystem requirements. This is only used by
+ * {@link ConditionalCommand} so cancelling the chosen command works properly in
+ * {@link CommandGroup}.
+ */
+void Command::ClearRequirements() { m_requirements.clear(); }
 
 /**
  * This is used internally to mark that the command has been started.
@@ -392,9 +435,9 @@ std::string Command::GetName() const { return m_name; }
 
 std::string Command::GetSmartDashboardType() const { return "Command"; }
 
-void Command::InitTable(std::shared_ptr<ITable> table) {
+void Command::InitTable(std::shared_ptr<ITable> subtable) {
   if (m_table != nullptr) m_table->RemoveTableListener(this);
-  m_table = table;
+  m_table = subtable;
   if (m_table != nullptr) {
     m_table->PutString(kName, GetName());
     m_table->PutBoolean(kRunning, IsRunning());

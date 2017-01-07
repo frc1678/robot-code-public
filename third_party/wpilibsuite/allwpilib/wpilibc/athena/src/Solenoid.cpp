@@ -1,23 +1,28 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
+#include "HAL/Solenoid.h"
 #include "Solenoid.h"
+
+#include <sstream>
+
 #include "HAL/HAL.h"
+#include "HAL/Ports.h"
 #include "LiveWindow/LiveWindow.h"
 #include "WPIErrors.h"
 
-#include <sstream>
+using namespace frc;
 
 /**
  * Constructor using the default PCM ID (0).
  *
  * @param channel The channel on the PCM to control (0..7).
  */
-Solenoid::Solenoid(uint32_t channel)
+Solenoid::Solenoid(int channel)
     : Solenoid(GetDefaultSolenoidModule(), channel) {}
 
 /**
@@ -26,7 +31,7 @@ Solenoid::Solenoid(uint32_t channel)
  * @param moduleNumber The CAN ID of the PCM the solenoid is attached to
  * @param channel      The channel on the PCM to control (0..7).
  */
-Solenoid::Solenoid(uint8_t moduleNumber, uint32_t channel)
+Solenoid::Solenoid(int moduleNumber, int channel)
     : SolenoidBase(moduleNumber), m_channel(channel) {
   std::stringstream buf;
   if (!CheckSolenoidModule(m_moduleNumber)) {
@@ -39,28 +44,28 @@ Solenoid::Solenoid(uint8_t moduleNumber, uint32_t channel)
     wpi_setWPIErrorWithContext(ChannelIndexOutOfRange, buf.str());
     return;
   }
-  Resource::CreateResourceObject(m_allocated, m_maxModules * m_maxPorts);
-  buf << "Solenoid " << m_channel << " (Module: " << m_moduleNumber << ")";
-  if (m_allocated->Allocate(m_moduleNumber * kSolenoidChannels + m_channel,
-                            buf.str()) ==
-      std::numeric_limits<uint32_t>::max()) {
-    CloneError(*m_allocated);
+
+  int32_t status = 0;
+  m_solenoidHandle = HAL_InitializeSolenoidPort(
+      HAL_GetPortWithModule(moduleNumber, channel), &status);
+  if (status != 0) {
+    wpi_setErrorWithContextRange(status, 0, HAL_GetNumSolenoidChannels(),
+                                 channel, HAL_GetErrorMessage(status));
+    m_solenoidHandle = HAL_kInvalidHandle;
     return;
   }
 
   LiveWindow::GetInstance()->AddActuator("Solenoid", m_moduleNumber, m_channel,
                                          this);
-  HALReport(HALUsageReporting::kResourceType_Solenoid, m_channel,
-            m_moduleNumber);
+  HAL_Report(HALUsageReporting::kResourceType_Solenoid, m_channel,
+             m_moduleNumber);
 }
 
 /**
  * Destructor.
  */
 Solenoid::~Solenoid() {
-  if (CheckSolenoidModule(m_moduleNumber)) {
-    m_allocated->Free(m_moduleNumber * kSolenoidChannels + m_channel);
-  }
+  HAL_FreeSolenoidPort(m_solenoidHandle);
   if (m_table != nullptr) m_table->RemoveTableListener(this);
 }
 
@@ -71,10 +76,9 @@ Solenoid::~Solenoid() {
  */
 void Solenoid::Set(bool on) {
   if (StatusIsFatal()) return;
-  uint8_t value = on ? 0xFF : 0x00;
-  uint8_t mask = 1 << m_channel;
-
-  SolenoidBase::Set(value, mask, m_moduleNumber);
+  int32_t status = 0;
+  HAL_SetSolenoid(m_solenoidHandle, on, &status);
+  wpi_setErrorWithContext(status, HAL_GetErrorMessage(status));
 }
 
 /**
@@ -84,8 +88,10 @@ void Solenoid::Set(bool on) {
  */
 bool Solenoid::Get() const {
   if (StatusIsFatal()) return false;
-  uint8_t value = GetAll(m_moduleNumber) & (1 << m_channel);
-  return (value != 0);
+  int32_t status = 0;
+  bool value = HAL_GetSolenoid(m_solenoidHandle, &status);
+  wpi_setErrorWithContext(status, HAL_GetErrorMessage(status));
+  return value;
 }
 
 /**

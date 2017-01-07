@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2011-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2011-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -9,8 +9,11 @@
 
 #include <memory>
 #include <string>
+
 #include "ErrorBase.h"
 #include "SmartDashboard/NamedSendable.h"
+
+namespace frc {
 
 class Command;
 
@@ -18,7 +21,7 @@ class Subsystem : public ErrorBase, public NamedSendable {
   friend class Scheduler;
 
  public:
-  Subsystem(const std::string& name);
+  explicit Subsystem(const std::string& name);
   virtual ~Subsystem() = default;
 
   void SetDefaultCommand(Command* command);
@@ -37,11 +40,13 @@ class Subsystem : public ErrorBase, public NamedSendable {
   bool m_initializedDefaultCommand = false;
 
  public:
-  virtual std::string GetName() const;
-  virtual void InitTable(std::shared_ptr<ITable> table);
-  virtual std::shared_ptr<ITable> GetTable() const;
-  virtual std::string GetSmartDashboardType() const;
+  std::string GetName() const override;
+  void InitTable(std::shared_ptr<ITable> subtable) override;
+  std::shared_ptr<ITable> GetTable() const override;
+  std::string GetSmartDashboardType() const override;
 
  protected:
   std::shared_ptr<ITable> m_table;
 };
+
+}  // namespace frc

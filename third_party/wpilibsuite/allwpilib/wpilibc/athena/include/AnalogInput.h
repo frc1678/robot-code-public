@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -8,10 +8,14 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
+#include "HAL/Types.h"
 #include "LiveWindow/LiveWindowSendable.h"
 #include "PIDSource.h"
 #include "SensorBase.h"
+
+namespace frc {
 
 /**
  * Analog input class.
@@ -28,42 +32,45 @@
 class AnalogInput : public SensorBase,
                     public PIDSource,
                     public LiveWindowSendable {
- public:
-  static const uint8_t kAccumulatorModuleNumber = 1;
-  static const uint32_t kAccumulatorNumChannels = 2;
-  static const uint32_t kAccumulatorChannels[kAccumulatorNumChannels];
+  friend class AnalogTrigger;
+  friend class AnalogGyro;
 
-  explicit AnalogInput(uint32_t channel);
+ public:
+  static const int kAccumulatorModuleNumber = 1;
+  static const int kAccumulatorNumChannels = 2;
+  static const int kAccumulatorChannels[kAccumulatorNumChannels];
+
+  explicit AnalogInput(int channel);
   virtual ~AnalogInput();
 
-  int16_t GetValue() const;
-  int32_t GetAverageValue() const;
+  int GetValue() const;
+  int GetAverageValue() const;
 
-  float GetVoltage() const;
-  float GetAverageVoltage() const;
+  double GetVoltage() const;
+  double GetAverageVoltage() const;
 
-  uint32_t GetChannel() const;
+  int GetChannel() const;
 
-  void SetAverageBits(uint32_t bits);
-  uint32_t GetAverageBits() const;
-  void SetOversampleBits(uint32_t bits);
-  uint32_t GetOversampleBits() const;
+  void SetAverageBits(int bits);
+  int GetAverageBits() const;
+  void SetOversampleBits(int bits);
+  int GetOversampleBits() const;
 
-  uint32_t GetLSBWeight() const;
-  int32_t GetOffset() const;
+  int GetLSBWeight() const;
+  int GetOffset() const;
 
   bool IsAccumulatorChannel() const;
   void InitAccumulator();
   void SetAccumulatorInitialValue(int64_t value);
   void ResetAccumulator();
-  void SetAccumulatorCenter(int32_t center);
-  void SetAccumulatorDeadband(int32_t deadband);
+  void SetAccumulatorCenter(int center);
+  void SetAccumulatorDeadband(int deadband);
   int64_t GetAccumulatorValue() const;
-  uint32_t GetAccumulatorCount() const;
-  void GetAccumulatorOutput(int64_t& value, uint32_t& count) const;
+  int64_t GetAccumulatorCount() const;
+  void GetAccumulatorOutput(int64_t& value, int64_t& count) const;
 
-  static void SetSampleRate(float samplesPerSecond);
-  static float GetSampleRate();
+  static void SetSampleRate(double samplesPerSecond);
+  static double GetSampleRate();
 
   double PIDGet() override;
 
@@ -75,10 +82,12 @@ class AnalogInput : public SensorBase,
   std::shared_ptr<ITable> GetTable() const override;
 
  private:
-  uint32_t m_channel;
+  int m_channel;
   // TODO: Adjust HAL to avoid use of raw pointers.
-  void* m_port;
+  HAL_AnalogInputHandle m_port;
   int64_t m_accumulatorOffset;
 
   std::shared_ptr<ITable> m_table;
 };
+
+}  // namespace frc

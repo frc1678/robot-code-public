@@ -1,14 +1,17 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
 #include "AnalogTriggerOutput.h"
+
 #include "AnalogTrigger.h"
 #include "HAL/HAL.h"
 #include "WPIErrors.h"
+
+using namespace frc;
 
 /**
  * Create an object that represents one of the four outputs from an analog
@@ -24,16 +27,16 @@
 AnalogTriggerOutput::AnalogTriggerOutput(const AnalogTrigger& trigger,
                                          AnalogTriggerType outputType)
     : m_trigger(trigger), m_outputType(outputType) {
-  HALReport(HALUsageReporting::kResourceType_AnalogTriggerOutput,
-            trigger.GetIndex(), outputType);
+  HAL_Report(HALUsageReporting::kResourceType_AnalogTriggerOutput,
+             trigger.GetIndex(), static_cast<uint8_t>(outputType));
 }
 
 AnalogTriggerOutput::~AnalogTriggerOutput() {
-  if (m_interrupt != HAL_INVALID_HANDLE) {
+  if (m_interrupt != HAL_kInvalidHandle) {
     int32_t status = 0;
-    cleanInterrupts(m_interrupt, &status);
+    HAL_CleanInterrupts(m_interrupt, &status);
     // ignore status, as an invalid handle just needs to be ignored.
-    m_interrupt = HAL_INVALID_HANDLE;
+    m_interrupt = HAL_kInvalidHandle;
   }
 }
 
@@ -44,25 +47,33 @@ AnalogTriggerOutput::~AnalogTriggerOutput() {
  */
 bool AnalogTriggerOutput::Get() const {
   int32_t status = 0;
-  bool result =
-      getAnalogTriggerOutput(m_trigger.m_trigger, m_outputType, &status);
-  wpi_setErrorWithContext(status, getHALErrorMessage(status));
+  bool result = HAL_GetAnalogTriggerOutput(
+      m_trigger.m_trigger, static_cast<HAL_AnalogTriggerType>(m_outputType),
+      &status);
+  wpi_setErrorWithContext(status, HAL_GetErrorMessage(status));
   return result;
 }
 
 /**
- * @return The value to be written to the channel field of a routing mux.
+ * @return The HAL Handle to the specified source.
  */
-uint32_t AnalogTriggerOutput::GetChannelForRouting() const {
-  return (m_trigger.m_index << 2) + m_outputType;
+HAL_Handle AnalogTriggerOutput::GetPortHandleForRouting() const {
+  return m_trigger.m_trigger;
 }
 
 /**
- * @return The value to be written to the module field of a routing mux.
+ * Is source an AnalogTrigger
  */
-uint32_t AnalogTriggerOutput::GetModuleForRouting() const { return 0; }
+bool AnalogTriggerOutput::IsAnalogTrigger() const { return true; }
 
 /**
- * @return The value to be written to the module field of a routing mux.
+ * @return The type of analog trigger output to be used.
  */
-bool AnalogTriggerOutput::GetAnalogTriggerForRouting() const { return true; }
+AnalogTriggerType AnalogTriggerOutput::GetAnalogTriggerTypeForRouting() const {
+  return m_outputType;
+}
+
+/**
+ * @return The channel of the source.
+ */
+int AnalogTriggerOutput::GetChannel() const { return m_trigger.m_index; }

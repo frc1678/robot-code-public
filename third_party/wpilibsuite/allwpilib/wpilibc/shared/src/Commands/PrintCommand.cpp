@@ -1,28 +1,19 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2011-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2011-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
 #include "Commands/PrintCommand.h"
-#include <sstream>
-#include "stdio.h"
+
+#include <iostream>
+
+using namespace frc;
 
 PrintCommand::PrintCommand(const std::string& message)
-    : Command(((std::stringstream&)(std::stringstream("Print \"") << message
-                                                                  << "\""))
-                  .str()
-                  .c_str()) {
+    : InstantCommand("Print \"" + message + "\"") {
   m_message = message;
 }
 
-void PrintCommand::Initialize() { printf("%s", m_message.c_str()); }
-
-void PrintCommand::Execute() {}
-
-bool PrintCommand::IsFinished() { return true; }
-
-void PrintCommand::End() {}
-
-void PrintCommand::Interrupted() {}
+void PrintCommand::Initialize() { std::cout << m_message << "\n"; }

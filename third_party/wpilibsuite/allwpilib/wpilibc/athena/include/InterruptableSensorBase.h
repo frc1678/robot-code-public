@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -9,9 +9,11 @@
 
 #include <memory>
 
+#include "AnalogTriggerType.h"
 #include "HAL/Interrupts.h"
-#include "Resource.h"
 #include "SensorBase.h"
+
+namespace frc {
 
 class InterruptableSensorBase : public SensorBase {
  public:
@@ -24,17 +26,16 @@ class InterruptableSensorBase : public SensorBase {
 
   InterruptableSensorBase();
   virtual ~InterruptableSensorBase() = default;
-  virtual uint32_t GetChannelForRouting() const = 0;
-  virtual uint32_t GetModuleForRouting() const = 0;
-  virtual bool GetAnalogTriggerForRouting() const = 0;
+  virtual HAL_Handle GetPortHandleForRouting() const = 0;
+  virtual AnalogTriggerType GetAnalogTriggerTypeForRouting() const = 0;
   virtual void RequestInterrupts(
-      InterruptHandlerFunction handler,
+      HAL_InterruptHandlerFunction handler,
       void* param);                  ///< Asynchronus handler version.
   virtual void RequestInterrupts();  ///< Synchronus Wait version.
   virtual void
   CancelInterrupts();  ///< Free up the underlying chipobject functions.
   virtual WaitResult WaitForInterrupt(
-      float timeout,
+      double timeout,
       bool ignorePrevious = true);  ///< Synchronus version.
   virtual void
   EnableInterrupts();  ///< Enable interrupts - after finishing setup.
@@ -46,6 +47,8 @@ class InterruptableSensorBase : public SensorBase {
   virtual void SetUpSourceEdge(bool risingEdge, bool fallingEdge);
 
  protected:
-  HalInterruptHandle m_interrupt = HAL_INVALID_HANDLE;
+  HAL_InterruptHandle m_interrupt = HAL_kInvalidHandle;
   void AllocateInterrupts(bool watcher);
 };
+
+}  // namespace frc

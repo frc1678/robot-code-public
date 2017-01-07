@@ -1,28 +1,27 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2011-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2011-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
 #include "Buttons/Button.h"
-
 #include "Buttons/CancelButtonScheduler.h"
 #include "Buttons/HeldButtonScheduler.h"
 #include "Buttons/PressedButtonScheduler.h"
 #include "Buttons/ReleasedButtonScheduler.h"
 #include "Buttons/ToggleButtonScheduler.h"
 
+using namespace frc;
+
 bool Trigger::Grab() {
-  if (Get())
+  if (Get()) {
     return true;
-  else if (m_table != nullptr) {
-    // if (m_table->isConnected())//TODO is connected on button?
+  } else if (m_table != nullptr) {
     return m_table->GetBoolean("pressed", false);
-    /*else
-            return false;*/
-  } else
+  } else {
     return false;
+  }
 }
 
 void Trigger::WhenActive(Command* command) {
@@ -52,8 +51,8 @@ void Trigger::ToggleWhenActive(Command* command) {
 
 std::string Trigger::GetSmartDashboardType() const { return "Button"; }
 
-void Trigger::InitTable(std::shared_ptr<ITable> table) {
-  m_table = table;
+void Trigger::InitTable(std::shared_ptr<ITable> subtable) {
+  m_table = subtable;
   if (m_table != nullptr) {
     m_table->PutBoolean("pressed", Get());
   }

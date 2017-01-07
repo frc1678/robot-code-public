@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -8,11 +8,15 @@
 #include "ErrorBase.h"
 
 #include <cerrno>
+#include <cstdio>
+#include <cstring>
 #include <iomanip>
 #include <sstream>
 
 #define WPI_ERRORS_DEFINE_STRINGS
 #include "WPIErrors.h"
+
+using namespace frc;
 
 priority_mutex ErrorBase::_globalErrorMutex;
 Error ErrorBase::_globalError;
@@ -41,8 +45,7 @@ void ErrorBase::ClearError() const { m_error.Clear(); }
  */
 void ErrorBase::SetErrnoError(llvm::StringRef contextMessage,
                               llvm::StringRef filename,
-                              llvm::StringRef function,
-                              uint32_t lineNumber) const {
+                              llvm::StringRef function, int lineNumber) const {
   std::string err;
   int errNo = errno;
   if (errNo == 0) {
@@ -50,7 +53,7 @@ void ErrorBase::SetErrnoError(llvm::StringRef contextMessage,
     err += contextMessage;
   } else {
     std::ostringstream oss;
-    oss << strerror(errNo) << " (0x" << std::setfill('0') << std::hex
+    oss << std::strerror(errNo) << " (0x" << std::setfill('0') << std::hex
         << std::uppercase << std::setw(8) << errNo << "): " << contextMessage;
     err = oss.str();
   }
@@ -77,7 +80,7 @@ void ErrorBase::SetErrnoError(llvm::StringRef contextMessage,
  */
 void ErrorBase::SetImaqError(int success, llvm::StringRef contextMessage,
                              llvm::StringRef filename, llvm::StringRef function,
-                             uint32_t lineNumber) const {
+                             int lineNumber) const {
   // If there was an error
   if (success <= 0) {
     std::stringstream err;
@@ -105,11 +108,49 @@ void ErrorBase::SetImaqError(int success, llvm::StringRef contextMessage,
  */
 void ErrorBase::SetError(Error::Code code, llvm::StringRef contextMessage,
                          llvm::StringRef filename, llvm::StringRef function,
-                         uint32_t lineNumber) const {
+                         int lineNumber) const {
   //  If there was an error
   if (code != 0) {
     //  Set the current error information for this object.
     m_error.Set(code, contextMessage, filename, function, lineNumber, this);
+
+    // Update the global error if there is not one already set.
+    std::lock_guard<priority_mutex> mutex(_globalErrorMutex);
+    if (_globalError.GetCode() == 0) {
+      _globalError.Clone(m_error);
+    }
+  }
+}
+
+/**
+ * @brief Set the current error information associated with this sensor.
+ * Range versions use for initialization code.
+ *
+ * @param code           The error code
+ * @param minRange       The minimum allowed allocation range
+ * @param maxRange       The maximum allowed allocation range
+ * @param requestedValue The requested value to allocate
+ * @param contextMessage A custom message from the code that set the error.
+ * @param filename       Filename of the error source
+ * @param function       Function of the error source
+ * @param lineNumber     Line number of the error source
+ */
+void ErrorBase::SetErrorRange(Error::Code code, int32_t minRange,
+                              int32_t maxRange, int32_t requestedValue,
+                              llvm::StringRef contextMessage,
+                              llvm::StringRef filename,
+                              llvm::StringRef function, int lineNumber) const {
+  //  If there was an error
+  if (code != 0) {
+    size_t size = contextMessage.size() + 100;
+    char* buf = new char[size];
+    std::snprintf(
+        buf, size,
+        "%s, Minimum Value: %d, Maximum Value: %d, Requested Value: %d",
+        contextMessage.data(), minRange, maxRange, requestedValue);
+    //  Set the current error information for this object.
+    m_error.Set(code, buf, filename, function, lineNumber, this);
+    delete[] buf;
 
     // Update the global error if there is not one already set.
     std::lock_guard<priority_mutex> mutex(_globalErrorMutex);
@@ -131,7 +172,7 @@ void ErrorBase::SetError(Error::Code code, llvm::StringRef contextMessage,
 void ErrorBase::SetWPIError(llvm::StringRef errorMessage, Error::Code code,
                             llvm::StringRef contextMessage,
                             llvm::StringRef filename, llvm::StringRef function,
-                            uint32_t lineNumber) const {
+                            int lineNumber) const {
   std::string err = errorMessage.str() + ": " + contextMessage.str();
 
   //  Set the current error information for this object.
@@ -157,7 +198,7 @@ bool ErrorBase::StatusIsFatal() const { return m_error.GetCode() < 0; }
 
 void ErrorBase::SetGlobalError(Error::Code code, llvm::StringRef contextMessage,
                                llvm::StringRef filename,
-                               llvm::StringRef function, uint32_t lineNumber) {
+                               llvm::StringRef function, int lineNumber) {
   // If there was an error
   if (code != 0) {
     std::lock_guard<priority_mutex> mutex(_globalErrorMutex);
@@ -171,8 +212,7 @@ void ErrorBase::SetGlobalError(Error::Code code, llvm::StringRef contextMessage,
 void ErrorBase::SetGlobalWPIError(llvm::StringRef errorMessage,
                                   llvm::StringRef contextMessage,
                                   llvm::StringRef filename,
-                                  llvm::StringRef function,
-                                  uint32_t lineNumber) {
+                                  llvm::StringRef function, int lineNumber) {
   std::string err = errorMessage.str() + ": " + contextMessage.str();
 
   std::lock_guard<priority_mutex> mutex(_globalErrorMutex);

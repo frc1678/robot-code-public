@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -10,22 +10,25 @@
 #include "Counter.h"
 #include "DigitalInput.h"
 #include "DigitalOutput.h"
+#include "HAL/HAL.h"
 #include "LiveWindow/LiveWindow.h"
 #include "Timer.h"
 #include "Utility.h"
 #include "WPIErrors.h"
 
+using namespace frc;
+
 // Time (sec) for the ping trigger pulse.
 constexpr double Ultrasonic::kPingTime;
 // Priority that the ultrasonic round robin task runs.
-const uint32_t Ultrasonic::kPriority;
+const int Ultrasonic::kPriority;
 // Max time (ms) between readings.
 constexpr double Ultrasonic::kMaxUltrasonicTime;
 constexpr double Ultrasonic::kSpeedOfSoundInchesPerSec;
-Task Ultrasonic::m_task;
 // automatic round robin mode
 std::atomic<bool> Ultrasonic::m_automaticEnabled{false};
 std::set<Ultrasonic*> Ultrasonic::m_sensors;
+std::thread Ultrasonic::m_thread;
 
 /**
  * Background task that goes through the list of ultrasonic sensors and pings
@@ -73,7 +76,7 @@ void Ultrasonic::Initialize() {
 
   static int instances = 0;
   instances++;
-  HALReport(HALUsageReporting::kResourceType_Ultrasonic, instances);
+  HAL_Report(HALUsageReporting::kResourceType_Ultrasonic, instances);
   LiveWindow::GetInstance()->AddSensor("Ultrasonic",
                                        m_echoChannel->GetChannel(), this);
 }
@@ -91,8 +94,7 @@ void Ultrasonic::Initialize() {
  *                    round trip time of the ping, and the distance.
  * @param units       The units returned in either kInches or kMilliMeters
  */
-Ultrasonic::Ultrasonic(uint32_t pingChannel, uint32_t echoChannel,
-                       DistanceUnit units)
+Ultrasonic::Ultrasonic(int pingChannel, int echoChannel, DistanceUnit units)
     : m_pingChannel(std::make_shared<DigitalOutput>(pingChannel)),
       m_echoChannel(std::make_shared<DigitalInput>(echoChannel)),
       m_counter(m_echoChannel) {
@@ -209,7 +211,7 @@ void Ultrasonic::SetAutomaticMode(bool enabling) {
       sensor->m_counter.Reset();
     }
 
-    m_task = Task("UltrasonicChecker", &Ultrasonic::UltrasonicChecker);
+    m_thread = std::thread(&Ultrasonic::UltrasonicChecker);
 
     // TODO: Currently, lvuser does not have permissions to set task priorities.
     // Until that is the case, uncommenting this will break user code that calls
@@ -217,7 +219,7 @@ void Ultrasonic::SetAutomaticMode(bool enabling) {
     // m_task.SetPriority(kPriority);
   } else {
     // Wait for background task to stop running
-    m_task.join();
+    m_thread.join();
 
     /* Clear all the counters (data now invalid) since automatic mode is
      * disabled. No synchronization is needed because the background task is

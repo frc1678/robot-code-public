@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,11 +7,12 @@
 
 #include "Encoder.h"
 
-#include <cstdio>
+#include <sstream>
 
 #include "LiveWindow/LiveWindow.h"
-#include "Resource.h"
 #include "WPIErrors.h"
+
+using namespace frc;
 
 /**
  * Common initialization code for Encoders.
@@ -30,15 +31,15 @@
  *                         value will either exactly match the spec'd count or
  *                         be double (2x) the spec'd count.
  */
-void Encoder::InitEncoder(int32_t channelA, int32_t channelB,
-                          bool reverseDirection, EncodingType encodingType) {
+void Encoder::InitEncoder(int channelA, int channelB, bool reverseDirection,
+                          EncodingType encodingType) {
   m_table = nullptr;
   this->channelA = channelA;
   this->channelB = channelB;
   m_encodingType = encodingType;
   m_encodingScale = encodingType == k4X ? 4 : encodingType == k2X ? 2 : 1;
 
-  int32_t index = 0;
+  int index = 0;
   m_distancePerPulse = 1.0;
 
   LiveWindow::GetInstance()->AddSensor("Encoder", channelA, this);
@@ -51,9 +52,9 @@ void Encoder::InitEncoder(int32_t channelA, int32_t channelB,
   } else {
     m_reverseDirection = reverseDirection;
   }
-  char buffer[50];
-  int n = std::sprintf(buffer, "dio/%d/%d", channelA, channelB);
-  impl = new SimEncoder(buffer);
+  std::stringstream ss;
+  ss << "dio/" << channelA << "/" << channelB;
+  impl = new SimEncoder(ss.str());
   impl->Start();
 }
 
@@ -77,7 +78,7 @@ void Encoder::InitEncoder(int32_t channelA, int32_t channelB,
  *                         value will either exactly match the spec'd count or
  *                         be double (2x) the spec'd count.
  */
-Encoder::Encoder(uint32_t aChannel, uint32_t bChannel, bool reverseDirection,
+Encoder::Encoder(int aChannel, int bChannel, bool reverseDirection,
                  EncodingType encodingType) {
   InitEncoder(aChannel, bChannel, reverseDirection, encodingType);
 }
@@ -204,7 +205,7 @@ double Encoder::DecodingScaleFactor() const {
  *
  * Used to divide raw edge counts down to spec'd counts.
  */
-int32_t Encoder::GetEncodingScale() const { return m_encodingScale; }
+int Encoder::GetEncodingScale() const { return m_encodingScale; }
 
 /**
  * Gets the raw value from the encoder.
@@ -214,7 +215,7 @@ int32_t Encoder::GetEncodingScale() const { return m_encodingScale; }
  *
  * @return Current raw count from the encoder
  */
-int32_t Encoder::GetRaw() const {
+int Encoder::GetRaw() const {
   throw "Simulation doesn't currently support this method.";
 }
 
@@ -227,7 +228,7 @@ int32_t Encoder::GetRaw() const {
  * @return Current count from the Encoder adjusted for the 1x, 2x, or 4x scale
  *         factor.
  */
-int32_t Encoder::Get() const {
+int Encoder::Get() const {
   throw "Simulation doesn't currently support this method.";
 }
 

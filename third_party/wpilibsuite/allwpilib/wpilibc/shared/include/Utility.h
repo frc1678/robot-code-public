@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -12,7 +12,10 @@
  */
 
 #include <stdint.h>
+
 #include <string>
+
+#include "llvm/StringRef.h"
 
 #define wpi_assert(condition) \
   wpi_assert_impl(condition, #condition, "", __FILE__, __LINE__, __FUNCTION__)
@@ -31,22 +34,27 @@
   wpi_assertNotEqual_impl(a, b, #a, #b, message, __FILE__, __LINE__, \
                           __FUNCTION__)
 
-bool wpi_assert_impl(bool conditionValue, const char* conditionText,
-                     const char* message, const char* fileName,
-                     uint32_t lineNumber, const char* funcName);
-bool wpi_assertEqual_impl(int valueA, int valueB, const char* valueAString,
-                          const char* valueBString, const char* message,
-                          const char* fileName, uint32_t lineNumber,
-                          const char* funcName);
-bool wpi_assertNotEqual_impl(int valueA, int valueB, const char* valueAString,
-                             const char* valueBString, const char* message,
-                             const char* fileName, uint32_t lineNumber,
-                             const char* funcName);
+bool wpi_assert_impl(bool conditionValue, llvm::StringRef conditionText,
+                     llvm::StringRef message, llvm::StringRef fileName,
+                     int lineNumber, llvm::StringRef funcName);
+bool wpi_assertEqual_impl(int valueA, int valueB, llvm::StringRef valueAString,
+                          llvm::StringRef valueBString, llvm::StringRef message,
+                          llvm::StringRef fileName, int lineNumber,
+                          llvm::StringRef funcName);
+bool wpi_assertNotEqual_impl(int valueA, int valueB,
+                             llvm::StringRef valueAString,
+                             llvm::StringRef valueBString,
+                             llvm::StringRef message, llvm::StringRef fileName,
+                             int lineNumber, llvm::StringRef funcName);
 
 void wpi_suspendOnAssertEnabled(bool enabled);
 
-uint16_t GetFPGAVersion();
-uint32_t GetFPGARevision();
+namespace frc {
+
+int GetFPGAVersion();
+int64_t GetFPGARevision();
 uint64_t GetFPGATime();
 bool GetUserButton();
-std::string GetStackTrace(uint32_t offset);
+std::string GetStackTrace(int offset);
+
+}  // namespace frc

@@ -1,14 +1,18 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2012-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2012-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
 #include "LiveWindow/LiveWindow.h"
+
 #include <algorithm>
 #include <sstream>
+
 #include "networktables/NetworkTable.h"
+
+using namespace frc;
 
 /**
  * Get an instance of the LiveWindow main class.

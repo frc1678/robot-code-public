@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -14,8 +14,14 @@
 #include "HLUsageReporting.h"
 #include "Internal/HardwareHLReporting.h"
 #include "RobotState.h"
+#include "SmartDashboard/SmartDashboard.h"
 #include "Utility.h"
+#include "WPILibVersion.h"
 #include "networktables/NetworkTable.h"
+
+using namespace frc;
+
+std::thread::id RobotBase::m_threadId;
 
 /**
  * Constructor for a generic robot program.
@@ -29,17 +35,22 @@
  * boot so ensure that it runs.
  */
 RobotBase::RobotBase() : m_ds(DriverStation::GetInstance()) {
+  m_threadId = std::this_thread::get_id();
+
   RobotState::SetImplementation(DriverStation::GetInstance());
   HLUsageReporting::SetImplementation(new HardwareHLReporting());
 
   NetworkTable::SetNetworkIdentity("Robot");
   NetworkTable::SetPersistentFilename("/home/lvuser/networktables.ini");
 
-  FILE* file = nullptr;
+  SmartDashboard::init();
+
+  std::FILE* file = nullptr;
   file = std::fopen("/tmp/frc_versions/FRC_Lib_Version.ini", "w");
 
   if (file != nullptr) {
-    std::fputs("2016 C++ Release 5", file);
+    std::fputs("C++ ", file);
+    std::fputs(WPILibVersion, file);
     std::fclose(file);
   }
 }
@@ -83,3 +94,8 @@ bool RobotBase::IsTest() const { return m_ds.IsTest(); }
  * function was called?
  */
 bool RobotBase::IsNewDataAvailable() const { return m_ds.IsNewControlData(); }
+
+/**
+ * Gets the ID of the main robot thread
+ */
+std::thread::id RobotBase::GetThreadId() { return m_threadId; }

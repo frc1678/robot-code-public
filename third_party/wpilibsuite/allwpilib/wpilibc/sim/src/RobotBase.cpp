@@ -1,15 +1,17 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
 #include "RobotBase.h"
+
 #include "RobotState.h"
+#include "SmartDashboard/SmartDashboard.h"
 #include "Utility.h"
 
-#include <string.h>
+using namespace frc;
 
 /**
  * Constructor for a generic robot program.
@@ -24,6 +26,7 @@
  */
 RobotBase::RobotBase() : m_ds(DriverStation::GetInstance()) {
   RobotState::SetImplementation(DriverStation::GetInstance());
+  SmartDashboard::init();
   time_sub = MainNode::Subscribe("~/time", &wpilib::internal::time_callback);
 }
 

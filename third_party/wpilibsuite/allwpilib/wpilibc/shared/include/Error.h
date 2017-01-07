@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,18 +7,20 @@
 
 #pragma once
 
+#include <stdint.h>
+
+#include <string>
+
 #include "Base.h"
+#include "llvm/StringRef.h"
 
 #ifdef _WIN32
 #include <Windows.h>
-// Windows.h defines #define GetMessage GetMessageW, which is stupid and we
-// don't want it.
+// Windows.h defines #define GetMessage GetMessageW, which we don't want.
 #undef GetMessage
 #endif
 
-#include <stdint.h>
-#include <string>
-#include "llvm/StringRef.h"
+namespace frc {
 
 //  Forward declarations
 class ErrorBase;
@@ -28,7 +30,7 @@ class ErrorBase;
  */
 class Error {
  public:
-  typedef int32_t Code;
+  typedef int Code;
 
   Error() = default;
 
@@ -40,12 +42,12 @@ class Error {
   std::string GetMessage() const;
   std::string GetFilename() const;
   std::string GetFunction() const;
-  uint32_t GetLineNumber() const;
+  int GetLineNumber() const;
   const ErrorBase* GetOriginatingObject() const;
   double GetTimestamp() const;
   void Clear();
   void Set(Code code, llvm::StringRef contextMessage, llvm::StringRef filename,
-           llvm::StringRef function, uint32_t lineNumber,
+           llvm::StringRef function, int lineNumber,
            const ErrorBase* originatingObject);
 
  private:
@@ -55,7 +57,9 @@ class Error {
   std::string m_message;
   std::string m_filename;
   std::string m_function;
-  uint32_t m_lineNumber = 0;
+  int m_lineNumber = 0;
   const ErrorBase* m_originatingObject = nullptr;
   double m_timestamp = 0.0;
 };
+
+}  // namespace frc

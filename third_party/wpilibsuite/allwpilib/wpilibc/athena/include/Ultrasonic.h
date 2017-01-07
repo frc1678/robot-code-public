@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -10,12 +10,15 @@
 #include <atomic>
 #include <memory>
 #include <set>
+#include <string>
+#include <thread>
 
 #include "Counter.h"
 #include "LiveWindow/LiveWindowSendable.h"
 #include "PIDSource.h"
 #include "SensorBase.h"
-#include "Task.h"
+
+namespace frc {
 
 class DigitalInput;
 class DigitalOutput;
@@ -46,8 +49,7 @@ class Ultrasonic : public SensorBase,
   Ultrasonic(std::shared_ptr<DigitalOutput> pingChannel,
              std::shared_ptr<DigitalInput> echoChannel,
              DistanceUnit units = kInches);
-  Ultrasonic(uint32_t pingChannel, uint32_t echoChannel,
-             DistanceUnit units = kInches);
+  Ultrasonic(int pingChannel, int echoChannel, DistanceUnit units = kInches);
   virtual ~Ultrasonic();
 
   void Ping();
@@ -78,12 +80,13 @@ class Ultrasonic : public SensorBase,
   // Time (sec) for the ping trigger pulse.
   static constexpr double kPingTime = 10 * 1e-6;
   // Priority that the ultrasonic round robin task runs.
-  static const uint32_t kPriority = 64;
+  static const int kPriority = 64;
   // Max time (ms) between readings.
   static constexpr double kMaxUltrasonicTime = 0.1;
   static constexpr double kSpeedOfSoundInchesPerSec = 1130.0 * 12.0;
 
-  static Task m_task;  // task doing the round-robin automatic sensing
+  static std::thread
+      m_thread;  // thread doing the round-robin automatic sensing
   static std::set<Ultrasonic*> m_sensors;       // ultrasonic sensors
   static std::atomic<bool> m_automaticEnabled;  // automatic round robin mode
 
@@ -95,3 +98,5 @@ class Ultrasonic : public SensorBase,
 
   std::shared_ptr<ITable> m_table;
 };
+
+}  // namespace frc

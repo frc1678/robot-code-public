@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,12 +7,13 @@
 
 #include "AnalogTrigger.h"
 
+#include <memory>
+
 #include "AnalogInput.h"
 #include "HAL/HAL.h"
-#include "Resource.h"
 #include "WPIErrors.h"
 
-#include <memory>
+using namespace frc;
 
 /**
  * Constructor for an analog trigger given a channel number.
@@ -20,16 +21,9 @@
  * @param channel The channel number on the roboRIO to represent. 0-3 are
  *                on-board 4-7 are on the MXP port.
  */
-AnalogTrigger::AnalogTrigger(int32_t channel) {
-  HalPortHandle port = getPort(channel);
-  int32_t status = 0;
-  uint32_t index = 0;
-  m_trigger = initializeAnalogTrigger(port, &index, &status);
-  wpi_setErrorWithContext(status, getHALErrorMessage(status));
-  freePort(port);
-  m_index = index;
-
-  HALReport(HALUsageReporting::kResourceType_AnalogTrigger, channel);
+AnalogTrigger::AnalogTrigger(int channel)
+    : AnalogTrigger(new AnalogInput(channel)) {
+  m_ownsAnalog = true;
 }
 
 /**
@@ -40,13 +34,29 @@ AnalogTrigger::AnalogTrigger(int32_t channel) {
  *
  * @param channel The pointer to the existing AnalogInput object
  */
-AnalogTrigger::AnalogTrigger(AnalogInput* input)
-    : AnalogTrigger(input->GetChannel()) {}
+AnalogTrigger::AnalogTrigger(AnalogInput* input) {
+  m_analogInput = input;
+  int32_t status = 0;
+  int index = 0;
+  m_trigger = HAL_InitializeAnalogTrigger(input->m_port, &index, &status);
+  if (status != 0) {
+    wpi_setErrorWithContext(status, HAL_GetErrorMessage(status));
+    m_index = std::numeric_limits<int>::max();
+    m_trigger = HAL_kInvalidHandle;
+    return;
+  }
+  m_index = index;
+
+  HAL_Report(HALUsageReporting::kResourceType_AnalogTrigger, input->m_channel);
+}
 
 AnalogTrigger::~AnalogTrigger() {
   int32_t status = 0;
-  cleanAnalogTrigger(m_trigger, &status);
-  wpi_setErrorWithContext(status, getHALErrorMessage(status));
+  HAL_CleanAnalogTrigger(m_trigger, &status);
+
+  if (m_ownsAnalog && m_analogInput != nullptr) {
+    delete m_analogInput;
+  }
 }
 
 /**
@@ -58,11 +68,11 @@ AnalogTrigger::~AnalogTrigger() {
  * @param lower The lower limit of the trigger in ADC codes (12-bit values).
  * @param upper The upper limit of the trigger in ADC codes (12-bit values).
  */
-void AnalogTrigger::SetLimitsRaw(int32_t lower, int32_t upper) {
+void AnalogTrigger::SetLimitsRaw(int lower, int upper) {
   if (StatusIsFatal()) return;
   int32_t status = 0;
-  setAnalogTriggerLimitsRaw(m_trigger, lower, upper, &status);
-  wpi_setErrorWithContext(status, getHALErrorMessage(status));
+  HAL_SetAnalogTriggerLimitsRaw(m_trigger, lower, upper, &status);
+  wpi_setErrorWithContext(status, HAL_GetErrorMessage(status));
 }
 
 /**
@@ -73,11 +83,11 @@ void AnalogTrigger::SetLimitsRaw(int32_t lower, int32_t upper) {
  * @param lower The lower limit of the trigger in Volts.
  * @param upper The upper limit of the trigger in Volts.
  */
-void AnalogTrigger::SetLimitsVoltage(float lower, float upper) {
+void AnalogTrigger::SetLimitsVoltage(double lower, double upper) {
   if (StatusIsFatal()) return;
   int32_t status = 0;
-  setAnalogTriggerLimitsVoltage(m_trigger, lower, upper, &status);
-  wpi_setErrorWithContext(status, getHALErrorMessage(status));
+  HAL_SetAnalogTriggerLimitsVoltage(m_trigger, lower, upper, &status);
+  wpi_setErrorWithContext(status, HAL_GetErrorMessage(status));
 }
 
 /**
@@ -92,8 +102,8 @@ void AnalogTrigger::SetLimitsVoltage(float lower, float upper) {
 void AnalogTrigger::SetAveraged(bool useAveragedValue) {
   if (StatusIsFatal()) return;
   int32_t status = 0;
-  setAnalogTriggerAveraged(m_trigger, useAveragedValue, &status);
-  wpi_setErrorWithContext(status, getHALErrorMessage(status));
+  HAL_SetAnalogTriggerAveraged(m_trigger, useAveragedValue, &status);
+  wpi_setErrorWithContext(status, HAL_GetErrorMessage(status));
 }
 
 /**
@@ -109,8 +119,8 @@ void AnalogTrigger::SetAveraged(bool useAveragedValue) {
 void AnalogTrigger::SetFiltered(bool useFilteredValue) {
   if (StatusIsFatal()) return;
   int32_t status = 0;
-  setAnalogTriggerFiltered(m_trigger, useFilteredValue, &status);
-  wpi_setErrorWithContext(status, getHALErrorMessage(status));
+  HAL_SetAnalogTriggerFiltered(m_trigger, useFilteredValue, &status);
+  wpi_setErrorWithContext(status, HAL_GetErrorMessage(status));
 }
 
 /**
@@ -120,8 +130,8 @@ void AnalogTrigger::SetFiltered(bool useFilteredValue) {
  *
  * @return The index of the analog trigger.
  */
-uint32_t AnalogTrigger::GetIndex() const {
-  if (StatusIsFatal()) return std::numeric_limits<uint32_t>::max();
+int AnalogTrigger::GetIndex() const {
+  if (StatusIsFatal()) return -1;
   return m_index;
 }
 
@@ -135,8 +145,8 @@ uint32_t AnalogTrigger::GetIndex() const {
 bool AnalogTrigger::GetInWindow() {
   if (StatusIsFatal()) return false;
   int32_t status = 0;
-  bool result = getAnalogTriggerInWindow(m_trigger, &status);
-  wpi_setErrorWithContext(status, getHALErrorMessage(status));
+  bool result = HAL_GetAnalogTriggerInWindow(m_trigger, &status);
+  wpi_setErrorWithContext(status, HAL_GetErrorMessage(status));
   return result;
 }
 
@@ -153,8 +163,8 @@ bool AnalogTrigger::GetInWindow() {
 bool AnalogTrigger::GetTriggerState() {
   if (StatusIsFatal()) return false;
   int32_t status = 0;
-  bool result = getAnalogTriggerTriggerState(m_trigger, &status);
-  wpi_setErrorWithContext(status, getHALErrorMessage(status));
+  bool result = HAL_GetAnalogTriggerTriggerState(m_trigger, &status);
+  wpi_setErrorWithContext(status, HAL_GetErrorMessage(status));
   return result;
 }
 

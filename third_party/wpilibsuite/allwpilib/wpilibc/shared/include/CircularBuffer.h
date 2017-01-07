@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2015-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2015-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,9 +7,10 @@
 
 #pragma once
 
-#include <stddef.h>
-
+#include <cstddef>
 #include <vector>
+
+namespace frc {
 
 /**
  * This is a simple circular buffer so we don't need to "bucket brigade" copy
@@ -18,12 +19,13 @@
 template <class T>
 class CircularBuffer {
  public:
-  CircularBuffer(size_t size);
+  explicit CircularBuffer(size_t size);
 
   void PushFront(T value);
   void PushBack(T value);
   T PopFront();
   T PopBack();
+  void Resize(size_t size);
   void Reset();
 
   T& operator[](size_t index);
@@ -41,5 +43,7 @@ class CircularBuffer {
   size_t ModuloInc(size_t index);
   size_t ModuloDec(size_t index);
 };
+
+}  // namespace frc
 
 #include "CircularBuffer.inc"

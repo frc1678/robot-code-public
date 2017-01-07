@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,18 +7,20 @@
 
 #include "Solenoid.h"
 
-#include <cstdio>
+#include <sstream>
 
 #include "LiveWindow/LiveWindow.h"
 #include "WPIErrors.h"
 #include "simulation/simTime.h"
+
+using namespace frc;
 
 /**
  * Constructor.
  *
  * @param channel The channel on the solenoid module to control (1..8).
  */
-Solenoid::Solenoid(uint32_t channel) : Solenoid(1, channel) {}
+Solenoid::Solenoid(int channel) : Solenoid(1, channel) {}
 
 /**
  * Constructor.
@@ -26,10 +28,10 @@ Solenoid::Solenoid(uint32_t channel) : Solenoid(1, channel) {}
  * @param moduleNumber The solenoid module (1 or 2).
  * @param channel      The channel on the solenoid module to control (1..8).
  */
-Solenoid::Solenoid(uint8_t moduleNumber, uint32_t channel) {
-  char buffer[50];
-  int n = std::sprintf(buffer, "pneumatic/%d/%d", moduleNumber, channel);
-  m_impl = new SimContinuousOutput(buffer);
+Solenoid::Solenoid(int moduleNumber, int channel) {
+  std::stringstream ss;
+  ss << "pneumatic/" << moduleNumber << "/" << channel;
+  m_impl = new SimContinuousOutput(ss.str());
 
   LiveWindow::GetInstance()->AddActuator("Solenoid", moduleNumber, channel,
                                          this);

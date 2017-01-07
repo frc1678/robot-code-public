@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2014-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2014-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -8,9 +8,12 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 #include "LiveWindow/LiveWindowSendable.h"
 #include "SensorBase.h"
+
+namespace frc {
 
 /**
  * Class for getting voltage, current, temperature, power and energy from the
@@ -19,11 +22,11 @@
 class PowerDistributionPanel : public SensorBase, public LiveWindowSendable {
  public:
   PowerDistributionPanel();
-  PowerDistributionPanel(uint8_t module);
+  explicit PowerDistributionPanel(int module);
 
   double GetVoltage() const;
   double GetTemperature() const;
-  double GetCurrent(uint8_t channel) const;
+  double GetCurrent(int channel) const;
   double GetTotalCurrent() const;
   double GetTotalPower() const;
   double GetTotalEnergy() const;
@@ -39,5 +42,7 @@ class PowerDistributionPanel : public SensorBase, public LiveWindowSendable {
 
  private:
   std::shared_ptr<ITable> m_table;
-  uint8_t m_module;
+  int m_module;
 };
+
+}  // namespace frc

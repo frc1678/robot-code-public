@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -8,10 +8,14 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 #include "DigitalSource.h"
+#include "HAL/Types.h"
 #include "LiveWindow/LiveWindowSendable.h"
 #include "tables/ITableListener.h"
+
+namespace frc {
 
 /**
  * Class to write to digital outputs.
@@ -23,24 +27,25 @@ class DigitalOutput : public DigitalSource,
                       public ITableListener,
                       public LiveWindowSendable {
  public:
-  explicit DigitalOutput(uint32_t channel);
+  explicit DigitalOutput(int channel);
   virtual ~DigitalOutput();
-  void Set(uint32_t value);
-  uint32_t GetChannel() const;
-  void Pulse(float length);
+  void Set(bool value);
+  bool Get() const;
+  int GetChannel() const override;
+  void Pulse(double length);
   bool IsPulsing() const;
-  void SetPWMRate(float rate);
-  void EnablePWM(float initialDutyCycle);
+  void SetPWMRate(double rate);
+  void EnablePWM(double initialDutyCycle);
   void DisablePWM();
-  void UpdateDutyCycle(float dutyCycle);
+  void UpdateDutyCycle(double dutyCycle);
 
   // Digital Source Interface
-  virtual uint32_t GetChannelForRouting() const;
-  virtual uint32_t GetModuleForRouting() const;
-  virtual bool GetAnalogTriggerForRouting() const;
+  HAL_Handle GetPortHandleForRouting() const override;
+  AnalogTriggerType GetAnalogTriggerTypeForRouting() const override;
+  bool IsAnalogTrigger() const override;
 
-  virtual void ValueChanged(ITable* source, llvm::StringRef key,
-                            std::shared_ptr<nt::Value> value, bool isNew);
+  void ValueChanged(ITable* source, llvm::StringRef key,
+                    std::shared_ptr<nt::Value> value, bool isNew) override;
   void UpdateTable();
   void StartLiveWindowMode();
   void StopLiveWindowMode();
@@ -49,8 +54,11 @@ class DigitalOutput : public DigitalSource,
   std::shared_ptr<ITable> GetTable() const;
 
  private:
-  uint32_t m_channel;
-  void* m_pwmGenerator;
+  int m_channel;
+  HAL_DigitalHandle m_handle;
+  HAL_DigitalPWMHandle m_pwmGenerator;
 
   std::shared_ptr<ITable> m_table;
 };
+
+}  // namespace frc

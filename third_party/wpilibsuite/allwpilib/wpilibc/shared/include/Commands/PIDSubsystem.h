@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2011-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2011-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,12 +7,15 @@
 
 #pragma once
 
+#include <memory>
+#include <string>
+
 #include "Commands/Subsystem.h"
 #include "PIDController.h"
 #include "PIDOutput.h"
 #include "PIDSource.h"
 
-#include <memory>
+namespace frc {
 
 /**
  * This class is designed to handle the case where there is a {@link Subsystem}
@@ -39,20 +42,20 @@ class PIDSubsystem : public Subsystem, public PIDOutput, public PIDSource {
   void Disable();
 
   // PIDOutput interface
-  virtual void PIDWrite(float output);
+  virtual void PIDWrite(double output);
 
   // PIDSource interface
   virtual double PIDGet();
   void SetSetpoint(double setpoint);
   void SetSetpointRelative(double deltaSetpoint);
-  void SetInputRange(float minimumInput, float maximumInput);
-  void SetOutputRange(float minimumOutput, float maximumOutput);
+  void SetInputRange(double minimumInput, double maximumInput);
+  void SetOutputRange(double minimumOutput, double maximumOutput);
   double GetSetpoint();
   double GetPosition();
   double GetRate();
 
-  virtual void SetAbsoluteTolerance(float absValue);
-  virtual void SetPercentTolerance(float percent);
+  virtual void SetAbsoluteTolerance(double absValue);
+  virtual void SetPercentTolerance(double percent);
   virtual bool OnTarget() const;
 
  protected:
@@ -66,6 +69,8 @@ class PIDSubsystem : public Subsystem, public PIDOutput, public PIDSource {
   std::shared_ptr<PIDController> m_controller;
 
  public:
-  virtual void InitTable(std::shared_ptr<ITable> table);
-  virtual std::string GetSmartDashboardType() const;
+  void InitTable(std::shared_ptr<ITable> subtable) override;
+  std::string GetSmartDashboardType() const override;
 };
+
+}  // namespace frc

@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2016. All Rights Reserved.                             */
+/* Copyright (c) FIRST 2016-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,16 +7,21 @@
 
 #include "Utility.h"
 
-#include <cstdio>
-#include <iostream>
-#include <sstream>
-#if not defined(_WIN32)
+#ifndef _WIN32
 #include <cxxabi.h>
 #include <execinfo.h>
 #endif
 
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
+
 #include "Timer.h"
+#include "llvm/SmallString.h"
 #include "simulation/simTime.h"
+
+using namespace frc;
 
 static bool stackTraceEnabled = false;
 static bool suspendOnAssertEnabled = false;
@@ -40,8 +45,8 @@ void wpi_suspendOnAssertEnabled(bool enabled) {
 static void wpi_handleTracing() {
   // if (stackTraceEnabled)
   // {
-  // 	std::printf("\n-----------<Stack Trace>----------------\n");
-  // 	printCurrentStackTrace();
+  //   std::printf("\n-----------<Stack Trace>----------------\n");
+  //   printCurrentStackTrace();
   // }
   std::printf("\n");
 }
@@ -52,15 +57,17 @@ static void wpi_handleTracing() {
  * The users don't call this, but instead use the wpi_assert macros in
  * Utility.h.
  */
-bool wpi_assert_impl(bool conditionValue, const char* conditionText,
-                     const char* message, const char* fileName,
-                     uint32_t lineNumber, const char* funcName) {
+bool wpi_assert_impl(bool conditionValue, llvm::StringRef conditionText,
+                     llvm::StringRef message, llvm::StringRef fileName,
+                     int lineNumber, llvm::StringRef funcName) {
   if (!conditionValue) {
     std::stringstream errorStream;
 
     errorStream << "Assertion \"" << conditionText << "\" ";
     errorStream << "on line " << lineNumber << " ";
-    errorStream << "of " << basename(fileName) << " ";
+
+    llvm::SmallString<128> fileTemp;
+    errorStream << "of " << basename(fileName.c_str(fileTemp)) << " ";
 
     if (message[0] != '\0') {
       errorStream << "failed: " << message << std::endl;
@@ -82,11 +89,10 @@ bool wpi_assert_impl(bool conditionValue, const char* conditionText,
  * wpi_assertEqual_impl and wpi_assertNotEqual_impl.
  */
 void wpi_assertEqual_common_impl(int valueA, int valueB,
-                                 const std::string& equalityType,
-                                 const std::string& message,
-                                 const std::string& fileName,
-                                 uint32_t lineNumber,
-                                 const std::string& funcName) {
+                                 llvm::StringRef equalityType,
+                                 llvm::StringRef message,
+                                 llvm::StringRef fileName, int lineNumber,
+                                 llvm::StringRef funcName) {
   // Error string buffer
   std::stringstream error;
 
@@ -115,9 +121,9 @@ void wpi_assertEqual_common_impl(int valueA, int valueB,
  * The users don't call this, but instead use the wpi_assertEqual macros in
  * Utility.h.
  */
-bool wpi_assertEqual_impl(int valueA, int valueB, const std::string& message,
-                          const std::string& fileName, uint32_t lineNumber,
-                          const std::string& funcName) {
+bool wpi_assertEqual_impl(int valueA, int valueB, llvm::StringRef message,
+                          llvm::StringRef fileName, int lineNumber,
+                          llvm::StringRef funcName) {
   if (!(valueA == valueB)) {
     wpi_assertEqual_common_impl(valueA, valueB, "!=", message, fileName,
                                 lineNumber, funcName);
@@ -132,15 +138,17 @@ bool wpi_assertEqual_impl(int valueA, int valueB, const std::string& message,
  * The users don't call this, but instead use the wpi_assertNotEqual macros in
  * Utility.h.
  */
-bool wpi_assertNotEqual_impl(int valueA, int valueB, const std::string& message,
-                             const std::string& fileName, uint32_t lineNumber,
-                             const std::string& funcName) {
+bool wpi_assertNotEqual_impl(int valueA, int valueB, llvm::StringRef message,
+                             llvm::StringRef fileName, int lineNumber,
+                             llvm::StringRef funcName) {
   if (!(valueA != valueB)) {
     wpi_assertEqual_common_impl(valueA, valueB, "==", message, fileName,
                                 lineNumber, funcName);
   }
   return valueA != valueB;
 }
+
+namespace frc {
 
 /**
  * Read the microsecond-resolution timer on the FPGA.
@@ -159,9 +167,9 @@ uint64_t GetFPGATime() { return wpilib::internal::simTime * 1e6; }
 static std::string demangle(char const* mangledSymbol) {
   char buffer[256];
   size_t length;
-  int status;
+  int32_t status;
 
-  if (sscanf(mangledSymbol, "%*[^(]%*[^_]%255[^)+]", buffer)) {
+  if (std::sscanf(mangledSymbol, "%*[^(]%*[^_]%255[^)+]", buffer)) {
     char* symbol = abi::__cxa_demangle(buffer, nullptr, &length, &status);
 
     if (status == 0) {
@@ -180,7 +188,7 @@ static std::string demangle(char const* mangledSymbol) {
 /**
  * Get a stack trace, ignoring the first "offset" symbols.
  */
-std::string GetStackTrace(uint32_t offset) {
+std::string GetStackTrace(int offset) {
   void* stackTrace[128];
   int stackSize = backtrace(stackTrace, 128);
   char** mangledSymbols = backtrace_symbols(stackTrace, stackSize);
@@ -193,7 +201,7 @@ std::string GetStackTrace(uint32_t offset) {
     }
   }
 
-  free(mangledSymbols);
+  std::free(mangledSymbols);
 
   return trace.str();
 }
@@ -202,7 +210,7 @@ std::string GetStackTrace(uint32_t offset) {
 static std::string demangle(char const* mangledSymbol) {
   return "no demangling on windows";
 }
-std::string GetStackTrace(uint32_t offset) {
-  return "no stack trace on windows";
-}
+std::string GetStackTrace(int offset) { return "no stack trace on windows"; }
 #endif
+
+}  // namespace frc

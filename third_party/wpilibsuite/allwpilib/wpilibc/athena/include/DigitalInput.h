@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -10,9 +10,12 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
 #include "DigitalSource.h"
 #include "LiveWindow/LiveWindowSendable.h"
+
+namespace frc {
 
 class DigitalGlitchFilter;
 
@@ -26,15 +29,15 @@ class DigitalGlitchFilter;
  */
 class DigitalInput : public DigitalSource, public LiveWindowSendable {
  public:
-  explicit DigitalInput(uint32_t channel);
+  explicit DigitalInput(int channel);
   virtual ~DigitalInput();
   bool Get() const;
-  uint32_t GetChannel() const;
+  int GetChannel() const override;
 
   // Digital Source Interface
-  virtual uint32_t GetChannelForRouting() const;
-  virtual uint32_t GetModuleForRouting() const;
-  virtual bool GetAnalogTriggerForRouting() const;
+  HAL_Handle GetPortHandleForRouting() const override;
+  AnalogTriggerType GetAnalogTriggerTypeForRouting() const override;
+  bool IsAnalogTrigger() const override;
 
   void UpdateTable();
   void StartLiveWindowMode();
@@ -44,8 +47,11 @@ class DigitalInput : public DigitalSource, public LiveWindowSendable {
   std::shared_ptr<ITable> GetTable() const;
 
  private:
-  uint32_t m_channel;
+  int m_channel;
+  HAL_DigitalHandle m_handle;
 
   std::shared_ptr<ITable> m_table;
   friend class DigitalGlitchFilter;
 };
+
+}  // namespace frc

@@ -1,14 +1,16 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
 #include "DoubleSolenoid.h"
-#include <string.h>
+
 #include "LiveWindow/LiveWindow.h"
 #include "WPIErrors.h"
+
+using namespace frc;
 
 /**
  * Constructor.
@@ -16,7 +18,7 @@
  * @param forwardChannel The forward channel on the module to control.
  * @param reverseChannel The reverse channel on the module to control.
  */
-DoubleSolenoid::DoubleSolenoid(uint32_t forwardChannel, uint32_t reverseChannel)
+DoubleSolenoid::DoubleSolenoid(int forwardChannel, int reverseChannel)
     : DoubleSolenoid(1, forwardChannel, reverseChannel) {}
 
 /**
@@ -26,8 +28,8 @@ DoubleSolenoid::DoubleSolenoid(uint32_t forwardChannel, uint32_t reverseChannel)
  * @param forwardChannel The forward channel on the module to control.
  * @param reverseChannel The reverse channel on the module to control.
  */
-DoubleSolenoid::DoubleSolenoid(uint8_t moduleNumber, uint32_t forwardChannel,
-                               uint32_t reverseChannel) {
+DoubleSolenoid::DoubleSolenoid(int moduleNumber, int forwardChannel,
+                               int reverseChannel) {
   m_reversed = false;
   if (reverseChannel < forwardChannel) {  // Swap ports to get the right address
     int channel = reverseChannel;
@@ -35,10 +37,10 @@ DoubleSolenoid::DoubleSolenoid(uint8_t moduleNumber, uint32_t forwardChannel,
     forwardChannel = channel;
     m_reversed = true;
   }
-  char buffer[50];
-  int n = std::sprintf(buffer, "pneumatic/%d/%d/%d/%d", moduleNumber,
-                       forwardChannel, moduleNumber, reverseChannel);
-  m_impl = new SimContinuousOutput(buffer);
+  std::stringstream ss;
+  ss << "pneumatic/" << moduleNumber << "/" << forwardChannel << "/"
+     << moduleNumber << "/" << reverseChannel;
+  m_impl = new SimContinuousOutput(ss.str());
 
   LiveWindow::GetInstance()->AddActuator("DoubleSolenoid", moduleNumber,
                                          forwardChannel, this);

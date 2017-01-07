@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,7 +7,13 @@
 
 #pragma once
 
+#include <string>
+
 #include "ErrorBase.h"
+#include "llvm/StringRef.h"
+#include "support/deprecated.h"
+
+namespace frc {
 
 /**
  * Driver for the RS-232 serial port on the roboRIO.
@@ -42,9 +48,9 @@ class SerialPort : public ErrorBase {
     kFlowControl_DtrDsr = 4
   };
   enum WriteBufferMode { kFlushOnAccess = 1, kFlushWhenFull = 2 };
-  enum Port { kOnboard = 0, kMXP = 1, kUSB = 2 };
+  enum Port { kOnboard = 0, kMXP = 1, kUSB = 2, kUSB1 = 2, kUSB2 = 3 };
 
-  SerialPort(uint32_t baudRate, Port port = kOnboard, uint8_t dataBits = 8,
+  SerialPort(int baudRate, Port port = kOnboard, int dataBits = 8,
              Parity parity = kParity_None, StopBits stopBits = kStopBits_One);
   ~SerialPort();
 
@@ -54,19 +60,26 @@ class SerialPort : public ErrorBase {
   void SetFlowControl(FlowControl flowControl);
   void EnableTermination(char terminator = '\n');
   void DisableTermination();
-  int32_t GetBytesReceived();
-  uint32_t Read(char* buffer, int32_t count);
-  uint32_t Write(const std::string& buffer, int32_t count);
-  void SetTimeout(float timeout);
-  void SetReadBufferSize(uint32_t size);
-  void SetWriteBufferSize(uint32_t size);
+  int GetBytesReceived();
+  int Read(char* buffer, int count);
+  WPI_DEPRECATED(
+      "Potential for unexpected behavior. Please use StringRef overload for "
+      "custom length buffers using std::string")
+  int Write(const std::string& buffer, int count);
+  int Write(const char* buffer, int count);
+  int Write(llvm::StringRef buffer);
+  void SetTimeout(double timeout);
+  void SetReadBufferSize(int size);
+  void SetWriteBufferSize(int size);
   void SetWriteBufferMode(WriteBufferMode mode);
   void Flush();
   void Reset();
 
  private:
-  uint32_t m_resourceManagerHandle = 0;
-  uint32_t m_portHandle = 0;
+  int m_resourceManagerHandle = 0;
+  int m_portHandle = 0;
   bool m_consoleModeEnabled = false;
-  uint8_t m_port;
+  int m_port;
 };
+
+}  // namespace frc

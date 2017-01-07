@@ -1,14 +1,17 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
 #include "Notifier.h"
+
 #include "Timer.h"
 #include "Utility.h"
 #include "WPIErrors.h"
+
+using namespace frc;
 
 std::list<Notifier*> Notifier::timerQueue;
 priority_recursive_mutex Notifier::queueMutex;
@@ -80,10 +83,11 @@ void Notifier::UpdateAlarm() {}
  * long as its scheduled time is after the current time. Then the item is
  * removed or rescheduled (repetitive events) in the queue.
  */
-void Notifier::ProcessQueue(uint32_t mask, void* params) {
+void Notifier::ProcessQueue(int mask, void* params) {
   Notifier* current;
-  while (true)  // keep processing past events until no more
-  {
+
+  // keep processing events until no more
+  while (true) {
     {
       std::lock_guard<priority_recursive_mutex> sync(queueMutex);
       double currentTime = GetClock();

@@ -1,21 +1,24 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
 #include "AnalogAccelerometer.h"
+
 #include "HAL/HAL.h"
 #include "LiveWindow/LiveWindow.h"
 #include "WPIErrors.h"
+
+using namespace frc;
 
 /**
  * Common function for initializing the accelerometer.
  */
 void AnalogAccelerometer::InitAccelerometer() {
-  HALReport(HALUsageReporting::kResourceType_Accelerometer,
-            m_analogInput->GetChannel());
+  HAL_Report(HALUsageReporting::kResourceType_Accelerometer,
+             m_analogInput->GetChannel());
   LiveWindow::GetInstance()->AddSensor("Accelerometer",
                                        m_analogInput->GetChannel(), this);
 }
@@ -28,7 +31,7 @@ void AnalogAccelerometer::InitAccelerometer() {
  * @param channel The channel number for the analog input the accelerometer is
  *                connected to
  */
-AnalogAccelerometer::AnalogAccelerometer(int32_t channel) {
+AnalogAccelerometer::AnalogAccelerometer(int channel) {
   m_analogInput = std::make_shared<AnalogInput>(channel);
   InitAccelerometer();
 }
@@ -78,7 +81,7 @@ AnalogAccelerometer::AnalogAccelerometer(std::shared_ptr<AnalogInput> channel)
  *
  * @return The current acceleration of the sensor in Gs.
  */
-float AnalogAccelerometer::GetAcceleration() const {
+double AnalogAccelerometer::GetAcceleration() const {
   return (m_analogInput->GetAverageVoltage() - m_zeroGVoltage) / m_voltsPerG;
 }
 
@@ -91,7 +94,7 @@ float AnalogAccelerometer::GetAcceleration() const {
  *
  * @param sensitivity The sensitivity of accelerometer in Volts per G.
  */
-void AnalogAccelerometer::SetSensitivity(float sensitivity) {
+void AnalogAccelerometer::SetSensitivity(double sensitivity) {
   m_voltsPerG = sensitivity;
 }
 
@@ -103,7 +106,7 @@ void AnalogAccelerometer::SetSensitivity(float sensitivity) {
  *
  * @param zero The zero G voltage.
  */
-void AnalogAccelerometer::SetZero(float zero) { m_zeroGVoltage = zero; }
+void AnalogAccelerometer::SetZero(double zero) { m_zeroGVoltage = zero; }
 
 /**
  * Get the Acceleration for the PID Source parent.
