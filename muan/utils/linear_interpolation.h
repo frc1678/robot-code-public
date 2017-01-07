@@ -1,9 +1,9 @@
 #ifndef MUAN_UTILS_LINEAR_INTERPOLATION_
 #define MUAN_UTILS_LINEAR_INTERPOLATION_
 
-#include <vector>
-#include <utility>
 #include <functional>
+#include <utility>
+#include <vector>
 
 namespace muan {
 
@@ -15,15 +15,15 @@ class LinearInterpolation {
   void AddControlPoint(std::pair<double, T> point);
   double lower_boundary() const;
   double upper_boundary() const;
+
  protected:
   std::vector<std::pair<double, T>> data_;
   // necessary for sorting
-  static bool ComparePoints(const std::pair<double, T> &a,
-                            const std::pair<double, T> &b);
+  static bool ComparePoints(const std::pair<double, T> &a, const std::pair<double, T> &b);
 };
 
-} // muan
+}  // muan
 
 #include "linear_interpolation.hpp"
 
-#endif // MUAN_UTILS_LINEAR_INTERPOLATION_
+#endif  // MUAN_UTILS_LINEAR_INTERPOLATION_

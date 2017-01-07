@@ -1,0 +1,108 @@
+syntax = "proto2";
+
+package frc971.control_loops.drivetrain;
+
+option cc_enable_arenas = true;
+
+enum Gear {
+  kHighGear = 0;
+  kLowGear = 1;
+}
+
+message MotionProfileConstraints {
+  required double max_velocity = 1;
+  required double max_acceleration = 2;
+}
+
+message DrivetrainGoal {
+  message TeleopCommand {
+    // Positive is left, -1 to 1
+    required double steering = 1;
+
+    // Positive is forwards, -1 to 1
+    required double throttle = 2;
+
+    required bool quick_turn = 4;
+
+    // Use a closed-loop controller (false is open-loop)
+    required bool closed_loop = 5;
+  }
+
+  message VelocityCommand {
+    required double left_velocity_goal = 1;
+    required double right_velocity_goal = 2;
+  }
+
+  message DistanceCommand {
+    required double left_goal = 1;
+    required double right_goal = 2;
+    required double left_velocity_goal = 3;
+    required double right_velocity_goal = 4;
+  }
+
+  required Gear gear = 2;
+
+  oneof command {
+    TeleopCommand teleop_command = 3;
+    VelocityCommand velocity_command = 4;
+    DistanceCommand distance_command = 5;
+  }
+
+  optional MotionProfileConstraints linear_constraints = 6;
+  optional MotionProfileConstraints angular_constraints = 7;
+}
+
+message DrivetrainInput {
+  // In meters, positive is forwards
+  required double left_encoder = 1;
+  required double right_encoder = 2;
+}
+
+message DrivetrainOutput {
+  // Voltage, positive is forwards
+  required double left_voltage = 1;
+  required double right_voltage = 2;
+
+  // True is high gear
+  required bool high_gear = 3;
+}
+
+message DrivetrainStatus {
+  // Estimated forwards velocity (of the center of the robot) in m/s, forwards
+  // is positive
+  required double forward_velocity = 1;
+
+  // Estimated position of each drivetrain side in meters, forwards is positive
+  required double estimated_left_position = 2;
+  required double estimated_right_position = 3;
+
+  // Estimated velocity of each drivetrain side in m/s, forwards is positive
+  required double estimated_left_velocity = 4;
+  required double estimated_right_velocity = 5;
+
+  // The voltage we wanted to send to each drivetrain side last cycle.
+  required double uncapped_left_voltage = 6;
+  required double uncapped_right_voltage = 7;
+
+  // The goal velocities for the polydrive controller.
+  required double left_velocity_goal = 8;
+  required double right_velocity_goal = 9;
+
+  // The voltage error for the left and right sides.
+  required double left_voltage_error = 10;
+  required double right_voltage_error = 11;
+
+  // The profiled goal states.
+  required double profiled_left_position_goal = 12;
+  required double profiled_right_position_goal = 13;
+  required double profiled_left_velocity_goal = 14;
+  required double profiled_right_velocity_goal = 15;
+
+  // The KF offset
+  required double estimated_angular_velocity_error = 16;
+  // The KF estimated heading.
+  required double estimated_heading = 17;
+
+  // True if the output voltage was capped last cycle.
+  required bool output_was_capped = 18;
+}
