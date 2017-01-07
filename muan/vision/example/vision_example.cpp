@@ -12,7 +12,7 @@ class ExampleVisionScorer : public muan::VisionScorer {
     double distance_penalty = std::min(distance_from_previous, 30.0) * .08;
     // No particular reason for this, it just works most of the time
     double base_score = std::log(width * height) / (.1 + std::pow(fullness - .2, 2));
-    double target_score = base_score / (1 + skew) - distance_penalty;
+    double target_score = (base_score / (1 + skew) - distance_penalty) / (1 + distance_to_target);
     return target_score;
   }
 };
@@ -31,6 +31,7 @@ int main() {
   muan::Vision::VisionConstants constants { 1, // kFovX
                                             1, // kFovY
                                             0.3, // kCameraAngle
+                                            1, // kHeightDifference
                                             0.2 }; // kFullness
 
   muan::Vision::ColorRange range { cv::Scalar(50, 0, 60),
