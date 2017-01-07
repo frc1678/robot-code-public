@@ -5,9 +5,37 @@ namespace muan {
 
 namespace wpilib {
 
-void PcmWrapper::CreateSolenoid(uint8_t port) {
+PcmWrapper::PcmWrapper(int32_t module) : module_(module) {}
+
+PcmWrapper::PcmWrapper() : PcmWrapper(SensorBase::GetDefaultSolenoidModule()) {}
+
+PcmWrapper::~PcmWrapper() {
+  for (size_t i = 0; i < 8; i++) {
+    if (handles_[i] != HAL_kInvalidHandle) {
+      HAL_FreeSolenoidPort(handles_[i]);
+    }
+  }
+}
+
+bool PcmWrapper::CreateSolenoid(uint8_t port) {
   // Mark this channel as initialized
-  initialized_ |= (1 << port);
+  if (!SensorBase::CheckSolenoidModule(module_)) {
+    return false;
+  }
+
+  if (!SensorBase::CheckSolenoidChannel(port)) {
+    return false;
+  }
+
+  int status = 0;
+  HAL_SolenoidHandle handle = HAL_InitializeSolenoidPort(HAL_GetPortWithModule(module_, port), &status);
+  if (status != 0) {
+    return false;
+  }
+
+  handles_[port] = handle;
+
+  return true;
 }
 
 void PcmWrapper::CreateDoubleSolenoid(uint8_t channel_forward, uint8_t channel_reverse) {
@@ -25,20 +53,23 @@ void PcmWrapper::WriteSolenoid(uint8_t channel, bool on) { SetChannel(channel, o
 
 void PcmWrapper::Flush() {
   // Write the cached values to CAN
-  SolenoidBase::Set(current_values_, initialized_, m_moduleNumber);
+  for (size_t i = 0; i < 8; i++) {
+    bool solenoid_set = current_values_ & (1 << i);
+    if (handles_[i] != HAL_kInvalidHandle) {
+      int status;
+      HAL_SetSolenoid(handles_[i], solenoid_set, &status);
+    }
+  }
 }
 
 void PcmWrapper::CheckPortInitialized(uint8_t channel) {
-  if (!(initialized_ & (1 << channel))) {
+  if (handles_[channel] == HAL_kInvalidHandle) {
     aos::Die("Solenoid port %i not initialized!", channel);
   }
 }
 
 void PcmWrapper::SetChannel(uint8_t channel, bool on) {
-  // Before we do anything, check that the port is initialized. This isn't
-  // really necessary, as WPILib automatically initializes all of the channels
-  // on the PCM (as far as I can tell), but it is a nice check to make sure
-  // people only write to solenoids that they actually mean to use.
+  // Before we do anything, check that the port is initialized.
   CheckPortInitialized(channel);
 
   if (on) {
