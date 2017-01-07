@@ -42,6 +42,8 @@ cc_library(
     'libspi.so.1.0.0',
     'libi2c.so.2.0.0',
     'libvisa.so',
+    'libniriosession.so.16.0.0',
+    'libniriodevenum.so.16.0.0',
   ]],
   hdrs = glob([
     'allwpilib/ni-libraries/include/**/*.h',
@@ -88,7 +90,8 @@ cc_library(
     'allwpilib/wpilibc/athena/include/**/*',
     'allwpilib/wpilibc/shared/include/**/*',
   ], exclude = [
-    'allwpilib/wpilibc/athena/src/Vision/*',
+    'allwpilib/wpilibc/athena/include/CameraServer.h',
+    'allwpilib/wpilibc/athena/include/vision/*',
   ]),
   includes = [
     'allwpilib/wpilibc/athena/include',
