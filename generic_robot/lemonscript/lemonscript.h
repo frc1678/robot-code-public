@@ -1,7 +1,7 @@
 #ifndef GENERICROBOT_LEMONSCRIPT_LEMONSRCIPT_H_
 #define GENERICROBOT_LEMONSCRIPT_LEMONSRCIPT_H_
 
-#include "third_party/lemonscript_transpiler/wait_func.h"
+#include "third_party/lemonscript_transpiler/example_func.h"
 #include "third_party/lemonscript/lemonscript/lemonscript.h"
 #include "third_party/lemonscript/lemonscript/AvailableCppCommandDeclaration.h"
 #include "third_party/lemonscript/lemonscript/LemonScriptCompiler.h"

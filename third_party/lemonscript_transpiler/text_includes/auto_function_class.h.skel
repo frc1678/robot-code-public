@@ -1,0 +1,9 @@
+// vim: filetype=cpp:
+
+class <<<name>>>Class : public BaseAutoFunction {
+  public:
+    bool Init(std::vector<void *> ls_arg_list);
+    bool Periodic(std::vector<void *> ls_arg_list);
+  private:
+    //<<<vars>>>
+};

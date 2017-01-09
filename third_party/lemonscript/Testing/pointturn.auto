@@ -1,0 +1,9 @@
+PointTurn: angle: 180.0, speed: 200.5, highgear: true
+PointTurn: angle: -180.0, speed: 200.5, highgear: false
+
+// Waiting
+Wait: seconds: 5
+
+PointTurn: angle: 90.0, speed: 200.5, highgear: false
+PointTurn: angle: -90.0, speed: 200.5, highgear: true
+

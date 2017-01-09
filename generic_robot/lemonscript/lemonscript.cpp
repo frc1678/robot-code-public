@@ -14,20 +14,18 @@ Lemonscript::Lemonscript() {
 Lemonscript::~Lemonscript() {
   delete compiler_;
   delete state_;
-
-  //TODO(donald) free decls_
 }
 
 void Lemonscript::operator()() {
-  //aos::time::PhasedLoop phased_loop(aos::time::Time::InMS(5));
+  aos::time::PhasedLoop phased_loop(aos::time::Time::InMS(5));
 
-  //aos::SetCurrentThreadRealtimePriority(10);
-  //aos::SetCurrentThreadName("Lemonscript");
+  aos::SetCurrentThreadRealtimePriority(10);
+  aos::SetCurrentThreadName("Lemonscript");
 
   running_ = true;
   while (running_) {
     running_ = !compiler_->PeriodicUpdate();
-    //phased_loop.SleepUntilNext();
+    phased_loop.SleepUntilNext();
   }
 
 }

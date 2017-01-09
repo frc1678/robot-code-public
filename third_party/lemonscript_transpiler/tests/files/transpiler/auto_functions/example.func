@@ -1,0 +1,21 @@
+Example(int time)
+
+include {
+  <stdio.h>
+}
+
+global {
+  int count
+}
+
+init {
+  printf("Starting countdown!\n");
+  count = time;
+  return false;
+}
+
+periodic {
+  printf("%d\n", count);
+  count -= 1;
+  return (count <= 0);
+}

@@ -6,7 +6,7 @@ cc_library(
   ],
   deps = [
     '//third_party/lemonscript:lemonscript',
-    '//third_party/lemonscript_transpiler:wait_func',
+    '//third_party/lemonscript_transpiler:example_func',
     '//third_party/aos/linux_code:init',
     '//third_party/aos/common/util:phased_loop',
     '//third_party/aos/common:time'

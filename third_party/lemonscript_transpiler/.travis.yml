@@ -1,0 +1,32 @@
+language: python
+
+sudo: required
+dist: trusty
+
+python:
+- '3.4'
+- '3.5'
+- 3.5-dev
+- nightly
+
+addons:
+  apt:
+     sources:
+      - ubuntu-toolchain-r-test
+     packages:
+      - gcc-4.9
+      - g++-4.9
+      - clang-format-3.5
+
+
+before_install:
+- sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.9
+- pip install coveralls
+script:
+- coverage run -m py.test ./tests/
+after_success:
+- coveralls
+notifications:
+  slack:
+    rooms:
+      secure: GefpYpO238WSWzZbmhwweyOh/6wnbZGPtl9S7C8sA6FeNB34xwVyGgTmm+exXbXWEmhqo3vA53V5qzLKM4gqO5krba4tUtoeawNa2kUPR6IfN+GgPZItxaFU54FLEpvSJAHKroSws8GT419g/uzkJpZnyavWRFj2egNusU9DPyWnIWCQnN+Vpy1kIUpXQ+gAGfF8bxUJJdXjfu9VkDms0QKVIESJJpMfyUtT/UlTu+WqGWfOWDomF7JAUDCVDeRdb4BKIE0c8q2fTNZdQnPaTYrqotYf95CqoRVKNWrVMldVSqoL6iHIjSW45kvCq/FtV4WMkAoj9sHz0RxHX1sWJT9dCs6IXDKk30gurMjdFn+bnBWazNvNZ/97FTXnrU/ze0yXCfKnyyYSpa7+QPzt5LxLNbNSExzSwr4uBCwEzjO5OwF2Ag9PMYHGa61LxpdoSNMCN2+IXwkGF++rxZa/UrmSgH7Z6QBRSfII2gv2NGftJhcD6YWvlh8ce5kyMCqgQcc4F1fAPePHhzuslwA+HuEg2crsC3lrEtyeT3Mc/QFTfM5LgrgTQTsYjRmH+cscAwEKWfXENFy1Dw0TzyIzyKBgJ/wETmxqwW3gJ9jjHlKGYaLL7suG9gi3B5jE9O63z7j7KN1rcYmdZALKEoZmWI2yLeohCepVd47hEGzknzE=
