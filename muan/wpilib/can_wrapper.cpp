@@ -19,7 +19,7 @@ void CanWrapper::operator()() {
   running_ = true;
 
   while (running_) {
-    int iterations_passed = phased_loop.SleepUntilNext();
+    phased_loop.SleepUntilNext();
     pdp_.SendValues();
     pcm_.Flush();
   }
