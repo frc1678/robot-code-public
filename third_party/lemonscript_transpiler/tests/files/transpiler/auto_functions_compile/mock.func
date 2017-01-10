@@ -1,0 +1,19 @@
+Wait(float time)
+
+include {
+  "tests/files/transpiler/mock_code.h"
+  "tests/files/transpiler/base_class.h"
+}
+
+global {
+  float start_time
+}
+
+init {
+  start_time = 0;
+  return false;
+}
+
+periodic {
+  return time > start_time; // This makes no sense, but whatever
+}

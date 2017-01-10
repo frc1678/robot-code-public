@@ -1,0 +1,9 @@
+// vim: filetype=cpp:
+
+bool <<<name>>>Class::Init(std::vector<void *> ls_arg_list) {
+  <<<init_code>>>
+}
+
+bool <<<name>>>Class::Periodic(std::vector<void *> ls_arg_list) {
+  <<<periodic_code>>>
+}

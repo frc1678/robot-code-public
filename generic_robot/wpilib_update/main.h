@@ -5,11 +5,11 @@
 
 namespace generic_robot {
 
-namespace teleop {
+namespace wpilib_update {
 
-class Teleop {
+class Main {
  public:
-  Teleop();
+  Main();
 
   // Call this to update at ~50hz (DS update rate)
   void Update();
@@ -25,7 +25,7 @@ class Teleop {
   void SendDSMessage();
 };
 
-}  // teleop
+}  // wpilib_update
 
 }  // generic_robot
 

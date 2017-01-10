@@ -1,0 +1,25 @@
+// vim: filetype=cpp:
+<<<warning>>>
+
+#include "<<<h_file>>>"
+
+//<<<convert>>>
+
+
+
+namespace AutoClass {
+  //<<<classes>>>
+}
+
+namespace AutoGenerator {
+  //<<<generators>>>
+
+  std::map<std::string, std::function<std::unique_ptr<BaseAutoFunction>()>> GetAutoGenerators() {
+    std::map<std::string, std::function<std::unique_ptr<BaseAutoFunction>()>> return_map;
+
+    //<<<addgenerators>>>
+
+    return return_map;
+
+  }
+}

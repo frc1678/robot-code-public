@@ -1,7 +1,7 @@
 cc_library(
-  name = 'teleop',
-  srcs = ['teleop.cpp'],
-  hdrs = ['teleop.h'],
+  name = 'main',
+  srcs = ['main.cpp'],
+  hdrs = ['main.h'],
   deps = [
     '//muan/teleop:joystick',
     '//generic_robot/queue_manager'
