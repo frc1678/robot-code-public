@@ -13,12 +13,12 @@ using namespace nt;
 
 Value::Value() {
   m_val.type = NT_UNASSIGNED;
-  m_val.last_change = Now();
+  m_val.last_change = wpi::Now();
 }
 
 Value::Value(NT_Type type, const private_init&) {
   m_val.type = type;
-  m_val.last_change = Now();
+  m_val.last_change = wpi::Now();
   if (m_val.type == NT_BOOLEAN_ARRAY)
     m_val.data.arr_boolean.arr = nullptr;
   else if (m_val.type == NT_DOUBLE_ARRAY)
@@ -59,7 +59,7 @@ std::shared_ptr<Value> Value::MakeStringArray(
   // point NT_Value to the contents in the vector.
   val->m_val.data.arr_string.arr = new NT_String[value.size()];
   val->m_val.data.arr_string.size = val->m_string_array.size();
-  for (std::size_t i=0; i<value.size(); ++i) {
+  for (std::size_t i = 0; i < value.size(); ++i) {
     val->m_val.data.arr_string.arr[i].str = const_cast<char*>(value[i].c_str());
     val->m_val.data.arr_string.arr[i].len = value[i].size();
   }
@@ -74,7 +74,7 @@ std::shared_ptr<Value> Value::MakeStringArray(
   // point NT_Value to the contents in the vector.
   val->m_val.data.arr_string.arr = new NT_String[val->m_string_array.size()];
   val->m_val.data.arr_string.size = val->m_string_array.size();
-  for (std::size_t i=0; i<val->m_string_array.size(); ++i) {
+  for (std::size_t i = 0; i < val->m_string_array.size(); ++i) {
     val->m_val.data.arr_string.arr[i].str =
         const_cast<char*>(val->m_string_array[i].c_str());
     val->m_val.data.arr_string.arr[i].len = val->m_string_array[i].size();
@@ -121,7 +121,7 @@ void nt::ConvertToC(const Value& in, NT_Value* out) {
     case NT_STRING_ARRAY: {
       auto v = in.GetStringArray();
       out->data.arr_string.arr =
-          static_cast<NT_String*>(std::malloc(v.size()*sizeof(NT_String)));
+          static_cast<NT_String*>(std::malloc(v.size() * sizeof(NT_String)));
       for (size_t i = 0; i < v.size(); ++i)
         ConvertToC(v[i], &out->data.arr_string.arr[i]);
       out->data.arr_string.size = v.size();
@@ -136,7 +136,7 @@ void nt::ConvertToC(const Value& in, NT_Value* out) {
 
 void nt::ConvertToC(llvm::StringRef in, NT_String* out) {
   out->len = in.size();
-  out->str = static_cast<char*>(std::malloc(in.size()+1));
+  out->str = static_cast<char*>(std::malloc(in.size() + 1));
   std::memcpy(out->str, in.data(), in.size());
   out->str[in.size()] = '\0';
 }
@@ -164,7 +164,7 @@ std::shared_ptr<Value> nt::ConvertFromC(const NT_Value& value) {
     case NT_STRING_ARRAY: {
       std::vector<std::string> v;
       v.reserve(value.data.arr_string.size);
-      for (size_t i=0; i<value.data.arr_string.size; ++i)
+      for (size_t i = 0; i < value.data.arr_string.size; ++i)
         v.push_back(ConvertFromC(value.data.arr_string.arr[i]));
       return Value::MakeStringArray(std::move(v));
     }

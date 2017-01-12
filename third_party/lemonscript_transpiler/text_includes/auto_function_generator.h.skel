@@ -1,0 +1,1 @@
+std::unique_ptr<BaseAutoFunction> New<<<name>>>Command();

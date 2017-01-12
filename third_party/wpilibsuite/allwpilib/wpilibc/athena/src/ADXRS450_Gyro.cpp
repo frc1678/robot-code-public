@@ -1,28 +1,32 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2015-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2015-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
 #include "ADXRS450_Gyro.h"
+
 #include "DriverStation.h"
+#include "HAL/HAL.h"
 #include "LiveWindow/LiveWindow.h"
 #include "Timer.h"
+
+using namespace frc;
 
 static constexpr double kSamplePeriod = 0.001;
 static constexpr double kCalibrationSampleTime = 5.0;
 static constexpr double kDegreePerSecondPerLSB = 0.0125;
 
-static constexpr uint8_t kRateRegister = 0x00;
-static constexpr uint8_t kTemRegister = 0x02;
-static constexpr uint8_t kLoCSTRegister = 0x04;
-static constexpr uint8_t kHiCSTRegister = 0x06;
-static constexpr uint8_t kQuadRegister = 0x08;
-static constexpr uint8_t kFaultRegister = 0x0A;
-static constexpr uint8_t kPIDRegister = 0x0C;
-static constexpr uint8_t kSNHighRegister = 0x0E;
-static constexpr uint8_t kSNLowRegister = 0x10;
+static constexpr int kRateRegister = 0x00;
+static constexpr int kTemRegister = 0x02;
+static constexpr int kLoCSTRegister = 0x04;
+static constexpr int kHiCSTRegister = 0x06;
+static constexpr int kQuadRegister = 0x08;
+static constexpr int kFaultRegister = 0x0A;
+static constexpr int kPIDRegister = 0x0C;
+static constexpr int kSNHighRegister = 0x0E;
+static constexpr int kSNLowRegister = 0x10;
 
 /**
  * Initialize the gyro.
@@ -43,7 +47,7 @@ void ADXRS450_Gyro::Calibrate() {
 
   Wait(kCalibrationSampleTime);
 
-  m_spi.SetAccumulatorCenter((int32_t)m_spi.GetAccumulatorAverage());
+  m_spi.SetAccumulatorCenter(static_cast<int>(m_spi.GetAccumulatorAverage()));
   m_spi.ResetAccumulator();
 }
 
@@ -75,11 +79,11 @@ ADXRS450_Gyro::ADXRS450_Gyro(SPI::Port port) : m_spi(port) {
 
   Calibrate();
 
-  HALReport(HALUsageReporting::kResourceType_ADXRS450, port);
+  HAL_Report(HALUsageReporting::kResourceType_ADXRS450, port);
   LiveWindow::GetInstance()->AddSensor("ADXRS450_Gyro", port, this);
 }
 
-static bool CalcParity(uint32_t v) {
+static bool CalcParity(int v) {
   bool parity = false;
   while (v != 0) {
     parity = !parity;
@@ -88,27 +92,28 @@ static bool CalcParity(uint32_t v) {
   return parity;
 }
 
-static inline uint32_t BytesToIntBE(uint8_t* buf) {
-  uint32_t result = ((uint32_t)buf[0]) << 24;
-  result |= ((uint32_t)buf[1]) << 16;
-  result |= ((uint32_t)buf[2]) << 8;
-  result |= (uint32_t)buf[3];
+static inline int BytesToIntBE(uint8_t* buf) {
+  int result = static_cast<int>(buf[0]) << 24;
+  result |= static_cast<int>(buf[1]) << 16;
+  result |= static_cast<int>(buf[2]) << 8;
+  result |= static_cast<int>(buf[3]);
   return result;
 }
 
-uint16_t ADXRS450_Gyro::ReadRegister(uint8_t reg) {
-  uint32_t cmd = 0x80000000 | (((uint32_t)reg) << 17);
+uint16_t ADXRS450_Gyro::ReadRegister(int reg) {
+  int cmd = 0x80000000 | static_cast<int>(reg) << 17;
   if (!CalcParity(cmd)) cmd |= 1u;
 
   // big endian
-  uint8_t buf[4] = {(uint8_t)((cmd >> 24) & 0xff),
-                    (uint8_t)((cmd >> 16) & 0xff), (uint8_t)((cmd >> 8) & 0xff),
-                    (uint8_t)(cmd & 0xff)};
+  uint8_t buf[4] = {static_cast<uint8_t>((cmd >> 24) & 0xff),
+                    static_cast<uint8_t>((cmd >> 16) & 0xff),
+                    static_cast<uint8_t>((cmd >> 8) & 0xff),
+                    static_cast<uint8_t>(cmd & 0xff)};
 
   m_spi.Write(buf, 4);
   m_spi.Read(false, buf, 4);
   if ((buf[0] & 0xe0) == 0) return 0;  // error, return 0
-  return (uint16_t)((BytesToIntBE(buf) >> 5) & 0xffff);
+  return static_cast<uint16_t>((BytesToIntBE(buf) >> 5) & 0xffff);
 }
 
 /**
@@ -132,9 +137,8 @@ void ADXRS450_Gyro::Reset() { m_spi.ResetAccumulator(); }
  * @return the current heading of the robot in degrees. This heading is based on
  *         integration of the returned rate from the gyro.
  */
-float ADXRS450_Gyro::GetAngle() const {
-  return (float)(m_spi.GetAccumulatorValue() * kDegreePerSecondPerLSB *
-                 kSamplePeriod);
+double ADXRS450_Gyro::GetAngle() const {
+  return m_spi.GetAccumulatorValue() * kDegreePerSecondPerLSB * kSamplePeriod;
 }
 
 /**
@@ -145,5 +149,6 @@ float ADXRS450_Gyro::GetAngle() const {
  * @return the current rate in degrees per second
  */
 double ADXRS450_Gyro::GetRate() const {
-  return (double)m_spi.GetAccumulatorLastValue() * kDegreePerSecondPerLSB;
+  return static_cast<double>(m_spi.GetAccumulatorLastValue()) *
+         kDegreePerSecondPerLSB;
 }

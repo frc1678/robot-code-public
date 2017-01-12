@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,11 +7,14 @@
 
 #pragma once
 
+#include <memory>
+#include <string>
+
 #include "LiveWindow/LiveWindowSendable.h"
 #include "simulation/SimContinuousOutput.h"
 #include "tables/ITableListener.h"
 
-#include <memory>
+namespace frc {
 
 /**
  * DoubleSolenoid class for running 2 channels of high voltage Digital Output
@@ -24,9 +27,8 @@ class DoubleSolenoid : public LiveWindowSendable, public ITableListener {
  public:
   enum Value { kOff, kForward, kReverse };
 
-  explicit DoubleSolenoid(uint32_t forwardChannel, uint32_t reverseChannel);
-  DoubleSolenoid(uint8_t moduleNumber, uint32_t forwardChannel,
-                 uint32_t reverseChannel);
+  explicit DoubleSolenoid(int forwardChannel, int reverseChannel);
+  DoubleSolenoid(int moduleNumber, int forwardChannel, int reverseChannel);
   virtual ~DoubleSolenoid();
   virtual void Set(Value value);
   virtual Value Get() const;
@@ -47,3 +49,5 @@ class DoubleSolenoid : public LiveWindowSendable, public ITableListener {
 
   std::shared_ptr<ITable> m_table;
 };
+
+}  // namespace frc

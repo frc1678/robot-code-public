@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -9,16 +9,18 @@
 
 #include <atomic>
 #include <condition_variable>
+#include <memory>
+#include <string>
+#include <thread>
 
-#include "HAL/cpp/Semaphore.h"
+#include "HAL/DriverStation.h"
 #include "HAL/cpp/priority_condition_variable.h"
 #include "HAL/cpp/priority_mutex.h"
 #include "RobotState.h"
 #include "SensorBase.h"
-#include "Task.h"
+#include "llvm/StringRef.h"
 
-struct HALControlWord;
-class AnalogInput;
+namespace frc {
 
 /**
  * Provide access to the network communication data to / from the Driver
@@ -30,27 +32,26 @@ class DriverStation : public SensorBase, public RobotStateInterface {
 
   virtual ~DriverStation();
   static DriverStation& GetInstance();
-  static void ReportError(std::string error);
-  static void ReportWarning(std::string error);
-  static void ReportError(bool is_error, int32_t code, const std::string& error,
-                          const std::string& location,
-                          const std::string& stack);
+  static void ReportError(llvm::StringRef error);
+  static void ReportWarning(llvm::StringRef error);
+  static void ReportError(bool is_error, int code, llvm::StringRef error,
+                          llvm::StringRef location, llvm::StringRef stack);
 
-  static const uint32_t kJoystickPorts = 6;
+  static const int kJoystickPorts = 6;
 
-  float GetStickAxis(uint32_t stick, uint32_t axis);
-  int GetStickPOV(uint32_t stick, uint32_t pov);
-  uint32_t GetStickButtons(uint32_t stick) const;
-  bool GetStickButton(uint32_t stick, uint8_t button);
+  double GetStickAxis(int stick, int axis);
+  int GetStickPOV(int stick, int pov);
+  int GetStickButtons(int stick) const;
+  bool GetStickButton(int stick, int button);
 
-  int GetStickAxisCount(uint32_t stick) const;
-  int GetStickPOVCount(uint32_t stick) const;
-  int GetStickButtonCount(uint32_t stick) const;
+  int GetStickAxisCount(int stick) const;
+  int GetStickPOVCount(int stick) const;
+  int GetStickButtonCount(int stick) const;
 
-  bool GetJoystickIsXbox(uint32_t stick) const;
-  int GetJoystickType(uint32_t stick) const;
-  std::string GetJoystickName(uint32_t stick) const;
-  int GetJoystickAxisType(uint32_t stick, uint8_t axis) const;
+  bool GetJoystickIsXbox(int stick) const;
+  int GetJoystickType(int stick) const;
+  std::string GetJoystickName(int stick) const;
+  int GetJoystickAxisType(int stick, int axis) const;
 
   bool IsEnabled() const override;
   bool IsDisabled() const override;
@@ -64,10 +65,11 @@ class DriverStation : public SensorBase, public RobotStateInterface {
   bool IsBrownedOut() const;
 
   Alliance GetAlliance() const;
-  uint32_t GetLocation() const;
+  int GetLocation() const;
   void WaitForData();
+  bool WaitForData(double timeout);
   double GetMatchTime() const;
-  float GetBatteryVoltage() const;
+  double GetBatteryVoltage() const;
 
   /** Only to be used to tell the Driver Station what code you claim to be
    * executing for diagnostic purposes only
@@ -90,39 +92,52 @@ class DriverStation : public SensorBase, public RobotStateInterface {
   void InTest(bool entering) { m_userInTest = entering; }
 
  protected:
-  DriverStation();
-
   void GetData();
 
  private:
-  static DriverStation* m_instance;
-  void ReportJoystickUnpluggedError(std::string message);
-  void ReportJoystickUnpluggedWarning(std::string message);
+  DriverStation();
+  void ReportJoystickUnpluggedError(llvm::StringRef message);
+  void ReportJoystickUnpluggedWarning(llvm::StringRef message);
   void Run();
+  void UpdateControlWord(bool force, HAL_ControlWord& controlWord) const;
 
-  std::unique_ptr<HALJoystickAxes[]> m_joystickAxes;
-  std::unique_ptr<HALJoystickPOVs[]> m_joystickPOVs;
-  std::unique_ptr<HALJoystickButtons[]> m_joystickButtons;
-  std::unique_ptr<HALJoystickDescriptor[]> m_joystickDescriptor;
+  // Joystick User Data
+  std::unique_ptr<HAL_JoystickAxes[]> m_joystickAxes;
+  std::unique_ptr<HAL_JoystickPOVs[]> m_joystickPOVs;
+  std::unique_ptr<HAL_JoystickButtons[]> m_joystickButtons;
+  std::unique_ptr<HAL_JoystickDescriptor[]> m_joystickDescriptor;
 
-  // Cached Data
-  std::unique_ptr<HALJoystickAxes[]> m_joystickAxesCache;
-  std::unique_ptr<HALJoystickPOVs[]> m_joystickPOVsCache;
-  std::unique_ptr<HALJoystickButtons[]> m_joystickButtonsCache;
-  std::unique_ptr<HALJoystickDescriptor[]> m_joystickDescriptorCache;
+  // Joystick Cached Data
+  std::unique_ptr<HAL_JoystickAxes[]> m_joystickAxesCache;
+  std::unique_ptr<HAL_JoystickPOVs[]> m_joystickPOVsCache;
+  std::unique_ptr<HAL_JoystickButtons[]> m_joystickButtonsCache;
+  std::unique_ptr<HAL_JoystickDescriptor[]> m_joystickDescriptorCache;
 
-  Task m_task;
+  // Internal Driver Station thread
+  std::thread m_dsThread;
   std::atomic<bool> m_isRunning{false};
-  mutable Semaphore m_newControlData{Semaphore::kEmpty};
-  mutable priority_condition_variable m_packetDataAvailableCond;
-  priority_mutex m_packetDataAvailableMutex;
-  bool m_updatedControlLoopData = false;
+
+  // WPILib WaitForData control variables
+  bool m_waitForDataPredicate = false;
   std::condition_variable_any m_waitForDataCond;
   priority_mutex m_waitForDataMutex;
+
+  mutable std::atomic<bool> m_newControlData{false};
+
   mutable priority_mutex m_joystickDataMutex;
+
+  // Robot state status variables
   bool m_userInDisabled = false;
   bool m_userInAutonomous = false;
   bool m_userInTeleop = false;
   bool m_userInTest = false;
+
+  // Control word variables
+  mutable HAL_ControlWord m_controlWordCache;
+  mutable std::chrono::steady_clock::time_point m_lastControlWordUpdate;
+  mutable priority_mutex m_controlWordMutex;
+
   double m_nextMessageTime = 0;
 };
+
+}  // namespace frc

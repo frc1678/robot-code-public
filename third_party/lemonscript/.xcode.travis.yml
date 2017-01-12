@@ -1,0 +1,5 @@
+language: objective-c
+osx_image: xcode7.3
+xcode_project: lemonscript.xcodeproj
+xcode_scheme: lemonscript
+

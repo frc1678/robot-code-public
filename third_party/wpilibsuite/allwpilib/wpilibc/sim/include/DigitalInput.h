@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,10 +7,13 @@
 
 #pragma once
 
+#include <memory>
+#include <string>
+
 #include "LiveWindow/LiveWindowSendable.h"
 #include "simulation/SimDigitalInput.h"
 
-#include <memory>
+namespace frc {
 
 /**
  * Class to read a digital input.
@@ -23,10 +26,10 @@
  */
 class DigitalInput : public LiveWindowSendable {
  public:
-  explicit DigitalInput(uint32_t channel);
+  explicit DigitalInput(int channel);
   virtual ~DigitalInput() = default;
-  uint32_t Get() const;
-  uint32_t GetChannel() const;
+  int Get() const;
+  int GetChannel() const;
 
   void UpdateTable() override;
   void StartLiveWindowMode() override;
@@ -36,9 +39,11 @@ class DigitalInput : public LiveWindowSendable {
   std::shared_ptr<ITable> GetTable() const override;
 
  private:
-  uint32_t m_channel;
+  int m_channel;
   bool m_lastValue;
   SimDigitalInput* m_impl;
 
   std::shared_ptr<ITable> m_table;
 };
+
+}  // namespace frc

@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -11,9 +11,12 @@
 #include <functional>
 #include <list>
 #include <thread>
+#include <utility>
 
 #include "ErrorBase.h"
 #include "HAL/cpp/priority_mutex.h"
+
+namespace frc {
 
 typedef std::function<void()> TimerEventHandler;
 
@@ -42,7 +45,7 @@ class Notifier : public ErrorBase {
   static std::atomic<int> refcount;
 
   // Process the timer queue on a timer event
-  static void ProcessQueue(uint32_t mask, void* params);
+  static void ProcessQueue(int mask, void* params);
 
   // Update the FPGA alarm since the queue has changed
   static void UpdateAlarm();
@@ -69,3 +72,5 @@ class Notifier : public ErrorBase {
   static std::atomic<bool> m_stopped;
   static void Run();
 };
+
+}  // namespace frc

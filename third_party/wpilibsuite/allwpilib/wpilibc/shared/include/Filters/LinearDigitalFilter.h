@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2015-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2015-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -10,25 +10,28 @@
 #include <initializer_list>
 #include <memory>
 #include <vector>
+
 #include "CircularBuffer.h"
 #include "Filter.h"
+
+namespace frc {
 
 /**
  * This class implements a linear, digital filter. All types of FIR and IIR
  * filters are supported. Static factory methods are provided to create commonly
  * used types of filters.
  *
- * Filters are of the form:
- *  y[n] = (b0*x[n] + b1*x[n-1] + ... + bP*x[n-P]) - (a0*y[n-1] + a2*y[n-2] +
- * ... + aQ*y[n-Q])
+ * Filters are of the form:<br>
+ *  y[n] = (b0 * x[n] + b1 * x[n-1] + … + bP * x[n-P]) -
+ *         (a0 * y[n-1] + a2 * y[n-2] + … + aQ * y[n-Q])
  *
- * Where:
- *  y[n] is the output at time "n"
- *  x[n] is the input at time "n"
- *  y[n-1] is the output from the LAST time step ("n-1")
- *  x[n-1] is the input from the LAST time step ("n-1")
- *  b0...bP are the "feedforward" (FIR) gains
- *  a0...aQ are the "feedback" (IIR) gains
+ * Where:<br>
+ *  y[n] is the output at time "n"<br>
+ *  x[n] is the input at time "n"<br>
+ *  y[n-1] is the output from the LAST time step ("n-1")<br>
+ *  x[n-1] is the input from the LAST time step ("n-1")<br>
+ *  b0 … bP are the "feedforward" (FIR) gains<br>
+ *  a0 … aQ are the "feedback" (IIR) gains<br>
  * IMPORTANT! Note the "-" sign in front of the feedback term! This is a common
  *            convention in signal processing.
  *
@@ -48,10 +51,10 @@
  *    electrical or mechanical components
  *  - If you use clever gains, you can make a PID controller out of this class!
  *
- * For more on filters, I highly recommend the following articles:
- *  http://en.wikipedia.org/wiki/Linear_filter
- *  http://en.wikipedia.org/wiki/Iir_filter
- *  http://en.wikipedia.org/wiki/Fir_filter
+ * For more on filters, I highly recommend the following articles:<br>
+ *  http://en.wikipedia.org/wiki/Linear_filter<br>
+ *  http://en.wikipedia.org/wiki/Iir_filter<br>
+ *  http://en.wikipedia.org/wiki/Fir_filter<br>
  *
  * Note 1: PIDGet() should be called by the user on a known, regular period.
  * You can set up a Notifier to do this (look at the WPILib PIDController
@@ -84,7 +87,7 @@ class LinearDigitalFilter : public Filter {
   static LinearDigitalFilter HighPass(std::shared_ptr<PIDSource> source,
                                       double timeConstant, double period);
   static LinearDigitalFilter MovingAverage(std::shared_ptr<PIDSource> source,
-                                           unsigned int taps);
+                                           int taps);
 
   // Filter interface
   double Get() const override;
@@ -99,3 +102,5 @@ class LinearDigitalFilter : public Filter {
   std::vector<double> m_inputGains;
   std::vector<double> m_outputGains;
 };
+
+}  // namespace frc

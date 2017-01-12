@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -8,11 +8,14 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 #include "AnalogInput.h"
 #include "LiveWindow/LiveWindowSendable.h"
 #include "PIDSource.h"
 #include "SensorBase.h"
+
+namespace frc {
 
 /**
  * Handle operation of an analog accelerometer.
@@ -24,14 +27,14 @@ class AnalogAccelerometer : public SensorBase,
                             public PIDSource,
                             public LiveWindowSendable {
  public:
-  explicit AnalogAccelerometer(int32_t channel);
+  explicit AnalogAccelerometer(int channel);
   explicit AnalogAccelerometer(AnalogInput* channel);
   explicit AnalogAccelerometer(std::shared_ptr<AnalogInput> channel);
   virtual ~AnalogAccelerometer() = default;
 
-  float GetAcceleration() const;
-  void SetSensitivity(float sensitivity);
-  void SetZero(float zero);
+  double GetAcceleration() const;
+  void SetSensitivity(double sensitivity);
+  void SetZero(double zero);
   double PIDGet() override;
 
   void UpdateTable() override;
@@ -45,8 +48,10 @@ class AnalogAccelerometer : public SensorBase,
   void InitAccelerometer();
 
   std::shared_ptr<AnalogInput> m_analogInput;
-  float m_voltsPerG = 1.0;
-  float m_zeroGVoltage = 2.5;
+  double m_voltsPerG = 1.0;
+  double m_zeroGVoltage = 2.5;
 
   std::shared_ptr<ITable> m_table;
 };
+
+}  // namespace frc

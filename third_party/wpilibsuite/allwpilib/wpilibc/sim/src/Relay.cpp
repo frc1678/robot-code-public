@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,9 +7,13 @@
 
 #include "Relay.h"
 
+#include <sstream>
+
 #include "LiveWindow/LiveWindow.h"
 #include "MotorSafetyHelper.h"
 #include "WPIErrors.h"
+
+using namespace frc;
 
 /**
  * Relay constructor given a channel.
@@ -20,23 +24,23 @@
  * @param channel   The channel number (0-3).
  * @param direction The direction that the Relay object will control.
  */
-Relay::Relay(uint32_t channel, Relay::Direction direction)
+Relay::Relay(int channel, Relay::Direction direction)
     : m_channel(channel), m_direction(direction) {
-  char buf[64];
+  std::stringstream ss;
   if (!SensorBase::CheckRelayChannel(m_channel)) {
-    std::snprintf(buf, 64, "Relay Channel %d", m_channel);
-    wpi_setWPIErrorWithContext(ChannelIndexOutOfRange, buf);
+    ss << "Relay Channel " << m_channel;
+    wpi_setWPIErrorWithContext(ChannelIndexOutOfRange, ss.str());
     return;
   }
 
   m_safetyHelper = std::make_unique<MotorSafetyHelper>(this);
   m_safetyHelper->SetSafetyEnabled(false);
 
-  std::sprintf(buf, "relay/%d", m_channel);
-  impl = new SimContinuousOutput(buf);  // TODO: Allow two different relays
-                                        // (targetting the different halves of a
-                                        // relay) to be combined to control one
-                                        // motor.
+  ss << "relay/" << m_channel;
+  impl = new SimContinuousOutput(ss.str());  // TODO: Allow two different relays
+                                             // (targetting the different halves
+                                             // of a relay) to be combined to
+                                             // control one motor.
   LiveWindow::GetInstance()->AddActuator("Relay", 1, m_channel, this);
   go_pos = go_neg = false;
 }
@@ -136,14 +140,14 @@ Relay::Value Relay::Get() const {
   }
 }
 
-uint32_t Relay::GetChannel() const { return m_channel; }
+int Relay::GetChannel() const { return m_channel; }
 
 /**
  * Set the expiration time for the Relay object.
  *
  * @param timeout The timeout (in seconds) for this relay object
  */
-void Relay::SetExpiration(float timeout) {
+void Relay::SetExpiration(double timeout) {
   m_safetyHelper->SetExpiration(timeout);
 }
 
@@ -152,7 +156,7 @@ void Relay::SetExpiration(float timeout) {
  *
  * @return The expiration time value.
  */
-float Relay::GetExpiration() const { return m_safetyHelper->GetExpiration(); }
+double Relay::GetExpiration() const { return m_safetyHelper->GetExpiration(); }
 
 /**
  * Check if the relay object is currently alive or stopped due to a timeout.

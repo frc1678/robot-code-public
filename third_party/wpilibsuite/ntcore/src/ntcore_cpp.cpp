@@ -11,8 +11,10 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "Dispatcher.h"
+#include "support/timestamp.h"
 #include "Log.h"
+#include "Dispatcher.h"
+#include "DsClient.h"
 #include "Notifier.h"
 #include "RpcServer.h"
 #include "Storage.h"
@@ -27,6 +29,10 @@ namespace nt {
 
 std::shared_ptr<Value> GetEntryValue(StringRef name) {
   return Storage::GetInstance().GetEntryValue(name);
+}
+
+bool SetDefaultEntryValue(StringRef name, std::shared_ptr<Value> value) {
+  return Storage::GetInstance().SetDefaultEntryValue(name, value);
 }
 
 bool SetEntryValue(StringRef name, std::shared_ptr<Value> value) {
@@ -45,21 +51,15 @@ unsigned int GetEntryFlags(StringRef name) {
   return Storage::GetInstance().GetEntryFlags(name);
 }
 
-void DeleteEntry(StringRef name) {
-  Storage::GetInstance().DeleteEntry(name);
-}
+void DeleteEntry(StringRef name) { Storage::GetInstance().DeleteEntry(name); }
 
-void DeleteAllEntries() {
-  Storage::GetInstance().DeleteAllEntries();
-}
+void DeleteAllEntries() { Storage::GetInstance().DeleteAllEntries(); }
 
 std::vector<EntryInfo> GetEntryInfo(StringRef prefix, unsigned int types) {
   return Storage::GetInstance().GetEntryInfo(prefix, types);
 }
 
-void Flush() {
-  Dispatcher::GetInstance().Flush();
-}
+void Flush() { Dispatcher::GetInstance().Flush(); }
 
 /*
  * Callback Creation Functions
@@ -123,6 +123,10 @@ bool PollRpc(bool blocking, RpcCallInfo* call_info) {
   return RpcServer::GetInstance().PollRpc(blocking, call_info);
 }
 
+bool PollRpc(bool blocking, double time_out, RpcCallInfo* call_info) {
+  return RpcServer::GetInstance().PollRpc(blocking, time_out, call_info);
+}
+
 void PostRpcResponse(unsigned int rpc_id, unsigned int call_uid,
                      StringRef result) {
   RpcServer::GetInstance().PostRpcResponse(rpc_id, call_uid, result);
@@ -134,6 +138,16 @@ unsigned int CallRpc(StringRef name, StringRef params) {
 
 bool GetRpcResult(bool blocking, unsigned int call_uid, std::string* result) {
   return Storage::GetInstance().GetRpcResult(blocking, call_uid, result);
+}
+
+bool GetRpcResult(bool blocking, unsigned int call_uid, double time_out,
+                  std::string* result) {
+  return Storage::GetInstance().GetRpcResult(blocking, call_uid, time_out,
+                                             result);
+}
+
+void CancelBlockingRpcResult(unsigned int call_uid) {
+  Storage::GetInstance().CancelBlockingRpcResult(call_uid);
 }
 
 std::string PackRpcDefinition(const RpcDefinition& def) {
@@ -164,7 +178,7 @@ std::string PackRpcDefinition(const RpcDefinition& def) {
 }
 
 bool UnpackRpcDefinition(StringRef packed, RpcDefinition* def) {
-  raw_mem_istream is(packed.data(), packed.size());
+  wpi::raw_mem_istream is(packed.data(), packed.size());
   WireDecoder dec(is, 0x0300);
   if (!dec.Read8(&def->version)) return false;
   if (!dec.ReadString(&def->name)) return false;
@@ -207,7 +221,7 @@ std::string PackRpcValues(ArrayRef<std::shared_ptr<Value>> values) {
 
 std::vector<std::shared_ptr<Value>> UnpackRpcValues(StringRef packed,
                                                     ArrayRef<NT_Type> types) {
-  raw_mem_istream is(packed.data(), packed.size());
+  wpi::raw_mem_istream is(packed.data(), packed.size());
   WireDecoder dec(is, 0x0300);
   std::vector<std::shared_ptr<Value>> vec;
   for (auto type : types) {
@@ -226,34 +240,44 @@ void SetNetworkIdentity(StringRef name) {
   Dispatcher::GetInstance().SetIdentity(name);
 }
 
-void StartServer(StringRef persist_filename, const char *listen_address,
+void StartServer(StringRef persist_filename, const char* listen_address,
                  unsigned int port) {
   Dispatcher::GetInstance().StartServer(persist_filename, listen_address, port);
 }
 
-void StopServer() {
-  Dispatcher::GetInstance().Stop();
-}
+void StopServer() { Dispatcher::GetInstance().Stop(); }
 
-void StartClient(const char *server_name, unsigned int port) {
-  Dispatcher::GetInstance().StartClient(server_name, port);
+void StartClient() { Dispatcher::GetInstance().StartClient(); }
+
+void StartClient(const char* server_name, unsigned int port) {
+  auto& d = Dispatcher::GetInstance();
+  d.SetServer(server_name, port);
+  d.StartClient();
 }
 
 void StartClient(ArrayRef<std::pair<StringRef, unsigned int>> servers) {
-  Dispatcher::GetInstance().StartClient(servers);
+  auto& d = Dispatcher::GetInstance();
+  d.SetServer(servers);
+  d.StartClient();
 }
 
-void StopClient() {
-  Dispatcher::GetInstance().Stop();
+void StopClient() { Dispatcher::GetInstance().Stop(); }
+
+void SetServer(const char* server_name, unsigned int port) {
+  Dispatcher::GetInstance().SetServer(server_name, port);
 }
 
-void StopRpcServer() {
-  RpcServer::GetInstance().Stop();
+void SetServer(ArrayRef<std::pair<StringRef, unsigned int>> servers) {
+  Dispatcher::GetInstance().SetServer(servers);
 }
 
-void StopNotifier() {
-  Notifier::GetInstance().Stop();
-}
+void StartDSClient(unsigned int port) { DsClient::GetInstance().Start(port); }
+
+void StopDSClient() { DsClient::GetInstance().Stop(); }
+
+void StopRpcServer() { RpcServer::GetInstance().Stop(); }
+
+void StopNotifier() { Notifier::GetInstance().Stop(); }
 
 void SetUpdateRate(double interval) {
   Dispatcher::GetInstance().SetUpdateRate(interval);
@@ -276,6 +300,8 @@ const char* LoadPersistent(
     std::function<void(size_t line, const char* msg)> warn) {
   return Storage::GetInstance().LoadPersistent(filename, warn);
 }
+
+unsigned long long Now() { return wpi::Now(); }
 
 void SetLogger(LogFunc func, unsigned int min_level) {
   Logger& logger = Logger::GetInstance();

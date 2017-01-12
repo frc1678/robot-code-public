@@ -14,16 +14,6 @@ allwpilib/simulation
 allwpilib/styleguide
 allwpilib/sim
 
-allwpilib/ni-libraries/*
-!allwpilib/ni-libraries/libFRC_NetworkCommunication.so.16.0.0
-!allwpilib/ni-libraries/libRoboRIO_FRC_ChipObject.so.16.0.0
-!allwpilib/ni-libraries/libNiFpgaLv.so.15.0.0
-!allwpilib/ni-libraries/libNiFpga.so.15.0.0
-!allwpilib/ni-libraries/libNiRioSrv.so.15.0.0
-!allwpilib/ni-libraries/libspi.so.1.0.0
-!allwpilib/ni-libraries/libi2c.so.1.0.0
-!allwpilib/ni-libraries/libvisa.so
-
 ntcore/appveyor.yml
 ntcore/doc
 ntcore/java

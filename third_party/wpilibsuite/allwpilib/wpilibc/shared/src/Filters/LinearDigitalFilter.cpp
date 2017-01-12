@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2015-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2015-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,8 +7,10 @@
 
 #include "Filters/LinearDigitalFilter.h"
 
-#include <assert.h>
-#include <math.h>
+#include <cassert>
+#include <cmath>
+
+using namespace frc;
 
 /**
  * Create a linear FIR or IIR filter.
@@ -75,11 +77,11 @@ LinearDigitalFilter::LinearDigitalFilter(std::shared_ptr<PIDSource> source,
       m_outputGains(fbGains) {}
 
 /**
- * Creates a one-pole IIR low-pass filter of the form:
- *   y[n] = (1-gain)*x[n] + gain*y[n-1]
- * where gain = e^(-dt / T), T is the time constant in seconds
+ * Creates a one-pole IIR low-pass filter of the form:<br>
+ *   y[n] = (1 - gain) * x[n] + gain * y[n-1]<br>
+ * where gain = e<sup>-dt / T</sup>, T is the time constant in seconds
  *
- * This filter is stable for time constants greater than zero
+ * This filter is stable for time constants greater than zero.
  *
  * @param source       The PIDSource object that is used to get values
  * @param timeConstant The discrete-time time constant in seconds
@@ -92,11 +94,11 @@ LinearDigitalFilter LinearDigitalFilter::SinglePoleIIR(
 }
 
 /**
- * Creates a first-order high-pass filter of the form:
- *   y[n] = gain*x[n] + (-gain)*x[n-1] + gain*y[n-1]
- * where gain = e^(-dt / T), T is the time constant in seconds
+ * Creates a first-order high-pass filter of the form:<br>
+ *   y[n] = gain * x[n] + (-gain) * x[n-1] + gain * y[n-1]<br>
+ * where gain = e<sup>-dt / T</sup>, T is the time constant in seconds
  *
- * This filter is stable for time constants greater than zero
+ * This filter is stable for time constants greater than zero.
  *
  * @param source       The PIDSource object that is used to get values
  * @param timeConstant The discrete-time time constant in seconds
@@ -109,8 +111,8 @@ LinearDigitalFilter LinearDigitalFilter::HighPass(
 }
 
 /**
- * Creates a K-tap FIR moving average filter of the form:
- *   y[n] = 1/k * (x[k] + x[k-1] + ... + x[0])
+ * Creates a K-tap FIR moving average filter of the form:<br>
+ *   y[n] = 1/k * (x[k] + x[k-1] + … + x[0])
  *
  * This filter is always stable.
  *
@@ -119,7 +121,7 @@ LinearDigitalFilter LinearDigitalFilter::HighPass(
  *               slower
  */
 LinearDigitalFilter LinearDigitalFilter::MovingAverage(
-    std::shared_ptr<PIDSource> source, unsigned int taps) {
+    std::shared_ptr<PIDSource> source, int taps) {
   assert(taps > 0);
 
   std::vector<double> gains(taps, 1.0 / taps);
@@ -130,10 +132,10 @@ double LinearDigitalFilter::Get() const {
   double retVal = 0.0;
 
   // Calculate the new value
-  for (unsigned int i = 0; i < m_inputGains.size(); i++) {
+  for (size_t i = 0; i < m_inputGains.size(); i++) {
     retVal += m_inputs[i] * m_inputGains[i];
   }
-  for (unsigned int i = 0; i < m_outputGains.size(); i++) {
+  for (size_t i = 0; i < m_outputGains.size(); i++) {
     retVal -= m_outputs[i] * m_outputGains[i];
   }
 
@@ -157,10 +159,10 @@ double LinearDigitalFilter::PIDGet() {
   m_inputs.PushFront(PIDGetSource());
 
   // Calculate the new value
-  for (unsigned int i = 0; i < m_inputGains.size(); i++) {
+  for (size_t i = 0; i < m_inputGains.size(); i++) {
     retVal += m_inputs[i] * m_inputGains[i];
   }
-  for (unsigned int i = 0; i < m_outputGains.size(); i++) {
+  for (size_t i = 0; i < m_outputGains.size(); i++) {
     retVal -= m_outputs[i] * m_outputGains[i];
   }
 

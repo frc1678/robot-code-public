@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2016. All Rights Reserved.                             */
+/* Copyright (c) FIRST 2016-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -18,11 +18,12 @@
 
 #include <condition_variable>
 #include <memory>
+#include <utility>
 
 #include "priority_mutex.h"
 
 class priority_condition_variable {
-  typedef std::chrono::system_clock clock_t;
+  typedef std::chrono::system_clock clock;
 
  public:
   typedef std::condition_variable::native_handle_type native_handle_type;
@@ -92,13 +93,13 @@ class priority_condition_variable {
   template <typename Lock, typename Rep, typename Period>
   std::cv_status wait_for(Lock& lock,
                           const std::chrono::duration<Rep, Period>& rtime) {
-    return wait_until(lock, clock_t::now() + rtime);
+    return wait_until(lock, clock::now() + rtime);
   }
 
   template <typename Lock, typename Rep, typename Period, typename Predicate>
   bool wait_for(Lock& lock, const std::chrono::duration<Rep, Period>& rtime,
                 Predicate p) {
-    return wait_until(lock, clock_t::now() + rtime, std::move(p));
+    return wait_until(lock, clock::now() + rtime, std::move(p));
   }
 
   native_handle_type native_handle() { return m_cond.native_handle(); }

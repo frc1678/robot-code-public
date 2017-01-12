@@ -5,7 +5,7 @@ namespace muan {
 
 namespace teleop {
 
-Joystick::Joystick(uint32_t port) : wpilib_joystick_{port} {}
+Joystick::Joystick(int32_t port) : wpilib_joystick_{port} {}
 
 ::Joystick* Joystick::wpilib_joystick() { return &wpilib_joystick_; }
 

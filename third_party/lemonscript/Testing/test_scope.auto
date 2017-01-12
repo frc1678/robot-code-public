@@ -1,0 +1,9 @@
+DEF x = 5
+DEF y = 5
+DEF z = 7
+
+
+WHILE:
+  DEF x = 7
+  TestBool: x == y, other: x == z
+ALSO:

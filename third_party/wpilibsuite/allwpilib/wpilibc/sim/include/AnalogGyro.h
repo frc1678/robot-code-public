@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,10 +7,12 @@
 
 #pragma once
 
+#include <memory>
+
 #include "GyroBase.h"
 #include "simulation/SimGyro.h"
 
-#include <memory>
+namespace frc {
 
 class AnalogInput;
 class AnalogModule;
@@ -29,15 +31,15 @@ class AnalogModule;
  */
 class AnalogGyro : public GyroBase {
  public:
-  static const uint32_t kOversampleBits;
-  static const uint32_t kAverageBits;
-  static const float kSamplesPerSecond;
-  static const float kCalibrationSampleTime;
-  static const float kDefaultVoltsPerDegreePerSecond;
+  static const int kOversampleBits;
+  static const int kAverageBits;
+  static const double kSamplesPerSecond;
+  static const double kCalibrationSampleTime;
+  static const double kDefaultVoltsPerDegreePerSecond;
 
-  explicit AnalogGyro(uint32_t channel);
+  explicit AnalogGyro(int channel);
   virtual ~AnalogGyro() = default;
-  float GetAngle() const;
+  double GetAngle() const;
   void Calibrate() override;
   double GetRate() const;
   void Reset();
@@ -49,3 +51,5 @@ class AnalogGyro : public GyroBase {
 
   std::shared_ptr<ITable> m_table;
 };
+
+}  // namespace frc

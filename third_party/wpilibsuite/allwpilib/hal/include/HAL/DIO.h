@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2016. All Rights Reserved.                             */
+/* Copyright (c) FIRST 2016-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -9,33 +9,37 @@
 
 #include <stdint.h>
 
-#include "Handles.h"
+#include "HAL/Types.h"
 
+#ifdef __cplusplus
 extern "C" {
-// the following 2 functions are here as they will be changed with
-// the handle changes to be DIO exclusive.
-void* initializeDigitalPort(HalPortHandle port_handle, int32_t* status);
-void freeDigitalPort(void* digital_port_pointer);
+#endif
 
-void* allocatePWM(int32_t* status);
-void freePWM(void* pwmGenerator, int32_t* status);
-void setPWMRate(double rate, int32_t* status);
-void setPWMDutyCycle(void* pwmGenerator, double dutyCycle, int32_t* status);
-void setPWMOutputChannel(void* pwmGenerator, uint32_t pin, int32_t* status);
+HAL_DigitalHandle HAL_InitializeDIOPort(HAL_PortHandle portHandle,
+                                        HAL_Bool input, int32_t* status);
+HAL_Bool HAL_CheckDIOChannel(int32_t channel);
+void HAL_FreeDIOPort(HAL_DigitalHandle dioPortHandle);
+HAL_DigitalPWMHandle HAL_AllocateDigitalPWM(int32_t* status);
+void HAL_FreeDigitalPWM(HAL_DigitalPWMHandle pwmGenerator, int32_t* status);
+void HAL_SetDigitalPWMRate(double rate, int32_t* status);
+void HAL_SetDigitalPWMDutyCycle(HAL_DigitalPWMHandle pwmGenerator,
+                                double dutyCycle, int32_t* status);
+void HAL_SetDigitalPWMOutputChannel(HAL_DigitalPWMHandle pwmGenerator,
+                                    int32_t channel, int32_t* status);
+void HAL_SetDIO(HAL_DigitalHandle dioPortHandle, HAL_Bool value,
+                int32_t* status);
+HAL_Bool HAL_GetDIO(HAL_DigitalHandle dioPortHandle, int32_t* status);
+HAL_Bool HAL_GetDIODirection(HAL_DigitalHandle dioPortHandle, int32_t* status);
+void HAL_Pulse(HAL_DigitalHandle dioPortHandle, double pulseLength,
+               int32_t* status);
+HAL_Bool HAL_IsPulsing(HAL_DigitalHandle dioPortHandle, int32_t* status);
+HAL_Bool HAL_IsAnyPulsing(int32_t* status);
 
-bool allocateDIO(void* digital_port_pointer, bool input, int32_t* status);
-void freeDIO(void* digital_port_pointer, int32_t* status);
-void setDIO(void* digital_port_pointer, short value, int32_t* status);
-bool getDIO(void* digital_port_pointer, int32_t* status);
-bool getDIODirection(void* digital_port_pointer, int32_t* status);
-void pulse(void* digital_port_pointer, double pulseLength, int32_t* status);
-bool isPulsing(void* digital_port_pointer, int32_t* status);
-bool isAnyPulsing(int32_t* status);
-
-void setFilterSelect(void* digital_port_pointer, int filter_index,
-                     int32_t* status);
-int getFilterSelect(void* digital_port_pointer, int32_t* status);
-
-void setFilterPeriod(int filter_index, uint32_t value, int32_t* status);
-uint32_t getFilterPeriod(int filter_index, int32_t* status);
+void HAL_SetFilterSelect(HAL_DigitalHandle dioPortHandle, int32_t filterIndex,
+                         int32_t* status);
+int32_t HAL_GetFilterSelect(HAL_DigitalHandle dioPortHandle, int32_t* status);
+void HAL_SetFilterPeriod(int32_t filterIndex, int64_t value, int32_t* status);
+int64_t HAL_GetFilterPeriod(int32_t filterIndex, int32_t* status);
+#ifdef __cplusplus
 }
+#endif

@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2016. All Rights Reserved.                             */
+/* Copyright (c) FIRST 2016-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,11 +7,14 @@
 
 #pragma once
 
+#include <memory>
+#include <string>
+
 #include "AnalogInput.h"
 #include "LiveWindow/LiveWindowSendable.h"
 #include "interfaces/Potentiometer.h"
 
-#include <memory>
+namespace frc {
 
 /**
  * Class for reading analog potentiometers. Analog potentiometers read
@@ -36,7 +39,8 @@ class AnalogPotentiometer : public Potentiometer, public LiveWindowSendable {
    * @param offset  The offset to add to the scaled value for controlling the
    *                zero value
    */
-  AnalogPotentiometer(int channel, double scale = 1.0, double offset = 0.0);
+  explicit AnalogPotentiometer(int channel, double scale = 1.0,
+                               double offset = 0.0);
 
   AnalogPotentiometer(AnalogInput* input, double scale = 1.0,
                       double offset = 0.0);
@@ -58,27 +62,27 @@ class AnalogPotentiometer : public Potentiometer, public LiveWindowSendable {
    *
    * @return The current reading.
    */
-  virtual double PIDGet() override;
+  double PIDGet() override;
 
   /*
    * Live Window code, only does anything if live window is activated.
    */
-  virtual std::string GetSmartDashboardType() const override;
-  virtual void InitTable(std::shared_ptr<ITable> subtable) override;
-  virtual void UpdateTable() override;
-  virtual std::shared_ptr<ITable> GetTable() const override;
+  std::string GetSmartDashboardType() const override;
+  void InitTable(std::shared_ptr<ITable> subtable) override;
+  void UpdateTable() override;
+  std::shared_ptr<ITable> GetTable() const override;
 
   /**
    * AnalogPotentiometers don't have to do anything special when entering the
    * LiveWindow.
    */
-  virtual void StartLiveWindowMode() override {}
+  void StartLiveWindowMode() override {}
 
   /**
    * AnalogPotentiometers don't have to do anything special when exiting the
    * LiveWindow.
    */
-  virtual void StopLiveWindowMode() override {}
+  void StopLiveWindowMode() override {}
 
  private:
   double m_scale, m_offset;
@@ -91,3 +95,5 @@ class AnalogPotentiometer : public Potentiometer, public LiveWindowSendable {
    */
   void initPot(AnalogInput* input, double scale, double offset);
 };
+
+}  // namespace frc

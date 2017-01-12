@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -10,10 +10,13 @@
 #include <limits>
 #include <sstream>
 
+#include "HAL/DIO.h"
 #include "HAL/HAL.h"
+#include "HAL/Ports.h"
 #include "LiveWindow/LiveWindow.h"
-#include "Resource.h"
 #include "WPIErrors.h"
+
+using namespace frc;
 
 /**
  * Create an instance of a Digital Input class.
@@ -22,23 +25,29 @@
  *
  * @param channel The DIO channel 0-9 are on-board, 10-25 are on the MXP port
  */
-DigitalInput::DigitalInput(uint32_t channel) {
+DigitalInput::DigitalInput(int channel) {
   std::stringstream buf;
 
   if (!CheckDigitalChannel(channel)) {
     buf << "Digital Channel " << channel;
     wpi_setWPIErrorWithContext(ChannelIndexOutOfRange, buf.str());
-    m_channel = std::numeric_limits<uint32_t>::max();
+    m_channel = std::numeric_limits<int>::max();
     return;
   }
   m_channel = channel;
 
   int32_t status = 0;
-  allocateDIO(m_digital_ports[channel], true, &status);
-  wpi_setErrorWithContext(status, getHALErrorMessage(status));
+  m_handle = HAL_InitializeDIOPort(HAL_GetPort(channel), true, &status);
+  if (status != 0) {
+    wpi_setErrorWithContextRange(status, 0, HAL_GetNumDigitalChannels(),
+                                 channel, HAL_GetErrorMessage(status));
+    m_handle = HAL_kInvalidHandle;
+    m_channel = std::numeric_limits<int>::max();
+    return;
+  }
 
   LiveWindow::GetInstance()->AddSensor("DigitalInput", channel, this);
-  HALReport(HALUsageReporting::kResourceType_DigitalInput, channel);
+  HAL_Report(HALUsageReporting::kResourceType_DigitalInput, channel);
 }
 
 /**
@@ -46,16 +55,14 @@ DigitalInput::DigitalInput(uint32_t channel) {
  */
 DigitalInput::~DigitalInput() {
   if (StatusIsFatal()) return;
-  if (m_interrupt != HAL_INVALID_HANDLE) {
+  if (m_interrupt != HAL_kInvalidHandle) {
     int32_t status = 0;
-    cleanInterrupts(m_interrupt, &status);
+    HAL_CleanInterrupts(m_interrupt, &status);
     // ignore status, as an invalid handle just needs to be ignored.
-    m_interrupt = HAL_INVALID_HANDLE;
+    m_interrupt = HAL_kInvalidHandle;
   }
 
-  int32_t status = 0;
-  freeDIO(m_digital_ports[m_channel], &status);
-  wpi_setErrorWithContext(status, getHALErrorMessage(status));
+  HAL_FreeDIOPort(m_handle);
 }
 
 /**
@@ -66,30 +73,32 @@ DigitalInput::~DigitalInput() {
 bool DigitalInput::Get() const {
   if (StatusIsFatal()) return false;
   int32_t status = 0;
-  bool value = getDIO(m_digital_ports[m_channel], &status);
-  wpi_setErrorWithContext(status, getHALErrorMessage(status));
+  bool value = HAL_GetDIO(m_handle, &status);
+  wpi_setErrorWithContext(status, HAL_GetErrorMessage(status));
   return value;
 }
 
 /**
  * @return The GPIO channel number that this object represents.
  */
-uint32_t DigitalInput::GetChannel() const { return m_channel; }
+int DigitalInput::GetChannel() const { return m_channel; }
 
 /**
- * @return The value to be written to the channel field of a routing mux.
+ * @return The HAL Handle to the specified source.
  */
-uint32_t DigitalInput::GetChannelForRouting() const { return GetChannel(); }
+HAL_Handle DigitalInput::GetPortHandleForRouting() const { return m_handle; }
 
 /**
- * @return The value to be written to the module field of a routing mux.
+ * Is source an AnalogTrigger
  */
-uint32_t DigitalInput::GetModuleForRouting() const { return 0; }
+bool DigitalInput::IsAnalogTrigger() const { return false; }
 
 /**
- * @return The value to be written to the analog trigger field of a routing mux.
+ * @return The type of analog trigger output to be used. 0 for Digitals
  */
-bool DigitalInput::GetAnalogTriggerForRouting() const { return false; }
+AnalogTriggerType DigitalInput::GetAnalogTriggerTypeForRouting() const {
+  return (AnalogTriggerType)0;
+}
 
 void DigitalInput::UpdateTable() {
   if (m_table != nullptr) {

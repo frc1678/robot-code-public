@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -10,11 +10,17 @@
 #include <cxxabi.h>
 #include <execinfo.h>
 
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <sstream>
 
+#include "ErrorBase.h"
+#include "HAL/DriverStation.h"
 #include "HAL/HAL.h"
-#include "Task.h"
-#include "nivision.h"
+#include "llvm/SmallString.h"
+
+using namespace frc;
 
 /**
  * Assert implementation.
@@ -22,13 +28,14 @@
  * The users don't call this, but instead use the wpi_assert macros in
  * Utility.h.
  */
-bool wpi_assert_impl(bool conditionValue, const char* conditionText,
-                     const char* message, const char* fileName,
-                     uint32_t lineNumber, const char* funcName) {
+bool wpi_assert_impl(bool conditionValue, llvm::StringRef conditionText,
+                     llvm::StringRef message, llvm::StringRef fileName,
+                     int lineNumber, llvm::StringRef funcName) {
   if (!conditionValue) {
     std::stringstream locStream;
     locStream << funcName << " [";
-    locStream << basename(fileName) << ":" << lineNumber << "]";
+    llvm::SmallString<128> fileTemp;
+    locStream << basename(fileName.c_str(fileTemp)) << ":" << lineNumber << "]";
 
     std::stringstream errorStream;
 
@@ -45,7 +52,7 @@ bool wpi_assert_impl(bool conditionValue, const char* conditionText,
     std::string error = errorStream.str();
 
     // Print the error and send it to the DriverStation
-    HALSendError(1, 1, 0, error.c_str(), location.c_str(), stack.c_str(), 1);
+    HAL_SendError(1, 1, 0, error.c_str(), location.c_str(), stack.c_str(), 1);
   }
 
   return conditionValue;
@@ -56,13 +63,15 @@ bool wpi_assert_impl(bool conditionValue, const char* conditionText,
  * This should not be called directly; it should only be used by
  * wpi_assertEqual_impl and wpi_assertNotEqual_impl.
  */
-void wpi_assertEqual_common_impl(const char* valueA, const char* valueB,
-                                 const char* equalityType, const char* message,
-                                 const char* fileName, uint32_t lineNumber,
-                                 const char* funcName) {
+void wpi_assertEqual_common_impl(llvm::StringRef valueA, llvm::StringRef valueB,
+                                 llvm::StringRef equalityType,
+                                 llvm::StringRef message,
+                                 llvm::StringRef fileName, int lineNumber,
+                                 llvm::StringRef funcName) {
   std::stringstream locStream;
   locStream << funcName << " [";
-  locStream << basename(fileName) << ":" << lineNumber << "]";
+  llvm::SmallString<128> fileTemp;
+  locStream << basename(fileName.c_str(fileTemp)) << ":" << lineNumber << "]";
 
   std::stringstream errorStream;
 
@@ -80,7 +89,7 @@ void wpi_assertEqual_common_impl(const char* valueA, const char* valueB,
   std::string error = errorStream.str();
 
   // Print the error and send it to the DriverStation
-  HALSendError(1, 1, 0, error.c_str(), location.c_str(), trace.c_str(), 1);
+  HAL_SendError(1, 1, 0, error.c_str(), location.c_str(), trace.c_str(), 1);
 }
 
 /**
@@ -90,10 +99,10 @@ void wpi_assertEqual_common_impl(const char* valueA, const char* valueB,
  * The users don't call this, but instead use the wpi_assertEqual macros in
  * Utility.h.
  */
-bool wpi_assertEqual_impl(int valueA, int valueB, const char* valueAString,
-                          const char* valueBString, const char* message,
-                          const char* fileName, uint32_t lineNumber,
-                          const char* funcName) {
+bool wpi_assertEqual_impl(int valueA, int valueB, llvm::StringRef valueAString,
+                          llvm::StringRef valueBString, llvm::StringRef message,
+                          llvm::StringRef fileName, int lineNumber,
+                          llvm::StringRef funcName) {
   if (!(valueA == valueB)) {
     wpi_assertEqual_common_impl(valueAString, valueBString, "==", message,
                                 fileName, lineNumber, funcName);
@@ -108,10 +117,11 @@ bool wpi_assertEqual_impl(int valueA, int valueB, const char* valueAString,
  * The users don't call this, but instead use the wpi_assertNotEqual macros in
  * Utility.h.
  */
-bool wpi_assertNotEqual_impl(int valueA, int valueB, const char* valueAString,
-                             const char* valueBString, const char* message,
-                             const char* fileName, uint32_t lineNumber,
-                             const char* funcName) {
+bool wpi_assertNotEqual_impl(int valueA, int valueB,
+                             llvm::StringRef valueAString,
+                             llvm::StringRef valueBString,
+                             llvm::StringRef message, llvm::StringRef fileName,
+                             int lineNumber, llvm::StringRef funcName) {
   if (!(valueA != valueB)) {
     wpi_assertEqual_common_impl(valueAString, valueBString, "!=", message,
                                 fileName, lineNumber, funcName);
@@ -119,16 +129,18 @@ bool wpi_assertNotEqual_impl(int valueA, int valueB, const char* valueAString,
   return valueA != valueB;
 }
 
+namespace frc {
+
 /**
  * Return the FPGA Version number.
  *
  * For now, expect this to be competition year.
  * @return FPGA Version number.
  */
-uint16_t GetFPGAVersion() {
+int GetFPGAVersion() {
   int32_t status = 0;
-  uint16_t version = getFPGAVersion(&status);
-  wpi_setGlobalErrorWithContext(status, getHALErrorMessage(status));
+  int version = HAL_GetFPGAVersion(&status);
+  wpi_setGlobalErrorWithContext(status, HAL_GetErrorMessage(status));
   return version;
 }
 
@@ -140,10 +152,10 @@ uint16_t GetFPGAVersion() {
  * The 12 least significant bits are the Build Number.
  * @return FPGA Revision number.
  */
-uint32_t GetFPGARevision() {
+int64_t GetFPGARevision() {
   int32_t status = 0;
-  uint32_t revision = getFPGARevision(&status);
-  wpi_setGlobalErrorWithContext(status, getHALErrorMessage(status));
+  int64_t revision = HAL_GetFPGARevision(&status);
+  wpi_setGlobalErrorWithContext(status, HAL_GetErrorMessage(status));
   return revision;
 }
 
@@ -155,8 +167,8 @@ uint32_t GetFPGARevision() {
  */
 uint64_t GetFPGATime() {
   int32_t status = 0;
-  uint64_t time = getFPGATime(&status);
-  wpi_setGlobalErrorWithContext(status, getHALErrorMessage(status));
+  uint64_t time = HAL_GetFPGATime(&status);
+  wpi_setGlobalErrorWithContext(status, HAL_GetErrorMessage(status));
   return time;
 }
 
@@ -168,7 +180,7 @@ uint64_t GetFPGATime() {
 bool GetUserButton() {
   int32_t status = 0;
 
-  bool value = getFPGAButton(&status);
+  bool value = HAL_GetFPGAButton(&status);
   wpi_setGlobalError(status);
 
   return value;
@@ -180,9 +192,9 @@ bool GetUserButton() {
 static std::string demangle(char const* mangledSymbol) {
   char buffer[256];
   size_t length;
-  int status;
+  int32_t status;
 
-  if (sscanf(mangledSymbol, "%*[^(]%*[(]%255[^)+]", buffer)) {
+  if (std::sscanf(mangledSymbol, "%*[^(]%*[(]%255[^)+]", buffer)) {
     char* symbol = abi::__cxa_demangle(buffer, nullptr, &length, &status);
     if (status == 0) {
       return symbol;
@@ -201,7 +213,7 @@ static std::string demangle(char const* mangledSymbol) {
  * Get a stack trace, ignoring the first "offset" symbols.
  * @param offset The number of symbols at the top of the stack to ignore
  */
-std::string GetStackTrace(uint32_t offset) {
+std::string GetStackTrace(int offset) {
   void* stackTrace[128];
   int stackSize = backtrace(stackTrace, 128);
   char** mangledSymbols = backtrace_symbols(stackTrace, stackSize);
@@ -214,7 +226,9 @@ std::string GetStackTrace(uint32_t offset) {
     }
   }
 
-  free(mangledSymbols);
+  std::free(mangledSymbols);
 
   return trace.str();
 }
+
+}  // namespace frc

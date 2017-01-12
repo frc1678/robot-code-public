@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,21 +7,22 @@
 
 #include "AnalogInput.h"
 
-#include <cstdio>
+#include <sstream>
 
 #include "LiveWindow/LiveWindow.h"
 #include "WPIErrors.h"
+
+using namespace frc;
 
 /**
  * Construct an analog input.
  *
  * @param channel The channel number to represent.
  */
-AnalogInput::AnalogInput(uint32_t channel) {
-  m_channel = channel;
-  char buffer[50];
-  int n = std::sprintf(buffer, "analog/%d", channel);
-  m_impl = new SimFloatInput(buffer);
+AnalogInput::AnalogInput(int channel) : m_channel(channel) {
+  std::stringstream ss;
+  ss << "analog/" << channel;
+  m_impl = new SimFloatInput(ss.str());
 
   LiveWindow::GetInstance()->AddSensor("AnalogInput", channel, this);
 }
@@ -34,7 +35,7 @@ AnalogInput::AnalogInput(uint32_t channel) {
  *
  * @return A scaled sample straight from this channel.
  */
-float AnalogInput::GetVoltage() const { return m_impl->Get(); }
+double AnalogInput::GetVoltage() const { return m_impl->Get(); }
 
 /**
  * Get a scaled sample from the output of the oversample and average engine for
@@ -48,14 +49,14 @@ float AnalogInput::GetVoltage() const { return m_impl->Get(); }
  * @return A scaled sample from the output of the oversample and average engine
  *         for this channel.
  */
-float AnalogInput::GetAverageVoltage() const { return m_impl->Get(); }
+double AnalogInput::GetAverageVoltage() const { return m_impl->Get(); }
 
 /**
  * Get the channel number.
  *
  * @return The channel number.
  */
-uint32_t AnalogInput::GetChannel() const { return m_channel; }
+int AnalogInput::GetChannel() const { return m_channel; }
 
 /**
  * Get the Average value for the PID Source base object.

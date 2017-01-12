@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2015-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2015-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -11,6 +11,8 @@
 
 #include "DigitalSource.h"
 #include "HAL/cpp/priority_mutex.h"
+
+namespace frc {
 
 class Encoder;
 class Counter;
@@ -34,10 +36,10 @@ class DigitalGlitchFilter : public SensorBase {
   void Remove(Encoder* input);
   void Remove(Counter* input);
 
-  void SetPeriodCycles(uint32_t fpga_cycles);
+  void SetPeriodCycles(int fpga_cycles);
   void SetPeriodNanoSeconds(uint64_t nanoseconds);
 
-  uint32_t GetPeriodCycles();
+  int GetPeriodCycles();
   uint64_t GetPeriodNanoSeconds();
 
  private:
@@ -50,3 +52,5 @@ class DigitalGlitchFilter : public SensorBase {
   static priority_mutex m_mutex;
   static ::std::array<bool, 3> m_filterAllocated;
 };
+
+}  // namespace frc

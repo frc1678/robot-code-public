@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -8,11 +8,15 @@
 #pragma once
 
 #include <stdint.h>
-#include <memory>
-#include <vector>
-#include "ErrorBase.h"
 
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "ErrorBase.h"
 #include "HAL/cpp/priority_mutex.h"
+
+namespace frc {
 
 /**
  * The Resource class is a convenient way to track allocated resources.
@@ -43,3 +47,5 @@ class Resource : public ErrorBase {
 
   static priority_recursive_mutex m_createLock;
 };
+
+}  // namespace frc

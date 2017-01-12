@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,12 +7,15 @@
 
 #pragma once
 
+#include <memory>
+#include <string>
+
 #include "LiveWindow/LiveWindowSendable.h"
 #include "SensorBase.h"
 #include "simulation/SimContinuousOutput.h"
 #include "tables/ITableListener.h"
 
-#include <memory>
+namespace frc {
 
 /**
  * Class implements the PWM generation in the FPGA.
@@ -41,16 +44,16 @@ class PWM : public SensorBase,
     kPeriodMultiplier_4X = 4
   };
 
-  explicit PWM(uint32_t channel);
+  explicit PWM(int channel);
   virtual ~PWM();
-  virtual void SetRaw(unsigned short value);
+  virtual void SetRaw(uint16_t value);
   void SetPeriodMultiplier(PeriodMultiplier mult);
   void EnableDeadbandElimination(bool eliminateDeadband);
-  void SetBounds(int32_t max, int32_t deadbandMax, int32_t center,
-                 int32_t deadbandMin, int32_t min);
+  void SetBounds(int max, int deadbandMax, int center, int deadbandMin,
+                 int min);
   void SetBounds(double max, double deadbandMax, double center,
                  double deadbandMin, double min);
-  uint32_t GetChannel() const { return m_channel; }
+  int GetChannel() const { return m_channel; }
 
  protected:
   /**
@@ -71,24 +74,24 @@ class PWM : public SensorBase,
    * scaling is implemented as an output squelch to get longer periods for old
    * devices.
    */
-  static const float kDefaultPwmPeriod;
+  static const double kDefaultPwmPeriod;
   /**
    * kDefaultPwmCenter is the PWM range center in ms
    */
-  static const float kDefaultPwmCenter;
+  static const double kDefaultPwmCenter;
   /**
    * kDefaultPWMStepsDown is the number of PWM steps below the centerpoint
    */
-  static const int32_t kDefaultPwmStepsDown;
-  static const int32_t kPwmDisabled;
+  static const int kDefaultPwmStepsDown;
+  static const int kPwmDisabled;
 
-  virtual void SetPosition(float pos);
-  virtual float GetPosition() const;
-  virtual void SetSpeed(float speed);
-  virtual float GetSpeed() const;
+  virtual void SetPosition(double pos);
+  virtual double GetPosition() const;
+  virtual void SetSpeed(double speed);
+  virtual double GetSpeed() const;
 
   bool m_eliminateDeadband;
-  int32_t m_centerPwm;
+  int m_centerPwm;
 
   void ValueChanged(ITable* source, llvm::StringRef key,
                     std::shared_ptr<nt::Value> value, bool isNew) override;
@@ -102,6 +105,8 @@ class PWM : public SensorBase,
   std::shared_ptr<ITable> m_table;
 
  private:
-  uint32_t m_channel;
+  int m_channel;
   SimContinuousOutput* impl;
 };
+
+}  // namespace frc

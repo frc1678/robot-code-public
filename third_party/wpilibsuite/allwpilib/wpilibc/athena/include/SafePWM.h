@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -14,6 +14,8 @@
 #include "MotorSafetyHelper.h"
 #include "PWM.h"
 
+namespace frc {
+
 /**
  * A safe version of the PWM class.
  * It is safe because it implements the MotorSafety interface that provides
@@ -23,19 +25,21 @@
  */
 class SafePWM : public PWM, public MotorSafety {
  public:
-  explicit SafePWM(uint32_t channel);
+  explicit SafePWM(int channel);
   virtual ~SafePWM() = default;
 
-  void SetExpiration(float timeout);
-  float GetExpiration() const;
+  void SetExpiration(double timeout);
+  double GetExpiration() const;
   bool IsAlive() const;
   void StopMotor();
   bool IsSafetyEnabled() const;
   void SetSafetyEnabled(bool enabled);
   void GetDescription(std::ostringstream& desc) const;
 
-  virtual void SetSpeed(float speed);
+  virtual void SetSpeed(double speed);
 
  private:
   std::unique_ptr<MotorSafetyHelper> m_safetyHelper;
 };
+
+}  // namespace frc

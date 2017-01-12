@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -9,6 +9,8 @@
 
 #include "HAL/HAL.h"
 #include "LiveWindow/LiveWindow.h"
+
+using namespace frc;
 
 /**
  * Note that the Spark uses the following bounds for PWM values. These values
@@ -31,12 +33,12 @@
  * @param channel The PWM channel that the Spark is attached to. 0-9 are
  *                on-board, 10-19 are on the MXP port
  */
-Spark::Spark(uint32_t channel) : PWMSpeedController(channel) {
+Spark::Spark(int channel) : PWMSpeedController(channel) {
   SetBounds(2.003, 1.55, 1.50, 1.46, .999);
   SetPeriodMultiplier(kPeriodMultiplier_1X);
-  SetRaw(m_centerPwm);
+  SetSpeed(0.0);
   SetZeroLatch();
 
-  HALReport(HALUsageReporting::kResourceType_RevSPARK, GetChannel());
+  HAL_Report(HALUsageReporting::kResourceType_RevSPARK, GetChannel());
   LiveWindow::GetInstance()->AddActuator("Spark", GetChannel(), this);
 }

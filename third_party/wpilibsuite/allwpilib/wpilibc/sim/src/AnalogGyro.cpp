@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,17 +7,19 @@
 
 #include "AnalogGyro.h"
 
-#include <cstdio>
+#include <sstream>
 
 #include "LiveWindow/LiveWindow.h"
 #include "Timer.h"
 #include "WPIErrors.h"
 
-const uint32_t AnalogGyro::kOversampleBits = 10;
-const uint32_t AnalogGyro::kAverageBits = 0;
-const float AnalogGyro::kSamplesPerSecond = 50.0;
-const float AnalogGyro::kCalibrationSampleTime = 5.0;
-const float AnalogGyro::kDefaultVoltsPerDegreePerSecond = 0.007;
+using namespace frc;
+
+const int AnalogGyro::kOversampleBits = 10;
+const int AnalogGyro::kAverageBits = 0;
+const double AnalogGyro::kSamplesPerSecond = 50.0;
+const double AnalogGyro::kCalibrationSampleTime = 5.0;
+const double AnalogGyro::kDefaultVoltsPerDegreePerSecond = 0.007;
 
 /**
  * Initialize the gyro.
@@ -32,9 +34,9 @@ const float AnalogGyro::kDefaultVoltsPerDegreePerSecond = 0.007;
 void AnalogGyro::InitAnalogGyro(int channel) {
   SetPIDSourceType(PIDSourceType::kDisplacement);
 
-  char buffer[50];
-  int n = std::sprintf(buffer, "analog/%d", channel);
-  impl = new SimGyro(buffer);
+  std::stringstream ss;
+  ss << "analog/" << channel;
+  impl = new SimGyro(ss.str());
 
   LiveWindow::GetInstance()->AddSensor("AnalogGyro", channel, this);
 }
@@ -44,7 +46,7 @@ void AnalogGyro::InitAnalogGyro(int channel) {
  *
  * @param channel The analog channel the gyro is connected to.
  */
-AnalogGyro::AnalogGyro(uint32_t channel) { InitAnalogGyro(channel); }
+AnalogGyro::AnalogGyro(int channel) { InitAnalogGyro(channel); }
 
 /**
  * Reset the gyro.
@@ -69,7 +71,7 @@ void AnalogGyro::Calibrate() { Reset(); }
  * @return the current heading of the robot in degrees. This heading is based on
  *         integration of the returned rate from the gyro.
  */
-float AnalogGyro::GetAngle() const { return impl->GetAngle(); }
+double AnalogGyro::GetAngle() const { return impl->GetAngle(); }
 
 /**
  * Return the rate of rotation of the gyro

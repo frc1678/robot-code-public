@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2011-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2011-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -9,10 +9,12 @@
 
 #include "Buttons/Button.h"
 
+namespace frc {
+
 class InternalButton : public Button {
  public:
   InternalButton() = default;
-  InternalButton(bool inverted);
+  explicit InternalButton(bool inverted);
   virtual ~InternalButton() = default;
 
   void SetInverted(bool inverted);
@@ -24,3 +26,5 @@ class InternalButton : public Button {
   bool m_pressed = false;
   bool m_inverted = false;
 };
+
+}  // namespace frc

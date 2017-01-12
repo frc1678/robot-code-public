@@ -10,42 +10,56 @@
 #include <algorithm>
 #include <iterator>
 
+#include "Log.h"
 #include "tcpsockets/TCPAcceptor.h"
 #include "tcpsockets/TCPConnector.h"
-#include "Log.h"
 
 using namespace nt;
 
 ATOMIC_STATIC_INIT(Dispatcher)
 
-void Dispatcher::StartServer(StringRef persist_filename,
+void Dispatcher::StartServer(llvm::StringRef persist_filename,
                              const char* listen_address, unsigned int port) {
-  DispatcherBase::StartServer(persist_filename,
-                              std::unique_ptr<NetworkAcceptor>(new TCPAcceptor(
-                                  static_cast<int>(port), listen_address)));
+  DispatcherBase::StartServer(
+      persist_filename,
+      std::unique_ptr<wpi::NetworkAcceptor>(new wpi::TCPAcceptor(
+          static_cast<int>(port), listen_address, Logger::GetInstance())));
 }
 
-void Dispatcher::StartClient(const char* server_name, unsigned int port) {
+void Dispatcher::SetServer(const char* server_name, unsigned int port) {
   std::string server_name_copy(server_name);
-  DispatcherBase::StartClient([=]() -> std::unique_ptr<NetworkStream> {
-    return TCPConnector::connect(server_name_copy.c_str(),
-                                 static_cast<int>(port), 1);
+  SetConnector([=]() -> std::unique_ptr<wpi::NetworkStream> {
+    return wpi::TCPConnector::connect(server_name_copy.c_str(),
+                                      static_cast<int>(port),
+                                      Logger::GetInstance(), 1);
   });
 }
 
-void Dispatcher::StartClient(
+void Dispatcher::SetServer(
     ArrayRef<std::pair<StringRef, unsigned int>> servers) {
   std::vector<Connector> connectors;
   for (const auto& server : servers) {
     std::string server_name(server.first);
     unsigned int port = server.second;
-    connectors.emplace_back([=]() -> std::unique_ptr<NetworkStream> {
-      return TCPConnector::connect(server_name.c_str(),
-                                   static_cast<int>(port), 1);
+    connectors.emplace_back([=]() -> std::unique_ptr<wpi::NetworkStream> {
+      return wpi::TCPConnector::connect(server_name.c_str(),
+                                        static_cast<int>(port),
+                                        Logger::GetInstance(), 1);
     });
   }
-  DispatcherBase::StartClient(std::move(connectors));
+  SetConnector(std::move(connectors));
 }
+
+void Dispatcher::SetServerOverride(const char* server_name, unsigned int port) {
+  std::string server_name_copy(server_name);
+  SetConnectorOverride([=]() -> std::unique_ptr<wpi::NetworkStream> {
+    return wpi::TCPConnector::connect(server_name_copy.c_str(),
+                                      static_cast<int>(port),
+                                      Logger::GetInstance(), 1);
+  });
+}
+
+void Dispatcher::ClearServerOverride() { ClearConnectorOverride(); }
 
 Dispatcher::Dispatcher()
     : Dispatcher(Storage::GetInstance(), Notifier::GetInstance()) {}
@@ -61,8 +75,9 @@ DispatcherBase::~DispatcherBase() {
   Stop();
 }
 
-void DispatcherBase::StartServer(StringRef persist_filename,
-                                 std::unique_ptr<NetworkAcceptor> acceptor) {
+void DispatcherBase::StartServer(
+    StringRef persist_filename,
+    std::unique_ptr<wpi::NetworkAcceptor> acceptor) {
   {
     std::lock_guard<std::mutex> lock(m_user_mutex);
     if (m_active) return;
@@ -94,18 +109,11 @@ void DispatcherBase::StartServer(StringRef persist_filename,
   m_clientserver_thread = std::thread(&Dispatcher::ServerThreadMain, this);
 }
 
-void DispatcherBase::StartClient(Connector connector) {
-  std::vector<Connector> connectors;
-  connectors.push_back(connector);
-  StartClient(std::move(connectors));
-}
-
-void DispatcherBase::StartClient(std::vector<Connector>&& connectors) {
+void DispatcherBase::StartClient() {
   {
     std::lock_guard<std::mutex> lock(m_user_mutex);
     if (m_active) return;
     m_active = true;
-    m_client_connectors = std::move(connectors);
   }
   m_server = false;
   using namespace std::placeholders;
@@ -147,9 +155,9 @@ void DispatcherBase::Stop() {
 }
 
 void DispatcherBase::SetUpdateRate(double interval) {
-  // don't allow update rates faster than 100 ms or slower than 1 second
-  if (interval < 0.1)
-    interval = 0.1;
+  // don't allow update rates faster than 10 ms or slower than 1 second
+  if (interval < 0.01)
+    interval = 0.01;
   else if (interval > 1.0)
     interval = 1.0;
   m_update_rate = static_cast<unsigned int>(interval * 1000);
@@ -164,9 +172,8 @@ void DispatcherBase::Flush() {
   auto now = std::chrono::steady_clock::now();
   {
     std::lock_guard<std::mutex> lock(m_flush_mutex);
-    // don't allow flushes more often than every 100 ms
-    if ((now - m_last_flush) < std::chrono::milliseconds(100))
-      return;
+    // don't allow flushes more often than every 10 ms
+    if ((now - m_last_flush) < std::chrono::milliseconds(10)) return;
     m_last_flush = now;
     m_do_flush = true;
   }
@@ -189,10 +196,28 @@ std::vector<ConnectionInfo> DispatcherBase::GetConnections() const {
 void DispatcherBase::NotifyConnections(
     ConnectionListenerCallback callback) const {
   std::lock_guard<std::mutex> lock(m_user_mutex);
-  for (auto& conn : m_connections) {
-    if (conn->state() != NetworkConnection::kActive) continue;
-    m_notifier.NotifyConnection(true, conn->info(), callback);
-  }
+  for (const auto& conn : m_connections) conn->NotifyIfActive(callback);
+}
+
+void DispatcherBase::SetConnector(Connector connector) {
+  std::vector<Connector> connectors;
+  connectors.push_back(connector);
+  SetConnector(std::move(connectors));
+}
+
+void DispatcherBase::SetConnector(std::vector<Connector>&& connectors) {
+  std::lock_guard<std::mutex> lock(m_user_mutex);
+  m_client_connectors = std::move(connectors);
+}
+
+void DispatcherBase::SetConnectorOverride(Connector connector) {
+  std::lock_guard<std::mutex> lock(m_user_mutex);
+  m_client_connector_override = std::move(connector);
+}
+
+void DispatcherBase::ClearConnectorOverride() {
+  std::lock_guard<std::mutex> lock(m_user_mutex);
+  m_client_connector_override = nullptr;
 }
 
 void DispatcherBase::DispatchThreadMain() {
@@ -203,18 +228,18 @@ void DispatcherBase::DispatchThreadMain() {
 
   int count = 0;
 
-  std::unique_lock<std::mutex> flush_lock(m_flush_mutex);
   while (m_active) {
     // handle loop taking too long
     auto start = std::chrono::steady_clock::now();
-    if (start > timeout_time)
-      timeout_time = start;
+    if (start > timeout_time) timeout_time = start;
 
     // wait for periodic or when flushed
     timeout_time += std::chrono::milliseconds(m_update_rate);
+    std::unique_lock<std::mutex> flush_lock(m_flush_mutex);
     m_flush_cv.wait_until(flush_lock, timeout_time,
                           [&] { return !m_active || m_do_flush; });
     m_do_flush = false;
+    flush_lock.unlock();
     if (!m_active) break;  // in case we were woken up to terminate
 
     // perform periodic persistent save
@@ -263,7 +288,8 @@ void DispatcherBase::QueueOutgoing(std::shared_ptr<Message> msg,
     if (only && conn.get() != only) continue;
     auto state = conn->state();
     if (state != NetworkConnection::kSynchronized &&
-        state != NetworkConnection::kActive) continue;
+        state != NetworkConnection::kActive)
+      continue;
     conn->QueueOutgoing(msg);
   }
 }
@@ -319,9 +345,13 @@ void DispatcherBase::ClientThreadMain() {
     // get next server to connect to
     {
       std::lock_guard<std::mutex> lock(m_user_mutex);
-      if (m_client_connectors.empty()) continue;
-      if (i >= m_client_connectors.size()) i = 0;
-      connect = m_client_connectors[i++];
+      if (m_client_connector_override) {
+        connect = m_client_connector_override;
+      } else {
+        if (m_client_connectors.empty()) continue;
+        if (i >= m_client_connectors.size()) i = 0;
+        connect = m_client_connectors[i++];
+      }
     }
 
     // try to connect (with timeout)
@@ -344,6 +374,9 @@ void DispatcherBase::ClientThreadMain() {
     conn->set_proto_rev(m_reconnect_proto_rev);
     conn->Start();
 
+    // reconnect the next time starting with latest protocol revision
+    m_reconnect_proto_rev = 0x0300;
+
     // block until told to reconnect
     m_do_reconnect = false;
     m_reconnect_cv.wait(lock, [&] { return !m_active || m_do_reconnect; });
@@ -351,8 +384,7 @@ void DispatcherBase::ClientThreadMain() {
 }
 
 bool DispatcherBase::ClientHandshake(
-    NetworkConnection& conn,
-    std::function<std::shared_ptr<Message>()> get_msg,
+    NetworkConnection& conn, std::function<std::shared_ptr<Message>()> get_msg,
     std::function<void(llvm::ArrayRef<std::shared_ptr<Message>>)> send_msgs) {
   // get identity
   std::string self_id;
@@ -399,9 +431,16 @@ bool DispatcherBase::ClientHandshake(
     DEBUG4("received init str=" << msg->str() << " id=" << msg->id()
                                 << " seq_num=" << msg->seq_num_uid());
     if (msg->Is(Message::kServerHelloDone)) break;
+    // shouldn't receive a keep alive, but handle gracefully
+    if (msg->Is(Message::kKeepAlive)) {
+      msg = get_msg();
+      continue;
+    }
     if (!msg->Is(Message::kEntryAssign)) {
       // unexpected message
-      DEBUG("client: received message (" << msg->type() << ") other than entry assignment during initial handshake");
+      DEBUG("client: received message ("
+            << msg->type()
+            << ") other than entry assignment during initial handshake");
       return false;
     }
     incoming.emplace_back(std::move(msg));
@@ -425,8 +464,7 @@ bool DispatcherBase::ClientHandshake(
 }
 
 bool DispatcherBase::ServerHandshake(
-    NetworkConnection& conn,
-    std::function<std::shared_ptr<Message>()> get_msg,
+    NetworkConnection& conn, std::function<std::shared_ptr<Message>()> get_msg,
     std::function<void(llvm::ArrayRef<std::shared_ptr<Message>>)> send_msgs) {
   // Wait for the client to send us a hello.
   auto msg = get_msg();
@@ -487,6 +525,11 @@ bool DispatcherBase::ServerHandshake(
         return false;
       }
       if (msg->Is(Message::kClientHelloDone)) break;
+      // shouldn't receive a keep alive, but handle gracefully
+      if (msg->Is(Message::kKeepAlive)) {
+        msg = get_msg();
+        continue;
+      }
       if (!msg->Is(Message::kEntryAssign)) {
         // unexpected message
         DEBUG("server: received message ("
