@@ -1,0 +1,17 @@
+syntax = "proto2"
+
+message TriggerInput {
+  required double encoder_position = 1;
+}
+
+message TriggerOutput {
+  required double voltage = 1;
+}
+
+message TriggerStatus {
+  required double speed = 1;
+}
+
+message TriggerGoal {
+  required double balls_per_second = 1;
+}
