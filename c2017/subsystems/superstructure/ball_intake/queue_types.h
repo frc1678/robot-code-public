@@ -4,6 +4,7 @@
 
   namespace c2017 {
 
+  namespace ball_intake_proto {
     using IntakeOutputProto = muan::proto::StackProto<IntakeOutput, 1024>;
     using IntakeStatusProto = muan::proto::StackProto<IntakeStatus, 1024>;
     using IntakeGoalProto = muan::proto::StackProto<IntakeGoal, 1024>;
