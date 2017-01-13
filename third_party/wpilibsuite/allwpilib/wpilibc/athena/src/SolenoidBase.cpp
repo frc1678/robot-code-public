@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -8,53 +8,27 @@
 #include "SolenoidBase.h"
 
 #include "HAL/HAL.h"
+#include "HAL/Solenoid.h"
 
-void* SolenoidBase::m_ports[m_maxModules][m_maxPorts];
-std::unique_ptr<Resource> SolenoidBase::m_allocated;
+using namespace frc;
 
 /**
  * Constructor
  *
  * @param moduleNumber The CAN PCM ID.
  */
-SolenoidBase::SolenoidBase(uint8_t moduleNumber)
-    : m_moduleNumber(moduleNumber) {
-  for (uint32_t i = 0; i < kSolenoidChannels; i++) {
-    HalPortHandle port = getPortWithModule(moduleNumber, i);
-    int32_t status = 0;
-    SolenoidBase::m_ports[moduleNumber][i] =
-        initializeSolenoidPort(port, &status);
-    wpi_setErrorWithContext(status, getHALErrorMessage(status));
-    freePort(port);
-  }
-}
-
-/**
- * Set the value of a solenoid.
- *
- * @param value The value you want to set on the module.
- * @param mask  The channels you want to be affected.
- */
-void SolenoidBase::Set(uint8_t value, uint8_t mask, int module) {
-  int32_t status = 0;
-  for (int i = 0; i < m_maxPorts; i++) {
-    uint8_t local_mask = 1 << i;
-    if (mask & local_mask)
-      setSolenoid(m_ports[module][i], value & local_mask, &status);
-  }
-  wpi_setErrorWithContext(status, getHALErrorMessage(status));
-}
+SolenoidBase::SolenoidBase(int moduleNumber) : m_moduleNumber(moduleNumber) {}
 
 /**
  * Read all 8 solenoids as a single byte
  *
  * @return The current value of all 8 solenoids on the module.
  */
-uint8_t SolenoidBase::GetAll(int module) const {
-  uint8_t value = 0;
+int SolenoidBase::GetAll(int module) const {
+  int value = 0;
   int32_t status = 0;
-  value = getAllSolenoids(m_ports[module][0], &status);
-  wpi_setErrorWithContext(status, getHALErrorMessage(status));
+  value = HAL_GetAllSolenoids(static_cast<int>(module), &status);
+  wpi_setErrorWithContext(status, HAL_GetErrorMessage(status));
   return value;
 }
 
@@ -67,9 +41,9 @@ uint8_t SolenoidBase::GetAll(int module) const {
  *
  * @return The solenoid blacklist of all 8 solenoids on the module.
  */
-uint8_t SolenoidBase::GetPCMSolenoidBlackList(int module) const {
+int SolenoidBase::GetPCMSolenoidBlackList(int module) const {
   int32_t status = 0;
-  return getPCMSolenoidBlackList(m_ports[module][0], &status);
+  return HAL_GetPCMSolenoidBlackList(static_cast<int>(module), &status);
 }
 
 /**
@@ -78,7 +52,8 @@ uint8_t SolenoidBase::GetPCMSolenoidBlackList(int module) const {
  */
 bool SolenoidBase::GetPCMSolenoidVoltageStickyFault(int module) const {
   int32_t status = 0;
-  return getPCMSolenoidVoltageStickyFault(m_ports[module][0], &status);
+  return HAL_GetPCMSolenoidVoltageStickyFault(static_cast<int>(module),
+                                              &status);
 }
 
 /**
@@ -87,7 +62,7 @@ bool SolenoidBase::GetPCMSolenoidVoltageStickyFault(int module) const {
  */
 bool SolenoidBase::GetPCMSolenoidVoltageFault(int module) const {
   int32_t status = 0;
-  return getPCMSolenoidVoltageFault(m_ports[module][0], &status);
+  return HAL_GetPCMSolenoidVoltageFault(static_cast<int>(module), &status);
 }
 
 /**
@@ -102,5 +77,5 @@ bool SolenoidBase::GetPCMSolenoidVoltageFault(int module) const {
  */
 void SolenoidBase::ClearAllPCMStickyFaults(int module) {
   int32_t status = 0;
-  return clearAllPCMStickyFaults_sol(m_ports[module][0], &status);
+  return HAL_ClearAllPCMStickyFaults(static_cast<int>(module), &status);
 }

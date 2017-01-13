@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,12 +7,15 @@
 
 #pragma once
 
+#include <memory>
+#include <string>
+
 #include "LiveWindow/LiveWindowSendable.h"
 #include "PIDSource.h"
 #include "SensorBase.h"
 #include "simulation/SimFloatInput.h"
 
-#include <memory>
+namespace frc {
 
 /**
  * Analog input class.
@@ -30,17 +33,17 @@ class AnalogInput : public SensorBase,
                     public PIDSource,
                     public LiveWindowSendable {
  public:
-  static const uint8_t kAccumulatorModuleNumber = 1;
-  static const uint32_t kAccumulatorNumChannels = 2;
-  static const uint32_t kAccumulatorChannels[kAccumulatorNumChannels];
+  static const int kAccumulatorModuleNumber = 1;
+  static const int kAccumulatorNumChannels = 2;
+  static const int kAccumulatorChannels[kAccumulatorNumChannels];
 
-  explicit AnalogInput(uint32_t channel);
+  explicit AnalogInput(int channel);
   virtual ~AnalogInput() = default;
 
-  float GetVoltage() const;
-  float GetAverageVoltage() const;
+  double GetVoltage() const;
+  double GetAverageVoltage() const;
 
-  uint32_t GetChannel() const;
+  int GetChannel() const;
 
   double PIDGet() override;
 
@@ -52,9 +55,11 @@ class AnalogInput : public SensorBase,
   std::shared_ptr<ITable> GetTable() const override;
 
  private:
-  uint32_t m_channel;
+  int m_channel;
   SimFloatInput* m_impl;
   int64_t m_accumulatorOffset;
 
   std::shared_ptr<ITable> m_table;
 };
+
+}  // namespace frc

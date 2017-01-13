@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -12,15 +12,17 @@
 #include "ErrorBase.h"
 #include "HAL/cpp/priority_mutex.h"
 
+namespace frc {
+
 class MotorSafety;
 
 class MotorSafetyHelper : public ErrorBase {
  public:
-  MotorSafetyHelper(MotorSafety* safeObject);
+  explicit MotorSafetyHelper(MotorSafety* safeObject);
   ~MotorSafetyHelper();
   void Feed();
-  void SetExpiration(float expirationTime);
-  float GetExpiration() const;
+  void SetExpiration(double expirationTime);
+  double GetExpiration() const;
   bool IsAlive() const;
   void Check();
   void SetSafetyEnabled(bool enabled);
@@ -43,3 +45,5 @@ class MotorSafetyHelper : public ErrorBase {
   // protect accesses to the list of helpers
   static priority_recursive_mutex m_listMutex;
 };
+
+}  // namespace frc

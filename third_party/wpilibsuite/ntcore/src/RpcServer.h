@@ -15,15 +15,16 @@
 #include <utility>
 
 #include "llvm/DenseMap.h"
-#include "atomic_static.h"
+#include "support/atomic_static.h"
+#include "support/SafeThread.h"
 #include "Message.h"
 #include "ntcore_cpp.h"
-#include "SafeThread.h"
 
 namespace nt {
 
 class RpcServer {
   friend class RpcServerTest;
+
  public:
   static RpcServer& GetInstance() {
     ATOMIC_STATIC(RpcServer, instance);
@@ -41,9 +42,10 @@ class RpcServer {
 
   void ProcessRpc(StringRef name, std::shared_ptr<Message> msg,
                   RpcCallback func, unsigned int conn_id,
-                  SendMsgFunc send_response);
+                  SendMsgFunc send_response, const ConnectionInfo& conn_info);
 
   bool PollRpc(bool blocking, RpcCallInfo* call_info);
+  bool PollRpc(bool blocking, double time_out, RpcCallInfo* call_info);
   void PostRpcResponse(unsigned int rpc_id, unsigned int call_uid,
                        llvm::StringRef result);
 
@@ -51,22 +53,25 @@ class RpcServer {
   RpcServer();
 
   class Thread;
-  SafeThreadOwner<Thread> m_owner;
+  wpi::SafeThreadOwner<Thread> m_owner;
 
   struct RpcCall {
     RpcCall(StringRef name_, std::shared_ptr<Message> msg_, RpcCallback func_,
-            unsigned int conn_id_, SendMsgFunc send_response_)
+            unsigned int conn_id_, SendMsgFunc send_response_,
+            const ConnectionInfo conn_info_)
         : name(name_),
           msg(msg_),
           func(func_),
           conn_id(conn_id_),
-          send_response(send_response_) {}
+          send_response(send_response_),
+          conn_info(conn_info_) {}
 
     std::string name;
     std::shared_ptr<Message> msg;
     RpcCallback func;
     unsigned int conn_id;
     SendMsgFunc send_response;
+    ConnectionInfo conn_info;
   };
 
   std::mutex m_mutex;

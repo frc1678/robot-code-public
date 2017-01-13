@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2011-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2011-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -10,6 +10,8 @@
 #include "Commands/Command.h"
 #include "Commands/Scheduler.h"
 #include "WPIErrors.h"
+
+using namespace frc;
 
 /**
  * Creates a subsystem with the given name.
@@ -129,8 +131,8 @@ std::string Subsystem::GetName() const { return m_name; }
 
 std::string Subsystem::GetSmartDashboardType() const { return "Subsystem"; }
 
-void Subsystem::InitTable(std::shared_ptr<ITable> table) {
-  m_table = table;
+void Subsystem::InitTable(std::shared_ptr<ITable> subtable) {
+  m_table = subtable;
   if (m_table != nullptr) {
     if (m_defaultCommand != nullptr) {
       m_table->PutBoolean("hasDefault", true);

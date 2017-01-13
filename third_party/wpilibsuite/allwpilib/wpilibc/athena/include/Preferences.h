@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2011-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2011-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -8,14 +8,15 @@
 #pragma once
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "ErrorBase.h"
-#include "HAL/cpp/Semaphore.h"
-#include "Task.h"
 #include "networktables/NetworkTable.h"
 #include "tables/ITableListener.h"
+
+namespace frc {
 
 /**
  * The preferences class provides a relatively simple way to save important
@@ -48,7 +49,7 @@ class Preferences : public ErrorBase {
   void PutFloat(llvm::StringRef key, float value);
   void PutBoolean(llvm::StringRef key, bool value);
   void PutLong(llvm::StringRef key, int64_t value);
-  DEPRECATED(
+  WPI_DEPRECATED(
       "Saving is now automatically performed by the NetworkTables server.")
   void Save();
   bool ContainsKey(llvm::StringRef key);
@@ -66,7 +67,9 @@ class Preferences : public ErrorBase {
                       std::shared_ptr<nt::Value> value, bool isNew) override;
     void ValueChangedEx(ITable* source, llvm::StringRef key,
                         std::shared_ptr<nt::Value> value,
-                        unsigned int flags) override;
+                        uint32_t flags) override;
   };
   Listener m_listener;
 };
+
+}  // namespace frc

@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,13 +7,17 @@
 
 #include "PWM.h"
 
+#include <sstream>
+
 #include "Utility.h"
 #include "WPIErrors.h"
 
-const float PWM::kDefaultPwmPeriod = 5.05;
-const float PWM::kDefaultPwmCenter = 1.5;
-const int32_t PWM::kDefaultPwmStepsDown = 1000;
-const int32_t PWM::kPwmDisabled = 0;
+using namespace frc;
+
+const double PWM::kDefaultPwmPeriod = 5.05;
+const double PWM::kDefaultPwmCenter = 1.5;
+const int PWM::kDefaultPwmStepsDown = 1000;
+const int PWM::kPwmDisabled = 0;
 
 /**
  * Allocate a PWM given a channel number.
@@ -25,17 +29,17 @@ const int32_t PWM::kPwmDisabled = 0;
  * @param channel The PWM channel number. 0-9 are on-board, 10-19 are on the MXP
  *                port
  */
-PWM::PWM(uint32_t channel) {
-  char buf[64];
+PWM::PWM(int channel) {
+  std::stringstream ss;
 
   if (!CheckPWMChannel(channel)) {
-    std::snprintf(buf, 64, "PWM Channel %d", channel);
-    wpi_setWPIErrorWithContext(ChannelIndexOutOfRange, buf);
+    ss << "PWM Channel " << channel;
+    wpi_setWPIErrorWithContext(ChannelIndexOutOfRange, ss.str());
     return;
   }
 
-  std::sprintf(buf, "pwm/%d", channel);
-  impl = new SimContinuousOutput(buf);
+  ss << "pwm/" << channel;
+  impl = new SimContinuousOutput(ss.str());
   m_channel = channel;
   m_eliminateDeadband = false;
 
@@ -71,8 +75,8 @@ void PWM::EnableDeadbandElimination(bool eliminateDeadband) {
  * @param deadbandMin The low end of the deadband range
  * @param min         The minimum pwm value
  */
-void PWM::SetBounds(int32_t max, int32_t deadbandMax, int32_t center,
-                    int32_t deadbandMin, int32_t min) {
+void PWM::SetBounds(int max, int deadbandMax, int center, int deadbandMin,
+                    int min) {
   // Nothing to do in simulation.
 }
 
@@ -104,7 +108,7 @@ void PWM::SetBounds(double max, double deadbandMax, double center,
  *
  * @param pos The position to set the servo between 0.0 and 1.0.
  */
-void PWM::SetPosition(float pos) {
+void PWM::SetPosition(double pos) {
   if (pos < 0.0) {
     pos = 0.0;
   } else if (pos > 1.0) {
@@ -124,8 +128,8 @@ void PWM::SetPosition(float pos) {
  *
  * @return The position the servo is set to between 0.0 and 1.0.
  */
-float PWM::GetPosition() const {
-  float value = impl->Get();
+double PWM::GetPosition() const {
+  double value = impl->Get();
   if (value < 0.0) {
     return 0.0;
   } else if (value > 1.0) {
@@ -148,7 +152,7 @@ float PWM::GetPosition() const {
  *
  * @param speed The speed to set the speed controller between -1.0 and 1.0.
  */
-void PWM::SetSpeed(float speed) {
+void PWM::SetSpeed(double speed) {
   // clamp speed to be in the range 1.0 >= speed >= -1.0
   if (speed < -1.0) {
     speed = -1.0;
@@ -171,8 +175,8 @@ void PWM::SetSpeed(float speed) {
  *
  * @return The most recently set speed between -1.0 and 1.0.
  */
-float PWM::GetSpeed() const {
-  float value = impl->Get();
+double PWM::GetSpeed() const {
+  double value = impl->Get();
   if (value > 1.0) {
     return 1.0;
   } else if (value < -1.0) {
@@ -189,7 +193,7 @@ float PWM::GetSpeed() const {
  *
  * @param value Raw PWM value.
  */
-void PWM::SetRaw(unsigned short value) {
+void PWM::SetRaw(uint16_t value) {
   wpi_assert(value == kPwmDisabled);
   impl->Set(0);
 }

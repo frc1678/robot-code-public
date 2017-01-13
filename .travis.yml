@@ -17,14 +17,13 @@ addons:
       - gcc-4.9
       - g++-4.9
       - clang-format-3.5
+      - clang-3.6
       - wget
+      - libopencv-dev
         # Package list from http://bazel.io/docs/install.html
       - pkg-config
       - zip
       - zlib1g-dev
-        # Our code deps
-      - python-numpy
-      - python-scipy
 
 # Eventually, Bazel will have binary packages and we'll be able to
 # just download a prebuilt distribution of Bazel. For now, build it
@@ -36,9 +35,13 @@ install:
   - sudo apt-get install frc-toolchain -y
   - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.9
   # Bazel
-  - wget 'https://github.com/bazelbuild/bazel/releases/download/0.2.1/bazel-0.2.1-installer-linux-x86_64.sh'
-  - chmod +x bazel-0.2.1-installer-linux-x86_64.sh
-  - ./bazel-0.2.1-installer-linux-x86_64.sh --user
+  - wget 'https://github.com/bazelbuild/bazel/releases/download/0.4.1/bazel-0.4.1-installer-linux-x86_64.sh'
+  - chmod +x bazel-0.4.1-installer-linux-x86_64.sh
+  - ./bazel-0.4.1-installer-linux-x86_64.sh --user
+  - sudo ln -s /usr/bin/clang-3.6 /usr/bin/clang
+  # Numpy and Scipy don't work from the deb packages for some reason
+  - pip install -U numpy
+  - pip install -U scipy
 
 # TODO(Wesley) Add to pre-push git hook?
 script:

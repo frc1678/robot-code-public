@@ -18,8 +18,9 @@
 #include <vector>
 
 #include "llvm/DenseMap.h"
+#include "llvm/SmallSet.h"
 #include "llvm/StringMap.h"
-#include "atomic_static.h"
+#include "support/atomic_static.h"
 #include "Message.h"
 #include "Notifier.h"
 #include "ntcore_cpp.h"
@@ -33,6 +34,7 @@ class StorageTest;
 
 class Storage {
   friend class StorageTest;
+
  public:
   static Storage& GetInstance() {
     ATOMIC_STATIC(Storage, instance);
@@ -46,7 +48,8 @@ class Storage {
   // Dispatcher::QueueOutgoing.
   typedef std::function<void(std::shared_ptr<Message> msg,
                              NetworkConnection* only,
-                             NetworkConnection* except)> QueueOutgoingFunc;
+                             NetworkConnection* except)>
+      QueueOutgoingFunc;
   void SetOutgoing(QueueOutgoingFunc queue_outgoing, bool server);
   void ClearOutgoing();
 
@@ -67,6 +70,7 @@ class Storage {
   // User functions.  These are the actual implementations of the corresponding
   // user API functions in ntcore_cpp.
   std::shared_ptr<Value> GetEntryValue(StringRef name) const;
+  bool SetDefaultEntryValue(StringRef name, std::shared_ptr<Value> value);
   bool SetEntryValue(StringRef name, std::shared_ptr<Value> value);
   void SetEntryTypeValue(StringRef name, std::shared_ptr<Value> value);
   void SetEntryFlags(StringRef name, unsigned int flags);
@@ -98,6 +102,9 @@ class Storage {
 
   unsigned int CallRpc(StringRef name, StringRef params);
   bool GetRpcResult(bool blocking, unsigned int call_uid, std::string* result);
+  bool GetRpcResult(bool blocking, unsigned int call_uid, double time_out,
+                    std::string* result);
+  void CancelBlockingRpcResult(unsigned int call_uid);
 
  private:
   Storage();
@@ -140,11 +147,13 @@ class Storage {
   typedef std::vector<Entry*> IdMap;
   typedef llvm::DenseMap<std::pair<unsigned int, unsigned int>, std::string>
       RpcResultMap;
+  typedef llvm::SmallSet<unsigned int, 12> RpcBlockingCallSet;
 
   mutable std::mutex m_mutex;
   EntriesMap m_entries;
   IdMap m_idmap;
   RpcResultMap m_rpc_results;
+  RpcBlockingCallSet m_rpc_blocking_calls;
   // If any persistent values have changed
   mutable bool m_persistent_dirty = false;
 

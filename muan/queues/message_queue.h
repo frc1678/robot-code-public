@@ -1,11 +1,11 @@
 #ifndef MUAN_QUEUES_MESSAGE_QUEUE_H_
 #define MUAN_QUEUES_MESSAGE_QUEUE_H_
 
+#include <array>
+#include <cstdint>
 #include "muan/utils/math_utils.h"
 #include "third_party/aos/common/mutex.h"
 #include "third_party/optional/optional.hpp"
-#include <array>
-#include <cstdint>
 
 namespace muan {
 
@@ -94,7 +94,6 @@ class MessageQueue {
   // position passed in. The parameter's value will be changed to the position
   // of the next valid message.
   std::experimental::optional<T> NextMessage(uint64_t& next) const;
-
 
   // Gets the "front" (the oldest messages still kept) of the circular buffer,
   // either from the current value of _back or from a known value of back.

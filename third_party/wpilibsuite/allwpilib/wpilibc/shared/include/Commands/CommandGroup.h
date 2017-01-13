@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2011-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2011-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -8,9 +8,13 @@
 #pragma once
 
 #include <list>
+#include <string>
 #include <vector>
+
 #include "Commands/Command.h"
 #include "Commands/CommandGroupEntry.h"
+
+namespace frc {
 
 /**
  * A {@link CommandGroup} is a list of commands which are executed in sequence.
@@ -35,7 +39,7 @@
 class CommandGroup : public Command {
  public:
   CommandGroup() = default;
-  CommandGroup(const std::string& name);
+  explicit CommandGroup(const std::string& name);
   virtual ~CommandGroup() = default;
 
   void AddSequential(Command* command);
@@ -68,3 +72,5 @@ class CommandGroup : public Command {
   /** The current command, -1 signifies that none have been run */
   int m_currentCommandIndex = -1;
 };
+
+}  // namespace frc

@@ -22,11 +22,13 @@ def generate_cc_toolchains(cpus):
 # The keys of the toolchains dictionary are obtained via {cpu}|{compiler} in
 # bazel >=0.3.2, but in <0.3.1 it's just {cpu}. Keep two copies of all of the
 # entries to compensate for that, at least until we move to 0.3.2.
-def generate_cc_toolchain_suite(name, cpus):
+def generate_cc_toolchain_suite(name, cpus, compilers = ['gcc', 'clang']):
   toolchain_dict = {}
   for cpu in cpus:
     toolchain_dict[cpu] = ':cc-compiler-%s' % cpu
     toolchain_dict['%s|compiler' % cpu] = ':cc-compiler-%s' % cpu
+    for compiler in compilers:
+      toolchain_dict['%s|%s' % (cpu, compiler)] = ':cc-compiler-%s' % cpu
 
   native.cc_toolchain_suite(
     name = name,

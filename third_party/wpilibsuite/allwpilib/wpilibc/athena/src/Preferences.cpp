@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2011-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2011-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -11,22 +11,25 @@
 
 #include "HAL/HAL.h"
 #include "WPIErrors.h"
+#include "llvm/StringRef.h"
+
+using namespace frc;
 
 /** The Preferences table name */
-static const char* kTableName = "Preferences";
+static llvm::StringRef kTableName{"Preferences"};
 
 void Preferences::Listener::ValueChanged(ITable* source, llvm::StringRef key,
                                          std::shared_ptr<nt::Value> value,
                                          bool isNew) {}
 void Preferences::Listener::ValueChangedEx(ITable* source, llvm::StringRef key,
                                            std::shared_ptr<nt::Value> value,
-                                           unsigned int flags) {
+                                           uint32_t flags) {
   source->SetPersistent(key);
 }
 
 Preferences::Preferences() : m_table(NetworkTable::GetTable(kTableName)) {
   m_table->AddTableListenerEx(&m_listener, NT_NOTIFY_NEW | NT_NOTIFY_IMMEDIATE);
-  HALReport(HALUsageReporting::kResourceType_Preferences, 0);
+  HAL_Report(HALUsageReporting::kResourceType_Preferences, 0);
 }
 
 /**
@@ -92,7 +95,7 @@ double Preferences::GetDouble(llvm::StringRef key, double defaultValue) {
  * @return either the value in the table, or the defaultValue
  */
 float Preferences::GetFloat(llvm::StringRef key, float defaultValue) {
-  return static_cast<float>(m_table->GetNumber(key, defaultValue));
+  return m_table->GetNumber(key, defaultValue);
 }
 
 /**

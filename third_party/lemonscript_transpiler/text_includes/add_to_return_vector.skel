@@ -1,0 +1,2 @@
+std::function<std::unique_ptr<BaseAutoFunction>()> New<<<name>>>Generator = New<<<name>>>Command;
+return_map["<<<name>>>-<<<args>>>"] = New<<<name>>>Command;

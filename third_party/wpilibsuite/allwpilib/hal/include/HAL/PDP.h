@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2016. All Rights Reserved.                             */
+/* Copyright (c) FIRST 2016-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -9,14 +9,24 @@
 
 #include <stdint.h>
 
+#include "HAL/Types.h"
+
+#ifdef __cplusplus
 extern "C" {
-void initializePDP(uint8_t module);
-double getPDPTemperature(uint8_t module, int32_t* status);
-double getPDPVoltage(uint8_t module, int32_t* status);
-double getPDPChannelCurrent(uint8_t module, uint8_t channel, int32_t* status);
-double getPDPTotalCurrent(uint8_t module, int32_t* status);
-double getPDPTotalPower(uint8_t module, int32_t* status);
-double getPDPTotalEnergy(uint8_t module, int32_t* status);
-void resetPDPTotalEnergy(uint8_t module, int32_t* status);
-void clearPDPStickyFaults(uint8_t module, int32_t* status);
+#endif
+
+void HAL_InitializePDP(int32_t module, int32_t* status);
+HAL_Bool HAL_CheckPDPChannel(int32_t channel);
+HAL_Bool HAL_CheckPDPModule(int32_t module);
+double HAL_GetPDPTemperature(int32_t module, int32_t* status);
+double HAL_GetPDPVoltage(int32_t module, int32_t* status);
+double HAL_GetPDPChannelCurrent(int32_t module, int32_t channel,
+                                int32_t* status);
+double HAL_GetPDPTotalCurrent(int32_t module, int32_t* status);
+double HAL_GetPDPTotalPower(int32_t module, int32_t* status);
+double HAL_GetPDPTotalEnergy(int32_t module, int32_t* status);
+void HAL_ResetPDPTotalEnergy(int32_t module, int32_t* status);
+void HAL_ClearPDPStickyFaults(int32_t module, int32_t* status);
+#ifdef __cplusplus
 }
+#endif

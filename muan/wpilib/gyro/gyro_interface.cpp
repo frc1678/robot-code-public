@@ -1,8 +1,8 @@
 #include "gyro_interface.h"
 
 #include <inttypes.h>
-#include <cstring>
 #include <unistd.h>
+#include <cstring>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -57,8 +57,7 @@ bool GyroInterface::InitializeGyro() {
 
 bool GyroInterface::DoTransaction(uint32_t to_write, uint32_t *result) {
   static const uint8_t kBytes = 4;
-  static_assert(kBytes == sizeof(to_write),
-                "need the same number of bytes as sizeof(the data)");
+  static_assert(kBytes == sizeof(to_write), "need the same number of bytes as sizeof(the data)");
 
   if (__builtin_parity(to_write & ~1) == 0) to_write |= 1;
 
@@ -110,9 +109,7 @@ double GyroInterface::ExtractAngle(uint32_t value) {
   return ((static_cast<double>(reading) * 2.0 * M_PI / 360.0 / 80.0) - .0068);
 }
 
-uint32_t GyroInterface::ReadPartID() {
-  return (DoRead(0x0E) << 16) | DoRead(0x10);
-}
+uint32_t GyroInterface::ReadPartID() { return (DoRead(0x0E) << 16) | DoRead(0x10); }
 
 uint32_t GyroInterface::GetReading() {
   uint32_t result;

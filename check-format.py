@@ -1,9 +1,16 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 
 import subprocess as sp
 import os
+import sys
 import re
 import distutils.spawn
+
+# Allow this script to not cause CI checks to fail
+if "--no-fail" in sys.argv:
+    failcode = 0
+else:
+    failcode = 1
 
 p = sp.Popen('git ls-files', shell=True, stdin=sp.PIPE, stdout=sp.PIPE, stderr=sp.STDOUT, close_fds=True)
 
@@ -30,13 +37,17 @@ for com in supported_clang_format_commands:
     if distutils.spawn.find_executable(com):
         clang_format_command = com
 
+fail = False
 for f in to_format:
     command = '%s %s | diff - %s' % (clang_format_command, f, f)
     p = sp.Popen(command, shell=True, stdin=sp.PIPE, stdout=sp.PIPE, stderr=sp.STDOUT, close_fds=True)
     s = p.stdout.read()
     if len(s) > 0:
-        print("Formatting error in file %s" % f)
+        print("Formatting error in file %s:" % f)
         print(s)
-        exit(1)
+        fail = True
 
-exit(0)
+if fail:
+    exit(0)
+else:
+    exit(failcode)

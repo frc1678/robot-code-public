@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -10,9 +10,12 @@
 #include <stdint.h>
 
 #include <memory>
+
 #include "ErrorBase.h"
 #include "MotorSafety.h"
 #include "MotorSafetyHelper.h"
+
+namespace frc {
 
 class SpeedController;
 class GenericHID;
@@ -38,9 +41,9 @@ class RobotDrive : public MotorSafety, public ErrorBase {
     kRearRightMotor = 3
   };
 
-  RobotDrive(uint32_t leftMotorChannel, uint32_t rightMotorChannel);
-  RobotDrive(uint32_t frontLeftMotorChannel, uint32_t rearLeftMotorChannel,
-             uint32_t frontRightMotorChannel, uint32_t rearRightMotorChannel);
+  RobotDrive(int leftMotorChannel, int rightMotorChannel);
+  RobotDrive(int frontLeftMotorChannel, int rearLeftMotorChannel,
+             int frontRightMotorChannel, int rearRightMotorChannel);
   RobotDrive(SpeedController* leftMotor, SpeedController* rightMotor);
   RobotDrive(SpeedController& leftMotor, SpeedController& rightMotor);
   RobotDrive(std::shared_ptr<SpeedController> leftMotor,
@@ -58,39 +61,38 @@ class RobotDrive : public MotorSafety, public ErrorBase {
   RobotDrive(const RobotDrive&) = delete;
   RobotDrive& operator=(const RobotDrive&) = delete;
 
-  void Drive(float outputMagnitude, float curve);
+  void Drive(double outputMagnitude, double curve);
   void TankDrive(GenericHID* leftStick, GenericHID* rightStick,
                  bool squaredInputs = true);
   void TankDrive(GenericHID& leftStick, GenericHID& rightStick,
                  bool squaredInputs = true);
-  void TankDrive(GenericHID* leftStick, uint32_t leftAxis,
-                 GenericHID* rightStick, uint32_t rightAxis,
+  void TankDrive(GenericHID* leftStick, int leftAxis, GenericHID* rightStick,
+                 int rightAxis, bool squaredInputs = true);
+  void TankDrive(GenericHID& leftStick, int leftAxis, GenericHID& rightStick,
+                 int rightAxis, bool squaredInputs = true);
+  void TankDrive(double leftValue, double rightValue,
                  bool squaredInputs = true);
-  void TankDrive(GenericHID& leftStick, uint32_t leftAxis,
-                 GenericHID& rightStick, uint32_t rightAxis,
-                 bool squaredInputs = true);
-  void TankDrive(float leftValue, float rightValue, bool squaredInputs = true);
   void ArcadeDrive(GenericHID* stick, bool squaredInputs = true);
   void ArcadeDrive(GenericHID& stick, bool squaredInputs = true);
-  void ArcadeDrive(GenericHID* moveStick, uint32_t moveChannel,
-                   GenericHID* rotateStick, uint32_t rotateChannel,
+  void ArcadeDrive(GenericHID* moveStick, int moveChannel,
+                   GenericHID* rotateStick, int rotateChannel,
                    bool squaredInputs = true);
-  void ArcadeDrive(GenericHID& moveStick, uint32_t moveChannel,
-                   GenericHID& rotateStick, uint32_t rotateChannel,
+  void ArcadeDrive(GenericHID& moveStick, int moveChannel,
+                   GenericHID& rotateStick, int rotateChannel,
                    bool squaredInputs = true);
-  void ArcadeDrive(float moveValue, float rotateValue,
+  void ArcadeDrive(double moveValue, double rotateValue,
                    bool squaredInputs = true);
-  void MecanumDrive_Cartesian(float x, float y, float rotation,
-                              float gyroAngle = 0.0);
-  void MecanumDrive_Polar(float magnitude, float direction, float rotation);
-  void HolonomicDrive(float magnitude, float direction, float rotation);
-  virtual void SetLeftRightMotorOutputs(float leftOutput, float rightOutput);
+  void MecanumDrive_Cartesian(double x, double y, double rotation,
+                              double gyroAngle = 0.0);
+  void MecanumDrive_Polar(double magnitude, double direction, double rotation);
+  void HolonomicDrive(double magnitude, double direction, double rotation);
+  virtual void SetLeftRightMotorOutputs(double leftOutput, double rightOutput);
   void SetInvertedMotor(MotorType motor, bool isInverted);
-  void SetSensitivity(float sensitivity);
+  void SetSensitivity(double sensitivity);
   void SetMaxOutput(double maxOutput);
 
-  void SetExpiration(float timeout) override;
-  float GetExpiration() const override;
+  void SetExpiration(double timeout) override;
+  double GetExpiration() const override;
   bool IsAlive() const override;
   void StopMotor() override;
   bool IsSafetyEnabled() const override;
@@ -99,14 +101,14 @@ class RobotDrive : public MotorSafety, public ErrorBase {
 
  protected:
   void InitRobotDrive();
-  float Limit(float num);
+  double Limit(double num);
   void Normalize(double* wheelSpeeds);
   void RotateVector(double& x, double& y, double angle);
 
-  static const int32_t kMaxNumberOfMotors = 4;
+  static const int kMaxNumberOfMotors = 4;
 
-  int32_t m_invertedMotors[kMaxNumberOfMotors] = {1, 1, 1, 1};
-  float m_sensitivity = 0.5;
+  int m_invertedMotors[kMaxNumberOfMotors] = {1, 1, 1, 1};
+  double m_sensitivity = 0.5;
   double m_maxOutput = 1.0;
   bool m_deleteSpeedControllers;
   std::shared_ptr<SpeedController> m_frontLeftMotor;
@@ -116,7 +118,7 @@ class RobotDrive : public MotorSafety, public ErrorBase {
   // FIXME: MotorSafetyHelper *m_safetyHelper;
 
  private:
-  int32_t GetNumMotors() {
+  int GetNumMotors() {
     int motors = 0;
     if (m_frontLeftMotor) motors++;
     if (m_frontRightMotor) motors++;
@@ -125,3 +127,5 @@ class RobotDrive : public MotorSafety, public ErrorBase {
     return motors;
   }
 };
+
+}  // namespace frc

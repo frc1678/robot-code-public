@@ -1,13 +1,13 @@
 #ifndef DRIVECONTROLLER_H_
 #define DRIVECONTROLLER_H_
 
+#include <WPILib.h>
 #include "gyro_interface.h"
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
 #include "muan/units/units.h"
 #include "queue_types.h"
 #include "third_party/aos/common/time.h"
-#include <WPILib.h>
 
 namespace muan {
 

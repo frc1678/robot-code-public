@@ -25,6 +25,7 @@ toolchain_cpus = [
   'darwin',
   'freebsd',
   'local',
+  'k8',
   'roborio',
   'roborio-osxbuild',
   'empty',

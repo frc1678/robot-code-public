@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -8,7 +8,8 @@
 #pragma once
 
 #include "RobotBase.h"
-#include "Timer.h"
+
+namespace frc {
 
 /**
  * IterativeRobot implements a specific type of Robot Program framework,
@@ -33,11 +34,9 @@
  *  - TestInit()       -- called each and every time test is entered from
  *                        another mode
  *
- * Periodic() functions -- each of these functions is called iteratively at the
- *                         appropriate periodic rate (aka the "slow loop").  The
- *                         default period of the iterative robot is synced to
- *                         the driver station control packets, giving a periodic
- *                         frequency of about 50Hz (50 times per second).
+ * Periodic() functions -- each of these functions is called each time a
+ *                         new packet is received from the driver station:
+ *   - RobotPeriodic()
  *   - DisabledPeriodic()
  *   - AutonomousPeriodic()
  *   - TeleopPeriodic()
@@ -47,13 +46,6 @@
 
 class IterativeRobot : public RobotBase {
  public:
-  /*
-   * The default period for the periodic function calls (seconds)
-   * Setting the period to 0.0 will cause the periodic functions to follow
-   * the Driver Station packet rate of about 50Hz.
-   */
-  static constexpr double kDefaultPeriod = 0.0;
-
   virtual void StartCompetition();
 
   virtual void RobotInit();
@@ -62,6 +54,7 @@ class IterativeRobot : public RobotBase {
   virtual void TeleopInit();
   virtual void TestInit();
 
+  virtual void RobotPeriodic();
   virtual void DisabledPeriodic();
   virtual void AutonomousPeriodic();
   virtual void TeleopPeriodic();
@@ -77,3 +70,5 @@ class IterativeRobot : public RobotBase {
   bool m_teleopInitialized = false;
   bool m_testInitialized = false;
 };
+
+}  // namespace frc

@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2016. All Rights Reserved.                             */
+/* Copyright (c) FIRST 2016-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -9,17 +9,23 @@
 
 #include <stdint.h>
 
-#include "ChipObject.h"
-#include "HAL/cpp/Resource.h"
+#include <memory>
+
+#include "HAL/AnalogTrigger.h"
+#include "HAL/ChipObject.h"
+#include "HAL/Ports.h"
+#include "HAL/Types.h"
+#include "HAL/handles/DigitalHandleResource.h"
+#include "HAL/handles/HandlesInternal.h"
+#include "PortsInternal.h"
 
 namespace hal {
-constexpr uint32_t kNumHeaders = 10;  // Number of non-MXP pins
-constexpr uint32_t kDigitalPins = 26;
-constexpr uint32_t kPwmPins = 20;
-constexpr uint32_t kMXPDigitalPWMOffset = 6;  // MXP pins when used as digital
-                                              // output pwm are offset by 6 from
-                                              // actual value
-constexpr uint32_t kExpectedLoopTiming = 40;
+/**
+ * MXP channels when used as digital output PWM are offset from actual value
+ */
+constexpr int32_t kMXPDigitalPWMOffset = 6;
+
+constexpr int32_t kExpectedLoopTiming = 40;
 
 /**
  * kDefaultPwmPeriod is in ms
@@ -39,11 +45,11 @@ constexpr uint32_t kExpectedLoopTiming = 40;
  * scaling is implemented as an output squelch to get longer periods for old
  * devices.
  */
-constexpr float kDefaultPwmPeriod = 5.05;
+constexpr double kDefaultPwmPeriod = 5.05;
 /**
  * kDefaultPwmCenter is the PWM range center in ms
  */
-constexpr float kDefaultPwmCenter = 1.5;
+constexpr double kDefaultPwmCenter = 1.5;
 /**
  * kDefaultPWMStepsDown is the number of PWM steps below the centerpoint
  */
@@ -53,22 +59,31 @@ constexpr int32_t kPwmDisabled = 0;
 // Create a mutex to protect changes to the DO PWM config
 extern priority_recursive_mutex digitalPwmMutex;
 
-extern tDIO* digitalSystem;
-extern tRelay* relaySystem;
-extern tPWM* pwmSystem;
-extern hal::Resource* DIOChannels;
-extern hal::Resource* DO_PWMGenerators;
-extern hal::Resource* PWMChannels;
-
-extern bool digitalSystemsInitialized;
+extern std::unique_ptr<tDIO> digitalSystem;
+extern std::unique_ptr<tRelay> relaySystem;
+extern std::unique_ptr<tPWM> pwmSystem;
+extern std::unique_ptr<tSPI> spiSystem;
 
 struct DigitalPort {
-  uint8_t pin;
-  uint32_t PWMGeneratorID;
+  uint8_t channel;
+  bool configSet = false;
+  bool eliminateDeadband = false;
+  int32_t maxPwm = 0;
+  int32_t deadbandMaxPwm = 0;
+  int32_t centerPwm = 0;
+  int32_t deadbandMinPwm = 0;
+  int32_t minPwm = 0;
 };
 
+extern DigitalHandleResource<HAL_DigitalHandle, DigitalPort,
+                             kNumDigitalChannels + kNumPWMHeaders>
+    digitalChannelHandles;
+
 void initializeDigital(int32_t* status);
-void remapDigitalSource(bool analogTrigger, uint32_t& pin, uint8_t& module);
-uint32_t remapMXPPWMChannel(uint32_t pin);
-uint32_t remapMXPChannel(uint32_t pin);
-}
+bool remapDigitalSource(HAL_Handle digitalSourceHandle,
+                        HAL_AnalogTriggerType analogTriggerType,
+                        uint8_t& channel, uint8_t& module, bool& analogTrigger);
+int32_t remapSPIChannel(int32_t channel);
+int32_t remapMXPPWMChannel(int32_t channel);
+int32_t remapMXPChannel(int32_t channel);
+}  // namespace hal

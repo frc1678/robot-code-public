@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,6 +7,15 @@
 
 #pragma once
 
+#include <condition_variable>
+#include <mutex>
+#include <string>
+
+#include <gazebo/transport/transport.hh>
+
+#include "RobotState.h"
+#include "SensorBase.h"
+#include "llvm/StringRef.h"
 #include "simulation/gz_msgs/msgs.h"
 
 #ifdef _WIN32
@@ -15,16 +24,10 @@
 #include <Winsock2.h>
 #endif
 
-#include <condition_variable>
-#include <gazebo/transport/transport.hh>
-#include <mutex>
-#include "RobotState.h"
-#include "SensorBase.h"
+namespace frc {
 
 struct HALCommonControlData;
 class AnalogInput;
-
-using namespace gazebo;
 
 /**
  * Provide access to the network communication data to / from the Driver
@@ -36,24 +39,23 @@ class DriverStation : public SensorBase, public RobotStateInterface {
 
   virtual ~DriverStation() = default;
   static DriverStation& GetInstance();
-  static void ReportError(std::string error);
-  static void ReportWarning(std::string error);
-  static void ReportError(bool is_error, int32_t code, const std::string& error,
-                          const std::string& location,
-                          const std::string& stack);
+  static void ReportError(llvm::StringRef error);
+  static void ReportWarning(llvm::StringRef error);
+  static void ReportError(bool is_error, int code, llvm::StringRef error,
+                          llvm::StringRef location, llvm::StringRef stack);
 
-  static const uint32_t kBatteryChannel = 7;
-  static const uint32_t kJoystickPorts = 4;
-  static const uint32_t kJoystickAxes = 6;
+  static const int kBatteryChannel = 7;
+  static const int kJoystickPorts = 4;
+  static const int kJoystickAxes = 6;
 
-  float GetStickAxis(uint32_t stick, uint32_t axis);
-  bool GetStickButton(uint32_t stick, uint32_t button);
-  short GetStickButtons(uint32_t stick);
+  double GetStickAxis(int stick, int axis);
+  bool GetStickButton(int stick, int button);
+  int16_t GetStickButtons(int stick);
 
-  float GetAnalogIn(uint32_t channel);
-  bool GetDigitalIn(uint32_t channel);
-  void SetDigitalOut(uint32_t channel, bool value);
-  bool GetDigitalOut(uint32_t channel);
+  double GetAnalogIn(int channel);
+  bool GetDigitalIn(int channel);
+  void SetDigitalOut(int channel, bool value);
+  bool GetDigitalOut(int channel);
 
   bool IsEnabled() const;
   bool IsDisabled() const;
@@ -62,12 +64,13 @@ class DriverStation : public SensorBase, public RobotStateInterface {
   bool IsTest() const;
   bool IsFMSAttached() const;
 
-  uint32_t GetPacketNumber() const;
+  int GetPacketNumber() const;
   Alliance GetAlliance() const;
-  uint32_t GetLocation() const;
+  int GetLocation() const;
   void WaitForData();
+  bool WaitForData(double timeout);
   double GetMatchTime() const;
-  float GetBatteryVoltage() const;
+  double GetBatteryVoltage() const;
   uint16_t GetTeamNumber() const;
 
   void IncrementUpdateNumber() { m_updateNumber++; }
@@ -110,22 +113,23 @@ class DriverStation : public SensorBase, public RobotStateInterface {
  private:
   static void InitTask(DriverStation* ds);
   static DriverStation* m_instance;
-  static uint8_t m_updateNumber;
+  static int m_updateNumber;
   ///< TODO: Get rid of this and use the semaphore signaling
-  static const float kUpdatePeriod;
+  static const double kUpdatePeriod;
 
-  void stateCallback(const msgs::ConstDriverStationPtr& msg);
-  void joystickCallback(const msgs::ConstFRCJoystickPtr& msg, int i);
-  void joystickCallback0(const msgs::ConstFRCJoystickPtr& msg);
-  void joystickCallback1(const msgs::ConstFRCJoystickPtr& msg);
-  void joystickCallback2(const msgs::ConstFRCJoystickPtr& msg);
-  void joystickCallback3(const msgs::ConstFRCJoystickPtr& msg);
-  void joystickCallback4(const msgs::ConstFRCJoystickPtr& msg);
-  void joystickCallback5(const msgs::ConstFRCJoystickPtr& msg);
+  void stateCallback(const gazebo::msgs::ConstDriverStationPtr& msg);
+  void joystickCallback(const gazebo::msgs::ConstFRCJoystickPtr& msg, int i);
+  void joystickCallback0(const gazebo::msgs::ConstFRCJoystickPtr& msg);
+  void joystickCallback1(const gazebo::msgs::ConstFRCJoystickPtr& msg);
+  void joystickCallback2(const gazebo::msgs::ConstFRCJoystickPtr& msg);
+  void joystickCallback3(const gazebo::msgs::ConstFRCJoystickPtr& msg);
+  void joystickCallback4(const gazebo::msgs::ConstFRCJoystickPtr& msg);
+  void joystickCallback5(const gazebo::msgs::ConstFRCJoystickPtr& msg);
 
-  uint8_t m_digitalOut = 0;
+  int m_digitalOut = 0;
   std::condition_variable m_waitForDataCond;
   std::mutex m_waitForDataMutex;
+  bool m_updatedControlLoopData = false;
   mutable std::recursive_mutex m_stateMutex;
   std::recursive_mutex m_joystickMutex;
   double m_approxMatchTimeOffset = 0;
@@ -134,8 +138,10 @@ class DriverStation : public SensorBase, public RobotStateInterface {
   bool m_userInTeleop = false;
   bool m_userInTest = false;
 
-  transport::SubscriberPtr stateSub;
-  transport::SubscriberPtr joysticksSub[6];
-  msgs::DriverStationPtr state;
-  msgs::FRCJoystickPtr joysticks[6];
+  gazebo::transport::SubscriberPtr stateSub;
+  gazebo::transport::SubscriberPtr joysticksSub[6];
+  gazebo::msgs::DriverStationPtr state;
+  gazebo::msgs::FRCJoystickPtr joysticks[6];
 };
+
+}  // namespace frc

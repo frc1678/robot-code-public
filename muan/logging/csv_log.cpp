@@ -7,14 +7,13 @@
  */
 
 #include "csv_log.h"
-#include "log_manager.h"
 #include <string>
 #include <vector>
+#include "log_manager.h"
 
 namespace muan {
 
-CSVLog::CSVLog(std::string filename, std::vector<std::string> keys)
-    : Log(filename, GetExtension()) {
+CSVLog::CSVLog(std::string filename, std::vector<std::string> keys) : Log(filename, GetExtension()) {
   buffer_ << "timestamp,";
   for (auto key = keys.begin(); key != keys.end(); key++) {
     buffer_ << *key;
@@ -75,8 +74,5 @@ std::string& CSVLog::operator[](std::string key) {
   return entries_.begin()->second;
 }
 
-const std::vector<std::pair<std::string, std::string>> CSVLog::GetEntries()
-    const {
-  return entries_;
-}
+const std::vector<std::pair<std::string, std::string>> CSVLog::GetEntries() const { return entries_; }
 }  // namespace muan

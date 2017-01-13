@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -8,12 +8,16 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 #include "Counter.h"
 #include "CounterBase.h"
+#include "HAL/Encoder.h"
 #include "LiveWindow/LiveWindowSendable.h"
 #include "PIDSource.h"
 #include "SensorBase.h"
+
+namespace frc {
 
 class DigitalSource;
 class DigitalGlitchFilter;
@@ -44,7 +48,7 @@ class Encoder : public SensorBase,
     kResetOnRisingEdge
   };
 
-  Encoder(uint32_t aChannel, uint32_t bChannel, bool reverseDirection = false,
+  Encoder(int aChannel, int bChannel, bool reverseDirection = false,
           EncodingType encodingType = k4X);
   Encoder(std::shared_ptr<DigitalSource> aSource,
           std::shared_ptr<DigitalSource> bSource, bool reverseDirection = false,
@@ -56,9 +60,9 @@ class Encoder : public SensorBase,
   virtual ~Encoder();
 
   // CounterBase interface
-  int32_t Get() const override;
-  int32_t GetRaw() const;
-  int32_t GetEncodingScale() const;
+  int Get() const override;
+  int GetRaw() const;
+  int GetEncodingScale() const;
   void Reset() override;
   double GetPeriod() const override;
   void SetMaxPeriod(double maxPeriod) override;
@@ -74,8 +78,8 @@ class Encoder : public SensorBase,
   int GetSamplesToAverage() const;
   double PIDGet() override;
 
-  void SetIndexSource(uint32_t channel, IndexingType type = kResetOnRisingEdge);
-  DEPRECATED("Use pass-by-reference instead.")
+  void SetIndexSource(int channel, IndexingType type = kResetOnRisingEdge);
+  WPI_DEPRECATED("Use pass-by-reference instead.")
   void SetIndexSource(DigitalSource* source,
                       IndexingType type = kResetOnRisingEdge);
   void SetIndexSource(const DigitalSource& source,
@@ -88,22 +92,20 @@ class Encoder : public SensorBase,
   void InitTable(std::shared_ptr<ITable> subTable) override;
   std::shared_ptr<ITable> GetTable() const override;
 
-  int32_t GetFPGAIndex() const { return m_index; }
+  int GetFPGAIndex() const;
 
  private:
-  void InitEncoder(bool _reverseDirection, EncodingType encodingType);
+  void InitEncoder(bool reverseDirection, EncodingType encodingType);
+
   double DecodingScaleFactor() const;
 
   std::shared_ptr<DigitalSource> m_aSource;  // the A phase of the quad encoder
   std::shared_ptr<DigitalSource> m_bSource;  // the B phase of the quad encoder
-  void* m_encoder = nullptr;
-  int32_t m_index = 0;              // The encoder's FPGA index.
-  double m_distancePerPulse = 1.0;  // distance of travel for each encoder tick
-  std::unique_ptr<Counter> m_counter =
-      nullptr;                  // Counter object for 1x and 2x encoding
-  EncodingType m_encodingType;  // Encoding type
-  int32_t m_encodingScale;      // 1x, 2x, or 4x, per the encodingType
+  std::unique_ptr<DigitalSource> m_indexSource = nullptr;
+  HAL_EncoderHandle m_encoder = HAL_kInvalidHandle;
 
   std::shared_ptr<ITable> m_table;
   friend class DigitalGlitchFilter;
 };
+
+}  // namespace frc

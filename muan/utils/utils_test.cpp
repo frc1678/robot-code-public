@@ -1,8 +1,9 @@
+#include "gtest/gtest.h"
+#include "muan/utils/disk_brake.h"
 #include "muan/utils/history.h"
+#include "muan/utils/linear_interpolation.h"
 #include "muan/utils/timer.h"
 #include "muan/utils/timing_utils.h"
-#include "muan/utils/linear_interpolation.h"
-#include "gtest/gtest.h"
 
 using muan::Timer;
 using muan::History;
@@ -10,6 +11,8 @@ using muan::sleep_until;
 using muan::sleep_for;
 using muan::now;
 using muan::LinearInterpolation;
+using muan::DiskBrake;
+using muan::units::s;
 
 TEST(TimeUtils, TimerPositive) {
   using namespace muan::units;
@@ -60,14 +63,20 @@ TEST(History, WorksCorrectly) {
   }
 }
 
+TEST(History, FailsOnOldHistory) {
+  using namespace muan::units;
+  History<int, 200> hist(.01 * s);
+
+  EXPECT_DEATH(hist.GoBack(250 * 0.01 * s), "unrecorded history");
+}
+
 TEST(LinearInterpolation, VerifiesListSize) {
   EXPECT_DEATH(LinearInterpolation<double> f({std::make_pair(1., 1.)}),
                "Interpolate requires 2 or more control points");
 }
 
 TEST(LinearInterpolation, CalculatesCorrectly) {
-  LinearInterpolation<double> f({std::make_pair(3., 2.),
-                                 std::make_pair(1., 0.)});
+  LinearInterpolation<double> f({std::make_pair(3., 2.), std::make_pair(1., 0.)});
   f.AddControlPoint(std::make_pair(0., 0.));
   f.AddControlPoint(std::make_pair(7., 7.));
   f.AddControlPoint(std::make_pair(6., 8.));
@@ -82,4 +91,23 @@ TEST(LinearInterpolation, CalculatesCorrectly) {
   EXPECT_EQ(f(6), 8);
   EXPECT_EQ(f(7), 7);
   EXPECT_DEATH(f(100), "An interpolation is only defined between the lowest and highest x-values");
+}
+
+TEST(DiskBrake, Works) {
+  aos::time::Time::EnableMockTime();
+  // Start unlocked, 2s to lock
+  DiskBrake brake(false, 2 * s);
+  EXPECT_EQ(brake.Update(true), DiskBrake::UNLOCKED);
+  // Locking it for more that 2s should lock it
+  aos::time::Time::IncrementMockTime(aos::time::Time{3, 0});
+  EXPECT_EQ(brake.Update(true), DiskBrake::LOCKED);
+  // Changing it for less that 2s should leave it in between
+  aos::time::Time::IncrementMockTime(aos::time::Time{1, 0});
+  EXPECT_EQ(brake.Update(false), DiskBrake::CHANGING);
+  // 2 more seconds should complete the change
+  aos::time::Time::IncrementMockTime(aos::time::Time{2, 0});
+  EXPECT_EQ(brake.Update(false), DiskBrake::UNLOCKED);
+  // More time shouldn't change it
+  aos::time::Time::IncrementMockTime(aos::time::Time{2, 0});
+  EXPECT_EQ(brake.Update(false), DiskBrake::UNLOCKED);
 }

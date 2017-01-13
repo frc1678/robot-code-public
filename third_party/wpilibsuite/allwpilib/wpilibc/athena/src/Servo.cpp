@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -9,17 +9,19 @@
 
 #include "LiveWindow/LiveWindow.h"
 
-constexpr float Servo::kMaxServoAngle;
-constexpr float Servo::kMinServoAngle;
+using namespace frc;
 
-constexpr float Servo::kDefaultMaxServoPWM;
-constexpr float Servo::kDefaultMinServoPWM;
+constexpr double Servo::kMaxServoAngle;
+constexpr double Servo::kMinServoAngle;
+
+constexpr double Servo::kDefaultMaxServoPWM;
+constexpr double Servo::kDefaultMinServoPWM;
 
 /**
  * @param channel The PWM channel to which the servo is attached. 0-9 are
  *                on-board, 10-19 are on the MXP port
  */
-Servo::Servo(uint32_t channel) : SafePWM(channel) {
+Servo::Servo(int channel) : SafePWM(channel) {
   // Set minimum and maximum PWM values supported by the servo
   SetBounds(kDefaultMaxServoPWM, 0.0, 0.0, 0.0, kDefaultMinServoPWM);
 
@@ -43,7 +45,7 @@ Servo::~Servo() {
  *
  * @param value Position from 0.0 to 1.0.
  */
-void Servo::Set(float value) { SetPosition(value); }
+void Servo::Set(double value) { SetPosition(value); }
 
 /**
  * Set the servo to offline.
@@ -60,7 +62,7 @@ void Servo::SetOffline() { SetRaw(0); }
  *
  * @return Position from 0.0 to 1.0.
  */
-float Servo::Get() const { return GetPosition(); }
+double Servo::Get() const { return GetPosition(); }
 
 /**
  * Set the servo angle.
@@ -76,14 +78,14 @@ float Servo::Get() const { return GetPosition(); }
  *
  * @param degrees The angle in degrees to set the servo.
  */
-void Servo::SetAngle(float degrees) {
+void Servo::SetAngle(double degrees) {
   if (degrees < kMinServoAngle) {
     degrees = kMinServoAngle;
   } else if (degrees > kMaxServoAngle) {
     degrees = kMaxServoAngle;
   }
 
-  SetPosition(((float)(degrees - kMinServoAngle)) / GetServoAngleRange());
+  SetPosition((degrees - kMinServoAngle) / GetServoAngleRange());
 }
 
 /**
@@ -94,8 +96,8 @@ void Servo::SetAngle(float degrees) {
  *
  * @return The angle in degrees to which the servo is set.
  */
-float Servo::GetAngle() const {
-  return (float)GetPosition() * GetServoAngleRange() + kMinServoAngle;
+double Servo::GetAngle() const {
+  return GetPosition() * GetServoAngleRange() + kMinServoAngle;
 }
 
 void Servo::ValueChanged(ITable* source, llvm::StringRef key,

@@ -1,25 +1,36 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2014-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2014-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
 #include "PowerDistributionPanel.h"
+
+#include <sstream>
+
+#include "HAL/HAL.h"
 #include "HAL/PDP.h"
+#include "HAL/Ports.h"
 #include "LiveWindow/LiveWindow.h"
 #include "WPIErrors.h"
 
-#include <sstream>
+using namespace frc;
 
 PowerDistributionPanel::PowerDistributionPanel() : PowerDistributionPanel(0) {}
 
 /**
  * Initialize the PDP.
  */
-PowerDistributionPanel::PowerDistributionPanel(uint8_t module)
-    : m_module(module) {
-  initializePDP(m_module);
+PowerDistributionPanel::PowerDistributionPanel(int module) : m_module(module) {
+  int32_t status = 0;
+  HAL_InitializePDP(m_module, &status);
+  if (status != 0) {
+    wpi_setErrorWithContextRange(status, 0, HAL_GetNumPDPModules(), module,
+                                 HAL_GetErrorMessage(status));
+    m_module = -1;
+    return;
+  }
 }
 
 /**
@@ -28,9 +39,10 @@ PowerDistributionPanel::PowerDistributionPanel(uint8_t module)
  * @return The voltage of the PDP in volts
  */
 double PowerDistributionPanel::GetVoltage() const {
+  if (StatusIsFatal()) return 0;
   int32_t status = 0;
 
-  double voltage = getPDPVoltage(m_module, &status);
+  double voltage = HAL_GetPDPVoltage(m_module, &status);
 
   if (status) {
     wpi_setWPIErrorWithContext(Timeout, "");
@@ -45,9 +57,10 @@ double PowerDistributionPanel::GetVoltage() const {
  * @return The temperature of the PDP in degrees Celsius
  */
 double PowerDistributionPanel::GetTemperature() const {
+  if (StatusIsFatal()) return 0;
   int32_t status = 0;
 
-  double temperature = getPDPTemperature(m_module, &status);
+  double temperature = HAL_GetPDPTemperature(m_module, &status);
 
   if (status) {
     wpi_setWPIErrorWithContext(Timeout, "");
@@ -61,7 +74,8 @@ double PowerDistributionPanel::GetTemperature() const {
  *
  * @return The current of one of the PDP channels (channels 0-15) in Amperes
  */
-double PowerDistributionPanel::GetCurrent(uint8_t channel) const {
+double PowerDistributionPanel::GetCurrent(int channel) const {
+  if (StatusIsFatal()) return 0;
   int32_t status = 0;
 
   if (!CheckPDPChannel(channel)) {
@@ -70,7 +84,7 @@ double PowerDistributionPanel::GetCurrent(uint8_t channel) const {
     wpi_setWPIErrorWithContext(ChannelIndexOutOfRange, buf.str());
   }
 
-  double current = getPDPChannelCurrent(m_module, channel, &status);
+  double current = HAL_GetPDPChannelCurrent(m_module, channel, &status);
 
   if (status) {
     wpi_setWPIErrorWithContext(Timeout, "");
@@ -85,9 +99,10 @@ double PowerDistributionPanel::GetCurrent(uint8_t channel) const {
  * @return The the total current drawn from the PDP channels in Amperes
  */
 double PowerDistributionPanel::GetTotalCurrent() const {
+  if (StatusIsFatal()) return 0;
   int32_t status = 0;
 
-  double current = getPDPTotalCurrent(m_module, &status);
+  double current = HAL_GetPDPTotalCurrent(m_module, &status);
 
   if (status) {
     wpi_setWPIErrorWithContext(Timeout, "");
@@ -102,9 +117,10 @@ double PowerDistributionPanel::GetTotalCurrent() const {
  * @return The the total power drawn from the PDP channels in Watts
  */
 double PowerDistributionPanel::GetTotalPower() const {
+  if (StatusIsFatal()) return 0;
   int32_t status = 0;
 
-  double power = getPDPTotalPower(m_module, &status);
+  double power = HAL_GetPDPTotalPower(m_module, &status);
 
   if (status) {
     wpi_setWPIErrorWithContext(Timeout, "");
@@ -119,9 +135,10 @@ double PowerDistributionPanel::GetTotalPower() const {
  * @return The the total energy drawn from the PDP channels in Joules
  */
 double PowerDistributionPanel::GetTotalEnergy() const {
+  if (StatusIsFatal()) return 0;
   int32_t status = 0;
 
-  double energy = getPDPTotalEnergy(m_module, &status);
+  double energy = HAL_GetPDPTotalEnergy(m_module, &status);
 
   if (status) {
     wpi_setWPIErrorWithContext(Timeout, "");
@@ -136,9 +153,10 @@ double PowerDistributionPanel::GetTotalEnergy() const {
  * @see PowerDistributionPanel#GetTotalEnergy
  */
 void PowerDistributionPanel::ResetTotalEnergy() {
+  if (StatusIsFatal()) return;
   int32_t status = 0;
 
-  resetPDPTotalEnergy(m_module, &status);
+  HAL_ResetPDPTotalEnergy(m_module, &status);
 
   if (status) {
     wpi_setWPIErrorWithContext(Timeout, "");
@@ -149,9 +167,10 @@ void PowerDistributionPanel::ResetTotalEnergy() {
  * Remove all of the fault flags on the PDP.
  */
 void PowerDistributionPanel::ClearStickyFaults() {
+  if (StatusIsFatal()) return;
   int32_t status = 0;
 
-  clearPDPStickyFaults(m_module, &status);
+  HAL_ClearPDPStickyFaults(m_module, &status);
 
   if (status) {
     wpi_setWPIErrorWithContext(Timeout, "");

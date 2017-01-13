@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -12,11 +12,11 @@
 #ifdef WPI_ERRORS_DEFINE_STRINGS
 #define S(label, offset, message)            \
   const char* wpi_error_s_##label = message; \
-  const int32_t wpi_error_value_##label = offset
+  const int wpi_error_value_##label = offset
 #else
 #define S(label, offset, message)         \
   extern const char* wpi_error_s_##label; \
-  const int32_t wpi_error_value_##label = offset
+  const int wpi_error_value_##label = offset
 #endif
 
 /*
@@ -76,6 +76,7 @@ S(NetworkTablesCorrupt, -43, "NetworkTables data stream is corrupt");
 S(SmartDashboardMissingKey, -43, "SmartDashboard data does not exist");
 S(CommandIllegalUse, -50, "Illegal use of Command");
 S(UnsupportedInSimulation, -80, "Unsupported in simulation");
+S(CameraServerError, -90, "CameraServer error");
 
 /*
  * Warnings

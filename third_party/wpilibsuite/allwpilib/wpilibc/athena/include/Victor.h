@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -9,6 +9,8 @@
 
 #include "PWMSpeedController.h"
 
+namespace frc {
+
 /**
  * Vex Robotics Victor 888 Speed Controller
  *
@@ -17,6 +19,8 @@
  */
 class Victor : public PWMSpeedController {
  public:
-  explicit Victor(uint32_t channel);
+  explicit Victor(int channel);
   virtual ~Victor() = default;
 };
+
+}  // namespace frc

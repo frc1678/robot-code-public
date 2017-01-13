@@ -1,0 +1,13 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+package logging_test;
+
+message Test1 {
+  required int32 thing = 1;
+}
+
+message Test2 {
+  required string thing = 1;
+}

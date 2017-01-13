@@ -1,16 +1,19 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2016. All Rights Reserved.                             */
+/* Copyright (c) FIRST 2016-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
 #include "simulation/SimEncoder.h"
+
 #include "simulation/MainNode.h"
 
+using namespace frc;
+
 SimEncoder::SimEncoder(std::string topic) {
-  commandPub =
-      MainNode::Advertise<msgs::GzString>("~/simulator/" + topic + "/control");
+  commandPub = MainNode::Advertise<gazebo::msgs::GzString>("~/simulator/" +
+                                                           topic + "/control");
 
   posSub = MainNode::Subscribe("~/simulator/" + topic + "/position",
                                &SimEncoder::positionCallback, this);
@@ -38,15 +41,15 @@ double SimEncoder::GetPosition() { return position; }
 double SimEncoder::GetVelocity() { return velocity; }
 
 void SimEncoder::sendCommand(std::string cmd) {
-  msgs::GzString msg;
+  gazebo::msgs::GzString msg;
   msg.set_data(cmd);
   commandPub->Publish(msg);
 }
 
-void SimEncoder::positionCallback(const msgs::ConstFloat64Ptr& msg) {
+void SimEncoder::positionCallback(const gazebo::msgs::ConstFloat64Ptr& msg) {
   position = msg->data();
 }
 
-void SimEncoder::velocityCallback(const msgs::ConstFloat64Ptr& msg) {
+void SimEncoder::velocityCallback(const gazebo::msgs::ConstFloat64Ptr& msg) {
   velocity = msg->data();
 }

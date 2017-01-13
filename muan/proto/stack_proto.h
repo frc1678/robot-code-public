@@ -1,10 +1,10 @@
 #ifndef MUAN_PROTO_STACK_PROTO_H_
 #define MUAN_PROTO_STACK_PROTO_H_
 
-#include "google/protobuf/arena.h"
-#include "third_party/aos/common/die.h"
 #include <array>
 #include <cstdint>
+#include "google/protobuf/arena.h"
+#include "third_party/aos/common/die.h"
 
 namespace muan {
 namespace proto {
@@ -38,15 +38,12 @@ void ProtoFailOnBlockFree(void*, size_t);
 template <typename T, std::size_t size>
 class StackProto {
  public:
-  StackProto() : arena_(GetOptions()) {
-    proto_message_ = google::protobuf::Arena::CreateMessage<T>(&arena_);
-  }
+  StackProto() : arena_(GetOptions()) { proto_message_ = google::protobuf::Arena::CreateMessage<T>(&arena_); }
   virtual ~StackProto() = default;
 
   // Allocate from a StackProto of a different size.
   template <std::size_t other_size>
-  StackProto(const StackProto<T, other_size>& copy_from)
-      : arena_{GetOptions()} {
+  StackProto(const StackProto<T, other_size>& copy_from) : arena_{GetOptions()} {
     proto_message_ = google::protobuf::Arena::CreateMessage<T>(&arena_);
     proto_message_->CopyFrom(*copy_from.get());
   }

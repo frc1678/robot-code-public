@@ -5,7 +5,7 @@
 
 class BuildTestRobot : public RobotBase {
  public:
-  void StartCompetition() override{
+  void StartCompetition() override {
     muan::wpilib::PdpWrapper::Queue pdp_queue;
     muan::wpilib::CanWrapper can{&pdp_queue};
     std::thread can_thread{std::ref(can)};
@@ -14,16 +14,15 @@ class BuildTestRobot : public RobotBase {
 
     can.pcm()->CreateSolenoid(6);
 
-    HALNetworkCommunicationObserveUserProgramStarting();
+    HAL_ObserveUserProgramStarting();
 
     while (true) {
       if (IsDisabled()) {
         can.pcm()->WriteSolenoid(6, false);
-        HALNetworkCommunicationObserveUserProgramDisabled();
-      }
-      else if (IsAutonomous()) {
+        HAL_ObserveUserProgramDisabled();
+      } else if (IsAutonomous()) {
         can.pcm()->WriteSolenoid(6, true);
-        HALNetworkCommunicationObserveUserProgramAutonomous();
+        HAL_ObserveUserProgramAutonomous();
       }
     }
   }

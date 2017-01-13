@@ -1,33 +1,36 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
 #include "ADXL362.h"
+
 #include "DigitalInput.h"
 #include "DigitalOutput.h"
 #include "DriverStation.h"
 #include "HAL/HAL.h"
 #include "LiveWindow/LiveWindow.h"
 
-static uint8_t kRegWrite = 0x0A;
-static uint8_t kRegRead = 0x0B;
+using namespace frc;
 
-static uint8_t kPartIdRegister = 0x02;
-static uint8_t kDataRegister = 0x0E;
-static uint8_t kFilterCtlRegister = 0x2C;
-static uint8_t kPowerCtlRegister = 0x2D;
+static int kRegWrite = 0x0A;
+static int kRegRead = 0x0B;
 
-// static uint8_t kFilterCtl_Range2G = 0x00;
-// static uint8_t kFilterCtl_Range4G = 0x40;
-// static uint8_t kFilterCtl_Range8G = 0x80;
-static uint8_t kFilterCtl_ODR_100Hz = 0x03;
+static int kPartIdRegister = 0x02;
+static int kDataRegister = 0x0E;
+static int kFilterCtlRegister = 0x2C;
+static int kPowerCtlRegister = 0x2D;
 
-static uint8_t kPowerCtl_UltraLowNoise = 0x20;
-// static uint8_t kPowerCtl_AutoSleep = 0x04;
-static uint8_t kPowerCtl_Measure = 0x02;
+// static int kFilterCtl_Range2G = 0x00;
+// static int kFilterCtl_Range4G = 0x40;
+// static int kFilterCtl_Range8G = 0x80;
+static int kFilterCtl_ODR_100Hz = 0x03;
+
+static int kPowerCtl_UltraLowNoise = 0x20;
+// static int kPowerCtl_AutoSleep = 0x04;
+static int kPowerCtl_Measure = 0x02;
 
 /**
  * Constructor.  Uses the onboard CS1.
@@ -69,7 +72,7 @@ ADXL362::ADXL362(SPI::Port port, Range range) : m_spi(port) {
   commands[2] = kPowerCtl_Measure | kPowerCtl_UltraLowNoise;
   m_spi.Write(commands, 3);
 
-  HALReport(HALUsageReporting::kResourceType_ADXL362, port);
+  HAL_Report(HALUsageReporting::kResourceType_ADXL362, port);
 
   LiveWindow::GetInstance()->AddSensor("ADXL362", port, this);
 }
@@ -95,7 +98,8 @@ void ADXL362::SetRange(Range range) {
   // Specify the data format to read
   commands[0] = kRegWrite;
   commands[1] = kFilterCtlRegister;
-  commands[2] = kFilterCtl_ODR_100Hz | (uint8_t)((range & 0x03) << 6);
+  commands[2] =
+      kFilterCtl_ODR_100Hz | static_cast<uint8_t>((range & 0x03) << 6);
   m_spi.Write(commands, 3);
 }
 
@@ -117,7 +121,7 @@ double ADXL362::GetAcceleration(ADXL362::Axes axis) {
   uint8_t buffer[4];
   uint8_t command[4] = {0, 0, 0, 0};
   command[0] = kRegRead;
-  command[1] = kDataRegister + (uint8_t)axis;
+  command[1] = kDataRegister + static_cast<uint8_t>(axis);
   m_spi.Transaction(command, buffer, 4);
 
   // Sensor is little endian... swap bytes
@@ -146,7 +150,7 @@ ADXL362::AllAxes ADXL362::GetAccelerations() {
   dataBuffer[1] = kDataRegister;
   m_spi.Transaction(dataBuffer, dataBuffer, 8);
 
-  for (int32_t i = 0; i < 3; i++) {
+  for (int i = 0; i < 3; i++) {
     // Sensor is little endian... swap bytes
     rawData[i] = dataBuffer[i * 2 + 3] << 8 | dataBuffer[i * 2 + 2];
   }

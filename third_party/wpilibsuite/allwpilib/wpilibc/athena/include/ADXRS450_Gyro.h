@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2015-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2015-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -13,6 +13,8 @@
 #include "HAL/cpp/priority_mutex.h"
 #include "Notifier.h"
 #include "SPI.h"
+
+namespace frc {
 
 /**
  * Use a rate gyro to return the robots heading relative to a starting position.
@@ -31,7 +33,7 @@ class ADXRS450_Gyro : public GyroBase {
   explicit ADXRS450_Gyro(SPI::Port port);
   virtual ~ADXRS450_Gyro() = default;
 
-  float GetAngle() const override;
+  double GetAngle() const override;
   double GetRate() const override;
   void Reset() override;
   void Calibrate() override;
@@ -39,5 +41,7 @@ class ADXRS450_Gyro : public GyroBase {
  private:
   SPI m_spi;
 
-  uint16_t ReadRegister(uint8_t reg);
+  uint16_t ReadRegister(int reg);
 };
+
+}  // namespace frc

@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2011-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2011-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,7 +7,9 @@
 
 #include "Commands/PIDCommand.h"
 
-#include "float.h"
+#include <cfloat>
+
+using namespace frc;
 
 PIDCommand::PIDCommand(const std::string& name, double p, double i, double d,
                        double f, double period)
@@ -49,7 +51,7 @@ void PIDCommand::SetSetpointRelative(double deltaSetpoint) {
   SetSetpoint(GetSetpoint() + deltaSetpoint);
 }
 
-void PIDCommand::PIDWrite(float output) { UsePIDOutput(output); }
+void PIDCommand::PIDWrite(double output) { UsePIDOutput(output); }
 
 double PIDCommand::PIDGet() { return ReturnPIDInput(); }
 
@@ -66,7 +68,8 @@ double PIDCommand::GetSetpoint() const { return m_controller->GetSetpoint(); }
 double PIDCommand::GetPosition() { return ReturnPIDInput(); }
 
 std::string PIDCommand::GetSmartDashboardType() const { return "PIDCommand"; }
-void PIDCommand::InitTable(std::shared_ptr<ITable> table) {
-  m_controller->InitTable(table);
-  Command::InitTable(table);
+
+void PIDCommand::InitTable(std::shared_ptr<ITable> subtable) {
+  m_controller->InitTable(subtable);
+  Command::InitTable(subtable);
 }

@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -8,12 +8,16 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 #include "AnalogTrigger.h"
 #include "CounterBase.h"
 #include "HAL/Counter.h"
+#include "HAL/Types.h"
 #include "LiveWindow/LiveWindowSendable.h"
 #include "SensorBase.h"
+
+namespace frc {
 
 class DigitalGlitchFilter;
 
@@ -30,11 +34,17 @@ class Counter : public SensorBase,
                 public CounterBase,
                 public LiveWindowSendable {
  public:
+  enum Mode {
+    kTwoPulse = 0,
+    kSemiperiod = 1,
+    kPulseLength = 2,
+    kExternalDirection = 3
+  };
   explicit Counter(Mode mode = kTwoPulse);
-  explicit Counter(int32_t channel);
+  explicit Counter(int channel);
   explicit Counter(DigitalSource* source);
   explicit Counter(std::shared_ptr<DigitalSource> source);
-  DEPRECATED("Use pass-by-reference instead.")
+  WPI_DEPRECATED("Use pass-by-reference instead.")
   explicit Counter(AnalogTrigger* trigger);
   explicit Counter(const AnalogTrigger& trigger);
   Counter(EncodingType encodingType, DigitalSource* upSource,
@@ -43,7 +53,7 @@ class Counter : public SensorBase,
           std::shared_ptr<DigitalSource> downSource, bool inverted);
   virtual ~Counter();
 
-  void SetUpSource(int32_t channel);
+  void SetUpSource(int channel);
   void SetUpSource(AnalogTrigger* analogTrigger, AnalogTriggerType triggerType);
   void SetUpSource(std::shared_ptr<AnalogTrigger> analogTrigger,
                    AnalogTriggerType triggerType);
@@ -53,7 +63,7 @@ class Counter : public SensorBase,
   void SetUpSourceEdge(bool risingEdge, bool fallingEdge);
   void ClearUpSource();
 
-  void SetDownSource(int32_t channel);
+  void SetDownSource(int channel);
   void SetDownSource(AnalogTrigger* analogTrigger,
                      AnalogTriggerType triggerType);
   void SetDownSource(std::shared_ptr<AnalogTrigger> analogTrigger,
@@ -67,12 +77,12 @@ class Counter : public SensorBase,
   void SetUpDownCounterMode();
   void SetExternalDirectionMode();
   void SetSemiPeriodMode(bool highSemiPeriod);
-  void SetPulseLengthMode(float threshold);
+  void SetPulseLengthMode(double threshold);
 
   void SetReverseDirection(bool reverseDirection);
 
   // CounterBase interface
-  int32_t Get() const override;
+  int Get() const override;
   void Reset() override;
   double GetPeriod() const override;
   void SetMaxPeriod(double maxPeriod) override;
@@ -82,12 +92,12 @@ class Counter : public SensorBase,
 
   void SetSamplesToAverage(int samplesToAverage);
   int GetSamplesToAverage() const;
-  uint32_t GetFPGAIndex() const { return m_index; }
+  int GetFPGAIndex() const { return m_index; }
 
   void UpdateTable() override;
   void StartLiveWindowMode() override;
   void StopLiveWindowMode() override;
-  virtual std::string GetSmartDashboardType() const override;
+  std::string GetSmartDashboardType() const override;
   void InitTable(std::shared_ptr<ITable> subTable) override;
   std::shared_ptr<ITable> GetTable() const override;
 
@@ -97,10 +107,13 @@ class Counter : public SensorBase,
   // Makes the counter count down.
   std::shared_ptr<DigitalSource> m_downSource;
   // The FPGA counter object
-  void* m_counter = nullptr;  ///< The FPGA counter object.
+  HAL_CounterHandle m_counter = HAL_kInvalidHandle;
+
  private:
-  uint32_t m_index = 0;  ///< The index of this counter.
+  int m_index = 0;  ///< The index of this counter.
 
   std::shared_ptr<ITable> m_table;
   friend class DigitalGlitchFilter;
 };
+
+}  // namespace frc

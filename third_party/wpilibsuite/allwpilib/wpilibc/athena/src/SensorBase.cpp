@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -8,62 +8,34 @@
 #include "SensorBase.h"
 
 #include "FRC_NetworkCommunication/LoadOut.h"
+#include "HAL/AnalogInput.h"
+#include "HAL/AnalogOutput.h"
+#include "HAL/DIO.h"
 #include "HAL/HAL.h"
+#include "HAL/PDP.h"
+#include "HAL/PWM.h"
+#include "HAL/Ports.h"
+#include "HAL/Relay.h"
+#include "HAL/Solenoid.h"
 #include "WPIErrors.h"
 
-const uint32_t SensorBase::kDigitalChannels;
-const uint32_t SensorBase::kAnalogInputs;
-const uint32_t SensorBase::kSolenoidChannels;
-const uint32_t SensorBase::kSolenoidModules;
-const uint32_t SensorBase::kPwmChannels;
-const uint32_t SensorBase::kRelayChannels;
-const uint32_t SensorBase::kPDPChannels;
-const uint32_t SensorBase::kChassisSlots;
+using namespace frc;
 
-static bool portsInitialized = false;
-void* SensorBase::m_digital_ports[kDigitalChannels];
-void* SensorBase::m_relay_ports[kRelayChannels];
-void* SensorBase::m_pwm_ports[kPwmChannels];
-
-/**
- * Creates an instance of the sensor base and gets an FPGA handle
- */
-SensorBase::SensorBase() {
-  if (!portsInitialized) {
-    for (uint32_t i = 0; i < kDigitalChannels; i++) {
-      HalPortHandle port = getPort(i);
-      int32_t status = 0;
-      m_digital_ports[i] = initializeDigitalPort(port, &status);
-      wpi_setErrorWithContext(status, getHALErrorMessage(status));
-      freePort(port);
-    }
-
-    for (uint32_t i = 0; i < kRelayChannels; i++) {
-      HalPortHandle port = getPort(i);
-      int32_t status = 0;
-      m_relay_ports[i] = initializeDigitalPort(port, &status);
-      wpi_setErrorWithContext(status, getHALErrorMessage(status));
-      freePort(port);
-    }
-
-    for (uint32_t i = 0; i < kPwmChannels; i++) {
-      HalPortHandle port = getPort(i);
-      int32_t status = 0;
-      m_pwm_ports[i] = initializeDigitalPort(port, &status);
-      wpi_setErrorWithContext(status, getHALErrorMessage(status));
-      freePort(port);
-    }
-  }
-}
+const int SensorBase::kDigitalChannels = HAL_GetNumDigitalChannels();
+const int SensorBase::kAnalogInputs = HAL_GetNumAnalogInputs();
+const int SensorBase::kSolenoidChannels = HAL_GetNumSolenoidChannels();
+const int SensorBase::kSolenoidModules = HAL_GetNumPCMModules();
+const int SensorBase::kPwmChannels = HAL_GetNumPWMChannels();
+const int SensorBase::kRelayChannels = HAL_GetNumRelayHeaders();
+const int SensorBase::kPDPChannels = HAL_GetNumPDPChannels();
 
 /**
  * Check that the solenoid module number is valid.
  *
  * @return Solenoid module is valid and present
  */
-bool SensorBase::CheckSolenoidModule(uint8_t moduleNumber) {
-  if (moduleNumber < 64) return true;
-  return false;
+bool SensorBase::CheckSolenoidModule(int moduleNumber) {
+  return HAL_CheckSolenoidModule(moduleNumber);
 }
 
 /**
@@ -74,22 +46,20 @@ bool SensorBase::CheckSolenoidModule(uint8_t moduleNumber) {
  *
  * @return Digital channel is valid
  */
-bool SensorBase::CheckDigitalChannel(uint32_t channel) {
-  if (channel < kDigitalChannels) return true;
-  return false;
+bool SensorBase::CheckDigitalChannel(int channel) {
+  return HAL_CheckDIOChannel(channel);
 }
 
 /**
- * Check that the digital channel number is valid.
+ * Check that the relay channel number is valid.
  *
  * Verify that the channel number is one of the legal channel numbers. Channel
- * numbers are 1-based.
+ * numbers are 0-based.
  *
  * @return Relay channel is valid
  */
-bool SensorBase::CheckRelayChannel(uint32_t channel) {
-  if (channel < kRelayChannels) return true;
-  return false;
+bool SensorBase::CheckRelayChannel(int channel) {
+  return HAL_CheckRelayChannel(channel);
 }
 
 /**
@@ -100,9 +70,8 @@ bool SensorBase::CheckRelayChannel(uint32_t channel) {
  *
  * @return PWM channel is valid
  */
-bool SensorBase::CheckPWMChannel(uint32_t channel) {
-  if (channel < kPwmChannels) return true;
-  return false;
+bool SensorBase::CheckPWMChannel(int channel) {
+  return HAL_CheckPWMChannel(channel);
 }
 
 /**
@@ -113,9 +82,8 @@ bool SensorBase::CheckPWMChannel(uint32_t channel) {
  *
  * @return Analog channel is valid
  */
-bool SensorBase::CheckAnalogInput(uint32_t channel) {
-  if (channel < kAnalogInputs) return true;
-  return false;
+bool SensorBase::CheckAnalogInputChannel(int channel) {
+  return HAL_CheckAnalogInputChannel(channel);
 }
 
 /**
@@ -126,9 +94,8 @@ bool SensorBase::CheckAnalogInput(uint32_t channel) {
  *
  * @return Analog channel is valid
  */
-bool SensorBase::CheckAnalogOutput(uint32_t channel) {
-  if (channel < kAnalogOutputs) return true;
-  return false;
+bool SensorBase::CheckAnalogOutputChannel(int channel) {
+  return HAL_CheckAnalogOutputChannel(channel);
 }
 
 /**
@@ -136,9 +103,8 @@ bool SensorBase::CheckAnalogOutput(uint32_t channel) {
  *
  * @return Solenoid channel is valid
  */
-bool SensorBase::CheckSolenoidChannel(uint32_t channel) {
-  if (channel < kSolenoidChannels) return true;
-  return false;
+bool SensorBase::CheckSolenoidChannel(int channel) {
+  return HAL_CheckSolenoidChannel(channel);
 }
 
 /**
@@ -146,7 +112,6 @@ bool SensorBase::CheckSolenoidChannel(uint32_t channel) {
  *
  * @return PDP channel is valid
  */
-bool SensorBase::CheckPDPChannel(uint32_t channel) {
-  if (channel < kPDPChannels) return true;
-  return false;
+bool SensorBase::CheckPDPChannel(int channel) {
+  return HAL_CheckPDPModule(channel);
 }

@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2016. All Rights Reserved.                             */
+/* Copyright (c) FIRST 2016-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -9,20 +9,27 @@
 
 #include <stdint.h>
 
-#include "Handles.h"
+#include "HAL/Types.h"
 
+#ifdef __cplusplus
 extern "C" {
-void* initializeSolenoidPort(HalPortHandle port_handle, int32_t* status);
-void freeSolenoidPort(void* solenoid_port_pointer);
-bool checkSolenoidModule(uint8_t module);
+#endif
 
-bool getSolenoid(void* solenoid_port_pointer, int32_t* status);
-uint8_t getAllSolenoids(void* solenoid_port_pointer, int32_t* status);
-void setSolenoid(void* solenoid_port_pointer, bool value, int32_t* status);
-
-int getPCMSolenoidBlackList(void* solenoid_port_pointer, int32_t* status);
-bool getPCMSolenoidVoltageStickyFault(void* solenoid_port_pointer,
-                                      int32_t* status);
-bool getPCMSolenoidVoltageFault(void* solenoid_port_pointer, int32_t* status);
-void clearAllPCMStickyFaults_sol(void* solenoid_port_pointer, int32_t* status);
+HAL_SolenoidHandle HAL_InitializeSolenoidPort(HAL_PortHandle portHandle,
+                                              int32_t* status);
+void HAL_FreeSolenoidPort(HAL_SolenoidHandle solenoidPortHandle);
+HAL_Bool HAL_CheckSolenoidModule(int32_t module);
+HAL_Bool HAL_CheckSolenoidChannel(int32_t channel);
+HAL_Bool HAL_GetSolenoid(HAL_SolenoidHandle solenoidPortHandle,
+                         int32_t* status);
+int32_t HAL_GetAllSolenoids(int32_t module, int32_t* status);
+void HAL_SetSolenoid(HAL_SolenoidHandle solenoidPortHandle, HAL_Bool value,
+                     int32_t* status);
+void HAL_SetAllSolenoids(int32_t module, int32_t state, int32_t* status);
+int32_t HAL_GetPCMSolenoidBlackList(int32_t module, int32_t* status);
+HAL_Bool HAL_GetPCMSolenoidVoltageStickyFault(int32_t module, int32_t* status);
+HAL_Bool HAL_GetPCMSolenoidVoltageFault(int32_t module, int32_t* status);
+void HAL_ClearAllPCMStickyFaults(int32_t module, int32_t* status);
+#ifdef __cplusplus
 }
+#endif
