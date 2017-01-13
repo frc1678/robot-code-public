@@ -11,7 +11,7 @@ __author__ = 'Austin Schuh (austin.linux@gmail.com)'
 
 import numpy
 import scipy.signal
-import scipy.signal.cont2discrete
+#import scipy.signal.cont2discrete
 import glog
 
 class Error (Exception):

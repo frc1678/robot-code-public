@@ -1,6 +1,6 @@
 #include <WPILib.h>
 #include "c2017/wpilib_update/main.h"
-#include "subsystem_runner/subsystem_runner.h"
+#include "subsystems/subsystem_runner.h"
 
 class WpilibRobot : public IterativeRobot {
  public:

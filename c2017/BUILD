@@ -2,7 +2,7 @@ cc_binary(
   name="frc1678",
   deps=[
       "//third_party/wpilibsuite:wpilib",
-      "//c2017/subsystem_runner:subsystem_runner",
+      "//c2017/subsystems:subsystem_runner",
       "//c2017/wpilib_update:main"
   ],
   srcs=["main.cpp"]
