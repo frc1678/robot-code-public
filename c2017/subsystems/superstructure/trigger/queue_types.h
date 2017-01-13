@@ -3,16 +3,16 @@
 
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
-#include "o2017/subsystems/superstructure/trigger/trigger.pb.h"
+#include "c2017/subsystems/superstructure/trigger/trigger.pb.h"
 
-namespace o2017 {
+namespace c2017 {
 
 namespace trigger {
 
-using TriggerGoalProto = muan::proto::StackProto<::o2017::trigger::TriggerGoal, 256>;
-using TriggerInputProto = muan::proto::StackProto<::o2017::trigger::TriggerInput, 256>;
-using TriggerStatusProto = muan::proto::StackProto<::o2017::trigger::TriggerStatus, 256>;
-using TriggerOutputProto = muan::proto::StackProto<::o2017::trigger::TriggerOutput, 256>;
+using TriggerGoalProto = muan::proto::StackProto<::c2017::trigger::TriggerGoal, 256>;
+using TriggerInputProto = muan::proto::StackProto<::c2017::trigger::TriggerInput, 256>;
+using TriggerStatusProto = muan::proto::StackProto<::c2017::trigger::TriggerStatus, 256>;
+using TriggerOutputProto = muan::proto::StackProto<::c2017::trigger::TriggerOutput, 256>;
 
 using TriggerInputQueue = muan::queues::MessageQueue<TriggerInputProto, 200>;
 using TriggerGoalQueue = muan::queues::MessageQueue<TriggerGoalProto, 200>;
