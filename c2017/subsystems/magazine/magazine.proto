@@ -1,0 +1,40 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+package c2017.subsystems.magazine;
+
+/*  Requirements as of 1/12/17
+ conveyor motor
+ input - double voltage
+ magazine extension extended bool
+ gear intake - hp gear open bool
+ shutter bool - shutter open bool
+ */
+
+message MagazineStatus {
+    required bool has_gear = 1;
+    required bool current_spiked = 2;
+    required bool is_running = 3;
+}
+
+message MagazineInput {
+    required double conveyor_current = 1;
+}
+
+message PrototypeOutput {
+    //voltage running conveyor system to shooter
+    required double conveyor_motor_voltage = 1;
+    //extends solenoids to expand magazine capacity
+    required bool magazine_cylinder_extend = 2;
+    required bool gear_hp_open = 3;
+    required bool gear_shutter_open = 4;
+
+}
+
+message PrototypeGoal {
+    //check if magazine expansion is complete
+    required double conveyor_voltage = 1;
+    
+    
+}
