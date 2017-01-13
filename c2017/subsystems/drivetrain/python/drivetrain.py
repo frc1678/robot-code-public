@@ -59,7 +59,7 @@ class CIM(control_loop.ControlLoop):
 
 
 class Drivetrain(control_loop.ControlLoop):
-  def __init__(self, name="Drivetrain", left_low=True, right_low=True):
+  def __init__(self, name="Drivetrain"):
     super(Drivetrain, self).__init__(name)
     # Number of motors per side
     self.num_motors = 2
