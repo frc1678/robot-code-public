@@ -6,7 +6,7 @@ package c2017.Climber;
       
 message ClimberStatus {
   required bool currently_climbing = 1;
-  required bool hit_top = 1;
+  required bool hit_top = 2;
 }
                    
 message ClimberInput {
