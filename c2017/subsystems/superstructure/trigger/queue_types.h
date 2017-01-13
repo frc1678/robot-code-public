@@ -1,5 +1,5 @@
 #ifndef C2017_SUBSYSTEMS_SUPERSTRUCTURE_TRIGGER_QUEUETYPES_H_
-#define C2016_SUBSYSTEMS_SUPERSTRUCTURE_TRIGGER_QUEUETYPES_H_
+#define C2017_SUBSYSTEMS_SUPERSTRUCTURE_TRIGGER_QUEUETYPES_H_
 
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
@@ -23,4 +23,4 @@ using TriggerStatusQueue = muan::queues::MessageQueue<TriggerStatusProto, 200>;
 
 } // namespace c2017
 
-#endif  // C2016_SUBSYSTEMS_SUPERSTRUCTURE_TRIGGER_QUEUETYPES_H_
+#endif  // C2017_SUBSYSTEMS_SUPERSTRUCTURE_TRIGGER_QUEUETYPES_H_
