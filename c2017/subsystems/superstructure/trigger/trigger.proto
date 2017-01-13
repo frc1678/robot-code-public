@@ -1,4 +1,4 @@
-syntax = "proto2"
+syntax = "proto2";
 
 message TriggerInput {
   required double encoder_position = 1;
