@@ -42,6 +42,7 @@ install:
   # Numpy and Scipy don't work from the deb packages for some reason
   - pip install -U numpy
   - pip install -U scipy
+  - pip install -U glog
 
 # TODO(Wesley) Add to pre-push git hook?
 script:
