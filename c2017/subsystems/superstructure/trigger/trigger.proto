@@ -1,5 +1,7 @@
 syntax = "proto2";
 
+package c2017.trigger;
+
 message TriggerInput {
   required double encoder_position = 1;
 }
