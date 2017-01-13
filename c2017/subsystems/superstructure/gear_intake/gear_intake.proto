@@ -9,7 +9,7 @@ message GearIntakeInput {
 }
 
 message GearIntakeOutput {
-  //Positive is forwards
+  //Positive is pulling in gear
   required double roller_voltage = 1;
   required bool solenoid = 2;
 }
@@ -17,7 +17,7 @@ message GearIntakeOutput {
 message GearIntakeStatus {
   required bool current_spiked = 1;
   required bool has_gear = 2;
-  required bool open = 3;
+  required bool down = 3;
   required bool running = 4;
 }
 
