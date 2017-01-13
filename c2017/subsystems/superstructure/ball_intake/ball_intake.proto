@@ -1,0 +1,26 @@
+syntax = "proto2";
+
+package ball_intake_proto;
+
+option cc_enable_arenas = true;
+   
+message IntakeOutput {
+  required double roller_voltage = 1;
+  required double solenoid = 2;
+}
+
+message IntakeStatus {
+   required double open_running = 1;
+}
+
+message IntakeGoal {
+  required double intake = 1;
+  required bool agitate = 2;
+  required bool off = 3;
+}
+
+enum Goal {
+  STOP = 0;
+  FORWARD = 1;
+  REVERSE = 2;
+}
