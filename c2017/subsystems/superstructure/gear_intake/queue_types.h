@@ -19,7 +19,7 @@ using GearIntakeInputQueue = muan::queues::MessageQueue<GearIntakeInputProto, 20
 using GearIntakeStatusQueue = muan::queues::MessageQueue<GearIntakeStatusProto, 200>;
 using GearIntakeGoalQueue = muan::queues::MessageQueue<GearIntakeGoalProto, 200>;
 
-}
+} //gear_intake
 
-}
+} //c2017
 #endif
