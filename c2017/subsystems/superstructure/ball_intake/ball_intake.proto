@@ -19,3 +19,8 @@ message IntakeGoal {
   required bool off = 3;
 }
 
+enum Goal {
+  STOP = 0;
+  FORWARD = 1;
+  REVERSE = 2;
+}
