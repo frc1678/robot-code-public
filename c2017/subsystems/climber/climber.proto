@@ -10,7 +10,8 @@ message ClimberStatus {
 }
                    
 message ClimberInput {
-  required double encoder = 1;
+  required double current = 1;
+  required double position = 2;
 }
 
 message ClimberOutput {
