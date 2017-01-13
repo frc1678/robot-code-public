@@ -42,7 +42,7 @@ void Main::SendDSMessage() {
   status->set_brownout(DriverStation::GetInstance().IsBrownedOut());
   status->set_has_ds_connection(DriverStation::GetInstance().IsDSAttached());
 
-  c2017::QueueManager::GetInstance().driver_station_queue().WriteMessage(status);
+  c2017::QueueManager::GetInstance().driver_station_queue()->WriteMessage(status);
 }
 
 }  // wpilib_update

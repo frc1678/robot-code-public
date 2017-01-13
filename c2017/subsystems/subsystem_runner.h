@@ -5,6 +5,7 @@
 
 #include "c2017/queue_manager/queue_manager.h"
 #include "c2017/wpilib/wpilib_interface.h"
+#include "c2017/subsystems/drivetrain/drivetrain_base.h"
 #include "third_party/aos/common/time.h"
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/aos/linux_code/init.h"

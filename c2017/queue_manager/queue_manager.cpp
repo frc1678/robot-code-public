@@ -11,9 +11,13 @@ MessageQueue<muan::proto::StackProto<PdpStatus, 512>>& QueueManager::pdp_status_
   return pdp_status_queue_;
 }
 
-muan::wpilib::DriverStationQueue& QueueManager::driver_station_queue() { return driver_station_queue_; }
+muan::wpilib::DriverStationQueue*
+QueueManager::driver_station_queue() {
+  return &driver_station_queue_;
+}
 
-muan::wpilib::gyro::GyroQueue* QueueManager::gyro_queue() {
+muan::wpilib::gyro::GyroQueue*
+QueueManager::gyro_queue() {
   return &gyro_queue_;
 }
 
