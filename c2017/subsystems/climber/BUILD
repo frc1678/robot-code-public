@@ -1,4 +1,4 @@
-load('//third_party/google/protobuf:protobuf.bzl', 'cc_proto_ibrary')
+load('/third_party/google/protobuf/protobuf', 'cc_proto_library')
 
 cc_library(
   name = 'climber_queues',
@@ -10,6 +10,6 @@ cc_library(
 cc_proto_library(
   name = 'climber_proto',
   srcs = ['climber.proto'],
-  protoc = '//third_party/google/protobuf',
-  visibility = ['//visibility:public']
+  protoc = '//third_party/google/protobuf:protoc',
+  default_runtime = '//third_party/google/protobuf'
 )
