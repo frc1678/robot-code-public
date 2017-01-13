@@ -63,7 +63,10 @@ class Function(object):
             if var != "":
                 class_h_file.insert_text("vars", var + ";")
 
-        class_cpp_skel_file = open(self.script_dir + "text_includes/auto_function_class.cpp.skel")
+        if len(self.get_args()) == 0:
+            class_cpp_skel_file = open(self.script_dir + "text_includes/auto_function_class_no_args.cpp.skel")
+        else:
+            class_cpp_skel_file = open(self.script_dir + "text_includes/auto_function_class.cpp.skel")
         class_cpp_file = File(class_cpp_skel_file.read())
 
         class_cpp_file.replace_text("name", self.get_name())
