@@ -82,7 +82,6 @@ cc_library(
     'allwpilib/wpilibc/athena/src/**/*.cpp',
     'allwpilib/wpilibc/shared/src/**/*.cpp',
   ], exclude = [
-    'allwpilib/wpilibc/athena/src/Vision/*',
     'allwpilib/wpilibc/athena/src/CameraServer.cpp',
     'allwpilib/wpilibc/athena/src/USBCamera.cpp',
   ]),
@@ -91,7 +90,6 @@ cc_library(
     'allwpilib/wpilibc/shared/include/**/*',
   ], exclude = [
     'allwpilib/wpilibc/athena/include/CameraServer.h',
-    'allwpilib/wpilibc/athena/include/Vision/*',
   ]),
   includes = [
     'allwpilib/wpilibc/athena/include',
