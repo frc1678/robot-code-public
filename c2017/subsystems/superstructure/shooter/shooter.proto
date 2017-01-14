@@ -18,4 +18,5 @@ message ShooterStatus {
 
 message ShooterGoal {
   required double goal_velocity = 1;
+  required bool shot_mode = 2;
 }
