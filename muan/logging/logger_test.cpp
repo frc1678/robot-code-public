@@ -4,7 +4,6 @@
 #include "gtest/gtest.h"
 #include "muan/logging/logger_test.pb.h"
 #include "muan/units/units.h"
-#include "muan/utils/timing_utils.h"
 #include "muan/proto/stack_proto.h"
 
 using muan::logging::Logger;

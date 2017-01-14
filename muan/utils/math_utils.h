@@ -6,6 +6,7 @@
 #include "Eigen/Core"
 
 namespace muan {
+namespace utils {
 
 inline double Cap(double val, double min, double max) {
   double ret = val;
@@ -54,6 +55,7 @@ Eigen::Matrix<double, A, 1> GaussianNoise(
 // Perform a modulo operation that is relative to negative infinity, not 0
 uint32_t true_modulo(int a, int b);
 
-}  // namespace muan
+}  // utils
+}  // muan
 
 #endif /* MUAN_UTILS_MATH_UTILS_H_ */
