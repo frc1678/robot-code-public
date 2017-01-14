@@ -1,12 +1,14 @@
 syntax = "proto2";
 
-package ball_intake_proto;
+package c2017.ball_intake
 
 option cc_enable_arenas = true;
    
 message IntakeOutput {
   required double roller_voltage = 1;
+  //positive is forward
   required double solenoid = 2;
+  //controls pneumatic cylinder
 }
 
 message IntakeStatus {
@@ -15,7 +17,9 @@ message IntakeStatus {
 
 message IntakeGoal {
   required double intake = 1;
+  //intake can work as an outtake
   required bool agitate = 2;
+  //stirs up hooper
   required bool off = 3;
 }
 

@@ -1,18 +1,23 @@
-  #include "muan/proto/stack_proto.h"
-  #include "muan/queues/message_queue.h"
-  #include "c2017/subsystems/superstructure/intake/intake.pb.h"
+#ifndef C2017_SUBSYSTEMS_SUPERSTRUCTURE_BALLINTAKE_QUEUETYPES_H_
+#define C2017_SUBSYSTEMS_SUPERSTRUCTURE_BALLINTAKE_QUEUETYPES_H_
 
-  namespace c2017 {
+#include "muan/proto/stack_proto.h"
+#include "muan/queues/message_queue.h"
+#include "c2017/subsystems/superstructure/intake/intake.pb.h"
 
-    using IntakeOutputProto = muan::proto::StackProto<IntakeOutput, 1024>;
-    using IntakeStatusProto = muan::proto::StackProto<IntakeStatus, 1024>;
-    using IntakeGoalProto = muan::proto::StackProto<IntakeGoal, 1024>;
+namespace c2017 {
 
-    using IntakeOutputQueue = muan::queues::MessageQueue<IntakeOutputProto, 100>;
+namespace ball_intake {
 
-    using IntakeStatusQueue = muan::queues::MessageQueue<IntakeStatusProto, 100>;
-    using IntakeGoalQueue = muan::queues::MessageQueue<IntakeGoalProto, 100>;
-    }
-  }
+  using BallIntakeOutputProto = muan::proto::StackProto<BallIntakeOutput, 1024>;
+  using BallIntakeIntputProto = muan::proto::StackProto<BallIntakeInput, 1024>;
+  using BallIntakeStatusProto = muan::proto::StackProto<BallIntakeStatus, 1024>;
+  using BallIntakeGoalProto = muan::proto::StackProto<BallIntakeGoal, 1024>;
   
-  #endif
+  using BallIntakeOutputQueue = muan::queues::MessageQueue<BallIntakeOutputProto, 100>;
+  using BallIntakeInputQueue = muan::proto::StackProto<BallIntakeInputProto, 100>;
+  using BallIntakeStatusQueue = muan::queues::MessageQueue<BallIntakeStatusProto, 100>;
+  using BallIntakeGoalQueue = muan::queues::MessageQueue<BallIntakeGoalProto, 100>;
+  }
+} 
+#endif//C2017_SUBSYSTEMS_SUPERSTRUCTURE_BALLINTAKE_QUEUETYPES_H_
