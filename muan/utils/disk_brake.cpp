@@ -34,7 +34,7 @@ DiskBrake::BrakeState DiskBrake::Update(bool locking) {
     position_ -= dt / change_state_time_;
   }
 
-  position_ = Cap(position_, 0, 1);
+  position_ = utils::Cap(position_, 0, 1);
 
   last_update_ = this_update;
 

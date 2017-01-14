@@ -6,6 +6,7 @@
 #include <vector>
 
 namespace muan {
+namespace utils {
 
 template <typename T>
 class LinearInterpolation {
@@ -22,7 +23,10 @@ class LinearInterpolation {
   static bool ComparePoints(const std::pair<double, T> &a, const std::pair<double, T> &b);
 };
 
-}  // muan
+}  //  utils
+
+}  //  muan
+
 
 #include "linear_interpolation.hpp"
 

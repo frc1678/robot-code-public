@@ -368,9 +368,9 @@ TEST(StateSpace, ObserverRecoversFromNoise) {
   // Apply both process noise (Q) and measurement noise (R) to the simulation
   for (uint32_t t = 0; t < 1000; t++) {
     auto u = Eigen::Matrix<double, 1, 1>::Constant(1);
-    observer.Update(u, plant.y() + muan::GaussianNoise<1>(R));
+    observer.Update(u, plant.y() + muan::utils::GaussianNoise<1>(R));
     plant.Update(u);
-    plant.x() += muan::GaussianNoise<2>(Q);
+    plant.x() += muan::utils::GaussianNoise<2>(Q);
 
     EXPECT_NEAR(plant.x(0), observer.x(0), 2e-2);
     EXPECT_NEAR(plant.x(1), observer.x(1), 2e-1);

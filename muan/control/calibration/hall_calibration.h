@@ -3,6 +3,8 @@
 
 namespace muan {
 
+namespace control {
+
 /*
  * A class for calibrating a main sensor using a hall effect sensor. To use
  * call Update in a loop.
@@ -45,6 +47,8 @@ class HallCalibration {
   // The value that should be returned at the center of the magnet
   double magnet_position_;
 };
+
+}  // namespace control
 
 }  // namespace muan
 

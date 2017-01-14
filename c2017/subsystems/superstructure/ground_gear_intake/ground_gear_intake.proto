@@ -1,0 +1,31 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+package c2017.ground_gear_intake;
+
+message GroundGearIntakeInput {
+  required double current = 1;
+}
+
+message GroundGearIntakeOutput {
+  //Positive is pulling in gear
+  required double roller_voltage = 1;
+  required bool solenoid = 2;
+}
+
+message GroundGearIntakeStatus {
+  required bool current_spiked = 1;
+  required bool has_gear = 2;
+  required bool down = 3;
+  required bool running = 4;
+}
+
+message GroundGearIntakeGoal {
+  enum Goal {
+    CARRY = 0;
+    PICKUP = 1;
+    SCORE = 2;
+  }
+  required Goal goal = 1;
+}
