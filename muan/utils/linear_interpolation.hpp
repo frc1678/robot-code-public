@@ -2,6 +2,7 @@
 #include "third_party/aos/common/die.h"
 
 namespace muan {
+namespace utils {
 
 template <typename T>
 LinearInterpolation<T>::LinearInterpolation(std::vector<std::pair<double, T>> data) {
@@ -68,5 +69,7 @@ template <typename T>
 bool LinearInterpolation<T>::ComparePoints(const std::pair<double, T> &a, const std::pair<double, T> &b) {
   return a.first < b.first;
 }
+
+} // utils
 
 }  // muan
