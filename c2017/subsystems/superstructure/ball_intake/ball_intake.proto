@@ -1,6 +1,6 @@
 syntax = "proto2";
 
-package ball_intake_proto;
+package c2017.ball_intake
 
 option cc_enable_arenas = true;
    
