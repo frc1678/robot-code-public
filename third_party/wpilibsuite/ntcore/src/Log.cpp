@@ -9,17 +9,17 @@
 
 #include <cstdio>
 #ifdef _WIN32
- #include <cstdlib>
+#include <cstdlib>
 #else
- #include <cstring>
+#include <cstring>
 #endif
 
 #ifdef __APPLE__
- #include <libgen.h>
+#include <libgen.h>
 #endif
 
 #ifdef __ANDROID__
- #include <libgen.h>
+#include <libgen.h>
 #endif
 
 using namespace nt;
@@ -61,6 +61,6 @@ static void def_log_func(unsigned int level, const char* file,
 #endif
 }
 
-Logger::Logger() : m_func(def_log_func) {}
+Logger::Logger() { SetLogger(def_log_func); }
 
 Logger::~Logger() {}

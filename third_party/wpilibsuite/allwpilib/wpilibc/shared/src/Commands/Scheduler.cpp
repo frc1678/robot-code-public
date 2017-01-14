@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2011-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2011-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -10,10 +10,13 @@
 #include <algorithm>
 #include <iostream>
 #include <set>
+
 #include "Buttons/ButtonScheduler.h"
 #include "Commands/Subsystem.h"
 #include "HLUsageReporting.h"
 #include "WPIErrors.h"
+
+using namespace frc;
 
 Scheduler::Scheduler() { HLUsageReporting::ReportScheduler(); }
 
@@ -225,14 +228,14 @@ void Scheduler::UpdateTable() {
       toCancel = new_toCancel->GetDoubleArray();
     else
       toCancel.resize(0);
-    //		m_table->RetrieveValue("Ids", *ids);
+    // m_table->RetrieveValue("Ids", *ids);
 
     // cancel commands that have had the cancel buttons pressed
     // on the SmartDashboad
     if (!toCancel.empty()) {
       for (commandIter = m_commands.begin(); commandIter != m_commands.end();
            ++commandIter) {
-        for (unsigned i = 0; i < toCancel.size(); i++) {
+        for (size_t i = 0; i < toCancel.size(); i++) {
           Command* c = *commandIter;
           if (c->GetID() == toCancel[i]) {
             c->Cancel();

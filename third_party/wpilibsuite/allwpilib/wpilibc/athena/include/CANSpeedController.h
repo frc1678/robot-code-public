@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2014-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2014-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -9,10 +9,10 @@
 
 #include "SpeedController.h"
 
+namespace frc {
+
 /**
  * Interface for "smart" CAN-based speed controllers.
- * @see CANJaguar
- * @see CANTalon
  */
 class CANSpeedController : public SpeedController {
  public:
@@ -22,8 +22,8 @@ class CANSpeedController : public SpeedController {
     kSpeed = 2,
     kPosition = 3,
     kVoltage = 4,
-    kFollower = 5,       // Not supported in Jaguar.
-    kMotionProfile = 6,  // Not supported in Jaguar.
+    kFollower = 5,
+    kMotionProfile = 6,
   };
 
   // Helper function for the ControlMode enum
@@ -63,8 +63,8 @@ class CANSpeedController : public SpeedController {
     kLimitMode_SrxDisableSwitchInputs = 2,
   };
 
-  virtual float Get() const = 0;
-  virtual void Set(float value) = 0;
+  virtual double Get() const = 0;
+  virtual void Set(double value) = 0;
   virtual void StopMotor() = 0;
   virtual void Disable() = 0;
   virtual void SetP(double p) = 0;
@@ -74,17 +74,17 @@ class CANSpeedController : public SpeedController {
   virtual double GetP() const = 0;
   virtual double GetI() const = 0;
   virtual double GetD() const = 0;
-  virtual float GetBusVoltage() const = 0;
-  virtual float GetOutputVoltage() const = 0;
-  virtual float GetOutputCurrent() const = 0;
-  virtual float GetTemperature() const = 0;
+  virtual double GetBusVoltage() const = 0;
+  virtual double GetOutputVoltage() const = 0;
+  virtual double GetOutputCurrent() const = 0;
+  virtual double GetTemperature() const = 0;
   virtual double GetPosition() const = 0;
   virtual double GetSpeed() const = 0;
   virtual bool GetForwardLimitOK() const = 0;
   virtual bool GetReverseLimitOK() const = 0;
   virtual uint16_t GetFaults() const = 0;
   virtual void SetVoltageRampRate(double rampRate) = 0;
-  virtual uint32_t GetFirmwareVersion() const = 0;
+  virtual int GetFirmwareVersion() const = 0;
   virtual void ConfigNeutralMode(NeutralMode mode) = 0;
   virtual void ConfigEncoderCodesPerRev(uint16_t codesPerRev) = 0;
   virtual void ConfigPotentiometerTurns(uint16_t turns) = 0;
@@ -95,8 +95,10 @@ class CANSpeedController : public SpeedController {
   virtual void ConfigForwardLimit(double forwardLimitPosition) = 0;
   virtual void ConfigReverseLimit(double reverseLimitPosition) = 0;
   virtual void ConfigMaxOutputVoltage(double voltage) = 0;
-  virtual void ConfigFaultTime(float faultTime) = 0;
+  virtual void ConfigFaultTime(double faultTime) = 0;
   // Hold off on interface until we figure out ControlMode enums.
   // virtual void SetControlMode(ControlMode mode) = 0;
   // virtual ControlMode GetControlMode() const = 0;
 };
+
+}  // namespace frc

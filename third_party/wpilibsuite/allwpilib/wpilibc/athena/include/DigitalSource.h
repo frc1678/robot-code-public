@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,7 +7,10 @@
 
 #pragma once
 
+#include "HAL/Types.h"
 #include "InterruptableSensorBase.h"
+
+namespace frc {
 
 /**
  * DigitalSource Interface.
@@ -22,7 +25,10 @@
 class DigitalSource : public InterruptableSensorBase {
  public:
   virtual ~DigitalSource() = default;
-  virtual uint32_t GetChannelForRouting() const = 0;
-  virtual uint32_t GetModuleForRouting() const = 0;
-  virtual bool GetAnalogTriggerForRouting() const = 0;
+  virtual HAL_Handle GetPortHandleForRouting() const = 0;
+  virtual AnalogTriggerType GetAnalogTriggerTypeForRouting() const = 0;
+  virtual bool IsAnalogTrigger() const = 0;
+  virtual int GetChannel() const = 0;
 };
+
+}  // namespace frc

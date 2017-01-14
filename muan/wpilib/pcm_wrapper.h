@@ -1,6 +1,7 @@
 #ifndef MUAN_WPILIB_PCM_WRAPPER_H_
 #define MUAN_WPILIB_PCM_WRAPPER_H_
 
+#include <array>
 #include <atomic>
 #include <cstdint>
 #include "WPILib.h"
@@ -9,13 +10,15 @@ namespace muan {
 
 namespace wpilib {
 
-class PcmWrapper : private SolenoidBase {
+class PcmWrapper {
  public:
-  PcmWrapper(uint8_t module = 0) : SolenoidBase(module) {}
-  ~PcmWrapper() = default;
+  PcmWrapper(int32_t module);
+  PcmWrapper();
+
+  ~PcmWrapper();
 
   // Create a solenoid on the specified channel.
-  void CreateSolenoid(uint8_t port);
+  bool CreateSolenoid(uint8_t port);
   void CreateDoubleSolenoid(uint8_t channel_forward, uint8_t channel_reverse);
 
   // Writes to the specified solenoid port. This is realtime and just sets
@@ -38,7 +41,12 @@ class PcmWrapper : private SolenoidBase {
 
   // Bitmasks of the initialized channels as well as the current values of each
   // solenoid
-  std::atomic<uint8_t> initialized_{0}, current_values_{0};
+  std::atomic<uint8_t> current_values_{0};
+
+  // Handles to the solenoids
+  std::array<HAL_SolenoidHandle, 8> handles_;
+
+  int32_t module_;
 };
 
 }  // wpilib

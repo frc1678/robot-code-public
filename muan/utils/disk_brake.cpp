@@ -6,16 +6,21 @@ namespace muan {
 DiskBrake::DiskBrake(bool locked) {
   // 1/5th of a second is a good default, rounding up won't break anything.
   change_state_time_ = aos::time::Time::InMS(200);
-  if(locked) position_ = 1;
-  else position_ = 0;
+  if (locked) {
+    position_ = 1;
+  } else {
+    position_ = 0;
+  }
   last_update_ = aos::time::Time::Now();
 }
 
 DiskBrake::DiskBrake(bool locked, units::Time change_state_time) {
-  change_state_time_ = aos::time::Time::InMS(units::convert(
-        change_state_time, units::ms));
-  if(locked) position_ = 1;
-  else position_ = 0;
+  change_state_time_ = aos::time::Time::InMS(units::convert(change_state_time, units::ms));
+  if (locked) {
+    position_ = 1;
+  } else {
+    position_ = 0;
+  }
   last_update_ = aos::time::Time::Now();
 }
 
@@ -42,4 +47,4 @@ DiskBrake::BrakeState DiskBrake::Update(bool locking) {
   }
 }
 
-} // namespace muan
+}  // namespace muan

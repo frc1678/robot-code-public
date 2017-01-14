@@ -1,0 +1,3 @@
+[submodule "lemonscript-transpiler"]
+	path = lemonscript-transpiler
+	url = https://github.com/WesleyAC/lemonscript-transpiler

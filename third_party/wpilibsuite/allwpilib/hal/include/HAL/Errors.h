@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2016. All Rights Reserved.                             */
+/* Copyright (c) FIRST 2016-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,7 +7,7 @@
 
 #pragma once
 
-#define CTR_RxTimeout_MESSAGE "CTRE CAN Recieve Timeout"
+#define CTR_RxTimeout_MESSAGE "CTRE CAN Receive Timeout"
 #define CTR_TxTimeout_MESSAGE "CTRE CAN Transmit Timeout"
 #define CTR_InvalidParamValue_MESSAGE "CTRE CAN Invalid Parameter"
 #define CTR_UnexpectedArbId_MESSAGE \
@@ -19,7 +19,7 @@
 #define NiFpga_Status_TransferAborted_MESSAGE "NIFPGA: Transfer aborted error"
 #define NiFpga_Status_MemoryFull_MESSAGE \
   "NIFPGA: Memory Allocation failed, memory full"
-#define NiFpga_Status_SoftwareFault_MESSAGE "NIFPGA: Unexepected software error"
+#define NiFpga_Status_SoftwareFault_MESSAGE "NIFPGA: Unexpected software error"
 #define NiFpga_Status_InvalidParameter_MESSAGE "NIFPGA: Invalid Parameter"
 #define NiFpga_Status_ResourceNotFound_MESSAGE "NIFPGA: Resource not found"
 #define NiFpga_Status_ResourceNotInitialized_MESSAGE \
@@ -67,6 +67,41 @@
 #define PARAMETER_OUT_OF_RANGE_MESSAGE "HAL: A parameter is out of range."
 #define RESOURCE_IS_ALLOCATED -1029
 #define RESOURCE_IS_ALLOCATED_MESSAGE "HAL: Resource already allocated"
+#define RESOURCE_OUT_OF_RANGE -1030
+#define RESOURCE_OUT_OF_RANGE_MESSAGE \
+  "HAL: The requested resource is out of range."
+#define HAL_INVALID_ACCUMULATOR_CHANNEL -1035
+#define HAL_INVALID_ACCUMULATOR_CHANNEL_MESSAGE \
+  "HAL: The requested input is not an accumulator channel"
+#define HAL_COUNTER_NOT_SUPPORTED -1058
+#define HAL_COUNTER_NOT_SUPPORTED_MESSAGE \
+  "HAL: Counter mode not supported for encoder method"
+#define HAL_PWM_SCALE_ERROR -1072
+#define HAL_PWM_SCALE_ERROR_MESSAGE \
+  "HAL: The PWM Scale Factors are out of range"
+#define HAL_HANDLE_ERROR -1098
+#define HAL_HANDLE_ERROR_MESSAGE \
+  "HAL: A handle parameter was passed incorrectly"
+
+#define HAL_SERIAL_PORT_NOT_FOUND -1123
+#define HAL_SERIAL_PORT_NOT_FOUND_MESSAGE \
+  "HAL: The specified serial port device was not found"
+
+#define HAL_SERIAL_PORT_OPEN_ERROR -1124
+#define HAL_SERIAL_PORT_OPEN_ERROR_MESSAGE \
+  "HAL: The serial port could not be opened"
+
+#define HAL_SERIAL_PORT_ERROR -1125
+#define HAL_SERIAL_PORT_ERROR_MESSAGE \
+  "HAL: There was an error on the serial port"
+
+#define HAL_THREAD_PRIORITY_ERROR -1152
+#define HAL_THREAD_PRIORITY_ERROR_MESSAGE \
+  "HAL: Getting or setting the priority of a thread has failed";
+
+#define HAL_THREAD_PRIORITY_RANGE_ERROR -1153
+#define HAL_THREAD_PRIORITY_RANGE_ERROR_MESSAGE \
+  "HAL: The priority requested to be set is invalid"
 
 #define VI_ERROR_SYSTEM_ERROR_MESSAGE "HAL - VISA: System Error";
 #define VI_ERROR_INV_OBJECT_MESSAGE "HAL - VISA: Invalid Object"

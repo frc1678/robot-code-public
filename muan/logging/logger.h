@@ -14,12 +14,12 @@
 
 #include <iostream>
 
+#include <atomic>
 #include <map>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
-#include <atomic>
 
 namespace muan {
 namespace logging {

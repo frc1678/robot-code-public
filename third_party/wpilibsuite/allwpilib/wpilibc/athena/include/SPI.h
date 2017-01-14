@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -8,6 +8,8 @@
 #pragma once
 
 #include "SensorBase.h"
+
+namespace frc {
 
 class DigitalOutput;
 class DigitalInput;
@@ -22,7 +24,7 @@ class DigitalInput;
 class SPI : public SensorBase {
  public:
   enum Port { kOnboardCS0, kOnboardCS1, kOnboardCS2, kOnboardCS3, kMXP };
-  SPI(Port SPIport);
+  explicit SPI(Port SPIport);
   virtual ~SPI();
 
   SPI(const SPI&) = delete;
@@ -42,27 +44,25 @@ class SPI : public SensorBase {
   void SetChipSelectActiveHigh();
   void SetChipSelectActiveLow();
 
-  virtual int32_t Write(uint8_t* data, uint8_t size);
-  virtual int32_t Read(bool initiate, uint8_t* dataReceived, uint8_t size);
-  virtual int32_t Transaction(uint8_t* dataToSend, uint8_t* dataReceived,
-                              uint8_t size);
+  virtual int Write(uint8_t* data, int size);
+  virtual int Read(bool initiate, uint8_t* dataReceived, int size);
+  virtual int Transaction(uint8_t* dataToSend, uint8_t* dataReceived, int size);
 
-  void InitAccumulator(double period, uint32_t cmd, uint8_t xfer_size,
-                       uint32_t valid_mask, uint32_t valid_value,
-                       uint8_t data_shift, uint8_t data_size, bool is_signed,
-                       bool big_endian);
+  void InitAccumulator(double period, int cmd, int xfer_size, int valid_mask,
+                       int valid_value, int data_shift, int data_size,
+                       bool is_signed, bool big_endian);
   void FreeAccumulator();
   void ResetAccumulator();
-  void SetAccumulatorCenter(int32_t center);
-  void SetAccumulatorDeadband(int32_t deadband);
-  int32_t GetAccumulatorLastValue() const;
+  void SetAccumulatorCenter(int center);
+  void SetAccumulatorDeadband(int deadband);
+  int GetAccumulatorLastValue() const;
   int64_t GetAccumulatorValue() const;
-  uint32_t GetAccumulatorCount() const;
+  int64_t GetAccumulatorCount() const;
   double GetAccumulatorAverage() const;
-  void GetAccumulatorOutput(int64_t& value, uint32_t& count) const;
+  void GetAccumulatorOutput(int64_t& value, int64_t& count) const;
 
  protected:
-  uint8_t m_port;
+  int m_port;
   bool m_msbFirst = false;          // default little-endian
   bool m_sampleOnTrailing = false;  // default data updated on falling edge
   bool m_clk_idle_high = false;     // default clock active high
@@ -70,3 +70,5 @@ class SPI : public SensorBase {
  private:
   void Init();
 };
+
+}  // namespace frc

@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,12 +7,14 @@
 
 #include "MotorSafetyHelper.h"
 
+#include <sstream>
+
 #include "DriverStation.h"
 #include "MotorSafety.h"
 #include "Timer.h"
 #include "WPIErrors.h"
 
-#include <sstream>
+using namespace frc;
 
 std::set<MotorSafetyHelper*> MotorSafetyHelper::m_helperList;
 priority_recursive_mutex MotorSafetyHelper::m_listMutex;
@@ -59,7 +61,7 @@ void MotorSafetyHelper::Feed() {
  *
  * @param expirationTime The timeout value in seconds.
  */
-void MotorSafetyHelper::SetExpiration(float expirationTime) {
+void MotorSafetyHelper::SetExpiration(double expirationTime) {
   std::lock_guard<priority_recursive_mutex> sync(m_syncMutex);
   m_expiration = expirationTime;
 }
@@ -69,7 +71,7 @@ void MotorSafetyHelper::SetExpiration(float expirationTime) {
  *
  * @return the timeout value in seconds.
  */
-float MotorSafetyHelper::GetExpiration() const {
+double MotorSafetyHelper::GetExpiration() const {
   std::lock_guard<priority_recursive_mutex> sync(m_syncMutex);
   return m_expiration;
 }

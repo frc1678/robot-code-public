@@ -79,6 +79,7 @@ class StorageTestPersistent : public StorageTestEmpty {
         Value::MakeStringArray(std::vector<std::string>{"hello", "world\n"}));
     storage.SetEntryTypeValue(StringRef("\0\3\5\n", 4),
                               Value::MakeBoolean(true));
+    storage.SetEntryTypeValue("=", Value::MakeBoolean(true));
     outgoing.clear();
   }
 };
@@ -288,6 +289,106 @@ TEST_P(StorageTestEmpty, SetEntryValueEmptyValue) {
   EXPECT_TRUE(outgoing.empty());
 }
 
+TEST_P(StorageTestEmpty, SetDefaultEntryAssignNew) {
+  // brand new entry
+  auto value = Value::MakeBoolean(true);
+  auto ret_val = storage.SetDefaultEntryValue("foo", value);
+  EXPECT_TRUE(ret_val);
+  EXPECT_EQ(value, GetEntry("foo")->value);
+
+  ASSERT_EQ(1u, outgoing.size());
+  EXPECT_FALSE(outgoing[0].only);
+  EXPECT_FALSE(outgoing[0].except);
+  auto msg = outgoing[0].msg;
+  EXPECT_EQ(Message::kEntryAssign, msg->type());
+  EXPECT_EQ("foo", msg->str());
+  if (GetParam())
+    EXPECT_EQ(0u, msg->id());  // assigned as server
+  else
+    EXPECT_EQ(0xffffu, msg->id());  // not assigned as client
+  EXPECT_EQ(0u, msg->seq_num_uid());
+  EXPECT_EQ(value, msg->value());
+  EXPECT_EQ(0u, msg->flags());
+}
+
+TEST_P(StorageTestPopulateOne, SetDefaultEntryExistsSameType) {
+  // existing entry
+  auto value = Value::MakeBoolean(true);
+  auto ret_val = storage.SetDefaultEntryValue("foo", value);
+  EXPECT_TRUE(ret_val);
+  EXPECT_NE(value, GetEntry("foo")->value);
+  
+  EXPECT_TRUE(outgoing.empty());
+}
+
+TEST_P(StorageTestPopulateOne, SetDefaultEntryExistsDifferentType) {
+  // existing entry is boolean
+  auto value = Value::MakeDouble(2.0);
+  auto ret_val = storage.SetDefaultEntryValue("foo", value);
+  EXPECT_FALSE(ret_val);
+  // should not have updated value in table if it already existed.
+  EXPECT_NE(value, GetEntry("foo")->value);
+  
+  EXPECT_TRUE(outgoing.empty());
+}
+
+TEST_P(StorageTestEmpty, SetDefaultEntryEmptyName) {
+  auto value = Value::MakeBoolean(true);
+  auto ret_val = storage.SetDefaultEntryValue("", value);
+  EXPECT_FALSE(ret_val);
+  auto entry = GetEntry("foo");
+  EXPECT_FALSE(entry->value);
+  EXPECT_EQ(0u, entry->flags);
+  EXPECT_EQ("foobar", entry->name);  // since GetEntry uses the tmp_entry.
+  EXPECT_EQ(0xffffu, entry->id);
+  EXPECT_EQ(SequenceNumber(), entry->seq_num);
+  EXPECT_TRUE(entries().empty());
+  EXPECT_TRUE(idmap().empty());
+  EXPECT_TRUE(outgoing.empty());
+}
+
+TEST_P(StorageTestEmpty, SetDefaultEntryEmptyValue) {
+  auto value = Value::MakeBoolean(true);
+  auto ret_val = storage.SetDefaultEntryValue("", nullptr);
+  EXPECT_FALSE(ret_val);
+  auto entry = GetEntry("foo");
+  EXPECT_FALSE(entry->value);
+  EXPECT_EQ(0u, entry->flags);
+  EXPECT_EQ("foobar", entry->name);  // since GetEntry uses the tmp_entry.
+  EXPECT_EQ(0xffffu, entry->id);
+  EXPECT_EQ(SequenceNumber(), entry->seq_num);
+  EXPECT_TRUE(entries().empty());
+  EXPECT_TRUE(idmap().empty());
+  EXPECT_TRUE(outgoing.empty());
+}
+
+TEST_P(StorageTestPopulated, SetDefaultEntryEmptyName) {
+  auto value = Value::MakeBoolean(true);
+  auto ret_val = storage.SetDefaultEntryValue("", value);
+  EXPECT_FALSE(ret_val);
+  // assert that no entries get added
+  EXPECT_EQ(4u, entries().size());
+  if (GetParam())
+    EXPECT_EQ(4u, idmap().size());
+  else
+    EXPECT_EQ(0u, idmap().size());
+  EXPECT_TRUE(outgoing.empty());
+}
+
+TEST_P(StorageTestPopulated, SetDefaultEntryEmptyValue) { 
+  auto value = Value::MakeBoolean(true);
+  auto ret_val = storage.SetDefaultEntryValue("", nullptr);
+  EXPECT_FALSE(ret_val);
+  // assert that no entries get added
+  EXPECT_EQ(4u, entries().size());
+  if (GetParam())
+    EXPECT_EQ(4u, idmap().size());
+  else
+    EXPECT_EQ(0u, idmap().size());
+  EXPECT_TRUE(outgoing.empty());
+}
+
+
 TEST_P(StorageTestEmpty, SetEntryFlagsNew) {
   // flags setting doesn't create an entry
   storage.SetEntryFlags("foo", 0u);
@@ -459,6 +560,8 @@ TEST_P(StorageTestPersistent, SavePersistent) {
   ASSERT_EQ("[NetworkTables Storage 3.0]", line);
   std::tie(line, rem) = rem.split('\n');
   ASSERT_EQ("boolean \"\\x00\\x03\\x05\\n\"=true", line);
+  std::tie(line, rem) = rem.split('\n');
+  ASSERT_EQ("boolean \"\\x3D\"=true", line);
   std::tie(line, rem) = rem.split('\n');
   ASSERT_EQ("boolean \"boolean/false\"=false", line);
   std::tie(line, rem) = rem.split('\n');
@@ -675,6 +778,7 @@ TEST_P(StorageTestEmpty, LoadPersistent) {
 
   std::string in = "[NetworkTables Storage 3.0]\n";
   in += "boolean \"\\x00\\x03\\x05\\n\"=true\n";
+  in += "boolean \"\\x3D\"=true\n";
   in += "boolean \"boolean/false\"=false\n";
   in += "boolean \"boolean/true\"=true\n";
   in += "array boolean \"booleanarr/empty\"=\n";
@@ -698,8 +802,8 @@ TEST_P(StorageTestEmpty, LoadPersistent) {
 
   std::istringstream iss(in);
   EXPECT_TRUE(storage.LoadPersistent(iss, warn_func));
-  ASSERT_EQ(21u, entries().size());
-  EXPECT_EQ(21u, outgoing.size());
+  ASSERT_EQ(22u, entries().size());
+  EXPECT_EQ(22u, outgoing.size());
 
   EXPECT_EQ(*Value::MakeBoolean(true), *storage.GetEntryValue("boolean/true"));
   EXPECT_EQ(*Value::MakeBoolean(false),
@@ -739,6 +843,7 @@ TEST_P(StorageTestEmpty, LoadPersistent) {
       *storage.GetEntryValue("stringarr/two"));
   EXPECT_EQ(*Value::MakeBoolean(true),
             *storage.GetEntryValue(StringRef("\0\3\5\n", 4)));
+  EXPECT_EQ(*Value::MakeBoolean(true), *storage.GetEntryValue("="));
 }
 
 TEST_P(StorageTestEmpty, LoadPersistentWarn) {

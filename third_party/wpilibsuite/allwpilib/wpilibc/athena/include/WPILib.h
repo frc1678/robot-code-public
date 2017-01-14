@@ -1,13 +1,11 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
 #pragma once
-
-#define REAL
 
 #include "ADXL345_I2C.h"
 #include "ADXL345_SPI.h"
@@ -24,9 +22,7 @@
 #include "Buttons/InternalButton.h"
 #include "Buttons/JoystickButton.h"
 #include "Buttons/NetworkButton.h"
-#include "CANJaguar.h"
-#include "CANTalon.h"
-#include "CameraServer.h"
+// #include "CameraServer.h"
 #include "Commands/Command.h"
 #include "Commands/CommandGroup.h"
 #include "Commands/PIDCommand.h"
@@ -65,7 +61,6 @@
 #include "PowerDistributionPanel.h"
 #include "Preferences.h"
 #include "Relay.h"
-#include "Resource.h"
 #include "RobotBase.h"
 #include "RobotDrive.h"
 #include "SD540.h"
@@ -81,22 +76,15 @@
 #include "SpeedController.h"
 #include "Talon.h"
 #include "TalonSRX.h"
-#include "Task.h"
+#include "Threads.h"
 #include "Timer.h"
 #include "Ultrasonic.h"
 #include "Utility.h"
 #include "Victor.h"
 #include "VictorSP.h"
-#include "Vision/AxisCamera.h"
-#include "Vision/BinaryImage.h"
-#include "Vision/ColorImage.h"
-#include "Vision/HSLImage.h"
-#include "Vision/ImageBase.h"
-#include "Vision/MonoImage.h"
-#include "Vision/RGBImage.h"
-#include "Vision/Threshold.h"
+#include "WPIErrors.h"
+#include "XboxController.h"
 #include "interfaces/Accelerometer.h"
 #include "interfaces/Gyro.h"
 #include "interfaces/Potentiometer.h"
-// XXX: #include "Vision/AxisCamera.h"
-#include "WPIErrors.h"
+// #include "vision/VisionRunner.h"

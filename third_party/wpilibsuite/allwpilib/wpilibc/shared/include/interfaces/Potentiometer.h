@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -8,6 +8,8 @@
 #pragma once
 
 #include "PIDSource.h"
+
+namespace frc {
 
 /**
  * Interface for potentiometers.
@@ -23,5 +25,7 @@ class Potentiometer : public PIDSource {
    */
   virtual double Get() const = 0;
 
-  virtual void SetPIDSourceType(PIDSourceType pidSource) override;
+  void SetPIDSourceType(PIDSourceType pidSource) override;
 };
+
+}  // namespace frc

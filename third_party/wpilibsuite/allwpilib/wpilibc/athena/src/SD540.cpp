@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -9,6 +9,8 @@
 
 #include "HAL/HAL.h"
 #include "LiveWindow/LiveWindow.h"
+
+using namespace frc;
 
 /**
  * Note that the SD540 uses the following bounds for PWM values. These values
@@ -31,12 +33,12 @@
  * @param channel The PWM channel that the SD540 is attached to. 0-9 are
  *                on-board, 10-19 are on the MXP port
  */
-SD540::SD540(uint32_t channel) : PWMSpeedController(channel) {
+SD540::SD540(int channel) : PWMSpeedController(channel) {
   SetBounds(2.05, 1.55, 1.50, 1.44, .94);
   SetPeriodMultiplier(kPeriodMultiplier_1X);
-  SetRaw(m_centerPwm);
+  SetSpeed(0.0);
   SetZeroLatch();
 
-  HALReport(HALUsageReporting::kResourceType_MindsensorsSD540, GetChannel());
+  HAL_Report(HALUsageReporting::kResourceType_MindsensorsSD540, GetChannel());
   LiveWindow::GetInstance()->AddActuator("SD540", GetChannel(), this);
 }

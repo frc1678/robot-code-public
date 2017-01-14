@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -9,10 +9,13 @@
 
 #include <atomic>
 #include <functional>
+#include <utility>
 
 #include "ErrorBase.h"
 #include "HAL/Notifier.h"
 #include "HAL/cpp/priority_mutex.h"
+
+namespace frc {
 
 typedef std::function<void()> TimerEventHandler;
 
@@ -38,12 +41,14 @@ class Notifier : public ErrorBase {
   // update the HAL alarm
   void UpdateAlarm();
   // HAL callback
-  static void Notify(uint64_t currentTimeInt, void* param);
+  static void Notify(uint64_t currentTimeInt, HAL_NotifierHandle handle);
 
+  // used to constrain execution between destructors and callback
+  static priority_mutex m_destructorMutex;
   // held while updating process information
   priority_mutex m_processMutex;
   // HAL handle, atomic for proper destruction
-  std::atomic<HalNotifierHandle> m_notifier{0};
+  std::atomic<HAL_NotifierHandle> m_notifier{0};
   // address of the handler
   TimerEventHandler m_handler;
   // the absolute expiration time
@@ -52,7 +57,6 @@ class Notifier : public ErrorBase {
   double m_period = 0;
   // true if this is a periodic event
   bool m_periodic = false;
-
-  // held HAL notifier while Notifier::Notify() call is in progress
-  priority_mutex m_notifyMutex;
 };
+
+}  // namespace frc

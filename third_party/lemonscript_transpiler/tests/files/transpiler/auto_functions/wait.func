@@ -1,0 +1,14 @@
+Wait(float time)
+
+include {
+  "muan/utils/timing_utils.h"
+}
+
+init {
+  float start_time = lemon_var("start_time", muan::now());
+  return false;
+}
+
+periodic {
+  return (muan::now() - start_time < lemon_get("start_time"));
+}

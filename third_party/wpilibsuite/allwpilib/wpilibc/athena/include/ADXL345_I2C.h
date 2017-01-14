@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -8,10 +8,13 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 #include "I2C.h"
 #include "LiveWindow/LiveWindowSendable.h"
 #include "interfaces/Accelerometer.h"
+
+namespace frc {
 
 /**
  * ADXL345 Accelerometer on I2C.
@@ -23,10 +26,10 @@
  */
 class ADXL345_I2C : public Accelerometer, public LiveWindowSendable {
  protected:
-  static const uint8_t kAddress = 0x1D;
-  static const uint8_t kPowerCtlRegister = 0x2D;
-  static const uint8_t kDataFormatRegister = 0x31;
-  static const uint8_t kDataRegister = 0x32;
+  static const int kAddress = 0x1D;
+  static const int kPowerCtlRegister = 0x2D;
+  static const int kDataFormatRegister = 0x31;
+  static const int kDataRegister = 0x32;
   static constexpr double kGsPerLSB = 0.00390625;
   enum PowerCtlFields {
     kPowerCtl_Link = 0x20,
@@ -59,20 +62,20 @@ class ADXL345_I2C : public Accelerometer, public LiveWindowSendable {
   ADXL345_I2C& operator=(const ADXL345_I2C&) = delete;
 
   // Accelerometer interface
-  virtual void SetRange(Range range) override;
-  virtual double GetX() override;
-  virtual double GetY() override;
-  virtual double GetZ() override;
+  void SetRange(Range range) override;
+  double GetX() override;
+  double GetY() override;
+  double GetZ() override;
 
   virtual double GetAcceleration(Axes axis);
   virtual AllAxes GetAccelerations();
 
-  virtual std::string GetSmartDashboardType() const override;
-  virtual void InitTable(std::shared_ptr<ITable> subtable) override;
-  virtual void UpdateTable() override;
-  virtual std::shared_ptr<ITable> GetTable() const override;
-  virtual void StartLiveWindowMode() override {}
-  virtual void StopLiveWindowMode() override {}
+  std::string GetSmartDashboardType() const override;
+  void InitTable(std::shared_ptr<ITable> subtable) override;
+  void UpdateTable() override;
+  std::shared_ptr<ITable> GetTable() const override;
+  void StartLiveWindowMode() override {}
+  void StopLiveWindowMode() override {}
 
  protected:
   I2C m_i2c;
@@ -80,3 +83,5 @@ class ADXL345_I2C : public Accelerometer, public LiveWindowSendable {
  private:
   std::shared_ptr<ITable> m_table;
 };
+
+}  // namespace frc

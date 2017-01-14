@@ -16,6 +16,7 @@ DrivetrainAction::DrivetrainAction(
       goal_velocity_right_(gvr),
       threshold_distance_(td),
       threshold_velocity_(tv),
+      high_gear_(high_gear),
       goal_queue_(gq),
       status_queue_(sq) {}
 

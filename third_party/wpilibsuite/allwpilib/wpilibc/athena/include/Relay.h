@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -8,12 +8,16 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
+#include "HAL/Types.h"
 #include "LiveWindow/LiveWindowSendable.h"
 #include "MotorSafety.h"
 #include "SensorBase.h"
 #include "tables/ITable.h"
 #include "tables/ITableListener.h"
+
+namespace frc {
 
 class MotorSafetyHelper;
 
@@ -36,15 +40,15 @@ class Relay : public MotorSafety,
   enum Value { kOff, kOn, kForward, kReverse };
   enum Direction { kBothDirections, kForwardOnly, kReverseOnly };
 
-  Relay(uint32_t channel, Direction direction = kBothDirections);
+  explicit Relay(int channel, Direction direction = kBothDirections);
   virtual ~Relay();
 
   void Set(Value value);
   Value Get() const;
-  uint32_t GetChannel() const;
+  int GetChannel() const;
 
-  void SetExpiration(float timeout) override;
-  float GetExpiration() const override;
+  void SetExpiration(double timeout) override;
+  double GetExpiration() const override;
   bool IsAlive() const override;
   void StopMotor() override;
   bool IsSafetyEnabled() const override;
@@ -63,8 +67,13 @@ class Relay : public MotorSafety,
   std::shared_ptr<ITable> m_table;
 
  private:
-  uint32_t m_channel;
+  int m_channel;
   Direction m_direction;
+
+  HAL_RelayHandle m_forwardHandle = HAL_kInvalidHandle;
+  HAL_RelayHandle m_reverseHandle = HAL_kInvalidHandle;
 
   std::unique_ptr<MotorSafetyHelper> m_safetyHelper;
 };
+
+}  // namespace frc

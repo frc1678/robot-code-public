@@ -12,28 +12,7 @@
 
 #include "llvm/StringRef.h"
 #include "nt_Value.h"
-
-// [[deprecated(msg)]] is a C++14 feature not supported by MSVC or GCC < 4.9.
-// We provide an equivalent warning implementation for those compilers here.
-#ifndef NT_DEPRECATED
-  #if defined(_MSC_VER)
-    #define NT_DEPRECATED(msg) __declspec(deprecated(msg))
-  #elif defined(__GNUC__)
-    #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 8)
-      #if __cplusplus > 201103L
-        #define NT_DEPRECATED(msg) [[deprecated(msg)]]
-      #else
-        #define NT_DEPRECATED(msg) [[gnu::deprecated(msg)]]
-      #endif
-    #else
-      #define NT_DEPRECATED(msg) __attribute__((deprecated(msg)))
-    #endif
-  #elif __cplusplus > 201103L
-    #define NT_DEPRECATED(msg) [[deprecated(msg)]]
-  #else
-    #define NT_DEPRECATED(msg) /*nothing*/
-  #endif
-#endif
+#include "support/deprecated.h"
 
 class ITableListener;
 
@@ -145,6 +124,15 @@ class ITable {
   virtual std::shared_ptr<nt::Value> GetValue(llvm::StringRef key) const = 0;
 
   /**
+   * Gets the current value in the table, setting it if it does not exist.
+   * @param key the key
+   * @param defaultValue the default value to set if key doesn't exist.
+   * @returns False if the table key exists with a different type
+   */
+  virtual bool SetDefaultValue(llvm::StringRef key,
+                               std::shared_ptr<nt::Value> defaultValue) = 0;
+
+  /**
    * Put a value in the table
    *
    * @param key the key to be assigned to
@@ -164,6 +152,14 @@ class ITable {
   virtual bool PutNumber(llvm::StringRef key, double value) = 0;
 
   /**
+   * Gets the current value in the table, setting it if it does not exist.
+   * @param key the key
+   * @param defaultValue the default value to set if key doesn't exist.
+   * @returns False if the table key exists with a different type
+   */
+  virtual bool SetDefaultNumber(llvm::StringRef key, double defaultValue) = 0;
+
+  /**
    * Gets the number associated with the given name.
    *
    * @param key the key to look up
@@ -173,8 +169,9 @@ class ITable {
    * @deprecated This exception-raising method has been replaced by the
    * default-taking method.
    */
-  NT_DEPRECATED("Raises an exception if key not found; "
-                "use GetNumber(StringRef key, double defaultValue) instead")
+  WPI_DEPRECATED(
+      "Raises an exception if key not found; "
+      "use GetNumber(StringRef key, double defaultValue) instead")
   virtual double GetNumber(llvm::StringRef key) const = 0;
 
   /**
@@ -197,6 +194,15 @@ class ITable {
   virtual bool PutString(llvm::StringRef key, llvm::StringRef value) = 0;
 
   /**
+   * Gets the current value in the table, setting it if it does not exist.
+   * @param key the key
+   * @param defaultValue the default value to set if key doesn't exist.
+   * @returns False if the table key exists with a different type
+   */
+  virtual bool SetDefaultString(llvm::StringRef key,
+                                llvm::StringRef defaultValue) = 0;
+
+  /**
    * Gets the string associated with the given name.
    *
    * @param key the key to look up
@@ -206,8 +212,9 @@ class ITable {
    * @deprecated This exception-raising method has been replaced by the
    * default-taking method.
    */
-  NT_DEPRECATED("Raises an exception if key not found; "
-                "use GetString(StringRef key, StringRef defaultValue) instead")
+  WPI_DEPRECATED(
+      "Raises an exception if key not found; "
+      "use GetString(StringRef key, StringRef defaultValue) instead")
   virtual std::string GetString(llvm::StringRef key) const = 0;
 
   /**
@@ -235,6 +242,14 @@ class ITable {
   virtual bool PutBoolean(llvm::StringRef key, bool value) = 0;
 
   /**
+   * Gets the current value in the table, setting it if it does not exist.
+   * @param key the key
+   * @param defaultValue the default value to set if key doesn't exist.
+   * @returns False if the table key exists with a different type
+   */
+  virtual bool SetDefaultBoolean(llvm::StringRef key, bool defaultValue) = 0;
+
+  /**
    * Gets the boolean associated with the given name.
    *
    * @param key the key to look up
@@ -244,8 +259,9 @@ class ITable {
    * @deprecated This exception-raising method has been replaced by the
    * default-taking method.
    */
-  NT_DEPRECATED("Raises an exception if key not found; "
-                "use GetBoolean(StringRef key, bool defaultValue) instead")
+  WPI_DEPRECATED(
+      "Raises an exception if key not found; "
+      "use GetBoolean(StringRef key, bool defaultValue) instead")
   virtual bool GetBoolean(llvm::StringRef key) const = 0;
 
   /**
@@ -271,6 +287,15 @@ class ITable {
    */
   virtual bool PutBooleanArray(llvm::StringRef key,
                                llvm::ArrayRef<int> value) = 0;
+
+  /**
+   * Gets the current value in the table, setting it if it does not exist.
+   * @param key the key
+   * @param defaultValue the default value to set if key doesn't exist.
+   * @returns False if the table key exists with a different type
+   */
+  virtual bool SetDefaultBooleanArray(llvm::StringRef key,
+                                      llvm::ArrayRef<int> defaultValue) = 0;
 
   /**
    * Returns the boolean array the key maps to. If the key does not exist or is
@@ -300,6 +325,15 @@ class ITable {
                               llvm::ArrayRef<double> value) = 0;
 
   /**
+   * Gets the current value in the table, setting it if it does not exist.
+   * @param key the key
+   * @param defaultValue the default value to set if key doesn't exist.
+   * @returns False if the table key exists with a different type
+   */
+  virtual bool SetDefaultNumberArray(llvm::StringRef key,
+                                     llvm::ArrayRef<double> defaultValue) = 0;
+
+  /**
    * Returns the number array the key maps to. If the key does not exist or is
    * of different type, it will return the default value.
    * @param key the key to look up
@@ -323,6 +357,15 @@ class ITable {
                               llvm::ArrayRef<std::string> value) = 0;
 
   /**
+   * Gets the current value in the table, setting it if it does not exist.
+   * @param key the key
+   * @param defaultValue the default value to set if key doesn't exist.
+   * @returns False if the table key exists with a different type
+   */
+  virtual bool SetDefaultStringArray(
+      llvm::StringRef key, llvm::ArrayRef<std::string> defaultValue) = 0;
+
+  /**
    * Returns the string array the key maps to. If the key does not exist or is
    * of different type, it will return the default value.
    * @param key the key to look up
@@ -343,6 +386,15 @@ class ITable {
    * @return False if the table key already exists with a different type
    */
   virtual bool PutRaw(llvm::StringRef key, llvm::StringRef value) = 0;
+
+  /**
+   * Gets the current value in the table, setting it if it does not exist.
+   * @param key the key
+   * @param defaultValue the default value to set if key doesn't exist.
+   * @returns False if the table key exists with a different type
+   */
+  virtual bool SetDefaultRaw(llvm::StringRef key,
+                             llvm::StringRef defaultValue) = 0;
 
   /**
    * Returns the raw value (byte array) the key maps to. If the key does not

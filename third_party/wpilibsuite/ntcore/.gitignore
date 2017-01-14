@@ -28,6 +28,7 @@
 .vs/
 *.def
 !ntcore.def
+!ntcore-jni.def
 *.opensdf
 *.vcxproj
 *.vcxproj.user
@@ -217,3 +218,6 @@ gradle-app.setting
 
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
+
+#VSCode
+.vscode/

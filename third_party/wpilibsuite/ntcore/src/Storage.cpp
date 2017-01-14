@@ -12,7 +12,8 @@
 #include <tuple>
 
 #include "llvm/StringExtras.h"
-#include "Base64.h"
+#include "support/Base64.h"
+#include "support/timestamp.h"
 #include "Log.h"
 #include "NetworkConnection.h"
 
@@ -40,9 +41,7 @@ void Storage::SetOutgoing(QueueOutgoingFunc queue_outgoing, bool server) {
   m_server = server;
 }
 
-void Storage::ClearOutgoing() {
-  m_queue_outgoing = nullptr;
-}
+void Storage::ClearOutgoing() { m_queue_outgoing = nullptr; }
 
 NT_Type Storage::GetEntryType(unsigned int id) const {
   std::lock_guard<std::mutex> lock(m_mutex);
@@ -98,8 +97,8 @@ void Storage::ProcessIncoming(std::shared_ptr<Message> msg,
           // send the assignment to everyone (including the originator)
           if (m_queue_outgoing) {
             auto queue_outgoing = m_queue_outgoing;
-            auto outmsg = Message::EntryAssign(
-                name, id, entry->seq_num.value(), msg->value(), msg->flags());
+            auto outmsg = Message::EntryAssign(name, id, entry->seq_num.value(),
+                                               msg->value(), msg->flags());
             lock.unlock();
             queue_outgoing(outmsg, nullptr, nullptr);
           }
@@ -120,7 +119,7 @@ void Storage::ProcessIncoming(std::shared_ptr<Message> msg,
           DEBUG("client: received entry assignment request?");
           return;
         }
-        if (id >= m_idmap.size()) m_idmap.resize(id+1);
+        if (id >= m_idmap.size()) m_idmap.resize(id + 1);
         entry = m_idmap[id];
         if (!entry) {
           // create local
@@ -185,8 +184,7 @@ void Storage::ProcessIncoming(std::shared_ptr<Message> msg,
         // update persistent dirty flag if persistent flag changed
         if ((entry->flags & NT_PERSISTENT) != (msg->flags() & NT_PERSISTENT))
           m_persistent_dirty = true;
-        if (entry->flags != msg->flags())
-          notify_flags |= NT_NOTIFY_FLAGS;
+        if (entry->flags != msg->flags()) notify_flags |= NT_NOTIFY_FLAGS;
         entry->flags = msg->flags();
       }
 
@@ -205,9 +203,8 @@ void Storage::ProcessIncoming(std::shared_ptr<Message> msg,
       // be any other connections, so don't bother)
       if (m_server && m_queue_outgoing) {
         auto queue_outgoing = m_queue_outgoing;
-        auto outmsg =
-            Message::EntryAssign(entry->name, id, msg->seq_num_uid(),
-                                 msg->value(), entry->flags);
+        auto outmsg = Message::EntryAssign(entry->name, id, msg->seq_num_uid(),
+                                           msg->value(), entry->flags);
         lock.unlock();
         queue_outgoing(outmsg, nullptr, conn);
       }
@@ -346,11 +343,24 @@ void Storage::ProcessIncoming(std::shared_ptr<Message> msg,
         DEBUG("received RPC call to non-RPC entry");
         return;
       }
+      ConnectionInfo conn_info;
+      auto c = conn_weak.lock();
+      if (c) {
+        conn_info = c->info();
+      } else {
+        conn_info.remote_id = "";
+        conn_info.remote_ip = "";
+        conn_info.remote_port = 0;
+        conn_info.last_update = 0;
+        conn_info.protocol_version = 0;
+      }
       m_rpc_server.ProcessRpc(entry->name, msg, entry->rpc_callback,
-                              conn->uid(), [=](std::shared_ptr<Message> msg) {
+                              conn->uid(),
+                              [=](std::shared_ptr<Message> msg) {
                                 auto c = conn_weak.lock();
                                 if (c) c->QueueOutgoing(msg);
-                              });
+                              },
+                              conn_info);
       break;
     }
     case Message::kRpcResponse: {
@@ -441,7 +451,7 @@ void Storage::ApplyInitialAssignments(
 
     // set id and save to idmap
     entry->id = id;
-    if (id >= m_idmap.size()) m_idmap.resize(id+1);
+    if (id >= m_idmap.size()) m_idmap.resize(id + 1);
     m_idmap[id] = entry.get();
   }
 
@@ -462,6 +472,50 @@ std::shared_ptr<Value> Storage::GetEntryValue(StringRef name) const {
   std::lock_guard<std::mutex> lock(m_mutex);
   auto i = m_entries.find(name);
   return i == m_entries.end() ? nullptr : i->getValue()->value;
+}
+
+bool Storage::SetDefaultEntryValue(StringRef name,
+                                   std::shared_ptr<Value> value) {
+  if (!value) return false;        // can't compare to a null value
+  if (name.empty()) return false;  // can't compare empty name
+  std::unique_lock<std::mutex> lock(m_mutex);
+  auto& new_entry = m_entries[name];
+  if (new_entry) {  // entry already exists
+    auto old_value = new_entry->value;
+    // if types match return true
+    if (old_value && old_value->type() == value->type())
+      return true;
+    else
+      return false;  // entry exists but doesn't match type
+  }
+
+  // if we've gotten here, entry does not exist, and we can write it.
+  new_entry.reset(new Entry(name));
+  Entry* entry = new_entry.get();
+  // don't need to compare old value as we know it will assign
+  entry->value = value;
+
+  // if we're the server, assign an id if it doesn't have one
+  if (m_server && entry->id == 0xffff) {
+    unsigned int id = m_idmap.size();
+    entry->id = id;
+    m_idmap.push_back(entry);
+  }
+
+  // notify (for local listeners)
+  if (m_notifier.local_notifiers()) {
+    // always a new entry if we got this far
+    m_notifier.NotifyEntry(name, value, NT_NOTIFY_NEW | NT_NOTIFY_LOCAL);
+  }
+
+  // generate message
+  if (!m_queue_outgoing) return true;
+  auto queue_outgoing = m_queue_outgoing;
+  auto msg = Message::EntryAssign(name, entry->id, entry->seq_num.value(),
+                                  value, entry->flags);
+  lock.unlock();
+  queue_outgoing(msg, nullptr, nullptr);
+  return true;
 }
 
 bool Storage::SetEntryValue(StringRef name, std::shared_ptr<Value> value) {
@@ -506,8 +560,7 @@ bool Storage::SetEntryValue(StringRef name, std::shared_ptr<Value> value) {
     ++entry->seq_num;
     // don't send an update if we don't have an assigned id yet
     if (entry->id != 0xffff) {
-      auto msg =
-          Message::EntryUpdate(entry->id, entry->seq_num.value(), value);
+      auto msg = Message::EntryUpdate(entry->id, entry->seq_num.value(), value);
       lock.unlock();
       queue_outgoing(msg, nullptr, nullptr);
     }
@@ -557,8 +610,7 @@ void Storage::SetEntryTypeValue(StringRef name, std::shared_ptr<Value> value) {
     ++entry->seq_num;
     // don't send an update if we don't have an assigned id yet
     if (entry->id != 0xffff) {
-      auto msg =
-          Message::EntryUpdate(entry->id, entry->seq_num.value(), value);
+      auto msg = Message::EntryUpdate(entry->id, entry->seq_num.value(), value);
       lock.unlock();
       queue_outgoing(msg, nullptr, nullptr);
     }
@@ -610,7 +662,7 @@ void Storage::DeleteEntry(StringRef name) {
   if (entry->IsPersistent()) m_persistent_dirty = true;
 
   m_entries.erase(i);  // erase from map
-  if (id < m_idmap.size()) m_idmap[id] = nullptr; 
+  if (id < m_idmap.size()) m_idmap[id] = nullptr;
 
   if (!entry->value) return;
 
@@ -713,7 +765,7 @@ static void WriteString(std::ostream& os, llvm::StringRef str) {
         os << "\\\"";
         break;
       default:
-        if (std::isprint(c)) {
+        if (std::isprint(c) && c != '=') {
           os << c;
           break;
         }
@@ -811,7 +863,7 @@ static void SavePersistentImpl(
         WriteString(os, v->GetString());
         break;
       case NT_RAW:
-        Base64Encode(v->GetRaw(), &base64_encoded);
+        wpi::Base64Encode(v->GetRaw(), &base64_encoded);
         os << base64_encoded;
         break;
       case NT_BOOLEAN_ARRAY: {
@@ -957,12 +1009,12 @@ static void UnescapeString(llvm::StringRef source, std::string* dest) {
         dest->push_back('\n');
         break;
       case 'x': {
-        if (!isxdigit(*(s+1))) {
+        if (!isxdigit(*(s + 1))) {
           dest->push_back('x');  // treat it like a unknown escape
           break;
         }
         int ch = fromxdigit(*++s);
-        if (isxdigit(*(s+1))) {
+        if (isxdigit(*(s + 1))) {
           ch <<= 4;
           ch |= fromxdigit(*++s);
         }
@@ -994,8 +1046,7 @@ bool Storage::LoadPersistent(
   // ignore blank lines and lines that start with ; or # (comments)
   while (std::getline(is, line_str)) {
     llvm::StringRef line = llvm::StringRef(line_str).trim();
-    if (!line.empty() && line.front() != ';' && line.front() != '#')
-      break;
+    if (!line.empty() && line.front() != ';' && line.front() != '#') break;
   }
 
   // header
@@ -1009,23 +1060,29 @@ bool Storage::LoadPersistent(
     ++line_num;
 
     // ignore blank lines and lines that start with ; or # (comments)
-    if (line.empty() || line.front() == ';' || line.front() == '#')
-      continue;
+    if (line.empty() || line.front() == ';' || line.front() == '#') continue;
 
     // type
     llvm::StringRef type_tok;
     std::tie(type_tok, line) = line.split(' ');
     NT_Type type = NT_UNASSIGNED;
-    if (type_tok == "boolean") type = NT_BOOLEAN;
-    else if (type_tok == "double") type = NT_DOUBLE;
-    else if (type_tok == "string") type = NT_STRING;
-    else if (type_tok == "raw") type = NT_RAW;
+    if (type_tok == "boolean")
+      type = NT_BOOLEAN;
+    else if (type_tok == "double")
+      type = NT_DOUBLE;
+    else if (type_tok == "string")
+      type = NT_STRING;
+    else if (type_tok == "raw")
+      type = NT_RAW;
     else if (type_tok == "array") {
       llvm::StringRef array_tok;
       std::tie(array_tok, line) = line.split(' ');
-      if (array_tok == "boolean") type = NT_BOOLEAN_ARRAY;
-      else if (array_tok == "double") type = NT_DOUBLE_ARRAY;
-      else if (array_tok == "string") type = NT_STRING_ARRAY;
+      if (array_tok == "boolean")
+        type = NT_BOOLEAN_ARRAY;
+      else if (array_tok == "double")
+        type = NT_DOUBLE_ARRAY;
+      else if (array_tok == "string")
+        type = NT_STRING_ARRAY;
     }
     if (type == NT_UNASSIGNED) {
       if (warn) warn(line_num, "unrecognized type");
@@ -1097,7 +1154,7 @@ bool Storage::LoadPersistent(
         break;
       }
       case NT_RAW:
-        Base64Decode(line, &str);
+        wpi::Base64Decode(line, &str);
         value = Value::MakeRaw(std::move(str));
         break;
       case NT_BOOLEAN_ARRAY: {
@@ -1176,8 +1233,8 @@ bool Storage::LoadPersistent(
     }
     if (!name.empty() && value)
       entries.push_back(std::make_pair(std::move(name), std::move(value)));
-next_line:
-    ;
+  next_line:
+    continue;
   }
 
   // copy values into storage as quickly as possible so lock isn't held
@@ -1218,8 +1275,8 @@ next_line:
       // put on update queue
       if (!old_value || old_value->type() != i.second->type())
         msgs.emplace_back(Message::EntryAssign(i.first, entry->id,
-                                               entry->seq_num.value(),
-                                               i.second, entry->flags));
+                                               entry->seq_num.value(), i.second,
+                                               entry->flags));
       else if (entry->id != 0xffff) {
         // don't send an update if we don't have an assigned id yet
         if (*old_value != *i.second)
@@ -1252,7 +1309,7 @@ const char* Storage::LoadPersistent(
 void Storage::CreateRpc(StringRef name, StringRef def, RpcCallback callback) {
   if (name.empty() || def.empty() || !callback) return;
   std::unique_lock<std::mutex> lock(m_mutex);
-  if (!m_server) return; // only server can create RPCs
+  if (!m_server) return;  // only server can create RPCs
 
   auto& new_entry = m_entries[name];
   if (!new_entry) new_entry.reset(new Entry(name));
@@ -1296,7 +1353,7 @@ void Storage::CreateRpc(StringRef name, StringRef def, RpcCallback callback) {
 void Storage::CreatePolledRpc(StringRef name, StringRef def) {
   if (name.empty() || def.empty()) return;
   std::unique_lock<std::mutex> lock(m_mutex);
-  if (!m_server) return; // only server can create RPCs
+  if (!m_server) return;  // only server can create RPCs
 
   auto& new_entry = m_entries[name];
   if (!new_entry) new_entry.reset(new Entry(name));
@@ -1350,13 +1407,21 @@ unsigned int Storage::CallRpc(StringRef name, StringRef params) {
     // gracefully anyway.
     auto rpc_callback = entry->rpc_callback;
     lock.unlock();
+    ConnectionInfo conn_info;
+    conn_info.remote_id = "Server";
+    conn_info.remote_ip = "localhost";
+    conn_info.remote_port = 0;
+    conn_info.last_update = wpi::Now();
+    conn_info.protocol_version = 0x0300;
     m_rpc_server.ProcessRpc(
-        name, msg, rpc_callback, 0xffffU, [this](std::shared_ptr<Message> msg) {
+        name, msg, rpc_callback, 0xffffU,
+        [this](std::shared_ptr<Message> msg) {
           std::lock_guard<std::mutex> lock(m_mutex);
           m_rpc_results.insert(std::make_pair(
               std::make_pair(msg->id(), msg->seq_num_uid()), msg->str()));
           m_rpc_results_cond.notify_all();
-        });
+        },
+        conn_info);
   } else {
     auto queue_outgoing = m_queue_outgoing;
     lock.unlock();
@@ -1367,18 +1432,60 @@ unsigned int Storage::CallRpc(StringRef name, StringRef params) {
 
 bool Storage::GetRpcResult(bool blocking, unsigned int call_uid,
                            std::string* result) {
+  return GetRpcResult(blocking, call_uid, -1, result);
+}
+
+bool Storage::GetRpcResult(bool blocking, unsigned int call_uid,
+                           double time_out, std::string* result) {
   std::unique_lock<std::mutex> lock(m_mutex);
+  // only allow one blocking call per rpc call uid
+  if (!m_rpc_blocking_calls.insert(call_uid).second) return false;
+#if defined(_MSC_VER) && _MSC_VER < 1900
+  auto timeout_time = std::chrono::steady_clock::now() +
+                      std::chrono::duration<int64_t, std::nano>(
+                          static_cast<int64_t>(time_out * 1e9));
+#else
+  auto timeout_time = std::chrono::steady_clock::now() +
+                      std::chrono::duration<double>(time_out);
+#endif
   for (;;) {
     auto i =
         m_rpc_results.find(std::make_pair(call_uid >> 16, call_uid & 0xffff));
     if (i == m_rpc_results.end()) {
-      if (!blocking || m_terminating) return false;
-      m_rpc_results_cond.wait(lock);
-      if (m_terminating) return false;
+      if (!blocking || m_terminating) {
+        m_rpc_blocking_calls.erase(call_uid);
+        return false;
+      }
+      if (time_out < 0) {
+        m_rpc_results_cond.wait(lock);
+      } else {
+        auto timed_out = m_rpc_results_cond.wait_until(lock, timeout_time);
+        if (timed_out == std::cv_status::timeout) {
+          m_rpc_blocking_calls.erase(call_uid);
+          return false;
+        }
+      }
+      // if element does not exist, we have been canceled
+      if (m_rpc_blocking_calls.count(call_uid) == 0) {
+        return false;
+      }
+      if (m_terminating) {
+        m_rpc_blocking_calls.erase(call_uid);
+        return false;
+      }
       continue;
     }
     result->swap(i->getSecond());
+    // safe to erase even if id does not exist
+    m_rpc_blocking_calls.erase(call_uid);
     m_rpc_results.erase(i);
     return true;
   }
+}
+
+void Storage::CancelBlockingRpcResult(unsigned int call_uid) {
+  std::unique_lock<std::mutex> lock(m_mutex);
+  // safe to erase even if id does not exist
+  m_rpc_blocking_calls.erase(call_uid);
+  m_rpc_results_cond.notify_all();
 }

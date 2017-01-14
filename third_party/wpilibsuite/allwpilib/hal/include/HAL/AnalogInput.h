@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2016. All Rights Reserved.                             */
+/* Copyright (c) FIRST 2016-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -9,29 +9,42 @@
 
 #include <stdint.h>
 
-#include "Handles.h"
+#include "HAL/Types.h"
 
+#ifdef __cplusplus
 extern "C" {
-// Analog input functions
-void* initializeAnalogInputPort(HalPortHandle port_handle, int32_t* status);
-void freeAnalogInputPort(void* analog_port_pointer);
-bool checkAnalogModule(uint8_t module);
-bool checkAnalogInputChannel(uint32_t pin);
+#endif
 
-void setAnalogSampleRate(double samplesPerSecond, int32_t* status);
-float getAnalogSampleRate(int32_t* status);
-void setAnalogAverageBits(void* analog_port_pointer, uint32_t bits,
-                          int32_t* status);
-uint32_t getAnalogAverageBits(void* analog_port_pointer, int32_t* status);
-void setAnalogOversampleBits(void* analog_port_pointer, uint32_t bits,
-                             int32_t* status);
-uint32_t getAnalogOversampleBits(void* analog_port_pointer, int32_t* status);
-int16_t getAnalogValue(void* analog_port_pointer, int32_t* status);
-int32_t getAnalogAverageValue(void* analog_port_pointer, int32_t* status);
-int32_t getAnalogVoltsToValue(void* analog_port_pointer, double voltage,
-                              int32_t* status);
-float getAnalogVoltage(void* analog_port_pointer, int32_t* status);
-float getAnalogAverageVoltage(void* analog_port_pointer, int32_t* status);
-uint32_t getAnalogLSBWeight(void* analog_port_pointer, int32_t* status);
-int32_t getAnalogOffset(void* analog_port_pointer, int32_t* status);
+HAL_AnalogInputHandle HAL_InitializeAnalogInputPort(HAL_PortHandle portHandle,
+                                                    int32_t* status);
+void HAL_FreeAnalogInputPort(HAL_AnalogInputHandle analogPortHandle);
+HAL_Bool HAL_CheckAnalogModule(int32_t module);
+HAL_Bool HAL_CheckAnalogInputChannel(int32_t channel);
+
+void HAL_SetAnalogSampleRate(double samplesPerSecond, int32_t* status);
+double HAL_GetAnalogSampleRate(int32_t* status);
+void HAL_SetAnalogAverageBits(HAL_AnalogInputHandle analogPortHandle,
+                              int32_t bits, int32_t* status);
+int32_t HAL_GetAnalogAverageBits(HAL_AnalogInputHandle analogPortHandle,
+                                 int32_t* status);
+void HAL_SetAnalogOversampleBits(HAL_AnalogInputHandle analogPortHandle,
+                                 int32_t bits, int32_t* status);
+int32_t HAL_GetAnalogOversampleBits(HAL_AnalogInputHandle analogPortHandle,
+                                    int32_t* status);
+int32_t HAL_GetAnalogValue(HAL_AnalogInputHandle analogPortHandle,
+                           int32_t* status);
+int32_t HAL_GetAnalogAverageValue(HAL_AnalogInputHandle analogPortHandle,
+                                  int32_t* status);
+int32_t HAL_GetAnalogVoltsToValue(HAL_AnalogInputHandle analogPortHandle,
+                                  double voltage, int32_t* status);
+double HAL_GetAnalogVoltage(HAL_AnalogInputHandle analogPortHandle,
+                            int32_t* status);
+double HAL_GetAnalogAverageVoltage(HAL_AnalogInputHandle analogPortHandle,
+                                   int32_t* status);
+int32_t HAL_GetAnalogLSBWeight(HAL_AnalogInputHandle analogPortHandle,
+                               int32_t* status);
+int32_t HAL_GetAnalogOffset(HAL_AnalogInputHandle analogPortHandle,
+                            int32_t* status);
+#ifdef __cplusplus
 }
+#endif

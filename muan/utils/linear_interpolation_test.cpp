@@ -9,7 +9,7 @@ TEST(LinearInterpolation, VerifiesListSize) {
 }
 
 TEST(LinearInterpolation, CalculatesCorrectly) {
-  LinearInterpolation<double> f({std::make_pair(3., 2.),
+  muan::utils::LinearInterpolation<double> f({std::make_pair(3., 2.),
                                  std::make_pair(1., 0.)});
   f.AddControlPoint(std::make_pair(0., 0.));
   f.AddControlPoint(std::make_pair(7., 7.));

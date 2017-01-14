@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/wpilibsuite/allwpilib.svg?branch=master)](https://travis-ci.org/wpilibsuite/allwpilib)
 
-Welcome to the WPILib project. This repository contains the HAL, WPILibJ, and WPILibC projcts. These are the core libraries for creating robot programs for the roboRIO.
+Welcome to the WPILib project. This repository contains the HAL, WPILibJ, and WPILibC projects. These are the core libraries for creating robot programs for the roboRIO.
 
 - [WPILib Mission](#wpilib-mission)
 - [Building WPILib](#building-wpilib)
@@ -22,13 +22,19 @@ The WPILib Mission is to enable FIRST Robotics teams to focus on writing game-sp
 Using Gradle makes building WPILib very straightforward. It only has a few dependencies on outside tools, such as the ARM cross compiler for creating roboRIO binaries.
 
 ## Requirements
+
 - [ARM Compiler Toolchain](http://first.wpi.edu/FRC/roborio/toolchains/)
 - Doxygen (Only required if you want to build the C++ documentation)
+- [wpiformat](https://github.com/wpilibsuite/styleguide)
 
 ## Setup
-Clone the WPILib Repo. If the toolchains are not installed, install them, and make sure they are available on the system PATH.
+
+Clone the WPILib repository. If the toolchains are not installed, install them, and make sure they are available on the system PATH.
+
+See the [styleguide README](https://github.com/wpilibsuite/styleguide/blob/master/README.md) for wpiformat setup instructions.
 
 ## Building
+
 All build steps are executed using the Gradle wrapper, `gradlew`. Each target that Gradle can build is referred to as a task. The most common Gradle task to use is `build`. This will build all the outputs created by WPILib. To run, open a console and cd into the cloned WPILib directory. Then:
 
 ```bash
@@ -39,6 +45,12 @@ To build a specific subproject, such as WPILibC, you must access the subproject 
 
 ```bash
 ./gradlew :wpilibc:build
+```
+
+If you have installed the FRC Toolchain to a directory other than the default, or if the Toolchain location is not on your System PATH, you can pass the `toolChainPath` property to specify where it is located. Example:
+
+```bash
+./gradlew build -PtoolChainPath=some/path/to/frc/toolchain/bin
 ```
 
 If you also want simulation to be built, add -PmakeSim. This requires gazebo_transport. We have tested on 14.04 and 15.05, but any correct install of Gazebo should work, even on Windows if you build Gazebo from source. Correct means CMake needs to be able to find gazebo-config.cmake. See [The Gazebo website](https://gazebosim.org/) for installation instructions.
@@ -61,7 +73,10 @@ The gradlew wrapper only exists in the root of the main project, so be sure to r
 
 There are a few tasks other than `build` available. To see them, run the meta-task `tasks`. This will print a list of all available tasks, with a description of each task.
 
+wpiformat can be executed anywhere in the repository via `py -3 -m wpiformat` on Windows or `python3 -m wpiformat` on other platforms.
+
 ## Publishing
+
 If you are building to test with the Eclipse plugins or just want to export the build as a Maven-style dependency, simply run the `publish` task. This task will publish all available packages to ~/releases/maven/development. If you need to publish the project to a different repo, you can specify it with `-Prepo=repo_name`. Valid options are:
 
 - development - The default repo.
@@ -79,6 +94,7 @@ The following maven targets a published by this task:
 - org.gazebosim:JavaGazebo:0.1.0-SNAPSHOT - Gazebo protocol for Java.
 
 ## Structure and Organization
+
 The main WPILib code you're probably looking for is in WPILibJ and WPILibC. Those directories are split into shared, sim, and athena. Athena contains the WPILib code meant to run on your roboRIO. Sim is WPILib code meant to run on your computer with Gazebo, and shared is code shared between the two. Shared code must be platform-independent, since it will be compiled with both the ARM cross-compiler and whatever desktop compiler you are using (g++, msvc, etc...).
 
 The Simulation directory contains extra simulation tools and libraries, such as gz_msgs and JavaGazebo. See sub-directories for more information.
@@ -87,7 +103,7 @@ The integration test directories for C++ and Java contain test code that runs on
 
 The hal directory contains more C++ code meant to run on the roboRIO. HAL is an acronym for "Hardware Abstraction Layer", and it interfaces with the NI Libraries. The NI Libraries contain the low-level code for controlling devices on your robot. The NI Libraries are found in the ni-libraries folder.
 
-The styleguide directory contains the styleguide for C++ and Java code. Anything submitted to the WPILib project needs to follow the code style guides outlined in there. For details about the style, please see the contributors document [here](CONTRIBUTING.md#coding-guidelines).
+The [styleguide repository](https://github.com/wpilibsuite/styleguide) contains our style guides for C++ and Java code. Anything submitted to the WPILib project needs to follow the code style guides outlined in there. For details about the style, please see the contributors document [here](CONTRIBUTING.md#coding-guidelines).
 
 # Contributing to WPILib
 

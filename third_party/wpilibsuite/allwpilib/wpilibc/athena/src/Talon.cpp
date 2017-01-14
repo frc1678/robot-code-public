@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -10,13 +10,15 @@
 #include "HAL/HAL.h"
 #include "LiveWindow/LiveWindow.h"
 
+using namespace frc;
+
 /**
  * Constructor for a Talon (original or Talon SR).
  *
  * @param channel The PWM channel number that the Talon is attached to. 0-9 are
  *                on-board, 10-19 are on the MXP port
  */
-Talon::Talon(uint32_t channel) : PWMSpeedController(channel) {
+Talon::Talon(int channel) : PWMSpeedController(channel) {
   /* Note that the Talon uses the following bounds for PWM values. These values
    * should work reasonably well for most controllers, but if users experience
    * issues such as asymmetric behavior around the deadband or inability to
@@ -32,9 +34,9 @@ Talon::Talon(uint32_t channel) : PWMSpeedController(channel) {
    */
   SetBounds(2.037, 1.539, 1.513, 1.487, .989);
   SetPeriodMultiplier(kPeriodMultiplier_1X);
-  SetRaw(m_centerPwm);
+  SetSpeed(0.0);
   SetZeroLatch();
 
-  HALReport(HALUsageReporting::kResourceType_Talon, GetChannel());
+  HAL_Report(HALUsageReporting::kResourceType_Talon, GetChannel());
   LiveWindow::GetInstance()->AddActuator("Talon", GetChannel(), this);
 }

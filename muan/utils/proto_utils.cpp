@@ -2,20 +2,19 @@
 #define MUAN_UTILS_PROTO_UTILS_HPP_
 
 #include "proto_utils.h"
-#include "google/protobuf/generated_message_reflection.h"
-#include "google/protobuf/message.h"
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include "google/protobuf/generated_message_reflection.h"
+#include "google/protobuf/message.h"
 
 namespace muan {
 
 namespace util {
 
-std::string FieldToCSV(
-    const google::protobuf::Message& message,
-    const google::protobuf::FieldDescriptor* const descriptor,
-    const google::protobuf::Reflection* const reflection) {
+std::string FieldToCSV(const google::protobuf::Message& message,
+                       const google::protobuf::FieldDescriptor* const descriptor,
+                       const google::protobuf::Reflection* const reflection) {
   if (descriptor->is_repeated()) {
     aos::Die("Logging protos with repeated messages is not supported!");
   } else {
@@ -71,16 +70,14 @@ std::string ProtoToCSV(const google::protobuf::Message& message) {
   return ss.str();
 }
 
-std::string FieldToCSVHeader(
-    const google::protobuf::Message& message,
-    const google::protobuf::FieldDescriptor* const descriptor,
-    const google::protobuf::Reflection* const reflection,
-    const std::string& prefix) {
+std::string FieldToCSVHeader(const google::protobuf::Message& message,
+                             const google::protobuf::FieldDescriptor* const descriptor,
+                             const google::protobuf::Reflection* const reflection,
+                             const std::string& prefix) {
   if (descriptor->is_repeated()) {
     aos::Die("Logging protos with repeated messages is not supported!");
   } else {
-    if (descriptor->cpp_type() ==
-        google::protobuf::FieldDescriptor::CPPTYPE_MESSAGE) {
+    if (descriptor->cpp_type() == google::protobuf::FieldDescriptor::CPPTYPE_MESSAGE) {
       auto& submessage = reflection->GetMessage(message, descriptor);
       return ProtoToCSVHeader(submessage, prefix + descriptor->name() + ".");
     } else {

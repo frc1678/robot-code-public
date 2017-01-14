@@ -42,7 +42,7 @@ struct EntryInfo {
 /** NetworkTables Connection Information */
 struct ConnectionInfo {
   std::string remote_id;
-  std::string remote_name;
+  std::string remote_ip;
   unsigned int remote_port;
   unsigned long long last_update;
   unsigned int protocol_version;
@@ -95,6 +95,17 @@ struct RpcCallInfo {
  * @return entry value
  */
 std::shared_ptr<Value> GetEntryValue(StringRef name);
+
+/** Set Default Entry Value
+ * Returns copy of current entry value if it exists.
+ * Otherwise, sets passed in value, and returns set value.
+ * Note that one of the type options is "unassigned".
+ *
+ * @param name      entry name (UTF-8 string)
+ * @param value     value to be set if name does not exist
+ * @return False on error (value not set), True on success
+ */
+bool SetDefaultEntryValue(StringRef name, std::shared_ptr<Value> value);
 
 /** Set Entry Value.
  * Sets new entry value.  If type of new value differs from the type of the
@@ -184,8 +195,8 @@ void SetListenerOnStart(std::function<void()> on_start);
 void SetListenerOnExit(std::function<void()> on_exit);
 
 typedef std::function<void(unsigned int uid, StringRef name,
-                           std::shared_ptr<Value> value,
-                           unsigned int flags)> EntryListenerCallback;
+                           std::shared_ptr<Value> value, unsigned int flags)>
+    EntryListenerCallback;
 
 typedef std::function<void(unsigned int uid, bool connected,
                            const ConnectionInfo& conn)>
@@ -204,24 +215,35 @@ bool NotifierDestroyed();
  * Remote Procedure Call Functions
  */
 
+#if defined(_MSC_VER) && _MSC_VER < 1900
+const double kTimeout_Indefinite = -1;
+#else
+constexpr double kTimeout_Indefinite = -1;
+#endif
+
 void SetRpcServerOnStart(std::function<void()> on_start);
 void SetRpcServerOnExit(std::function<void()> on_exit);
 
-typedef std::function<std::string(StringRef name, StringRef params)>
+typedef std::function<std::string(StringRef name, StringRef params,
+                                  const ConnectionInfo& conn_info)>
     RpcCallback;
 
 void CreateRpc(StringRef name, StringRef def, RpcCallback callback);
 void CreatePolledRpc(StringRef name, StringRef def);
 
 bool PollRpc(bool blocking, RpcCallInfo* call_info);
+bool PollRpc(bool blocking, double time_out, RpcCallInfo* call_info);
 void PostRpcResponse(unsigned int rpc_id, unsigned int call_uid,
                      StringRef result);
 
 unsigned int CallRpc(StringRef name, StringRef params);
 bool GetRpcResult(bool blocking, unsigned int call_uid, std::string* result);
+bool GetRpcResult(bool blocking, unsigned int call_uid, double time_out,
+                  std::string* result);
+void CancelBlockingRpcResult(unsigned int call_uid);
 
 std::string PackRpcDefinition(const RpcDefinition& def);
-bool UnpackRpcDefinition(StringRef packed, RpcDefinition *def);
+bool UnpackRpcDefinition(StringRef packed, RpcDefinition* def);
 std::string PackRpcValues(ArrayRef<std::shared_ptr<Value>> values);
 std::vector<std::shared_ptr<Value>> UnpackRpcValues(StringRef packed,
                                                     ArrayRef<NT_Type> types);
@@ -233,9 +255,14 @@ void SetNetworkIdentity(StringRef name);
 void StartServer(StringRef persist_filename, const char* listen_address,
                  unsigned int port);
 void StopServer();
+void StartClient();
 void StartClient(const char* server_name, unsigned int port);
 void StartClient(ArrayRef<std::pair<StringRef, unsigned int>> servers);
 void StopClient();
+void SetServer(const char* server_name, unsigned int port);
+void SetServer(ArrayRef<std::pair<StringRef, unsigned int>> servers);
+void StartDSClient(unsigned int port);
+void StopDSClient();
 void StopRpcServer();
 void StopNotifier();
 void SetUpdateRate(double interval);
@@ -258,9 +285,10 @@ unsigned long long Now();
 
 /* logging */
 typedef std::function<void(unsigned int level, const char* file,
-                           unsigned int line, const char* msg)> LogFunc;
+                           unsigned int line, const char* msg)>
+    LogFunc;
 void SetLogger(LogFunc func, unsigned int min_level);
 
 }  // namespace nt
 
-#endif  /* NTCORE_CPP_H_ */
+#endif /* NTCORE_CPP_H_ */

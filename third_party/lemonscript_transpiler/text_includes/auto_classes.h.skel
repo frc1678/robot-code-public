@@ -1,0 +1,29 @@
+// vim: filetype=cpp:
+<<<warning>>>
+
+#ifndef AUTOGEN_AUTO_CLASSES_H_
+#define AUTOGEN_AUTO_CLASSES_H_
+
+#include <vector>
+#include <functional>
+#include <memory>
+#include <map>
+#include "third_party/lemonscript/lemonscript/BaseAutoFunction.h"
+
+using lemonscript::BaseAutoFunction;
+
+//<<<include>>>
+
+
+
+namespace AutoClass {
+  //<<<classes>>>
+}
+
+namespace AutoGenerator {
+  //<<<generators>>>
+
+  std::map<std::string, std::function<std::unique_ptr<BaseAutoFunction>()>> GetAutoGenerators();
+}
+
+#endif

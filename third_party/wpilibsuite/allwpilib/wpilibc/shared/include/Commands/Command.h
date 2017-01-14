@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2011-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2011-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -10,9 +10,12 @@
 #include <memory>
 #include <set>
 #include <string>
+
 #include "ErrorBase.h"
 #include "SmartDashboard/NamedSendable.h"
 #include "tables/ITableListener.h"
+
+namespace frc {
 
 class CommandGroup;
 class Subsystem;
@@ -52,8 +55,8 @@ class Command : public ErrorBase, public NamedSendable, public ITableListener {
 
  public:
   Command();
-  Command(const std::string& name);
-  Command(double timeout);
+  explicit Command(const std::string& name);
+  explicit Command(double timeout);
   Command(const std::string& name, double timeout);
   virtual ~Command();
   double TimeSinceInitialized() const;
@@ -78,16 +81,11 @@ class Command : public ErrorBase, public NamedSendable, public ITableListener {
   bool IsTimedOut() const;
   bool AssertUnlocked(const std::string& message);
   void SetParent(CommandGroup* parent);
-  /**
-   * The initialize method is called the first time this Command is run after
-   * being started.
-   */
-  virtual void Initialize() = 0;
-  /**
-   * The execute method is called repeatedly until this Command either finishes
-   * or is canceled.
-   */
-  virtual void Execute() = 0;
+  void ClearRequirements();
+
+  virtual void Initialize();
+  virtual void Execute();
+
   /**
    * Returns whether this command is finished.
    * If it is, then the command will be removed and {@link Command#end() end()}
@@ -95,33 +93,27 @@ class Command : public ErrorBase, public NamedSendable, public ITableListener {
    *
    * <p>It may be useful for a team to reference the {@link Command#isTimedOut()
    * isTimedOut()} method for time-sensitive commands.</p>
+   *
+   * <p>Returning false will result in the command never ending automatically.
+   * It may still be cancelled manually or interrupted by another command.
+   * Returning true will result in the command executing once and finishing
+   * immediately. We recommend using {@link InstantCommand} for this.</p>
+   *
    * @return whether this command is finished.
    * @see Command#isTimedOut() isTimedOut()
    */
   virtual bool IsFinished() = 0;
-  /**
-   * Called when the command ended peacefully.  This is where you may want
-   * to wrap up loose ends, like shutting off a motor that was being used
-   * in the command.
-   */
-  virtual void End() = 0;
-  /**
-   * Called when the command ends because somebody called
-   * {@link Command#cancel() cancel()} or another command shared the same
-   * requirements as this one, and booted it out.
-   *
-   * <p>This is where you may want to wrap up loose ends, like shutting off a
-   * motor that was being used in the command.</p>
-   *
-   * <p>Generally, it is useful to simply call the {@link Command#end() end()}
-   * method within this method</p>
-   */
-  virtual void Interrupted() = 0;
+
+  virtual void End();
+  virtual void Interrupted();
+
   virtual void _Initialize();
   virtual void _Interrupted();
   virtual void _Execute();
   virtual void _End();
   virtual void _Cancel();
+
+  friend class ConditionalCommand;
 
  private:
   void LockChanges();
@@ -167,13 +159,15 @@ class Command : public ErrorBase, public NamedSendable, public ITableListener {
   static int m_commandCounter;
 
  public:
-  virtual std::string GetName() const;
-  virtual void InitTable(std::shared_ptr<ITable> table);
-  virtual std::shared_ptr<ITable> GetTable() const;
-  virtual std::string GetSmartDashboardType() const;
-  virtual void ValueChanged(ITable* source, llvm::StringRef key,
-                            std::shared_ptr<nt::Value> value, bool isNew);
+  std::string GetName() const override;
+  void InitTable(std::shared_ptr<ITable> subtable) override;
+  std::shared_ptr<ITable> GetTable() const override;
+  std::string GetSmartDashboardType() const override;
+  void ValueChanged(ITable* source, llvm::StringRef key,
+                    std::shared_ptr<nt::Value> value, bool isNew) override;
 
  protected:
   std::shared_ptr<ITable> m_table;
 };
+
+}  // namespace frc

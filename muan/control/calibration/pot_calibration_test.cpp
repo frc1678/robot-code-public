@@ -126,7 +126,6 @@ TEST_F(PotCalibrationTest, UniversalCases) {
 TEST_F(PotCalibrationTest, CalibrationError) {
   muan::control::PotCalibration calibration_error(10);
   double system_value = 19;
-  double calibrated_value = 0;
   int uncalibrated_value;
   bool index_click = false;
 
@@ -142,10 +141,10 @@ TEST_F(PotCalibrationTest, CalibrationError) {
     double pot_value = system_value + muan::utils::GaussianNoise(5, 0);
 
     // Get the calibrated value.
-    calibrated_value = calibration_error.Update(uncalibrated_value, pot_value, index_click);
+    calibration_error.Update(uncalibrated_value, pot_value, index_click);
   }
 
-  for (uncalibrated_value; uncalibrated_value <= 150; uncalibrated_value++, system_value++) {
+  for (; uncalibrated_value <= 150; uncalibrated_value++, system_value++) {
     if (int(system_value) % 10 == 0) {
       index_click = true;
     } else {
@@ -156,7 +155,7 @@ TEST_F(PotCalibrationTest, CalibrationError) {
     // reference, it should recognize the error.
     double pot_value = system_value + 15 + muan::utils::GaussianNoise(5, 0);
 
-    calibrated_value = calibration_error.Update(uncalibrated_value, pot_value, index_click);
+    calibration_error.Update(uncalibrated_value, pot_value, index_click);
   }
 
   EXPECT_TRUE(calibration_error.is_calibrated());

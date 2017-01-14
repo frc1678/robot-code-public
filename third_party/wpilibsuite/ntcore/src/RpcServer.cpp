@@ -15,7 +15,7 @@ using namespace nt;
 
 ATOMIC_STATIC_INIT(RpcServer)
 
-class RpcServer::Thread : public SafeThread {
+class RpcServer::Thread : public wpi::SafeThread {
  public:
   Thread(std::function<void()> on_start, std::function<void()> on_exit)
       : m_on_start(on_start), m_on_exit(on_exit) {}
@@ -28,9 +28,7 @@ class RpcServer::Thread : public SafeThread {
   std::function<void()> m_on_exit;
 };
 
-RpcServer::RpcServer() {
-  m_terminating = false;
-}
+RpcServer::RpcServer() { m_terminating = false; }
 
 RpcServer::~RpcServer() {
   Logger::GetInstance().SetLogger(nullptr);
@@ -47,28 +45,56 @@ void RpcServer::Stop() { m_owner.Stop(); }
 
 void RpcServer::ProcessRpc(StringRef name, std::shared_ptr<Message> msg,
                            RpcCallback func, unsigned int conn_id,
-                           SendMsgFunc send_response) {
+                           SendMsgFunc send_response,
+                           const ConnectionInfo& conn_info) {
   if (func) {
     auto thr = m_owner.GetThread();
     if (!thr) return;
-    thr->m_call_queue.emplace(name, msg, func, conn_id, send_response);
+    thr->m_call_queue.emplace(name, msg, func, conn_id, send_response,
+                              conn_info);
     thr->m_cond.notify_one();
   } else {
     std::lock_guard<std::mutex> lock(m_mutex);
-    m_poll_queue.emplace(name, msg, func, conn_id, send_response);
+    m_poll_queue.emplace(name, msg, func, conn_id, send_response, conn_info);
     m_poll_cond.notify_one();
   }
 }
 
 bool RpcServer::PollRpc(bool blocking, RpcCallInfo* call_info) {
+  return PollRpc(blocking, kTimeout_Indefinite, call_info);
+}
+
+bool RpcServer::PollRpc(bool blocking, double time_out,
+                        RpcCallInfo* call_info) {
   std::unique_lock<std::mutex> lock(m_mutex);
+#if defined(_MSC_VER) && _MSC_VER < 1900
+  auto timeout_time = std::chrono::steady_clock::now() +
+                      std::chrono::duration<int64_t, std::nano>(
+                          static_cast<int64_t>(time_out * 1e9));
+#else
+  auto timeout_time = std::chrono::steady_clock::now() +
+                      std::chrono::duration<double>(time_out);
+#endif
   while (m_poll_queue.empty()) {
     if (!blocking || m_terminating) return false;
-    m_poll_cond.wait(lock);
+    if (time_out < 0) {
+      m_poll_cond.wait(lock);
+    } else {
+      auto timed_out = m_poll_cond.wait_until(lock, timeout_time);
+      if (timed_out == std::cv_status::timeout) {
+        return false;
+      }
+    }
+    if (m_terminating) return false;
   }
 
   auto& item = m_poll_queue.front();
-  unsigned int call_uid = (item.conn_id << 16) | item.msg->seq_num_uid();
+  unsigned int call_uid;
+  // do not include conn id if the result came from the server
+  if (item.conn_id != 0xffff)
+    call_uid = (item.conn_id << 16) | item.msg->seq_num_uid();
+  else
+    call_uid = item.msg->seq_num_uid();
   call_info->rpc_id = item.msg->id();
   call_info->call_uid = call_uid;
   call_info->name = std::move(item.name);
@@ -113,7 +139,7 @@ void RpcServer::Thread::Main() {
 
       // Don't hold mutex during callback execution!
       lock.unlock();
-      auto result = item.func(item.name, item.msg->str());
+      auto result = item.func(item.name, item.msg->str(), item.conn_info);
       item.send_response(Message::RpcResponse(item.msg->id(),
                                               item.msg->seq_num_uid(), result));
       lock.lock();

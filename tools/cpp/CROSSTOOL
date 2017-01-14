@@ -203,7 +203,7 @@ toolchain {
     # We need to undef it before redefining it as some distributions now have
     # it enabled by default.
     compiler_flag: "-U_FORTIFY_SOURCE"
-    compiler_flag: "-D_FORTIFY_SOURCE=1"
+    compiler_flag: "-D_FORTIFY_SOURCE=0"
     compiler_flag: "-fstack-protector"
     linker_flag: "-Wl,-z,relro,-z,now"
 
@@ -330,7 +330,7 @@ toolchain {
     # We need to undef it before redefining it as some distributions now have
     # it enabled by default.
     compiler_flag: "-U_FORTIFY_SOURCE"
-    compiler_flag: "-D_FORTIFY_SOURCE=1"
+    compiler_flag: "-D_FORTIFY_SOURCE=0"
     compiler_flag: "-fstack-protector"
     linker_flag: "-Wl,-z,relro,-z,now"
 
@@ -455,7 +455,7 @@ toolchain {
     # We need to undef it before redefining it as some distributions now have
     # it enabled by default.
     compiler_flag: "-U_FORTIFY_SOURCE"
-    compiler_flag: "-D_FORTIFY_SOURCE=1"
+    compiler_flag: "-D_FORTIFY_SOURCE=0"
     compiler_flag: "-fstack-protector"
     linker_flag: "-Wl,-z,relro,-z,now"
 
@@ -551,7 +551,7 @@ toolchain {
 
     # Security hardening on by default.
     # Conservative choice; -D_FORTIFY_SOURCE=2 may be unsafe in some cases.
-    compiler_flag: "-D_FORTIFY_SOURCE=1"
+    compiler_flag: "-D_FORTIFY_SOURCE=0"
     compiler_flag: "-fstack-protector"
 
     # Disable assertions
@@ -671,7 +671,7 @@ toolchain {
     # We need to undef it before redefining it as some distributions now have
     # it enabled by default.
     compiler_flag: "-U_FORTIFY_SOURCE"
-    compiler_flag: "-D_FORTIFY_SOURCE=1"
+    compiler_flag: "-D_FORTIFY_SOURCE=0"
     compiler_flag: "-fstack-protector"
     linker_flag: "-Wl,-z,relro,-z,now"
 
@@ -1131,7 +1131,7 @@ toolchain {
   # We need to undef it before redefining it as some distributions now have
   # it enabled by default.
   compiler_flag: "-U_FORTIFY_SOURCE"
-  compiler_flag: "-D_FORTIFY_SOURCE=1"
+  compiler_flag: "-D_FORTIFY_SOURCE=0"
   compiler_flag: "-fstack-protector"
   compiler_flag: "-fPIE"
   linker_flag: "-pie"

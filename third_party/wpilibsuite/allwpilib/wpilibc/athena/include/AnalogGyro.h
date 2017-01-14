@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,7 +7,12 @@
 
 #pragma once
 
+#include <memory>
+
 #include "GyroBase.h"
+#include "HAL/Types.h"
+
+namespace frc {
 
 class AnalogInput;
 
@@ -26,26 +31,25 @@ class AnalogInput;
  */
 class AnalogGyro : public GyroBase {
  public:
-  static const uint32_t kOversampleBits = 10;
-  static const uint32_t kAverageBits = 0;
-  static constexpr float kSamplesPerSecond = 50.0;
-  static constexpr float kCalibrationSampleTime = 5.0;
-  static constexpr float kDefaultVoltsPerDegreePerSecond = 0.007;
+  static const int kOversampleBits = 10;
+  static const int kAverageBits = 0;
+  static constexpr double kSamplesPerSecond = 50.0;
+  static constexpr double kCalibrationSampleTime = 5.0;
+  static constexpr double kDefaultVoltsPerDegreePerSecond = 0.007;
 
-  explicit AnalogGyro(int32_t channel);
+  explicit AnalogGyro(int channel);
   explicit AnalogGyro(AnalogInput* channel);
   explicit AnalogGyro(std::shared_ptr<AnalogInput> channel);
-  AnalogGyro(int32_t channel, uint32_t center, float offset);
-  AnalogGyro(std::shared_ptr<AnalogInput> channel, uint32_t center,
-             float offset);
-  virtual ~AnalogGyro() = default;
+  AnalogGyro(int channel, int center, double offset);
+  AnalogGyro(std::shared_ptr<AnalogInput> channel, int center, double offset);
+  virtual ~AnalogGyro();
 
-  float GetAngle() const override;
+  double GetAngle() const override;
   double GetRate() const override;
-  virtual uint32_t GetCenter() const;
-  virtual float GetOffset() const;
-  void SetSensitivity(float voltsPerDegreePerSecond);
-  void SetDeadband(float volts);
+  virtual int GetCenter() const;
+  virtual double GetOffset() const;
+  void SetSensitivity(double voltsPerDegreePerSecond);
+  void SetDeadband(double volts);
   void Reset() override;
   virtual void InitGyro();
   void Calibrate() override;
@@ -54,7 +58,7 @@ class AnalogGyro : public GyroBase {
   std::shared_ptr<AnalogInput> m_analog;
 
  private:
-  float m_voltsPerDegreePerSecond;
-  float m_offset;
-  uint32_t m_center;
+  HAL_GyroHandle m_gyroHandle = HAL_kInvalidHandle;
 };
+
+}  // namespace frc

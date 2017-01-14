@@ -1,12 +1,15 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2011-2016. All Rights Reserved.                        */
+/* Copyright (c) FIRST 2011-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
 #include "Commands/WaitUntilCommand.h"
+
 #include "Timer.h"
+
+using namespace frc;
 
 /**
  * A {@link WaitCommand} will wait until a certain match time before finishing.
@@ -25,15 +28,7 @@ WaitUntilCommand::WaitUntilCommand(const std::string& name, double time)
   m_time = time;
 }
 
-void WaitUntilCommand::Initialize() {}
-
-void WaitUntilCommand::Execute() {}
-
 /**
  * Check if we've reached the actual finish time.
  */
 bool WaitUntilCommand::IsFinished() { return Timer::GetMatchTime() >= m_time; }
-
-void WaitUntilCommand::End() {}
-
-void WaitUntilCommand::Interrupted() {}

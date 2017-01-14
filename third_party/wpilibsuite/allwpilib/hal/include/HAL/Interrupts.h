@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2016. All Rights Reserved.                             */
+/* Copyright (c) FIRST 2016-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -9,32 +9,42 @@
 
 #include <stdint.h>
 
-#include "Handles.h"
+#include "HAL/AnalogTrigger.h"
+#include "HAL/Types.h"
 
-typedef HalHandle HalInterruptHandle;
-
+#ifdef __cplusplus
 extern "C" {
-typedef void (*InterruptHandlerFunction)(uint32_t interruptAssertedMask,
-                                         void* param);
+#endif
 
-HalInterruptHandle initializeInterrupts(bool watcher, int32_t* status);
-void cleanInterrupts(HalInterruptHandle interrupt_handle, int32_t* status);
+typedef void (*HAL_InterruptHandlerFunction)(uint32_t interruptAssertedMask,
+                                             void* param);
 
-uint32_t waitForInterrupt(HalInterruptHandle interrupt_handle, double timeout,
-                          bool ignorePrevious, int32_t* status);
-void enableInterrupts(HalInterruptHandle interrupt_handle, int32_t* status);
-void disableInterrupts(HalInterruptHandle interrupt_handle, int32_t* status);
-double readRisingTimestamp(HalInterruptHandle interrupt_handle,
+HAL_InterruptHandle HAL_InitializeInterrupts(HAL_Bool watcher, int32_t* status);
+void HAL_CleanInterrupts(HAL_InterruptHandle interruptHandle, int32_t* status);
+
+int64_t HAL_WaitForInterrupt(HAL_InterruptHandle interruptHandle,
+                             double timeout, HAL_Bool ignorePrevious,
+                             int32_t* status);
+void HAL_EnableInterrupts(HAL_InterruptHandle interruptHandle, int32_t* status);
+void HAL_DisableInterrupts(HAL_InterruptHandle interruptHandle,
                            int32_t* status);
-double readFallingTimestamp(HalInterruptHandle interrupt_handle,
-                            int32_t* status);
-void requestInterrupts(HalInterruptHandle interrupt_handle,
-                       uint8_t routing_module, uint32_t routing_pin,
-                       bool routing_analog_trigger, int32_t* status);
-void attachInterruptHandler(HalInterruptHandle interrupt_handle,
-                            InterruptHandlerFunction handler, void* param,
-                            int32_t* status);
-void setInterruptUpSourceEdge(HalInterruptHandle interrupt_handle,
-                              bool risingEdge, bool fallingEdge,
-                              int32_t* status);
+double HAL_ReadInterruptRisingTimestamp(HAL_InterruptHandle interruptHandle,
+                                        int32_t* status);
+double HAL_ReadInterruptFallingTimestamp(HAL_InterruptHandle interruptHandle,
+                                         int32_t* status);
+void HAL_RequestInterrupts(HAL_InterruptHandle interruptHandle,
+                           HAL_Handle digitalSourceHandle,
+                           HAL_AnalogTriggerType analogTriggerType,
+                           int32_t* status);
+void HAL_AttachInterruptHandler(HAL_InterruptHandle interruptHandle,
+                                HAL_InterruptHandlerFunction handler,
+                                void* param, int32_t* status);
+void HAL_AttachInterruptHandlerThreaded(HAL_InterruptHandle interruptHandle,
+                                        HAL_InterruptHandlerFunction handler,
+                                        void* param, int32_t* status);
+void HAL_SetInterruptUpSourceEdge(HAL_InterruptHandle interruptHandle,
+                                  HAL_Bool risingEdge, HAL_Bool fallingEdge,
+                                  int32_t* status);
+#ifdef __cplusplus
 }
+#endif
