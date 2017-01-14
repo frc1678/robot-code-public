@@ -4,7 +4,7 @@ package(default_visibility = ['//visibility:public'])
 cc_library(
   name = 'shooter_queues',
   hdrs = ['queue_types.h'],
-  deps = [':shooter_proto', '//muan/queues', '//muan/proto:stack_proto']
+  deps = ['shooter_proto', '//muan/queues', '//muan/proto:stack_proto']
 )
 
 cc_proto_library(
