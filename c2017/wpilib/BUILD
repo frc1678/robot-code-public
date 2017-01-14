@@ -1,3 +1,26 @@
+load('//third_party/google/protobuf:protobuf.bzl', 'cc_proto_library')
+
+cc_library(
+  name = 'wpilib_queues',
+  hdrs = [
+    'queue_types.h',
+  ],
+  deps = [
+    'wpilib_proto', 
+    '//muan/proto:stack_proto',
+    '//muan/queues:queues'
+  ],
+  visibility = ['//visibility:public']
+)
+
+cc_proto_library(
+  name = 'wpilib_proto',
+  srcs = ['wpilib.proto'],
+  protoc = '//third_party/google/protobuf:protoc',
+  default_runtime = '//third_party/google/protobuf',
+  visibility = ['//visibility:public']
+)
+
 cc_library(
   name = 'wpilib_interface',
   srcs = [
@@ -13,3 +36,5 @@ cc_library(
   ],
   visibility = ['//visibility:public']
 )
+
+
