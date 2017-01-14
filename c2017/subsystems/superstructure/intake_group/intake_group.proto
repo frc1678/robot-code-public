@@ -1,0 +1,34 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+package c2017.intake_group;
+
+message IntakeGoal {
+  enum GroundIntakePosition {
+    INTAKE_NOTHING = 0;
+    INTAKE_GEAR = 1;
+    INTAKE_BALLS = 2;
+  }
+  enum HpLoadType {
+    HP_LOAD_NONE = 0;
+    HP_LOAD_GEAR = 1;
+    HP_LOAD_BALLS = 2;
+    HP_LOAD_BOTH = 3;
+  }
+  enum Rollers {
+    ROLLER_IDLE = 0;
+    ROLLER_INTAKE = 1;
+    ROLLER_OUTTAKE = 2;
+  }
+  enum GearIntake {
+    GEAR_IDLE = 0;
+    GEAR_INTAKE = 1;
+    GEAR_OUTTAKE = 2;
+  }
+  
+  required IntakeGoal intake_goal = 1;
+  required HpLoadType hp_load_type = 2;
+  required Rollers roller = 3;
+  required GearIntake gear_intake = 4;
+}
