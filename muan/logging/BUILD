@@ -24,7 +24,6 @@ cc_test(
           'logger',
           'filewriter',
           'logger_test_protobufs',
-          '//muan/utils:timing',
           '//muan/proto:stack_proto']
 )
 

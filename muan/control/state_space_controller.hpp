@@ -46,7 +46,7 @@ template <uint32_t kNumInputs, uint32_t kNumStates, uint32_t kNumOutputs>
 Eigen::Matrix<double, kNumInputs, 1> StateSpaceController<kNumInputs, kNumStates, kNumOutputs>::Update(
     const Eigen::Matrix<double, kNumStates, 1>& x) {
   Eigen::Matrix<double, kNumInputs, 1> u = K() * (r_ - x) + Kff() * (r_ - A() * r_);
-  return CapMatrix(u, u_min(), u_max());
+  return utils::CapMatrix(u, u_min(), u_max());
 }
 
 template <uint32_t kNumInputs, uint32_t kNumStates, uint32_t kNumOutputs>
@@ -54,7 +54,7 @@ Eigen::Matrix<double, kNumInputs, 1> StateSpaceController<kNumInputs, kNumStates
     const Eigen::Matrix<double, kNumStates, 1>& x, const Eigen::Matrix<double, kNumStates, 1>& r) {
   Eigen::Matrix<double, kNumInputs, 1> u = K() * (r_ - x) + Kff() * (r - A() * r_);
   r_ = r;
-  return CapMatrix(u, u_min(), u_max());
+  return utils::CapMatrix(u, u_min(), u_max());
 }
 
 template <uint32_t kNumInputs, uint32_t kNumStates, uint32_t kNumOutputs>
