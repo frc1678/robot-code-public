@@ -22,5 +22,5 @@ message ShooterGoal {
     HOPPER = 1;
   }
   required ShotMode goal_mode = 1;
-  required double goal_velocity = 2;
+  required double goal_velocity = 2; // Positive velocity = forwards
 }
