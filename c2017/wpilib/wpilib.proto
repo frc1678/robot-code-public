@@ -6,42 +6,42 @@ option cc_enable_arenas = true;
 
 message WpilibOutput {
   // Intake Group
-  enum  GroundIntakePosition {
-    NONE = 0;
-    GEAR = 1;
-    BALL = 2;
+  enum GroundIntakePosition {
+    INTAKE_NONE = 0;
+    INTAKE_GEAR = 1;
+    INTAKE_BALL = 2;
   }
 
   enum HpLoadType {
-    NONE = 0;
-    GEAR = 1;
-    BALL = 2;
-    BOTH = 3;
+    HP_NONE = 0;
+    HP_GEAR = 1;
+    HP_BALL = 2;
+    HP_BOTH = 3;
   }
 
   enum Rollers {
-    IDLE = 0;
-    INTAKE = 1;
-    OUTTAKE = 2;
+    ROLLER_IDLE = 0;
+    ROLLER_INTAKE = 1;
+    ROLLER_OUTTAKE = 2;
   }
 
   enum GearIntake {
-    IDLE = 0;
-    INTAKE = 1;
-    OUTTAKE = 2;
+    GEAR_IDLE = 0;
+    GEAR_INTAKE = 1;
+    GEAR_OUTTAKE = 2;
   }
 
   // Shooter Group
   enum Position {
-    NONE = 0;
-    FENDER = 1;
-    HOPPER = 2;
+    SHOOTER_NONE = 0;
+    SHOOTER_FENDER = 1;
+    SHOOTER_HOPPER = 2;
   }
 
   enum Wheel {
-    IDLE = 0;
-    SPINUP = 1;
-    SHOOT = 2;
+    WHEEL_IDLE = 0;
+    WHEEL_SPINUP = 1;
+    WHEEL_SHOOT = 2;
   }
 
   required GroundIntakePosition ground_intake_position = 1;
@@ -51,7 +51,7 @@ message WpilibOutput {
 
   required Position position = 5;
   required Wheel wheel = 6;
-  required int rate = 7;
+  required int32 rate = 7;
 
   // Climber Group
   required bool should_climb = 8;
