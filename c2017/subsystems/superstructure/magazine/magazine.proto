@@ -23,7 +23,7 @@ message MagazineOutput {
     required bool gear_shutter_open = 4;
 }
 
-enum motor_status {
+enum MotorStatus {
     idle = 0;
     forward = 1;
     backward = 2;
@@ -31,5 +31,5 @@ enum motor_status {
 
 message MagazineGoal {
     //check if magazine expansion is complete
-    required motor_status conveyor_voltage = 1;
+    required MotorStatus conveyor_voltage = 1;
 }
