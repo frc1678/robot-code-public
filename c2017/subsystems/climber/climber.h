@@ -12,12 +12,17 @@ namespace climber {
 class Climber {
 public:
   Climber();
-  void Update (ClimberGoalProto goal, ClimberInputProto input);
-private:
-  ClimberOutputProto output_;
-  ClimberStatusProto status_;
+  void SetGoal (const ClimberGoalProto& goal);
+  void Update (const ClimberInputProto& input);
   ClimberOutputProto Output();
   ClimberStatusProto Status();
+private:
+  double voltage_;
+  bool at_top_;
+  bool is_climbing_;
+  ClimberOutputProto output_;
+  ClimberGoalProto goal_;
+  ClimberStatusProto status_;
 };  //Climber
 }
 

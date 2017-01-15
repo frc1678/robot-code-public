@@ -20,3 +20,9 @@ cc_proto_library(
   protoc = '//third_party/google/protobuf:protoc',
   default_runtime = '//third_party/google/protobuf'
 )
+
+cc_test(
+  name = 'climber_test',
+  srcs = ['climber_test.cpp'],
+  deps = [ ':climber', '//third_party/google/googletest:googletest']
+)
