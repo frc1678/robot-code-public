@@ -57,6 +57,16 @@ cc_library(
   ],
 )
 
+cc_library(
+  name = 'scoped_fd',
+  hdrs = [
+    'scoped_fd.h',
+  ],
+  deps = [
+    '//aos/common/logging',
+  ],
+)
+
 cc_test(
   name = 'type_traits_test',
   srcs = [
