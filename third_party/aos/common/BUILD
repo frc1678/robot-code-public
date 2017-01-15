@@ -62,9 +62,6 @@ cc_library(
   hdrs = [
     'scoped_fd.h',
   ],
-  deps = [
-    '//aos/common/logging',
-  ],
 )
 
 cc_test(

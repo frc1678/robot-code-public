@@ -1,4 +1,4 @@
-#include "aos/vision/events/udp.h"
+#include "third_party/aos/vision/events/udp.h"
 
 #include "gtest/gtest.h"
 

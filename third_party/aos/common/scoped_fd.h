@@ -1,7 +1,6 @@
 #include <unistd.h>
 
-#include "aos/common/macros.h"
-#include "aos/common/logging/logging.h"
+#include "third_party/aos/common/macros.h"
 
 namespace aos {
 
@@ -29,9 +28,7 @@ class ScopedFD {
   int fd_;
   void Close() {
     if (fd_ != -1) {
-      if (close(fd_) == -1) {
-        PLOG(WARNING, "close(%d) failed", fd_);
-      }
+      close(fd_); 
     }
   }
   DISALLOW_COPY_AND_ASSIGN(ScopedFD);

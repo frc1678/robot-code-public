@@ -1,11 +1,12 @@
+licenses(['notice'])
+
 cc_library(
   name = 'epoll_events',
   srcs = ['epoll_events.cc'],
   hdrs = ['epoll_events.h'],
   deps = [
-    '//aos/common:scoped_fd',
-    '//aos/common/logging',
-    '//aos/common:time',
+    '//third_party/aos/common:scoped_fd',
+    '//third_party/aos/common:time',
   ],
 )
 
@@ -15,9 +16,8 @@ cc_library(
   srcs = ['udp.cc'],
   hdrs = ['udp.h'],
   deps = [
-    '//aos/common:macros',
-    '//aos/common/logging',
-    '//aos/common:scoped_fd',
+    '//third_party/aos/common:macros',
+    '//third_party/aos/common:scoped_fd',
   ],
 )
 
@@ -26,6 +26,6 @@ cc_test(
   srcs = ['udp_test.cc'],
   deps = [
     ':udp',
-    '//aos/testing:googletest'
+    '//third_party/google/googletest:googletest'
   ],
 )

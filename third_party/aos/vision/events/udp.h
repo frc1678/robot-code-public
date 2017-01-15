@@ -7,8 +7,8 @@
 #include <unistd.h>
 #include <vector>
 
-#include "aos/common/macros.h"
-#include "aos/common/scoped_fd.h"
+#include "third_party/aos/common/macros.h"
+#include "third_party/aos/common/scoped_fd.h"
 
 namespace aos {
 namespace vision {
