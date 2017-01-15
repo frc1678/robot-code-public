@@ -14,6 +14,7 @@ cc_library(
   deps = ['//muan/units:units', ':climber_queues' ],
   visibility = ['//visibility:public']
 )
+
 cc_proto_library(
   name = 'climber_proto',
   srcs = ['climber.proto'],
