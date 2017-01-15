@@ -13,3 +13,10 @@ cc_proto_library(
   protoc = '//third_party/google/protobuf:protoc',
   default_runtime = '//third_party/google/protobuf'
 )
+
+py_binary(
+  name= 'shooter_python',
+  srcs = ['shooter_controller.py'],
+  main = 'shooter_controller.py',
+  deps = ['//muan/control:python_controls']
+)
