@@ -32,6 +32,7 @@ cc_library(
   deps = [
     '//c2017/queue_manager',
     '//muan/wpilib:can_wrapper',
+    '//muan/wpilib/gyro:gyro',
     '//third_party/wpilibsuite:wpilib',
   ],
   visibility = ['//visibility:public']
