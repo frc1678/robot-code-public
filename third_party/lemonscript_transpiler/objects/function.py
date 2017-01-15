@@ -61,7 +61,7 @@ class Function(object):
 
         for var in self.get_section("global").split("\n"):
             if var != "":
-                class_h_file.insert_text("vars", var + " = 0;")
+                class_h_file.insert_text("vars", var + ";")
 
         class_cpp_skel_file = open(self.script_dir + "text_includes/auto_function_class.cpp.skel")
         class_cpp_file = File(class_cpp_skel_file.read())
