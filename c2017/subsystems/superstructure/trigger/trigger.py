@@ -19,7 +19,7 @@ def make_gains():
 
     # Parameters (WE DONT ACTAULLY KNOW ANY OF THESE VALUES LOL
     moment_inertia =  (0.05**2) * 3.0 / 2.0
-    gear_ratio = 1 / 4 #ALSO GET FROM MECHANICAL
+    gear_ratio = 1.0 / 4.0  #ALSO GET FROM MECHANICAL
     efficiency = .8
 
     #Motor characteristics
@@ -59,7 +59,7 @@ def make_gains():
 
     #Controller weighting
     Q_controller = np.asmatrix([
-        [1e3, 0.],
+        [0., 0.],
         [0., 1e-1]
     ])
 
@@ -121,14 +121,14 @@ def make_augmented_gains():
     Q_noise[2, 2] = 1
 
     R_noise = np.asmatrix([
-        [0.1]
+        [.1]
     ])
 
     # Kalman noise matrix
     Q_kalman = np.asmatrix([
-        [1.0, 0.0, 0.0],
-        [0.0, 2.0, 0.0],
-        [0.0, 0.0, 0.0]
+        [10., 0.0, 0.0],
+        [0.0, 5., 0.0],
+        [0.0, 0.0, 1.0]
     ])
 
     Q_ff = np.asmatrix([
@@ -159,7 +159,7 @@ controller = StateSpaceController(gains, -u_max, u_max)
 observer = StateSpaceObserver(gains, x0)
 
 def goal(t):
-    return np.asmatrix([1., 0., 0.]).T
+    return np.asmatrix([0., 10., 0.]).T
 
 if len(sys.argv) == 3:
     from muan.control.state_space_write import StateSpaceWriter
