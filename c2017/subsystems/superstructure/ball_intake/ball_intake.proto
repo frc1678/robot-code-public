@@ -16,15 +16,16 @@ message IntakeStatus {
 }
 
 message IntakeGoal {
-  required double intake = 1;
+  required bool intake = 1;
   //intake can work as an outtake
-  required bool agitate = 2;
+  required bool stir_hopper = 2;
   //stirs up hooper
   required bool off = 3;
+  enum Goal {
+    STOP = 0;
+    FORWARD = 1;
+    REVERSE = 2;
+  }
+
 }
 
-enum Goal {
-  STOP = 0;
-  FORWARD = 1;
-  REVERSE = 2;
-}

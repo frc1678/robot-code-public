@@ -5,7 +5,7 @@ cc_library(
   hdrs = ['queue_types.h'],
   deps = ['ball_intake_proto', '//muan/proto:stack_proto', '//muan/queues:queues'],
   visibility = ['//visibility:public']
- )
+)
 
 cc_proto_library(
   name = 'ball_intake_proto',
@@ -13,4 +13,4 @@ cc_proto_library(
   protoc = '//third_party/google/protobuf:protoc',
   default_runtime = '//third_party/google/protobuf',
   visibility = ['//visibility:public']
- )
+)
