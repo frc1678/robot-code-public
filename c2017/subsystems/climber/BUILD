@@ -7,6 +7,13 @@ cc_library(
   visibility = ['//visibility:public']
 )
 
+cc_library(
+  name = 'climber',
+  hdrs = ['climber.h'],
+  srcs = ['climber.cpp'],
+  deps = ['//muan/units:units', ':climber_queues' ],
+  visibility = ['//visibility:public']
+)
 cc_proto_library(
   name = 'climber_proto',
   srcs = ['climber.proto'],
