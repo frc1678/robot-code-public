@@ -14,6 +14,24 @@ cc_proto_library(
   default_runtime = '//third_party/google/protobuf'
 )
 
+cc_library(
+  name = 'trigger_mechanism',
+  srcs = ['trigger_controller.cpp'],
+  hdrs = ['trigger_controller.h'],
+  deps = [
+    '//muan/control:state_space',
+    ':trigger_constants',
+    ':trigger_queues'
+  ]
+)
+
+cc_library(
+  name = 'trigger_constants',
+  srcs = [':trigger_constants.cpp'],
+  hdrs = [':trigger_constants.h'],
+  deps = ['//third_party/eigen']
+)
+
 genrule(
   name = 'trigger_genrule',
   srcs = [],

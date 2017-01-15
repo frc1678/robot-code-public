@@ -121,14 +121,14 @@ def make_augmented_gains():
     Q_noise[2, 2] = 1
 
     R_noise = np.asmatrix([
-        [.1]
+        [.075]
     ])
 
     # Kalman noise matrix
     Q_kalman = np.asmatrix([
-        [10., 0.0, 0.0],
-        [0.0, 5., 0.0],
-        [0.0, 0.0, 1.0]
+        [3, 0.0, 0.0],
+        [0.0, 1., 0.0],
+        [0.0, 0.0, 2.75]
     ])
 
     Q_ff = np.asmatrix([
@@ -162,11 +162,11 @@ def goal(t):
     return np.asmatrix([0., 10., 0.]).T
 
 if len(sys.argv) == 3:
-    from muan.control.state_space_write import StateSpaceWriter
-    writer = StateSpaceWriter(gains, 'intake_controller')
+    from muan.control.state_space_writer import StateSpaceWriter
+    writer = StateSpaceWriter(gains, 'trigger_controller')
     writer.write(sys.argv[1], sys.argv[2])
 else:
     from muan.control.state_space_scenario import StateSpaceScenario
 
-    scenario = StateSpaceScenario(plant, x0, controller, observer, x0, 'intake_controller')
+    scenario = StateSpaceScenario(plant, x0, controller, observer, x0, 'trigger_controller')
     scenario.run(goal, 4)
