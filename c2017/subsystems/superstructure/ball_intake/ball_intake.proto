@@ -7,24 +7,25 @@ option cc_enable_arenas = true;
 message IntakeOutput {
   required double roller_voltage = 1;
   //positive is forward
-  required double solenoid = 2;
+  required bool is_solenoid_up = 2;
   //controls pneumatic cylinder
 }
 
 message IntakeStatus {
-   required double open_running = 1;
+  required bool open = 1;
+  //is intake open or not
+  required bool running = 2;  
 }
 
 message IntakeGoal {
-  required bool intake = 1;
-  //intake can work as an outtake
-  required bool stir_hopper = 2;
+  required bool stir_hopper = 1;
   //stirs up hooper
-  required bool off = 3;
+  required bool off = ;
   enum Goal {
-    STOP = 0;
-    FORWARD = 1;
-    REVERSE = 2;
+    IDLE = 0;
+    INTAKE = 1;
+    OUTTAKE = 2;
+    
   }
 
 }
