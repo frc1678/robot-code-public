@@ -1,7 +1,7 @@
 load('/third_party/google/protobuf/protobuf', 'cc_proto_library')
 
 cc_library(
-	name = 'magazine_queues',
+  name = 'magazine_queues',
 hdrs = ['queue_types.h'],
 deps = ['magazine_proto', '//muan/proto:stack_proto', '//muan/queues:queues'],
 visibility = ['//visibility:public']

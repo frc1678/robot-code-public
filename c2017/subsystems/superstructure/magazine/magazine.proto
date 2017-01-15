@@ -30,6 +30,5 @@ enum MotorStatus {
 }
 
 message MagazineGoal {
-    //check if magazine expansion is complete
-    required MotorStatus conveyor_voltage = 1;
+    required MotorStatus conveyor = 1;
 }
