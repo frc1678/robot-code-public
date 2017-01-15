@@ -54,7 +54,8 @@ cc_library(
 cc_test(
   name = 'motor_safety_test',
   srcs = ['motor_safety_test.cpp'],
-  deps = [':motor_safety', '//third_party/google/googletest:googletest']
+  deps = [':motor_safety', '//third_party/google/googletest:googletest'],
+  linkopts = ['-lm']
 )
 
 cc_binary(

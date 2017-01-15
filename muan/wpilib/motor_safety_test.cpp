@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "motor_safety.h"
+#include <math.h>
 
 TEST(MotorSafetyTest, NeverOverCurrentThresh) {
   muan::wpilib::MotorSafety safety = muan::wpilib::MotorSafety(100., 2., 2., 0.005);
