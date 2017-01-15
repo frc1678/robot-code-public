@@ -5,7 +5,8 @@
 
 class MotorSafety {
  public:
-  MotorSafety(double current_threshold, double stall_time, double reset_time, double dt);
+  MotorSafety(double current_threshold = 120., double stall_time = 2., double reset_time = 2.,
+              double dt = 0.005);
 
   // Returns voltage
   double Update(double voltage, double current);
