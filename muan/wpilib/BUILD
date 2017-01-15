@@ -44,6 +44,20 @@ cc_binary(
           '//third_party/wpilibsuite:wpilib']
 )
 
+cc_library(
+  name = 'motor_safety',
+  srcs = ['motor_safety.cpp'],
+  hdrs = ['motor_safety.h'],
+  deps = ['//muan/utils:history']
+)
+
+cc_test(
+  name = 'motor_safety_test',
+  srcs = ['motor_safety_test.cpp'],
+  deps = [':motor_safety', '//third_party/google/googletest:googletest'],
+  linkopts = ['-lm']
+)
+
 cc_binary(
   name = 'pcm_test',
   srcs = ['pcm_test.cpp'],

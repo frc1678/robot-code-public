@@ -57,6 +57,13 @@ cc_library(
   ],
 )
 
+cc_library(
+  name = 'scoped_fd',
+  hdrs = [
+    'scoped_fd.h',
+  ],
+)
+
 cc_test(
   name = 'type_traits_test',
   srcs = [
