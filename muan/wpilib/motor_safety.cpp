@@ -1,5 +1,9 @@
 #include "motor_safety.h"
 
+namespace muan {
+
+namespace wpilib {
+
 MotorSafety::MotorSafety(double current_threshold, double stall_time, double reset_time, double dt)
     : current_history_(dt) {
   current_threshold_ = current_threshold;
@@ -48,3 +52,5 @@ void MotorSafety::Reset() {
 }
 
 bool MotorSafety::is_stalled() { return is_stalled_; }
+}
+}

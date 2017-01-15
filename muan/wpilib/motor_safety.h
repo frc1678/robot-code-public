@@ -3,6 +3,10 @@
 
 #include "muan/utils/history.h"
 
+namespace muan {
+
+namespace wpilib {
+
 class MotorSafety {
  public:
   MotorSafety(double current_threshold = 120., double stall_time = 2., double reset_time = 2.,
@@ -20,7 +24,11 @@ class MotorSafety {
   bool is_stalled_;
 
   static constexpr uint32_t kHistorySize = 20;
-  muan::History<double, kHistorySize> current_history_;
+  muan::utils::History<double, kHistorySize> current_history_;
 };
+
+}  // wpilib
+
+}  // muan
 
 #endif  // MUAN_WPILIB_MOTOR_SAFETY_H_
