@@ -13,3 +13,18 @@ cc_proto_library(
   protoc = '//third_party/google/protobuf:protoc',
   default_runtime = '//third_party/google/protobuf'
 )
+
+genrule(
+  name = 'trigger_genrule',
+  srcs = [],
+  tools = ['trigger_python'],
+  cmd = '$(location :trigger_python) $(location trigger_constants.h) $(location trigger_constants.cpp)',
+  outs = ['trigger_constants.h', 'trigger_constants.cpp']
+)
+
+py_binary(
+  name = 'trigger_python',
+  srcs = ['trigger.py'],
+  main = 'trigger.py',
+  deps = ['//muan/control:python_controls']
+)
