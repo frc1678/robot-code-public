@@ -15,7 +15,7 @@ message IntakeStatus {
 }
 
 message IntakeGoal {
-  required bool intake_down = 1; //whether it is down or up
+  required bool intake_up = 1; //whether it is down or up
   required RollerGoal run_intake = 2; 
   enum RollerGoal {
     IDLE = 0;
