@@ -1,6 +1,7 @@
 #include "motor_safety.h"
 
-MotorSafety::MotorSafety(double current_threshold, double stall_time, double reset_time, double dt) : current_history_(dt) {
+MotorSafety::MotorSafety(double current_threshold, double stall_time, double reset_time, double dt)
+    : current_history_(dt) {
   current_threshold_ = current_threshold;
   stall_time_ = stall_time;
   reset_time_ = reset_time;
@@ -11,19 +12,18 @@ MotorSafety::MotorSafety(double current_threshold, double stall_time, double res
 }
 
 double MotorSafety::Update(double voltage, double current) {
-
   current_history_.Update(current);
 
   // Take a moving average of the history array
   double sum = 0;
-  std::array<double, kHistorySize> hist_arr = current_history_.get_hist_arr(); 
-  for(size_t i = 0; i < kHistorySize; i++) {
-      sum += hist_arr[i];
+  std::array<double, kHistorySize> hist_arr = current_history_.get_hist_arr();
+  for (size_t i = 0; i < kHistorySize; i++) {
+    sum += hist_arr[i];
   }
   double moving_avg = sum / current_history_.num_samples();
 
   // Determine if the current is above the threshold or not
-  if(moving_avg >= current_threshold_) {
+  if (moving_avg >= current_threshold_) {
     time_above_ += dt_;
     time_below_ = 0;
   } else {
@@ -32,7 +32,7 @@ double MotorSafety::Update(double voltage, double current) {
   }
 
   // Determine if the motor has been stalling
-  if(time_above_ >= stall_time_) {
+  if (time_above_ >= stall_time_) {
     is_stalled_ = true;
   } else if (time_below_ > reset_time_) {
     is_stalled_ = false;
