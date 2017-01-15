@@ -1,0 +1,26 @@
+Test()
+
+include {
+  "c2017/queue_manager/queue_manager.h"
+  "c2017/subsystems/drivetrain/drivetrain_base.h"
+  "muan/actions/drivetrain_action.h"
+}
+
+global {
+  std::unique_ptr<muan::actions::DriveSCurveAction> action;
+}
+
+init {
+  printf("Test function init!\n");
+  muan::actions::DrivetrainProperties properties = muan::actions::DrivetrainProperties{1.0, 1.0, 1.0, 1.0, c2017::drivetrain::GetDrivetrainConfig().robot_radius};
+  action = std::make_unique<muan::actions::DriveSCurveAction>(
+      1, 0.5, true, properties,
+      c2017::QueueManager::GetInstance().drivetrain_goal_queue(),
+      c2017::QueueManager::GetInstance().drivetrain_status_queue());
+  return false;
+}
+
+periodic {
+  action->Update();
+  return true;
+}

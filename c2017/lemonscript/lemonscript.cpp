@@ -16,16 +16,23 @@ Lemonscript::~Lemonscript() {
   delete state_;
 }
 
+void Lemonscript::Start() { running_ = true; }
+void Lemonscript::Stop() { running_ = false; }
+void Lemonscript::Kill() { started_ = false; }
+
 void Lemonscript::operator()() {
   aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(5));
 
   aos::SetCurrentThreadRealtimePriority(10);
   aos::SetCurrentThreadName("Lemonscript");
 
-  running_ = true;
-  while (running_) {
-    running_ = !compiler_->PeriodicUpdate();
-    phased_loop.SleepUntilNext();
+  running_ = false;
+  started_ = true;
+  while (started_) {
+    if (running_) {
+      running_ = !compiler_->PeriodicUpdate();
+      phased_loop.SleepUntilNext();
+    }
   }
 
 }
