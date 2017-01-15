@@ -4,7 +4,7 @@ option cc_enable_arenas = true;
 
 package c2017.intake_group;
 
-message IntakeGoal {//sorry about the bad naming
+message IntakeGroupGoal {//sorry about the bad naming
   enum GroundIntakePosition {//there's a weird error without it
     INTAKE_NONE = 0;
     INTAKE_GEAR = 1;
@@ -16,19 +16,19 @@ message IntakeGoal {//sorry about the bad naming
     HP_LOAD_BALLS = 2;
     HP_LOAD_BOTH = 3;
   }
-  enum Rollers {
+  enum BallIntakeRollers {
     ROLLERS_IDLE = 0;
     ROLLERS_INTAKE = 1;
     ROLLERS_OUTTAKE = 2;
   }
-  enum GearIntake {
+  enum GearIntakeRollers {
     GEAR_IDLE = 0;
     GEAR_INTAKE = 1;
     GEAR_OUTTAKE = 2;
   }
 
-  required IntakeGoal intake_goal = 1;
+  required GroundIntakePosition ground_intake_position = 1;
   required HpLoadType hp_load_type = 2;
-  required Rollers roller = 3;
-  required GearIntake gear_intake = 4;
+  required BallIntakeRollers roller = 3;
+  required GearIntakeRollers gear_intake = 4;
 }
