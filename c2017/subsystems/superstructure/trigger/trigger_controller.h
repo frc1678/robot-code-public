@@ -15,7 +15,6 @@ namespace trigger {
 class TriggerController {
  public:
   TriggerController();
-  
   //Updates trigger status and output protos
   TriggerOutputProto Update(TriggerInputProto input);
   void SetGoal(TriggerGoalProto goal) { goal_ = goal; }
@@ -23,7 +22,6 @@ class TriggerController {
   TriggerStatusProto get_status() { return status_; }
   muan::units::AngularVelocity get_velocity_tolerance() { return velocity_tolerance_; }
  private:
-  
   //creates local protos for status and goal
   TriggerStatusProto status_;
   TriggerGoalProto goal_;
@@ -32,6 +30,7 @@ class TriggerController {
   muan::control::StateSpaceObserver<1,3,1> observer_;
   
   bool at_goal_;
+
   muan::units::AngularVelocity velocity_tolerance_;
 };
 

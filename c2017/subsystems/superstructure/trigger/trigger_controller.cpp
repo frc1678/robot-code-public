@@ -14,7 +14,7 @@ using namespace ::frc1678::trigger_controller;
 TriggerController::TriggerController() {
   auto ss_plant = StateSpacePlant<1, 3, 1>(controller::A(), controller::B(),
                                            controller::C());
-  //Matrix math I don't understand and hope is correct
+  //matrix math I don't understand and hope is correct
   controller_ = StateSpaceController<1, 3, 1>(controller::K());
   controller_.u_min() = Eigen::Matrix<double, 1, 1>::Ones() * -12.0;
   controller_.u_max() = Eigen::Matrix<double, 1, 1>::Ones() * 12.0;
