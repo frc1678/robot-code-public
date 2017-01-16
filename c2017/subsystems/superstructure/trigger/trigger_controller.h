@@ -17,7 +17,8 @@ class TriggerController {
   TriggerController();
 
   TriggerOutputProto Update(TriggerInputProto input);
-  void SetGoal (TriggerGoalProto goal) { goal_ = goal; }
+  void SetGoal(TriggerGoalProto goal) { goal_ = goal; }
+  void SetStatus(TriggerStatusProto status) { status_ = status; }
 
  private:
   TriggerStatusProto status_;
