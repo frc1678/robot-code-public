@@ -164,10 +164,10 @@ def goal(t):
 
 if len(sys.argv) == 3:
     from muan.control.state_space_writer import StateSpaceWriter
-    writer = StateSpaceWriter(gains, 'intake_controller')
+    writer = StateSpaceWriter(gains, 'shooter_controller')
     writer.write(sys.argv[1], sys.argv[2])
 else:
     from muan.control.state_space_scenario import StateSpaceScenario
 
-    scenario = StateSpaceScenario(plant, x0, controller, observer, x0, 'intake_controller')
+    scenario = StateSpaceScenario(plant, x0, controller, observer, x0, 'shooter_controller')
     scenario.run(goal, 4)
