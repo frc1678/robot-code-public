@@ -1,5 +1,5 @@
-#ifndef GENERICROBOT_TELEOP_TELEOP_H_
-#define GENERICROBOT_TELEOP_TELEOP_H_
+#ifndef GENERICROBOT_WPILIBUPDATE_MAIN_H_
+#define GENERICROBOT_WPILIBUPDATE_MAIN_H_
 
 #include "muan/teleop/joystick.h"
 
@@ -29,4 +29,4 @@ class Main {
 
 }  // generic_robot
 
-#endif  // GENERICROBOT_TELEOP_TELEOP_H_
+#endif  // GENERICROBOT_WPILIBUPDATE_MAIN_H_

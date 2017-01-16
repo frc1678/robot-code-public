@@ -1,5 +1,5 @@
-#ifndef O2016_SUBSYSTEMS_DRIVETRAIN_BUILD_H_
-#define O2016_SUBSYSTEMS_DRIVETRAIN_BUILD_H_
+#ifndef O2016_SUBSYSTEMS_DRIVETRAIN_QUEUETYPES_H_
+#define O2016_SUBSYSTEMS_DRIVETRAIN_QUEUETYPES_H_
 
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
@@ -23,4 +23,4 @@ using DrivetrainOutputQueue = muan::queues::MessageQueue<StackDrivetrainOutput, 
 
 }  // o2016
 
-#endif // O2016_SUBSYSTEMS_DRIVETRAIN_BUILD_H_
+#endif // O2016_SUBSYSTEMS_DRIVETRAIN_QUEUETYPES_H_
