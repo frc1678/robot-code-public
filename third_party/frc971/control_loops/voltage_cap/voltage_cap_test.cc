@@ -4,8 +4,6 @@
 
 #include "gtest/gtest.h"
 
-using ::aos::time::Time;
-
 namespace frc971 {
 namespace control_loops {
 namespace testing {
