@@ -1,5 +1,5 @@
-#ifndef C2017_SUBSYSTEMS_CLIMBER_QUEUE_TYPES_H_
-#define C2017_SUBSYSTEMS_CLIMBER_QUEUE_TYPES_H_
+#ifndef C2017_SUBSYSTEMS_SUPERSTRUCTURE_CLIMBER_QUEUE_TYPES_H_
+#define C2017_SUBSYSTEMS_SUPERSTRUCTURE_CLIMBER_QUEUE_TYPES_H_
 
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
@@ -22,4 +22,4 @@ using ClimberGoalQueue = muan::queues::MessageQueue<ClimberGoalProto, 100>;
 
 }  // c2017
 
-#endif //C2017_SUBSYSTEMS_CLIMBER_QUEUE_TYPES_H_
+#endif //C2017_SUBSYSTEMS_SUPERSTRUCTURE_CLIMBER_QUEUES_TYPES_H_
