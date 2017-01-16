@@ -20,4 +20,4 @@ using BallIntakeStatusQueue = muan::queues::MessageQueue<BallIntakeStatusProto, 
 using BallIntakeGoalQueue = muan::queues::MessageQueue<BallIntakeGoalProto, 100>;
 }
 } 
-#endif//C2017_SUBSYSTEMS_SUPERSTRUCTURE_BALLINTAKE_QUEUETYPES_H_
+#endif// C2017_SUBSYSTEMS_SUPERSTRUCTURE_BALLINTAKE_QUEUETYPES_H_
