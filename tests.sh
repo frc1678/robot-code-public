@@ -1,3 +1,4 @@
+#!/bin/bash
 set -e
 
 if [[ $* == *--no-vision* ]]; then
@@ -16,5 +17,7 @@ bazel build //generic_robot/... --cpu=roborio
 
 bazel test --test_output=errors //c2017/... -- -//c2017:frc1678 -//c2017/wpilib/... -//c2017/subsystems:subsystem_runner -//c2017/wpilib_update/...
 bazel build //c2017/... --cpu=roborio
+
+bazel test --test_output=errors //third_party/frc971/control_loops/drivetrain:drivetrain_lib_test
 
 ./check-format.py --no-fail
