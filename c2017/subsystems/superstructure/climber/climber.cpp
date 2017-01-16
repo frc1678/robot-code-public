@@ -1,3 +1,4 @@
+#include <iostream>
 #include "climber.h"
 
 namespace c2017 {
@@ -16,9 +17,8 @@ ClimberOutputProto Climber::Update(const ClimberInputProto& input, const muan::w
     if(to_climb){
       is_climbing_ = true;
       
-      if ((input->position() - last_position_) > 5000 && at_top_ == false) { // TODO tune rate number
+      if ((input->position() - last_position_) > 1e-3) { // TODO tune rate number
         voltage_ = 12.0; // TODO determine the direction for the climbing motors/shooter motors
-      
       } else { 
           voltage_ = 0.0;
           at_top_ = true;
@@ -26,13 +26,18 @@ ClimberOutputProto Climber::Update(const ClimberInputProto& input, const muan::w
     
     } else {
         is_climbing_ = false;
+        voltage_ = 0.0;
       }
       
-    output_->set_voltage(voltage_);
-    status_->set_currently_climbing(is_climbing_);
-    status_->set_hit_top(at_top_);
+  } else {
+      voltage_ = 0.0;
   }
   last_position_ = input->position();
+  
+  output_->set_voltage(voltage_);
+  status_->set_currently_climbing(is_climbing_);
+  status_->set_hit_top(at_top_);
+  
   return output_;
 }  // Update
 
