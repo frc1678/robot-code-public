@@ -5,6 +5,7 @@
 #include "muan/control/state_space_observer.h"
 #include "muan/control/state_space_plant.h"
 #include "muan/units/units.h"
+#include "muan/wpilib/queue_types.h"
 #include "c2017/subsystems/superstructure/trigger/trigger_constants.h"
 #include "c2017/subsystems/superstructure/trigger/queue_types.h"
 
@@ -16,7 +17,7 @@ class TriggerController {
  public:
   TriggerController();
   //Updates trigger status and output protos
-  TriggerOutputProto Update(TriggerInputProto input);
+  TriggerOutputProto Update(const TriggerInputProto& input, const muan::wpilib::DriverStationProto& robot_state);
   void SetGoal(TriggerGoalProto goal) { goal_ = goal; }
   
   TriggerStatusProto get_status() { return status_; }

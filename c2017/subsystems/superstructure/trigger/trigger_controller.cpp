@@ -1,66 +1,59 @@
 #include "trigger_controller.h"
 #include <math.h>
 
-using namespace muan::control;
-using namespace muan::units;
-
 namespace c2017 {
 
 namespace trigger {
 
-using namespace ::muan::control;
-using namespace ::frc1678::trigger_controller;
-
 TriggerController::TriggerController() {
-  auto ss_plant = StateSpacePlant<1, 3, 1>(controller::A(), controller::B(),
-                                           controller::C());
-  //matrix math I don't understand and hope is correct
-  controller_ = StateSpaceController<1, 3, 1>(controller::K());
+  auto ss_plant = muan::control::StateSpacePlant<1, 3, 1>(frc1678::trigger_controller::controller::A(), frc1678::trigger_controller::controller::B(), frc1678::trigger_controller::controller::C());
+  
+  // matrix math I don't understand and hope is correct
+  controller_ = muan::control::StateSpaceController<1, 3, 1>(frc1678::trigger_controller::controller::K());
   controller_.u_min() = Eigen::Matrix<double, 1, 1>::Ones() * -12.0;
   controller_.u_max() = Eigen::Matrix<double, 1, 1>::Ones() * 12.0;
-  observer_ = StateSpaceObserver<1, 3, 1>(ss_plant, controller::L());
-  //Tolerance in rad/sec
+  observer_ = muan::control::StateSpaceObserver<1, 3, 1>(ss_plant, frc1678::trigger_controller::controller::L());
+  
+  // Tolerance in rad/sec
   velocity_tolerance_ = 5;
   at_goal_ = false;
 }
 
-TriggerOutputProto TriggerController::Update(TriggerInputProto input) {
+TriggerOutputProto TriggerController::Update(const TriggerInputProto& input,
+                                             const muan::wpilib::DriverStationProto& robot_state) {
   TriggerOutputProto output;
-  //The current aim is 16 bps with two triggers.
-  //That means 8 bps in each trigger.
-  //Each trigger pushs through 2 balls per rotation,
-  //Which means the trigger needs to rotate 4 times per second.
-
   TriggerStatusProto status;
-  status->set_observed_velocity(x.()[1]);
+  
+  status->set_observed_velocity(observer_.x()[1]);
   status->set_goal_velocity(16 * muan::units::pi / 2);
 
+  bool enable_outputs = !(robot_state->mode() == RobotMode::ESTOP ||
+                          robot_state->mode() == RobotMode::DISABLED || robot_state->brownout());
 
-  //More matrix math I don't understand - ask Kyle
-  Eigen::Matrix<double, 3, 1> r;
-  r << 0.0, (muan::units::pi / 2 * goal_->balls_per_second()), 0.0;
+  output->set_voltage(0);
 
-  Eigen::Matrix<double, 1, 1> y;
-  y << input->encoder_position();
+  if (enable_outputs) {
+    // Matrix stuff! Woo!
+    Eigen::Matrix<double, 3, 1> r;
+    r << 0.0, (muan::units::pi / 2 * goal_->balls_per_second()), 0.0;
+    Eigen::Matrix<double, 1, 1> y;
+    y << input->encoder_position();
 
-  auto u = controller_.Update(observer_.x(), r);
+    auto u = controller_.Update(observer_.x(), r);
 
-  observer_.Update(u, y);
+    observer_.Update(u, y);
+    output->set_voltage(u[0]);
 
-  output->set_voltage(u[0]);
-
-  //Capping voltage
-  if (output->voltage() < -12.) {
-    output->set_voltage(-12.); 
-  } else if (output->voltage() > 12.) {
-    output->set_voltage(12.);
+    // Capping voltage
+    if (output->voltage() < -12.) {
+      output->set_voltage(-12.);
+    } else if (output->voltage() > 12.) {
+      output->set_voltage(12.);
+    }
   }
-
   return output;
 }
 
+}  // trigger
 
-
-} //trigger
-
-} //c2017
+}  // c2017
