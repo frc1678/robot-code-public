@@ -4,7 +4,7 @@
 
 #include "gtest/gtest.h"
 
-#include "third_party/aos/common/util/string_to_num.h"
+#include "aos/common/util/string_to_num.h"
 
 namespace aos {
 namespace util {

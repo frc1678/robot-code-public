@@ -1,9 +1,9 @@
 #ifndef AOS_COMMON_MUTEX_H_
 #define AOS_COMMON_MUTEX_H_
 
-#include "third_party/aos/common/macros.h"
-#include "third_party/aos/common/die.h"
-#include "third_party/aos/linux_code/ipc_lib/aos_sync.h"
+#include "aos/common/macros.h"
+#include "aos/common/die.h"
+#include "aos/linux_code/ipc_lib/aos_sync.h"
 
 namespace aos {
 

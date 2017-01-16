@@ -1,10 +1,10 @@
-#include "third_party/aos/common/condition.h"
+#include "aos/common/condition.h"
 
 #include <inttypes.h>
 #include <assert.h>
 
-#include "third_party/aos/common/type_traits.h"
-#include "third_party/aos/common/mutex.h"
+#include "aos/common/type_traits.h"
+#include "aos/common/mutex.h"
 
 namespace aos {
 

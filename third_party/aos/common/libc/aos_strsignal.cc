@@ -1,9 +1,8 @@
-#include "third_party/aos/common/libc/aos_strsignal.h"
+#include "aos/common/libc/aos_strsignal.h"
 
 #include <signal.h>
 
-#include <stdio.h>
-#include "third_party/aos/common/check.h"
+#include "aos/common/logging/logging.h"
 
 const char *aos_strsignal(int signal) {
   static thread_local char buffer[512];

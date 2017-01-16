@@ -1,10 +1,10 @@
-#include "third_party/aos/linux_code/complex_thread_local.h"
+#include "aos/linux_code/complex_thread_local.h"
 
 #include <atomic>
 
 #include "gtest/gtest.h"
 
-#include "third_party/aos/common/util/thread.h"
+#include "aos/common/util/thread.h"
 
 namespace aos {
 namespace testing {

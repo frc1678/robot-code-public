@@ -11,8 +11,8 @@
 #include <thread>
 #include <ostream>
 
-#include "third_party/aos/common/type_traits.h"
-#include "third_party/aos/common/macros.h"
+#include "aos/common/type_traits.h"
+#include "aos/common/macros.h"
 
 namespace aos {
 
@@ -28,11 +28,29 @@ class monotonic_clock {
 
   // Returns the epoch (0).
   static constexpr monotonic_clock::time_point epoch() {
-    return time_point(duration(0));
+    return time_point(zero());
   }
+
+  static constexpr monotonic_clock::duration zero() { return duration(0); }
+
+  static constexpr time_point min_time{
+      time_point(duration(::std::numeric_limits<duration::rep>::min()))};
 };
 
 namespace time {
+
+// Enables returning the mock time value for Now instead of checking the system
+// clock.
+void EnableMockTime(monotonic_clock::time_point now);
+// Calls SetMockTime with the current actual time.
+void UpdateMockTime();
+// Sets now when time is being mocked.
+void SetMockTime(monotonic_clock::time_point now);
+// Convenience function to just increment the mock time by a certain amount in
+// a thread safe way.
+void IncrementMockTime(monotonic_clock::duration amount);
+// Disables mocking time.
+void DisableMockTime();
 
 // A nice structure for representing times.
 // 0 <= nsec_ < kNSecInSec should always be true. All functions here will make
@@ -146,8 +164,10 @@ struct Time {
   }
 
   // Construct a time representing the period of hertz.
-  static constexpr Time FromRate(int hertz) {
-    return Time(0, kNSecInSec / hertz);
+  static constexpr ::std::chrono::nanoseconds FromRate(int hertz) {
+    return ::std::chrono::duration_cast<::std::chrono::nanoseconds>(
+               ::std::chrono::seconds(1)) /
+           hertz;
   }
 
   // Checks whether or not this time is within amount nanoseconds of other.
@@ -236,19 +256,6 @@ struct Time {
     return Time(-sec_ - 1, kNSecInSec - nsec_);
   }
 
-  // Enables returning the mock time value for Now instead of checking the
-  // system clock.
-  static void EnableMockTime(const Time &now = Now());
-  // Calls SetMockTime with the current actual time.
-  static void UpdateMockTime();
-  // Sets now when time is being mocked.
-  static void SetMockTime(const Time &now);
-  // Convenience function to just increment the mock time by a certain amount in
-  // a thread safe way.
-  static void IncrementMockTime(const Time &amount);
-  // Disables mocking time.
-  static void DisableMockTime();
-
  private:
   int32_t sec_, nsec_;
 
@@ -285,12 +292,8 @@ void OffsetToNow(const Time &now);
 // syscalls to find the real time).
 class TimeFreezer {
  public:
-  TimeFreezer() {
-    Time::EnableMockTime();
-  }
-  ~TimeFreezer() {
-    Time::DisableMockTime();
-  }
+  TimeFreezer() { EnableMockTime(monotonic_clock::now()); }
+  ~TimeFreezer() { DisableMockTime(); }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TimeFreezer);

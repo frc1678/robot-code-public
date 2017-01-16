@@ -1,17 +1,21 @@
-#include "third_party/aos/common/mutex.h"
+#include "aos/common/mutex.h"
 
+#include <sched.h>
 #include <math.h>
 #include <pthread.h>
-#include <sched.h>
 
 #include <thread>
 
 #include "gtest/gtest.h"
 
-#include "third_party/aos/common/die.h"
-#include "third_party/aos/common/time.h"
-#include "third_party/aos/common/util/thread.h"
-#include "third_party/aos/linux_code/ipc_lib/aos_sync.h"
+#include "aos/linux_code/ipc_lib/aos_sync.h"
+#include "aos/common/die.h"
+#include "aos/common/util/death_test_log_implementation.h"
+#include "aos/common/util/thread.h"
+#include "aos/common/time.h"
+#include "aos/testing/test_logging.h"
+#include "aos/testing/test_shm.h"
+#include "aos/linux_code/ipc_lib/core_lib.h"
 
 namespace aos {
 namespace testing {
@@ -21,7 +25,10 @@ class MutexTest : public ::testing::Test {
   Mutex test_mutex_;
 
  protected:
-  void SetUp() override { SetDieTestMode(true); }
+  void SetUp() override {
+    ::aos::testing::EnableTestLogging();
+    SetDieTestMode(true);
+  }
 };
 
 typedef MutexTest MutexDeathTest;
@@ -56,20 +63,33 @@ TEST_F(MutexTest, Unlock) {
 
 // Sees what happens with multiple unlocks.
 TEST_F(MutexDeathTest, RepeatUnlock) {
+  logging::Init();
   ASSERT_FALSE(test_mutex_.Lock());
   test_mutex_.Unlock();
-  EXPECT_DEATH({ test_mutex_.Unlock(); }, ".*multiple unlock.*");
+  EXPECT_DEATH(
+      {
+        logging::AddImplementation(new util::DeathTestLogImplementation());
+        test_mutex_.Unlock();
+      },
+      ".*multiple unlock.*");
 }
 
 // Sees what happens if you unlock without ever locking (or unlocking) it.
 TEST_F(MutexDeathTest, NeverLock) {
-  EXPECT_DEATH({ test_mutex_.Unlock(); }, ".*multiple unlock.*");
+  logging::Init();
+  EXPECT_DEATH(
+      {
+        logging::AddImplementation(new util::DeathTestLogImplementation());
+        test_mutex_.Unlock();
+      },
+      ".*multiple unlock.*");
 }
 
 // Tests that locking a mutex multiple times from the same thread fails nicely.
 TEST_F(MutexDeathTest, RepeatLock) {
   EXPECT_DEATH(
       {
+        logging::AddImplementation(new util::DeathTestLogImplementation());
         ASSERT_FALSE(test_mutex_.Lock());
         ASSERT_FALSE(test_mutex_.Lock());
       },
@@ -80,6 +100,7 @@ TEST_F(MutexDeathTest, RepeatLock) {
 TEST_F(MutexDeathTest, DestroyLocked) {
   EXPECT_DEATH(
       {
+        logging::AddImplementation(new util::DeathTestLogImplementation());
         Mutex new_mutex;
         ASSERT_FALSE(new_mutex.Lock());
       },
@@ -89,10 +110,14 @@ TEST_F(MutexDeathTest, DestroyLocked) {
 // Tests that Lock behaves correctly when the previous owner exits with the lock
 // held (which is the same as dying any other way).
 TEST_F(MutexTest, OwnerDiedDeathLock) {
-  Mutex *mutex = new Mutex();
+  testing::TestSharedMemory my_shm;
+  Mutex *mutex =
+      static_cast<Mutex *>(shm_malloc_aligned(sizeof(Mutex), alignof(Mutex)));
+  new (mutex) Mutex();
 
-  util::FunctionThread::RunInOtherThread(
-      [&]() { ASSERT_FALSE(mutex->Lock()); });
+  util::FunctionThread::RunInOtherThread([&]() {
+    ASSERT_FALSE(mutex->Lock());
+  });
   EXPECT_TRUE(mutex->Lock());
 
   mutex->Unlock();
@@ -101,10 +126,14 @@ TEST_F(MutexTest, OwnerDiedDeathLock) {
 
 // Tests that TryLock behaves correctly when the previous owner dies.
 TEST_F(MutexTest, OwnerDiedDeathTryLock) {
-  Mutex *mutex = new Mutex();
+  testing::TestSharedMemory my_shm;
+  Mutex *mutex =
+      static_cast<Mutex *>(shm_malloc_aligned(sizeof(Mutex), alignof(Mutex)));
+  new (mutex) Mutex();
 
-  util::FunctionThread::RunInOtherThread(
-      [&]() { ASSERT_FALSE(mutex->Lock()); });
+  util::FunctionThread::RunInOtherThread([&]() {
+    ASSERT_FALSE(mutex->Lock());
+  });
   EXPECT_EQ(Mutex::State::kOwnerDied, mutex->TryLock());
 
   mutex->Unlock();
@@ -170,8 +199,7 @@ TEST_F(MutexTest, ThreadSanitizerContended) {
       {&counter, &test_mutex_, ::aos::time::Time::InSeconds(0.2),
        ::aos::time::Time::InSeconds(0)},
       {&counter, &test_mutex_, ::aos::time::Time::InSeconds(0),
-       ::aos::time::Time::InSeconds(0)},
-  };
+       ::aos::time::Time::InSeconds(0)}, };
   for (auto &c : threads) {
     c.Start();
   }
@@ -210,8 +238,7 @@ TEST_F(MutexTest, ThreadSanitizerUncontended) {
       {&counter, &test_mutex_, ::aos::time::Time::InSeconds(0),
        ::aos::time::Time::InSeconds(0)},
       {&counter, &test_mutex_, ::aos::time::Time::InSeconds(0.2),
-       ::aos::time::Time::InSeconds(0)},
-  };
+       ::aos::time::Time::InSeconds(0)}, };
   for (auto &c : threads) {
     c.Start();
   }
@@ -261,12 +288,20 @@ TEST_F(MutexLockerTest, Basic) {
 
 // Tests that MutexLocker behaves correctly when the previous owner dies.
 TEST_F(MutexLockerDeathTest, OwnerDied) {
-  Mutex *mutex = new Mutex();
+  testing::TestSharedMemory my_shm;
+  Mutex *mutex =
+      static_cast<Mutex *>(shm_malloc_aligned(sizeof(Mutex), alignof(Mutex)));
+  new (mutex) Mutex();
 
-  util::FunctionThread::RunInOtherThread(
-      [&]() { ASSERT_FALSE(mutex->Lock()); });
-  EXPECT_DEATH({ MutexLocker locker(mutex); },
-               ".*previous owner of mutex [^ ]+ died.*");
+  util::FunctionThread::RunInOtherThread([&]() {
+    ASSERT_FALSE(mutex->Lock());
+  });
+  EXPECT_DEATH(
+      {
+        logging::AddImplementation(new util::DeathTestLogImplementation());
+        MutexLocker locker(mutex);
+      },
+      ".*previous owner of mutex [^ ]+ died.*");
 
   mutex->~Mutex();
 }
@@ -320,10 +355,14 @@ TEST_F(IPCRecursiveMutexLockerTest, RecursiveLock) {
 
 // Tests that IPCMutexLocker behaves correctly when the previous owner dies.
 TEST_F(IPCMutexLockerTest, OwnerDied) {
-  Mutex *mutex = new Mutex();
+  testing::TestSharedMemory my_shm;
+  Mutex *mutex =
+      static_cast<Mutex *>(shm_malloc_aligned(sizeof(Mutex), alignof(Mutex)));
+  new (mutex) Mutex();
 
-  util::FunctionThread::RunInOtherThread(
-      [&]() { ASSERT_FALSE(mutex->Lock()); });
+  util::FunctionThread::RunInOtherThread([&]() {
+    ASSERT_FALSE(mutex->Lock());
+  });
   {
     aos::IPCMutexLocker locker(mutex);
     EXPECT_EQ(Mutex::State::kLockFailed, mutex->TryLock());

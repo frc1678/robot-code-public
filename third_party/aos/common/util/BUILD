@@ -1,5 +1,4 @@
 package(default_visibility = ['//visibility:public'])
-licenses(['notice'])
 
 py_library(
   name = 'py_trapezoid_profile',
@@ -17,8 +16,7 @@ cc_library(
     'run_command.h',
   ],
   deps = [
-    '//third_party/aos/common:die',
-    '//third_party/aos/common:check',
+    '//aos/common/logging',
   ],
 )
 
@@ -29,8 +27,19 @@ cc_test(
   ],
   deps = [
     ':run_command',
-    '//third_party/aos/testing:googletest',
+    '//aos/testing:googletest',
+    '//aos/common/logging',
     ':thread',
+  ],
+)
+
+cc_library(
+  name = 'death_test_log_implementation',
+  hdrs = [
+    'death_test_log_implementation.h',
+  ],
+  deps = [
+    '//aos/common/logging:implementations',
   ],
 )
 
@@ -43,8 +52,8 @@ cc_library(
     'inet_addr.h',
   ],
   deps = [
-    '//third_party/aos/common:byteorder',
-    '//third_party/aos/common:network_port',
+    '//aos/common:byteorder',
+    '//aos/common:network_port',
   ],
 )
 
@@ -57,8 +66,19 @@ cc_library(
     'phased_loop.h',
   ],
   deps = [
-    '//third_party/aos/common:check',
-    '//third_party/aos/common:time',
+    '//aos/common/logging',
+    '//aos/common:time',
+  ],
+)
+
+cc_library(
+  name = 'log_interval',
+  hdrs = [
+    'log_interval.h',
+  ],
+  deps = [
+    '//aos/common:time',
+    '//aos/common/logging',
   ],
 )
 
@@ -76,7 +96,7 @@ cc_test(
   ],
   deps = [
     ':string_to_num',
-    '//third_party/aos/testing:googletest',
+    '//aos/testing:googletest',
   ],
 )
 
@@ -89,9 +109,8 @@ cc_library(
     'thread.h',
   ],
   deps = [
-    '//third_party/aos/common:macros',
-    '//third_party/aos/common:die',
-    '//third_party/aos/common:check',
+    '//aos/common:macros',
+    '//aos/common/logging',
   ],
 )
 
@@ -105,9 +124,9 @@ cc_library(
   ],
   deps = [
     '//third_party/eigen',
-    '//third_party/aos/common:time',
-    # '//aos/common/logging',
-    '//linux_libraries:libm',
+    '//aos/common:time',
+    '//aos/common/logging',
+    '//debian:libm',
   ],
 )
 
@@ -139,7 +158,7 @@ cc_test(
   ],
   deps = [
     ':wrapping_counter',
-    '//third_party/aos/testing:googletest',
+    '//aos/testing:googletest',
   ],
 )
 
@@ -157,7 +176,7 @@ cc_test(
   ],
   deps = [
     ':options',
-    '//third_party/aos/testing:googletest',
+    '//aos/testing:googletest',
   ],
 )
 
@@ -168,6 +187,28 @@ cc_library(
   ],
 )
 
+cc_library(
+  name = 'linked_list',
+  hdrs = [
+    'linked_list.h',
+  ],
+  deps = [
+    '//aos/common:transaction',
+  ],
+)
+
+cc_test(
+  name = 'linked_list_test',
+  srcs = [
+    'linked_list_test.cc',
+  ],
+  deps = [
+    ':linked_list',
+    '//aos/testing:googletest',
+    '//aos/common/logging',
+  ],
+)
+
 cc_test(
   name = 'phased_loop_test',
   srcs = [
@@ -175,7 +216,33 @@ cc_test(
   ],
   deps = [
     ':phased_loop',
-    '//third_party/aos/testing:googletest',
-    '//linux_libraries:libpthread',
+    '//aos/testing:googletest',
+    '//aos/testing:test_logging',
   ],
+)
+
+cc_library(
+  name = 'file',
+  hdrs = [
+    'file.h',
+  ],
+  srcs = [
+    'file.cc',
+  ],
+  deps = [
+    '//aos/common:scoped_fd',
+  ],
+)
+
+cc_test(
+  name = 'file_test',
+  srcs = [
+    'file_test.cc',
+  ],
+  deps = [
+    ':file',
+    '//aos/testing:googletest',
+    '//aos/testing:test_logging',
+  ],
+  size = 'small',
 )

@@ -1,4 +1,4 @@
-#include "third_party/aos/common/libc/aos_strerror.h"
+#include "aos/common/libc/aos_strerror.h"
 
 #include <errno.h>
 

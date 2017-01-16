@@ -1,4 +1,4 @@
-#include "third_party/aos/common/util/options.h"
+#include "aos/common/util/options.h"
 
 #include "gtest/gtest.h"
 

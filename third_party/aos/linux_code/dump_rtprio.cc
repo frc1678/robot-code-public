@@ -16,9 +16,9 @@
 
 #include <string>
 
-#include "third_party/aos/common/die.h"
-#include "third_party/aos/common/check.h"
-#include "third_party/aos/common/time.h"
+#include "aos/common/logging/logging.h"
+#include "aos/common/logging/implementations.h"
+#include "aos/common/time.h"
 
 namespace {
 
@@ -55,7 +55,7 @@ int find_pid_max() {
   int r;
   FILE *pid_max_file = fopen("/proc/sys/kernel/pid_max", "r");
   if (pid_max_file == nullptr) {
-    ::aos::Die("fopen(\"/proc/sys/kernel/pid_max\")");
+    PLOG(FATAL, "fopen(\"/proc/sys/kernel/pid_max\")");
   }
   CHECK_EQ(1, fscanf(pid_max_file, "%d", &r));
   PCHECK(fclose(pid_max_file));
@@ -65,7 +65,7 @@ int find_pid_max() {
 cpu_set_t find_all_cpus() {
   long nproc = sysconf(_SC_NPROCESSORS_CONF);
   if (nproc == -1) {
-    ::aos::Die("sysconf(_SC_NPROCESSORS_CONF)");
+    PLOG(FATAL, "sysconf(_SC_NPROCESSORS_CONF)");
   }
   cpu_set_t r;
   CPU_ZERO(&r);
@@ -83,7 +83,7 @@ cpu_set_t find_cpu_mask(int process, bool *not_there) {
     return cpu_set_t();
   }
   if (result != 0) {
-    ::aos::Die("sched_getaffinity(%d, %zu, %p)", process, sizeof(r), &r);
+    PLOG(FATAL, "sched_getaffinity(%d, %zu, %p)", process, sizeof(r), &r);
   }
   return r;
 }
@@ -96,7 +96,7 @@ sched_param find_sched_param(int process, bool *not_there) {
     return sched_param();
   }
   if (result != 0) {
-    ::aos::Die("sched_getparam(%d)", process);
+    PLOG(FATAL, "sched_getparam(%d)", process);
   }
   return r;
 }
@@ -108,7 +108,7 @@ int find_scheduler(int process, bool *not_there) {
     return 0;
   }
   if (scheduler == -1) {
-    ::aos::Die("sched_getscheduler(%d)", process);
+    PLOG(FATAL, "sched_getscheduler(%d)", process);
   }
   return scheduler;
 }
@@ -126,7 +126,7 @@ int find_scheduler(int process, bool *not_there) {
       return "";
     }
     if (exe_size == -1) {
-      ::aos::Die("readlink(%s, %p, %zu)", exe_filename.c_str(), exe_buffer,
+      PLOG(FATAL, "readlink(%s, %p, %zu)", exe_filename.c_str(), exe_buffer,
            sizeof(exe_buffer));
     }
     return ::std::string(exe_buffer, exe_size);
@@ -141,7 +141,7 @@ int find_nice_value(int process, bool *not_there) {
     return 0;
   }
   if (errno != 0) {
-    ::aos::Die("getpriority(PRIO_PROCESS, %d)", process);
+    PLOG(FATAL, "getpriority(PRIO_PROCESS, %d)", process);
   }
   return nice_value;
 }
@@ -154,7 +154,7 @@ void read_stat(int process, int *ppid, int *sid, bool *not_there) {
     return;
   }
   if (stat == nullptr) {
-    ::aos::Die("fopen(%s, \"r\")", stat_filename.c_str());
+    PLOG(FATAL, "fopen(%s, \"r\")", stat_filename.c_str());
   }
 
   char buffer[2048];
@@ -164,7 +164,7 @@ void read_stat(int process, int *ppid, int *sid, bool *not_there) {
         *not_there = true;
         return;
       }
-      ::aos::Die("fgets(%p, %zu, %p)", buffer, sizeof(buffer), stat);
+      PLOG(FATAL, "fgets(%p, %zu, %p)", buffer, sizeof(buffer), stat);
     }
   }
 
@@ -200,7 +200,7 @@ void read_stat(int process, int *ppid, int *sid, bool *not_there) {
   PCHECK(fclose(stat));
 
   if (field < 4) {
-    ::aos::Die("couldn't get fields from /proc/%d/stat\n", process);
+    LOG(FATAL, "couldn't get fields from /proc/%d/stat\n", process);
   }
   CHECK_EQ(pid, process);
 }
@@ -215,7 +215,7 @@ void read_status(int process, int ppid, int *pgrp, ::std::string *name,
     return;
   }
   if (status == nullptr) {
-    ::aos::Die("fopen(%s, \"r\")", status_filename.c_str());
+    PLOG(FATAL, "fopen(%s, \"r\")", status_filename.c_str());
   }
 
   int pid = 0, status_ppid = 0;
@@ -223,7 +223,7 @@ void read_status(int process, int ppid, int *pgrp, ::std::string *name,
     char buffer[1024];
     if (fgets(buffer, sizeof(buffer), status) == nullptr) {
       if (ferror(status)) {
-        ::aos::Die("fgets(%p, %zu, %p)", buffer, sizeof(buffer), status);
+        PLOG(FATAL, "fgets(%p, %zu, %p)", buffer, sizeof(buffer), status);
       } else {
         break;
       }
@@ -247,6 +247,10 @@ void read_status(int process, int ppid, int *pgrp, ::std::string *name,
 }  // namespace
 
 int main() {
+  ::aos::logging::Init();
+  ::aos::logging::AddImplementation(
+      new ::aos::logging::StreamLogImplementation(stdout));
+
   const int pid_max = find_pid_max();
   const cpu_set_t all_cpus = find_all_cpus();
 

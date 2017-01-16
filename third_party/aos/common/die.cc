@@ -1,4 +1,4 @@
-#include "third_party/aos/common/die.h"
+#include "aos/common/die.h"
 
 #include <stdlib.h>
 #include <stdio.h>

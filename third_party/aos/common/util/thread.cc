@@ -1,17 +1,18 @@
-#include "third_party/aos/common/util/thread.h"
+#include "aos/common/util/thread.h"
 
 #include <pthread.h>
 #include <signal.h>
 
-#include "third_party/aos/common/check.h"
-#include "third_party/aos/common/die.h"
+#include "aos/common/logging/logging.h"
 
 namespace aos {
 namespace util {
 
 Thread::Thread() : started_(false), joined_(false), should_terminate_(false) {}
 
-Thread::~Thread() { CHECK(!(started_ && !joined_)); }
+Thread::~Thread() {
+  CHECK(!(started_ && !joined_));
+}
 
 void Thread::Start() {
   CHECK(!started_);
@@ -38,7 +39,7 @@ bool Thread::TryJoin() {
   if (kill_ret == 0) return false;
   // If it died, we'll get ESRCH. Otherwise, something went wrong.
   if (kill_ret != ESRCH) {
-    ::aos::Die("pthread_kill(thread_, 0) failed");
+    PELOG(FATAL, kill_ret, "pthread_kill(thread_, 0) failed");
   }
   Join();
   return true;
@@ -50,7 +51,7 @@ bool Thread::TryJoin() {
   } else if (ret == EBUSY) {
     return false;
   } else {
-    ::aos::Die("pthread_tryjoin_np(thread_, nullptr) failed");
+    PELOG(FATAL, ret, "pthread_tryjoin_np(thread_, nullptr) failed");
   }
 #endif
 }

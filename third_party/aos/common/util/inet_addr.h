@@ -9,7 +9,7 @@
 #include <arpa/inet.h>
 #endif
 
-#include "third_party/aos/common/network_port.h"
+#include "aos/common/network_port.h"
 
 namespace aos {
 namespace util {

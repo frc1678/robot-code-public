@@ -1,4 +1,4 @@
-#include "third_party/aos/common/util/wrapping_counter.h"
+#include "aos/common/util/wrapping_counter.h"
 
 namespace aos {
 namespace util {

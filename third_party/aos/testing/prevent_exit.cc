@@ -1,9 +1,9 @@
-#include "third_party/aos/testing/prevent_exit.h"
+#include "aos/testing/prevent_exit.h"
 
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "third_party/aos/common/check.h"
+#include "aos/common/logging/logging.h"
 
 namespace aos {
 namespace testing {

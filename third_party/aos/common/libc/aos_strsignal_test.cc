@@ -1,4 +1,4 @@
-#include "third_party/aos/common/libc/aos_strsignal.h"
+#include "aos/common/libc/aos_strsignal.h"
 
 #include <signal.h>
 #include <thread>

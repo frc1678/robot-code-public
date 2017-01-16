@@ -1,4 +1,4 @@
-#include "third_party/aos/linux_code/init.h"
+#include "aos/linux_code/init.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -13,8 +13,9 @@
 #include <sys/prctl.h>
 #include <malloc.h>
 
-#include "third_party/aos/common/die.h"
-#include "third_party/aos/common/check.h"
+#include "aos/common/die.h"
+#include "aos/common/logging/implementations.h"
+#include "aos/linux_code/ipc_lib/shared_mem.h"
 
 namespace FLAG__namespace_do_not_use_directly_use_DECLARE_double_instead {
 extern double FLAGS_tcmalloc_release_rate __attribute__((weak));
@@ -23,6 +24,14 @@ using FLAG__namespace_do_not_use_directly_use_DECLARE_double_instead::
     FLAGS_tcmalloc_release_rate;
 
 namespace aos {
+namespace logging {
+namespace internal {
+
+// Implemented in aos/common/logging/context.cc.
+void ReloadThreadName();
+
+}  // namespace internal
+}  // namespace logging
 namespace {
 
 void SetSoftRLimit(int resource, rlim64_t soft, bool set_for_root) {
@@ -47,6 +56,7 @@ void SetSoftRLimit(int resource, rlim64_t soft, bool set_for_root) {
 // Common stuff that needs to happen at the beginning of both the realtime and
 // non-realtime initialization sequences. May be called twice.
 void InitStart() {
+  ::aos::logging::Init();
   WriteCoreDumps();
 }
 
@@ -87,12 +97,16 @@ void LockAllMemory() {
 
 void InitNRT() {
   InitStart();
-  // LOG(INFO, "%s initialized non-realtime\n", program_invocation_short_name);
+  aos_core_create_shared_mem(false, false);
+  logging::RegisterQueueImplementation();
+  LOG(INFO, "%s initialized non-realtime\n", program_invocation_short_name);
 }
 
 void InitCreate() {
   InitStart();
-  // LOG(INFO, "%s created shm\n", program_invocation_short_name);
+  aos_core_create_shared_mem(true, false);
+  logging::RegisterQueueImplementation();
+  LOG(INFO, "%s created shm\n", program_invocation_short_name);
 }
 
 void Init(int relative_priority) {
@@ -120,10 +134,13 @@ void Init(int relative_priority) {
   }
 
   InitStart();
-  // LOG(INFO, "%s initialized realtime\n", program_invocation_short_name);
+  aos_core_create_shared_mem(false, realtime);
+  logging::RegisterQueueImplementation();
+  LOG(INFO, "%s initialized realtime\n", program_invocation_short_name);
 }
 
 void Cleanup() {
+  aos_core_free_shared_mem();
 }
 
 void WriteCoreDumps() {
@@ -138,7 +155,7 @@ void SetCurrentThreadRealtimePriority(int priority) {
   struct sched_param param;
   param.sched_priority = priority;
   if (sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-    ::aos::Die("sched_setscheduler(0, SCHED_FIFO, %d) failed", priority);
+    PLOG(FATAL, "sched_setscheduler(0, SCHED_FIFO, %d) failed", priority);
   }
 }
 
@@ -151,10 +168,11 @@ void PinCurrentThreadToCPU(int number) {
 
 void SetCurrentThreadName(const ::std::string &name) {
   if (name.size() > 16) {
-    ::aos::Die("thread name '%s' too long\n", name.c_str());
+    LOG(FATAL, "thread name '%s' too long\n", name.c_str());
   }
-  // LOG(INFO, "this thread is changing to '%s'\n", name.c_str());
+  LOG(INFO, "this thread is changing to '%s'\n", name.c_str());
   PCHECK(prctl(PR_SET_NAME, name.c_str()));
+  logging::internal::ReloadThreadName();
 }
 
 }  // namespace aos
