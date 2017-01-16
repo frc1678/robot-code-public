@@ -19,3 +19,4 @@ message TriggerStatus {
 message TriggerGoal {
   required double balls_per_second = 1;
 }
+
