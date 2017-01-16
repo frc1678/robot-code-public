@@ -20,7 +20,7 @@ def make_gains():
     # Parameters (WE DONT ACTAULLY KNOW ANY OF THESE VALUES LOL
     moment_inertia =  (0.05**2) * 3.0 / 2.0
     gear_ratio = 1.0 / 4.0  #ALSO GET FROM MECHANICAL
-    efficiency = .8
+    efficiency = .8 #motor = 775pro
 
     #Motor characteristics
     #defining the plant's (simulation) characteristics
@@ -33,7 +33,6 @@ def make_gains():
     velocity_constant = (12. -free_current * resistance) / free_speed #Kv
 
     num_motors = 1
-    sensor_ratio = 1.0
 
     #back emf torque
     emf = -(torque_constant * velocity_constant) / ( num_motors * resistance * gear_ratio**2.)
@@ -44,7 +43,7 @@ def make_gains():
     #rotational acceleration
     t2a = 1. / moment_inertia
 
-#matrix math
+    #matrix math
     A_c = np.asmatrix([
         [0., 1.],
         [0., t2a * emf * 2.0]
@@ -56,7 +55,7 @@ def make_gains():
     ])
 
     C = np.asmatrix([
-        [sensor_ratio, 0.]
+        [1.0, 0.]
     ])
 
     #Controller weighting
@@ -89,7 +88,7 @@ def make_gains():
     Kff = feedforwards(A_d, B_d, Q_ff)
     L = dkalman(A_d, C, Q_d, R_d)
 
-#matrix math
+    #matrix math
     gains = StateSpaceGains(name, dt, A_d, B_d, C, None, Q_d, R_noise, K, Kff, L)
     gains.A_c = A_c
     gains.B_c = B_c
@@ -102,7 +101,7 @@ def make_augmented_gains():
 
     dt = unaugmented_gains.dt
 
-#matrix math
+    #matrix math
     A_c = np.asmatrix(np.zeros((3,3)))
     A_c[:2, :2] = unaugmented_gains.A_c
     A_c[:2, 2:3] = unaugmented_gains.B_c
@@ -162,7 +161,7 @@ plant = StateSpacePlant(gains, x0)
 controller = StateSpaceController(gains, -u_max, u_max)
 observer = StateSpaceObserver(gains, x0)
 
-#I really don't get matrix's yet please ask Kyle if you have questions 
+#I really don't get matrices yet please ask Kyle if you have questions
 def goal(t):
     return np.asmatrix([0., 10., 0.]).T
 
