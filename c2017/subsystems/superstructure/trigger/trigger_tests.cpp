@@ -96,7 +96,5 @@ TEST(TriggerController, NormalInput) {
   //x.()[2] = displacement??
   
   //(...) * 4 -> multiplying by 2 for balls per rotation and by 2 again because there are two triggers
-  EXPECT_NEAR(goal->balls_per_second() * muan::units::pi / 2, plant.x()[1], 1); 
-  //Testing that the velocity is close to what we want, based on velocity tolerance
-  EXPECT_NEAR(plant.x()[1], (4 * (muan::units::pi / 2)), trigger_.get_velocity_tolerance());
+  EXPECT_NEAR(plant.x()[1], (goal->balls_per_second() * (muan::units::pi / 2)), trigger_.get_velocity_tolerance());
 }
