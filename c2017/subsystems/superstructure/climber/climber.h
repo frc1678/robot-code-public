@@ -14,13 +14,13 @@ class Climber {
 public:
   Climber();
   void SetGoal (const ClimberGoalProto& goal);
-  void Update (const ClimberInputProto& input, const muan::wpilib::DriverStationProto& ds_status);
-  ClimberOutputProto Output();
+  ClimberOutputProto Update (const ClimberInputProto& input, const muan::wpilib::DriverStationProto& ds_status);
   ClimberStatusProto Status();
 private:
   double voltage_;
   bool at_top_;
   bool is_climbing_;
+  double last_position_;
   ClimberOutputProto output_;
   ClimberGoalProto goal_;
   ClimberStatusProto status_;

@@ -3,7 +3,9 @@ load('/third_party/google/protobuf/protobuf', 'cc_proto_library')
 cc_library(
   name = 'climber_queues',
   hdrs = ['queue_types.h'],
-  deps = [':climber_proto', '//muan/proto:stack_proto', '//muan/queues:queues'],
+  deps = [':climber_proto', 
+          '//muan/proto:stack_proto', 
+          '//muan/queues:queues'],
   visibility = ['//visibility:public']
 )
 
@@ -11,7 +13,9 @@ cc_library(
   name = 'climber',
   hdrs = ['climber.h'],
   srcs = ['climber.cpp'],
-  deps = ['//muan/units:units', ':climber_queues', '//muan/wpilib:wpilib_queues' ],
+  deps = ['//muan/units:units', 
+          ':climber_queues', 
+          '//muan/wpilib:wpilib_queues' ],
   visibility = ['//visibility:public']
 )
 cc_proto_library(
@@ -24,5 +28,6 @@ cc_proto_library(
 cc_test(
   name = 'climber_test',
   srcs = ['climber_test.cpp'],
-  deps = [ ':climber', '//third_party/google/googletest:googletest']
+  deps = [ ':climber', 
+           '//third_party/google/googletest:googletest']
 )
