@@ -1,5 +1,5 @@
-#ifndef C2017_QUEUEMANAGER_QUEUEMANAGER_h_
-#define C2017_QUEUEMANAGER_QUEUEMANAGER_h_
+#ifndef C2017_QUEUEMANAGER_QUEUEMANAGER_H_
+#define C2017_QUEUEMANAGER_QUEUEMANAGER_H_
 
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
