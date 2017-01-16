@@ -22,6 +22,22 @@ cc_proto_library(
 )
 
 cc_library(
+  name = 'drivetrain_interface',
+  srcs = [
+    'drivetrain_interface.cpp'
+  ],
+  hdrs = [
+    'drivetrain_interface.h'
+  ],
+  deps = [
+    '//c2017/queue_manager',
+    '//muan/wpilib/gyro:gyro',
+    '//third_party/wpilibsuite:wpilib',
+    '//muan/utils:math_utils'
+  ]
+)
+
+cc_library(
   name = 'wpilib_interface',
   srcs = [
     'wpilib_interface.cpp',
@@ -30,6 +46,7 @@ cc_library(
     'wpilib_interface.h',
   ],
   deps = [
+    ':drivetrain_interface',
     '//c2017/queue_manager',
     '//muan/wpilib:can_wrapper',
     '//muan/wpilib/gyro:gyro',
