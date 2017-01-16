@@ -34,6 +34,7 @@ cc_library(
     '//muan/wpilib:can_wrapper',
     '//muan/wpilib/gyro:gyro',
     '//third_party/wpilibsuite:wpilib',
+    '//muan/utils:math_utils'
   ],
   visibility = ['//visibility:public']
 )

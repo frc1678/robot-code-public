@@ -5,6 +5,7 @@
 #include "muan/wpilib/can_wrapper.h"
 #include "muan/wpilib/gyro/gyro_reader.h"
 #include "c2017/queue_manager/queue_manager.h"
+#include "muan/utils/math_utils.h"
 
 namespace c2017 {
 
