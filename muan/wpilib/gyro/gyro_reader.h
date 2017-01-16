@@ -1,5 +1,5 @@
-#ifndef DRIVECONTROLLER_H_
-#define DRIVECONTROLLER_H_
+#ifndef MUAN_WPILIB_GYRO_GYROREADER_H_
+#define MUAN_WPILIB_GYRO_GYROREADER_H_
 
 #include <WPILib.h>
 #include "gyro_interface.h"
