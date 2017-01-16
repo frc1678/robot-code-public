@@ -19,16 +19,25 @@ TEST(TriggerController, ZeroInput) {
   TriggerController trigger_;
   auto plant = StateSpacePlant<1, 3, 1>(controller::A(), controller::B(), controller::C());
 
-  plant.x(0) = 0.5;
+  plant.x(0) = 0.0;
   plant.x(1) = 0.0;
   plant.x(2) = 0.0;
 
-  for (int i = 0; i <= 100000; i++) {
+  for (int i = 0; i <= 1000; i++) {
     goal->set_balls_per_seconda(0);
     input->set_encoder_position(plant.x(0) + 10.);
    
     output = trigger_.Update(input);
 
-    plant.Update((Eigen::Matrix<double, 1, 1>(); 
+    plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished()); 
+   
+    EXPECT_NEAR(output->voltage(), 0., 12.)
   }
+  EXPECT_NEAR(plant.x()[1], 0, trigger_.velocity_tolerance)
+  /*TODO
+   * expect that we're at the goal
+   * test 0 (done)
+   * test 75bps
+   * test no output/brownout/disabled
+   */
 }
