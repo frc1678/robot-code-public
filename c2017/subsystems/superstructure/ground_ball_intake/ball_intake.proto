@@ -14,12 +14,13 @@ message IntakeStatus {
   required RollerGoal running = 2; //is it running or idle
 }
 
+enum RollerGoal {
+  IDLE = 0;
+  INTAKE = 1;
+  OUTTAKE = 2;
+}
+
 message IntakeGoal {
   required bool intake_up = 1; //whether it is down or up
-  required RollerGoal run_intake = 2;
-  enum RollerGoal {
-    IDLE = 0;
-    INTAKE = 1;
-    OUTTAKE = 2;
-  }
+  required RollerGoal run_intake = 2;  
 }
