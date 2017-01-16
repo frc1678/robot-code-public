@@ -2,7 +2,8 @@
 #include <thread>
 
 int main() {
-  std::thread reader_thread(c2017::vision::RunReader);
+  c2017::vision::VisionReader reader;
+  std::thread reader_thread(reader);
   while(true) {
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   }

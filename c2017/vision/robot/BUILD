@@ -1,3 +1,4 @@
+# For testing only
 cc_binary(
   name = 'main',
   srcs = ['main.cpp'],
@@ -11,6 +12,10 @@ cc_library(
   hdrs = ['reader.h'],
   deps = [
     '//third_party/aos/vision/events:udp',
-    '//muan/vision:vision_queues'
-  ]
+    '//muan/vision:vision_queues',
+    '//third_party/aos/linux_code:init',
+    '//third_party/aos/common/util:phased_loop',
+    '//third_party/aos/common:time'
+  ],
+  visibility = ['//visibility:public']
 )
