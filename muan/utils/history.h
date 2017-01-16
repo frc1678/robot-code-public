@@ -16,6 +16,9 @@ class History {
   void Update(T val) {
     hist_arr_[current_pos_] = val;
     current_pos_ = (current_pos_ + 1) % size;
+
+    // Keep count of initial amount of elements in the history
+    initial_pos_ += (initial_pos_ < size) ? 1 : 0;
   }
 
   const T& GoBack(muan::units::Time t) {
@@ -27,11 +30,22 @@ class History {
     return hist_arr_[element_pos];
   }
 
+  const std::array<T, size> get_hist_arr() {
+    std::array<T, size> ordered_array;
+    for (int i = 0; i <= size; i++) {
+      ordered_array[i] = GoBack((size - i) * time_step_);
+    }
+    return ordered_array;
+  }
+
+  size_t num_samples() const { return std::min(initial_pos_, size); }
+
   auto begin() { return begin(hist_arr_); }
   auto end() { return end(hist_arr_); }
 
  private:
   int current_pos_;
+  int initial_pos_ = 0;
   muan::units::Time time_step_;
   std::array<T, size> hist_arr_;
 };
