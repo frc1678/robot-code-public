@@ -22,9 +22,8 @@ void SubsystemRunner::operator()() {
 
   while (running_) {
     wpilib_.ReadSensors();
-    drivetrain_.Update();
 
-    // Update subsystems here
+    drivetrain_.Update();
 
     wpilib_.WriteActuators();
 
