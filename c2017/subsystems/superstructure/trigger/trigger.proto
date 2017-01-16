@@ -14,6 +14,7 @@ message TriggerOutput {
 
 message TriggerStatus {
   required double observed_velocity = 1;
+  required double goal_velocity = 2;
 }
 
 message TriggerGoal {
