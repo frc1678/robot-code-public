@@ -37,10 +37,14 @@ TriggerOutputProto TriggerController::Update(TriggerInputProto input) {
   y << input->encoder_position();
 
   auto u = controller_.Update(observer_.x(), r);
+  
+  //TODO cap voltage
 
   observer_.Update(u, y);
 
   output->set_voltage(u[0]);
+
+  status_->set_observed_velocity(observer_.x()[1]);
 
   return output;
 }
