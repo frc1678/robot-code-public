@@ -1,5 +1,5 @@
-#ifndef TESTBENCH_QUEUEMANAGER_QUEUEMANAGER_h_
-#define TESTBENCH_QUEUEMANAGER_QUEUEMANAGER_h_
+#ifndef TESTBENCH_QUEUEMANAGER_QUEUEMANAGER_H_
+#define TESTBENCH_QUEUEMANAGER_QUEUEMANAGER_H_
 
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"

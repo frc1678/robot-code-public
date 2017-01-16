@@ -1,5 +1,5 @@
-#ifndef MUAN_UTILS_LINEAR_INTERPOLATION_
-#define MUAN_UTILS_LINEAR_INTERPOLATION_
+#ifndef MUAN_UTILS_LINEAR_INTERPOLATION_H_
+#define MUAN_UTILS_LINEAR_INTERPOLATION_H_
 
 #include <functional>
 #include <utility>
@@ -30,4 +30,4 @@ class LinearInterpolation {
 
 #include "linear_interpolation.hpp"
 
-#endif  // MUAN_UTILS_LINEAR_INTERPOLATION_
+#endif  // MUAN_UTILS_LINEAR_INTERPOLATION_H_
