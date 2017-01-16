@@ -3,7 +3,6 @@
 #include <atomic>
 
 #include <string.h>
-#define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 
 #include "third_party/aos/common/die.h"

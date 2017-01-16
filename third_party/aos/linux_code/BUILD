@@ -45,6 +45,7 @@ cc_test(
     ':complex_thread_local',
     '//third_party/aos/testing:googletest',
     '//third_party/aos/common/util:thread',
+    '//aos/common/logging',
   ],
 )
 
