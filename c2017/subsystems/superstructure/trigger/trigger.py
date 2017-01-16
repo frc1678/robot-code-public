@@ -23,6 +23,7 @@ def make_gains():
     efficiency = .8
 
     #Motor characteristics
+    #defining the plant's (simulation) characteristics
     free_speed = 18700.
     free_current = .67
     stall_torque = .71
@@ -43,6 +44,7 @@ def make_gains():
     #rotational acceleration
     t2a = 1. / moment_inertia
 
+#matrix math
     A_c = np.asmatrix([
         [0., 1.],
         [0., t2a * emf * 2.0]
@@ -87,6 +89,7 @@ def make_gains():
     Kff = feedforwards(A_d, B_d, Q_ff)
     L = dkalman(A_d, C, Q_d, R_d)
 
+#matrix math
     gains = StateSpaceGains(name, dt, A_d, B_d, C, None, Q_d, R_noise, K, Kff, L)
     gains.A_c = A_c
     gains.B_c = B_c
@@ -99,6 +102,7 @@ def make_augmented_gains():
 
     dt = unaugmented_gains.dt
 
+#matrix math
     A_c = np.asmatrix(np.zeros((3,3)))
     A_c[:2, :2] = unaugmented_gains.A_c
     A_c[:2, 2:3] = unaugmented_gains.B_c
@@ -136,7 +140,7 @@ def make_augmented_gains():
         [0.0, 1.0, 0.0],
         [0.0, 0.0, 0.0],
     ])
-
+    #matrix math
     A_d, B_d, Q_d, R_d = c2d(A_c, B_c, dt, Q_noise, R_noise)
     _, _, Q_dkalman, R_dkalman = c2d(A_c, B_c, dt, Q_kalman, R_noise)
     L = dkalman(A_d, C, Q_dkalman, R_dkalman)
@@ -158,6 +162,7 @@ plant = StateSpacePlant(gains, x0)
 controller = StateSpaceController(gains, -u_max, u_max)
 observer = StateSpaceObserver(gains, x0)
 
+#I really don't get matrix's yet please ask Kyle if you have questions 
 def goal(t):
     return np.asmatrix([0., 10., 0.]).T
 
