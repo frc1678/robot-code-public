@@ -1,5 +1,5 @@
-#ifndef GENERICROBOT_LEMONSCRIPT_LEMONSRCIPT_H_
-#define GENERICROBOT_LEMONSCRIPT_LEMONSRCIPT_H_
+#ifndef GENERIC_ROBOT_LEMONSCRIPT_LEMONSRCIPT_H_
+#define GENERIC_ROBOT_LEMONSCRIPT_LEMONSRCIPT_H_
 
 #include "third_party/lemonscript_transpiler/example_func.h"
 #include "third_party/lemonscript/lemonscript/lemonscript.h"
@@ -21,15 +21,14 @@ class Lemonscript {
   ~Lemonscript();
 
   void operator()();
+
  private:
   ::lemonscript::LemonScriptState *state_;
   ::lemonscript::LemonScriptCompiler *compiler_;
   std::vector<const ::lemonscript::AvailableCppCommandDeclaration *> decls_;
   std::atomic<bool> running_;
 };
+}  // namespace lemonscript
+}  // namespace genericrobot
 
-}
-
-}
-
-#endif
+#endif  // GENERIC_ROBOT_LEMONSCRIPT_LEMONSCRIPT_H_
