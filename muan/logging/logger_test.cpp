@@ -115,8 +115,7 @@ TEST(Logger, DiesOnDuplicateQueues) {
 }
 
 TEST(Logger, TextLogger) {
-  aos::time::EnableMockTime(aos::monotonic_clock::now());
-  aos::time::SetMockTime(aos::monotonic_clock::epoch());
+  aos::time::EnableMockTime(aos::monotonic_clock::epoch());
   std::unique_ptr<muan::logging::MockFileWriter> writer = std::make_unique<muan::logging::MockFileWriter>();
 
   EXPECT_CALL(*writer, WriteLine("name.log", "1000,test")).Times(1);
