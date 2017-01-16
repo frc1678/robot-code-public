@@ -11,7 +11,7 @@ namespace vision {
 
 void RunVision();
 
-}
-}
+} // namespace vision
+} // namespace c2017
 
 #endif // C2017_VISION_COPROCESSOR_VISION_H_
