@@ -31,8 +31,8 @@ void Lemonscript::operator()() {
   while (started_) {
     if (running_) {
       running_ = !compiler_->PeriodicUpdate();
-      phased_loop.SleepUntilNext();
     }
+    phased_loop.SleepUntilNext();
   }
 
 }

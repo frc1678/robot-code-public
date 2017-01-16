@@ -21,6 +21,7 @@ init {
 }
 
 periodic {
+  printf("Test function periodic!\n");
   action->Update();
-  return true;
+  return false;
 }
