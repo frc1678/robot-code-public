@@ -70,6 +70,6 @@ bool LinearInterpolation<T>::ComparePoints(const std::pair<double, T> &a, const 
   return a.first < b.first;
 }
 
-} // utils
+}  // utils
 
 }  // muan

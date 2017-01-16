@@ -21,31 +21,28 @@ class DrivetrainAction {
   virtual bool Update();
 
   // Create an action that drives straight
-  static DrivetrainAction DriveStraight(
-      double distance, bool high_gear, DrivetrainProperties properties,
-      frc971::control_loops::drivetrain::GoalQueue* goal_queue,
-      frc971::control_loops::drivetrain::StatusQueue* status_queue,
-      double termination_distance = 2e-2, double termination_velocity = 1e-2);
+  static DrivetrainAction DriveStraight(double distance, bool high_gear, DrivetrainProperties properties,
+                                        frc971::control_loops::drivetrain::GoalQueue* goal_queue,
+                                        frc971::control_loops::drivetrain::StatusQueue* status_queue,
+                                        double termination_distance = 2e-2,
+                                        double termination_velocity = 1e-2);
 
   // Create an action that does a point turn
-  static DrivetrainAction PointTurn(
-      double angle, bool high_gear, DrivetrainProperties properties,
-      frc971::control_loops::drivetrain::GoalQueue* goal_queue,
-      frc971::control_loops::drivetrain::StatusQueue* status_queue,
-      double termination_distance = 2e-2, double termination_velocity = 1e-2);
+  static DrivetrainAction PointTurn(double angle, bool high_gear, DrivetrainProperties properties,
+                                    frc971::control_loops::drivetrain::GoalQueue* goal_queue,
+                                    frc971::control_loops::drivetrain::StatusQueue* status_queue,
+                                    double termination_distance = 2e-2, double termination_velocity = 1e-2);
 
   // Create an action to do a swoop turn
-  static DrivetrainAction SwoopTurn(
-      double distance, double angle, bool high_gear,
-      DrivetrainProperties properties,
-      frc971::control_loops::drivetrain::GoalQueue* goal_queue,
-      frc971::control_loops::drivetrain::StatusQueue* status_queue,
-      double termination_distance = 2e-2, double termination_velocity = 1e-2);
+  static DrivetrainAction SwoopTurn(double distance, double angle, bool high_gear,
+                                    DrivetrainProperties properties,
+                                    frc971::control_loops::drivetrain::GoalQueue* goal_queue,
+                                    frc971::control_loops::drivetrain::StatusQueue* status_queue,
+                                    double termination_distance = 2e-2, double termination_velocity = 1e-2);
 
  protected:
-  DrivetrainAction(DrivetrainProperties properties, bool high_gear, double gl,
-                   double gr, double gvl, double gvr, double td, double tv,
-                   frc971::control_loops::drivetrain::GoalQueue* gq,
+  DrivetrainAction(DrivetrainProperties properties, bool high_gear, double gl, double gr, double gvl,
+                   double gvr, double td, double tv, frc971::control_loops::drivetrain::GoalQueue* gq,
                    frc971::control_loops::drivetrain::StatusQueue* sq);
 
   // Send a goal message into the queue
@@ -67,11 +64,9 @@ class DrivetrainAction {
 
 class DriveSCurveAction : public DrivetrainAction {
  public:
-  DriveSCurveAction(double distance, double angle, bool high_gear,
-                    DrivetrainProperties properties,
+  DriveSCurveAction(double distance, double angle, bool high_gear, DrivetrainProperties properties,
                     frc971::control_loops::drivetrain::GoalQueue* gq,
-                    frc971::control_loops::drivetrain::StatusQueue* sq,
-                    double termination_distance = 2e-2,
+                    frc971::control_loops::drivetrain::StatusQueue* sq, double termination_distance = 2e-2,
                     double termination_velocity = 1e-2);
   bool Update() override;
 

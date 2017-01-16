@@ -75,7 +75,8 @@ std::experimental::optional<std::string> Logger::Reader<T>::GetMessageAsCSV() {
 }
 
 template <class T>
-Logger::Reader<T>::Reader(T* reader) : reader_{reader} {}
+Logger::Reader<T>::Reader(T* reader)
+    : reader_{reader} {}
 
 }  // namespace logging
 }  // namespace muan

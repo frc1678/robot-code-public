@@ -43,7 +43,8 @@ class StackProto {
 
   // Allocate from a StackProto of a different size.
   template <std::size_t other_size>
-  StackProto(const StackProto<T, other_size>& copy_from) : arena_{GetOptions()} {
+  StackProto(const StackProto<T, other_size>& copy_from)
+      : arena_{GetOptions()} {
     proto_message_ = google::protobuf::Arena::CreateMessage<T>(&arena_);
     proto_message_->CopyFrom(*copy_from.get());
   }

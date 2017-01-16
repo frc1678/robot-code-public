@@ -27,7 +27,6 @@ class LinearInterpolation {
 
 }  //  muan
 
-
 #include "linear_interpolation.hpp"
 
 #endif  // MUAN_UTILS_LINEAR_INTERPOLATION_H_

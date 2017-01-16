@@ -79,7 +79,8 @@ MessageQueue<T, size>::QueueReader::QueueReader(MessageQueue<T, size>::QueueRead
       next_message_{move_from.next_message_} {}
 
 template <typename T, uint64_t size>
-MessageQueue<T, size>::QueueReader::QueueReader(const MessageQueue<T, size>& queue) : queue_(queue) {
+MessageQueue<T, size>::QueueReader::QueueReader(const MessageQueue<T, size>& queue)
+    : queue_(queue) {
   next_message_ = queue_.front();
 }
 
