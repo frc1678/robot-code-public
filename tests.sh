@@ -15,6 +15,6 @@ bazel test --test_output=errors //generic_robot/... -- -//generic_robot:frc1678 
 bazel build //generic_robot/... --cpu=roborio
 
 bazel test --test_output=errors //c2017/... -- -//c2017:frc1678 -//c2017/wpilib/... -//c2017/subsystems:subsystem_runner -//c2017/wpilib_update/...
-bazel build //c2017/... --cpu=roborio
+bazel build //c2017/... --cpu=roborio -- -//c2017/vision/coprocessor/...
 
 ./check-format.py --no-fail
