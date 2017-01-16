@@ -2,7 +2,7 @@
 
 #include "Eigen/Dense"
 
-#include "aos/common/util/trapezoid_profile.h"
+#include "third_party/aos/common/util/trapezoid_profile.h"
 
 namespace aos {
 namespace util {

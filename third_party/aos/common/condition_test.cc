@@ -1,4 +1,4 @@
-#include "aos/common/condition.h"
+#include "third_party/aos/common/condition.h"
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -9,17 +9,17 @@
 
 #include "gtest/gtest.h"
 
-#include "aos/common/time.h"
-#include "aos/common/mutex.h"
-#include "aos/testing/test_shm.h"
-#include "aos/common/type_traits.h"
-#include "aos/linux_code/ipc_lib/core_lib.h"
-#include "aos/common/logging/logging.h"
-#include "aos/common/macros.h"
-#include "aos/linux_code/ipc_lib/aos_sync.h"
-#include "aos/common/die.h"
-#include "aos/common/util/thread.h"
-#include "aos/testing/prevent_exit.h"
+#include "third_party/aos/common/time.h"
+#include "third_party/aos/common/mutex.h"
+#include "third_party/aos/testing/test_shm.h"
+#include "third_party/aos/common/type_traits.h"
+#include "third_party/aos/linux_code/ipc_lib/core_lib.h"
+#include "third_party/aos/common/logging/logging.h"
+#include "third_party/aos/common/macros.h"
+#include "third_party/aos/linux_code/ipc_lib/aos_sync.h"
+#include "third_party/aos/common/die.h"
+#include "third_party/aos/common/util/thread.h"
+#include "third_party/aos/testing/prevent_exit.h"
 
 using ::aos::time::Time;
 

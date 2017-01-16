@@ -3,8 +3,8 @@
 
 #include "Eigen/Dense"
 
-#include "aos/common/macros.h"
-#include "aos/common/time.h"
+#include "third_party/aos/common/macros.h"
+#include "third_party/aos/common/time.h"
 
 namespace aos {
 namespace util {

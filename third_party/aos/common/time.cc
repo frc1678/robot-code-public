@@ -1,16 +1,12 @@
-#include "aos/common/time.h"
+#include "third_party/aos/common/time.h"
 
 #include <atomic>
 
 #include <string.h>
 #include <inttypes.h>
 
-// We only use global_core from here, which is weak, so we don't really have a
-// dependency on it.
-#include "aos/linux_code/ipc_lib/shared_mem.h"
-
-#include "aos/common/logging/logging.h"
-#include "aos/common/mutex.h"
+#include "third_party/aos/common/die.h"
+#include "third_party/aos/common/mutex.h"
 
 namespace std {
 namespace this_thread {
@@ -30,7 +26,7 @@ void sleep_until(const ::aos::monotonic_clock::time_point &end_time) {
     returnval = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME,
                                 &end_time_timespec, nullptr);
     if (returnval != EINTR && returnval != 0) {
-      PLOG(FATAL, "clock_nanosleep(%jd, TIMER_ABSTIME, %p, nullptr) failed",
+      ::aos::Die("clock_nanosleep(%jd, TIMER_ABSTIME, %p, nullptr) failed",
            static_cast<uintmax_t>(CLOCK_MONOTONIC), &end_time_timespec);
     }
   } while (returnval != 0);
@@ -64,15 +60,15 @@ monotonic_clock::time_point current_mock_time = monotonic_clock::epoch();
 Time NowImpl(clockid_t clock) {
   timespec temp;
   if (clock_gettime(clock, &temp) != 0) {
-    PLOG(FATAL, "clock_gettime(%jd, %p) failed",
+    ::aos::Die( "clock_gettime(%jd, %p) failed",
          static_cast<uintmax_t>(clock), &temp);
   }
 
-  const timespec offset = (&global_core == nullptr || global_core == nullptr ||
+  /* const timespec offset = (&global_core == nullptr || global_core == nullptr ||
                            global_core->mem_struct == nullptr)
                               ? timespec{0, 0}
-                              : global_core->mem_struct->time_offset;
-  return Time(temp) + Time(offset);
+                              : global_core->mem_struct->time_offset; */
+  return Time(temp); // + Time(offset);
 }
 
 }  // namespace
@@ -101,7 +97,7 @@ void DisableMockTime() {
 void SetMockTime(monotonic_clock::time_point now) {
   MutexLocker time_mutex_locker(&time_mutex);
   if (__builtin_expect(!mock_time_enabled, 0)) {
-    LOG(FATAL, "Tried to set mock time and mock time is not enabled\n");
+    ::aos::Die( "Tried to set mock time and mock time is not enabled\n");
   }
   current_mock_time = now;
 }
@@ -125,10 +121,8 @@ Time Time::Now(clockid_t clock) {
 }
 
 void Time::CheckImpl(int32_t nsec) {
-  static_assert(aos::shm_ok<Time>::value,
-                "it should be able to go through shared memory");
   if (nsec >= kNSecInSec || nsec < 0) {
-    LOG(FATAL, "0 <= nsec(%" PRId32 ") < %" PRId32 " isn't true.\n",
+    ::aos::Die( "0 <= nsec(%" PRId32 ") < %" PRId32 " isn't true.\n",
         nsec, kNSecInSec);
   }
 }
@@ -241,7 +235,7 @@ void SleepFor(const Time &time, clockid_t clock) {
     // This checks whether the last time through the loop actually failed or got
     // interrupted.
     if (failure != EINTR) {
-      PELOG(FATAL, failure, "clock_nanosleep(%jd, 0, %p, %p) failed",
+      ::aos::Die("clock_nanosleep(%jd, 0, %p, %p) failed",
             static_cast<intmax_t>(clock), &converted, &remaining);
     }
     failure = clock_nanosleep(clock, 0, &converted, &remaining);
@@ -255,19 +249,21 @@ void SleepUntil(const Time &time, clockid_t clock) {
   while ((failure = clock_nanosleep(clock, TIMER_ABSTIME,
                                     &converted, NULL)) != 0) {
     if (failure != EINTR) {
-      PELOG(FATAL, failure, "clock_nanosleep(%jd, TIMER_ABSTIME, %p, NULL)"
+      ::aos::Die("clock_nanosleep(%jd, TIMER_ABSTIME, %p, NULL)"
             " failed", static_cast<intmax_t>(clock), &converted);
     }
   }
 }
 
 void OffsetToNow(const Time &now) {
+  /*
   CHECK_NOTNULL(&global_core);
   CHECK_NOTNULL(global_core);
   CHECK_NOTNULL(global_core->mem_struct);
   global_core->mem_struct->time_offset.tv_nsec = 0;
   global_core->mem_struct->time_offset.tv_sec = 0;
   global_core->mem_struct->time_offset = (now - Time::Now()).ToTimespec();
+  */
 }
 
 }  // namespace time
@@ -284,7 +280,7 @@ monotonic_clock::time_point monotonic_clock::now() noexcept {
 
   struct timespec current_time;
   if (clock_gettime(CLOCK_MONOTONIC, &current_time) != 0) {
-    PLOG(FATAL, "clock_gettime(%jd, %p) failed",
+    ::aos::Die("clock_gettime(%jd, %p) failed",
          static_cast<uintmax_t>(CLOCK_MONOTONIC), &current_time);
   }
   return time_point(::std::chrono::seconds(current_time.tv_sec) +

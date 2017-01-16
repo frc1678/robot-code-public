@@ -1,12 +1,10 @@
-#include "aos/common/controls/polytope.h"
+#include "third_party/aos/common/controls/polytope.h"
 
 #include <vector>
 
 #include "Eigen/Dense"
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
-
-#include "aos/testing/test_logging.h"
 
 namespace aos {
 namespace controls {
@@ -41,8 +39,6 @@ class HPolytopeTest : public ::testing::Test {
   }
 
   void SetUp() override {
-    ::aos::testing::EnableTestLogging();
-    ::aos::testing::ForcePrintLogsDuringTests();
     HPolytope<0>::Init();
   }
 

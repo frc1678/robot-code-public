@@ -1,5 +1,6 @@
-#include "aos/common/util/phased_loop.h"
+#include "third_party/aos/common/util/phased_loop.h"
 
+#include "third_party/aos/common/check.h"
 namespace aos {
 namespace time {
 

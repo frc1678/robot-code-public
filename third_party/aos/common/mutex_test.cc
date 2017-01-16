@@ -1,4 +1,4 @@
-#include "aos/common/mutex.h"
+#include "third_party/aos/common/mutex.h"
 
 #include <sched.h>
 #include <math.h>
@@ -8,14 +8,10 @@
 
 #include "gtest/gtest.h"
 
-#include "aos/linux_code/ipc_lib/aos_sync.h"
-#include "aos/common/die.h"
-#include "aos/common/util/death_test_log_implementation.h"
-#include "aos/common/util/thread.h"
-#include "aos/common/time.h"
-#include "aos/testing/test_logging.h"
-#include "aos/testing/test_shm.h"
-#include "aos/linux_code/ipc_lib/core_lib.h"
+#include "third_party/aos/linux_code/ipc_lib/aos_sync.h"
+#include "third_party/aos/common/die.h"
+#include "third_party/aos/common/util/thread.h"
+#include "third_party/aos/common/time.h"
 
 namespace aos {
 namespace testing {
@@ -26,7 +22,6 @@ class MutexTest : public ::testing::Test {
 
  protected:
   void SetUp() override {
-    ::aos::testing::EnableTestLogging();
     SetDieTestMode(true);
   }
 };
@@ -63,12 +58,10 @@ TEST_F(MutexTest, Unlock) {
 
 // Sees what happens with multiple unlocks.
 TEST_F(MutexDeathTest, RepeatUnlock) {
-  logging::Init();
   ASSERT_FALSE(test_mutex_.Lock());
   test_mutex_.Unlock();
   EXPECT_DEATH(
       {
-        logging::AddImplementation(new util::DeathTestLogImplementation());
         test_mutex_.Unlock();
       },
       ".*multiple unlock.*");
@@ -76,10 +69,8 @@ TEST_F(MutexDeathTest, RepeatUnlock) {
 
 // Sees what happens if you unlock without ever locking (or unlocking) it.
 TEST_F(MutexDeathTest, NeverLock) {
-  logging::Init();
   EXPECT_DEATH(
       {
-        logging::AddImplementation(new util::DeathTestLogImplementation());
         test_mutex_.Unlock();
       },
       ".*multiple unlock.*");
@@ -89,7 +80,6 @@ TEST_F(MutexDeathTest, NeverLock) {
 TEST_F(MutexDeathTest, RepeatLock) {
   EXPECT_DEATH(
       {
-        logging::AddImplementation(new util::DeathTestLogImplementation());
         ASSERT_FALSE(test_mutex_.Lock());
         ASSERT_FALSE(test_mutex_.Lock());
       },
@@ -100,7 +90,6 @@ TEST_F(MutexDeathTest, RepeatLock) {
 TEST_F(MutexDeathTest, DestroyLocked) {
   EXPECT_DEATH(
       {
-        logging::AddImplementation(new util::DeathTestLogImplementation());
         Mutex new_mutex;
         ASSERT_FALSE(new_mutex.Lock());
       },
@@ -110,10 +99,7 @@ TEST_F(MutexDeathTest, DestroyLocked) {
 // Tests that Lock behaves correctly when the previous owner exits with the lock
 // held (which is the same as dying any other way).
 TEST_F(MutexTest, OwnerDiedDeathLock) {
-  testing::TestSharedMemory my_shm;
-  Mutex *mutex =
-      static_cast<Mutex *>(shm_malloc_aligned(sizeof(Mutex), alignof(Mutex)));
-  new (mutex) Mutex();
+  Mutex *mutex = new Mutex();
 
   util::FunctionThread::RunInOtherThread([&]() {
     ASSERT_FALSE(mutex->Lock());
@@ -126,10 +112,7 @@ TEST_F(MutexTest, OwnerDiedDeathLock) {
 
 // Tests that TryLock behaves correctly when the previous owner dies.
 TEST_F(MutexTest, OwnerDiedDeathTryLock) {
-  testing::TestSharedMemory my_shm;
-  Mutex *mutex =
-      static_cast<Mutex *>(shm_malloc_aligned(sizeof(Mutex), alignof(Mutex)));
-  new (mutex) Mutex();
+  Mutex *mutex = new Mutex();
 
   util::FunctionThread::RunInOtherThread([&]() {
     ASSERT_FALSE(mutex->Lock());
@@ -288,17 +271,13 @@ TEST_F(MutexLockerTest, Basic) {
 
 // Tests that MutexLocker behaves correctly when the previous owner dies.
 TEST_F(MutexLockerDeathTest, OwnerDied) {
-  testing::TestSharedMemory my_shm;
-  Mutex *mutex =
-      static_cast<Mutex *>(shm_malloc_aligned(sizeof(Mutex), alignof(Mutex)));
-  new (mutex) Mutex();
+  Mutex *mutex = new Mutex();
 
   util::FunctionThread::RunInOtherThread([&]() {
     ASSERT_FALSE(mutex->Lock());
   });
   EXPECT_DEATH(
       {
-        logging::AddImplementation(new util::DeathTestLogImplementation());
         MutexLocker locker(mutex);
       },
       ".*previous owner of mutex [^ ]+ died.*");
@@ -355,10 +334,7 @@ TEST_F(IPCRecursiveMutexLockerTest, RecursiveLock) {
 
 // Tests that IPCMutexLocker behaves correctly when the previous owner dies.
 TEST_F(IPCMutexLockerTest, OwnerDied) {
-  testing::TestSharedMemory my_shm;
-  Mutex *mutex =
-      static_cast<Mutex *>(shm_malloc_aligned(sizeof(Mutex), alignof(Mutex)));
-  new (mutex) Mutex();
+  Mutex *mutex = new Mutex();
 
   util::FunctionThread::RunInOtherThread([&]() {
     ASSERT_FALSE(mutex->Lock());

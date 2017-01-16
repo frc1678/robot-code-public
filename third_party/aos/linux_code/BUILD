@@ -1,4 +1,5 @@
 package(default_visibility = ['//visibility:public'])
+licenses(['notice'])
 
 cc_binary(
   name = 'dump_rtprio',
@@ -6,15 +7,15 @@ cc_binary(
     'dump_rtprio.cc',
   ],
   deps = [
-    '//aos/common/logging',
-    '//aos/common/logging:implementations',
-    '//aos/common:time',
+    '//third_party/aos/common:die',
+    '//third_party/aos/common:check',
+    '//third_party/aos/common:time',
   ],
 )
 
 cc_library(
   name = 'queue',
-  visibility = ['//aos/common:__pkg__'],
+  visibility = ['//third_party/aos/common:__pkg__'],
   hdrs = [
     'queue-tmpl.h',
   ],
@@ -29,9 +30,9 @@ cc_library(
     'complex_thread_local.h',
   ],
   deps = [
-    '//aos/common:once',
-    '//aos/common:die',
-    '//debian:libpthread',
+    '//third_party/aos/common:once',
+    '//third_party/aos/common:die',
+    '//linux_libraries:libpthread',
   ],
 )
 
@@ -42,9 +43,8 @@ cc_test(
   ],
   deps = [
     ':complex_thread_local',
-    '//aos/testing:googletest',
-    '//aos/common/util:thread',
-    '//aos/common/logging',
+    '//third_party/aos/testing:googletest',
+    '//third_party/aos/common/util:thread',
   ],
 )
 
@@ -57,9 +57,9 @@ cc_library(
     'init.h',
   ],
   deps = [
-    '//aos/linux_code/ipc_lib:shared_mem',
-    '//aos/common:die',
-    '//aos/common/logging:implementations',
+    '//third_party/aos/common:die',
+    '//third_party/aos/common:check',
+    '//linux_libraries:libpthread',
   ],
 )
 
@@ -72,9 +72,9 @@ cc_library(
     'configuration.h',
   ],
   deps = [
-    '//aos/common:once',
-    '//aos/common/logging',
-    '//aos/common:unique_malloc_ptr',
+    '//third_party/aos/common:once',
+    '//third_party/aos/common:die',
+    '//third_party/aos/common:unique_malloc_ptr',
   ],
 )
 
@@ -85,6 +85,6 @@ cc_binary(
   ],
   deps = [
     ':init',
-    '//aos/common/util:run_command',
+    '//third_party/aos/common/util:run_command',
   ],
 )

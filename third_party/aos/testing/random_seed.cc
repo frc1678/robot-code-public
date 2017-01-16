@@ -1,4 +1,4 @@
-#include "aos/testing/random_seed.h"
+#include "third_party/aos/testing/random_seed.h"
 
 #include <stdlib.h>
 

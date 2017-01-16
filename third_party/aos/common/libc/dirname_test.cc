@@ -1,4 +1,4 @@
-#include "aos/common/libc/dirname.h"
+#include "third_party/aos/common/libc/dirname.h"
 
 #include <libgen.h>
 

@@ -3,10 +3,12 @@
 
 #include <mutex>
 
-#include "aos/linux_code/ipc_lib/aos_sync.h"
-#include "aos/common/logging/logging.h"
-#include "aos/common/type_traits.h"
-#include "aos/common/macros.h"
+#include "third_party/aos/linux_code/ipc_lib/aos_sync.h"
+#include "third_party/aos/common/type_traits.h"
+#include "third_party/aos/common/macros.h"
+
+#include "third_party/aos/common/die.h"
+#include "third_party/aos/common/check.h"
 
 namespace aos {
 
@@ -31,7 +33,7 @@ class stl_mutex {
         owner_died_ = true;
         break;
       default:
-        LOG(FATAL, "mutex_grab(%p) failed with %d\n", &native_handle_, ret);
+        ::aos::Die("mutex_grab(%p) failed with %d\n", &native_handle_, ret);
     }
   }
 
@@ -46,7 +48,7 @@ class stl_mutex {
       case 4:
         return false;
       default:
-        LOG(FATAL, "mutex_trylock(%p) failed with %d\n", &native_handle_, ret);
+        ::aos::Die("mutex_trylock(%p) failed with %d\n", &native_handle_, ret);
     }
   }
 

@@ -3,7 +3,7 @@
 #define NDEBUG
 #endif
 
-#include "aos/linux_code/ipc_lib/aos_sync.h"
+#include "third_party/aos/linux_code/ipc_lib/aos_sync.h"
 
 #include <linux/futex.h>
 #include <unistd.h>
@@ -26,10 +26,10 @@
 #include <algorithm>
 #include <type_traits>
 
-#include "aos/common/logging/logging.h"
-#include "aos/common/once.h"
-#include "aos/common/macros.h"
-#include "aos/common/util/compiler_memory_barrier.h"
+#include "third_party/aos/common/once.h"
+#include "third_party/aos/common/macros.h"
+#include "third_party/aos/common/util/compiler_memory_barrier.h"
+#include "third_party/aos/common/die.h"
 
 using ::aos::linux_code::ipc_lib::FutexAccessorObserver;
 
@@ -371,7 +371,7 @@ pid_t do_get_tid() {
 void check_cached_tid(pid_t tid) {
   pid_t actual = do_get_tid();
   if (tid != actual) {
-    LOG(FATAL,
+    ::aos::Die(
         "task %jd forked into %jd without letting aos_sync know"
         " so we're not really sure what's going on\n",
         static_cast<intmax_t>(tid), static_cast<intmax_t>(actual));
@@ -390,7 +390,7 @@ void atfork_child() {
 
 void *InstallAtforkHook() {
   if (pthread_atfork(NULL, NULL, atfork_child) != 0) {
-    PLOG(FATAL, "pthread_atfork(NULL, NULL, %p) failed", atfork_child);
+    ::aos::Die("pthread_atfork(NULL, NULL, %p) failed", atfork_child);
   }
   return nullptr;
 }
@@ -486,7 +486,7 @@ void Init() {
   robust_head.pending_next = 0;
   if (syscall(SYS_set_robust_list, robust_head_next_value(), sizeof(robust_head)) !=
       0) {
-    PLOG(FATAL, "set_robust_list(%p, %zd) failed",
+    ::aos::Die("set_robust_list(%p, %zd) failed",
          reinterpret_cast<void *>(robust_head.next), sizeof(robust_head));
   }
   if (kRobustListDebug) {
@@ -688,9 +688,9 @@ inline int mutex_do_get(aos_mutex *m, bool signals_fail,
         }
         my_robust_list::robust_head.pending_next = 0;
         if (ret == -EDEADLK) {
-          LOG(FATAL, "multiple lock of %p by %" PRId32 "\n", m, tid);
+          ::aos::Die("multiple lock of %p by %" PRId32 "\n", m, tid);
         }
-        PELOG(FATAL, -ret, "FUTEX_LOCK_PI(%p(=%" PRIu32 "), 1, %p) failed",
+        ::aos::Die("FUTEX_LOCK_PI(%p(=%" PRIu32 "), 1, %p) failed",
               &m->futex, __atomic_load_n(&m->futex, __ATOMIC_SEQ_CST), timeout);
       } else {
         if (kLockDebug) {
@@ -758,7 +758,7 @@ void condition_wake(aos_condition *c, aos_mutex *m, int number_requeue) {
           continue;
         }
         my_robust_list::robust_head.pending_next = 0;
-        PELOG(FATAL, -ret, "FUTEX_CMP_REQUEUE_PI(%p, 1, %d, %p, *%p) failed",
+        ::aos::Die("FUTEX_CMP_REQUEUE_PI(%p, 1, %d, %p, *%p) failed",
               c, number_requeue, &m->futex, c);
       } else {
         return;
@@ -771,7 +771,7 @@ void condition_wake(aos_condition *c, aos_mutex *m, int number_requeue) {
             static_cast<unsigned int>(ret) > static_cast<unsigned int>(-4096),
             false)) {
       my_robust_list::robust_head.pending_next = 0;
-      PELOG(FATAL, -ret, "FUTEX_WAKE(%p, %d) failed", c, INT_MAX - 4096);
+      ::aos::Die("FUTEX_WAKE(%p, %d) failed", c, INT_MAX - 4096);
     }
   }
 }
@@ -800,9 +800,9 @@ void mutex_unlock(aos_mutex *m) {
     my_robust_list::robust_head.pending_next = 0;
     check_cached_tid(tid);
     if ((value & FUTEX_TID_MASK) == 0) {
-      LOG(FATAL, "multiple unlock of aos_mutex %p by %" PRId32 "\n", m, tid);
+      ::aos::Die("multiple unlock of aos_mutex %p by %" PRId32 "\n", m, tid);
     } else {
-      LOG(FATAL, "aos_mutex %p is locked by %" PRId32 ", not %" PRId32 "\n",
+      ::aos::Die("aos_mutex %p is locked by %" PRId32 ", not %" PRId32 "\n",
           m, value & FUTEX_TID_MASK, tid);
     }
   }
@@ -816,7 +816,7 @@ void mutex_unlock(aos_mutex *m) {
     const int ret = sys_futex_unlock_pi(&m->futex);
     if (ret != 0) {
       my_robust_list::robust_head.pending_next = 0;
-      PELOG(FATAL, -ret, "FUTEX_UNLOCK_PI(%p) failed", &m->futex);
+      ::aos::Die("FUTEX_UNLOCK_PI(%p) failed", &m->futex);
     }
   } else {
     // There aren't any waiters, so no need to call into the kernel.
@@ -853,7 +853,7 @@ int mutex_trylock(aos_mutex *m) {
           return 4;
         }
         my_robust_list::robust_head.pending_next = 0;
-        PELOG(FATAL, -ret, "FUTEX_TRYLOCK_PI(%p, 0, NULL) failed", &m->futex);
+        ::aos::Die("FUTEX_TRYLOCK_PI(%p, 0, NULL) failed", &m->futex);
       }
     }
   }
@@ -908,10 +908,10 @@ int condition_wait(aos_condition *c, aos_mutex *m) {
       if (__builtin_expect(ret == -EINTR, true)) continue;
       my_robust_list::robust_head.pending_next = 0;
       if (USE_REQUEUE_PI) {
-        PELOG(FATAL, -ret, "FUTEX_WAIT_REQUEUE_PI(%p, %" PRIu32 ", %p) failed",
+        ::aos::Die("FUTEX_WAIT_REQUEUE_PI(%p, %" PRIu32 ", %p) failed",
               c, wait_start, &m->futex);
       } else {
-        PELOG(FATAL, -ret, "FUTEX_WAIT(%p, %" PRIu32 ", nullptr) failed",
+        ::aos::Die("FUTEX_WAIT(%p, %" PRIu32 ", nullptr) failed",
               c, wait_start);
       }
     } else {

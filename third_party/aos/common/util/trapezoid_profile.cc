@@ -1,6 +1,6 @@
-#include "aos/common/util/trapezoid_profile.h"
+#include "third_party/aos/common/util/trapezoid_profile.h"
 
-#include "aos/common/logging/logging.h"
+#include "third_party/aos/common/check.h"
 
 using ::Eigen::Matrix;
 

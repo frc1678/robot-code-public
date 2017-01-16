@@ -1,4 +1,4 @@
-#include "aos/linux_code/configuration.h"
+#include "third_party/aos/linux_code/configuration.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -8,9 +8,10 @@
 #include <ifaddrs.h>
 #include <unistd.h>
 
-#include "aos/common/logging/logging.h"
-#include "aos/common/unique_malloc_ptr.h"
-#include "aos/common/once.h"
+#include "third_party/aos/common/unique_malloc_ptr.h"
+#include "third_party/aos/common/once.h"
+
+#include "third_party/aos/common/die.h"
 
 namespace aos {
 namespace configuration {
@@ -23,21 +24,21 @@ const in_addr *DoGetOwnIPAddress() {
   static const char *kOverrideVariable = "FRC971_IP_OVERRIDE";
   const char *override_ip = getenv(kOverrideVariable);
   if (override_ip != NULL) {
-    LOG(INFO, "Override IP is %s\n", override_ip);
+    // LOG(INFO, "Override IP is %s\n", override_ip);
     static in_addr r;
     if (inet_aton(override_ip, &r) != 0) {
       return &r;
     } else {
-      LOG(WARNING, "error parsing %s value '%s'\n",
-          kOverrideVariable, override_ip);
+      // LOG(WARNING, "error parsing %s value '%s'\n",
+      //    kOverrideVariable, override_ip);
     }
   } else {
-    LOG(INFO, "Couldn't get environmental variable.\n");
+    // LOG(INFO, "Couldn't get environmental variable.\n");
   }
 
   ifaddrs *addrs;
   if (getifaddrs(&addrs) != 0) {
-    PLOG(FATAL, "getifaddrs(%p) failed", &addrs);
+    ::aos::Die("getifaddrs(%p) failed", &addrs);
   }
   // Smart pointers don't work very well for iterating through a linked list,
   // but it does do a very nice job of making sure that addrs gets freed.
@@ -54,7 +55,7 @@ const in_addr *DoGetOwnIPAddress() {
       }
     }
   }
-  LOG(FATAL, "couldn't find an AF_INET interface named \"%s\"\n",
+  ::aos::Die("couldn't find an AF_INET interface named \"%s\"\n",
       kLinuxNetInterface);
 }
 
@@ -69,18 +70,18 @@ const char *DoGetRootDirectory() {
     ssize_t ret = readlink("/proc/self/exe", r, size);
     if (ret < 0) {
       if (ret != -1) {
-        LOG(WARNING, "it returned %zd, not -1\n", ret);
+        // LOG(WARNING, "it returned %zd, not -1\n", ret);
       }
-      PLOG(FATAL, "readlink(\"/proc/self/exe\", %p, %zu) failed", r, size);
+      ::aos::Die("readlink(\"/proc/self/exe\", %p, %zu) failed", r, size);
     }
     if (ret < size) {
       void *last_slash = memrchr(r, '/', ret);
       if (last_slash == NULL) {
         r[ret] = '\0';
-        LOG(FATAL, "couldn't find a '/' in \"%s\"\n", r);
+        ::aos::Die("couldn't find a '/' in \"%s\"\n", r);
       }
       *static_cast<char *>(last_slash) = '\0';
-      LOG(INFO, "got a root dir of \"%s\"\n", r);
+      // LOG(INFO, "got a root dir of \"%s\"\n", r);
       return r;
     }
   }

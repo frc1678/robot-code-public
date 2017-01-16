@@ -1,4 +1,4 @@
-#include "aos/common/util/run_command.h"
+#include "third_party/aos/common/util/run_command.h"
 
 #include <signal.h>
 #include <sys/types.h>
@@ -6,8 +6,9 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <errno.h>
 
-#include "aos/common/logging/logging.h"
+#include "third_party/aos/common/die.h"
 
 namespace aos {
 namespace util {
@@ -21,13 +22,13 @@ class BlockSIGCHLD {
     sigemptyset(&to_block);
     sigaddset(&to_block, SIGCHLD);
     if (sigprocmask(SIG_BLOCK, &to_block, &original_blocked_) == -1) {
-      PLOG(FATAL, "sigprocmask(SIG_BLOCK, %p, %p) failed",
+      ::aos::Die("sigprocmask(SIG_BLOCK, %p, %p) failed",
            &to_block, &original_blocked_);
     }
   }
   ~BlockSIGCHLD() {
     if (sigprocmask(SIG_SETMASK, &original_blocked_, nullptr) == -1) {
-      PLOG(FATAL, "sigprocmask(SIG_SETMASK, %p, nullptr) failed",
+      ::aos::Die("sigprocmask(SIG_SETMASK, %p, nullptr) failed",
            &original_blocked_);
     }
   }

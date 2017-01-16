@@ -1,4 +1,4 @@
-#include "aos/common/die.h"
+#include "third_party/aos/common/die.h"
 
 #include "gtest/gtest.h"
 

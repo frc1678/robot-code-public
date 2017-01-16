@@ -1,10 +1,10 @@
-#include "aos/common/util/inet_addr.h"
+#include "third_party/aos/common/util/inet_addr.h"
 
 #include <stdlib.h>
 #ifndef __VXWORKS__
 #include <string.h>
 
-#include "aos/common/byteorder.h"
+#include "third_party/aos/common/byteorder.h"
 #else
 
 template<typename T>

@@ -5,8 +5,7 @@
 #include "third_party/cddlib/lib-src/setoper.h"
 #include "third_party/cddlib/lib-src/cdd.h"
 
-#include "aos/common/logging/logging.h"
-#include "aos/common/logging/matrix_logging.h"
+#include "third_party/aos/common/check.h"
 
 namespace aos {
 namespace controls {
@@ -183,9 +182,9 @@ HPolytope<number_of_dimensions>::CalculateVertices(
   if (error != dd_NoError || polyhedra == NULL) {
     dd_WriteErrorMessages(stderr, error);
     dd_FreeMatrix(matrix);
-    LOG_MATRIX(ERROR, "bad H", H);
-    LOG_MATRIX(ERROR, "bad k_", k);
-    LOG(FATAL, "dd_DDMatrix2Poly failed\n");
+    // LOG_MATRIX(ERROR, "bad H", H);
+    // LOG_MATRIX(ERROR, "bad k_", k);
+    // LOG(FATAL, "dd_DDMatrix2Poly failed\n");
   }
 
   dd_MatrixPtr vertex_matrix = dd_CopyGenerators(polyhedra);
