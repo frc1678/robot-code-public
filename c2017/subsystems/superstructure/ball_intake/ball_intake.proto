@@ -10,7 +10,7 @@ message IntakeOutput {
 }
 
 message IntakeStatus {
-  required bool intake_up = 1; //is intake letting in balls
+  required bool is_intake_up = 1; //is intake letting in balls
   required RollerGoal running = 2; //is it running or idle
 }
 
