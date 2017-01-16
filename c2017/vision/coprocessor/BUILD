@@ -23,6 +23,5 @@ cc_library(
     ':sender',
     '//muan/vision:vision'
   ],
-  copts = ['-Wno-error=unused-parameter'],
   linkopts = ['-lopencv_video', '-lopencv_highgui']
 )

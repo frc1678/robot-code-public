@@ -7,8 +7,8 @@ namespace vision {
 
 class VisionScorer2017 : public muan::VisionScorer {
  public:
-  double GetScore(double distance_to_target, double distance_from_previous,
-                  double skew, double width, double height, double fullness) override {
+  double GetScore(double , double /* unused */, double skew,
+                  double width, double height, double fullness) override {
     double base_score = std::log(width * height) / (.1 + std::pow(fullness - .9, 2));
     double target_score = (base_score / (1 + skew));
     return target_score;
