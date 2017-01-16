@@ -23,4 +23,4 @@ using DrivetrainOutputQueue = muan::queues::MessageQueue<StackDrivetrainOutput, 
 
 }  // o2016
 
-#endif // O2016_SUBSYSTEMS_DRIVETRAIN_QUEUETYPES_H_
+#endif  // O2016_SUBSYSTEMS_DRIVETRAIN_QUEUETYPES_H_
