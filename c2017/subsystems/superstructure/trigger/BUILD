@@ -32,6 +32,15 @@ cc_library(
   deps = ['//third_party/eigen']
 )
 
+cc_test(
+  name = 'trigger_tests',
+  srcs = ['trigger_tests.cpp'],
+  deps = [
+    '//third_party/google/googletest:googletest',
+    ':trigger_mechanism'
+  ]
+)
+
 genrule(
   name = 'trigger_genrule',
   srcs = [],
