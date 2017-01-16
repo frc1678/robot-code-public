@@ -20,9 +20,7 @@ message IntakeGoal {
   enum RollerGoal {
     IDLE = 0;
     INTAKE = 1;
-    OUTTAKE = 2;
-    
+    OUTTAKE = 2;   
   }
 
 }
-
