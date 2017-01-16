@@ -11,7 +11,7 @@ cc_library(
   name = 'climber',
   hdrs = ['climber.h'],
   srcs = ['climber.cpp'],
-  deps = ['//muan/units:units', ':climber_queues' ],
+  deps = ['//muan/units:units', ':climber_queues', '//muan/wpilib:wpilib_queues' ],
   visibility = ['//visibility:public']
 )
 cc_proto_library(

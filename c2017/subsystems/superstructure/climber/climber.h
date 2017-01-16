@@ -1,6 +1,7 @@
 #ifndef C2017_SUBSYSTEMS_CLIMBER_CLIMBER_H_
 #define C2017_SUBSYSTEMS_CLIMBER_CLIMBER_H_
 
+#include "muan/wpilib/queue_types.h"
 #include "muan/units/units.h"
 #include "queue_types.h"
 #include <memory.h>
@@ -13,7 +14,7 @@ class Climber {
 public:
   Climber();
   void SetGoal (const ClimberGoalProto& goal);
-  void Update (const ClimberInputProto& input);
+  void Update (const ClimberInputProto& input, const muan::wpilib::DriverStationProto& ds_status);
   ClimberOutputProto Output();
   ClimberStatusProto Status();
 private:

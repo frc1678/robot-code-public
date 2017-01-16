@@ -68,3 +68,25 @@ TEST(Climbing, NotClimbing) {
     EXPECT_FALSE(test_status->hit_top());
     EXPECT_EQ(test_output->voltage(), 0);
     }
+
+TEST(Climbing, Disabled) {
+    c2017::climber::ClimberGoalProto goal;
+    c2017::climber::ClimberInputProto input;
+    goal->set_climbing(false);
+    input->set_current(0);
+    input->set_position(0);
+    c2017::climber::Climber test_climber;
+
+    test_climber.SetGoal(goal);
+    for (int i = 0; i < 1000; i++) {
+      test_climber.Update(input);
+    }
+
+    c2017::climber::ClimberStatusProto test_status = test_climber.Status();
+    c2017::climber::ClimberOutputProto test_output = test_climber.Output();
+
+
+    EXPECT_EQ(test_output->voltage(), 0);
+    EXPECT_FALSE(test_status->hit_top());
+    EXPECT_FALSE(test_status->currently_climbing());
+    }
