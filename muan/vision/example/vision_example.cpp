@@ -20,7 +20,7 @@ class ExampleVisionScorer : public muan::VisionScorer {
 int main() {
   cv::VideoCapture cap;
   cap.open("muan/vision/example/captured.avi");
-  
+
 #if VIDEO_OUTPUT
   cv::VideoWriter output{"output.avi", CV_FOURCC('M', 'J', 'P', 'G'), 30,
                          cv::Size(640 * 2, 480)};

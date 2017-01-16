@@ -1,5 +1,5 @@
-#ifndef C2017_TELEOP_TELEOP_H_
-#define C2017_TELEOP_TELEOP_H_
+#ifndef C2017_WPILIBUPDATE_MAIN_H_
+#define C2017_WPILIBUPDATE_MAIN_H_
 
 #include "muan/teleop/joystick.h"
 
@@ -29,4 +29,4 @@ class Main {
 
 }  // c2017
 
-#endif  // C2017_TELEOP_TELEOP_H_
+#endif  // C2017_WPILIBUPDATE_MAIN_H_

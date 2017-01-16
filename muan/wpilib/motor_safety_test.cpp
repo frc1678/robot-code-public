@@ -69,7 +69,7 @@ TEST(MotorSafetyTest, InfiniteReset) {
     if (t < 2.0) {
       EXPECT_NEAR(safe_voltage, voltage, 1e-5);
       EXPECT_FALSE(safety.is_stalled());
-    } else { 
+    } else {
       EXPECT_NEAR(safe_voltage, 0, 1e-5);
       EXPECT_TRUE(safety.is_stalled());
     }
@@ -85,7 +85,7 @@ TEST(MotorSafetyTest, SlowStall) {
     if(t < 1.0) {
       EXPECT_NEAR(safe_voltage, voltage, 1e-5);
       EXPECT_FALSE(safety.is_stalled());
-    } else if (t < 7.055) { // A little more to allow the moving average to catch up on current 
+    } else if (t < 7.055) { // A little more to allow the moving average to catch up on current
       EXPECT_NEAR(safe_voltage, 0, 1e-5);
       EXPECT_TRUE(safety.is_stalled());
     } else {
