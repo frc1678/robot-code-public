@@ -23,7 +23,7 @@ void Logger::AddQueue(const std::string& name, T* queue_reader) {
 }
 
 void Logger::Run() {
-  aos::time::PhasedLoop phased_loop(aos::time::Time::InMS(20));
+  aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(20));
 
   aos::SetCurrentThreadRealtimePriority(20);
   aos::SetCurrentThreadName("Logger");
