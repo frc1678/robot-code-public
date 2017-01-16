@@ -1,5 +1,5 @@
-#ifndef C2017_SUBSYSTEMS_SUPERSTRUCTURE_BALLINTAKE_QUEUETYPES_H_
-#define C2017_SUBSYSTEMS_SUPERSTRUCTURE_BALLINTAKE_QUEUETYPES_H_
+#ifndef C2017_SUBSYSTEMS_SUPERSTRUCTURE_BALL_INTAKE_QUEUE_TYPES_H_
+#define C2017_SUBSYSTEMS_SUPERSTRUCTURE_BALL_INTAKE_QUEUE_TYPES_H_
 
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
@@ -20,4 +20,4 @@ using BallIntakeStatusQueue = muan::queues::MessageQueue<BallIntakeStatusProto, 
 using BallIntakeGoalQueue = muan::queues::MessageQueue<BallIntakeGoalProto, 100>;
 }
 }
-#endif //C2017_SUBSYSTEMS_SUPERSTRUCTURE_BALLINTAKE_QUEUETYPES_H_
+#endif //C2017_SUBSYSTEMS_SUPERSTRUCTURE_BALL_INTAKE_QUEUE_TYPES_H_
