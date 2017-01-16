@@ -23,7 +23,7 @@ def state_space_regression(xt, ut):
     # All but the first for of xt
     solver_b = xt[1:, :]
     solution = np.linalg.lstsq(solver_A, solver_b)[0]
-    
+
     # The first n rows of the solution, where x is
     # the number of states (number of cols in xt)
     gains_A = solution[:xt.shape[1], :].T

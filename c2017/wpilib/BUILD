@@ -6,7 +6,7 @@ cc_library(
     'queue_types.h',
   ],
   deps = [
-    'wpilib_proto', 
+    'wpilib_proto',
     '//muan/proto:stack_proto',
     '//muan/queues:queues'
   ],
@@ -36,5 +36,4 @@ cc_library(
   ],
   visibility = ['//visibility:public']
 )
-
 

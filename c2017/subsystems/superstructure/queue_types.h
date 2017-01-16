@@ -7,7 +7,7 @@
 #include "c2017/subsystems/superstructure/shooter_group/shooter_group.pb.h"
 
 namespace c2017 {
-  
+
 namespace intake_group {
 
   using IntakeGroupGoalProto = muan::proto::StackProto<IntakeGoal, 256>;
