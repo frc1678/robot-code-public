@@ -16,18 +16,23 @@ class TriggerController {
  public:
   TriggerController();
 
+    //Updates trigger status and output protos
   TriggerOutputProto Update(TriggerInputProto input);
+    //set's local goal that will not be sent
   void SetGoal (TriggerGoalProto goal) { goal_ = goal; }
 
  private:
+    //creates local protos for status and goal
   TriggerStatusProto status_;
-  TriggerGoalProto goal_; //set local goal proto
+  TriggerGoalProto goal_;
   
+    //matrix math bull$^*#
   muan::control::StateSpaceController<1, 3, 1> controller_;
   muan::control::StateSpaceObserver<1,3,1> observer_;
   
   bool at_goal_;
 
+    //
   muan::units::AngularVelocity velocity_tolerance_;
 };
 
