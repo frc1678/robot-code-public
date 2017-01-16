@@ -33,7 +33,7 @@ TriggerOutputProto TriggerController::Update(TriggerInputProto input) {
 
   //More matrix math I don't understand - ask Kyle
   Eigen::Matrix<double, 3, 1> r;
-  r << 0.0, (8.0 * pi), 0.0;
+  r << 0.0, (8.0 * pi * goal_->balls_per_second()), 0.0;
 
   Eigen::Matrix<double, 1, 1> y;
   y << input->encoder_position();
@@ -43,13 +43,15 @@ TriggerOutputProto TriggerController::Update(TriggerInputProto input) {
   observer_.Update(u, y);
 
   output->set_voltage(u[0]);
+
+  std::cout << observer_.x()[1] << std::endl;
   
   status_->set_observed_velocity(observer_.x()[1]);
 
   //Capping voltage
   if (output->voltage() < -12.) {
     output->set_voltage(-12.); 
-  } else if (output->voltage > 12.) {
+  } else if (output->voltage() > 12.) {
     output->set_voltage(12.);
   }
 
