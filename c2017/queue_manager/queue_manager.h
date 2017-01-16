@@ -8,6 +8,7 @@
 #include "muan/wpilib/queue_types.h"
 
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
+#include "c2017/subsystems/superstructure/trigger/queue_types.h"
 
 using muan::queues::MessageQueue;
 
@@ -33,6 +34,7 @@ class QueueManager {
   frc971::control_loops::drivetrain::InputQueue* drivetrain_input_queue();
   frc971::control_loops::drivetrain::OutputQueue* drivetrain_output_queue();
   frc971::control_loops::drivetrain::StatusQueue* drivetrain_status_queue();
+  c2017::trigger::TriggerStatusQueue* trigger_status_queue();
 
  private:
   QueueManager() = default;
@@ -47,6 +49,7 @@ class QueueManager {
   frc971::control_loops::drivetrain::InputQueue drivetrain_input_queue_;
   frc971::control_loops::drivetrain::OutputQueue drivetrain_output_queue_;
   frc971::control_loops::drivetrain::StatusQueue drivetrain_status_queue_;
+  c2017::trigger::TriggerStatusQueue trigger_status_queue_;
 };
 
 }  // c2017

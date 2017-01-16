@@ -22,7 +22,8 @@ cc_library(
     '//muan/control:state_space',
     '//muan/wpilib:wpilib_queues',
     ':trigger_constants',
-    ':trigger_queues'
+    ':trigger_queues',
+    '//c2017/queue_manager:queue_manager'
   ]
 )
 
