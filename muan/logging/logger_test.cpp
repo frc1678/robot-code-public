@@ -1,4 +1,4 @@
-#include "logger.hpp"
+#include "logger.h"
 #include "filewriter.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"

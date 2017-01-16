@@ -127,4 +127,6 @@ class Logger {
 }  // namespace logging
 }  // namespace muan
 
+#include "logger.hpp"
+
 #endif

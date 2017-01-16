@@ -1,8 +1,6 @@
 #ifndef MUAN_LOGGING_LOGGER_HPP_
 #define MUAN_LOGGING_LOGGER_HPP_
 
-#include "logger.h"
-
 namespace muan {
 namespace logging {
 

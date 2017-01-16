@@ -13,7 +13,9 @@ cc_library(
           '//third_party/aos/common/util:phased_loop',
           '//third_party/aos/common:time',
           '//third_party/google/protobuf',
-          '//third_party/optional']
+          '//third_party/optional',
+          '//third_party/google/googletest:googletest'],
+  linkstatic = 1
 )
 
 cc_test(
