@@ -3,24 +3,23 @@ syntax = "proto2";
 package c2017.ball_intake;
 
 option cc_enable_arenas = true;
-   
+
 message IntakeOutput {
-  required double roller_voltage = 1; //positive is intaking,negative is outtaking
+  required double roller_voltage = 1; //positive is intaking, negative is outtaking
   required bool intake_up = 2; //controls pneumatic cylinder
 }
 
 message IntakeStatus {
-  required bool open = 1; //is intake letting in balls
-  required bool running = 2; //is it running or idle
+  required bool intake_up = 1; //is intake letting in balls
+  required RollerGoal running = 2; //is it running or idle
 }
 
 message IntakeGoal {
   required bool intake_up = 1; //whether it is down or up
-  required RollerGoal run_intake = 2; 
+  required RollerGoal run_intake = 2;
   enum RollerGoal {
     IDLE = 0;
     INTAKE = 1;
-    OUTTAKE = 2;   
+    OUTTAKE = 2;
   }
-
 }
