@@ -8,6 +8,7 @@
 #include "muan/wpilib/queue_types.h"
 #include "c2017/subsystems/superstructure/trigger/trigger_constants.h"
 #include "c2017/subsystems/superstructure/trigger/queue_types.h"
+#include "c2017/queue_manager/queue_manager.h"
 
 namespace c2017 {
 
@@ -33,6 +34,7 @@ class TriggerController {
   muan::control::StateSpaceObserver<1, 3, 1> observer_;
 
   muan::units::AngularVelocity velocity_tolerance_;
+  TriggerStatusQueue* status_queue_;
 };
 
 }  // trigger

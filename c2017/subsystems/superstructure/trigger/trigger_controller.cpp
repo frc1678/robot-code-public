@@ -1,12 +1,14 @@
 #include "trigger_controller.h"
 #include <math.h>
+#include "c2017/queue_manager/queue_manager.h"
 
 namespace c2017 {
 
 namespace trigger {
 
 //Constructor
-TriggerController::TriggerController() {
+TriggerController::TriggerController() :
+      status_queue_(QueueManager::GetInstance().trigger_status_queue()) {
   auto ss_plant = muan::control::StateSpacePlant<1, 3, 1>(frc1678::trigger_controller::controller::A(),
                                                           frc1678::trigger_controller::controller::B(),
                                                           frc1678::trigger_controller::controller::C());
@@ -58,6 +60,8 @@ TriggerOutputProto TriggerController::Update(const TriggerInputProto& input,
       output->set_voltage(12.);
     }
   }
+
+  status_queue_->WriteMessage(status);
   return output;
 }
 
