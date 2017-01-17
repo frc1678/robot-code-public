@@ -5,21 +5,19 @@
 
 #include "third_party/aos/linux_code/ipc_lib/aos_sync.h"
 
-#include <assert.h>
-#include <errno.h>
-#define __STDC_FORMAT_MACROS
-#include <inttypes.h>
-#include <limits.h>
 #include <linux/futex.h>
+#include <unistd.h>
+#include <sys/syscall.h>
+#include <errno.h>
+#include <stdint.h>
+#include <limits.h>
+#include <string.h>
+#include <inttypes.h>
+#include <sys/types.h>
+#include <stddef.h>
+#include <assert.h>
 #include <pthread.h>
 #include <sched.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <string.h>
-#include <sys/syscall.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <stdio.h>
 
 #ifdef AOS_SANITIZER_thread
 #include <sanitizer/tsan_interface_atomic.h>
@@ -28,14 +26,14 @@
 #include <algorithm>
 #include <type_traits>
 
-#include "third_party/aos/common/macros.h"
 #include "third_party/aos/common/once.h"
+#include "third_party/aos/common/macros.h"
 #include "third_party/aos/common/util/compiler_memory_barrier.h"
 #include "third_party/aos/common/die.h"
 
 using ::aos::linux_code::ipc_lib::FutexAccessorObserver;
 
-// This code was originally based on <http://www.akkadia.org/drepper/futex.pdf>,
+// This code was originally based on <https://www.akkadia.org/drepper/futex.pdf>,
 // but is has since evolved a lot. However, that still has useful information.
 //
 // Finding information about actually using futexes is really REALLY hard, so
@@ -182,8 +180,7 @@ inline int sys_futex_wake(aos_futex *addr1, int val1) {
 }
 
 inline int sys_futex_cmp_requeue_pi(aos_futex *addr1, int num_wake,
-                                    int num_requeue, aos_futex *m,
-                                    uint32_t val) {
+    int num_requeue, aos_futex *m, uint32_t val) {
 #if ARM_EABI_INLINE_SYSCALL
   register aos_futex *addr1_reg __asm__("r0") = addr1;
   register int op_reg __asm__("r1") = FUTEX_CMP_REQUEUE_PI;
@@ -208,7 +205,8 @@ inline int sys_futex_cmp_requeue_pi(aos_futex *addr1, int num_wake,
 #endif
 }
 
-inline int sys_futex_wait_requeue_pi(aos_condition *addr1, uint32_t start_val,
+inline int sys_futex_wait_requeue_pi(aos_condition *addr1,
+                                     uint32_t start_val,
                                      const struct timespec *timeout,
                                      aos_futex *m) {
 #if ARM_EABI_INLINE_SYSCALL
@@ -475,8 +473,8 @@ inline aos_mutex *next_to_mutex(uintptr_t next) {
     // We don't offset the head pointer, so be careful.
     return reinterpret_cast<aos_mutex *>(next);
   }
-  return reinterpret_cast<aos_mutex *>((next & ~kRobustListOr) -
-                                       robust_list_offset);
+  return reinterpret_cast<aos_mutex *>(
+      (next & ~kRobustListOr) - robust_list_offset);
 }
 
 // Sets up the robust list for each thread.
@@ -486,10 +484,10 @@ void Init() {
   robust_head.futex_offset = static_cast<ssize_t>(offsetof(aos_mutex, futex)) -
                              static_cast<ssize_t>(offsetof(aos_mutex, next));
   robust_head.pending_next = 0;
-  if (syscall(SYS_set_robust_list, robust_head_next_value(),
-              sizeof(robust_head)) != 0) {
+  if (syscall(SYS_set_robust_list, robust_head_next_value(), sizeof(robust_head)) !=
+      0) {
     ::aos::Die("set_robust_list(%p, %zd) failed",
-               reinterpret_cast<void *>(robust_head.next), sizeof(robust_head));
+         reinterpret_cast<void *>(robust_head.next), sizeof(robust_head));
   }
   if (kRobustListDebug) {
     printf("%" PRId32 ": init done\n", get_tid());
@@ -692,8 +690,8 @@ inline int mutex_do_get(aos_mutex *m, bool signals_fail,
         if (ret == -EDEADLK) {
           ::aos::Die("multiple lock of %p by %" PRId32 "\n", m, tid);
         }
-        ::aos::Die("FUTEX_LOCK_PI(%p(=%" PRIu32 "), 1, %p) failed", &m->futex,
-                   __atomic_load_n(&m->futex, __ATOMIC_SEQ_CST), timeout);
+        ::aos::Die("FUTEX_LOCK_PI(%p(=%" PRIu32 "), 1, %p) failed",
+              &m->futex, __atomic_load_n(&m->futex, __ATOMIC_SEQ_CST), timeout);
       } else {
         if (kLockDebug) {
           printf("%" PRId32 ": %p kernel lock done\n", tid, m);
@@ -760,8 +758,8 @@ void condition_wake(aos_condition *c, aos_mutex *m, int number_requeue) {
           continue;
         }
         my_robust_list::robust_head.pending_next = 0;
-        ::aos::Die("FUTEX_CMP_REQUEUE_PI(%p, 1, %d, %p, *%p) failed", c,
-                   number_requeue, &m->futex, c);
+        ::aos::Die("FUTEX_CMP_REQUEUE_PI(%p, 1, %d, %p, *%p) failed",
+              c, number_requeue, &m->futex, c);
       } else {
         return;
       }
@@ -780,11 +778,15 @@ void condition_wake(aos_condition *c, aos_mutex *m, int number_requeue) {
 
 }  // namespace
 
-int mutex_lock(aos_mutex *m) { return mutex_get(m, true, NULL); }
+int mutex_lock(aos_mutex *m) {
+  return mutex_get(m, true, NULL);
+}
 int mutex_lock_timeout(aos_mutex *m, const struct timespec *timeout) {
   return mutex_get(m, true, timeout);
 }
-int mutex_grab(aos_mutex *m) { return mutex_get(m, false, NULL); }
+int mutex_grab(aos_mutex *m) {
+  return mutex_get(m, false, NULL);
+}
 
 void mutex_unlock(aos_mutex *m) {
   RunObservers run_observers(m, true);
@@ -800,8 +802,8 @@ void mutex_unlock(aos_mutex *m) {
     if ((value & FUTEX_TID_MASK) == 0) {
       ::aos::Die("multiple unlock of aos_mutex %p by %" PRId32 "\n", m, tid);
     } else {
-      ::aos::Die("aos_mutex %p is locked by %" PRId32 ", not %" PRId32 "\n", m,
-                 value & FUTEX_TID_MASK, tid);
+      ::aos::Die("aos_mutex %p is locked by %" PRId32 ", not %" PRId32 "\n",
+          m, value & FUTEX_TID_MASK, tid);
     }
   }
 
@@ -906,11 +908,11 @@ int condition_wait(aos_condition *c, aos_mutex *m) {
       if (__builtin_expect(ret == -EINTR, true)) continue;
       my_robust_list::robust_head.pending_next = 0;
       if (USE_REQUEUE_PI) {
-        ::aos::Die("FUTEX_WAIT_REQUEUE_PI(%p, %" PRIu32 ", %p) failed", c,
-                   wait_start, &m->futex);
+        ::aos::Die("FUTEX_WAIT_REQUEUE_PI(%p, %" PRIu32 ", %p) failed",
+              c, wait_start, &m->futex);
       } else {
-        ::aos::Die("FUTEX_WAIT(%p, %" PRIu32 ", nullptr) failed", c,
-                   wait_start);
+        ::aos::Die("FUTEX_WAIT(%p, %" PRIu32 ", nullptr) failed",
+              c, wait_start);
       }
     } else {
       if (USE_REQUEUE_PI) {
@@ -952,9 +954,6 @@ void condition_broadcast(aos_condition *c, aos_mutex *m) {
 
 int futex_wait_timeout(aos_futex *m, const struct timespec *timeout) {
   RunObservers run_observers(m, false);
-  if (__atomic_load_n(m, __ATOMIC_SEQ_CST) != 0) {
-    return 0;
-  }
   const int ret = sys_futex_wait(FUTEX_WAIT, m, 0, timeout);
   if (ret != 0) {
     if (ret == -EINTR) {
@@ -987,7 +986,9 @@ int futex_set_value(aos_futex *m, uint32_t value) {
   }
 }
 
-int futex_set(aos_futex *m) { return futex_set_value(m, 1); }
+int futex_set(aos_futex *m) {
+  return futex_set_value(m, 1);
+}
 
 int futex_unset(aos_futex *m) {
   return !__atomic_exchange_n(m, 0, __ATOMIC_SEQ_CST);
@@ -1016,7 +1017,9 @@ void SetRobustListOffset(ptrdiff_t offset) {
 
 // Returns true iff there are any mutexes locked by the current thread.
 // This is mainly useful for testing.
-bool HaveLockedMutexes() { return my_robust_list::HaveLockedMutexes(); }
+bool HaveLockedMutexes() {
+  return my_robust_list::HaveLockedMutexes();
+}
 
 }  // namespace ipc_lib
 }  // namespace linux_code

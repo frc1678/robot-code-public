@@ -214,7 +214,7 @@ class DrivetrainTest : public ::testing::Test {
   DrivetrainLoop drivetrain_motor_;
   DrivetrainSimulation drivetrain_motor_plant_;
 
-  ::aos::time::Time current_time_ = ::aos::time::Time::InSeconds(0);
+  ::aos::monotonic_clock::time_point current_time_ = ::aos::monotonic_clock::epoch();
 
   DrivetrainTest()
       : drivetrain_motor_(GetDrivetrainConfig(), &goal_queue_, &input_queue_,
@@ -223,9 +223,9 @@ class DrivetrainTest : public ::testing::Test {
         drivetrain_motor_plant_(&input_queue_, &output_queue_, &gyro_queue_) {}
 
   void SetUp() override {
-    ::aos::time::Time::EnableMockTime();
-    current_time_ = ::aos::time::Time::InSeconds(0);
-    ::aos::time::Time::SetMockTime(current_time_);
+    current_time_ = ::aos::monotonic_clock::epoch();
+    ::aos::time::EnableMockTime(current_time_);
+    ::aos::time::SetMockTime(current_time_);
   }
 
   void RunIteration() {
@@ -235,10 +235,10 @@ class DrivetrainTest : public ::testing::Test {
     SimulateTimestep(true);
   }
 
-  void RunForTime(const aos::time::Time run_for) {
-    ::aos::time::Time::SetMockTime(current_time_);
-    const auto end_time = aos::time::Time::Now() + run_for;
-    while (aos::time::Time::Now() < end_time) {
+  void RunForTime(const aos::monotonic_clock::duration run_for) {
+    ::aos::time::SetMockTime(current_time_);
+    const auto end_time = aos::monotonic_clock::now() + run_for;
+    while (::aos::monotonic_clock::now() < end_time) {
       RunIteration();
     }
   }
@@ -252,8 +252,8 @@ class DrivetrainTest : public ::testing::Test {
       ds_state->set_has_ds_connection(true);
       driver_station_queue_.WriteMessage(ds_state);
     }
-    constexpr ::aos::time::Time kTimeTick = ::aos::time::Time::InMS(5);
-    ::aos::time::Time::SetMockTime(current_time_ += kTimeTick);
+    constexpr auto kTimeTick = ::std::chrono::milliseconds(5);
+    ::aos::time::SetMockTime(current_time_ += kTimeTick);
   }
 
   void VerifyNearGoal() {
@@ -281,7 +281,7 @@ TEST_F(DrivetrainTest, ConvergesCorrectly) {
 
   goal_queue_.WriteMessage(goal);
 
-  RunForTime(aos::time::Time::InSeconds(2.0));
+  RunForTime(::std::chrono::seconds(2));
 
   VerifyNearGoal();
 }
@@ -297,7 +297,7 @@ TEST_F(DrivetrainTest, ConvergesWithVoltageError) {
 
   drivetrain_motor_plant_.set_left_voltage_offset(1.0);
   drivetrain_motor_plant_.set_right_voltage_offset(1.0);
-  RunForTime(aos::time::Time::InSeconds(1.5));
+  RunForTime(::std::chrono::milliseconds(1500));
   VerifyNearGoal();
 }
 
@@ -343,7 +343,7 @@ TEST_F(DrivetrainTest, NoGoalStart) {
 // Tests that never having a goal, but having driver's station messages, doesn't
 // break.
 TEST_F(DrivetrainTest, NoGoalWithRobotState) {
-  RunForTime(aos::time::Time::InSeconds(0.1));
+  RunForTime(::std::chrono::milliseconds(100));
 }
 
 // Tests that the robot successfully drives straight forward.
@@ -512,7 +512,7 @@ TEST_F(DrivetrainTest, OpenLoopThenClosed) {
     goal_queue_.WriteMessage(goal);
   }
 
-  RunForTime(aos::time::Time::InSeconds(1.0));
+  RunForTime(::std::chrono::milliseconds(1000));
 
   {
     ::frc971::control_loops::drivetrain::GoalProto goal;
@@ -524,7 +524,7 @@ TEST_F(DrivetrainTest, OpenLoopThenClosed) {
     goal_queue_.WriteMessage(goal);
   }
 
-  RunForTime(aos::time::Time::InSeconds(1.0));
+  RunForTime(::std::chrono::milliseconds(1000));
 
   {
     ::frc971::control_loops::drivetrain::GoalProto goal;
@@ -536,7 +536,7 @@ TEST_F(DrivetrainTest, OpenLoopThenClosed) {
     goal_queue_.WriteMessage(goal);
   }
 
-  RunForTime(aos::time::Time::InSeconds(10.0));
+  RunForTime(::std::chrono::milliseconds(10000));
 
   {
     ::frc971::control_loops::drivetrain::GoalProto goal;
@@ -568,8 +568,8 @@ TEST_F(DrivetrainTest, OpenLoopThenClosed) {
   VerifyNearGoal();
 }
 
-::aos::controls::HPolytope<2> MakeBox(double x1_min, double x1_max,
-                                      double x2_min, double x2_max) {
+::aos::controls::HVPolytope<2, 4, 4> MakeBox(double x1_min, double x1_max,
+                                             double x2_min, double x2_max) {
   Eigen::Matrix<double, 4, 2> box_H;
   box_H << /*[[*/ 1.0, 0.0 /*]*/,
       /*[*/ -1.0, 0.0 /*]*/,
@@ -581,7 +581,8 @@ TEST_F(DrivetrainTest, OpenLoopThenClosed) {
       /*[*/ x2_max /*]*/,
       /*[*/ -x2_min /*]]*/;
   ::aos::controls::HPolytope<2> t_poly(box_H, box_k);
-  return t_poly;
+  return ::aos::controls::HVPolytope<2, 4, 4>(t_poly.H(), t_poly.k(),
+                                              t_poly.Vertices());
 }
 
 class CoerceGoalTest : public ::testing::Test {
@@ -591,7 +592,7 @@ class CoerceGoalTest : public ::testing::Test {
 
 // WHOOOHH!
 TEST_F(CoerceGoalTest, Inside) {
-  ::aos::controls::HPolytope<2> box = MakeBox(1, 2, 1, 2);
+  ::aos::controls::HVPolytope<2, 4, 4> box = MakeBox(1, 2, 1, 2);
 
   Eigen::Matrix<double, 1, 2> K;
   K << /*[[*/ 1, -1 /*]]*/;
@@ -607,7 +608,7 @@ TEST_F(CoerceGoalTest, Inside) {
 }
 
 TEST_F(CoerceGoalTest, Outside_Inside_Intersect) {
-  ::aos::controls::HPolytope<2> box = MakeBox(1, 2, 1, 2);
+  ::aos::controls::HVPolytope<2, 4, 4> box = MakeBox(1, 2, 1, 2);
 
   Eigen::Matrix<double, 1, 2> K;
   K << 1, -1;
@@ -623,7 +624,7 @@ TEST_F(CoerceGoalTest, Outside_Inside_Intersect) {
 }
 
 TEST_F(CoerceGoalTest, Outside_Inside_no_Intersect) {
-  ::aos::controls::HPolytope<2> box = MakeBox(3, 4, 1, 2);
+  ::aos::controls::HVPolytope<2, 4, 4> box = MakeBox(3, 4, 1, 2);
 
   Eigen::Matrix<double, 1, 2> K;
   K << 1, -1;
@@ -639,7 +640,7 @@ TEST_F(CoerceGoalTest, Outside_Inside_no_Intersect) {
 }
 
 TEST_F(CoerceGoalTest, Middle_Of_Edge) {
-  ::aos::controls::HPolytope<2> box = MakeBox(0, 4, 1, 2);
+  ::aos::controls::HVPolytope<2, 4, 4> box = MakeBox(0, 4, 1, 2);
 
   Eigen::Matrix<double, 1, 2> K;
   K << -1, 1;
@@ -655,7 +656,7 @@ TEST_F(CoerceGoalTest, Middle_Of_Edge) {
 }
 
 TEST_F(CoerceGoalTest, PerpendicularLine) {
-  ::aos::controls::HPolytope<2> box = MakeBox(1, 2, 1, 2);
+  ::aos::controls::HVPolytope<2, 4, 4> box = MakeBox(1, 2, 1, 2);
 
   Eigen::Matrix<double, 1, 2> K;
   K << 1, 1;

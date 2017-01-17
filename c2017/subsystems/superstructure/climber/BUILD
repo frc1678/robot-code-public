@@ -18,6 +18,7 @@ cc_library(
           '//muan/wpilib:wpilib_queues' ],
   visibility = ['//visibility:public']
 )
+
 cc_proto_library(
   name = 'climber_proto',
   srcs = ['climber.proto'],

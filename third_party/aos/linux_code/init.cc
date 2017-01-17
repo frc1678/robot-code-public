@@ -47,6 +47,7 @@ void SetSoftRLimit(int resource, rlim64_t soft, bool set_for_root) {
 // Common stuff that needs to happen at the beginning of both the realtime and
 // non-realtime initialization sequences. May be called twice.
 void InitStart() {
+  // ::aos::logging::Init();
   WriteCoreDumps();
 }
 
@@ -87,11 +88,13 @@ void LockAllMemory() {
 
 void InitNRT() {
   InitStart();
+  // logging::RegisterQueueImplementation();
   // LOG(INFO, "%s initialized non-realtime\n", program_invocation_short_name);
 }
 
 void InitCreate() {
   InitStart();
+  // logging::RegisterQueueImplementation();
   // LOG(INFO, "%s created shm\n", program_invocation_short_name);
 }
 
@@ -120,6 +123,7 @@ void Init(int relative_priority) {
   }
 
   InitStart();
+  // logging::RegisterQueueImplementation();
   // LOG(INFO, "%s initialized realtime\n", program_invocation_short_name);
 }
 
@@ -155,6 +159,7 @@ void SetCurrentThreadName(const ::std::string &name) {
   }
   // LOG(INFO, "this thread is changing to '%s'\n", name.c_str());
   PCHECK(prctl(PR_SET_NAME, name.c_str()));
+  // logging::internal::ReloadThreadName();
 }
 
 }  // namespace aos
