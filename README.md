@@ -35,7 +35,7 @@ Before you push your code, you can run our automated test script. This is what T
 
 ## Style Guide
 
-We use the [Google C++ style guide](https://google.github.io/styleguide/cppguide.html) (mostly). You should **read all of it and make sure that your code adhears to it**. There are a few parts that we do not follow, and are aware of:
+We use the [Google C++ style guide](https://google.github.io/styleguide/cppguide.html) (mostly). You should **read all of it and make sure that your code adheres to it**. There are a few parts that we do not follow, and are aware of:
 
 * We use `.cpp` as the source file extension
 * We do make use of templates in some places
@@ -84,8 +84,13 @@ Here's how to get your code into the main robot repository:
       1. 1 mentor and 1 other person have approved
       2. 2 experienced students and one other person have approved
   * If there are any concerns about your pull request, fix them. Depending on how severe the concerns are, the pull request may be merged without it, but everyone will be happier if you fix your code. To update your PR, just push to the branch on your forked repo.
-7. ???
-8. Profit
+  * Don't dismiss someone's review when you make changes - instead, ask them to re-review it.
+8. Rebase your changes onto master
+  * If there are no conflicts, just push the rebase and merge button.
+  * If there are conflicts rebasing, but no conflicts merging, merge into master
+  * If there are conflicts either way, fix them locally on your branch, push them, wait for Travis to pass, and rebase on master.
+9. ???
+10. Profit
 
 ## Helpful Tips
 
