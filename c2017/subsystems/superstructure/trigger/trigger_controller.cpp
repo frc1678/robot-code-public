@@ -35,7 +35,8 @@ TriggerOutputProto TriggerController::Update(const TriggerInputProto& input,
   // Checking if E-Stop/brownout/disabled from driver station proto
   // Trigger should not be running if any of these are true
   bool enable_outputs = !(robot_state->mode() == RobotMode::ESTOP ||
-                          robot_state->mode() == RobotMode::DISABLED || robot_state->brownout());
+                          robot_state->mode() == RobotMode::DISABLED ||
+                          robot_state->brownout());
 
   output->set_voltage(0); // The voltage will end up being zero if enable_outputs is false
 
