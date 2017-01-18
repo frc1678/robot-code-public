@@ -5,7 +5,7 @@ option cc_enable_arenas = true;
 package c2017.trigger;
 
 message TriggerInput {
-  required double encoder_position = 1; 
+  required double encoder_position = 1;
 }
 
 message TriggerOutput {
@@ -18,5 +18,5 @@ message TriggerStatus {
 }
 
 message TriggerGoal {
-  required double balls_per_second = 1; 
+  required double balls_per_second = 1;
 }
