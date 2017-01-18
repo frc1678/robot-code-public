@@ -29,9 +29,6 @@ TriggerOutputProto TriggerController::Update(const TriggerInputProto& input,
   TriggerOutputProto output;
   TriggerStatusProto status;
 
-  status->set_observed_velocity(observer_.x()[1]);
-  status->set_goal_velocity(goal_->balls_per_second() * muan::units::pi / 2);
-
   // Checking if E-Stop/brownout/disabled from driver station proto
   // Trigger should not be running if any of these are true
   bool enable_outputs = !(robot_state->mode() == RobotMode::ESTOP ||
@@ -61,6 +58,10 @@ TriggerOutputProto TriggerController::Update(const TriggerInputProto& input,
       output->set_voltage(12.);
     }
   }
+
+  status->set_observed_velocity(observer_.x()[1]);
+  status->set_goal_velocity(goal_->balls_per_second() * muan::units::pi / 2);
+  status->set_position(observer_.x()[0]);
 
   status_queue_->WriteMessage(status);
   return output;
