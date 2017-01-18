@@ -165,12 +165,13 @@ observer = StateSpaceObserver(gains, x0)
 def goal(t):
     return np.asmatrix([0., 10., 0.]).T
 
-if len(sys.argv) == 3:
-    from muan.control.state_space_writer import StateSpaceWriter
-    writer = StateSpaceWriter(gains, 'trigger_controller')
-    writer.write(sys.argv[1], sys.argv[2])
-else:
-    from muan.control.state_space_scenario import StateSpaceScenario
+if ___name___ == '___main___':
+    if len(sys.argv) == 3:
+        from muan.control.state_space_writer import StateSpaceWriter
+        writer = StateSpaceWriter(gains, 'trigger_controller')
+        writer.write(sys.argv[1], sys.argv[2])
+    else:
+        from muan.control.state_space_scenario import StateSpaceScenario
 
-    scenario = StateSpaceScenario(plant, x0, controller, observer, x0, 'trigger_controller')
-    scenario.run(goal, 4)
+        scenario = StateSpaceScenario(plant, x0, controller, observer, x0, 'trigger_controller')
+        scenario.run(goal, 4)
