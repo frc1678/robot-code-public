@@ -14,45 +14,27 @@ class PidController {
     double kD;
   };
 
-  PidController(double kP, double kI, double kD)
-      : kP(kP), kI(kI), kD(kD), integral_(0), last_proportional_(0) {}
-  explicit PidController(const PidGains& gains) : PidController(gains.kP, gains.kI, gains.kD) {}
+  PidController(double kP, double kI, double kD);
+  explicit PidController(const PidGains& gains);
 
-  double Calculate(muan::units::Time dt, double error) {
-    return error * kP + CalculateIntegral(dt, error) * kI +
-           (last_derivative_ = CalculateDerivative(dt, error)) * kD;
-  }
+  double Calculate(muan::units::Time dt, double error);
 
-  void SetProportionalConstant(double p) { kP = p; }
+  void SetProportionalConstant(double p);
 
-  void SetDerivativeConstant(double i) { kI = i; }
+  void SetDerivativeConstant(double i);
 
-  void Setdouble(double d) { kD = d; }
+  void Setdouble(double d);
 
-  void SetGains(const PidGains& gains) {
-    kP = gains.kP;
-    kI = gains.kI;
-    kD = gains.kD;
-  }
+  void SetGains(const PidGains& gains);
 
-  void Reset() {
-    last_proportional_ = 0;
-    integral_ = 0;
-  }
+  void Reset();
 
-  double GetDerivative() { return last_derivative_; }
+  double GetDerivative();
 
  protected:
-  double CalculateDerivative(muan::units::Time dt, double error) {
-    auto ret = (error - last_proportional_) / dt;
-    last_proportional_ = error;
-    return ret;
-  }
+  double CalculateDerivative(muan::units::Time dt, double error);
 
-  double CalculateIntegral(muan::units::Time dt, double error) {
-    integral_ += error * dt;
-    return integral_;
-  }
+  double CalculateIntegral(muan::units::Time dt, double error);
 
   double kP;
   double kI;

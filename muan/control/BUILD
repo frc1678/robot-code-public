@@ -26,7 +26,10 @@ cc_library(
   name = 'pid_controller',
   hdrs = [
     'pid_controller.h',
-    'average_filter_pid.h'
+    'average_filter_pid.h',
+  ],
+  srcs = [
+    'pid_controller.cpp',
   ],
   deps = [
     '//muan/units:units',
