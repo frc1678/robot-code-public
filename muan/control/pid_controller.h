@@ -20,10 +20,8 @@ class PidController {
   double Calculate(muan::units::Time dt, double error);
 
   void SetProportionalConstant(double p);
-
-  void SetDerivativeConstant(double i);
-
-  void Setdouble(double d);
+  void SetIntegralConstant(double i);
+  void SetDerivativeConstant(double d);
 
   void SetGains(const PidGains& gains);
 
@@ -33,7 +31,6 @@ class PidController {
 
  protected:
   double CalculateDerivative(muan::units::Time dt, double error);
-
   double CalculateIntegral(muan::units::Time dt, double error);
 
   double kP;

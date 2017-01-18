@@ -13,9 +13,9 @@ double PidController::Calculate(muan::units::Time dt, double error) {
 
 void PidController::SetProportionalConstant(double p) { kP = p; }
 
-void PidController::SetDerivativeConstant(double i) { kI = i; }
+void PidController::SetIntegralConstant(double i) { kI = i; }
 
-void PidController::Setdouble(double d) { kD = d; }
+void PidController::SetDerivativeConstant(double d) { kD = d; }
 
 void PidController::SetGains(const PidGains& gains) {
   kP = gains.kP;
