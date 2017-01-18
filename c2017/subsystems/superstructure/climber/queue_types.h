@@ -5,6 +5,7 @@
 #include "muan/queues/message_queue.h"
 #include "c2017/subsystems/superstructure/climber/climber.pb.h"
 
+
 namespace c2017 {
 
 namespace climber {
@@ -23,3 +24,4 @@ using ClimberGoalQueue = muan::queues::MessageQueue<ClimberGoalProto, 100>;
 }  // c2017
 
 #endif //C2017_SUBSYSTEMS_SUPERSTRUCTURE_CLIMBER_QUEUES_TYPES_H_
+

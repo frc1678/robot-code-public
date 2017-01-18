@@ -16,9 +16,8 @@
 
 #include <string>
 
-#include "third_party/aos/common/die.h"
-#include "third_party/aos/common/check.h"
 #include "third_party/aos/common/time.h"
+#include "third_party/aos/common/check.h"
 
 namespace {
 

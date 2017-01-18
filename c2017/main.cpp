@@ -8,6 +8,8 @@ class WpilibRobot : public IterativeRobot {
 
   void TeleopPeriodic() override { main_.Update(); }
 
+  void AutonomousPeriodic() override { main_.Update(); }
+
  private:
   c2017::SubsystemRunner subsystem_runner_;
   std::thread subsystem_thread{std::ref(subsystem_runner_)};
