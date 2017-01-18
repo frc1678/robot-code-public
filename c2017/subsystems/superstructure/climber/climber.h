@@ -13,8 +13,8 @@ namespace climber {
 class Climber {
 public:
   Climber();
-  void SetGoal (const ClimberGoalProto& goal);
-  ClimberOutputProto Update (const ClimberInputProto& input, const muan::wpilib::DriverStationProto& ds_status);
+  void SetGoal(const ClimberGoalProto& goal);
+  ClimberOutputProto Update(const ClimberInputProto& input, const muan::wpilib::DriverStationProto& ds_status);
   ClimberStatusProto Status();
 private:
   double voltage_;
@@ -24,8 +24,8 @@ private:
   ClimberOutputProto output_;
   ClimberGoalProto goal_;
   ClimberStatusProto status_;
-};  //Climber
-}
+}; 
+}  //climber
 
 }  //c2017
 #endif // C2017_SUBSYSTEMS_SUPERSTRUCTURE_CLIMBER_CLIMBER_H_

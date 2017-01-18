@@ -13,7 +13,7 @@ TEST(Climbing, ClimbsToTheTop) {
     c2017::climber::Climber test_climber;
 
     test_climber.SetGoal(goal);
-    for(double t = 0.005; t < 2; t+=0.005) {
+    for (double t = 0.005; t < 2; t+=0.005) {
         double d;
         if (t < 1) {
           d = t;
@@ -22,7 +22,7 @@ TEST(Climbing, ClimbsToTheTop) {
         }
         input->set_position(d);
         output = test_climber.Update(input, ds_status);
-        if(d < 1) {
+        if (d < 1) {
           EXPECT_NEAR(output->voltage(), 12, 1e-5);
         }
         
@@ -47,7 +47,7 @@ TEST(Climbing, Disabled) {
     c2017::climber::Climber test_climber;
 
     test_climber.SetGoal(goal);
-    for(double t = 0; t < 2; t+=0.005) {
+    for (double t = 0; t < 2; t+=0.005) {
         output = test_climber.Update(input, ds_status);
         double d;
         if (t < 1) {
