@@ -9,7 +9,7 @@ message TriggerInput {
 }
 
 message TriggerOutput {
-  required double voltage = 1; 
+  required double voltage = 1;
 }
 
 message TriggerStatus {
