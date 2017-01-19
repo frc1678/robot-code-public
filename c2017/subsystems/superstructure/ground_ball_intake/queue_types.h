@@ -7,7 +7,7 @@
 
 namespace c2017 {
 
-namespace ball_intake {
+namespace ground_ball_intake {
 
 using GroundBallIntakeOutputProto = muan::proto::StackProto<GroundBallIntakeOutput, 256>;
 using GroundBallIntakeStatusProto = muan::proto::StackProto<GroundBallIntakeStatus, 256>;
@@ -17,8 +17,8 @@ using GroundBallIntakeOutputQueue = muan::queues::MessageQueue<GroundBallIntakeO
 using GroundBallIntakeStatusQueue = muan::queues::MessageQueue<GroundBallIntakeStatusProto, 100>;
 using GroundBallIntakeGoalQueue = muan::queues::MessageQueue<GroundBallIntakeGoalProto, 100>;
 
-}
+} //ground_ball_intake
 
-}
+} //c2017
 
 #endif  // C2017_SUBSYSTEMS_SUPERSTRUCTURE_BALLINTAKE_QUEUETYPES_H_

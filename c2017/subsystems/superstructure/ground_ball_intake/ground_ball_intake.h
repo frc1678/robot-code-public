@@ -6,22 +6,20 @@
 
 namespace c2017 {
 
-namespace ball_intake {
+namespace ground_ball_intake {
 
 class GroundBallIntake {
  public:
-  GroundBallIntake();
-  GroundBallIntakeOutputProto Update(const DriverStationStatus& robot_state);
-  void SetGoal(const GroundBallIntakeGoalProto& goal);
+  GroundBallIntake() = default;
+  GroundBallIntakeOutputProto Update(const DriverStationStatus& robot_state, GroundBallIntakeGoalProto goal_);
   GroundBallIntakeStatusProto get_status();
  private:
   GroundBallIntakeOutputProto output_;
   GroundBallIntakeStatusProto status_;
   GroundBallIntakeGoalProto goal_;
-  //IntakeOutputProto, IntakeStatusProto, IntakeGoalProto
 };
 
-} //ball_intake
+} //ground_ball_intake
 
 } //c2017
 

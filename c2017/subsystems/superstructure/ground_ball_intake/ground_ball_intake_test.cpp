@@ -3,9 +3,9 @@
 #include "c2017/subsystems/superstructure/ground_ball_intake/queue_types.h"
 #include "c2017/subsystems/superstructure/ground_ball_intake/ground_ball_intake.h"
 
-using namespace c2017::ball_intake;
+using namespace c2017::ground_ball_intake;
 
-TEST(RollerIntake, IntakeGoingDown) {
+TEST(TestGroundBallIntake, RollerIntakeGoingDown) {
   GroundBallIntakeOutputProto output;
   GroundBallIntakeStatusProto status;
   GroundBallIntakeGoalProto goal;
@@ -15,8 +15,7 @@ TEST(RollerIntake, IntakeGoingDown) {
   goal->set_intake_up(false);
   goal->set_run_intake(roller_goal);
   GroundBallIntake intake;
-  intake.SetGoal(goal);
-  output = intake.Update(ds_status);
+  output = intake.Update(ds_status, goal);
   status = intake.get_status();
   EXPECT_NEAR(output->roller_voltage(), 12, 1e-5);
   EXPECT_FALSE(output->intake_up());
@@ -24,7 +23,7 @@ TEST(RollerIntake, IntakeGoingDown) {
   EXPECT_EQ(status->running(), INTAKE);
 }
 
-TEST(RollerIntake, IntakeGoingUp) {
+TEST(TestGroundBallIntake, RollerIntakeGoingUp) {
   GroundBallIntakeOutputProto output;
   GroundBallIntakeStatusProto status;
   GroundBallIntakeGoalProto goal;
@@ -34,8 +33,7 @@ TEST(RollerIntake, IntakeGoingUp) {
   goal->set_intake_up(true);
   goal->set_run_intake(roller_goal);
   GroundBallIntake intake;
-  intake.SetGoal(goal);
-  output = intake.Update(ds_status);
+  output = intake.Update(ds_status, goal);
   status = intake.get_status();
   EXPECT_NEAR(output->roller_voltage(), 12, 1e-5);
   EXPECT_TRUE(output->intake_up());
@@ -43,7 +41,7 @@ TEST(RollerIntake, IntakeGoingUp) {
   EXPECT_EQ(status->running(), INTAKE);
 }
 
-TEST(RollerOuttake, IntakeGoingDown) {
+TEST(TestGroundBallIntake, RollerOuttakeGoingDown) {
   GroundBallIntakeOutputProto output;
   GroundBallIntakeStatusProto status;
   GroundBallIntakeGoalProto goal;
@@ -53,8 +51,7 @@ TEST(RollerOuttake, IntakeGoingDown) {
   goal->set_intake_up(false);
   goal->set_run_intake(roller_goal);
   GroundBallIntake intake;
-  intake.SetGoal(goal);
-  output = intake.Update(ds_status);
+  output = intake.Update(ds_status, goal);
   status = intake.get_status();
   EXPECT_NEAR(output->roller_voltage(), -12, 1e-5);
   EXPECT_FALSE(output->intake_up());
@@ -62,7 +59,7 @@ TEST(RollerOuttake, IntakeGoingDown) {
   EXPECT_EQ(status->running(), OUTTAKE);
 }
 
-TEST(RollerOuttake, IntakeGoingUp) {
+TEST(TestGroundBallIntake, RollerOuttakeGoingUp) {
   GroundBallIntakeOutputProto output;
   GroundBallIntakeStatusProto status;
   GroundBallIntakeGoalProto goal;
@@ -72,8 +69,7 @@ TEST(RollerOuttake, IntakeGoingUp) {
   goal->set_intake_up(true);
   goal->set_run_intake(roller_goal);
   GroundBallIntake intake;
-  intake.SetGoal(goal);
-  output = intake.Update(ds_status);
+  output = intake.Update(ds_status, goal);
   status = intake.get_status();
   EXPECT_NEAR(output->roller_voltage(), -12, 1e-5);
   EXPECT_TRUE(output->intake_up());
@@ -81,7 +77,7 @@ TEST(RollerOuttake, IntakeGoingUp) {
   EXPECT_EQ(status->running(), OUTTAKE);
 }
 
-TEST(RollerIdle, IntakeGoingDown) {
+TEST(TestGroundBallIntake, RollerIdleGoingDown) {
   GroundBallIntakeOutputProto output;
   GroundBallIntakeStatusProto status;
   GroundBallIntakeGoalProto goal;
@@ -91,8 +87,7 @@ TEST(RollerIdle, IntakeGoingDown) {
   goal->set_intake_up(false);
   goal->set_run_intake(roller_goal);
   GroundBallIntake intake;
-  intake.SetGoal(goal);
-  output = intake.Update(ds_status);
+  output = intake.Update(ds_status, goal);
   status = intake.get_status();
   EXPECT_NEAR(output->roller_voltage(), 0, 1e-5);
   EXPECT_FALSE(output->intake_up());
@@ -100,7 +95,7 @@ TEST(RollerIdle, IntakeGoingDown) {
   EXPECT_EQ(status->running(), IDLE);
 }
 
-TEST(RollerIdle, IntakeGoingUp) {
+TEST(TestGroundBallIntake, RollerIdleGoingUp) {
   GroundBallIntakeOutputProto output;
   GroundBallIntakeStatusProto status;
   GroundBallIntakeGoalProto goal;
@@ -110,11 +105,65 @@ TEST(RollerIdle, IntakeGoingUp) {
   goal->set_intake_up(true);
   goal->set_run_intake(roller_goal);
   GroundBallIntake intake;
-  intake.SetGoal(goal);
-  output = intake.Update(ds_status);
+  output = intake.Update(ds_status, goal);
   status = intake.get_status();
   EXPECT_NEAR(output->roller_voltage(), 0, 1e-5);
   EXPECT_TRUE(output->intake_up());
   EXPECT_TRUE(status->is_intake_up());
   EXPECT_EQ(status->running(), IDLE);
+}
+
+TEST(TestGroundBallIntake, DISABLED) {
+  GroundBallIntakeOutputProto output;
+  GroundBallIntakeStatusProto status;
+  GroundBallIntakeGoalProto goal;
+  DriverStationStatus ds_status;
+  ds_status.set_mode(RobotMode::DISABLED);
+  RollerGoal roller_goal = RollerGoal::INTAKE;
+  goal->set_intake_up(false);
+  goal->set_run_intake(roller_goal);
+  GroundBallIntake intake;
+  output = intake.Update(ds_status, goal);
+  status = intake.get_status();
+  EXPECT_NEAR(output->roller_voltage(), 0, 1e-5);
+  EXPECT_TRUE(output->intake_up());
+  EXPECT_TRUE(status->is_intake_up());
+  EXPECT_EQ(status->running(), INTAKE);
+}
+
+TEST(TestGroundBallIntake, ESTOP) {
+  GroundBallIntakeOutputProto output;
+  GroundBallIntakeStatusProto status;
+  GroundBallIntakeGoalProto goal;
+  DriverStationStatus ds_status;
+  ds_status.set_mode(RobotMode::ESTOP);
+  RollerGoal roller_goal = RollerGoal::INTAKE;
+  goal->set_intake_up(false);
+  goal->set_run_intake(roller_goal);
+  GroundBallIntake intake;
+  output = intake.Update(ds_status, goal);
+  status = intake.get_status();
+  EXPECT_NEAR(output->roller_voltage(), 0, 1e-5);
+  EXPECT_TRUE(output->intake_up());
+  EXPECT_TRUE(status->is_intake_up());
+  EXPECT_EQ(status->running(), INTAKE);
+}
+
+TEST(TestGroundBallIntake, Brownout) {
+  GroundBallIntakeOutputProto output;
+  GroundBallIntakeStatusProto status;
+  GroundBallIntakeGoalProto goal;
+  DriverStationStatus ds_status;
+  ds_status.set_mode(RobotMode::TELEOP);
+  ds_status.set_brownout(true);
+  RollerGoal roller_goal = RollerGoal::INTAKE;
+  goal->set_intake_up(false);
+  goal->set_run_intake(roller_goal);
+  GroundBallIntake intake;
+  output = intake.Update(ds_status, goal);
+  status = intake.get_status();
+  EXPECT_NEAR(output->roller_voltage(), 0, 1e-5);
+  EXPECT_TRUE(output->intake_up());
+  EXPECT_TRUE(status->is_intake_up());
+  EXPECT_EQ(status->running(), INTAKE);
 }
