@@ -23,7 +23,7 @@ TEST(ShooterControllerTest, IsSane) {
   plant.x(1) = 0.0;
   plant.x(2) = 0.0;
 
-  for (int i = 0; i <= 1e5; i++) {
+  for (int i = 0; i <= 1e3; i++) {
     input->set_encoder_position(plant.x(0));
 
     goal->set_goal_velocity(300.0);
@@ -61,7 +61,7 @@ TEST(ShooterControllerTest, CantTakeNegativeVoltage) {
   plant.x(1) = 0.0;
   plant.x(2) = 0.0;
 
-  for (int i = 0; i <= 1e5; i++) {
+  for (int i = 0; i <= 1e3; i++) {
     input->set_encoder_position(plant.x(0));
 
     goal->set_goal_velocity(-300.0);
@@ -100,7 +100,7 @@ TEST(ShooterControllerTest, CanStop) {
   plant.x(1) = 0.0;
   plant.x(2) = 0.0;
 
-  for (int i = 0; i <= 1e5; i++) {
+  for (int i = 0; i <= 1e3; i++) {
     input->set_encoder_position(plant.x(0));
 
     goal->set_goal_velocity(0.0);
