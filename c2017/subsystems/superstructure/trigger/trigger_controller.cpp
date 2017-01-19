@@ -35,8 +35,6 @@ TriggerOutputProto TriggerController::Update(const TriggerInputProto& input,
                           robot_state->mode() == RobotMode::DISABLED ||
                           robot_state->brownout());
 
-  output->set_voltage(0); // The voltage will end up being zero if enable_outputs is false
-
   if (enable_outputs) {
     // r is the goal
     Eigen::Matrix<double, 3, 1> r;
@@ -52,10 +50,12 @@ TriggerOutputProto TriggerController::Update(const TriggerInputProto& input,
 
     // u is the motor value output
     auto u = controller_.Update(observer_.x(), r);
-
+    
     observer_.Update(u, y);
     output->set_voltage(u[0]);
-  } 
+  } else {
+    output->set_voltage(0);
+  }
 
   status->set_observed_velocity(observer_.x()[1]);
   status->set_goal_velocity(goal_->balls_per_second() * muan::units::pi / 2);
