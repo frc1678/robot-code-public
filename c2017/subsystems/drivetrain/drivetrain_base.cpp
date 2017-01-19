@@ -15,24 +15,19 @@ namespace drivetrain {
 
 const DrivetrainConfig &GetDrivetrainConfig() {
   static DrivetrainConfig kDrivetrainConfig{
-      ::frc971::control_loops::drivetrain::ShifterType::SIMPLE_SHIFTER, // We actually have no shifters, but
-                                                                        // there isn't a way to handle that
-                                                                        // in 971's code.
+      ::frc971::control_loops::drivetrain::ShifterType::SIMPLE_SHIFTER,  // We actually have no shifters, but
+                                                                         // there isn't a way to handle that
+                                                                         // in 971's code.
       ::frc971::control_loops::drivetrain::LoopType::CLOSED_LOOP,
 
       ::c2017::subsystems::drivetrain::MakeDrivetrainLoop,
       ::c2017::subsystems::drivetrain::MakeVelocityDrivetrainLoop,
       ::c2017::subsystems::drivetrain::MakeKFDrivetrainLoop,
 
-      subsystems::drivetrain::kDt,
-      subsystems::drivetrain::kRobotRadius,
-      subsystems::drivetrain::kWheelRadius,
+      subsystems::drivetrain::kDt, subsystems::drivetrain::kRobotRadius, subsystems::drivetrain::kWheelRadius,
       subsystems::drivetrain::kV,
 
-      subsystems::drivetrain::kGearRatio,
-      subsystems::drivetrain::kGearRatio,
-      true,
-      0.0};
+      subsystems::drivetrain::kGearRatio, subsystems::drivetrain::kGearRatio, true, 0.0};
 
   return kDrivetrainConfig;
 };

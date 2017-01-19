@@ -10,19 +10,20 @@ namespace c2017 {
 
 namespace intake_group {
 
-  using IntakeGroupGoalProto = muan::proto::StackProto<IntakeGoal, 256>;
+using IntakeGroupGoalProto = muan::proto::StackProto<IntakeGoal, 256>;
 
-  using IntakeGroupGoalQueue = muan::queues::MessageQueue<IntakeGoalProto, 200>;
-} // namespace intake_group
+using IntakeGroupGoalQueue = muan::queues::MessageQueue<IntakeGoalProto, 200>;
+
+}  // namespace intake_group
 
 namespace shooter_group {
 
-  using ShooterGroupGoalProto = muan::proto::StackProto<::c2017::shooter_group::ShooterGroupGoal, 256>;
+using ShooterGroupGoalProto = muan::proto::StackProto<::c2017::shooter_group::ShooterGroupGoal, 256>;
 
-  using ShooterGroupGoalQueue = muan::queues::MessageQueue<ShooterGroupGoalProto, 200>;
+using ShooterGroupGoalQueue = muan::queues::MessageQueue<ShooterGroupGoalProto, 200>;
 
-} // namespace shooter_group
+}  // namespace shooter_group
 
-} // namespace c2017
+}  // namespace c2017
 
 #endif  // C2017_SUBSYSTEMS_SUPERSTRUCTURE_QUEUE_TYPES_H_

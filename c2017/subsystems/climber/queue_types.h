@@ -22,4 +22,4 @@ using ClimberGoalQueue = muan::queues::MessageQueue<ClimberGoalProto, 100>;
 
 }  // c2017
 
-#endif //C2017_SUBSYSTEMS_CLIMBER_QUEUE_TYPES_H_
+#endif  // C2017_SUBSYSTEMS_CLIMBER_QUEUE_TYPES_H_

@@ -15,7 +15,6 @@ Main::Main() : throttle_{1}, wheel_{0}, gamepad_{2} {
 
 void Main::Update() {
   if (DriverStation::GetInstance().IsAutonomous()) {
-
   } else if (DriverStation::GetInstance().IsOperatorControl()) {
     // Update joysticks
     throttle_.Update();

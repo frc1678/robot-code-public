@@ -26,9 +26,7 @@ class DrivetrainInterface {
 
   Encoder encoder_left_, encoder_right_;
 };
-
 }
-
 }
 
 #endif

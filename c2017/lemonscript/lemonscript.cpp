@@ -6,7 +6,8 @@ namespace lemonscript {
 
 Lemonscript::Lemonscript() {
   state_ = new ::lemonscript::LemonScriptState();
-  decls_ = ::lemonscript::AvailableCppCommandDeclaration::parseCppCommands(AutoGenerator::GetAutoGenerators());
+  decls_ =
+      ::lemonscript::AvailableCppCommandDeclaration::parseCppCommands(AutoGenerator::GetAutoGenerators());
   state_->declareAvailableCppCommands(decls_);
   compiler_ = new ::lemonscript::LemonScriptCompiler("test.auto", state_);
 }
@@ -27,9 +28,7 @@ void Lemonscript::operator()() {
     running_ = !compiler_->PeriodicUpdate();
     phased_loop.SleepUntilNext();
   }
-
 }
 
-} // lemonscript
-
-} // c2017
+}  // lemonscript
+}  // c2017

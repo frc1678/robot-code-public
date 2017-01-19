@@ -21,15 +21,14 @@ class Lemonscript {
   ~Lemonscript();
 
   void operator()();
+
  private:
   ::lemonscript::LemonScriptState *state_;
   ::lemonscript::LemonScriptCompiler *compiler_;
   std::vector<const ::lemonscript::AvailableCppCommandDeclaration *> decls_;
   std::atomic<bool> running_;
 };
+}  // lemonscript
+}  // c2017
 
-}
-
-}
-
-#endif
+#endif  // C2017_LEMONSCRIPT_LEMONSCRIPT_H_
