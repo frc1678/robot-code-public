@@ -120,9 +120,9 @@ TEST(TriggerController, BrownoutInput) {
 
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
 
+    // The velocity should be zero because the trigger wheel shouldn't move during brownout
+    EXPECT_NEAR(plant.x()[1], 0, 1e-3);
     // Making sure voltage is capped
     EXPECT_NEAR(output->voltage(), 0., 12.);
   }
-  // The velocity should be zero because the trigger wheel shouldn't move during brownout
-  EXPECT_NEAR(plant.x()[1], 0, 1e-3);
 }
