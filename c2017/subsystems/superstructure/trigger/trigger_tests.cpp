@@ -182,5 +182,45 @@ TEST(TriggerController, SuddenChange) {
     EXPECT_NEAR(output->voltage(), 0., 12.);
   }
   // This tests if the trigger can get up to speed in 2 seconds
-  EXPECT_NEAR(plant.x()[1], goal->balls_per_second() * (muan::units::pi / 2), 1e-3);
+  EXPECT_NEAR(plant.x()[1], goal->balls_per_second() * (muan::units::pi / 2), trigger_.get_velocity_tolerance());
+}
+
+
+TEST(TriggerController, DisabledRobot) {
+  c2017::trigger::TriggerInputProto input;
+  c2017::trigger::TriggerOutputProto output;
+  c2017::trigger::TriggerStatusProto status;
+  c2017::trigger::TriggerGoalProto goal;
+
+  c2017::trigger::TriggerController trigger_;
+  auto plant = muan::control::StateSpacePlant<1, 3, 1>(frc1678::trigger_controller::controller::A(),
+                                                       frc1678::trigger_controller::controller::B(),
+                                                       frc1678::trigger_controller::controller::C());
+
+  plant.x()[0] = 0.0;
+  plant.x()[1] = 0.0;
+  plant.x()[2] = 0.0;
+
+  for (int i = 0; i <= 1000; i++) {
+    // Run at 16 bps for 2 seconds
+    goal->set_balls_per_second(16);
+    input->set_encoder_position(plant.x()[0]);
+
+    trigger_.SetGoal(goal);
+
+    muan::wpilib::DriverStationProto driver_station;
+    driver_station->set_brownout(false);
+    driver_station->set_mode(RobotMode::DISABLED);
+
+    output = trigger_.Update(input, driver_station);
+
+    plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
+
+    // Wheel shouldn't move when robot is disabled
+    EXPECT_NEAR(plant.x()[1], 0, 1e-3);
+    // Making sure voltage is capped
+    EXPECT_NEAR(output->voltage(), 0., 12.);
+    //BPS should be equal to conversion
+    EXPECT_NEAR(plant.x()[1], goal->balls_per_second() * (muan::units::pi / 2), trigger_.get_velocity_tolerance());
+  }
 }
