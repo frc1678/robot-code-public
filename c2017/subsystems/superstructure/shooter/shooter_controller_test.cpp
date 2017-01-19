@@ -19,7 +19,7 @@ TEST(ShooterControllerTest, IsSane) {
                                                        frc1678::shooter_controller::controller::B(),
                                                        frc1678::shooter_controller::controller::C());
 
-  plant.x(0) = 0.5;
+  plant.x(0) = 0.0;
   plant.x(1) = 0.0;
   plant.x(2) = 0.0;
 
@@ -57,7 +57,7 @@ TEST(ShooterControllerTest, CantTakeNegativeVoltage) {
                                                        frc1678::shooter_controller::controller::B(),
                                                        frc1678::shooter_controller::controller::C());
 
-  plant.x(0) = 0.5;
+  plant.x(0) = 0.0;
   plant.x(1) = 0.0;
   plant.x(2) = 0.0;
 
@@ -96,7 +96,7 @@ TEST(ShooterControllerTest, CanStop) {
                                                        frc1678::shooter_controller::controller::B(),
                                                        frc1678::shooter_controller::controller::C());
 
-  plant.x(0) = 0.5;
+  plant.x(0) = 0.0;
   plant.x(1) = 0.0;
   plant.x(2) = 0.0;
 
