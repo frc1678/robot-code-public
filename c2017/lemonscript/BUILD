@@ -1,7 +1,9 @@
 genrule(
   name = 'lemonscript_generate',
   srcs = [
-    'funcs/test.func'
+    'funcs/test.func',
+    'funcs/drivestraight.func',
+    'funcs/pointturn.func'
   ],
   outs = [
     'ls_gen.cpp',
@@ -10,7 +12,8 @@ genrule(
   tools = [
     '//third_party/lemonscript_transpiler:lemonscript_transpiler'
   ],
-  cmd = "$(location //third_party/lemonscript_transpiler:lemonscript_transpiler) --input-files $(location funcs/test.func) --output-cpp $(location ls_gen.cpp) --output-header $(location ls_gen.h)",
+  #TODO(Wesley) Use locations instead of location
+  cmd = "$(location //third_party/lemonscript_transpiler:lemonscript_transpiler) --input-files $(location funcs/test.func) $(location funcs/drivestraight.func) $(location funcs/pointturn.func) --output-cpp $(location ls_gen.cpp) --output-header $(location ls_gen.h)",
 )
 
 cc_library(
@@ -26,7 +29,8 @@ cc_library(
     '//c2017/subsystems/drivetrain:drivetrain_base',
     '//c2017/queue_manager:queue_manager',
     '//third_party/lemonscript:lemonscript'
-  ]
+  ],
+  copts = ['-Wno-unused-variable']
 )
 
 cc_library(

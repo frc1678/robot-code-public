@@ -1,0 +1,26 @@
+PointTurn(double angle)
+
+include {
+  "c2017/queue_manager/queue_manager.h"
+  "c2017/subsystems/drivetrain/drivetrain_base.h"
+  "muan/actions/drivetrain_action.h"
+}
+
+global {
+  std::unique_ptr<muan::actions::DrivetrainAction> action;
+}
+
+init {
+  muan::actions::DrivetrainProperties properties = muan::actions::DrivetrainProperties{1.0, 1.0, 1.0, 1.0, c2017::drivetrain::GetDrivetrainConfig().robot_radius};
+  action = std::make_unique<muan::actions::DrivetrainAction>(
+      muan::actions::DrivetrainAction::PointTurn(angle, true, properties,
+      c2017::QueueManager::GetInstance().drivetrain_goal_queue(),
+      c2017::QueueManager::GetInstance().drivetrain_status_queue(),
+      0.01, 0.05));
+  return false;
+}
+
+periodic {
+  action->Update();
+  return false;
+}
