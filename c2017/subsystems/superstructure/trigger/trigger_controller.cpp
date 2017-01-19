@@ -35,7 +35,7 @@ TriggerOutputProto TriggerController::Update(const TriggerInputProto& input,
                           robot_state->mode() == RobotMode::DISABLED ||
                           robot_state->brownout());
 
-  if (enable_outputs) {
+  if (enable_outputs || goal_->balls_per_second() <= 0) { // I didn't see the point in adding another if statement that does the same thing as this one
     // r is the goal
     Eigen::Matrix<double, 3, 1> r;
     r << 0.0, (muan::units::pi / 2 * goal_->balls_per_second()), 0.0;
