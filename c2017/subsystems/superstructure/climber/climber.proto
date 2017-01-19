@@ -11,13 +11,11 @@ message ClimberStatus {
 
 message ClimberInput {
   required double current = 1;
-  required double position = 2; //encoder position, helps find the rate
+  required double position = 2; // encoder position, helps find the rate
 }
 
 message ClimberOutput {
-  required double voltage = 1; //Positive is moving up
+  required double voltage = 1; // Positive is moving up
 }
 
-message ClimberGoal {
-  required bool climbing = 1;
-}
+message ClimberGoal { required bool climbing = 1; }
