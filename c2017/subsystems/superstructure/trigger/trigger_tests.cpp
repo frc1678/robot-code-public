@@ -118,11 +118,69 @@ TEST(TriggerController, BrownoutInput) {
 
     output = trigger_.Update(input, driver_station);
 
-    plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
+    plant.Update((Eigen::Matrix<double, 1, 1>() << 0).finished());
 
     // The velocity should be zero because the trigger wheel shouldn't move during brownout
     EXPECT_NEAR(plant.x()[1], 0, 1e-3);
     // Making sure voltage is capped
     EXPECT_NEAR(output->voltage(), 0., 12.);
   }
+}
+
+TEST(TriggerController, SuddenChange) {
+  c2017::trigger::TriggerInputProto input;
+  c2017::trigger::TriggerOutputProto output;
+  c2017::trigger::TriggerStatusProto status;
+  c2017::trigger::TriggerGoalProto goal;
+
+  c2017::trigger::TriggerController trigger_;
+  auto plant = muan::control::StateSpacePlant<1, 3, 1>(frc1678::trigger_controller::controller::A(),
+                                                       frc1678::trigger_controller::controller::B(),
+                                                       frc1678::trigger_controller::controller::C());
+
+  plant.x()[0] = 0.0;
+  plant.x()[1] = 0.0;
+  plant.x()[2] = 0.0;
+
+  for (int i = 0; i <= 400; i++) {
+    // Run at 0 bps for 2 seconds
+    goal->set_balls_per_second(0);
+    input->set_encoder_position(plant.x()[0]);
+
+    trigger_.SetGoal(goal);
+
+    muan::wpilib::DriverStationProto driver_station;
+    driver_station->set_brownout(false);
+    driver_station->set_mode(RobotMode::TELEOP);
+
+    output = trigger_.Update(input, driver_station);
+
+    plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
+
+    // Wheel shouldn't move when bps is 0
+    EXPECT_NEAR(plant.x()[1], goal->balls_per_second() * (muan::units::pi / 2), 1e-3);
+    // Making sure voltage is capped
+    EXPECT_NEAR(output->voltage(), 0., 12.);
+  }
+
+  for (int i = 0; i <= 400; i++) {
+    // Try to get up to 16 bps in 2 seconds
+    goal->set_balls_per_second(16);
+    input->set_encoder_position(plant.x()[0]);
+
+    trigger_.SetGoal(goal);
+
+    muan::wpilib::DriverStationProto driver_station;
+    driver_station->set_brownout(false);
+    driver_station->set_mode(RobotMode::TELEOP);
+
+    output = trigger_.Update(input, driver_station);
+
+    plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
+
+    // Making sure voltage is capped
+    EXPECT_NEAR(output->voltage(), 0., 12.);
+  }
+  // This tests if the trigger can get up to speed in 2 seconds
+  EXPECT_NEAR(plant.x()[1], goal->balls_per_second() * (muan::units::pi / 2), 1e-3);
 }
