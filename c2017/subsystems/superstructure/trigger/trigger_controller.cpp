@@ -41,28 +41,26 @@ TriggerOutputProto TriggerController::Update(const TriggerInputProto& input,
     // r is the goal
     Eigen::Matrix<double, 3, 1> r;
     r << 0.0, (muan::units::pi / 2 * goal_->balls_per_second()), 0.0;
-    //y is the input/sensor values
+    // y is the input/sensor values
     Eigen::Matrix<double, 1, 1> y;
     y << input->encoder_position();
 
-    //u is the motor value output
+    // Cap voltage
+    double voltage = output->voltage();
+    muan::utils::Cap(voltage, -12, 12);
+    output->set_voltage(voltage);
+
+    // u is the motor value output
     auto u = controller_.Update(observer_.x(), r);
 
     observer_.Update(u, y);
     output->set_voltage(u[0]);
-
-    // Capping voltage
-    if (output->voltage() < -12.) {
-      output->set_voltage(-12.);
-    } else if (output->voltage() > 12.) {
-      output->set_voltage(12.);
-    }
-  }
+  } 
 
   status->set_observed_velocity(observer_.x()[1]);
   status->set_goal_velocity(goal_->balls_per_second() * muan::units::pi / 2);
   status->set_position(observer_.x()[0]);
-
+  
   status_queue_->WriteMessage(status);
   return output;
 }
