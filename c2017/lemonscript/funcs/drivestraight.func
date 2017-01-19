@@ -1,4 +1,4 @@
-DriveStraight(double distance)
+DriveStraight(float distance)
 
 include {
   "c2017/queue_manager/queue_manager.h"

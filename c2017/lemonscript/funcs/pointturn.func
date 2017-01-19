@@ -1,4 +1,4 @@
-PointTurn(double angle)
+PointTurn(float angle)
 
 include {
   "c2017/queue_manager/queue_manager.h"
@@ -21,6 +21,5 @@ init {
 }
 
 periodic {
-  action->Update();
-  return false;
+  return !action->Update();
 }

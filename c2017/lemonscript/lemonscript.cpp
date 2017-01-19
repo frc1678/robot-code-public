@@ -8,7 +8,11 @@ Lemonscript::Lemonscript() {
   state_ = new ::lemonscript::LemonScriptState();
   decls_ = ::lemonscript::AvailableCppCommandDeclaration::parseCppCommands(AutoGenerator::GetAutoGenerators());
   state_->declareAvailableCppCommands(decls_);
-  compiler_ = new ::lemonscript::LemonScriptCompiler("test.auto", state_);
+  try {
+    compiler_ = new ::lemonscript::LemonScriptCompiler("test.auto", state_);
+  } catch (std::string e) {
+    std::cout << e << std::endl;
+  }
 }
 
 Lemonscript::~Lemonscript() {
