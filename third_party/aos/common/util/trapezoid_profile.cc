@@ -1,4 +1,5 @@
 #include "third_party/aos/common/util/trapezoid_profile.h"
+
 #include "third_party/aos/common/check.h"
 
 using ::Eigen::Matrix;
@@ -6,22 +7,26 @@ using ::Eigen::Matrix;
 namespace aos {
 namespace util {
 
-TrapezoidProfile::TrapezoidProfile(const time::Time &delta_time)
+TrapezoidProfile::TrapezoidProfile(::std::chrono::nanoseconds delta_time)
     : maximum_acceleration_(0), maximum_velocity_(0), timestep_(delta_time) {
   output_.setZero();
 }
 
-void TrapezoidProfile::UpdateVals(double acceleration, double delta_time) {
-  output_(0) +=
-      output_(1) * delta_time + 0.5 * acceleration * delta_time * delta_time;
+void TrapezoidProfile::UpdateVals(double acceleration,
+                                  double delta_time) {
+  output_(0) += output_(1) * delta_time +
+      0.5 * acceleration * delta_time * delta_time;
   output_(1) += acceleration * delta_time;
 }
 
-const Matrix<double, 2, 1> &TrapezoidProfile::Update(double goal_position,
-                                                     double goal_velocity) {
+const Matrix<double, 2, 1> &TrapezoidProfile::Update(
+    double goal_position,
+    double goal_velocity) {
   CalculateTimes(goal_position - output_(0), goal_velocity);
 
-  double next_timestep = timestep_.ToSeconds();
+  double next_timestep =
+      ::std::chrono::duration_cast<::std::chrono::duration<double>>(timestep_)
+          .count();
 
   if (acceleration_time_ > next_timestep) {
     UpdateVals(acceleration_, next_timestep);
@@ -88,23 +93,26 @@ void TrapezoidProfile::CalculateTimes(double distance_to_target,
   }
 
   // We now know the top velocity we can get to.
-  double top_velocity = sqrt(
-      (distance_to_target + (output_(1) * output_(1)) / (2.0 * acceleration_) +
-       (goal_velocity * goal_velocity) / (2.0 * deceleration_)) /
-      (-1.0 / (2.0 * deceleration_) + 1.0 / (2.0 * acceleration_)));
+  double top_velocity = sqrt((distance_to_target +
+                              (output_(1) * output_(1)) /
+                              (2.0 * acceleration_) +
+                              (goal_velocity * goal_velocity) /
+                              (2.0 * deceleration_)) /
+                             (-1.0 / (2.0 * deceleration_) +
+                              1.0 / (2.0 * acceleration_)));
 
   // If it can go too fast, we now know how long we get to accelerate for and
   // how long to go at constant velocity.
   if (top_velocity > maximum_velocity_) {
-    acceleration_time_ =
-        (maximum_velocity_ - output_(1)) / maximum_acceleration_;
+    acceleration_time_ = (maximum_velocity_ - output_(1)) /
+        maximum_acceleration_;
     constant_time_ = (distance_to_target +
                       (goal_velocity * goal_velocity -
                        maximum_velocity_ * maximum_velocity_) /
-                          (2.0 * maximum_acceleration_)) /
-                     maximum_velocity_;
+                      (2.0 * maximum_acceleration_)) / maximum_velocity_;
   } else {
-    acceleration_time_ = (top_velocity - output_(1)) / acceleration_;
+    acceleration_time_ = (top_velocity - output_(1)) /
+        acceleration_;
   }
 
   CHECK_GT(top_velocity, -maximum_velocity_);
@@ -114,7 +122,8 @@ void TrapezoidProfile::CalculateTimes(double distance_to_target,
     acceleration_time_ = 0;
   }
 
-  deceleration_time_ = (goal_velocity - top_velocity) / deceleration_;
+  deceleration_time_ = (goal_velocity - top_velocity) /
+      deceleration_;
 }
 
 }  // namespace util

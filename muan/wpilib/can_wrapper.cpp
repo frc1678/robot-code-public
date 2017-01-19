@@ -10,7 +10,7 @@ namespace wpilib {
 CanWrapper::CanWrapper(PdpWrapper::Queue* pdp_queue) { pdp_.SetQueue(pdp_queue); }
 
 void CanWrapper::operator()() {
-  aos::time::PhasedLoop phased_loop(aos::time::Time::InMS(20));
+  aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(20));
 
   // TODO(Kyle) Come up with some actual value for this...
   aos::SetCurrentThreadRealtimePriority(10);

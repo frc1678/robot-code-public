@@ -18,7 +18,7 @@ Lemonscript::~Lemonscript() {
 }
 
 void Lemonscript::operator()() {
-  aos::time::PhasedLoop phased_loop(aos::time::Time::InMS(5));
+  aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(5));
 
   aos::SetCurrentThreadRealtimePriority(10);
   aos::SetCurrentThreadName("Lemonscript");
