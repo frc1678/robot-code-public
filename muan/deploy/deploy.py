@@ -30,7 +30,6 @@ def get_ssh_command(port):
     sshpass_path = spawn.find_executable('sshpass')
     return ([sshpass_path, '-e'] if sshpass_path is not None else []) + ['ssh', '-p', '%s' % port]
 
-# TODO(Kyle) Use sshpass or something else to avoid having to enter a password
 def main(argv):
     files = []
     opts = []
