@@ -11,7 +11,7 @@ Lemonscript::Lemonscript() {
   try {
     compiler_ = new ::lemonscript::LemonScriptCompiler("test.auto", state_);
   } catch (std::string e) {
-    std::cout << e << std::endl;
+    std::cerr << e << std::endl;
   }
 }
 
