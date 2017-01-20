@@ -9,6 +9,8 @@
 
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
 
+#include "c2017/subsystems/superstructure/shooter/queue_types.h"
+
 using muan::queues::MessageQueue;
 
 namespace c2017 {
@@ -33,6 +35,7 @@ class QueueManager {
   frc971::control_loops::drivetrain::InputQueue* drivetrain_input_queue();
   frc971::control_loops::drivetrain::OutputQueue* drivetrain_output_queue();
   frc971::control_loops::drivetrain::StatusQueue* drivetrain_status_queue();
+  shooter::ShooterStatusQueue* shooter_status_queue();
 
  private:
   QueueManager() = default;
@@ -47,6 +50,7 @@ class QueueManager {
   frc971::control_loops::drivetrain::InputQueue drivetrain_input_queue_;
   frc971::control_loops::drivetrain::OutputQueue drivetrain_output_queue_;
   frc971::control_loops::drivetrain::StatusQueue drivetrain_status_queue_;
+  shooter::ShooterStatusQueue shooter_status_queue_;
 };
 
 }  // c2017

@@ -8,7 +8,7 @@
 #include "c2017/subsystems/superstructure/shooter/shooter_constants.h"
 #include "c2017/subsystems/superstructure/shooter/queue_types.h"
 #include "muan/wpilib/queue_types.h"
-#include <iostream>
+#include "c2017/queue_manager/queue_manager.h"
 
 namespace c2017 {
 
@@ -33,6 +33,7 @@ class ShooterController {
   c2017::shooter::ShooterStatusProto status_;
   double angle_tolerance_;
   double velocity_tolerance_;
+  c2017::shooter::ShooterStatusQueue* shooter_status_queue_;
 };
 }
 }

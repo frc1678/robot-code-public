@@ -7,7 +7,8 @@ cc_library(
     '//muan/proto:stack_proto',
     '//muan/wpilib:wpilib_queues',
     '//muan/wpilib/gyro:gyro_queues',
-    '//third_party/frc971/control_loops/drivetrain:drivetrain_lib'
+    '//third_party/frc971/control_loops/drivetrain:drivetrain_lib',
+    '//c2017/subsystems/superstructure/shooter:shooter_queues'
   ],
   visibility = ['//visibility:public']
 )
