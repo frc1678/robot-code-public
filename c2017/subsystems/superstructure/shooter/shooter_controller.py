@@ -161,13 +161,13 @@ observer = StateSpaceObserver(gains, x0)
 
 def goal(t):
     return np.asmatrix([0., 300., 0.]).T
+if __name__ == '__main__':
+    if len(sys.argv) == 3:
+        from muan.control.state_space_writer import StateSpaceWriter
+        writer = StateSpaceWriter(gains, 'shooter_controller')
+        writer.write(sys.argv[1], sys.argv[2])
+    else:
+        from muan.control.state_space_scenario import StateSpaceScenario
 
-if len(sys.argv) == 3:
-    from muan.control.state_space_writer import StateSpaceWriter
-    writer = StateSpaceWriter(gains, 'shooter_controller')
-    writer.write(sys.argv[1], sys.argv[2])
-else:
-    from muan.control.state_space_scenario import StateSpaceScenario
-
-    scenario = StateSpaceScenario(plant, x0, controller, observer, x0, 'shooter_controller')
-    scenario.run(goal, 4)
+        scenario = StateSpaceScenario(plant, x0, controller, observer, x0, 'shooter_controller')
+        scenario.run(goal, 4)
