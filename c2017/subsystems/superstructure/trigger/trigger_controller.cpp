@@ -21,7 +21,7 @@ TriggerController::TriggerController() :
       muan::control::StateSpaceObserver<1, 3, 1>(ss_plant, frc1678::trigger_controller::controller::L());
 
   // Tolerance in rad/sec
-  velocity_tolerance_ = 1; //TODO
+  velocity_tolerance_ = 1; //TODO tune this
 }
 
 TriggerOutputProto TriggerController::Update(const TriggerInputProto& input,
@@ -35,28 +35,25 @@ TriggerOutputProto TriggerController::Update(const TriggerInputProto& input,
                           robot_state->mode() == RobotMode::DISABLED ||
                           robot_state->brownout());
 
-  if (enable_outputs) { // I didn't see the point in adding another if statement that does the same thing as this one
-    if (!(goal_->balls_per_second() <= 0)) {
-      // r is the goal
-      Eigen::Matrix<double, 3, 1> r;
-      r << 0.0, (muan::units::pi / 2 * goal_->balls_per_second()), 0.0;
-      // y is the input/sensor values
-      Eigen::Matrix<double, 1, 1> y;
-      y << input->encoder_position();
+  if (enable_outputs && goal_->balls_per_second() > 0) { // I didn't see the point in adding another if statement that does the same thing as this one
+    // r is the goal
+    Eigen::Matrix<double, 3, 1> r;
+    r << 0.0, (muan::units::pi / 2 * goal_->balls_per_second()), 0.0;
+    // y is the input/sensor values
+    Eigen::Matrix<double, 1, 1> y;
+    y << input->encoder_position();
 
-      // Cap voltage
-      double voltage = output->voltage();
-      muan::utils::Cap(voltage, -12, 12);
-      output->set_voltage(voltage);
+    // Cap voltage
+    double voltage = output->voltage();
+    muan::utils::Cap(voltage, -12, 12);
+    output->set_voltage(voltage);
 
-      // u is the motor value output
-      auto u = controller_.Update(observer_.x(), r);
+    // u is the motor value output
+    auto u = controller_.Update(observer_.x(), r);
     
-      observer_.Update(u, y);
-      output->set_voltage(u[0]);
-    } else {
-      output->set_voltage(0);
-    }
+    observer_.Update(u, y);
+    output->set_voltage(u[0]);
+    output->set_voltage(0);
   } else {
     output->set_voltage(0);
   }
