@@ -20,7 +20,7 @@ class TriggerController {
   // Updates trigger status and output protos
   TriggerOutputProto Update(const TriggerInputProto& input,
                             const muan::wpilib::DriverStationProto& robot_state);
-  void SetGoal(TriggerGoalProto goal) { goal_ = goal; }
+  void SetGoal(TriggerGoalProto goal) { balls_per_second_ = goal->balls_per_second(); }
 
   TriggerStatusProto get_status() { return status_; }
   muan::units::AngularVelocity get_velocity_tolerance() { return velocity_tolerance_; }
@@ -28,7 +28,7 @@ class TriggerController {
  private:
   // creates local protos for status and goal
   TriggerStatusProto status_;
-  TriggerGoalProto goal_;
+  double balls_per_second_; 
 
   muan::control::StateSpaceController<1, 3, 1> controller_;
   muan::control::StateSpaceObserver<1, 3, 1> observer_;
