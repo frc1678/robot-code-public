@@ -23,6 +23,7 @@ class Climber {
   bool at_top_;
   bool is_climbing_;
   double last_position_;
+  bool to_climb_;
 
   ClimberOutputProto output_;
   ClimberGoalProto goal_;
