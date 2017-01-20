@@ -16,7 +16,6 @@ class Climber {
   void SetGoal(const ClimberGoalProto& goal);
   ClimberOutputProto Update(const ClimberInputProto& input,
                             const muan::wpilib::DriverStationProto& ds_status);
-  ClimberStatusProto Status();
 
  private:
   bool at_top_;
