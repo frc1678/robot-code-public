@@ -54,7 +54,7 @@ def main(argv):
                 options[opt] = True
 
     # The user to log in as
-    user = options.get('user', 'admin')
+    user = options.get('user', 'lvuser')
 
     # The port of the machine to connect to
     port = options.get('port', '22')
@@ -99,10 +99,16 @@ def main(argv):
     rsync = ['rsync', '-e', ' '.join(ssh_command), '-c', '-v', '-z', '-r', '-L', '.', full_remote_path]
 
     # This will look like (cd /home/lvuser/robot_code && ./c2017/frc1678).
-    robot_command_contents = '''(cd {} && ./{})'''.format(remote_path, main)
+    robot_command_contents = '''\\$(cd {} && ./{})'''.format(remote_path, main)
 
     # Where we actually want to ssh into
     ssh_target = '%s@%s' % (user, target)
+
+    # Kill the user program before copying things
+    ssh_kill_command = ssh_command + [
+        ssh_target,
+        '/usr/local/frc/bin/frcKillRobot.sh -r',
+    ]
 
     # The ssh command that we're going to run to create robotCommand
     ssh = ssh_command + [
@@ -114,6 +120,8 @@ def main(argv):
 
     # Try to rsync the files over and run an ssh command to create the robotCommand.
     try:
+        print("Running kill robot command: {}".format(' '.join(ssh_kill_command)))
+        sp.check_call(ssh_kill_command)
         print("Running rsync command: {}".format(' '.join(rsync)))
         sp.check_call(rsync)
         print("Running ssh command: {}".format(' '.join(ssh)))
