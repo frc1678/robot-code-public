@@ -4,7 +4,7 @@
 namespace c2017 {
 
 namespace climber {
-Climber::Climber() : at_top_(false), is_climbing_(false), last_position_(0) {}
+Climber::Climber() : at_top_(false), is_climbing_(false), last_position_(0), status_queue_(QueueManager::GetInstance::climber_status_proto{}
 
 void Climber::SetGoal(const ClimberGoalProto& goal) { 
     to_climb_ = goal->climbing();
@@ -44,6 +44,9 @@ ClimberOutputProto Climber::Update(const ClimberInputProto& input,
   output->set_voltage(voltage_);
   status->set_currently_climbing(is_climbing_);
   status->set_hit_top(at_top_);
+
+  status_queue_.WriteMessage(status)
+
   return output;
 
 }

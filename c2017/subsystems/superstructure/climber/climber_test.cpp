@@ -12,7 +12,6 @@ TEST(Climbing, ClimbsToTheTop) {
   input->set_position(100);  // position helps find the rate of the encoder. Encoder has been running
                              // throughout the match as the shooter so its big.
   c2017::climber::Climber test_climber;
-
   test_climber.SetGoal(goal);
   for (double t = 0.005; t < 2; t += 0.005) {
     double d;

@@ -3,6 +3,7 @@
 
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
+#include "c2017/subsytems/superstructure/climber/queue_types.h"
 
 #include "muan/wpilib/gyro/queue_types.h"
 #include "muan/wpilib/queue_types.h"
@@ -33,6 +34,7 @@ class QueueManager {
   frc971::control_loops::drivetrain::InputQueue* drivetrain_input_queue();
   frc971::control_loops::drivetrain::OutputQueue* drivetrain_output_queue();
   frc971::control_loops::drivetrain::StatusQueue* drivetrain_status_queue();
+  climber::ClimberStatusQueue* climber_status_queue();
 
  private:
   QueueManager() = default;
@@ -47,6 +49,7 @@ class QueueManager {
   frc971::control_loops::drivetrain::InputQueue drivetrain_input_queue_;
   frc971::control_loops::drivetrain::OutputQueue drivetrain_output_queue_;
   frc971::control_loops::drivetrain::StatusQueue drivetrain_status_queue_;
+  climber::ClimberStatusQueue climber_status_queue_;
 };
 
 }  // c2017

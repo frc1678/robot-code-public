@@ -41,4 +41,8 @@ QueueManager::drivetrain_output_queue() {
   return &drivetrain_output_queue_;
 }
 
+climber::ClimberStatusQueue*
+QueueManager::climber_status_queue() {
+  return &climber_status_queue_;
+}
 }  // c2017
