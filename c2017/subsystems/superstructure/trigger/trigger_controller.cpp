@@ -35,13 +35,13 @@ TriggerOutputProto TriggerController::Update(const TriggerInputProto& input,
                           robot_state->mode() == RobotMode::DISABLED ||
                           robot_state->brownout());
 
+    Eigen::Matrix<double, 1, 1> y;
+    y << input->encoder_position();
+
   if (enable_outputs && balls_per_second_ > 0) { // I didn't see the point in adding another if statement that does the same thing as this one
     // r is the goal
     Eigen::Matrix<double, 3, 1> r;
     r << 0.0, ((muan::units::pi / 2) * balls_per_second_), 0.0;
-    // y is the input/sensor values
-    Eigen::Matrix<double, 1, 1> y;
-    y << input->encoder_position();
 
     // Cap voltage
     double voltage = output->voltage();
@@ -53,9 +53,11 @@ TriggerOutputProto TriggerController::Update(const TriggerInputProto& input,
     
     observer_.Update(u, y);
     output->set_voltage(u[0]);
-    output->set_voltage(0);
   } else {
     output->set_voltage(0);
+    Eigen::Matrix<double, 1, 1> u;
+    u << 0;
+    observer_.Update(u, y);
   }
 
   status->set_observed_velocity(observer_.x()[1]);

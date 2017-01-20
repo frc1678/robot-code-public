@@ -24,6 +24,7 @@ class TriggerController {
 
   TriggerStatusProto get_status() { return status_; }
   muan::units::AngularVelocity get_velocity_tolerance() { return velocity_tolerance_; }
+  double get_bps() { return balls_per_second_; }
 
  private:
   // creates local protos for status and goal

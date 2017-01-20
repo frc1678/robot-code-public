@@ -48,7 +48,7 @@ TEST(TriggerController, ZeroInput) {
   // x.()[2] = displacement?
 
   // Test that BPS is what we want
-  EXPECT_NEAR(goal->balls_per_second(), (plant.x()[1] * (2 * muan::units::pi)) * 4, 1e-3);
+  EXPECT_NEAR(trigger_.get_bps(), (plant.x()[1] * (2 * muan::units::pi)) * 4, 1e-3);
   // Testing that the velocity is close to what we want, based on velocity tolerance
   EXPECT_NEAR(plant.x()[1], 0, trigger_.get_velocity_tolerance());
 }
@@ -81,14 +81,11 @@ TEST(TriggerController, NormalInput) {
     output = trigger_.Update(input, driver_station);
 
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
-
-    std::cout << "plant1 " << plant.x()[1] << std::endl;
-    // Making sure voltage is capped
     EXPECT_NEAR(output->voltage(), 0., 12.);
   }
 
   // Checking velocity
-  EXPECT_NEAR(plant.x()[1], goal->balls_per_second() * (muan::units::pi / 2),
+  EXPECT_NEAR(plant.x()[1], trigger_.get_bps() * (muan::units::pi / 2),
               trigger_.get_velocity_tolerance());
 }
 
@@ -159,7 +156,7 @@ TEST(TriggerController, SuddenChange) {
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
 
     // Wheel shouldn't move when bps is 0
-    EXPECT_NEAR(plant.x()[1], (goal->balls_per_second() * (muan::units::pi / 2)), 1e-3);
+    EXPECT_NEAR(plant.x()[1], (trigger_.get_bps() * (muan::units::pi / 2)), 1e-3);
     // Making sure voltage is capped
     EXPECT_NEAR(output->voltage(), 0., 12.);
   }
@@ -183,7 +180,7 @@ TEST(TriggerController, SuddenChange) {
     EXPECT_NEAR(output->voltage(), 0., 12.);
   }
   // This tests if the trigger can get up to speed in 2 seconds
-  EXPECT_NEAR(plant.x()[1], goal->balls_per_second() * (muan::units::pi / 2), trigger_.get_velocity_tolerance());
+  EXPECT_NEAR(plant.x()[1], trigger_.get_bps() * (muan::units::pi / 2), trigger_.get_velocity_tolerance());
 }
 
 
@@ -223,4 +220,46 @@ TEST(TriggerController, DisabledRobot) {
     EXPECT_NEAR(output->voltage(), 0., 12.);
     EXPECT_NEAR(plant.x()[1], 0, trigger_.get_velocity_tolerance());
   }
+}
+
+
+TEST(TriggerController, BallResistance) {
+  c2017::trigger::TriggerInputProto input;
+  c2017::trigger::TriggerOutputProto output;
+  c2017::trigger::TriggerStatusProto status;
+  c2017::trigger::TriggerGoalProto goal;
+
+  c2017::trigger::TriggerController trigger_;
+  auto plant = muan::control::StateSpacePlant<1, 3, 1>(frc1678::trigger_controller::controller::A(),
+                                                       frc1678::trigger_controller::controller::B(),
+                                                       frc1678::trigger_controller::controller::C());
+
+  plant.x()[0] = 0.0;
+  plant.x()[1] = 0.0;
+  plant.x()[2] = 0.0;
+
+  for (int i = 0; i <= 3000; i++) {
+
+    if (i % 20 == 0) {
+      plant.x()[1] *= 0.96;
+    }
+    goal->set_balls_per_second(16);
+    input->set_encoder_position(plant.x()[0]);
+
+    trigger_.SetGoal(goal);
+
+    muan::wpilib::DriverStationProto driver_station;
+    driver_station->set_brownout(false);
+    driver_station->set_mode(RobotMode::TELEOP);
+
+    output = trigger_.Update(input, driver_station);
+
+    plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
+
+
+
+    // Making sure voltage is capped
+    EXPECT_NEAR(output->voltage(), 0., 12.);
+  }
+  EXPECT_NEAR(plant.x()[1], trigger_.get_bps() * (muan::units::pi / 2), trigger_.get_velocity_tolerance());
 }

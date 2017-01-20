@@ -124,13 +124,13 @@ def make_augmented_gains():
     Q_noise[2, 2] = 1
 
     R_noise = np.asmatrix([
-        [.075]
+        [.06]
     ])
 
     # Kalman noise matrix
     Q_kalman = np.asmatrix([
         [3, 0.0, 0.0],
-        [0.0, 0.9, 0.0],
+        [0.0, 1.1, 0.0],
         [0.0, 0.0, 2.75]
     ])
 
