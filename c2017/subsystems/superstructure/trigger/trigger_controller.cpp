@@ -68,6 +68,22 @@ TriggerOutputProto TriggerController::Update(const TriggerInputProto& input,
   return output;
 }
 
+void TriggerController::SetGoal(TriggerGoalProto goal) { 
+  balls_per_second_ = goal->balls_per_second(); 
+}
+
+TriggerStatusProto TriggerController::get_status() {
+  return status_;
+}
+
+muan::units::AngularVelocity TriggerController::get_velocity_tolerance() {
+  return velocity_tolerance_;
+}
+
+double TriggerController::get_bps() {
+  return balls_per_second_;
+}
+
 }  // trigger
 
 }  // c2017
