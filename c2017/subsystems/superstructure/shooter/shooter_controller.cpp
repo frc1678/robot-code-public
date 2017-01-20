@@ -37,7 +37,7 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
 
   auto u = controller_.Update(observer_.x(), r_)(0, 0);
 
-  if (disabled) {
+  if (disabled || goal_->goal_velocity() == 0) {
     u = 0.0;
   }
 
