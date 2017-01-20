@@ -3,9 +3,11 @@
 #include "c2017/subsystems/superstructure/trigger/trigger_controller.h"
 #include "muan/control/state_space_plant.h"
 #include "muan/control/state_space_controller.h"
+#include "c2017/queue_manager/queue_manager.h"
 #include <iostream>
 #include <fstream>
 #include <math.h>
+
 
 TEST(TriggerController, ZeroInput) {
   c2017::trigger::TriggerInputProto input;
@@ -217,7 +219,7 @@ TEST(TriggerController, DisabledRobot) {
     // Wheel shouldn't move when robot is disabled
     EXPECT_NEAR(plant.x()[1], 0, 1e-3);
     // Making sure voltage is capped
-    EXPECT_NEAR(output->voltage(), 0., 12.);
+    EXPECT_NEAR(output->voltage(), 0., 1e-3);
     EXPECT_NEAR(plant.x()[1], 0, trigger_.get_velocity_tolerance());
   }
 }
@@ -257,6 +259,86 @@ TEST(TriggerController, BallResistance) {
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
 
 
+
+    // Making sure voltage is capped
+    EXPECT_NEAR(output->voltage(), 0., 12.);
+  }
+  EXPECT_NEAR(plant.x()[1], trigger_.get_bps() * (muan::units::pi / 2), trigger_.get_velocity_tolerance());
+}
+
+
+TEST(TriggerController, DisabledtoNormal) {
+  c2017::trigger::TriggerInputProto input;
+  c2017::trigger::TriggerOutputProto output;
+  auto status = c2017::QueueManager::GetInstance().trigger_status_queue()->MakeReader().ReadLastMessage();
+  c2017::trigger::TriggerGoalProto goal;
+
+  c2017::trigger::TriggerController trigger_;
+  auto plant = muan::control::StateSpacePlant<1, 3, 1>(frc1678::trigger_controller::controller::A(),
+                                                       frc1678::trigger_controller::controller::B(),
+                                                       frc1678::trigger_controller::controller::C());
+
+  plant.x()[0] = 0.0;
+  plant.x()[1] = 0.0;
+  plant.x()[2] = 0.0;
+
+  //First, run normally
+  for (int i = 0; i <= 500; i++) {
+    goal->set_balls_per_second(16);
+    input->set_encoder_position(plant.x()[0]);
+
+    trigger_.SetGoal(goal);
+
+    muan::wpilib::DriverStationProto driver_station;
+    driver_station->set_brownout(false);
+    driver_station->set_mode(RobotMode::TELEOP);
+
+    output = trigger_.Update(input, driver_station);
+
+    plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
+
+    // Making sure voltage is capped
+    EXPECT_NEAR(output->voltage(), 0., 12.);
+  }
+
+  //Disable robot and run a velocity to change encoder position
+  for (int i = 0; i <= 200; i++) {
+    goal->set_balls_per_second(16);
+    input->set_encoder_position(plant.x()[0]);
+
+    trigger_.SetGoal(goal);
+
+    muan::wpilib::DriverStationProto driver_station;
+    driver_station->set_brownout(false);
+    driver_station->set_mode(RobotMode::DISABLED);
+
+    plant.x()[1] = 5;
+
+    output = trigger_.Update(input, driver_station);
+
+    plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
+
+    // Making sure voltage is capped
+    EXPECT_NEAR(output->voltage(), 0., 12.);
+    if (status) {
+      EXPECT_NEAR(status->observed_velocity(), plant.x()[1], 1);
+    }
+  }
+
+  //Run normally again and see if works
+  for (int i = 0; i <= 1000; i++) {
+    goal->set_balls_per_second(16);
+    input->set_encoder_position(plant.x()[0]);
+
+    trigger_.SetGoal(goal);
+
+    muan::wpilib::DriverStationProto driver_station;
+    driver_station->set_brownout(false);
+    driver_station->set_mode(RobotMode::TELEOP);
+
+    output = trigger_.Update(input, driver_station);
+
+    plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
 
     // Making sure voltage is capped
     EXPECT_NEAR(output->voltage(), 0., 12.);

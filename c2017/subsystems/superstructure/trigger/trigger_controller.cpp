@@ -8,7 +8,8 @@ namespace trigger {
 
 //Constructor
 TriggerController::TriggerController() :
-      status_queue_(QueueManager::GetInstance().trigger_status_queue()) {
+      status_queue_(QueueManager::GetInstance().trigger_status_queue()) 
+    {
   auto ss_plant = muan::control::StateSpacePlant<1, 3, 1>(frc1678::trigger_controller::controller::A(),
                                                           frc1678::trigger_controller::controller::B(),
                                                           frc1678::trigger_controller::controller::C());
