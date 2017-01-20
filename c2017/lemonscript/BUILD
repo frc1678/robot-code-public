@@ -1,9 +1,12 @@
+filegroup(
+  name = "lemonscript_funcs",
+  srcs = glob(["funcs/*.func"])
+)
+
 genrule(
   name = 'lemonscript_generate',
   srcs = [
-    'funcs/drivestraight.func',
-    'funcs/pointturn.func',
-    'funcs/swoopturn.func'
+    ':lemonscript_funcs'
   ],
   outs = [
     'ls_gen.cpp',
@@ -12,8 +15,7 @@ genrule(
   tools = [
     '//third_party/lemonscript_transpiler:lemonscript_transpiler'
   ],
-  #TODO(Wesley) Use locations instead of location
-  cmd = "$(location //third_party/lemonscript_transpiler:lemonscript_transpiler) --input-files $(location funcs/drivestraight.func) $(location funcs/pointturn.func) $(location funcs/swoopturn.func) --output-cpp $(location ls_gen.cpp) --output-header $(location ls_gen.h)",
+  cmd = "$(location //third_party/lemonscript_transpiler:lemonscript_transpiler) --input-files $(locations :lemonscript_funcs) --output-cpp $(location ls_gen.cpp) --output-header $(location ls_gen.h)",
 )
 
 cc_library(
