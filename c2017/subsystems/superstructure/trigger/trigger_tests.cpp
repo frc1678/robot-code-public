@@ -82,12 +82,13 @@ TEST(TriggerController, NormalInput) {
 
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
 
+    std::cout << "plant1 " << plant.x()[1] << std::endl;
     // Making sure voltage is capped
     EXPECT_NEAR(output->voltage(), 0., 12.);
   }
 
   // Checking velocity
-  EXPECT_NEAR(plant.x()[1], (goal->balls_per_second() * (muan::units::pi / 2)),
+  EXPECT_NEAR(plant.x()[1], goal->balls_per_second() * (muan::units::pi / 2),
               trigger_.get_velocity_tolerance());
 }
 
@@ -220,7 +221,6 @@ TEST(TriggerController, DisabledRobot) {
     EXPECT_NEAR(plant.x()[1], 0, 1e-3);
     // Making sure voltage is capped
     EXPECT_NEAR(output->voltage(), 0., 12.);
-    //BPS should be equal to conversion
-    EXPECT_NEAR(plant.x()[1], goal->balls_per_second() * (muan::units::pi / 2), trigger_.get_velocity_tolerance());
+    EXPECT_NEAR(plant.x()[1], 0, trigger_.get_velocity_tolerance());
   }
 }
