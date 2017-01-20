@@ -22,7 +22,6 @@ class TriggerController {
                             const muan::wpilib::DriverStationProto& robot_state);
   void SetGoal(TriggerGoalProto goal);
 
-  TriggerStatusProto get_status();
   muan::units::AngularVelocity get_velocity_tolerance();
   double get_bps();
 

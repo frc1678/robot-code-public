@@ -72,10 +72,6 @@ void TriggerController::SetGoal(TriggerGoalProto goal) {
   balls_per_second_ = goal->balls_per_second(); 
 }
 
-TriggerStatusProto TriggerController::get_status() {
-  return status_;
-}
-
 muan::units::AngularVelocity TriggerController::get_velocity_tolerance() {
   return velocity_tolerance_;
 }
