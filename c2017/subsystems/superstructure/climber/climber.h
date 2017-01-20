@@ -19,15 +19,11 @@ class Climber {
   ClimberStatusProto Status();
 
  private:
-  double voltage_;
   bool at_top_;
   bool is_climbing_;
   double last_position_;
   bool to_climb_;
 
-  ClimberOutputProto output_;
-  ClimberGoalProto goal_;
-  ClimberStatusProto status_;
 };
 }  // climber
 

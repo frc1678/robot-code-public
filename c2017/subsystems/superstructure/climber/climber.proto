@@ -12,6 +12,7 @@ message ClimberStatus {
 message ClimberInput {
   required double current = 1;
   required double position = 2; // encoder position, helps find the rate
+  required double velocity = 3;
 }
 
 message ClimberOutput {
