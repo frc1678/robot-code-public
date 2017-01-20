@@ -159,7 +159,7 @@ TEST(TriggerController, SuddenChange) {
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
 
     // Wheel shouldn't move when bps is 0
-    EXPECT_NEAR(plant.x()[1], goal->balls_per_second() * (muan::units::pi / 2), 1e-3);
+    EXPECT_NEAR(plant.x()[1], (goal->balls_per_second() * (muan::units::pi / 2)), 1e-3);
     // Making sure voltage is capped
     EXPECT_NEAR(output->voltage(), 0., 12.);
   }
