@@ -14,7 +14,7 @@ constexpr uint32_t kMotorRight = 0;
 constexpr uint32_t kEncoderLeftA = 10, kEncoderLeftB = 11;
 constexpr uint32_t kEncoderRightA = 12, kEncoderRightB = 13;
 
-constexpr double kMaxVoltage = 2;
+constexpr double kMaxVoltage = 12;
 
 }  // drivetrain
 
