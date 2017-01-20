@@ -41,9 +41,10 @@ class DrivetrainAction {
                                     double termination_distance = 2e-2, double termination_velocity = 1e-2);
 
  protected:
-  DrivetrainAction(DrivetrainProperties properties, bool high_gear, double gl, double gr, double gvl,
-                   double gvr, double td, double tv, frc971::control_loops::drivetrain::GoalQueue* gq,
-                   frc971::control_loops::drivetrain::StatusQueue* sq);
+  DrivetrainAction(DrivetrainProperties properties, bool high_gear, double goal_left, double goal_right,
+                   double goal_velocity_left, double goal_velocity_right, double threshold_distance,
+                   double threshold_velocity, frc971::control_loops::drivetrain::GoalQueue* goal_queue,
+                   frc971::control_loops::drivetrain::StatusQueue* status_queue);
 
   // Send a goal message into the queue
   void SendMessage();

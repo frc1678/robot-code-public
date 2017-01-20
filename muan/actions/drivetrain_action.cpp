@@ -4,20 +4,21 @@ namespace muan {
 
 namespace actions {
 
-DrivetrainAction::DrivetrainAction(DrivetrainProperties properties, bool high_gear, double gl, double gr,
-                                   double gvl, double gvr, double td, double tv,
-                                   frc971::control_loops::drivetrain::GoalQueue* gq,
-                                   frc971::control_loops::drivetrain::StatusQueue* sq)
+DrivetrainAction::DrivetrainAction(DrivetrainProperties properties, bool high_gear, double goal_left,
+                                   double goal_right, double goal_velocity_left, double goal_velocity_right,
+                                   double threshold_distance, double threshold_velocity,
+                                   frc971::control_loops::drivetrain::GoalQueue* goal_queue,
+                                   frc971::control_loops::drivetrain::StatusQueue* status_queue)
     : properties_(properties),
-      goal_left_(gl),
-      goal_velocity_left_(gvl),
-      goal_right_(gr),
-      goal_velocity_right_(gvr),
-      threshold_distance_(td),
-      threshold_velocity_(tv),
+      goal_left_(goal_left),
+      goal_velocity_left_(goal_velocity_left),
+      goal_right_(goal_right),
+      goal_velocity_right_(goal_velocity_right),
+      threshold_distance_(threshold_distance),
+      threshold_velocity_(threshold_velocity),
       high_gear_(high_gear),
-      goal_queue_(gq),
-      status_queue_(sq) {}
+      goal_queue_(goal_queue),
+      status_queue_(status_queue) {}
 
 bool DrivetrainAction::Update() {
   if (!IsTerminated()) {
