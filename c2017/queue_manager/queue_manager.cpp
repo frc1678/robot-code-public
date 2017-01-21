@@ -45,4 +45,16 @@ ground_ball_intake::GroundBallIntakeStatusQueue& QueueManager::ground_ball_intak
   return ground_ball_intake_status_queue_;
 }
 
+ground_ball_intake::GroundBallIntakeInputQueue& QueueManager::ground_ball_intake_input_queue() {
+  return ground_ball_intake_status_queue_;
+}
+
+ground_ball_intake::GroundBallOutputStatusQueue& QueueManager::ground_ball_output_status_queue() {
+  return ground_ball_intake_status_queue_;
+}
+
+ground_ball_intake::GroundBallIntakeGoalQueue& QueueManager::ground_ball_intake_goal_queue() {
+  return ground_ball_intake_status_queue_;
+}
+
 }  // c2017

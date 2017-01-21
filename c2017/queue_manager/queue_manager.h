@@ -36,6 +36,9 @@ class QueueManager {
   frc971::control_loops::drivetrain::StatusQueue* drivetrain_status_queue();
 
   ground_ball_intake::GroundBallIntakeStatusQueue& ground_ball_intake_status_queue();
+  ground_ball_intake::GroundBallIntakeInputQueue& ground_ball_intake_input_queue();
+  ground_ball_intake::GroundBallIntakeOutputQueue& ground_ball_Output_status_queue();
+  ground_ball_intake::GroundBallIntakeGoalQueue& ground_ball_intake_goal_queue();
 
  private:
   QueueManager() = default;
@@ -52,6 +55,9 @@ class QueueManager {
   frc971::control_loops::drivetrain::StatusQueue drivetrain_status_queue_;
 
   ground_ball_intake::GroundBallIntakeStatusQueue ground_ball_intake_status_queue_;
+  ground_ball_intake::GroundBallIntakeInputQueue ground_ball_intake_input_queue_;
+  ground_ball_intake::GroundBallIntakeOutputQueue ground_ball_intake_output_queue_;
+  ground_ball_intake::GroundBallIntakeGoalQueue ground_ball_intake_goal_queue_;
 };
 
 }  // c2017
