@@ -5,6 +5,22 @@
 #include "c2017/subsystems/superstructure/shooter/shooter.pb.h"
 
 TEST(ShooterControllerTest, IsSane) {
+  auto plant = muan::control::StateSpacePlant<1, 3, 1>(frc1678::shooter_controller::controller::A(),
+                                                       frc1678::shooter_controller::controller::B(),
+                                                       frc1678::shooter_controller::controller::C());
+
+  plant.x(0) = 0.0;
+  plant.x(1) = 0.0;
+  plant.x(2) = 0.0;
+
+  plant.Update((Eigen::Matrix<double, 1, 1>() << 0.).finished());
+
+  EXPECT_NEAR(plant.x(0), 0, 1e-5);
+  EXPECT_NEAR(plant.x(1), 0, 1e-5);
+  EXPECT_NEAR(plant.x(2), 0, 1e-5);
+}
+
+TEST(ShooterControllerTest, PositiveVelocity) {
   c2017::shooter::ShooterInputProto input;
   c2017::shooter::ShooterOutputProto output;
   c2017::shooter::ShooterStatusProto status;
