@@ -17,8 +17,8 @@ using GroundBallIntakeOutputQueue = muan::queues::MessageQueue<GroundBallIntakeO
 using GroundBallIntakeStatusQueue = muan::queues::MessageQueue<GroundBallIntakeStatusProto, 100>;
 using GroundBallIntakeGoalQueue = muan::queues::MessageQueue<GroundBallIntakeGoalProto, 100>;
 
-} //ground_ball_intake
+}  // ground_ball_intake
 
-} //c2017
+}  // c2017
 
 #endif  // C2017_SUBSYSTEMS_SUPERSTRUCTURE_BALLINTAKE_QUEUETYPES_H_

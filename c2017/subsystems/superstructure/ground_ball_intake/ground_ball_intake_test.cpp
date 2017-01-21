@@ -21,7 +21,7 @@ TEST(TestGroundBallIntake, RollerIntakeGoingDown) {
   auto status = c2017::QueueManager::GetInstance().ground_ball_intake_status_queue().ReadLastMessage();
   EXPECT_NEAR(output->roller_voltage(), 12, 1e-5);
   EXPECT_FALSE(output->intake_up());
-  if(status) {
+  if (status) {
     EXPECT_FALSE(status.value()->is_intake_up());
     EXPECT_EQ(status.value()->running(), RollerGoal::INTAKE);
   }

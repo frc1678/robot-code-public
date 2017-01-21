@@ -5,13 +5,14 @@ package c2017.ground_ball_intake;
 option cc_enable_arenas = true;
 
 message GroundBallIntakeOutput {
-  required double roller_voltage = 1; //positive is intaking, negative is outtaking
-  required bool intake_up = 2; //controls pneumatic cylinder
+  required double roller_voltage =
+      1; // positive is intaking, negative is outtaking
+  required bool intake_up = 2; // controls pneumatic cylinder
 }
 
 message GroundBallIntakeStatus {
-  required bool is_intake_up = 1; //is intake letting in balls
-  required RollerGoal running = 2; //is it running or idle
+  required bool is_intake_up = 1; // is intake letting in balls
+  required RollerGoal running = 2; // is it running or idle
 }
 
 enum RollerGoal {
@@ -21,6 +22,6 @@ enum RollerGoal {
 }
 
 message GroundBallIntakeGoal {
-  required bool intake_up = 1; //whether it is down or up
+  required bool intake_up = 1; // whether it is down or up
   required RollerGoal run_intake = 2;
 }

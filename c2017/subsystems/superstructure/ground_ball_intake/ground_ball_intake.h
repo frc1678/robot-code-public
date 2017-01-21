@@ -14,16 +14,16 @@ class GroundBallIntake {
   GroundBallIntakeOutputProto Update(const DriverStationStatus& robot_state);
   GroundBallIntakeStatusProto get_status();
   void set_goal(GroundBallIntakeGoalProto goal);
+
  private:
   bool intake_up_;
   RollerGoal run_intake_;
 
   GroundBallIntakeStatusQueue& status_queue_;
-
 };
 
-} //ground_ball_intake
+}  // ground_ball_intake
 
-} //c2017
+}  // c2017
 
-#endif //C2017_SUBSYSTEMS_SUPERSTRUCTURE_GROUND_BALL_INTAKE_GROUND_BALL_INTAKE_H_
+#endif  // C2017_SUBSYSTEMS_SUPERSTRUCTURE_GROUND_BALL_INTAKE_GROUND_BALL_INTAKE_H_
