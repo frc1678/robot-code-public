@@ -1,6 +1,7 @@
 #ifndef C2017_SUBSYSTEMS_SUPERSTRUCTURE_TRIGGER_TRIGGER_CONTROLLER_H_
 #define C2017_SUBSYSTEMS_SUPERSTRUCTURE_TRIGGER_TRIGGER_CONTROLLER_H_
 
+#include <math.h>
 #include "muan/control/state_space_controller.h"
 #include "muan/control/state_space_observer.h"
 #include "muan/control/state_space_plant.h"

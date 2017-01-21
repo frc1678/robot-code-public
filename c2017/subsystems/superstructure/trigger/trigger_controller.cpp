@@ -1,6 +1,4 @@
 #include "trigger_controller.h"
-#include <math.h>
-#include "c2017/queue_manager/queue_manager.h"
 
 namespace c2017 {
 
