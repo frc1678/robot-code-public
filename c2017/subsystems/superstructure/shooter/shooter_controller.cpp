@@ -4,19 +4,16 @@ namespace c2017 {
 
 namespace shooter {
 
-using namespace ::muan::control;
-using namespace ::frc1678::shooter_controller;
-
-ShooterController::ShooterController() :
-  shooter_status_queue_{
-    QueueManager::GetInstance().shooter_status_queue()
-  }
-{
-  auto ss_plant = StateSpacePlant<1, 3, 1>(controller::A(), controller::B(), controller::C());
-  controller_ = StateSpaceController<1, 3, 1>(controller::K());
+ShooterController::ShooterController()
+    : shooter_status_queue_{QueueManager::GetInstance().shooter_status_queue()} {
+  auto ss_plant = muan::control::StateSpacePlant<1, 3, 1>(frc1678::shooter_controller::controller::A(),
+                                                          frc1678::shooter_controller::controller::B(),
+                                                          frc1678::shooter_controller::controller::C());
+  controller_ = muan::control::StateSpaceController<1, 3, 1>(frc1678::shooter_controller::controller::K());
   controller_.u_min() = Eigen::Matrix<double, 1, 1>::Ones() * -12.0;
   controller_.u_max() = Eigen::Matrix<double, 1, 1>::Ones() * 12.0;
-  observer_ = StateSpaceObserver<1, 3, 1>(ss_plant, controller::L());
+  observer_ =
+      muan::control::StateSpaceObserver<1, 3, 1>(ss_plant, frc1678::shooter_controller::controller::L());
 
   at_goal_ = false;
 
@@ -54,7 +51,7 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
     output->set_voltage(0);
   }
   status_->set_observed_velocity(observer_.x()(1, 0));
-  
+
   shooter_status_queue_->WriteMessage(status_);
 
   return output;
