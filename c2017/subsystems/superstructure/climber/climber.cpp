@@ -1,6 +1,4 @@
-#include <iostream>
 #include "climber.h"
-#include "c2017/queue_manager/queue_manager.h"
 
 namespace c2017 {
 

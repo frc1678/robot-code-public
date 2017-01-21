@@ -6,6 +6,7 @@
 #include "queue_types.h"
 #include <memory.h>
 #include "muan/wpilib/motor_safety.h"
+#include "c2017/queue_manager/queue_manager.h"
 
 namespace c2017 {
 
