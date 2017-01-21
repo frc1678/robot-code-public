@@ -8,7 +8,7 @@ cc_library(
     '//muan/wpilib:wpilib_queues',
     '//muan/wpilib/gyro:gyro_queues',
     '//third_party/frc971/control_loops/drivetrain:drivetrain_lib',
-    '//c2017/subsytems/superstructure/climber/queue_types.h'
+    '//c2017/subsystems/superstructure/climber:climber_queues'
   ],
   visibility = ['//visibility:public']
 )

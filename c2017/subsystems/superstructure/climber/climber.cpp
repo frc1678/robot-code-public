@@ -1,10 +1,11 @@
 #include <iostream>
 #include "climber.h"
+#include "c2017/queue_manager/queue_manager.h"
 
 namespace c2017 {
 
 namespace climber {
-Climber::Climber() : at_top_(false), is_climbing_(false), last_position_(0), status_queue_(QueueManager::GetInstance::climber_status_proto{}
+Climber::Climber() : at_top_(false), is_climbing_(false), last_position_(0), status_queue_(QueueManager::GetInstance().climber_status_queue()) {}
 
 void Climber::SetGoal(const ClimberGoalProto& goal) { 
     to_climb_ = goal->climbing();
@@ -24,7 +25,7 @@ ClimberOutputProto Climber::Update(const ClimberInputProto& input,
     if (to_climb_) {
       is_climbing_ = true;
 
-      if (input->velocity() > 1e-3) {  // TODO tune rate number
+      if (input->position() - last_position_ > 1e-3) {  // TODO tune rate number
         voltage_ = 12.0;
 
       } else {
@@ -45,7 +46,7 @@ ClimberOutputProto Climber::Update(const ClimberInputProto& input,
   status->set_currently_climbing(is_climbing_);
   status->set_hit_top(at_top_);
 
-  status_queue_.WriteMessage(status)
+  status_queue_.WriteMessage(status);
 
   return output;
 

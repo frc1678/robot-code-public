@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include "climber.h"
 #include <iostream>
+#include "c2017/queue_manager/queue_manager.h"
 
 TEST(Climbing, ClimbsToTheTop) {
   c2017::climber::ClimberGoalProto goal;
@@ -9,8 +10,7 @@ TEST(Climbing, ClimbsToTheTop) {
   muan::wpilib::DriverStationProto ds_status;
   ds_status->set_mode(RobotMode::TELEOP);
   goal->set_climbing(true);
-  input->set_position(100);  // position helps find the rate of the encoder. Encoder has been running
-                             // throughout the match as the shooter so its big.
+  input->set_position(100);  // position helps find the rate of the encoder. Encoder has been running throughout the match as the shooter so its big.
   c2017::climber::Climber test_climber;
   test_climber.SetGoal(goal);
   for (double t = 0.005; t < 2; t += 0.005) {
@@ -27,10 +27,12 @@ TEST(Climbing, ClimbsToTheTop) {
     }
   }
 
-  c2017::climber::ClimberStatusProto test_status = test_climber.Status();
+  auto test_status = c2017::QueueManager::GetInstance().climber_status_queue().ReadLastMessage();
 
-  EXPECT_TRUE(test_status->currently_climbing());
-  EXPECT_TRUE(test_status->hit_top());
+  if(test_status) {
+  EXPECT_TRUE(test_status.value()->currently_climbing());
+  EXPECT_TRUE(test_status.value()->hit_top());
+  }
   EXPECT_NEAR(output->voltage(), 0, 1e-5);
 }
 
@@ -54,10 +56,12 @@ TEST(Climbing, Disabled) {
       d = 1;
     }
     input->set_position(d);
-    c2017::climber::ClimberStatusProto test_status = test_climber.Status();
+    auto test_status = c2017::QueueManager::GetInstance().climber_status_queue().ReadLastMessage();
 
-    EXPECT_FALSE(test_status->currently_climbing());
-    EXPECT_FALSE(test_status->hit_top());
+    if(test_status) {
+    EXPECT_FALSE(test_status.value()->currently_climbing());
+    EXPECT_FALSE(test_status.value()->hit_top());
+    }
     EXPECT_NEAR(output->voltage(), 0, 1e-5);
   }
 }

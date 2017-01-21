@@ -22,7 +22,7 @@ class Climber {
   bool is_climbing_;
   double last_position_;
   bool to_climb_;
-  ClimberStatusQueue* status_queue_;
+  ClimberStatusQueue& status_queue_;
 
 };
 }  // climber
