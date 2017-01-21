@@ -1,16 +1,20 @@
 #include "c2017/subsystems/superstructure/ground_ball_intake/ground_ball_intake.h"
+#include "c2017/queue_manager/queue_manager.h"
 
 namespace c2017 {
 
 namespace ground_ball_intake {
 
-GroundBallIntakeOutputProto GroundBallIntake::Update(const DriverStationStatus& robot_state, GroundBallIntakeGoalProto goal_) {
+GroundBallIntake::GroundBallIntake() : status_queue_{QueueManager::GetInstance().ground_ball_intake_status_queue()} {}
+
+GroundBallIntakeOutputProto GroundBallIntake::Update(const DriverStationStatus& robot_state) {
+  GroundBallIntakeStatusProto status;
+  GroundBallIntakeOutputProto output;
   double roller_voltage = 0;
   bool enable_outputs = !(robot_state.mode() == RobotMode::DISABLED || robot_state.mode() == RobotMode::ESTOP || robot_state.brownout() == true);
-  bool intake_up;
 
   if (enable_outputs) {
-    switch(goal_->run_intake()) {
+    switch(run_intake_) {
       case RollerGoal::INTAKE :
         roller_voltage = 12;
         break;
@@ -21,23 +25,25 @@ GroundBallIntakeOutputProto GroundBallIntake::Update(const DriverStationStatus& 
         roller_voltage = 0;
         break;
     }
-    intake_up = goal_->intake_up();
   } else {
     roller_voltage = 0;
-    intake_up = true;
+    intake_up_ = true;
   }
 
-  output_->set_roller_voltage(roller_voltage);
-  output_->set_intake_up(intake_up);
+  output->set_roller_voltage(roller_voltage);
+  output->set_intake_up(intake_up_);
 
-  status_->set_running(goal_->run_intake());
-  status_->set_is_intake_up(intake_up);
+  status->set_running(run_intake_);
+  status->set_is_intake_up(intake_up_);
 
-  return output_;
+  status_queue_->WriteMessage(status);
+
+  return output;
 }
 
-GroundBallIntakeStatusProto GroundBallIntake::get_status() {
-  return status_;
+void GroundBallIntake::set_goal(GroundBallIntakeGoalProto goal) {
+  intake_up_ = goal->intake_up();
+  run_intake_ = goal->run_intake();
 }
 
 } //ground_ball_intake

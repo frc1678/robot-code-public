@@ -7,6 +7,7 @@ cc_library(
   deps = [
     ':ground_ball_intake_queues',
     '//muan/wpilib:wpilib_queues',
+    '//c2017/queue_manager:queue_manager'
   ],
   visibility = ['//visibility:public']
 )

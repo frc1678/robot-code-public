@@ -10,13 +10,16 @@ namespace ground_ball_intake {
 
 class GroundBallIntake {
  public:
-  GroundBallIntake() = default;
-  GroundBallIntakeOutputProto Update(const DriverStationStatus& robot_state, GroundBallIntakeGoalProto goal_);
+  GroundBallIntake();
+  GroundBallIntakeOutputProto Update(const DriverStationStatus& robot_state);
   GroundBallIntakeStatusProto get_status();
+  void set_goal(GroundBallIntakeGoalProto goal);
  private:
-  GroundBallIntakeOutputProto output_;
-  GroundBallIntakeStatusProto status_;
-  GroundBallIntakeGoalProto goal_;
+  bool intake_up_;
+  RollerGoal run_intake_;
+
+  GroundBallIntakeStatusQueue* status_queue_;
+
 };
 
 } //ground_ball_intake
