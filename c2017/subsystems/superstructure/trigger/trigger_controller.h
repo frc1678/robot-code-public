@@ -34,7 +34,7 @@ class TriggerController {
   muan::control::StateSpaceObserver<1, 3, 1> observer_;
 
   muan::units::AngularVelocity velocity_tolerance_;
-  TriggerStatusQueue* status_queue_;
+  TriggerStatusQueue status_queue_;
 };
 
 }  // trigger

@@ -270,7 +270,7 @@ TEST(TriggerController, BallResistance) {
 TEST(TriggerController, DisabledtoNormal) {
   c2017::trigger::TriggerInputProto input;
   c2017::trigger::TriggerOutputProto output;
-  auto status = c2017::QueueManager::GetInstance().trigger_status_queue()->MakeReader().ReadLastMessage();
+  auto status = c2017::QueueManager::GetInstance().trigger_status_queue().ReadLastMessage();
   c2017::trigger::TriggerGoalProto goal;
 
   c2017::trigger::TriggerController trigger_;
@@ -321,7 +321,7 @@ TEST(TriggerController, DisabledtoNormal) {
     // Making sure voltage is capped
     EXPECT_NEAR(output->voltage(), 0., 12.);
     if (status) {
-      EXPECT_NEAR(status->observed_velocity(), plant.x()[1], 1);
+      EXPECT_NEAR(status.value()->observed_velocity(), plant.x()[1], 1);
     }
   }
 

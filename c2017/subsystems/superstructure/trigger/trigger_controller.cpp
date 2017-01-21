@@ -7,7 +7,7 @@ namespace c2017 {
 namespace trigger {
 
 // Constructor
-TriggerController::TriggerController() : status_queue_(QueueManager::GetInstance().trigger_status_queue()) {
+TriggerController::TriggerController() {
   auto ss_plant = muan::control::StateSpacePlant<1, 3, 1>(frc1678::trigger_controller::controller::A(),
                                                           frc1678::trigger_controller::controller::B(),
                                                           frc1678::trigger_controller::controller::C());
@@ -26,7 +26,6 @@ TriggerController::TriggerController() : status_queue_(QueueManager::GetInstance
 TriggerOutputProto TriggerController::Update(const TriggerInputProto& input,
                                              const muan::wpilib::DriverStationProto& robot_state) {
   TriggerOutputProto output;
-  TriggerStatusProto status;
 
   // Checking if E-Stop/brownout/disabled from driver station proto
   // Trigger should not be running if any of these are true
@@ -59,11 +58,11 @@ TriggerOutputProto TriggerController::Update(const TriggerInputProto& input,
     observer_.Update(u, y);
   }
 
-  status->set_observed_velocity(observer_.x()[1]);
-  status->set_goal_velocity(balls_per_second_ * muan::units::pi / 2);
-  status->set_position(observer_.x()[0]);
+  status_->set_observed_velocity(observer_.x()[1]);
+  status_->set_goal_velocity(balls_per_second_ * muan::units::pi / 2);
+  status_->set_position(observer_.x()[0]);
 
-  status_queue_->WriteMessage(status);
+  status_queue_.WriteMessage(status_);
   return output;
 }
 
