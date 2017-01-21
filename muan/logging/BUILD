@@ -3,7 +3,7 @@ load('//third_party/google/protobuf:protobuf.bzl', 'cc_proto_library')
 
 cc_library(
   name = 'logger',
-  srcs = ['logger.hpp'],
+  srcs = ['logger.hpp', 'logger.cpp'],
   hdrs = ['logger.h'],
   deps = ['filewriter',
           'textlogger',
