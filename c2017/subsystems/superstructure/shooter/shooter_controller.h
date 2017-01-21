@@ -29,7 +29,8 @@ class ShooterController {
 
   bool at_goal_;
 
-  c2017::shooter::ShooterGoalProto goal_;
+  c2017::shooter::ShotMode shot_mode_;
+	double goal_velocity_; 
   c2017::shooter::ShooterStatusProto status_;
   double angle_tolerance_;
   double velocity_tolerance_;
