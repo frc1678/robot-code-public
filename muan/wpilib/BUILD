@@ -47,23 +47,6 @@ cc_binary(
     ],
 )
 
-cc_library(
-    name = "motor_safety",
-    srcs = ["motor_safety.cpp"],
-    hdrs = ["motor_safety.h"],
-    deps = ["//muan/utils:history"],
-)
-
-cc_test(
-    name = "motor_safety_test",
-    srcs = ["motor_safety_test.cpp"],
-    linkopts = ["-lm"],
-    deps = [
-        ":motor_safety",
-        "//third_party/google/googletest",
-    ],
-)
-
 cc_binary(
     name = "pcm_test",
     srcs = ["pcm_test.cpp"],
