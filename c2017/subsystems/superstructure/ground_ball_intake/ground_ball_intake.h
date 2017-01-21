@@ -18,7 +18,7 @@ class GroundBallIntake {
   bool intake_up_;
   RollerGoal run_intake_;
 
-  GroundBallIntakeStatusQueue* status_queue_;
+  GroundBallIntakeStatusQueue& status_queue_;
 
 };
 

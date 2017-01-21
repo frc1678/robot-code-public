@@ -36,7 +36,7 @@ GroundBallIntakeOutputProto GroundBallIntake::Update(const DriverStationStatus& 
   status->set_running(run_intake_);
   status->set_is_intake_up(intake_up_);
 
-  status_queue_->WriteMessage(status);
+  status_queue_.WriteMessage(status);
 
   return output;
 }

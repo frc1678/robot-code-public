@@ -35,7 +35,7 @@ class QueueManager {
   frc971::control_loops::drivetrain::OutputQueue* drivetrain_output_queue();
   frc971::control_loops::drivetrain::StatusQueue* drivetrain_status_queue();
 
-  ground_ball_intake::GroundBallIntakeStatusQueue* ground_ball_intake_status_queue();
+  ground_ball_intake::GroundBallIntakeStatusQueue& ground_ball_intake_status_queue();
 
  private:
   QueueManager() = default;
