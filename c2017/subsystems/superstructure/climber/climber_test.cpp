@@ -7,7 +7,7 @@ class ClimberTest : public ::testing::Test {
  public:
   ClimberTest() {}
   void Update(double voltage) {
-     current_position_ += current_position_ > 1 ? 1 : 0.00042 * voltage;
+     current_position_ += current_position_ > 1 ? 0 : 0.00042 * voltage;
      current_ = voltage / 10;
   }
   double GetPosition() {
@@ -27,25 +27,25 @@ class ClimberTest : public ::testing::Test {
 TEST_F(ClimberTest, ClimbsToTheTop) {
   c2017::climber::ClimberGoalProto goal;
   c2017::climber::ClimberInputProto input;
+  c2017::climber::ClimberOutputProto output;
 
   muan::wpilib::DriverStationProto ds_status;
   ds_status->set_mode(RobotMode::TELEOP);
 
   goal->set_climbing(true);
-  input->set_position(GetPosition());  // position helps find the rate of the encoder. Encoder has been running throughout the match as the shooter so its big.
+  input->set_position(100);  // position helps find the rate of the encoder. Encoder has been running throughout the match as the shooter so its big.
 
   c2017::climber::Climber test_climber;
 
   test_climber.SetGoal(goal);
-
-  auto output = test_climber.Update(input, ds_status);
   
   for (double t = -1.005; t < 2; t += 0.005) {
     input->set_position(GetPosition());
+    output = test_climber.Update(input, ds_status);
+    Update(output->voltage());
     if (GetPosition() < 1) {
       EXPECT_NEAR(output->voltage(), 12, 1e-5);
     }
-    Update(output->voltage());
   }
 
   auto test_status = c2017::QueueManager::GetInstance().climber_status_queue().ReadLastMessage();

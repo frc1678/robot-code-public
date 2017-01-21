@@ -16,6 +16,7 @@ cc_library(
   deps = ['//muan/units:units', 
           ':climber_queues', 
           '//muan/wpilib:wpilib_queues',
+          '//muan/wpilib:motor_safety',
           '//c2017/queue_manager:queue_manager'],
   visibility = ['//visibility:public']
 )

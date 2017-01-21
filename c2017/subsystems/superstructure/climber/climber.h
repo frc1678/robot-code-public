@@ -5,6 +5,7 @@
 #include "muan/units/units.h"
 #include "queue_types.h"
 #include <memory.h>
+#include "muan/wpilib/motor_safety.h"
 
 namespace c2017 {
 
@@ -23,6 +24,7 @@ class Climber {
   double last_position_;
   bool to_climb_;
   ClimberStatusQueue& status_queue_;
+  muan::wpilib::MotorSafety climber_watcher_;
 
 };
 }  // climber

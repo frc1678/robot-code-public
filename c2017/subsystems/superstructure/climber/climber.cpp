@@ -5,7 +5,7 @@
 namespace c2017 {
 
 namespace climber {
-Climber::Climber() : at_top_(false), is_climbing_(false), last_position_(0), status_queue_(QueueManager::GetInstance().climber_status_queue()) {}
+Climber::Climber() : at_top_(false), is_climbing_(false), last_position_(0), status_queue_(QueueManager::GetInstance().climber_status_queue()), climber_watcher_(1/0.001, 0.25, std::numeric_limits<int>::max(), 0.005) {}
 
 void Climber::SetGoal(const ClimberGoalProto& goal) { 
     to_climb_ = goal->climbing();
@@ -23,15 +23,9 @@ ClimberOutputProto Climber::Update(const ClimberInputProto& input,
   if (robot_state == RobotMode::TELEOP) {
 
     if (to_climb_) {
+      voltage_ = climber_watcher_.Update(12, 1/(input->position() - last_position_));
       is_climbing_ = true;
-
-      if (input->position() - last_position_ > 1e-3) {  // TODO tune rate number
-        voltage_ = 12.0;
-
-      } else {
-        voltage_ = 0.0;
-        at_top_ = true;
-      }
+      at_top_ = voltage_ < 9;
 
     } else {
       is_climbing_ = false;
@@ -40,6 +34,7 @@ ClimberOutputProto Climber::Update(const ClimberInputProto& input,
 
   } else {
     voltage_ = 0.0;
+    climber_watcher_.Reset();
   }
   last_position_ = input->position();
   output->set_voltage(voltage_);
