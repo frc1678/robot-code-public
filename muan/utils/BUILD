@@ -56,6 +56,13 @@ cc_library(
     ],
 )
 
+cc_library(
+  name = 'monitor',
+  srcs = ['monitor.cpp'],
+  hdrs = ['monitor.h'],
+  deps = [':history']
+)
+
 cc_proto_library(
     name = "test_proto",
     srcs = ["test_proto.proto"],
@@ -99,3 +106,11 @@ cc_test(
         "//third_party/google/googletest",
     ],
 )
+
+cc_test(
+  name = 'monitor_test',
+  srcs = ['monitor_test.cpp'],
+  deps = [':monitor', '//third_party/google/googletest:googletest'],
+  linkopts = ['-lm']
+)
+
