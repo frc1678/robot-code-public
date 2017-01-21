@@ -86,7 +86,7 @@ class Drivetrain(control_loop.ControlLoop):
     # Torque constant
     self.Kt = self.stall_torque / self.stall_current
     # Gear ratios
-    self.gear = 4.55
+    self.gear = 12.0 / 40.0 * 24.0 / 60.0 * 24.0 / 60.0 # 4.55 on actual robot
     self.Gl = self.gear
     self.Gr = self.gear
 

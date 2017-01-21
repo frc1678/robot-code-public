@@ -1,7 +1,8 @@
 #ifndef C2017_LEMONSCRIPT_LEMONSRCIPT_H_
 #define C2017_LEMONSCRIPT_LEMONSRCIPT_H_
 
-#include "third_party/lemonscript_transpiler/example_func.h"
+//#include "c2017/lemonscript/lemonscript_funcs.h"
+#include "c2017/lemonscript/ls_gen.h"
 #include "third_party/lemonscript/lemonscript/lemonscript.h"
 #include "third_party/lemonscript/lemonscript/AvailableCppCommandDeclaration.h"
 #include "third_party/lemonscript/lemonscript/LemonScriptCompiler.h"
@@ -21,12 +22,15 @@ class Lemonscript {
   ~Lemonscript();
 
   void operator()();
-
+  void Start(); // Start running lemonscript
+  void Stop(); // Pause running lemonscript
+  void Kill(); // Stop the thread
  private:
   ::lemonscript::LemonScriptState *state_;
   ::lemonscript::LemonScriptCompiler *compiler_;
   std::vector<const ::lemonscript::AvailableCppCommandDeclaration *> decls_;
   std::atomic<bool> running_;
+  std::atomic<bool> started_;
 };
 }  // lemonscript
 }  // c2017
