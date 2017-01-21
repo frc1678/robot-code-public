@@ -35,10 +35,10 @@ class QueueManager {
   frc971::control_loops::drivetrain::OutputQueue* drivetrain_output_queue();
   frc971::control_loops::drivetrain::StatusQueue* drivetrain_status_queue();
   
-  c2017::trigger::TriggerGoalQueue* trigger_goal_queue();
-  c2017::trigger::TriggerInputQueue* trigger_input_queue();
-  c2017::trigger::TriggerOutputQueue* trigger_output_queue();
-  c2017::trigger::TriggerStatusQueue* trigger_status_queue();
+  c2017::trigger::TriggerGoalQueue& trigger_goal_queue();
+  c2017::trigger::TriggerInputQueue& trigger_input_queue();
+  c2017::trigger::TriggerOutputQueue& trigger_output_queue();
+  c2017::trigger::TriggerStatusQueue& trigger_status_queue();
 
  private:
   QueueManager() = default;
