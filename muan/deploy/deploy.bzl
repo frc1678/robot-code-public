@@ -5,9 +5,8 @@ def _muan_deploy_impl(ctx):
     content = '\n'.join([
       '#!/bin/bash',
     ] + [
-      'exec %s %s -- --main=%s --default-target=%s "$@"' % (
+      'exec %s --main %s --default-target %s "$@"' % (
           ctx.executable._deploy_script.short_path,
-          ' '.join([f.short_path for f in ctx.files.data + ctx.files.main]),
           ctx.files.main[0].short_path,
           ctx.attr.default_target)
     ]),

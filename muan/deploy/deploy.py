@@ -3,11 +3,32 @@ import subprocess as sp
 import re
 import os
 from distutils import spawn
+import argparse
 
 """
 Deploys a program and all related files needed for execution. This should usually not be run directly - use
 the muan_deploy bazel rule from deploy.bzl, which runs this script.
 """
+
+def get_args():
+    parser = argparse.ArgumentParser(description = "Deploy a robot program and all related files needed for execution")
+    parser.add_argument('--main', dest='main_binary', help="The main binary to run with robotCommand", required=True)
+    parser.add_argument('--default-target', dest='default_target', help="The default target to deploy to. Should only be set by the muan_deploy bazel rule.", required=True)
+    parser.add_argument('--user', dest='user', help="The user to log in and deploy as", default='lvuser')
+    parser.add_argument('--target', dest='target', help="The address of the RoboRIO to deploy to", default=None)
+    parser.add_argument('--team', dest='team', help="The team number to deploy to. Setting this option will override --target as roborio-####-frc.local.", default=None)
+    parser.add_argument('--port', dest='port', default='22')
+    parser.add_argument('--deploy-path', dest='deploy_path', help="The path on the RoboRIO to deploy code to", default='/home/lvuser/robot_code')
+    parser.add_argument('--robot-command', dest='command', help="The robotCommand file to create", default='/home/lvuser/robotCommand')
+    parser.add_argument('--password', dest='password', help="The password for the user on the RoboRIO", default='')
+    args = parser.parse_args()
+    if args.target is None:
+        if args.team is not None:
+            args.target = 'roborio-{}-frc.local'.format(args.team)
+        else:
+            args.target = args.default_target
+
+    return args
 
 # Shamelessly stolen from 971's downloader script :)
 def install(ssh_target, pkg):
@@ -30,79 +51,31 @@ def get_ssh_command(port):
     sshpass_path = spawn.find_executable('sshpass')
     return ([sshpass_path, '-e'] if sshpass_path is not None else []) + ['ssh', '-p', '%s' % port]
 
-def main(argv):
+def main():
     files = []
     opts = []
 
-    options = {}
-
-    # All of the files in the list will come before the --, all other options come after.
-    if '--' in argv:
-        files = argv[1:argv.index('--')]
-        opts = argv[argv.index('--')+1:]
-    else:
-        files = argv[1:]
-
-    # Each option must be of the form --flag=value (or --flag, which sets the value to true implicitly)
-    for opt in opts:
-        if opt.startswith('--'):
-            if '=' in opt:
-                flag_name = opt.split('=')[0][2:]
-                flag_value = ''.join(opt.split('=')[1:])
-                options[flag_name] = flag_value
-            else:
-                options[opt] = True
-
-    # The user to log in as
-    user = options.get('user', 'lvuser')
-
-    # The port of the machine to connect to
-    port = options.get('port', '22')
-
-    # The address of the machine to deploy to
-    target = ''
-
-    if 'target' in options:
-        target = options.get('target')
-    elif 'team' in options:
-        target = 'roborio-{}-frc.local'.format(options.get('team'))
-    else:
-        target = options.get('default-target')
-
-    assert len(target) > 0, "Can't have an empty target! Use --team=<team number>, --target=<ip>, or --default-target=<ip>"
-
-    # Where to put the actual files on the RoboRIO
-    remote_path = options.get('path', '/home/lvuser/robot_code')
-
-    # Where to put the robotCommand file on the RoboRIO
-    binary_name = options.get('robot-command', '/home/lvuser/robotCommand')
-    binary_path = os.path.dirname(binary_name)
+    options = get_args()
 
     # Set the password to be used by sshpass
-    os.environ["SSHPASS"] = options.get('password', '')
+    os.environ["SSHPASS"] = options.password
 
-    # The main file that we should run with the robotCommand
-    assert 'main' in options, "Must supply the name for a main program file!"
-    main = options.get('main')
-
-    all_files = files + [main]
+    # Where we actually want to ssh into
+    ssh_target = '{}@{}'.format(options.user, options.target)
 
     # An ssh target combined with the path to deploy to
-    assert os.path.isabs(remote_path), "Path must be absolute: {}".format(remote_path)
-    full_remote_path = "%s@%s:%s" % (user, target, remote_path)
+    assert os.path.isabs(options.deploy_path), "Path must be absolute: {}".format(options.deploy_path)
+    ssh_deploy_path = "{}:{}".format(ssh_target, options.deploy_path)
 
     # The ssh command to use
-    ssh_command = get_ssh_command(port)
+    ssh_command = get_ssh_command(options.port)
 
     # rsync all of the runfiles over. This will also copy this script over, which isn't the cleanest way to
     # do it, but it works and this file is small enough that it doesn't matter. Also, if this file doesn't change (which it shouldn't) there will be no problem.
-    rsync = ['rsync', '-e', ' '.join(ssh_command), '-c', '-v', '-z', '-r', '-L', '.', full_remote_path]
+    rsync = ['rsync', '-e', ' '.join(ssh_command), '-c', '-v', '-z', '-r', '-L', '.', ssh_deploy_path]
 
     # This will look like (cd /home/lvuser/robot_code && ./c2017/frc1678).
-    robot_command_contents = '''\\$(cd {} && ./{})'''.format(remote_path, main)
-
-    # Where we actually want to ssh into
-    ssh_target = '%s@%s' % (user, target)
+    robot_command_contents = '''\\$(cd {} && ./{})'''.format(options.deploy_path, options.main_binary)
 
     # Kill the user program before copying things
     ssh_kill_command = ssh_command + [
@@ -115,7 +88,7 @@ def main(argv):
            ssh_target,
            'echo "{robot_command_contents}" > {robot_command_path} && chmod +x {robot_command_path}'.format(
                robot_command_contents = robot_command_contents,
-               robot_command_path = binary_name)
+               robot_command_path = options.command)
     ]
 
     # Try to rsync the files over and run an ssh command to create the robotCommand.
@@ -126,6 +99,7 @@ def main(argv):
         sp.check_call(rsync)
         print("Running ssh command: {}".format(' '.join(ssh)))
         sp.check_call(ssh)
+        print("Deploying completed successfully.")
     except sp.CalledProcessError as e:
         # If it doesn't work, try installing rsync on the RoboRIO.
         if e.returncode == 127:
@@ -136,12 +110,12 @@ def main(argv):
             sp.check_call(rsync)
         elif e.returncode == 12:
             print('Incorrect password')
+            return e.returncode
         elif e.returncode == 255:
             print("SSH error - check that the address is correct")
+            return e.returncode
         else:
             raise e
 
-    print("Deploying completed successfully.")
-
 if __name__ == '__main__':
-    main(sys.argv)
+    exit(main())
