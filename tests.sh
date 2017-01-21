@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+./check-format.py
+
 if [[ $* == *--no-vision* ]]; then
   bazel test --test_output=errors //muan/... -- -//muan/wpilib/... -//muan/teleop/... -//muan/vision/...
 else
@@ -22,5 +24,3 @@ bazel test --test_output=errors //c2017/... -- -//c2017:frc1678 -//c2017/wpilib/
 bazel build //c2017/... --cpu=roborio
 
 bazel test --test_output=errors //third_party/frc971/control_loops/drivetrain:drivetrain_lib_test
-
-./check-format.py --no-fail
