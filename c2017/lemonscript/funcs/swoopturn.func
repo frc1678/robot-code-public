@@ -16,7 +16,7 @@ init {
       muan::actions::DrivetrainAction::SwoopTurn(distance, angle, true, properties,
       c2017::QueueManager::GetInstance().drivetrain_goal_queue(),
       c2017::QueueManager::GetInstance().drivetrain_status_queue(),
-      0.01, 0.05));
+      0.05, 0.1));
   return false;
 }
 
