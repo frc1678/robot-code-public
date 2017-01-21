@@ -12,7 +12,7 @@ SubsystemRunner::SubsystemRunner()
                   QueueManager::GetInstance().gyro_queue()} {}
 
 void SubsystemRunner::operator()() {
-  aos::time::PhasedLoop phased_loop(aos::time::Time::InMS(5));
+  aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(5));
 
   // TODO(Kyle or Wesley) Come up with some actual value for this...
   aos::SetCurrentThreadRealtimePriority(10);
@@ -22,7 +22,8 @@ void SubsystemRunner::operator()() {
 
   while (running_) {
     wpilib_.ReadSensors();
-    // Update subsystems here
+
+    drivetrain_.Update();
 
     wpilib_.WriteActuators();
 

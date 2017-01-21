@@ -54,11 +54,11 @@ void DrivetrainInterface::WriteActuators() {
   auto outputs = output_queue_.ReadLastMessage();
   if (outputs) {
     motor_left_.Set(
-        -muan::Cap((*outputs)->left_voltage(), -kMaxVoltage, kMaxVoltage) /
+        -muan::utils::Cap((*outputs)->left_voltage(), -kMaxVoltage, kMaxVoltage) /
         12.0);
 
     motor_right_.Set(
-        muan::Cap((*outputs)->right_voltage(), -kMaxVoltage, kMaxVoltage) /
+        muan::utils::Cap((*outputs)->right_voltage(), -kMaxVoltage, kMaxVoltage) /
         12.0);
 
     // TODO(Wesley) Verify high gear/low gear

@@ -1,0 +1,34 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+package c2017.magazine;
+
+message MagazineStatus {
+  required bool has_gear = 1;
+  required bool current_spiked = 2;
+  required bool is_running = 3;
+}
+
+message MagazineInput {
+  required double conveyor_current = 1;
+}
+
+message MagazineOutput {
+  // Voltage running conveyor system to shooter - positve is towards shooter, negative is away
+  required double conveyor_motor_voltage = 1;
+  // Extends solenoids to expand magazine capacity
+  required bool magazine_cylinder_extend = 2;
+  required bool gear_hp_open = 3;
+  required bool gear_shutter_open = 4;
+}
+
+enum MotorStatus {
+  IDLE = 0;
+  FORWARD = 1;
+  BACKWARD = 2;
+}
+
+message MagazineGoal {
+  required MotorStatus conveyor = 1;
+}

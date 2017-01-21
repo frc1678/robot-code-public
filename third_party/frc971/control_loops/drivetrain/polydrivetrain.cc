@@ -19,13 +19,13 @@ PolyDrivetrain::PolyDrivetrain(const DrivetrainConfig &dt_config,
       U_Poly_((Eigen::Matrix<double, 4, 2>() << /*[[*/ 1, 0 /*]*/,
                /*[*/ -1, 0 /*]*/,
                /*[*/ 0, 1 /*]*/,
-               /*[*/ 0, -1 /*]]*/)
-                  .finished(),
+               /*[*/ 0, -1 /*]]*/).finished(),
               (Eigen::Matrix<double, 4, 1>() << /*[[*/ 12 /*]*/,
                /*[*/ 12 /*]*/,
                /*[*/ 12 /*]*/,
-               /*[*/ 12 /*]]*/)
-                  .finished()),
+               /*[*/ 12 /*]]*/).finished(),
+              (Eigen::Matrix<double, 2, 4>() << /*[[*/ 12, 12, -12, -12 /*]*/,
+               /*[*/ -12, 12, 12, -12 /*]*/).finished()),
       loop_(new StateFeedbackLoop<2, 2, 2>(dt_config.make_v_drivetrain_loop())),
       ttrust_(1.1),
       wheel_(0.0),
@@ -199,12 +199,16 @@ void PolyDrivetrain::Update() {
     const double equality_w = 0.0;
 
     // Construct a constraint on R by manipulating the constraint on U
-    ::aos::controls::HPolytope<2> R_poly = ::aos::controls::HPolytope<2>(
-        U_Poly_.H() * (loop_->K() + FF),
-        U_Poly_.k() + U_Poly_.H() * loop_->K() * loop_->X_hat());
+    ::aos::controls::HVPolytope<2, 4, 4> R_poly_hv(
+        U_Poly_.static_H() * (loop_->K() + FF),
+        U_Poly_.static_k() + U_Poly_.static_H() * loop_->K() * loop_->X_hat(),
+        (loop_->K() + FF).inverse() *
+            ::aos::controls::ShiftPoints<2, 4>(U_Poly_.StaticVertices(),
+                                               loop_->K() * loop_->X_hat()));
 
     // Limit R back inside the box.
-    loop_->mutable_R() = CoerceGoal(R_poly, equality_k, equality_w, loop_->R());
+    loop_->mutable_R() =
+        CoerceGoal(R_poly_hv, equality_k, equality_w, loop_->R());
   }
 
   const Eigen::Matrix<double, 2, 1> FF_volts = FF * loop_->R();

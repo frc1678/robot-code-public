@@ -31,13 +31,16 @@ TEST(TimeTest, timevalConversions) {
 }
 
 TEST(TimeDeathTest, ConstructorChecking) {
+  // logging::Init();
   EXPECT_DEATH(
       {
+        // logging::AddImplementation(new util::DeathTestLogImplementation());
         Time(0, -1);
       },
       ".*0 <= nsec\\(-1\\) < 10+ .*");
   EXPECT_DEATH(
       {
+        // logging::AddImplementation(new util::DeathTestLogImplementation());
         Time(0, Time::kNSecInSec);
       },
       ".*0 <= nsec\\(10+\\) < 10+ .*");
@@ -251,7 +254,7 @@ TEST(TimeTest, Abs) {
 }
 
 TEST(TimeTest, FromRate) {
-  EXPECT_EQ(MACRO_DARG(Time(0, Time::kNSecInSec / 100)), Time::FromRate(100));
+  EXPECT_EQ(::std::chrono::milliseconds(10), Time::FromRate(100));
 }
 
 // Test the monotonic_clock and sleep_until functions.

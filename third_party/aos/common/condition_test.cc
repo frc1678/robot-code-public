@@ -11,11 +11,13 @@
 
 #include "third_party/aos/common/time.h"
 #include "third_party/aos/common/mutex.h"
+#include "third_party/aos/testing/test_shm.h"
 #include "third_party/aos/common/type_traits.h"
+#include "third_party/aos/linux_code/ipc_lib/core_lib.h"
+#include "third_party/aos/common/logging/logging.h"
 #include "third_party/aos/common/macros.h"
 #include "third_party/aos/linux_code/ipc_lib/aos_sync.h"
 #include "third_party/aos/common/die.h"
-#include "third_party/aos/common/check.h"
 #include "third_party/aos/common/util/thread.h"
 #include "third_party/aos/testing/prevent_exit.h"
 
@@ -98,12 +100,17 @@ class ConditionTest : public ConditionTestCommon {
     Mutex mutex;
     Condition condition;
   };
+  static_assert(shm_ok<Shared>::value,
+                "it's going to get shared between forked processes");
 
-  ConditionTest() : shared_(new Shared()) {
+  ConditionTest() : shared_(static_cast<Shared *>(shm_malloc(sizeof(Shared)))) {
+    new (shared_) Shared();
   }
   ~ConditionTest() {
     shared_->~Shared();
   }
+
+  ::aos::testing::TestSharedMemory my_shm_;
 
   Shared *const shared_;
 
@@ -134,7 +141,7 @@ class ConditionTestProcess {
                        const ::Time &timeout = kDefaultTimeout)
     : delay_(kMinimumDelay + delay), action_(action), condition_(condition),
       timeout_(delay_ + timeout), child_(-1),
-      shared_(new Shared()) {
+      shared_(static_cast<Shared *>(shm_malloc(sizeof(Shared)))) {
     new (shared_) Shared();
   }
   ~ConditionTestProcess() {
@@ -208,6 +215,8 @@ class ConditionTestProcess {
     volatile bool finished;
     aos_futex ready;
   };
+  static_assert(shm_ok<Shared>::value,
+                "it's going to get shared between forked processes");
 
   void Run() {
     if (action_ == Action::kWaitLockStart) {

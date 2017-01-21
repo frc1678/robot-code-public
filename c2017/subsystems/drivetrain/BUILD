@@ -51,7 +51,7 @@ cc_library(
 cc_library(
   name = 'drivetrain_base',
   srcs = [
-    'drivetrain_base.cpp',
+    'drivetrain_base.cc',
   ],
   hdrs = [
     'drivetrain_base.h',
