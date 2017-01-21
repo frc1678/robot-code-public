@@ -14,7 +14,6 @@ cc_library(
   hdrs = ['trigger_controller.h'],
   deps = [
     '//muan/control:state_space',
-    '//muan/wpilib:wpilib_queues',
     ':trigger_constants',
     ':trigger_queues',
     '//c2017/queue_manager:queue_manager'
