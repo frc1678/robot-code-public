@@ -31,5 +31,7 @@ cc_test(
   name = 'climber_test',
   srcs = ['climber_test.cpp'],
   deps = [ ':climber', 
-           '//third_party/google/googletest:googletest']
+           '//third_party/google/googletest:googletest',
+           ':climber_queues',
+           ]
 )
