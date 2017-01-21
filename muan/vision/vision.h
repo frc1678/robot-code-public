@@ -17,6 +17,7 @@ class VisionScorer {
                           double height, // in pixels
                           double fullness // area / bounding box area
                           ) = 0;
+  virtual void Morph(cv::Mat) {} // Erode and dilate go in here. By default does nothing.
 };
 
 class Vision {

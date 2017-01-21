@@ -7,19 +7,23 @@ namespace vision {
 
 class VisionScorer2017 : public muan::VisionScorer {
  public:
-  double GetScore(double , double /* unused */, double skew,
-                  double width, double height, double fullness) override {
+  double GetScore(double , double /* unused */, double skew, double width, double height, double fullness) {
     double base_score = std::log(width * height) / (.1 + std::pow(fullness - .9, 2));
     double target_score = (base_score / (1 + skew));
     return target_score;
+  }
+
+  void Morph(cv::Mat img) {
+    cv::erode(img, img, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1, 3), cv::Point(0, 1)));
+    cv::dilate(img, img, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1, 25), cv::Point(0, 12)));
   }
 };
 
 void RunVision() {
   cv::VideoCapture cap;
-  cap.open(1);
+  cap.open("c2017/vision/coprocessor/output1.avi");
   muan::Vision::ColorRange range {
-    cv::Scalar(0, 100, 0), cv::Scalar(150, 255, 255), CV_BGR2RGB
+    cv::Scalar(0, 48, 37), cv::Scalar(10, 249, 228), CV_BGR2RGB
   };
   muan::Vision::VisionConstants constants {1, 1, 0, 0, 0.9};
   muan::Vision vision{ range, std::make_shared<VisionScorer2017>(), constants};
@@ -36,7 +40,7 @@ void RunVision() {
       position->set_angle_to_target(status.angle_to_target);
     }
     vision_queue.WriteMessage(position);
-    cv::waitKey(10);
+    cv::waitKey(0);
   }
 }
 

@@ -65,6 +65,7 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
 
   cv::cvtColor(raw, image, range_.colorspace);
   cv::inRange(image, range_.lower_bound, range_.upper_bound, image);
+  scorer_->Morph(image);
 
   std::vector<std::vector<cv::Point>> contours;
   std::vector<cv::Vec4i> hierarchy;
