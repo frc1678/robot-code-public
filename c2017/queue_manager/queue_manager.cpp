@@ -41,9 +41,8 @@ QueueManager::drivetrain_output_queue() {
   return &drivetrain_output_queue_;
 }
 
-ground_ball_intake::GroundBallIntakeStatusQueue*
-QueueManager::ground_ball_intake_status_queue() {
-  return &ground_ball_intake_status_queue_;
+ground_ball_intake::GroundBallIntakeStatusQueue& QueueManager::ground_ball_intake_status_queue() {
+  return ground_ball_intake_status_queue_;
 }
 
 }  // c2017
