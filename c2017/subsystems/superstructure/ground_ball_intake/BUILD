@@ -3,7 +3,8 @@ load('//third_party/google/protobuf:protobuf.bzl', 'cc_proto_library')
 cc_library(
   name = 'ground_ball_intake',
   srcs = ['ground_ball_intake.cpp'],
-  hdrs = ['ground_ball_intake.h'], deps = [
+  hdrs = ['ground_ball_intake.h'],
+  deps = [
     ':ground_ball_intake_queues',
     '//muan/wpilib:wpilib_queues',
     '//c2017/queue_manager:queue_manager'
