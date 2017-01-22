@@ -69,11 +69,11 @@ class Logger {
   // under the name "name". The name will determine the file that it logs to,
   // as well as serving as a human-readable name in other places.
   template <class T>
-  void AddQueue(const std::string& name, T* queue_reader);
+  void AddQueue(const std::string& name, T* queue);
 
   // This is designed to be used with std::thread to run the logger. It will
   // run forever, calling the Update function.
-  void Run();
+  void operator()();
 
   // This starts the logger if you have previously stopped it by calling Stop().
   // You do not need to call this if you have just called Run() - Run() will
@@ -97,14 +97,14 @@ class Logger {
     virtual std::experimental::optional<std::string> GetMessageAsCSV() = 0;
   };
 
-  template <class T>
+  template <class R>
   class Reader : public GenericReader {
    public:
-    Reader(T* reader);
+    Reader(R reader);
     std::experimental::optional<std::string> GetMessageAsCSV() override;
 
    private:
-    T* reader_;
+    R reader_;
   };
 
   struct QueueLog {
