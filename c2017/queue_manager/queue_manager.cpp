@@ -55,7 +55,7 @@ c2017::trigger::TriggerInputQueue& QueueManager::trigger_input_queue() {
 }
 
 c2017::trigger::TriggerOutputQueue& QueueManager::trigger_output_queue() {
-  return trigger_output_queue_;`
+  return trigger_output_queue_;
 }
 
 c2017::trigger::TriggerStatusQueue& QueueManager::trigger_status_queue() {
