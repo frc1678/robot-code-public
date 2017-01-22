@@ -88,16 +88,17 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
     cv::RotatedRect bounding = cv::minAreaRect(hull[i]);
 
     double area = cv::contourArea(contours[i]);
-    double hull_area = cv::contourArea(hull[i]);
-    // Fullness is the ratio of the contour's area to that of its convex hull
-    double fullness = area / hull_area;
 
     // A baseline score to determine whether or not it's even a target
-    double base_score = hull_area / (image.rows * image.cols);
+    double base_score = area / (image.rows * image.cols);
 
-    // Check anything with area at least .2% of the image
-    if (base_score > 0.002) {
+    // Check anything with area at least 1% of the image
+    if (base_score > 0.01) {
       targets.push_back(i);
+
+      double hull_area = cv::contourArea(hull[i]);
+      // Fullness is the ratio of the contour's area to that of its convex hull
+      double fullness = area / hull_area;
 
       std::vector<cv::Point> skewbox;
 
