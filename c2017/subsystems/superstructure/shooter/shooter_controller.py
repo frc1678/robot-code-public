@@ -161,6 +161,7 @@ observer = StateSpaceObserver(gains, x0)
 
 def goal(t):
     return np.asmatrix([0., 300., 0.]).T
+
 if __name__ == '__main__':
     if len(sys.argv) == 3:
         from muan.control.state_space_writer import StateSpaceWriter
