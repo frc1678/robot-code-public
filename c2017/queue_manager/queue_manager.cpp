@@ -2,6 +2,16 @@
 
 namespace c2017 {
 
+void QueueManager::StartLogging() {
+  logger_.AddQueue("pdp_status", &pdp_status_queue_);
+  logger_.AddQueue("driver_station", &driver_station_queue_);
+  logger_.AddQueue("gyro", &driver_station_queue_);
+  logger_.AddQueue("drivetrain_input", &drivetrain_input_queue_);
+  logger_.AddQueue("drivetrain_goal", &drivetrain_goal_queue_);
+  logger_.AddQueue("drivetrain_status", &drivetrain_status_queue_);
+  logger_.AddQueue("drivetrain_output", &drivetrain_output_queue_);
+}
+
 QueueManager& QueueManager::GetInstance() {
   static QueueManager instance;
   return instance;

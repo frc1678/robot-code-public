@@ -1,8 +1,11 @@
 #ifndef C2017_QUEUEMANAGER_QUEUEMANAGER_h_
 #define C2017_QUEUEMANAGER_QUEUEMANAGER_h_
 
+#include <thread>
+#include <functional>
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
+#include "muan/logging/logger.h"
 
 #include "muan/wpilib/gyro/queue_types.h"
 #include "muan/wpilib/queue_types.h"
@@ -20,6 +23,8 @@ namespace c2017 {
 class QueueManager {
  public:
   static QueueManager& GetInstance();
+
+  void StartLogging();
 
   // Note: This needs to be the same as the actual message queue in the
   // PdpWrapper class. If you change that, you will need to change this.
@@ -47,6 +52,9 @@ class QueueManager {
   frc971::control_loops::drivetrain::InputQueue drivetrain_input_queue_;
   frc971::control_loops::drivetrain::OutputQueue drivetrain_output_queue_;
   frc971::control_loops::drivetrain::StatusQueue drivetrain_status_queue_;
+
+  muan::logging::Logger logger_;
+  std::thread logger_thread_{std::ref(logger_)};
 };
 
 }  // c2017
