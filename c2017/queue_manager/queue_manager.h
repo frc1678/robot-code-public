@@ -49,37 +49,24 @@ class QueueManager {
   
   c2017::wpilib::WpilibOutputQueue& superstructure_output_queue();
 
-  c2017::trigger::TriggerGoalQueue& trigger_goal_queue();
   c2017::trigger::TriggerInputQueue& trigger_input_queue();
-  c2017::trigger::TriggerOutputQueue& trigger_output_queue();
   c2017::trigger::TriggerStatusQueue& trigger_status_queue();
 
   ground_ball_intake::GroundBallIntakeStatusQueue& ground_ball_intake_status_queue();
-  ground_ball_intake::GroundBallIntakeOutputQueue& ground_ball_intake_output_queue();
-  ground_ball_intake::GroundBallIntakeGoalQueue& ground_ball_intake_goal_queue();
 
-  c2017::shooter::ShooterGoalQueue& shooter_goal_queue();
   c2017::shooter::ShooterInputQueue& shooter_input_queue();
-  c2017::shooter::ShooterOutputQueue& shooter_output_queue();
   c2017::shooter::ShooterStatusQueue& shooter_status_queue();
 
-  c2017::magazine::MagazineGoalQueue& magazine_goal_queue();
   c2017::magazine::MagazineInputQueue& magazine_input_queue();
-  c2017::magazine::MagazineOutputQueue& magazine_output_queue();
   c2017::magazine::MagazineStatusQueue& magazine_status_queue();
 
-  c2017::ground_gear_intake::GroundGearIntakeGoalQueue& ground_gear_goal_queue();
   c2017::ground_gear_intake::GroundGearIntakeInputQueue& ground_gear_input_queue();
-  c2017::ground_gear_intake::GroundGearIntakeOutputQueue& ground_gear_output_queue();
   c2017::ground_gear_intake::GroundGearIntakeStatusQueue& ground_gear_status_queue();
 
-  c2017::ground_ball_intake::GroundBallIntakeGoalQueue& ball_intake_goal_queue();
-  c2017::ground_ball_intake::GroundBallIntakeOutputQueue& ball_intake_output_queue();
   c2017::ground_ball_intake::GroundBallIntakeStatusQueue& ball_intake_status_queue();
 
   c2017::climber::ClimberGoalQueue& climber_goal_queue();
   c2017::climber::ClimberInputQueue& climber_input_queue();
-  c2017::climber::ClimberOutputQueue& climber_output_queue();
   c2017::climber::ClimberStatusQueue& climber_status_queue();
 
   c2017::intake_group::IntakeGroupGoalQueue& intake_group_goal_queue();
@@ -101,33 +88,22 @@ class QueueManager {
 
   c2017::wpilib::WpilibOutputQueue superstructure_output_queue_;
 
-  c2017::trigger::TriggerGoalQueue trigger_goal_queue_;
   c2017::trigger::TriggerInputQueue trigger_input_queue_;
-  c2017::trigger::TriggerOutputQueue trigger_output_queue_;
   c2017::trigger::TriggerStatusQueue trigger_status_queue_;
 
-  c2017::shooter::ShooterGoalQueue shooter_goal_queue_;
   c2017::shooter::ShooterInputQueue shooter_input_queue_;
-  c2017::shooter::ShooterOutputQueue shooter_output_queue_;
   c2017::shooter::ShooterStatusQueue shooter_status_queue_;
 
-  c2017::magazine::MagazineGoalQueue magazine_goal_queue_;
   c2017::magazine::MagazineInputQueue magazine_input_queue_;
-  c2017::magazine::MagazineOutputQueue magazine_output_queue_;
   c2017::magazine::MagazineStatusQueue magazine_status_queue_;
 
-  c2017::ground_gear_intake::GroundGearIntakeGoalQueue ground_gear_goal_queue_;
   c2017::ground_gear_intake::GroundGearIntakeInputQueue ground_gear_input_queue_;
-  c2017::ground_gear_intake::GroundGearIntakeOutputQueue ground_gear_output_queue_;
   c2017::ground_gear_intake::GroundGearIntakeStatusQueue ground_gear_status_queue_;
 
-  c2017::ground_ball_intake::GroundBallIntakeGoalQueue ground_ball_intake_goal_queue_;
-  c2017::ground_ball_intake::GroundBallIntakeOutputQueue ground_ball_intake_output_queue_;
   c2017::ground_ball_intake::GroundBallIntakeStatusQueue ground_ball_intake_status_queue_;
 
   c2017::climber::ClimberGoalQueue climber_goal_queue_;
   c2017::climber::ClimberInputQueue climber_input_queue_;
-  c2017::climber::ClimberOutputQueue climber_output_queue_;
   c2017::climber::ClimberStatusQueue climber_status_queue_;
 
   c2017::intake_group::IntakeGroupGoalQueue intake_group_goal_queue_;
