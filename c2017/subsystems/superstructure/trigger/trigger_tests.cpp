@@ -321,6 +321,8 @@ TEST(TriggerController, DisabledtoNormal) {
   auto status = c2017::QueueManager::GetInstance().trigger_status_queue().ReadLastMessage();
   if (status) {
     EXPECT_NEAR(status.value()->observed_velocity(), plant.x()[1], 1);
+  } else {
+    FAIL();
   }
 
   //Run normally again and see if works
