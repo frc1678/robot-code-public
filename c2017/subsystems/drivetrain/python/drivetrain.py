@@ -1,9 +1,8 @@
-#!/usr/bin/env python2
+#!/usr/bin/python
 
 from third_party.frc971.control_loops.python import control_loop
 from third_party.frc971.control_loops.python import controls
 import numpy
-import scipy
 import sys
 import argparse
 from matplotlib import pylab
@@ -59,7 +58,7 @@ class CIM(control_loop.ControlLoop):
 
 
 class Drivetrain(control_loop.ControlLoop):
-  def __init__(self, name="Drivetrain"):
+  def __init__(self, name="Drivetrain", left_low=True, right_low=True):
     super(Drivetrain, self).__init__(name)
     # Number of motors per side
     self.num_motors = 2
@@ -74,7 +73,7 @@ class Drivetrain(control_loop.ControlLoop):
     # Moment of inertia of the drivetrain in kg m^2
     self.J = 2.0
     # Mass of the robot, in kg.
-    self.m = 50 # Mike swears it's legit
+    self.m = 50
     # Radius of the robot, in meters (requires tuning by hand)
     self.rb = 0.4
     # Radius of the wheels, in meters.
@@ -87,7 +86,9 @@ class Drivetrain(control_loop.ControlLoop):
     # Torque constant
     self.Kt = self.stall_torque / self.stall_current
     # Gear ratios
-    self.G = 4.55
+    self.gear = 12.0 / 40.0 * 24.0 / 60.0 * 24.0 / 60.0 # 4.55 on actual robot
+    self.Gl = self.gear
+    self.Gr = self.gear
 
     # Control loop time step
     self.dt = 0.005
@@ -97,10 +98,10 @@ class Drivetrain(control_loop.ControlLoop):
     self.msp = 1.0 / self.m + self.rb * self.rb / self.J
     self.msn = 1.0 / self.m - self.rb * self.rb / self.J
     # The calculations which we will need for A and B.
-    self.tcl = -self.Kt / self.Kv / (self.G * self.G * self.resistance * self.r * self.r)
-    self.tcr = -self.Kt / self.Kv / (self.G * self.G * self.resistance * self.r * self.r)
-    self.mpl = self.Kt / (self.G * self.resistance * self.r)
-    self.mpr = self.Kt / (self.G * self.resistance * self.r)
+    self.tcl = -self.Kt / self.Kv / (self.Gl * self.Gl * self.resistance * self.r * self.r)
+    self.tcr = -self.Kt / self.Kv / (self.Gr * self.Gr * self.resistance * self.r * self.r)
+    self.mpl = self.Kt / (self.Gl * self.resistance * self.r)
+    self.mpr = self.Kt / (self.Gr * self.resistance * self.r)
 
     # State feedback matrices
     # X will be of the format
@@ -123,8 +124,12 @@ class Drivetrain(control_loop.ControlLoop):
     self.A, self.B = self.ContinuousToDiscrete(
         self.A_continuous, self.B_continuous, self.dt)
 
-    q_pos = 0.14
-    q_vel = 0.95
+    if left_low or right_low:
+      q_pos = 0.12
+      q_vel = 1.0
+    else:
+      q_pos = 0.14
+      q_vel = 0.95
 
     self.Q = numpy.matrix([[(1.0 / (q_pos ** 2.0)), 0.0, 0.0, 0.0],
                            [0.0, (1.0 / (q_vel ** 2.0)), 0.0, 0.0],
@@ -150,8 +155,8 @@ class Drivetrain(control_loop.ControlLoop):
 
 
 class KFDrivetrain(Drivetrain):
-  def __init__(self, name="KFDrivetrain"):
-    super(KFDrivetrain, self).__init__(name)
+  def __init__(self, name="KFDrivetrain", left_low=True, right_low=True):
+    super(KFDrivetrain, self).__init__(name, left_low, right_low)
 
     self.unaugmented_A_continuous = self.A_continuous
     self.unaugmented_B_continuous = self.B_continuous
@@ -240,7 +245,7 @@ def main(argv):
   glog.init()
 
   # Simulate the response of the system to a step input.
-  drivetrain = Drivetrain()
+  drivetrain = Drivetrain(left_low=False, right_low=False)
   simulated_left = []
   simulated_right = []
   for _ in xrange(100):
@@ -255,7 +260,7 @@ def main(argv):
     pylab.show()
 
   # Simulate forwards motion.
-  drivetrain = Drivetrain()
+  drivetrain = Drivetrain(left_low=False, right_low=False)
   close_loop_left = []
   close_loop_right = []
   left_power = []
@@ -319,47 +324,65 @@ def main(argv):
     pylab.show()
 
   # Write the generated constants out to a file.
-  drivetrain = Drivetrain(name="Drivetrain")
+  drivetrain_low_low = Drivetrain(
+      name="DrivetrainLowLow", left_low=True, right_low=True)
+  drivetrain_low_high = Drivetrain(
+      name="DrivetrainLowHigh", left_low=True, right_low=False)
+  drivetrain_high_low = Drivetrain(
+      name="DrivetrainHighLow", left_low=False, right_low=True)
+  drivetrain_high_high = Drivetrain(
+      name="DrivetrainHighHigh", left_low=False, right_low=False)
 
-  kf_drivetrain = KFDrivetrain(name="KFDrivetrainHighHigh")
+  kf_drivetrain_low_low = KFDrivetrain(
+      name="KFDrivetrainLowLow", left_low=True, right_low=True)
+  kf_drivetrain_low_high = KFDrivetrain(
+      name="KFDrivetrainLowHigh", left_low=True, right_low=False)
+  kf_drivetrain_high_low = KFDrivetrain(
+      name="KFDrivetrainHighLow", left_low=False, right_low=True)
+  kf_drivetrain_high_high = KFDrivetrain(
+      name="KFDrivetrainHighHigh", left_low=False, right_low=False)
 
   if len(argv) != 5:
-    print("Expected .h file name and .cc file name")
+    print "Expected .h file name and .cc file name"
   else:
     namespaces = ['c2017', 'subsystems', 'drivetrain']
     dog_loop_writer = control_loop.ControlLoopWriter(
-        "Drivetrain", [drivetrain], namespaces = namespaces)
+        "Drivetrain", [drivetrain_low_low, drivetrain_low_high,
+                       drivetrain_high_low, drivetrain_high_high],
+        namespaces = namespaces)
     dog_loop_writer.AddConstant(control_loop.Constant("kDt", "%f",
-          drivetrain.dt))
+          drivetrain_low_low.dt))
     dog_loop_writer.AddConstant(control_loop.Constant("kStallTorque", "%f",
-          drivetrain.stall_torque))
+          drivetrain_low_low.stall_torque))
     dog_loop_writer.AddConstant(control_loop.Constant("kStallCurrent", "%f",
-          drivetrain.stall_current))
+          drivetrain_low_low.stall_current))
     dog_loop_writer.AddConstant(control_loop.Constant("kFreeSpeedRPM", "%f",
-          drivetrain.free_speed))
+          drivetrain_low_low.free_speed))
     dog_loop_writer.AddConstant(control_loop.Constant("kFreeCurrent", "%f",
-          drivetrain.free_current))
+          drivetrain_low_low.free_current))
     dog_loop_writer.AddConstant(control_loop.Constant("kJ", "%f",
-          drivetrain.J))
+          drivetrain_low_low.J))
     dog_loop_writer.AddConstant(control_loop.Constant("kMass", "%f",
-          drivetrain.m))
+          drivetrain_low_low.m))
     dog_loop_writer.AddConstant(control_loop.Constant("kRobotRadius", "%f",
-          drivetrain.rb))
+          drivetrain_low_low.rb))
     dog_loop_writer.AddConstant(control_loop.Constant("kWheelRadius", "%f",
-          drivetrain.r))
+          drivetrain_low_low.r))
     dog_loop_writer.AddConstant(control_loop.Constant("kR", "%f",
-          drivetrain.resistance))
+          drivetrain_low_low.resistance))
     dog_loop_writer.AddConstant(control_loop.Constant("kV", "%f",
-          drivetrain.Kv))
+          drivetrain_low_low.Kv))
     dog_loop_writer.AddConstant(control_loop.Constant("kT", "%f",
-          drivetrain.Kt))
+          drivetrain_low_low.Kt))
     dog_loop_writer.AddConstant(control_loop.Constant("kGearRatio", "%f",
-          drivetrain.G))
+          drivetrain_low_low.gear))
 
     dog_loop_writer.Write(argv[1], argv[2])
 
     kf_loop_writer = control_loop.ControlLoopWriter(
-        "KFDrivetrain", [kf_drivetrain], namespaces = namespaces)
+        "KFDrivetrain", [kf_drivetrain_low_low, kf_drivetrain_low_high,
+                         kf_drivetrain_high_low, kf_drivetrain_high_high],
+        namespaces = namespaces)
     kf_loop_writer.Write(argv[3], argv[4])
 
 if __name__ == '__main__':

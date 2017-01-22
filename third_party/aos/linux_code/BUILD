@@ -63,6 +63,21 @@ cc_library(
   ],
 )
 
+cc_library(
+  name = 'configuration',
+  srcs = [
+    'configuration.cc',
+  ],
+  hdrs = [
+    'configuration.h',
+  ],
+  deps = [
+    '//third_party/aos/common:once',
+    '//third_party/aos/common:die',
+    '//third_party/aos/common:unique_malloc_ptr',
+  ],
+)
+
 cc_binary(
   name = 'core',
   srcs = [

@@ -14,4 +14,4 @@ GetDrivetrainConfig();
 
 }  // namespace c2017
 
-#endif  // C2017_SUBSYSTEMS_DRIVETRAIN_DRIVETRAIN_BASE_H_
+#endif  // c2017_SUBSYSTEMS_DRIVETRAIN_DRIVETRAIN_BASE_H_

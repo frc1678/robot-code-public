@@ -16,6 +16,7 @@ class Teleop {
   void Update();
 
  private:
+  muan::actions::DrivetrainProperties properties_;
   muan::teleop::Joystick throttle_, wheel_;
 
   bool high_gear_;
@@ -23,7 +24,6 @@ class Teleop {
   muan::teleop::Button* quickturn_;
   muan::teleop::Button* drive_profile_;
 
-  muan::actions::DrivetrainProperties properties_;
   bool running_action_{false};
   muan::actions::DriveSCurveAction action_;
 

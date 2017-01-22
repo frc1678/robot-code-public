@@ -53,7 +53,7 @@ void DrivetrainInterface::WriteActuators() {
         12.0);
   } else {
     motor_left_.Set(0);
-    motor_left_.Set(0);
+    motor_right_.Set(0);
   }
 }
 

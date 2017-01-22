@@ -8,7 +8,11 @@
 #include "muan/wpilib/queue_types.h"
 
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
+<<<<<<< HEAD
 #include "c2017/subsystems/superstructure/ground_ball_intake/queue_types.h"
+=======
+#include "c2017/subsystems/superstructure/trigger/queue_types.h"
+>>>>>>> frc1678/master
 
 using muan::queues::MessageQueue;
 
@@ -35,6 +39,11 @@ class QueueManager {
   frc971::control_loops::drivetrain::OutputQueue* drivetrain_output_queue();
   frc971::control_loops::drivetrain::StatusQueue* drivetrain_status_queue();
 
+  c2017::trigger::TriggerGoalQueue& trigger_goal_queue();
+  c2017::trigger::TriggerInputQueue& trigger_input_queue();
+  c2017::trigger::TriggerOutputQueue& trigger_output_queue();
+  c2017::trigger::TriggerStatusQueue& trigger_status_queue();
+
   ground_ball_intake::GroundBallIntakeStatusQueue& ground_ball_intake_status_queue();
   ground_ball_intake::GroundBallIntakeOutputQueue& ground_ball_intake_output_queue();
   ground_ball_intake::GroundBallIntakeGoalQueue& ground_ball_intake_goal_queue();
@@ -56,6 +65,12 @@ class QueueManager {
   ground_ball_intake::GroundBallIntakeStatusQueue ground_ball_intake_status_queue_;
   ground_ball_intake::GroundBallIntakeOutputQueue ground_ball_intake_output_queue_;
   ground_ball_intake::GroundBallIntakeGoalQueue ground_ball_intake_goal_queue_;
+
+  c2017::trigger::TriggerGoalQueue trigger_goal_queue_;
+  c2017::trigger::TriggerInputQueue trigger_input_queue_;
+  c2017::trigger::TriggerOutputQueue trigger_output_queue_;
+  c2017::trigger::TriggerStatusQueue trigger_status_queue_;
+
 };
 
 }  // c2017

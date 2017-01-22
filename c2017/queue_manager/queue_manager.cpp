@@ -1,4 +1,5 @@
 #include "queue_manager.h"
+#include "c2017/subsystems/superstructure/trigger/queue_types.h"
 
 namespace c2017 {
 
@@ -51,6 +52,21 @@ ground_ball_intake::GroundBallIntakeOutputQueue& QueueManager::ground_ball_intak
 
 ground_ball_intake::GroundBallIntakeGoalQueue& QueueManager::ground_ball_intake_goal_queue() {
   return ground_ball_intake_goal_queue_;
+
+c2017::trigger::TriggerGoalQueue& QueueManager::trigger_goal_queue() {
+  return trigger_goal_queue_;
+}
+
+c2017::trigger::TriggerInputQueue& QueueManager::trigger_input_queue() {
+  return trigger_input_queue_;
+}
+
+c2017::trigger::TriggerOutputQueue& QueueManager::trigger_output_queue() {
+  return trigger_output_queue_;
+}
+
+c2017::trigger::TriggerStatusQueue& QueueManager::trigger_status_queue() {
+  return trigger_status_queue_;
 }
 
 }  // c2017

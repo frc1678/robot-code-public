@@ -27,6 +27,25 @@ You should also test anything that you change:
 bazel test //c2017/submarine_subsystem/...
 ```
 
+Before you push your code, you can run our automated test script. This is what Travis CI runs, so if you don't like failed travis builds you should always run it before pushing:
+
+```
+./tests.sh
+```
+
+## Style Guide
+
+We use the [Google C++ style guide](https://google.github.io/styleguide/cppguide.html) (mostly). You should **read all of it and make sure that your code adheres to it**. There are a few parts that we do not follow, and are aware of:
+
+* We use `.cpp` as the source file extension
+* We do make use of templates in some places
+
+In addition to the Google C++ style guide, you should also make sure that you are writing good commit messages! Here are a couple articles on this: [1](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html) [2](http://chris.beams.io/posts/git-commit/).
+
+Particularly, you should make sure to write your commits in the imperative mood ("Add thingamadoodle", not "Added thingamadoodle") and capitalize the first word. If the change is complicated, use multiple lines to describe it.
+
+Additionally, you should try to make your commits as small as possible (often referred to as making "atomic" commits). This helps other people understand what you are doing.
+
 ## Contributing
 
 Here's how to get your code into the main robot repository:
@@ -60,13 +79,21 @@ Here's how to get your code into the main robot repository:
   5. Review the changes that you made.
   6. If you are happy with your changes, click "Create Pull Request".
 6. Wait
-  * At least 2 people (at least one mentor) must review (and approve of) your changes before they are merged.
+  * People must review (and approve of) your changes before they are merged.
+    * Specifically, the rules are that one of the following two conditions must be true for it to get merged:
+      1. 1 mentor and 1 other person have approved
+      2. 2 experienced students and one other person have approved
   * If there are any concerns about your pull request, fix them. Depending on how severe the concerns are, the pull request may be merged without it, but everyone will be happier if you fix your code. To update your PR, just push to the branch on your forked repo.
-7. ???
-8. Profit
+  * Don't dismiss someone's review when you make changes - instead, ask them to re-review it.
+8. Rebase your changes onto master
+  * If there are no conflicts, just push the rebase and merge button.
+  * If there are conflicts rebasing, but no conflicts merging, merge into master
+  * If there are conflicts either way, fix them locally on your branch, push them, wait for Travis to pass, and rebase on master.
+9. ???
+10. Profit
 
 ## Helpful Tips
 
 ### Other remotes
 
-You can add "remotes" to github that refer to other people's robot code repos. This allows you to, for example, take a look at someone else's code to look over it, you would be able to `git checkout wesley/branch-that-breaks-everything` to see it. To add a remote, just do `git remote add https://github.com/<username>/robot-code`. Once you've done this, you can use `git fetch <remote_name>` to get updated code from other people's repos!
+You can add "remotes" to github that refer to other people's robot code repos. This allows you to, for example, take a look at someone else's code to look over it, you would be able to `git checkout wesley/branch-that-breaks-everything` to see it. To add a remote, just do `git remote add <name_of_person> https://github.com/<username>/robot-code`. Once you've done this, you can use `git fetch <name_of_person>` to get updated code from other people's repos!
