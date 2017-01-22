@@ -3,7 +3,7 @@
 
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
-#include "c2017/subsystems/climber/climber.pb.h"
+#include "c2017/subsystems/superstructure/climber/climber.pb.h"
 
 namespace c2017 {
 

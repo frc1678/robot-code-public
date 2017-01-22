@@ -37,4 +37,4 @@ const DrivetrainConfig &GetDrivetrainConfig() {
 
 }  // namespace drivetrain
 
-}  // namespace c2017
+} // namespace c2017

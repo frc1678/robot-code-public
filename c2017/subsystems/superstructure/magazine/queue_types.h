@@ -3,16 +3,16 @@
 
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
-#include "c2017/subsystems/magazine.pb.h"
+#include "c2017/subsystems/superstructure/magazine/magazine.pb.h"
 
 namespace c2017 {
 
 namespace magazine {
 
-    using MagazineGoalProto = muan::proto::StackProto<::c2017::subsystems::MagazineGoal, 256>;
-    using MagazineInputProto = muan::proto::StackProto<::c2017::subsystems::MagazineInput, 256>;
-    using MagazineOutputProto = muan::proto::StackProto<::c2017::subsystems::MagazineOutput, 256>;
-    using MagazineStatusProto = muan::proto::StackProto<::c2017::subsystems::MagazineStatus, 256>;
+    using MagazineGoalProto = muan::proto::StackProto<::c2017::magazine::MagazineGoal, 256>;
+    using MagazineInputProto = muan::proto::StackProto<::c2017::magazine::MagazineInput, 256>;
+    using MagazineOutputProto = muan::proto::StackProto<::c2017::magazine::MagazineOutput, 256>;
+    using MagazineStatusProto = muan::proto::StackProto<::c2017::magazine::MagazineStatus, 256>;
 
     using MagazineGoalQueue = muan::queues::MessageQueue<MagazineGoalProto, 200>;
     using MagazineInputQueue = muan::queues::MessageQueue<MagazineInputProto, 200>;

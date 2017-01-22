@@ -5,6 +5,7 @@ cc_library(
   deps = [
     '//c2017/wpilib:wpilib_interface',
     '//c2017/subsystems/drivetrain:drivetrain_base',
+    '//c2017/subsystems/superstructure:superstructure_subsystem',
     '//third_party/frc971/control_loops/drivetrain:drivetrain_lib',
     '//third_party/aos/linux_code:init',
     '//third_party/aos/common/util:phased_loop',
