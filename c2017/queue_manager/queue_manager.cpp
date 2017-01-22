@@ -41,9 +41,9 @@ QueueManager::drivetrain_output_queue() {
   return &drivetrain_output_queue_;
 }
 
-shooter::ShooterStatusQueue*
+shooter::ShooterStatusQueue&
 QueueManager::shooter_status_queue() {
-  return &shooter_status_queue_;
+  return shooter_status_queue_;
 }
 
 }  // c2017

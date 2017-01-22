@@ -35,7 +35,7 @@ class QueueManager {
   frc971::control_loops::drivetrain::InputQueue* drivetrain_input_queue();
   frc971::control_loops::drivetrain::OutputQueue* drivetrain_output_queue();
   frc971::control_loops::drivetrain::StatusQueue* drivetrain_status_queue();
-  shooter::ShooterStatusQueue* shooter_status_queue();
+  shooter::ShooterStatusQueue& shooter_status_queue();
 
  private:
   QueueManager() = default;

@@ -20,7 +20,6 @@ class ShooterController {
 
   c2017::shooter::ShooterOutputProto Update(c2017::shooter::ShooterInputProto input,
                                             muan::wpilib::DriverStationProto ds);
-  c2017::shooter::ShooterStatusProto get_status();
   void SetGoal(c2017::shooter::ShooterGoalProto goal);
 
  private:
@@ -30,11 +29,11 @@ class ShooterController {
   bool at_goal_;
 
   c2017::shooter::ShotMode shot_mode_;
-	double goal_velocity_; 
+  double goal_velocity_;
   c2017::shooter::ShooterStatusProto status_;
   double angle_tolerance_;
   double velocity_tolerance_;
-  c2017::shooter::ShooterStatusQueue* shooter_status_queue_;
+  c2017::shooter::ShooterStatusQueue& shooter_status_queue_;
 };
 }
 }

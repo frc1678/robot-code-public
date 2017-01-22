@@ -4,16 +4,16 @@ namespace c2017 {
 
 namespace shooter {
 
-ShooterController::ShooterController() :
-  shooter_status_queue_{
-    QueueManager::GetInstance().shooter_status_queue()
-  }
-{
-  auto ss_plant = muan::control::StateSpacePlant<1, 3, 1>(frc1678::shooter_controller::controller::A(), frc1678::shooter_controller::controller::B(), frc1678::shooter_controller::controller::C());
+ShooterController::ShooterController()
+    : shooter_status_queue_{QueueManager::GetInstance().shooter_status_queue()} {
+  auto ss_plant = muan::control::StateSpacePlant<1, 3, 1>(frc1678::shooter_controller::controller::A(),
+                                                          frc1678::shooter_controller::controller::B(),
+                                                          frc1678::shooter_controller::controller::C());
   controller_ = muan::control::StateSpaceController<1, 3, 1>(frc1678::shooter_controller::controller::K());
   controller_.u_min() = Eigen::Matrix<double, 1, 1>::Ones() * -12.0;
   controller_.u_max() = Eigen::Matrix<double, 1, 1>::Ones() * 12.0;
-  observer_ = muan::control::StateSpaceObserver<1, 3, 1>(ss_plant, frc1678::shooter_controller::controller::L());
+  observer_ =
+      muan::control::StateSpaceObserver<1, 3, 1>(ss_plant, frc1678::shooter_controller::controller::L());
 
   at_goal_ = false;
 
@@ -51,18 +51,15 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
     output->set_voltage(0);
   }
   status_->set_observed_velocity(observer_.x()(1, 0));
-  
-  shooter_status_queue_->WriteMessage(status_);
+
+  shooter_status_queue_.WriteMessage(status_);
 
   return output;
 }
 
-c2017::shooter::ShooterStatusProto ShooterController::get_status() { return status_; }
-
-void ShooterController::SetGoal(c2017::shooter::ShooterGoalProto goal) { 
-	goal_velocity_ = goal->goal_velocity();
-	shot_mode_ = goal->goal_mode();
+void ShooterController::SetGoal(c2017::shooter::ShooterGoalProto goal) {
+  goal_velocity_ = goal->goal_velocity();
+  shot_mode_ = goal->goal_mode();
 }
-
 }
 }

@@ -23,9 +23,10 @@ TEST(ShooterControllerTest, IsSane) {
 TEST(ShooterControllerTest, PositiveVelocity) {
   c2017::shooter::ShooterInputProto input;
   c2017::shooter::ShooterOutputProto output;
-  c2017::shooter::ShooterStatusProto status;
   c2017::shooter::ShooterGoalProto goal;
   muan::wpilib::DriverStationProto ds;
+
+  auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
 
   ds->set_mode(RobotMode::TELEOP);
 
@@ -47,23 +48,27 @@ TEST(ShooterControllerTest, PositiveVelocity) {
 
     shooter_.SetGoal(goal);
 
-    output = shooter_.Update(input, ds);
-    status = shooter_.get_status();
+    output = shooter_.Update(input, ds); 
+    status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
 
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
 
     EXPECT_NEAR(output->voltage(), 0., 12.);
   }
-
-  EXPECT_NEAR(status->observed_velocity(), 300, 10);
+  if (status) {
+    EXPECT_NEAR(status.value()->observed_velocity(), 300, 10);
+  } else {
+    FAIL();
+  }
 }
 
 TEST(ShooterControllerTest, CantTakeNegativeVoltage) {
   c2017::shooter::ShooterInputProto input;
   c2017::shooter::ShooterOutputProto output;
-  c2017::shooter::ShooterStatusProto status;
   c2017::shooter::ShooterGoalProto goal;
   muan::wpilib::DriverStationProto ds;
+
+  auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
 
   ds->set_mode(RobotMode::TELEOP);
 
@@ -86,7 +91,7 @@ TEST(ShooterControllerTest, CantTakeNegativeVoltage) {
     shooter_.SetGoal(goal);
 
     output = shooter_.Update(input, ds);
-    status = shooter_.get_status();
+    status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
 
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
 
@@ -94,13 +99,16 @@ TEST(ShooterControllerTest, CantTakeNegativeVoltage) {
   }
 
   EXPECT_EQ(output->voltage(), 0);
-  EXPECT_NEAR(status->observed_velocity(), 0, 1e-5);
+  if (status) {
+    EXPECT_NEAR(status.value()->observed_velocity(), 0, 1e-5);
+  } else {
+    FAIL();
+  }
 }
 
 TEST(ShooterControllerTest, CanStop) {
   c2017::shooter::ShooterInputProto input;
   c2017::shooter::ShooterOutputProto output;
-  c2017::shooter::ShooterStatusProto status;
   c2017::shooter::ShooterGoalProto goal;
   muan::wpilib::DriverStationProto ds;
 
@@ -115,6 +123,8 @@ TEST(ShooterControllerTest, CanStop) {
   plant.x(0) = 0.0;
   plant.x(1) = 0.0;
   plant.x(2) = 0.0;
+  
+  auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
 
   for (int i = 0; i <= 1e3; i++) {
     input->set_encoder_position(plant.x(0));
@@ -125,12 +135,16 @@ TEST(ShooterControllerTest, CanStop) {
     shooter_.SetGoal(goal);
 
     output = shooter_.Update(input, ds);
-    status = shooter_.get_status();
-
+    status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+    
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
 
     EXPECT_NEAR(output->voltage(), 0., 12.);
   }
 
-  EXPECT_NEAR(status->observed_velocity(), 0, 1e-5);
+  if (status) {
+    EXPECT_NEAR(status.value()->observed_velocity(), 0, 1e-5);
+  } else {
+    FAIL();
+  }
 }
