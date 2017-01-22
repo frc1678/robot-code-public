@@ -49,7 +49,7 @@ TEST(MotorSafetyTest, CurrentSpikeThenDrop) {
     if (t < 3.0) {
       EXPECT_NEAR(safe_voltage, voltage, 1e-5);
       EXPECT_FALSE(safety.is_stalled());
-    } else if (t < 6.095) {  // Slightly more than 6 seconds to account for the moving average filter getting
+    } else if (t < 6.090) {  // Slightly more than 6 seconds to account for the moving average filter getting
                              // track of the sudden current change.
       EXPECT_NEAR(safe_voltage, 0, 1e-5);
       EXPECT_TRUE(safety.is_stalled());
@@ -85,7 +85,7 @@ TEST(MotorSafetyTest, SlowStall) {
     if(t < 1.0) {
       EXPECT_NEAR(safe_voltage, voltage, 1e-5);
       EXPECT_FALSE(safety.is_stalled());
-    } else if (t < 7.055) { // A little more to allow the moving average to catch up on current
+    } else if (t < 7.050) { // A little more to allow the moving average to catch up on current
       EXPECT_NEAR(safe_voltage, 0, 1e-5);
       EXPECT_TRUE(safety.is_stalled());
     } else {
