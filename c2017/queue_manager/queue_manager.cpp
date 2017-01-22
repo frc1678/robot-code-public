@@ -42,21 +42,7 @@ QueueManager::drivetrain_output_queue() {
   return &drivetrain_output_queue_;
 }
 
-<<<<<<< HEAD
-ground_ball_intake::GroundBallIntakeStatusQueue& QueueManager::ground_ball_intake_status_queue() {
-  return ground_ball_intake_status_queue_;
-}
-
-ground_ball_intake::GroundBallIntakeOutputQueue& QueueManager::ground_ball_intake_output_queue() {
-  return ground_ball_intake_output_queue_;
-}
-
-ground_ball_intake::GroundBallIntakeGoalQueue& QueueManager::ground_ball_intake_goal_queue() {
-  return ground_ball_intake_goal_queue_;
-}
-
-=======
-c2017::wpilib::WpilibOutputQueue& 
+c2017::wpilib::WpilibOutputQueue&
 QueueManager::superstructure_output_queue() {
   return superstructure_output_queue_;
 }
@@ -125,19 +111,19 @@ QueueManager::ground_gear_status_queue() {
 }
 
 // Ground Ball Intake
-c2017::ball_intake::BallIntakeGoalQueue&
-QueueManager::ball_intake_goal_queue() {
-  return ball_intake_goal_queue_;
+c2017::ground_ball_intake::GroundBallIntakeGoalQueue&
+QueueManager::ground_ball_intake_goal_queue() {
+  return ground_ball_intake_goal_queue_;
 }
 
-c2017::ball_intake::BallIntakeOutputQueue&
-QueueManager::ball_intake_output_queue() {
-  return ball_intake_output_queue_;
+c2017::ground_ball_intake::GroundBallIntakeOutputQueue&
+QueueManager::ground_ball_intake_output_queue() {
+  return ground_ball_intake_output_queue_;
 }
 
-c2017::ball_intake::BallIntakeStatusQueue&
-QueueManager::ball_intake_status_queue() {
-  return ball_intake_status_queue_;
+c2017::ground_ball_intake::GroundBallIntakeStatusQueue&
+QueueManager::ground_ball_intake_status_queue() {
+  return ground_ball_intake_status_queue_;
 }
 
 // Climber
@@ -173,7 +159,6 @@ QueueManager::shooter_group_goal_queue() {
 }
 
 // Trigger Queues
->>>>>>> frc1678/master
 c2017::trigger::TriggerGoalQueue& QueueManager::trigger_goal_queue() {
   return trigger_goal_queue_;
 }
