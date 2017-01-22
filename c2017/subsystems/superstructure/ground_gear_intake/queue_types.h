@@ -19,7 +19,7 @@ using GroundGearIntakeInputQueue = muan::queues::MessageQueue<GroundGearIntakeIn
 using GroundGearIntakeStatusQueue = muan::queues::MessageQueue<GroundGearIntakeStatusProto, 200>;
 using GroundGearIntakeGoalQueue = muan::queues::MessageQueue<GroundGearIntakeGoalProto, 200>;
 
-} //ground_gear_intake
+}  // ground_gear_intake
 
-} //c2017
+}  // c2017
 #endif
