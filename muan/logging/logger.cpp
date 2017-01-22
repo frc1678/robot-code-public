@@ -8,7 +8,7 @@ Logger::Logger() { writer_ = std::make_unique<FileWriter>(); }
 Logger::Logger(std::unique_ptr<FileWriter>&& writer) : writer_(std::move(writer)) {}
 
 void Logger::operator()() {
-  aos::time::PhasedLoop phased_loop(aos::time::Time::InMS(20));
+  aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(20));
 
   aos::SetCurrentThreadRealtimePriority(20);
   aos::SetCurrentThreadName("Logger");
