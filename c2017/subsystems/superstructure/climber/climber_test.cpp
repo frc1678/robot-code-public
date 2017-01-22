@@ -6,6 +6,7 @@
 class ClimberTest : public ::testing::Test {
  public:
   ClimberTest() {}
+  
   void Update(double voltage) {
      current_position_ += current_position_ > 1 ? 0 : 0.00042 * voltage;
      current_ = voltage / 10;

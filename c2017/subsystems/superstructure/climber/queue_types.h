@@ -5,7 +5,6 @@
 #include "muan/queues/message_queue.h"
 #include "c2017/subsystems/superstructure/climber/climber.pb.h"
 
-
 namespace c2017 {
 
 namespace climber {

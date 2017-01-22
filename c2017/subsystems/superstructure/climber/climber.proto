@@ -18,4 +18,6 @@ message ClimberOutput {
   required double voltage = 1; // Positive is moving up
 }
 
-message ClimberGoal { required bool climbing = 1; }
+message ClimberGoal {
+  required bool climbing = 1;
+}

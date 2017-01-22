@@ -17,13 +17,11 @@ ClimberOutputProto Climber::Update(const ClimberInputProto& input,
   
   ClimberStatusProto status;
   ClimberOutputProto output;
-
   if (robot_state == RobotMode::TELEOP) {
-
     if (to_climb_) {
       voltage_ = climber_watcher_.Update(12, 1/(input->position() - last_position_));
       is_climbing_ = true;
-      at_top_ = voltage_ < 9;
+      at_top_ = climber_watcher_.is_stalled();
 
     } else {
       is_climbing_ = false;
@@ -42,7 +40,6 @@ ClimberOutputProto Climber::Update(const ClimberInputProto& input,
   status_queue_.WriteMessage(status);
 
   return output;
-
 }
 
 }  // climber
