@@ -7,7 +7,6 @@ cc_library(
     '//muan/proto:stack_proto',
     '//muan/wpilib:wpilib_queues',
     '//muan/wpilib/gyro:gyro_queues',
-    '//third_party/frc971/control_loops/drivetrain:drivetrain_lib',
     '//c2017/subsystems/superstructure/climber:climber_queues',
     '//c2017/subsystems/superstructure/trigger:trigger_queues',
     '//third_party/frc971/control_loops/drivetrain:drivetrain_lib'

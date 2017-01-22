@@ -18,15 +18,17 @@ class Climber {
   void SetGoal(const ClimberGoalProto& goal);
   ClimberOutputProto Update(const ClimberInputProto& input,
                             const muan::wpilib::DriverStationProto& ds_status);
-
+  void Reset();
+  
  private:
   bool at_top_;
   bool is_climbing_;
   double last_position_;
   bool to_climb_;
   ClimberStatusQueue& status_queue_;
-  muan::wpilib::MotorSafety climber_watcher_;
-
+  muan::wpilib::MotorSafety climber_position_watcher_;
+  muan::wpilib::MotorSafety climber_current_watcher_;
+  bool on_rope_;
 };
 }  // climber
 
