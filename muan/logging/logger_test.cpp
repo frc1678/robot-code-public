@@ -22,7 +22,7 @@ class MockFileWriter : public muan::logging::FileWriter {
 TEST(Logger, LogsOneMessage) {
   std::unique_ptr<muan::logging::MockFileWriter> writer = std::make_unique<muan::logging::MockFileWriter>();
 
-  EXPECT_CALL(*writer, WriteLine("testqueue.csv", "42")).Times(1);
+  EXPECT_CALL(*writer, WriteLine("testqueue.csv", "thing\n42")).Times(1);
 
   Logger logger(std::move(writer));
 
@@ -38,7 +38,8 @@ TEST(Logger, LogsOneMessage) {
 TEST(Logger, LogsManyMessages) {
   std::unique_ptr<muan::logging::MockFileWriter> writer = std::make_unique<muan::logging::MockFileWriter>();
 
-  EXPECT_CALL(*writer, WriteLine("testqueue.csv", "42")).Times(42);
+  EXPECT_CALL(*writer, WriteLine("testqueue.csv", "thing\n42")).Times(1);
+  EXPECT_CALL(*writer, WriteLine("testqueue.csv", "42")).Times(41);
 
   Logger logger(std::move(writer));
 
@@ -56,8 +57,8 @@ TEST(Logger, LogsManyMessages) {
 TEST(Logger, LogsMultipleQueues) {
   std::unique_ptr<muan::logging::MockFileWriter> writer = std::make_unique<muan::logging::MockFileWriter>();
 
-  EXPECT_CALL(*writer, WriteLine("testqueue1.csv", "42")).Times(1);
-  EXPECT_CALL(*writer, WriteLine("testqueue2.csv", "42")).Times(1);
+  EXPECT_CALL(*writer, WriteLine("testqueue1.csv", "thing\n42")).Times(1);
+  EXPECT_CALL(*writer, WriteLine("testqueue2.csv", "thing\n42")).Times(1);
 
   Logger logger(std::move(writer));
 
@@ -79,7 +80,8 @@ TEST(Logger, LogsMultipleQueues) {
 TEST(Logger, LogsManyMessagesPerTick) {
   std::unique_ptr<muan::logging::MockFileWriter> writer = std::make_unique<muan::logging::MockFileWriter>();
 
-  EXPECT_CALL(*writer, WriteLine("testqueue.csv", "42")).Times(10000);
+  EXPECT_CALL(*writer, WriteLine("testqueue.csv", "thing\n42")).Times(1);
+  EXPECT_CALL(*writer, WriteLine("testqueue.csv", "42")).Times(9999);
 
   Logger logger(std::move(writer));
 

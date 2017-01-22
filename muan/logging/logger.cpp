@@ -24,7 +24,10 @@ void Logger::operator()() {
 void Logger::Update() {
   for (const auto& log : queue_logs_) {
     std::experimental::optional<std::string> message;
-    while ((message = log->reader->GetMessageAsCSV())) {
+    while ((message = log->reader->GetMessageAsCSV(log->write_header))) {
+      if (log->write_header) {
+        log->write_header = false;
+      }
       writer_->WriteLine(log->filename, message.value());
     }
   }

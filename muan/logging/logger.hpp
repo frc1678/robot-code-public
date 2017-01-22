@@ -13,16 +13,21 @@ void Logger::AddQueue(const std::string& name, T* queue) {
       aos::Die("Two queues with same name \"%s\"", name.c_str());
     }
   }
-  QueueLog queue_log = {std::make_unique<Reader<typename T::QueueReader>>(queue->MakeReader()), name, name + ".csv"};
+  QueueLog queue_log = {std::make_unique<Reader<typename T::QueueReader>>(queue->MakeReader()), name, name + ".csv", true};
 
   queue_logs_.push_back(std::make_unique<QueueLog>(std::move(queue_log)));
 }
 
 template <class R>
-std::experimental::optional<std::string> Logger::Reader<R>::GetMessageAsCSV() {
+std::experimental::optional<std::string> Logger::Reader<R>::GetMessageAsCSV(bool header) {
   auto message = reader_.ReadMessage();
   if (message) {
-    return muan::util::ProtoToCSV(*message.value().get());
+    std::string out = "";
+    if (header) {
+      out = out + muan::util::ProtoToCSVHeader(*message.value().get()) + "\n";
+    }
+    out = out + muan::util::ProtoToCSV(*message.value().get());
+    return out;
   } else {
     return std::experimental::nullopt;
   }
