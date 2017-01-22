@@ -4,8 +4,8 @@ namespace muan {
 
 namespace utils {
 
-Monitor::Monitor(double threshold, double delay_time, double reset_time, double dt, bool check_above, double standing_voltage)
-    : current_history_(dt) {
+Monitor::Monitor(double threshold, double delay_time, double reset_time, double dt, bool check_above, double standing_voltage, double size)
+    : current_history_(size) {
   threshold_ = threshold;
   delay_time_ = delay_time;
   reset_time_ = reset_time;
@@ -15,6 +15,7 @@ Monitor::Monitor(double threshold, double delay_time, double reset_time, double 
 
   time_above_ = time_below_ = 0;
   is_at_thresh_ = false;
+  size_ =static_cast<uint32_t>(size); 
 }
 
 double Monitor::Update(double voltage, double value) {
@@ -22,9 +23,9 @@ double Monitor::Update(double voltage, double value) {
 
   // Take a moving average of the history array
   double sum = 0;
-  std::array<double, kHistorySize> hist_arr = current_history_.get_hist_arr();
-  for (size_t i = 0; i < kHistorySize; i++) {
-    sum += hist_arr[i];
+
+  for (auto i : current_history_) {
+    sum += i;
   }
   double moving_avg = sum / current_history_.num_samples();
 
