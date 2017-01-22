@@ -46,6 +46,124 @@ shooter::ShooterStatusQueue& QueueManager::shooter_status_queue() {
   return shooter_status_queue_;
 }
 
+c2017::wpilib::WpilibOutputQueue& 
+QueueManager::superstructure_output_queue() {
+  return superstructure_output_queue_;
+}
+
+// Shooter
+c2017::shooter::ShooterGoalQueue&
+QueueManager::shooter_goal_queue() {
+  return shooter_goal_queue_;
+}
+
+c2017::shooter::ShooterInputQueue&
+QueueManager::shooter_input_queue() {
+  return shooter_input_queue_;
+}
+
+c2017::shooter::ShooterOutputQueue&
+QueueManager::shooter_output_queue() {
+  return shooter_output_queue_;
+}
+
+c2017::shooter::ShooterStatusQueue&
+QueueManager::shooter_status_queue() {
+  return shooter_status_queue_;
+}
+
+// Magazine
+c2017::magazine::MagazineGoalQueue&
+QueueManager::magazine_goal_queue() {
+  return magazine_goal_queue_;
+}
+
+c2017::magazine::MagazineInputQueue&
+QueueManager::magazine_input_queue() {
+  return magazine_input_queue_;
+}
+
+c2017::magazine::MagazineOutputQueue&
+QueueManager::magazine_output_queue() {
+  return magazine_output_queue_;
+}
+
+c2017::magazine::MagazineStatusQueue&
+QueueManager::magazine_status_queue() {
+  return magazine_status_queue_;
+}
+
+// Ground Gear Intake
+c2017::ground_gear_intake::GroundGearIntakeGoalQueue&
+QueueManager::ground_gear_goal_queue() {
+  return ground_gear_goal_queue_;
+}
+
+c2017::ground_gear_intake::GroundGearIntakeInputQueue&
+QueueManager::ground_gear_input_queue() {
+  return ground_gear_input_queue_;
+}
+
+c2017::ground_gear_intake::GroundGearIntakeOutputQueue&
+QueueManager::ground_gear_output_queue() {
+  return ground_gear_output_queue_;
+}
+
+c2017::ground_gear_intake::GroundGearIntakeStatusQueue&
+QueueManager::ground_gear_status_queue() {
+  return ground_gear_status_queue_;
+}
+
+// Ground Ball Intake
+c2017::ball_intake::BallIntakeGoalQueue&
+QueueManager::ball_intake_goal_queue() {
+  return ball_intake_goal_queue_;
+}
+
+c2017::ball_intake::BallIntakeOutputQueue&
+QueueManager::ball_intake_output_queue() {
+  return ball_intake_output_queue_;
+}
+
+c2017::ball_intake::BallIntakeStatusQueue&
+QueueManager::ball_intake_status_queue() {
+  return ball_intake_status_queue_;
+}
+
+// Climber
+c2017::climber::ClimberGoalQueue&
+QueueManager::climber_goal_queue() {
+  return climber_goal_queue_;
+}
+
+c2017::climber::ClimberInputQueue&
+QueueManager::climber_input_queue() {
+  return climber_input_queue_;
+}
+
+c2017::climber::ClimberOutputQueue&
+QueueManager::climber_output_queue() {
+  return climber_output_queue_;
+}
+
+c2017::climber::ClimberStatusQueue&
+QueueManager::climber_status_queue() {
+  return climber_status_queue_;
+}
+
+// Group Goal Queues
+c2017::intake_group::IntakeGroupGoalQueue&
+QueueManager::intake_group_goal_queue() {
+  return intake_group_goal_queue_;
+}
+
+c2017::shooter_group::ShooterGroupGoalQueue&
+QueueManager::shooter_group_goal_queue() {
+  return shooter_group_goal_queue_;
+}
+
+// Trigger Queues
+
 c2017::trigger::TriggerGoalQueue& QueueManager::trigger_goal_queue() {
   return trigger_goal_queue_;
 }
