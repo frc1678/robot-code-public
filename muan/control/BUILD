@@ -26,7 +26,10 @@ cc_library(
   name = 'pid_controller',
   hdrs = [
     'pid_controller.h',
-    'average_filter_pid.h'
+    'average_filter_pid.h',
+  ],
+  srcs = [
+    'pid_controller.cpp',
   ],
   deps = [
     '//muan/units:units',
@@ -42,9 +45,12 @@ cc_library(
     'trapezoidal_motion_profile.h',
   ],
   srcs = [
-    'trapezoidal_motion_profile.hpp'
+    'trapezoidal_motion_profile.cpp'
   ],
-  deps = ['//muan/units:units'],
+  deps = [
+    '//muan/units:units',
+    '//muan/utils:math_utils',
+  ],
   linkopts = ['-lm'],
   linkstatic = 1
 )

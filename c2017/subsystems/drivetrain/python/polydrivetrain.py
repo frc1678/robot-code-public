@@ -107,9 +107,10 @@ def DoCoerceGoal(region, K, w, R):
 
 
 class VelocityDrivetrainModel(control_loop.ControlLoop):
-  def __init__(self, name="VelocityDrivetrainModel"):
+  def __init__(self, left_low=True, right_low=True, name="VelocityDrivetrainModel"):
     super(VelocityDrivetrainModel, self).__init__(name)
-    self._drivetrain = drivetrain.Drivetrain()
+    self._drivetrain = drivetrain.Drivetrain(left_low=left_low,
+                                             right_low=right_low)
     self.dt = 0.005
     self.A_continuous = numpy.matrix(
         [[self._drivetrain.A_continuous[1, 1], self._drivetrain.A_continuous[1, 3]],
@@ -130,7 +131,7 @@ class VelocityDrivetrainModel(control_loop.ControlLoop):
     self.PlaceControllerPoles([0.67, 0.67])
     self.PlaceObserverPoles([0.02, 0.02])
 
-    self.G = self._drivetrain.G
+    self.gear = self._drivetrain.gear
     self.resistance = self._drivetrain.resistance
     self.r = self._drivetrain.r
     self.Kv = self._drivetrain.Kv
@@ -141,9 +142,17 @@ class VelocityDrivetrainModel(control_loop.ControlLoop):
 
 
 class VelocityDrivetrain(object):
+  HIGH = 'high'
+  LOW = 'low'
+  SHIFTING_UP = 'up'
+  SHIFTING_DOWN = 'down'
+
   def __init__(self):
-    self.drivetrain_low_low = VelocityDrivetrainModel(name='VelocityDrivetrainLowLow')
-    self.drivetrain = VelocityDrivetrainModel(name = 'VelocityDrivetrain')
+    self.drivetrain_low_low = VelocityDrivetrainModel(
+        left_low=True, right_low=True, name='VelocityDrivetrainLowLow')
+    self.drivetrain_low_high = VelocityDrivetrainModel(left_low=True, right_low=False, name='VelocityDrivetrainLowHigh')
+    self.drivetrain_high_low = VelocityDrivetrainModel(left_low=False, right_low=True, name = 'VelocityDrivetrainHighLow')
+    self.drivetrain_high_high = VelocityDrivetrainModel(left_low=False, right_low=False, name = 'VelocityDrivetrainHighHigh')
 
     # X is [lvel, rvel]
     self.X = numpy.matrix(
@@ -182,15 +191,31 @@ class VelocityDrivetrain(object):
     # inertia.  A value of 1 is no throttle negative inertia.
     self.ttrust = 1.0
 
+    self.left_gear = VelocityDrivetrain.LOW
+    self.right_gear = VelocityDrivetrain.LOW
+    self.left_shifter_position = 0.0
+    self.right_shifter_position = 0.0
     self.left_cim = drivetrain.CIM()
     self.right_cim = drivetrain.CIM()
 
+  def IsInGear(self, gear):
+    return gear is VelocityDrivetrain.HIGH or gear is VelocityDrivetrain.LOW
+
   def MotorRPM(self, shifter_position, velocity):
-      return (velocity / self.CurrentDrivetrain().G /
-              self.CurrentDrivetrain().r)
+    return (velocity / self.CurrentDrivetrain().gear /
+          self.CurrentDrivetrain().r)
 
   def CurrentDrivetrain(self):
-        return self.drivetrain
+    if self.left_shifter_position > 0.5:
+      if self.right_shifter_position > 0.5:
+        return self.drivetrain_high_high
+      else:
+        return self.drivetrain_high_low
+    else:
+      if self.right_shifter_position > 0.5:
+        return self.drivetrain_low_high
+      else:
+        return self.drivetrain_low_low
 
   def SimShifter(self, gear, shifter_position):
     if gear is VelocityDrivetrain.HIGH or gear is VelocityDrivetrain.SHIFTING_UP:
@@ -206,17 +231,12 @@ class VelocityDrivetrain(object):
     return gear, shifter_position
 
   def ComputeGear(self, wheel_velocity, should_print=False, current_gear=False, gear_name=None):
-    high_omega = (wheel_velocity / self.CurrentDrivetrain().G_high /
+    omega = (wheel_velocity / self.CurrentDrivetrain().gear /
                   self.CurrentDrivetrain().r)
-    low_omega = (wheel_velocity / self.CurrentDrivetrain().G_low /
-                 self.CurrentDrivetrain().r)
     #print gear_name, "Motor Energy Difference.", 0.5 * 0.000140032647 * (low_omega * low_omega - high_omega * high_omega), "joules"
-    high_torque = ((12.0 - high_omega / self.CurrentDrivetrain().Kv) *
-                   self.CurrentDrivetrain().Kt / self.CurrentDrivetrain().resistance)
-    low_torque = ((12.0 - low_omega / self.CurrentDrivetrain().Kv) *
+    torque = ((12.0 - omega / self.CurrentDrivetrain().Kv) *
                   self.CurrentDrivetrain().Kt / self.CurrentDrivetrain().resistance)
-    high_power = high_torque * high_omega
-    low_power = low_torque * low_omega
+    power = low_torque * omega
     #if should_print:
     #  print gear_name, "High omega", high_omega, "Low omega", low_omega
     #  print gear_name, "High torque", high_torque, "Low torque", low_torque
@@ -390,7 +410,11 @@ def main(argv):
     else:
       namespaces = ['c2017', 'subsystems', 'drivetrain']
       dog_loop_writer = control_loop.ControlLoopWriter(
-          "VelocityDrivetrain", [vdrivetrain.drivetrain], namespaces=namespaces)
+          "VelocityDrivetrain", [vdrivetrain.drivetrain_low_low,
+                         vdrivetrain.drivetrain_low_high,
+                         vdrivetrain.drivetrain_high_low,
+                         vdrivetrain.drivetrain_high_high],
+                         namespaces=namespaces)
 
       dog_loop_writer.Write(argv[1], argv[2])
 

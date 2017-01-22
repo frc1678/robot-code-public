@@ -10,7 +10,7 @@ class BuildTestRobot : public RobotBase {
     muan::wpilib::CanWrapper can{&pdp_queue};
     std::thread can_thread{std::ref(can)};
 
-    aos::time::PhasedLoop loop{aos::time::Time::InMS(10)};
+    aos::time::PhasedLoop loop{std::chrono::milliseconds(10)};
 
     can.pcm()->CreateSolenoid(6);
 

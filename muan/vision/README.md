@@ -53,10 +53,10 @@ struct muan::Vision::VisionStatus {
 This is a struct to hold the information needed to threshold an image:
 ```c++
 struct muan::Vision::ColorRange {
-  cv::Scalar lower_bound; // Lower end of color range 
+  cv::Scalar lower_bound; // Lower end of color range
   cv::Scalar upper_bound; // Upper end of color range
   // Colorspace used for in_range (such as CV_BGR2YUV for
-  // the YUV colorspace). 
+  // the YUV colorspace).
   int colorspace;
 };
 ```

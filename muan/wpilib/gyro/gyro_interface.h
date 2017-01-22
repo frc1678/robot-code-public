@@ -1,5 +1,5 @@
-#ifndef GYRO_INTERFACE_H_
-#define GYRO_INTERFACE_H_
+#ifndef MUAN_WPILIB_GYRO_GYRO_INTERFACE_H_
+#define MUAN_WPILIB_GYRO_GYRO_INTERFACE_H_
 
 #include <memory>
 
@@ -46,4 +46,4 @@ class GyroInterface {
   std::unique_ptr<SPI> gyro_;
 };
 
-#endif  // GYRO_INTERFACE_H_
+#endif  // MUAN_WPILIB_GYRO_GYRO_INTERFACE_H_

@@ -1,6 +1,5 @@
 #include "third_party/aos/common/mutex.h"
 
-#define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 #include <stdio.h>
 #include <string.h>
@@ -33,7 +32,9 @@ bool Mutex::Lock() {
   }
 }
 
-void Mutex::Unlock() { mutex_unlock(&impl_); }
+void Mutex::Unlock() {
+  mutex_unlock(&impl_);
+}
 
 Mutex::State Mutex::TryLock() {
   const int ret = mutex_trylock(&impl_);
@@ -50,6 +51,8 @@ Mutex::State Mutex::TryLock() {
   }
 }
 
-bool Mutex::OwnedBySelf() const { return mutex_islocked(&impl_); }
+bool Mutex::OwnedBySelf() const {
+  return mutex_islocked(&impl_);
+}
 
 }  // namespace aos

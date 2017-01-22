@@ -3,16 +3,17 @@
 
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
-#include "c2017/subsystems/superstructure/intake_group/intake_group.pb.h"
-#include "c2017/subsystems/superstructure/shooter_group/shooter_group.pb.h"
+#include "c2017/subsystems/superstructure/intake_group.pb.h"
+#include "c2017/subsystems/superstructure/shooter_group.pb.h"
 
 namespace c2017 {
-  
+
 namespace intake_group {
 
-  using IntakeGroupGoalProto = muan::proto::StackProto<IntakeGoal, 256>;
+  using IntakeGroupGoalProto = muan::proto::StackProto<IntakeGroupGoal, 256>;
 
-  using IntakeGroupGoalQueue = muan::queues::MessageQueue<IntakeGoalProto, 200>;
+  using IntakeGroupGoalQueue = muan::queues::MessageQueue<IntakeGroupGoalProto, 200>;
+
 } // namespace intake_group
 
 namespace shooter_group {

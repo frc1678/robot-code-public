@@ -5,27 +5,31 @@
 
 namespace c2017 {
 
-namespace wpilib_update {
+namespace citrus_robot {
 
-Main::Main() : throttle_{1}, wheel_{0}, gamepad_{2} {
+CitrusRobot::CitrusRobot() : throttle_{1}, wheel_{0}, gamepad_{2} {
   shifting_low_ = throttle_.MakeButton(4);
   shifting_high_ = throttle_.MakeButton(5);
   quickturn_ = throttle_.MakeButton(5);
 }
 
-void Main::Update() {
+void CitrusRobot::Update() {
   if (DriverStation::GetInstance().IsAutonomous()) {
+    lemonscript_.Start(); // Weird to call Start in a loop, but it's a setter so it's fine
 
-  } else if (DriverStation::GetInstance().IsOperatorControl())
-  // Update joysticks
-  throttle_.Update();
-  wheel_.Update();
-  gamepad_.Update();
+  } else if (DriverStation::GetInstance().IsOperatorControl()) {
+    lemonscript_.Stop(); // Weirder to do this, but it works :/
+
+    // Update joysticks
+    throttle_.Update();
+    wheel_.Update();
+    gamepad_.Update();
+  }
 
   SendDSMessage();
 }
 
-void Main::SendDSMessage() {
+void CitrusRobot::SendDSMessage() {
   muan::wpilib::DriverStationProto status;
 
   if (DriverStation::GetInstance().IsDisabled()) {
@@ -45,6 +49,6 @@ void Main::SendDSMessage() {
   c2017::QueueManager::GetInstance().driver_station_queue()->WriteMessage(status);
 }
 
-}  // wpilib_update
+}  // citrus_robot
 
 }  // c2017

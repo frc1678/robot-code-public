@@ -15,9 +15,7 @@ namespace drivetrain {
 
 const DrivetrainConfig &GetDrivetrainConfig() {
   static DrivetrainConfig kDrivetrainConfig{
-      ::frc971::control_loops::drivetrain::ShifterType::SIMPLE_SHIFTER, // We actually have no shifters, but
-                                                                        // there isn't a way to handle that
-                                                                        // in 971's code.
+      ::frc971::control_loops::drivetrain::ShifterType::SIMPLE_SHIFTER,
       ::frc971::control_loops::drivetrain::LoopType::CLOSED_LOOP,
 
       ::c2017::subsystems::drivetrain::MakeDrivetrainLoop,
@@ -39,4 +37,4 @@ const DrivetrainConfig &GetDrivetrainConfig() {
 
 }  // namespace drivetrain
 
-}  // namespace c2017
+} // namespace c2017

@@ -1,0 +1,23 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+package c2017.climber;
+
+message ClimberStatus {
+  required bool currently_climbing = 1;
+  required bool hit_top = 2;
+}
+
+message ClimberInput {
+  required double current = 1;
+  required double position = 2;
+}
+
+message ClimberOutput {
+  required double voltage = 1;
+}
+
+message ClimberGoal {
+  required bool climbing = 1;
+}

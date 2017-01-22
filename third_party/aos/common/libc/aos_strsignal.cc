@@ -2,9 +2,7 @@
 
 #include <signal.h>
 
-#include <stdio.h>
 #include "third_party/aos/common/check.h"
-
 const char *aos_strsignal(int signal) {
   static thread_local char buffer[512];
 
