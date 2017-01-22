@@ -124,7 +124,6 @@ class QueueManager {
 
   c2017::intake_group::IntakeGroupGoalQueue intake_group_goal_queue_;
   c2017::shooter_group::ShooterGroupGoalQueue shooter_group_goal_queue_;
-
 };
 
 }  // c2017

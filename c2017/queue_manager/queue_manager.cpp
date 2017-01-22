@@ -159,6 +159,7 @@ QueueManager::shooter_group_goal_queue() {
 }
 
 // Trigger Queues
+
 c2017::trigger::TriggerGoalQueue& QueueManager::trigger_goal_queue() {
   return trigger_goal_queue_;
 }
