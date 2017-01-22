@@ -16,11 +16,12 @@ message ShooterStatus {
   required double observed_velocity = 1; // Positive velocity = forwards
 }
 
+enum ShotMode {
+  FENDER = 0;
+  HOPPER = 1;
+}
+
 message ShooterGoal {
-  enum ShotMode {
-    FENDER = 0;
-    HOPPER = 1;
-  }
   required ShotMode goal_mode = 1;
   required double goal_velocity = 2; // Positive velocity = forwards
 }
