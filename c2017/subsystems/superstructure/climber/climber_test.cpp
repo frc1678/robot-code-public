@@ -13,7 +13,7 @@ class ClimberTest : public ::testing::Test {
        current_ = current_position_ > 2 ? 120 : 20;
      } else {
        current_position_ += 0.00042 * voltage;
-       current_ = current_position_ > 2 ? 120 : 20;
+       current_ = current_position_ > 2 ? 120 : 10;
        initial_rope_position = current_position_;
      }
   }
@@ -53,7 +53,7 @@ TEST_F(ClimberTest, ClimbsToTheTop) {
   
   auto test_status = c2017::QueueManager::GetInstance().climber_status_queue().ReadLastMessage();
 
-  for (double t = 0; t < 2; t += 0.005) {
+  for (double t = 0; t < 5; t += 0.005) {
     input->set_position(GetPosition());
     input->set_current(GetCurrent());
     output = test_climber.Update(input, ds_status);
