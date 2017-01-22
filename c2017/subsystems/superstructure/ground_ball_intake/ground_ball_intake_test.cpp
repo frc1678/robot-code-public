@@ -24,6 +24,8 @@ TEST(TestGroundBallIntake, RollerIntakeGoingDown) {
   if (status) {
     EXPECT_FALSE(status.value()->is_intake_up());
     EXPECT_EQ(status.value()->running(), RollerGoal::INTAKE);
+  } else {
+    FAIL();
   }
 }
 
@@ -44,6 +46,8 @@ TEST(TestGroundBallIntake, RollerIntakeGoingUp) {
   if (status) {
     EXPECT_TRUE(status.value()->is_intake_up());
     EXPECT_EQ(status.value()->running(), RollerGoal::INTAKE);
+  } else {
+    FAIL();
   }
 }
 
@@ -64,6 +68,8 @@ TEST(TestGroundBallIntake, RollerOuttakeGoingDown) {
   if (status) {
     EXPECT_FALSE(status.value()->is_intake_up());
     EXPECT_EQ(status.value()->running(), RollerGoal::OUTTAKE);
+  } else {
+    FAIL();
   }
 }
 
@@ -84,6 +90,8 @@ TEST(TestGroundBallIntake, RollerOuttakeGoingUp) {
   if (status) {
     EXPECT_TRUE(status.value()->is_intake_up());
     EXPECT_EQ(status.value()->running(), RollerGoal::OUTTAKE);
+  } else {
+    FAIL();
   }
 }
 
@@ -104,6 +112,8 @@ TEST(TestGroundBallIntake, RollerIdleGoingDown) {
   if (status) {
     EXPECT_FALSE(status.value()->is_intake_up());
     EXPECT_EQ(status.value()->running(), RollerGoal::IDLE);
+  } else {
+    FAIL();
   }
 }
 
@@ -124,6 +134,8 @@ TEST(TestGroundBallIntake, RollerIdleGoingUp) {
   if (status) {
     EXPECT_TRUE(status.value()->is_intake_up());
     EXPECT_EQ(status.value()->running(), RollerGoal::IDLE);
+  } else {
+    FAIL();
   }
 }
 
@@ -144,6 +156,8 @@ TEST(TestGroundBallIntake, DISABLED) {
   if (status) {
     EXPECT_TRUE(status.value()->is_intake_up());
     EXPECT_EQ(status.value()->running(), RollerGoal::INTAKE);
+  } else {
+    FAIL();
   }
 }
 
@@ -164,6 +178,8 @@ TEST(TestGroundBallIntake, ESTOP) {
   if (status) {
     EXPECT_TRUE(status.value()->is_intake_up());
     EXPECT_EQ(status.value()->running(), RollerGoal::INTAKE);
+  } else {
+    FAIL();
   }
 }
 
@@ -185,5 +201,7 @@ TEST(TestGroundBallIntake, Brownout) {
   if (status) {
     EXPECT_TRUE(status.value()->is_intake_up());
     EXPECT_EQ(status.value()->running(), RollerGoal::INTAKE);
+  } else {
+    FAIL();
   }
 }
