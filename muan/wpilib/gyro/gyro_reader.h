@@ -19,7 +19,8 @@ using namespace muan::units;
 
 class GyroReader {
  public:
-  GyroReader(GyroQueue* queue);
+  // If invert is set to true, clockwise on the robot is positive. Useful for when mechanical decides that the RoboRIO should be upside down for some reason.
+  GyroReader(GyroQueue* queue, bool invert = false);
 
   // Run forever. This should be passed as an argument to the constructor of
   // std::thread.
@@ -36,9 +37,15 @@ class GyroReader {
 
   bool is_calibrated();
 
+  // Read from the gyro, accounting for whether or not the gyro is inverted.
+  double AngleReading();
+
   GyroInterface gyro_;
 
   GyroQueue* gyro_queue_;
+
+  // Is the RIO upside down?
+  bool should_invert_;
 
   // The rate at which the gyro will drift, in radians per tick (at 200hz)
   double drift_rate_ = 0;
