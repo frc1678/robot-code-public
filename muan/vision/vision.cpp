@@ -65,6 +65,7 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
 
   cv::cvtColor(raw, image, range_.colorspace);
   cv::inRange(image, range_.lower_bound, range_.upper_bound, image);
+  scorer_->Morph(image);
 
   std::vector<std::vector<cv::Point>> contours;
   std::vector<cv::Vec4i> hierarchy;
@@ -124,7 +125,7 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
         retval.target_exists = true;
         retval.distance_to_target = distance_to_target;
         // average together points
-        double angle_to_target = (skewbox[0] + skewbox[1] + skewbox[2] + skewbox[3]).x / 4;
+        double angle_to_target = bounding.center.x;
         angle_to_target = (angle_to_target / image.cols - 0.5) * constants_.kFovX;
         retval.angle_to_target = angle_to_target;
       }

@@ -8,5 +8,5 @@ message VisionPosition {
   required bool target_found = 1;
   optional double angle_to_target = 2; // Number of radians the robot is left of the target
   optional double distance_to_target = 3; // In meters
-  optional uint32 target_identifier = 4; // If there are multiple targets, this is a unique number for each
+  optional uint32 target_id = 4; // If there are multiple targets, this is a unique number for each
 }

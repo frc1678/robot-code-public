@@ -8,11 +8,15 @@ namespace vision {
 
 class VisionScorer2017 : public muan::VisionScorer {
  public:
-  double GetScore(double , double /* unused */, double skew,
-                  double width, double height, double fullness) override {
+  double GetScore(double , double /* unused */, double skew, double width, double height, double fullness) {
     double base_score = std::log(width * height) / (.1 + std::pow(fullness - .9, 2));
     double target_score = (base_score / (1 + skew));
     return target_score;
+  }
+
+  void Morph(cv::Mat img) {
+    cv::erode(img, img, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1, 3), cv::Point(0, 1)));
+    cv::dilate(img, img, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1, 25), cv::Point(0, 12)));
   }
 };
 
