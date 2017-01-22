@@ -52,6 +52,7 @@ ground_ball_intake::GroundBallIntakeOutputQueue& QueueManager::ground_ball_intak
 
 ground_ball_intake::GroundBallIntakeGoalQueue& QueueManager::ground_ball_intake_goal_queue() {
   return ground_ball_intake_goal_queue_;
+}
 
 c2017::trigger::TriggerGoalQueue& QueueManager::trigger_goal_queue() {
   return trigger_goal_queue_;

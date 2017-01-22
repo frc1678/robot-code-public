@@ -8,11 +8,8 @@
 #include "muan/wpilib/queue_types.h"
 
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
-<<<<<<< HEAD
 #include "c2017/subsystems/superstructure/ground_ball_intake/queue_types.h"
-=======
 #include "c2017/subsystems/superstructure/trigger/queue_types.h"
->>>>>>> frc1678/master
 
 using muan::queues::MessageQueue;
 
