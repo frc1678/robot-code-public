@@ -8,6 +8,7 @@
 #include "muan/wpilib/queue_types.h"
 
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
+#include "c2017/subsystems/superstructure/trigger/queue_types.h"
 
 #include "c2017/subsystems/superstructure/shooter/queue_types.h"
 
@@ -36,6 +37,10 @@ class QueueManager {
   frc971::control_loops::drivetrain::OutputQueue* drivetrain_output_queue();
   frc971::control_loops::drivetrain::StatusQueue* drivetrain_status_queue();
   shooter::ShooterStatusQueue& shooter_status_queue();
+  c2017::trigger::TriggerGoalQueue& trigger_goal_queue();
+  c2017::trigger::TriggerInputQueue& trigger_input_queue();
+  c2017::trigger::TriggerOutputQueue& trigger_output_queue();
+  c2017::trigger::TriggerStatusQueue& trigger_status_queue();
 
  private:
   QueueManager() = default;
@@ -51,6 +56,10 @@ class QueueManager {
   frc971::control_loops::drivetrain::OutputQueue drivetrain_output_queue_;
   frc971::control_loops::drivetrain::StatusQueue drivetrain_status_queue_;
   shooter::ShooterStatusQueue shooter_status_queue_;
+  c2017::trigger::TriggerGoalQueue trigger_goal_queue_;
+  c2017::trigger::TriggerInputQueue trigger_input_queue_;
+  c2017::trigger::TriggerOutputQueue trigger_output_queue_;
+  c2017::trigger::TriggerStatusQueue trigger_status_queue_;
 };
 
 }  // c2017
