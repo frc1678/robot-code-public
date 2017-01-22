@@ -73,7 +73,7 @@ class Drivetrain(control_loop.ControlLoop):
     # Moment of inertia of the drivetrain in kg m^2
     self.J = 2.0
     # Mass of the robot, in kg.
-    self.m = 50
+    self.m = 22
     # Radius of the robot, in meters (requires tuning by hand)
     self.rb = 0.4
     # Radius of the wheels, in meters.
@@ -86,7 +86,7 @@ class Drivetrain(control_loop.ControlLoop):
     # Torque constant
     self.Kt = self.stall_torque / self.stall_current
     # Gear ratios
-    self.gear = 12.0 / 40.0 * 24.0 / 60.0 * 24.0 / 60.0 # 4.55 on actual robot
+    self.gear = 4.55
     self.Gl = self.gear
     self.Gr = self.gear
 

@@ -8,7 +8,7 @@ namespace wpilib {
 
 WpilibInterface::WpilibInterface()
     : can_{&QueueManager::GetInstance().pdp_status_queue()},
-      gyro_{QueueManager::GetInstance().gyro_queue()} {
+      gyro_{QueueManager::GetInstance().gyro_queue(), true} {
 
   std::thread can_thread(std::ref(can_));
   can_thread.detach();
