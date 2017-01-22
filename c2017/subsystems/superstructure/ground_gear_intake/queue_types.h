@@ -3,7 +3,7 @@
 
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
-#include "c2017/subsystems/superstructure/ground_gear_intake/intake.pb.h"
+#include "c2017/subsystems/superstructure/ground_gear_intake/ground_gear_intake.pb.h"
 
 namespace c2017 {
 

@@ -14,7 +14,7 @@ class WpilibRobot : public IterativeRobot {
   c2017::SubsystemRunner subsystem_runner_;
   std::thread subsystem_thread{std::ref(subsystem_runner_)};
 
-  c2017::wpilib_update::Main main_;
+  c2017::citrus_robot::CitrusRobot main_;
 };
 
 START_ROBOT_CLASS(WpilibRobot);
