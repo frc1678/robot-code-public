@@ -11,6 +11,7 @@
 #include "muan/wpilib/queue_types.h"
 
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
+#include "c2017/subsystems/superstructure/ground_ball_intake/queue_types.h"
 #include "c2017/subsystems/superstructure/trigger/queue_types.h"
 
 #include "c2017/subsystems/superstructure/shooter/queue_types.h"
@@ -48,13 +49,17 @@ class QueueManager {
   frc971::control_loops::drivetrain::InputQueue* drivetrain_input_queue();
   frc971::control_loops::drivetrain::OutputQueue* drivetrain_output_queue();
   frc971::control_loops::drivetrain::StatusQueue* drivetrain_status_queue();
-  
+
   c2017::wpilib::WpilibOutputQueue& superstructure_output_queue();
 
   c2017::trigger::TriggerGoalQueue& trigger_goal_queue();
   c2017::trigger::TriggerInputQueue& trigger_input_queue();
   c2017::trigger::TriggerOutputQueue& trigger_output_queue();
   c2017::trigger::TriggerStatusQueue& trigger_status_queue();
+
+  ground_ball_intake::GroundBallIntakeStatusQueue& ground_ball_intake_status_queue();
+  ground_ball_intake::GroundBallIntakeOutputQueue& ground_ball_intake_output_queue();
+  ground_ball_intake::GroundBallIntakeGoalQueue& ground_ball_intake_goal_queue();
 
   c2017::shooter::ShooterGoalQueue& shooter_goal_queue();
   c2017::shooter::ShooterInputQueue& shooter_input_queue();
@@ -71,9 +76,9 @@ class QueueManager {
   c2017::ground_gear_intake::GroundGearIntakeOutputQueue& ground_gear_output_queue();
   c2017::ground_gear_intake::GroundGearIntakeStatusQueue& ground_gear_status_queue();
 
-  c2017::ball_intake::BallIntakeGoalQueue& ball_intake_goal_queue();
-  c2017::ball_intake::BallIntakeOutputQueue& ball_intake_output_queue();
-  c2017::ball_intake::BallIntakeStatusQueue& ball_intake_status_queue();
+  c2017::ground_ball_intake::GroundBallIntakeGoalQueue& ball_intake_goal_queue();
+  c2017::ground_ball_intake::GroundBallIntakeOutputQueue& ball_intake_output_queue();
+  c2017::ground_ball_intake::GroundBallIntakeStatusQueue& ball_intake_status_queue();
 
   c2017::climber::ClimberGoalQueue& climber_goal_queue();
   c2017::climber::ClimberInputQueue& climber_input_queue();
@@ -118,9 +123,9 @@ class QueueManager {
   c2017::ground_gear_intake::GroundGearIntakeOutputQueue ground_gear_output_queue_;
   c2017::ground_gear_intake::GroundGearIntakeStatusQueue ground_gear_status_queue_;
 
-  c2017::ball_intake::BallIntakeGoalQueue ball_intake_goal_queue_;
-  c2017::ball_intake::BallIntakeOutputQueue ball_intake_output_queue_;
-  c2017::ball_intake::BallIntakeStatusQueue ball_intake_status_queue_;
+  c2017::ground_ball_intake::GroundBallIntakeGoalQueue ground_ball_intake_goal_queue_;
+  c2017::ground_ball_intake::GroundBallIntakeOutputQueue ground_ball_intake_output_queue_;
+  c2017::ground_ball_intake::GroundBallIntakeStatusQueue ground_ball_intake_status_queue_;
 
   c2017::climber::ClimberGoalQueue climber_goal_queue_;
   c2017::climber::ClimberInputQueue climber_input_queue_;

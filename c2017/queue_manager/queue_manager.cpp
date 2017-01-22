@@ -35,9 +35,9 @@ void QueueManager::StartLogging() {
   logger_.AddQueue("ground_gear_status", &ground_gear_status_queue_);
   logger_.AddQueue("ground_gear_output", &ground_gear_output_queue_);
 
-  logger_.AddQueue("ball_intake_goal", &ball_intake_goal_queue_);
-  logger_.AddQueue("ball_intake_status", &ball_intake_status_queue_);
-  logger_.AddQueue("ball_intake_output", &ball_intake_output_queue_);
+  logger_.AddQueue("ground_ball_intake_goal", &ground_ball_intake_goal_queue_);
+  logger_.AddQueue("ground_ball_intake_status", &ground_ball_intake_status_queue_);
+  logger_.AddQueue("ground_ball_intake_output", &ground_ball_intake_output_queue_);
 
   logger_.AddQueue("climber_input", &climber_input_queue_);
   logger_.AddQueue("climber_goal", &climber_goal_queue_);
@@ -87,7 +87,7 @@ QueueManager::drivetrain_output_queue() {
   return &drivetrain_output_queue_;
 }
 
-c2017::wpilib::WpilibOutputQueue& 
+c2017::wpilib::WpilibOutputQueue&
 QueueManager::superstructure_output_queue() {
   return superstructure_output_queue_;
 }
@@ -156,19 +156,19 @@ QueueManager::ground_gear_status_queue() {
 }
 
 // Ground Ball Intake
-c2017::ball_intake::BallIntakeGoalQueue&
-QueueManager::ball_intake_goal_queue() {
-  return ball_intake_goal_queue_;
+c2017::ground_ball_intake::GroundBallIntakeGoalQueue&
+QueueManager::ground_ball_intake_goal_queue() {
+  return ground_ball_intake_goal_queue_;
 }
 
-c2017::ball_intake::BallIntakeOutputQueue&
-QueueManager::ball_intake_output_queue() {
-  return ball_intake_output_queue_;
+c2017::ground_ball_intake::GroundBallIntakeOutputQueue&
+QueueManager::ground_ball_intake_output_queue() {
+  return ground_ball_intake_output_queue_;
 }
 
-c2017::ball_intake::BallIntakeStatusQueue&
-QueueManager::ball_intake_status_queue() {
-  return ball_intake_status_queue_;
+c2017::ground_ball_intake::GroundBallIntakeStatusQueue&
+QueueManager::ground_ball_intake_status_queue() {
+  return ground_ball_intake_status_queue_;
 }
 
 // Climber
@@ -204,6 +204,7 @@ QueueManager::shooter_group_goal_queue() {
 }
 
 // Trigger Queues
+
 c2017::trigger::TriggerGoalQueue& QueueManager::trigger_goal_queue() {
   return trigger_goal_queue_;
 }
