@@ -45,11 +45,9 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
   at_goal_ = (absolute_error(0, 0) < angle_tolerance_) && (absolute_error(1, 0) < velocity_tolerance_);
 
   c2017::shooter::ShooterOutputProto output;
-  if (goal_velocity_ > 0) {
-    output->set_voltage(u);
-  } else {
-    output->set_voltage(0);
-  }
+
+  output->set_voltage(u);
+
   status_->set_observed_velocity(observer_.x()(1, 0));
 
   shooter_status_queue_.WriteMessage(status_);
