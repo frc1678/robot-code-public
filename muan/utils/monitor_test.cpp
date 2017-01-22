@@ -49,7 +49,7 @@ TEST(MotorSafetyTest, CurrentSpikeThenDrop) {
     if (t < 3.0) {
       EXPECT_NEAR(safe_voltage, voltage, 1e-5);
       EXPECT_FALSE(safety.is_at_thresh());
-    } else if (t < 6.095) {  // Slightly more than 6 seconds to account for the moving average filter getting
+    } else if (t < 6.090) {  // Slightly more than 6 seconds to account for the moving average filter getting
                              // track of the sudden current change.
       EXPECT_NEAR(safe_voltage, 0, 1e-5);
       EXPECT_TRUE(safety.is_at_thresh());
@@ -85,7 +85,7 @@ TEST(MotorSafetyTest, SlowStall) {
     if(t < 1.0) {
       EXPECT_NEAR(safe_voltage, voltage, 1e-5);
       EXPECT_FALSE(safety.is_at_thresh());
-    } else if (t < 7.055) { // A little more to allow the moving average to catch up on current
+    } else if (t < 7.050) { // A little more to allow the moving average to catch up on current
       EXPECT_NEAR(safe_voltage, 0, 1e-5);
       EXPECT_TRUE(safety.is_at_thresh());
     } else {
@@ -101,7 +101,7 @@ TEST(MonitorTest, BelowThreshold) {
     double value = t < 2 ? 200 : 20;
     double voltage = 10;
     double safe_voltage = monitor.Update(voltage, value);
-    if(t < 3.055) {
+    if(t < 3.050) {
       EXPECT_NEAR(safe_voltage, voltage, 1e-5);
       EXPECT_FALSE(monitor.is_at_thresh());
     } else { // A little more to allow the moving average to catch up on value
@@ -117,11 +117,27 @@ TEST(MonitorTest, CustomStandingVoltage) {
     double value = t < 2 ? 200 : 20;
     double voltage = 10;
     double safe_voltage = monitor.Update(voltage, value);
-    if(t < 3.055) {
+    if(t < 3.050) {
       EXPECT_NEAR(safe_voltage, voltage, 1e-5);
       EXPECT_FALSE(monitor.is_at_thresh());
     } else { // A little more to allow the moving average to catch up on value
       EXPECT_NEAR(safe_voltage, 5, 1e-5);
+      EXPECT_TRUE(monitor.is_at_thresh());
+    }
+  }
+}
+
+TEST(MonitorTest, CustomHistorySize) {
+  muan::utils::Monitor monitor = muan::utils::Monitor(100., 1., 1., 0.005, false, 0, 30);
+  for (double t = 0.005; t < 9; t += 0.005) {
+    double value = t < 2 ? 200 : 20;
+    double voltage = 10;
+    double safe_voltage = monitor.Update(voltage, value);
+    if(t < 3.075) {
+      EXPECT_NEAR(safe_voltage, voltage, 1e-5);
+      EXPECT_FALSE(monitor.is_at_thresh());
+    } else { // A little more to allow the moving average to catch up on value
+      EXPECT_NEAR(safe_voltage, 0, 1e-5);
       EXPECT_TRUE(monitor.is_at_thresh());
     }
   }
@@ -133,7 +149,7 @@ TEST(MonitorTest, Resets) {
     double value = t < 2 ? 200 : t < 6 ? 20 : 200;
     double voltage = 10;
     double safe_voltage = monitor.Update(voltage, value);
-    if(t < 3.055) {
+    if(t < 3.050) {
       EXPECT_NEAR(safe_voltage, voltage, 1e-5);
       EXPECT_FALSE(monitor.is_at_thresh());
     } else if (t < 6) { // A little more to allow the moving average to catch up on value
