@@ -2,6 +2,7 @@
 #define C2017_WPILIBUPDATE_MAIN_H_
 
 #include "muan/teleop/joystick.h"
+#include "c2017/lemonscript/lemonscript.h"
 
 namespace c2017 {
 
@@ -17,6 +18,9 @@ class Main {
  private:
   muan::teleop::Joystick throttle_, wheel_;
   muan::teleop::Joystick gamepad_;
+
+  c2017::lemonscript::Lemonscript lemonscript_;
+  std::thread lemonscript_thread_{std::ref(lemonscript_)};
 
   bool high_gear_;
   muan::teleop::Button *shifting_high_, *shifting_low_;

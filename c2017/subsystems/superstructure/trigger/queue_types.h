@@ -19,8 +19,8 @@ using TriggerGoalQueue = muan::queues::MessageQueue<TriggerGoalProto, 200>;
 using TriggerOutputQueue = muan::queues::MessageQueue<TriggerOutputProto, 200>;
 using TriggerStatusQueue = muan::queues::MessageQueue<TriggerStatusProto, 200>;
 
-} // namespace trigger
+}  // namespace trigger
 
-} // namespace c2017
+}  // namespace c2017
 
 #endif  // C2017_SUBSYSTEMS_SUPERSTRUCTURE_TRIGGER_QUEUETYPES_H_
