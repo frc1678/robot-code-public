@@ -90,8 +90,6 @@ class QueueManager {
   frc971::control_loops::drivetrain::InputQueue drivetrain_input_queue_;
   frc971::control_loops::drivetrain::OutputQueue drivetrain_output_queue_;
   frc971::control_loops::drivetrain::StatusQueue drivetrain_status_queue_;
-
-  shooter::ShooterStatusQueue shooter_status_queue_;
   
   c2017::wpilib::WpilibOutputQueue superstructure_output_queue_;
   

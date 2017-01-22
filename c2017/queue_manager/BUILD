@@ -9,7 +9,6 @@ cc_library(
     '//muan/wpilib/gyro:gyro_queues',
     '//third_party/frc971/control_loops/drivetrain:drivetrain_lib',
     '//c2017/subsystems/superstructure/shooter:shooter_queues',
-    '//c2017/subsystems/superstructure/trigger:trigger_queues',
     '//c2017/subsystems/superstructure/magazine:magazine_queues',
     '//c2017/subsystems/superstructure/trigger:trigger_queues',
     '//c2017/subsystems/superstructure/ground_gear_intake:ground_gear_intake_queues',

@@ -42,10 +42,6 @@ QueueManager::drivetrain_output_queue() {
   return &drivetrain_output_queue_;
 }
 
-shooter::ShooterStatusQueue& QueueManager::shooter_status_queue() {
-  return shooter_status_queue_;
-}
-
 c2017::wpilib::WpilibOutputQueue& 
 QueueManager::superstructure_output_queue() {
   return superstructure_output_queue_;
