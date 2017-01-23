@@ -86,7 +86,7 @@ class Drivetrain(control_loop.ControlLoop):
     # Torque constant
     self.Kt = self.stall_torque / self.stall_current
     # Gear ratios
-    self.gear = 4.55
+    self.gear = 1 / 4.55
     self.Gl = self.gear
     self.Gr = self.gear
 
@@ -105,7 +105,7 @@ class Drivetrain(control_loop.ControlLoop):
 
     # State feedback matrices
     # X will be of the format
-    # [[positionl], [velocityl], [positionr], velocityr]]
+    # [[positionl], [velocityl], [positionr], [velocityr]]
     self.A_continuous = numpy.matrix(
         [[0, 1, 0, 0],
          [0, self.msp * self.tcl, 0, self.msn * self.tcr],
@@ -124,12 +124,8 @@ class Drivetrain(control_loop.ControlLoop):
     self.A, self.B = self.ContinuousToDiscrete(
         self.A_continuous, self.B_continuous, self.dt)
 
-    if left_low or right_low:
-      q_pos = 0.12
-      q_vel = 1.0
-    else:
-      q_pos = 0.14
-      q_vel = 0.95
+    q_pos = 0.3
+    q_vel = 2.0
 
     self.Q = numpy.matrix([[(1.0 / (q_pos ** 2.0)), 0.0, 0.0, 0.0],
                            [0.0, (1.0 / (q_vel ** 2.0)), 0.0, 0.0],
