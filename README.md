@@ -30,7 +30,7 @@ bazel test //c2017/submarine_subsystem/...
 Before you push your code, you can run our automated test script. This is what Travis CI runs, so if you don't like failed travis builds you should always run it before pushing:
 
 ```
-./tests.sh
+./scripts/tests.sh
 ```
 
 ## Style Guide
