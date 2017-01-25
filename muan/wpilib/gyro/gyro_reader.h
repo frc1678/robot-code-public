@@ -15,11 +15,11 @@ namespace wpilib {
 
 namespace gyro {
 
-using namespace muan::units;
+using namespace muan::units;  //NOLINT
 
 class GyroReader {
  public:
-  GyroReader(GyroQueue* queue);
+  explicit GyroReader(GyroQueue* queue);
 
   // Run forever. This should be passed as an argument to the constructor of
   // std::thread.

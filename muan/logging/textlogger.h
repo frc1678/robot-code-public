@@ -15,7 +15,7 @@ class TextLogger {
  public:
   typedef muan::queues::MessageQueue<std::array<char, 1024>, 500> TextQueue;
   typedef std::shared_ptr<TextQueue> TextQueuePtr;
-  TextLogger(TextQueuePtr log_queue) : log_queue_(log_queue) {}
+  explicit TextLogger(TextQueuePtr log_queue) : log_queue_(log_queue) {}
   void operator()(const char *text);
 
  private:
@@ -24,6 +24,6 @@ class TextLogger {
 };
 
 }  // namespace logging
-} // namespace muan
+}  // namespace muan
 
 #endif  // MUAN_LOGGING_TEXTLOGGER_H_

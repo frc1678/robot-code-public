@@ -119,4 +119,4 @@ class MessageQueue {
 
 #include "message_queue.hpp"
 
-#endif /* MUAN_QUEUES_MESSAGE_QUEUE_H_ */
+#endif  // MUAN_QUEUES_MESSAGE_QUEUE_H_

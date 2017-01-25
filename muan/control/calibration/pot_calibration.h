@@ -7,7 +7,7 @@ namespace control {
 
 class PotCalibration {
  public:
-  PotCalibration(double units_per_index);
+  explicit PotCalibration(double units_per_index);
   ~PotCalibration();
 
   double Update(double enc_value, double pot_value, bool index_click);

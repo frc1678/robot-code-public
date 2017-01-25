@@ -13,7 +13,7 @@ namespace teleop {
 
 class Joystick {
  public:
-  Joystick(int32_t port);
+  explicit Joystick(int32_t port);
   void Update();
 
   muan::teleop::Button* MakeButton(uint32_t button);

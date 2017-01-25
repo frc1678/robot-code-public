@@ -13,25 +13,25 @@ TrapezoidalMotionProfile::TrapezoidalMotionProfile(MotionProfileConstraints cons
   // Deal with a possibly truncated motion profile (with nonzero initial or
   // final velocity) by calculating the parameters as if the profile began and
   // ended at zero velocity
-  Time cutoff_begin = initial_.velocity / constraints_.max_acceleration;
-  Length cutoff_dist_begin = cutoff_begin * cutoff_begin * constraints_.max_acceleration / 2.0;
+  muan::units::Time cutoff_begin = initial_.velocity / constraints_.max_acceleration;
+  muan::units::Length cutoff_dist_begin = cutoff_begin * cutoff_begin * constraints_.max_acceleration / 2.0;
 
-  Time cutoff_end = goal_.velocity / constraints_.max_acceleration;
-  Length cutoff_dist_end = cutoff_end * cutoff_end * constraints_.max_acceleration / 2.0;
+  muan::units::Time cutoff_end = goal_.velocity / constraints_.max_acceleration;
+  muan::units::Length cutoff_dist_end = cutoff_end * cutoff_end * constraints_.max_acceleration / 2.0;
 
   // Now we can calculate the parameters as if it was a full trapezoid instead
   // of a truncated one
   {
-    Length full_trapezoid_dist = cutoff_dist_begin + (goal_.position - initial_.position) + cutoff_dist_end;
-    Time acceleration_time = constraints_.max_velocity / constraints_.max_acceleration;
+    muan::units::Length full_trapezoid_dist = cutoff_dist_begin + (goal_.position - initial_.position) + cutoff_dist_end;
+    muan::units::Time acceleration_time = constraints_.max_velocity / constraints_.max_acceleration;
 
-    Length full_speed_dist =
+    muan::units::Length full_speed_dist =
         full_trapezoid_dist - acceleration_time * acceleration_time * constraints_.max_acceleration;
 
     // Handle the case where the profile never reaches full speed
-    if (full_speed_dist < 0.0 * m) {
-      acceleration_time = std::sqrt(full_trapezoid_dist / constraints_.max_acceleration) * s;
-      full_speed_dist = 0.0 * m;
+    if (full_speed_dist < 0.0 * muan::units::m) {
+      acceleration_time = std::sqrt(full_trapezoid_dist / constraints_.max_acceleration) * muan::units::s;
+      full_speed_dist = 0.0 * muan::units::m;
     }
 
     end_accel_ = acceleration_time - cutoff_begin;
@@ -40,7 +40,7 @@ TrapezoidalMotionProfile::TrapezoidalMotionProfile(MotionProfileConstraints cons
   }
 }
 
-MotionProfilePosition TrapezoidalMotionProfile::Calculate(Time t) const {
+MotionProfilePosition TrapezoidalMotionProfile::Calculate(muan::units::Time t) const {
   MotionProfilePosition result = initial_;
 
   if (t < end_accel_) {
@@ -52,7 +52,7 @@ MotionProfilePosition TrapezoidalMotionProfile::Calculate(Time t) const {
                        constraints_.max_velocity * (t - end_accel_);
   } else if (t <= end_deccel_) {
     result.velocity = goal_.velocity + (end_deccel_ - t) * constraints_.max_acceleration;
-    Time time_left = end_deccel_ - t;
+    muan::units::Time time_left = end_deccel_ - t;
     result.position =
         goal_.position - (goal_.velocity + time_left * constraints_.max_acceleration / 2.0) * time_left;
   } else {

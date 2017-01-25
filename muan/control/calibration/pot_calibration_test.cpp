@@ -26,7 +26,7 @@ class PotCalibrationTest : public ::testing::Test {
       for (int uncalibrated_value = 0; uncalibrated_value <= ending_difference;
            uncalibrated_value++, system_value_++) {
         // Check if it should be an index click
-        if (int(system_value_) % 10 == 0) {
+        if (static_cast<int>(system_value_) % 10 == 0) {
           index_click = true;
         } else {
           index_click = false;
@@ -59,7 +59,7 @@ class PotCalibrationTest : public ::testing::Test {
       for (int uncalibrated_value = 0; uncalibrated_value >= ending_difference;
            uncalibrated_value--, system_value_--) {
         // Checks if it should be an index click
-        if (int(system_value_) % 10 == 0) {
+        if (static_cast<int>(system_value_) % 10 == 0) {
           index_click = true;
         } else {
           index_click = false;
@@ -111,8 +111,8 @@ TEST_F(PotCalibrationTest, UniversalCases) {
         // calibrated at the beginning or the end of the iteration, it should be
         // considered calibrated.
         if (std::floor(system_value / 10.0) != std::floor((system_value + ending_difference) / 10.0) ||
-            muan::utils::true_modulo(int(system_value + ending_difference), 10) == 0 ||
-            muan::utils::true_modulo(int(system_value), 10) == 0) {
+            muan::utils::true_modulo(static_cast<int>(system_value + ending_difference), 10) == 0 ||
+            muan::utils::true_modulo(static_cast<int>(system_value), 10) == 0) {
           EXPECT_TRUE(is_calibrated());
           EXPECT_NEAR(std::get<0>(get_final_values()), std::get<1>(get_final_values()), 1e-5);
         } else {
@@ -133,7 +133,7 @@ TEST_F(PotCalibrationTest, CalibrationError) {
 
   for (uncalibrated_value = 0; uncalibrated_value <= 60; uncalibrated_value++, system_value++) {
     // Check if it should be an index click
-    if (int(system_value) % 10 == 0) {
+    if (static_cast<int>(system_value) % 10 == 0) {
       index_click = true;
     } else {
       index_click = false;
@@ -147,7 +147,7 @@ TEST_F(PotCalibrationTest, CalibrationError) {
   }
 
   for (; uncalibrated_value <= 150; uncalibrated_value++, system_value++) {
-    if (int(system_value) % 10 == 0) {
+    if (static_cast<int>(system_value) % 10 == 0) {
       index_click = true;
     } else {
       index_click = false;

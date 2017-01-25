@@ -3,7 +3,13 @@
 
 
 TEST(PidController, GoesToPosition) {
-  using namespace muan::units;
+  using muan::units::V;
+  using muan::units::m;
+  using muan::units::s;
+  using muan::units::Length;
+  using muan::units::Time;
+  using muan::units::Voltage;
+  using muan::units::convert;
   muan::PidController p(1 * V / m, 1 * V / m / s, 0 * V * s / m);
   Length h = 1.0 * m;
   for (int i = 0; i < 10000; i++) {

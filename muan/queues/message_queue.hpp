@@ -1,6 +1,7 @@
 #ifndef MUAN_QUEUES_MESSAGE_QUEUE_HPP_
 #define MUAN_QUEUES_MESSAGE_QUEUE_HPP_
 
+#include <algorithm>
 #include "muan/queues/message_queue.h"
 
 namespace muan {

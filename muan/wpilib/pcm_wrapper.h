@@ -12,7 +12,7 @@ namespace wpilib {
 
 class PcmWrapper {
  public:
-  PcmWrapper(int32_t module);
+  explicit PcmWrapper(int32_t module);
   PcmWrapper();
 
   ~PcmWrapper();

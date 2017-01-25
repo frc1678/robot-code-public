@@ -11,7 +11,7 @@ namespace utils {
 template <typename T>
 class LinearInterpolation {
  public:
-  LinearInterpolation(std::vector<std::pair<double, T>> data);
+  explicit LinearInterpolation(std::vector<std::pair<double, T>> data);
   T operator()(double x) const;
   void AddControlPoint(std::pair<double, T> point);
   double lower_boundary() const;

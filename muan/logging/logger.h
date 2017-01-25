@@ -61,7 +61,7 @@ class Logger {
 
  public:
   Logger();
-  Logger(std::unique_ptr<FileWriter>&& writer);
+  explicit Logger(std::unique_ptr<FileWriter>&& writer);
   virtual ~Logger() = default;
 
   // Adds a QueueReader<protobuf_class> to the list of queues to be logged,
@@ -99,7 +99,7 @@ class Logger {
   template <class T>
   class Reader : public GenericReader {
    public:
-    Reader(T* reader);
+    explicit Reader(T* reader);
     std::experimental::optional<std::string> GetMessageAsCSV() override;
 
    private:
@@ -125,4 +125,4 @@ class Logger {
 }  // namespace logging
 }  // namespace muan
 
-#endif
+#endif  // MUAN_LOGGING_LOGGER_H_

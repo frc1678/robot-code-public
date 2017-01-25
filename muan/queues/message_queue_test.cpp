@@ -1,5 +1,5 @@
 #include "muan/queues/message_queue.h"
-#include <thread>
+#include <thread>  //NOLINT
 #include "gtest/gtest.h"
 
 using muan::queues::MessageQueue;

@@ -1,6 +1,6 @@
 #include <opencv2/opencv.hpp>
+#include <algorithm>
 #include <memory>
-#include <alogrithm>
 #include <cmath>
 #include "muan/vision/vision.h"
 

@@ -8,11 +8,9 @@ namespace muan {
 
 namespace control {
 
-using namespace muan::units;
-
 struct MotionProfilePosition {
-  Length position;
-  Velocity velocity;
+  muan::units::Length position;
+  muan::units::Velocity velocity;
 };
 
 /*
@@ -24,10 +22,10 @@ class MotionProfile {
   MotionProfile() = default;
   virtual ~MotionProfile() = default;
 
-  virtual MotionProfilePosition Calculate(Time time) const = 0;
+  virtual MotionProfilePosition Calculate(muan::units::Time time) const = 0;
 
-  virtual Time total_time() const = 0;
-  virtual bool finished(Time time) { return time > total_time(); }
+  virtual muan::units::Time total_time() const = 0;
+  virtual bool finished(muan::units::Time time) { return time > total_time(); }
 };
 
 }  // namespace control

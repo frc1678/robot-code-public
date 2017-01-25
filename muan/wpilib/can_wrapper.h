@@ -21,7 +21,7 @@ namespace wpilib {
  */
 class CanWrapper {
  public:
-  CanWrapper(PdpWrapper::Queue* pdp_queue = nullptr);
+  explicit CanWrapper(PdpWrapper::Queue* pdp_queue = nullptr);
   ~CanWrapper() = default;
 
   // Call this to run the loop forever (or until Stop() is called)

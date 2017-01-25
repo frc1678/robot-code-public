@@ -18,7 +18,7 @@ namespace logging {
 
 class MockFileWriter : public muan::logging::FileWriter {
  public:
-  MockFileWriter() : muan::logging::FileWriter("/"){}
+  MockFileWriter() : muan::logging::FileWriter("/") {}
   MOCK_METHOD2(WriteLine, void(const std::string &filename, const std::string &line));
 };
 
