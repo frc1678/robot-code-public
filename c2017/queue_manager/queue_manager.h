@@ -3,7 +3,6 @@
 
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
-#include "c2017/subsystems/superstructure/climber/queue_types.h"
 
 #include "muan/wpilib/gyro/queue_types.h"
 #include "muan/wpilib/queue_types.h"
@@ -43,7 +42,6 @@ class QueueManager {
   frc971::control_loops::drivetrain::OutputQueue* drivetrain_output_queue();
   frc971::control_loops::drivetrain::StatusQueue* drivetrain_status_queue();
 
-  
   c2017::wpilib::WpilibOutputQueue& superstructure_output_queue();
 
   c2017::trigger::TriggerInputQueue& trigger_input_queue();
