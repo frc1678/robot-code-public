@@ -4,6 +4,7 @@
 namespace c2017 {
 
 void QueueManager::StartLogging() {
+#ifndef C2017_NO_QUEUE_LOGGING
   logger_.AddQueue("pdp_status", &pdp_status_queue_);
   logger_.AddQueue("driver_station", &driver_station_queue_);
   logger_.AddQueue("gyro", &driver_station_queue_);
@@ -46,6 +47,7 @@ void QueueManager::StartLogging() {
 
   logger_.AddQueue("intake_group_goal", &intake_group_goal_queue_);
   logger_.AddQueue("shooter_group_goal", &shooter_group_goal_queue_);
+#endif  // C2017_NO_QUEUE_LOGGING
 }
 
 QueueManager& QueueManager::GetInstance() {
