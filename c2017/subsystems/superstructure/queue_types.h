@@ -1,5 +1,5 @@
-#ifndef C2017_SUBSYSTEMS_SUPERSTRUCTURE_QUEUETYPES_H_
-#define C2017_SUBSYSTEMS_SUPERSTRUCTURE_QUEUETYPES_H_
+#ifndef C2017_SUBSYSTEMS_SUPERSTRUCTURE_QUEUE_TYPES_H_
+#define C2017_SUBSYSTEMS_SUPERSTRUCTURE_QUEUE_TYPES_H_
 
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
@@ -14,7 +14,7 @@ namespace intake_group {
 
   using IntakeGroupGoalQueue = muan::queues::MessageQueue<IntakeGroupGoalProto, 200>;
 
-} // namespace intake_group
+}  // namespace intake_group
 
 namespace shooter_group {
 
@@ -22,8 +22,8 @@ namespace shooter_group {
 
   using ShooterGroupGoalQueue = muan::queues::MessageQueue<ShooterGroupGoalProto, 200>;
 
-} // namespace shooter_group
+}  // namespace shooter_group
 
-} // namespace c2017
+}  // namespace c2017
 
 #endif  // C2017_SUBSYSTEMS_SUPERSTRUCTURE_QUEUE_TYPES_H_

@@ -1,4 +1,4 @@
-#include "queue_manager.h"
+#include "c2017/queue_manager/queue_manager.h"
 #include "c2017/subsystems/superstructure/trigger/queue_types.h"
 
 namespace c2017 {
@@ -122,4 +122,4 @@ QueueManager::shooter_group_goal_queue() {
   return shooter_group_goal_queue_;
 }
 
-}  // c2017
+}  // namespace c2017

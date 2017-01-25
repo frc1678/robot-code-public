@@ -1,5 +1,5 @@
-#ifndef TESTBENCH_SUBSYSTEMS_SUBSYSTEMRUNNER_H_
-#define TESTBENCH_SUBSYSTEMS_SUBSYSTEMRUNNER_H_
+#ifndef TESTBENCH_SUBSYSTEMS_SUBSYSTEM_RUNNER_H_
+#define TESTBENCH_SUBSYSTEMS_SUBSYSTEM_RUNNER_H_
 
 #include <atomic>
 
@@ -26,6 +26,6 @@ class SubsystemRunner {
   frc971::control_loops::drivetrain::DrivetrainLoop drivetrain_;
 };
 
-}  // testbench
+}  // namespace testbench
 
-#endif  // TESTBENCH_SUBSYSTEMS_SUBSYSTEMRUNNER_H_
+#endif  // TESTBENCH_SUBSYSTEMS_SUBSYSTEM_RUNNER_H_

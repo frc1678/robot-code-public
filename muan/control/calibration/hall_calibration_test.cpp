@@ -1,4 +1,4 @@
-#include "hall_calibration.h"
+#include "muan/control/calibration/hall_calibration.h"
 #include "gtest/gtest.h"
 
 class HallCalibrationTest : public ::testing::Test {

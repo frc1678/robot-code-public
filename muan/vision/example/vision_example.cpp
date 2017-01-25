@@ -1,5 +1,7 @@
-#include <cmath>
 #include <opencv2/opencv.hpp>
+#include <algorithm>
+#include <memory>
+#include <cmath>
 #include "muan/vision/vision.h"
 
 #define VIDEO_OUTPUT 0
@@ -28,11 +30,11 @@ int main() {
   cv::namedWindow("vision", cv::WINDOW_AUTOSIZE);
 #endif
 
-  muan::Vision::VisionConstants constants { 1, // kFovX
-                                            1, // kFovY
-                                            0.3, // kCameraAngle
-                                            1, // kHeightDifference
-                                            0.2 }; // kFullness
+  muan::Vision::VisionConstants constants { 1,      // kFovX
+                                            1,      // kFovY
+                                            0.3,    // kCameraAngle
+                                            1,      // kHeightDifference
+                                            0.2 };  // kFullness
 
   muan::Vision::ColorRange range { cv::Scalar(50, 0, 60),
                                    cv::Scalar(100, 255, 255),
@@ -40,10 +42,10 @@ int main() {
 
   muan::Vision vision(range, std::make_shared<ExampleVisionScorer>(), constants);
 
-  while(cap.isOpened()) {
+  while (cap.isOpened()) {
     cv::Mat raw;
     cap >> raw;
-    if(raw.empty()) { // End of data
+    if (raw.empty()) {  // End of data
       break;
     }
     muan::Vision::VisionStatus status = vision.Update(raw);
@@ -60,6 +62,5 @@ int main() {
     cv::imshow("raw", raw);
     cv::waitKey(1);
 #endif
-
   }
 }

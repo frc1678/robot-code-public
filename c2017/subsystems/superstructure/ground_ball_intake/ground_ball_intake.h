@@ -22,8 +22,8 @@ class GroundBallIntake {
   GroundBallIntakeStatusQueue& status_queue_;
 };
 
-}  // ground_ball_intake
+}  // namespace ground_ball_intake
 
-}  // c2017
+}  // namespace c2017
 
 #endif  // C2017_SUBSYSTEMS_SUPERSTRUCTURE_GROUND_BALL_INTAKE_GROUND_BALL_INTAKE_H_

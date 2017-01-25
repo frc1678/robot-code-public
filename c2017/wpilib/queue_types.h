@@ -13,8 +13,8 @@ namespace wpilib {
 
   using WpilibOutputQueue = muan::queues::MessageQueue<WpilibOutputProto, 1024>;
 
-} // wpilib
+}  // namespace wpilib
 
-} // c2017
+}  // namespace c2017
 
-#endif
+#endif  // C2017_WPILIB_QUEUE_TYPES_H_

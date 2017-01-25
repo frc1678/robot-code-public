@@ -5,7 +5,6 @@
 #include "muan/teleop/joystick.h"
 
 namespace testbench {
-
 namespace teleop {
 
 class Teleop {
@@ -31,8 +30,7 @@ class Teleop {
   void SendDrivetrainMessage();
 };
 
-}  // teleop
-
-}  // testbench
+}  // namespace teleop
+}  // namespace testbench
 
 #endif  // TESTBENCH_TELEOP_TELEOP_H_

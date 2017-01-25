@@ -1,4 +1,4 @@
-#include "gyro_reader.h"
+#include "muan/wpilib/gyro/gyro_reader.h"
 #include "third_party/aos/common/util/phased_loop.h"
 
 // Gyro datasheet:
@@ -10,7 +10,7 @@ namespace wpilib {
 
 namespace gyro {
 
-GyroReader::GyroReader(GyroQueue* queue) : gyro_queue_{queue} {}
+GyroReader::GyroReader(GyroQueue* queue, bool invert) : gyro_queue_{queue}, should_invert_{invert} {}
 
 void GyroReader::Reset() { should_reset_ = true; }
 
@@ -24,6 +24,14 @@ void GyroReader::operator()() {
   Init();
   RunCalibration();
   RunReader();
+}
+
+double GyroReader::AngleReading() {
+  double angle = gyro_.ExtractAngle(gyro_.GetReading());
+  if (should_invert_) {
+    angle = -angle;
+  }
+  return angle;
 }
 
 void GyroReader::Init() {
@@ -63,7 +71,7 @@ void GyroReader::RunCalibration() {
 
   for (num_cycles = 0; num_cycles < calib_cycles && calibration_state_ == GyroState::kCalibrating;
        num_cycles++) {
-    drift_sum += gyro_.ExtractAngle(gyro_.GetReading());
+    drift_sum += AngleReading();
 
     // Send out a GyroMessage if the queue exists
     if (gyro_queue_ != nullptr) {
@@ -87,7 +95,7 @@ void GyroReader::RunReader() {
   calibration_state_ = GyroState::kRunning;
 
   while (calibration_state_ == GyroState::kRunning) {
-    double velocity = gyro_.ExtractAngle(gyro_.GetReading()) - drift_rate_;
+    double velocity = AngleReading() - drift_rate_;
 
     // Integrate the gyro readings - the drift rate is in radians per cycle
     angle_ += velocity * std::chrono::duration<double>(loop_time).count();
@@ -114,8 +122,8 @@ void GyroReader::Quit() { calibration_state_ = GyroState::kKilled; }
 
 void GyroReader::Recalibrate() { calibration_state_ = GyroState::kInitialized; }
 
-}  // gyro
+}  // namespace gyro
 
-}  // wpilib
+}  // namespace wpilib
 
-}  // muan
+}  // namespace muan

@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include "Eigen/Core"
-#include "state_space_plant.h"
+#include "muan/control/state_space_plant.h"
 
 namespace muan {
 
@@ -66,4 +66,4 @@ class StateSpaceObserver {
 
 #include "state_space_observer.hpp"
 
-#endif /* MUAN_CONTROL_STATE_SPACE_OBSERVER_H_ */
+#endif  // MUAN_CONTROL_STATE_SPACE_OBSERVER_H_

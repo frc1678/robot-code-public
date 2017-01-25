@@ -92,4 +92,4 @@ class StateSpacePlant {
 
 #include "state_space_plant.hpp"
 
-#endif /* MUAN_CONTROL_STATE_SPACE_PLANT_H_ */
+#endif  // MUAN_CONTROL_STATE_SPACE_PLANT_H_

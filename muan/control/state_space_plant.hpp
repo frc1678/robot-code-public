@@ -1,7 +1,7 @@
 #ifndef MUAN_CONTROL_STATE_SPACE_PLANT_HPP_
 #define MUAN_CONTROL_STATE_SPACE_PLANT_HPP_
 
-#include "state_space_plant.h"
+#include "muan/control/state_space_plant.h"
 
 namespace muan {
 

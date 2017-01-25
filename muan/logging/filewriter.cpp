@@ -1,4 +1,7 @@
-#include "filewriter.h"
+#include "muan/logging/filewriter.h"
+
+#include <string>
+#include <vector>
 
 namespace muan {
 namespace logging {
