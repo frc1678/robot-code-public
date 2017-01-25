@@ -8,7 +8,7 @@ namespace wpilib {
 
 WpilibInterface::WpilibInterface()
     : can_{&QueueManager::GetInstance().pdp_status_queue()},
-      gyro_{QueueManager::GetInstance().gyro_queue()}, drivetrain_{},
+      gyro_{QueueManager::GetInstance().gyro_queue(), true}, drivetrain_{},
       superstructure_{&can_} {
 
   std::thread can_thread(std::ref(can_));
@@ -18,13 +18,13 @@ WpilibInterface::WpilibInterface()
   gyro_thread.detach();
 }
 
-void WpilibInterface::WriteActuators() { 
+void WpilibInterface::WriteActuators() {
   drivetrain_.WriteActuators();
   superstructure_.WriteActuators();
 }
 
-void WpilibInterface::ReadSensors() { 
-  drivetrain_.ReadSensors(); 
+void WpilibInterface::ReadSensors() {
+  drivetrain_.ReadSensors();
   superstructure_.ReadSensors();
 }
 

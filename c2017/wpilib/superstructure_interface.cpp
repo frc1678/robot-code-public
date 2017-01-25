@@ -21,8 +21,8 @@ constexpr uint32_t kBallIntakeMotor = 3;
 constexpr uint32_t kGearIntakeMotor = 6;
 
 // Sensor ports
-constexpr uint32_t kShooterEncoderA = 14, kShooterEncoderB = 15;
-constexpr uint32_t kTriggerEncoderA = 16, kTriggerEncoderB = 17;
+constexpr uint32_t kShooterEncoderA = 16, kShooterEncoderB = 17;
+constexpr uint32_t kTriggerEncoderA = 18, kTriggerEncoderB = 19;
 
 // Solenoid ports
 constexpr uint32_t kBallIntakeSolenoid = 1;

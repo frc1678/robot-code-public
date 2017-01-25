@@ -63,7 +63,7 @@ class Drivetrain(control_loop.ControlLoop):
     # Number of motors per side
     self.num_motors = 2
     # Stall Torque in N m
-    self.stall_torque = 2.42 * self.num_motors * 0.60
+    self.stall_torque = 2.42 * self.num_motors * 0.4
     # Stall Current in Amps
     self.stall_current = 133.0 * self.num_motors
     # Free Speed in RPM. Used number from last year.
@@ -73,7 +73,7 @@ class Drivetrain(control_loop.ControlLoop):
     # Moment of inertia of the drivetrain in kg m^2
     self.J = 2.0
     # Mass of the robot, in kg.
-    self.m = 50
+    self.m = 100 # Wrong, but makes it work
     # Radius of the robot, in meters (requires tuning by hand)
     self.rb = 0.4
     # Radius of the wheels, in meters.
@@ -86,7 +86,7 @@ class Drivetrain(control_loop.ControlLoop):
     # Torque constant
     self.Kt = self.stall_torque / self.stall_current
     # Gear ratios
-    self.gear = 12.0 / 40.0 * 24.0 / 60.0 * 24.0 / 60.0 # 4.55 on actual robot
+    self.gear = 1 / 4.55
     self.Gl = self.gear
     self.Gr = self.gear
 
@@ -105,7 +105,7 @@ class Drivetrain(control_loop.ControlLoop):
 
     # State feedback matrices
     # X will be of the format
-    # [[positionl], [velocityl], [positionr], velocityr]]
+    # [[positionl], [velocityl], [positionr], [velocityr]]
     self.A_continuous = numpy.matrix(
         [[0, 1, 0, 0],
          [0, self.msp * self.tcl, 0, self.msn * self.tcr],
@@ -124,12 +124,8 @@ class Drivetrain(control_loop.ControlLoop):
     self.A, self.B = self.ContinuousToDiscrete(
         self.A_continuous, self.B_continuous, self.dt)
 
-    if left_low or right_low:
-      q_pos = 0.12
-      q_vel = 1.0
-    else:
-      q_pos = 0.14
-      q_vel = 0.95
+    q_pos = 0.2
+    q_vel = 1.8
 
     self.Q = numpy.matrix([[(1.0 / (q_pos ** 2.0)), 0.0, 0.0, 0.0],
                            [0.0, (1.0 / (q_vel ** 2.0)), 0.0, 0.0],
