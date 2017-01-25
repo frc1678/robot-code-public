@@ -4,7 +4,7 @@
 #include "c2017/subsystems/superstructure/ground_ball_intake/ground_ball_intake.h"
 #include "c2017/queue_manager/queue_manager.h"
 
-using namespace c2017::ground_ball_intake;
+using namespace c2017::ground_ball_intake;  //NOLINT
 
 TEST(TestGroundBallIntake, RollerIntakeGoingDown) {
   GroundBallIntakeOutputProto output;

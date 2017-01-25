@@ -1,4 +1,4 @@
-#include "gyro_reader.h"
+#include "muan/wpilib/gyro/gyro_reader.h"
 #include "third_party/aos/common/util/phased_loop.h"
 
 // Gyro datasheet:
@@ -122,8 +122,8 @@ void GyroReader::Quit() { calibration_state_ = GyroState::kKilled; }
 
 void GyroReader::Recalibrate() { calibration_state_ = GyroState::kInitialized; }
 
-}  // gyro
+}  // namespace gyro
 
-}  // wpilib
+}  // namespace wpilib
 
-}  // muan
+}  // namespace muan

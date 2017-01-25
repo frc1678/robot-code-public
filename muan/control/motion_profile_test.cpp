@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include "muan/units/units.h"
 #include "muan/utils/math_utils.h"
-#include "trapezoidal_motion_profile.h"
+#include "muan/control/trapezoidal_motion_profile.h"
 
 using muan::control::MotionProfile;
 using muan::control::MotionProfilePosition;

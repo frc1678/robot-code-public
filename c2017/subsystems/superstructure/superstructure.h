@@ -12,7 +12,6 @@
 #include "muan/wpilib/queue_types.h"
 
 namespace c2017 {
-
 namespace superstructure {
 
 class SuperStructure {
@@ -31,8 +30,7 @@ class SuperStructure {
     c2017::climber::ClimberInputQueue climber_input_queue;
 };
 
-}
+}  // namespace superstructure
+}  // namespace c2017
 
-}
-#endif // C2017_SUBSYSTEMS_SUPERSTRUCTURE_SUPERSTRUCTURE_H_
-
+#endif  // C2017_SUBSYSTEMS_SUPERSTRUCTURE_SUPERSTRUCTURE_H_

@@ -1,7 +1,11 @@
 #ifndef MUAN_LOGGING_LOGGER_HPP_
 #define MUAN_LOGGING_LOGGER_HPP_
 
-#include "logger.h"
+#include "muan/logging/logger.h"
+
+#include <memory>
+#include <utility>
+#include <string>
 
 namespace muan {
 namespace logging {
@@ -80,4 +84,4 @@ Logger::Reader<T>::Reader(T* reader) : reader_{reader} {}
 }  // namespace logging
 }  // namespace muan
 
-#endif /* MUAN_LOGGING_LOGGER_HPP_ */
+#endif  // MUAN_LOGGING_LOGGER_HPP_

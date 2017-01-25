@@ -1,11 +1,19 @@
-#include "climber.h"
+#include <limits>
+#include "c2017/subsystems/superstructure/climber/climber.h"
 
 namespace c2017 {
 
 namespace climber {
-Climber::Climber() : at_top_(false), is_climbing_(false), last_position_(0), status_queue_(QueueManager::GetInstance().climber_status_queue()), climber_position_watcher_(1/0.001, 0.25, std::numeric_limits<int>::max(), 0.005), climber_current_watcher_(100, 0.1, std::numeric_limits<int>::max(), 0.005), on_rope_(false) {}
+Climber::Climber() :
+  at_top_(false),
+  is_climbing_(false),
+  last_position_(0),
+  status_queue_(QueueManager::GetInstance().climber_status_queue()),
+  climber_position_watcher_(1/0.001, 0.25, std::numeric_limits<int>::max(), 0.005),
+  climber_current_watcher_(100, 0.1, std::numeric_limits<int>::max(), 0.005),
+  on_rope_(false) {}
 
-void Climber::SetGoal(const ClimberGoalProto& goal) { 
+void Climber::SetGoal(const ClimberGoalProto& goal) {
     to_climb_ = goal->climbing();
 }
 
@@ -14,7 +22,7 @@ ClimberOutputProto Climber::Update(const ClimberInputProto& input,
                                    DriverStationProto& ds_status) {
   RobotMode robot_state = ds_status->mode();
   double voltage_;
-  
+
   ClimberStatusProto status;
   ClimberOutputProto output;
   if (robot_state == RobotMode::TELEOP) {
@@ -56,6 +64,6 @@ void Climber::Reset() {
   last_position_ = 0;
   on_rope_ = false;
 }
-}  // climber
+}  // namespace climber
 
-}  // c2017
+}  // namespace c2017

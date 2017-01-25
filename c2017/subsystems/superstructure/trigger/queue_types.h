@@ -1,12 +1,11 @@
-#ifndef C2017_SUBSYSTEMS_SUPERSTRUCTURE_TRIGGER_QUEUETYPES_H_
-#define C2017_SUBSYSTEMS_SUPERSTRUCTURE_TRIGGER_QUEUETYPES_H_
+#ifndef C2017_SUBSYSTEMS_SUPERSTRUCTURE_TRIGGER_QUEUE_TYPES_H_
+#define C2017_SUBSYSTEMS_SUPERSTRUCTURE_TRIGGER_QUEUE_TYPES_H_
 
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
 #include "c2017/subsystems/superstructure/trigger/trigger.pb.h"
 
 namespace c2017 {
-
 namespace trigger {
 
 using TriggerGoalProto = muan::proto::StackProto<::c2017::trigger::TriggerGoal, 256>;
@@ -18,7 +17,6 @@ using TriggerInputQueue = muan::queues::MessageQueue<TriggerInputProto, 200>;
 using TriggerStatusQueue = muan::queues::MessageQueue<TriggerStatusProto, 200>;
 
 }  // namespace trigger
-
 }  // namespace c2017
 
-#endif  // C2017_SUBSYSTEMS_SUPERSTRUCTURE_TRIGGER_QUEUETYPES_H_
+#endif  // C2017_SUBSYSTEMS_SUPERSTRUCTURE_TRIGGER_QUEUE_TYPES_H_

@@ -5,7 +5,7 @@
 #include <memory>
 #include <vector>
 #include "WPILib.h"
-#include "button.h"
+#include "muan/teleop/button.h"
 
 namespace muan {
 
@@ -13,7 +13,7 @@ namespace teleop {
 
 class Joystick {
  public:
-  Joystick(int32_t port);
+  explicit Joystick(int32_t port);
   void Update();
 
   muan::teleop::Button* MakeButton(uint32_t button);
@@ -25,8 +25,8 @@ class Joystick {
   ::Joystick wpilib_joystick_;
 };
 
-}  // teleop
+}  // namespace teleop
 
-}  // muan
+}  // namespace muan
 
 #endif  // MUAN_TELEOP_JOYSTICK_H_

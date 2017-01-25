@@ -1,12 +1,12 @@
-#ifndef MUAN_WPILIB_GYRO_GYROREADER_H_
-#define MUAN_WPILIB_GYRO_GYROREADER_H_
+#ifndef MUAN_WPILIB_GYRO_GYRO_READER_H_
+#define MUAN_WPILIB_GYRO_GYRO_READER_H_
 
 #include <WPILib.h>
-#include "gyro_interface.h"
+#include "muan/wpilib/gyro/gyro_interface.h"
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
 #include "muan/units/units.h"
-#include "queue_types.h"
+#include "muan/wpilib/gyro/queue_types.h"
 #include "third_party/aos/common/time.h"
 
 namespace muan {
@@ -15,12 +15,13 @@ namespace wpilib {
 
 namespace gyro {
 
-using namespace muan::units;
+using namespace muan::units;  //NOLINT
 
 class GyroReader {
  public:
-  // If invert is set to true, clockwise on the robot is positive. Useful for when mechanical decides that the RoboRIO should be upside down for some reason.
-  GyroReader(GyroQueue* queue, bool invert = false);
+  // If invert is set to true, clockwise on the robot is positive. Useful for
+  // when mechanical decides that the RoboRIO should be upside down for some reason.
+  explicit GyroReader(GyroQueue* queue, bool invert = false);
 
   // Run forever. This should be passed as an argument to the constructor of
   // std::thread.
@@ -58,10 +59,10 @@ class GyroReader {
   std::atomic<GyroState> calibration_state_{GyroState::kUninitialized};
 };
 
-}  // gyro
+}  // namespace gyro
 
-}  // wpilib
+}  // namespace wpilib
 
-}  // muan
+}  // namespace muan
 
-#endif
+#endif  // MUAN_WPILIB_GYRO_GYRO_READER_H_

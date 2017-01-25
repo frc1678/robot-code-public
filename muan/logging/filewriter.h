@@ -4,6 +4,7 @@
 #include <ctime>
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <map>
 #include "boost/filesystem.hpp"
 
@@ -21,7 +22,7 @@ namespace logging {
 class FileWriter {
  public:
   FileWriter();
-  FileWriter(const std::string &base_path);
+  explicit FileWriter(const std::string &base_path);
   virtual ~FileWriter() = default;
   // Writes a line to the file that can be referred to by 'filename'.
   // filename should not start with a slash. Calls with the same filename *to
@@ -39,4 +40,4 @@ class FileWriter {
 }  // namespace logging
 }  // namespace muan
 
-#endif /* MUAN_LOGGING_FILESYSTEM_H_ */
+#endif  // MUAN_LOGGING_FILEWRITER_H_

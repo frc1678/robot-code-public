@@ -1,7 +1,6 @@
 #include "c2017/subsystems/superstructure/shooter/shooter_controller.h"
 
 namespace c2017 {
-
 namespace shooter {
 
 ShooterController::ShooterController()
@@ -59,5 +58,6 @@ void ShooterController::SetGoal(c2017::shooter::ShooterGoalProto goal) {
   goal_velocity_ = goal->goal_velocity();
   shot_mode_ = goal->goal_mode();
 }
-}
-}
+
+}  // namespace shooter
+}  // namespace c2017

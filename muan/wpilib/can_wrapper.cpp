@@ -1,4 +1,4 @@
-#include "can_wrapper.h"
+#include "muan/wpilib/can_wrapper.h"
 #include "third_party/aos/common/time.h"
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/aos/linux_code/init.h"
@@ -31,6 +31,6 @@ PdpWrapper* CanWrapper::pdp() { return &pdp_; }
 
 PcmWrapper* CanWrapper::pcm() { return &pcm_; }
 
-}  // wpilib
+}  // namespace wpilib
 
-}  // muan
+}  // namespace muan

@@ -26,8 +26,8 @@ class Teleop {
   void SendDrivetrainMessage();
 };
 
-}  // teleop
+}  // namespace teleop
 
-}  // o2016
+}  // namespace o2016
 
 #endif  // O2016_TELEOP_TELEOP_H_

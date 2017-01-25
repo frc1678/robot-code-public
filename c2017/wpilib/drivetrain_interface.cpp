@@ -16,9 +16,9 @@ constexpr uint32_t kEncoderRightA = 12, kEncoderRightB = 13;
 
 constexpr double kMaxVoltage = 12;
 
-}  // drivetrain
+}  // namespace drivetrain
 
-}  // ports
+}  // namespace ports
 
 DrivetrainInterface::DrivetrainInterface()
     : input_queue_(QueueManager::GetInstance().drivetrain_input_queue()),
@@ -45,18 +45,19 @@ void DrivetrainInterface::WriteActuators() {
   auto outputs = output_queue_.ReadLastMessage();
   if (outputs) {
     motor_left_.Set(
-        -muan::utils::Cap((*outputs)->left_voltage(), -ports::drivetrain::kMaxVoltage, ports::drivetrain::kMaxVoltage) /
-        12.0);
+        -muan::utils::Cap((*outputs)->left_voltage(),
+                          -ports::drivetrain::kMaxVoltage,
+                          ports::drivetrain::kMaxVoltage) / 12.0);
 
     motor_right_.Set(
-        muan::utils::Cap((*outputs)->right_voltage(), -ports::drivetrain::kMaxVoltage, ports::drivetrain::kMaxVoltage) /
-        12.0);
+        muan::utils::Cap((*outputs)->right_voltage(),
+                         -ports::drivetrain::kMaxVoltage,
+                         ports::drivetrain::kMaxVoltage) / 12.0);
   } else {
     motor_left_.Set(0);
     motor_right_.Set(0);
   }
 }
 
-} // wpilib
-
-} // c2017
+}  // namespace wpilib
+}  // namespace c2017
