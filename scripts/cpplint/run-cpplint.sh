@@ -1,1 +1,1 @@
-find . -type f | grep -v '^\./\.git' | grep -v '^\./third_party' | grep -v '^\./tools' | grep '.[cpp|h]$' | xargs ./scripts/cpplint/cpplint.py --linelength=110 --filter=-legal/copyright --extensions=cpp,hpp,h,cc | tail -n 1 | grep "found: 0"
+find . -type f | grep -v '^\./\.git' | grep -v '^\./third_party' | grep -v '^\./tools' | grep '.[cpp|h]$' | xargs ./scripts/cpplint/cpplint.py --linelength=110 --filter=-legal/copyright,-build/c++11 --extensions=cpp,hpp,h,cc | tail -n 1 | grep "found: 0"
