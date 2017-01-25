@@ -76,8 +76,6 @@ class Logger {
   void operator()();
 
   // This starts the logger if you have previously stopped it by calling Stop().
-  // You do not need to call this if you have just called Run() - Run() will
-  // automatically start the logger.
   void Start();
 
   // This stops the logger from running. It can be resumed calling Start().
