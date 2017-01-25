@@ -11,8 +11,8 @@ namespace drivetrain {
 constexpr uint32_t kMotorLeft = 1;
 constexpr uint32_t kMotorRight = 0;
 
-constexpr uint32_t kEncoderLeftA = 12, kEncoderLeftB = 13;
-constexpr uint32_t kEncoderRightA = 10, kEncoderRightB = 11;
+constexpr uint32_t kEncoderLeftA = 14, kEncoderLeftB = 15;
+constexpr uint32_t kEncoderRightA = 12, kEncoderRightB = 13;
 
 constexpr double kMaxVoltage = 12;
 
@@ -33,8 +33,8 @@ DrivetrainInterface::DrivetrainInterface()
 
 void DrivetrainInterface::ReadSensors() {
   frc971::control_loops::drivetrain::InputProto sensors;
-  constexpr double wheel_radius = 3 * muan::units::in;
-  constexpr double kMetersPerClick = M_PI * 2.0 * wheel_radius / 360.0;
+  constexpr double wheel_radius = (3.25 / 2) * muan::units::in;
+  constexpr double kMetersPerClick = M_PI * 2.0 * wheel_radius / 512.0;
   sensors->set_left_encoder(encoder_left_.Get() * kMetersPerClick);
   sensors->set_right_encoder(-encoder_right_.Get() * kMetersPerClick);
 
