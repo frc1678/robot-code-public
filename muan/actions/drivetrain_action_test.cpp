@@ -2,7 +2,7 @@
 #include "muan/actions/drivetrain_action.h"
 #include "gtest/gtest.h"
 
-using namespace muan::actions;
+using namespace muan::actions;  //NOLINT
 
 class DrivetrainActionTest : public ::testing::Test {
  protected:

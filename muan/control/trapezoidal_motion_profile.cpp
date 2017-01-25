@@ -22,7 +22,8 @@ TrapezoidalMotionProfile::TrapezoidalMotionProfile(MotionProfileConstraints cons
   // Now we can calculate the parameters as if it was a full trapezoid instead
   // of a truncated one
   {
-    muan::units::Length full_trapezoid_dist = cutoff_dist_begin + (goal_.position - initial_.position) + cutoff_dist_end;
+    muan::units::Length full_trapezoid_dist =
+        cutoff_dist_begin + (goal_.position - initial_.position) + cutoff_dist_end;
     muan::units::Time acceleration_time = constraints_.max_velocity / constraints_.max_acceleration;
 
     muan::units::Length full_speed_dist =
