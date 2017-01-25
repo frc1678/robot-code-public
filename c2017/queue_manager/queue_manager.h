@@ -16,6 +16,7 @@
 #include "c2017/subsystems/superstructure/climber/queue_types.h"
 #include "c2017/subsystems/superstructure/queue_types.h"
 #include "c2017/wpilib/queue_types.h"
+#include "c2017/webdash/queue_types.h"
 
 using muan::queues::MessageQueue;
 
@@ -67,6 +68,8 @@ class QueueManager {
   c2017::intake_group::IntakeGroupGoalQueue& intake_group_goal_queue();
   c2017::shooter_group::ShooterGroupGoalQueue& shooter_group_goal_queue();
 
+  c2017::webdash::WebDashQueue& webdash_queue();
+
  private:
   QueueManager() = default;
   ~QueueManager() = default;
@@ -103,6 +106,8 @@ class QueueManager {
 
   c2017::intake_group::IntakeGroupGoalQueue intake_group_goal_queue_;
   c2017::shooter_group::ShooterGroupGoalQueue shooter_group_goal_queue_;
+
+  c2017::webdash::WebDashQueue webdash_queue_;
 };
 
 }  // namespace c2017

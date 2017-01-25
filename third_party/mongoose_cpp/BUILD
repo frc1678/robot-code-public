@@ -14,7 +14,8 @@ cc_library(
   srcs = glob(["upstream/*.cpp"]),
   hdrs = glob(["upstream/*.h*", "upstream/json/*.h"]),
   deps = ["mongoose"],
-  copts = ["-DHAS_JSONCPP=OFF"]
+  copts = ["-DHAS_JSONCPP=OFF"],
+  visibility = ["//visibility:public"]
 )
 
 cc_binary(

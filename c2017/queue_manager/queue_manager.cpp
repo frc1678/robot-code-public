@@ -122,4 +122,9 @@ QueueManager::shooter_group_goal_queue() {
   return shooter_group_goal_queue_;
 }
 
+c2017::webdash::WebDashQueue&
+QueueManager::webdash_queue() {
+  return webdash_queue_;
+}
+
 }  // namespace c2017
