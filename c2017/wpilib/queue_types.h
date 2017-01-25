@@ -10,10 +10,8 @@ namespace c2017 {
 namespace wpilib {
 
   using WpilibOutputProto = muan::proto::StackProto<WpilibOutput, 1024>;
-  using WpilibInputProto = muan::proto::StackProto<WpilibInput, 1024>;
 
   using WpilibOutputQueue = muan::queues::MessageQueue<WpilibOutputProto, 1024>;
-  using WpilibInputQueue = muan::queues::MessageQueue<WpilibInputProto, 1024>;
 
 } // wpilib
 
