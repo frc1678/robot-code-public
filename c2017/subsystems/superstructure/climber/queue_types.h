@@ -13,10 +13,9 @@ using ClimberInputProto = muan::proto::StackProto<ClimberInput, 1024>;
 using ClimberStatusProto = muan::proto::StackProto<ClimberStatus, 1024>;
 using ClimberGoalProto = muan::proto::StackProto<ClimberGoal, 1024>;
 
-using ClimberOutputQueue = muan::queues::MessageQueue<ClimberOutputProto, 100>;
+using ClimberGoalQueue = muan::queues::MessageQueue<ClimberGoalProto, 100>;
 using ClimberInputQueue = muan::queues::MessageQueue<ClimberInputProto, 100>;
 using ClimberStatusQueue = muan::queues::MessageQueue<ClimberStatusProto, 100>;
-using ClimberGoalQueue = muan::queues::MessageQueue<ClimberGoalProto, 100>;
 
 }  // namespace climber
 }  // namespace c2017

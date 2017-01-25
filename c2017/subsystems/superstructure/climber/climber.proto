@@ -7,15 +7,16 @@ package c2017.climber;
 message ClimberStatus {
   required bool currently_climbing = 1;
   required bool hit_top = 2;
+  required bool on_rope = 3;
 }
 
 message ClimberInput {
   required double current = 1;
-  required double position = 2;
+  required double position = 2; // encoder position, helps find the rate
 }
 
 message ClimberOutput {
-  required double voltage = 1;
+  required double voltage = 1; // Positive is moving up
 }
 
 message ClimberGoal {

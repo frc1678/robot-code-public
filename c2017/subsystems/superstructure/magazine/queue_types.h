@@ -13,9 +13,7 @@ namespace magazine {
     using MagazineOutputProto = muan::proto::StackProto<::c2017::magazine::MagazineOutput, 256>;
     using MagazineStatusProto = muan::proto::StackProto<::c2017::magazine::MagazineStatus, 256>;
 
-    using MagazineGoalQueue = muan::queues::MessageQueue<MagazineGoalProto, 200>;
     using MagazineInputQueue = muan::queues::MessageQueue<MagazineInputProto, 200>;
-    using MagazineOutputQueue = muan::queues::MessageQueue<MagazineOutputProto, 200>;
     using MagazineStatusQueue = muan::queues::MessageQueue<MagazineStatusProto, 200>;
 
 }  // namespace magazine
