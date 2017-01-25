@@ -76,6 +76,7 @@ def main():
             print_colored("Running command: {}".format(bazel_command))
             subprocess.check_call(bazel_command, shell=True)
 
+    subprocess.check_call("./scripts/cpplint/run-cpplint.sh", shell=True)
     subprocess.check_call("./scripts/check-format.py --no-fail", shell=True)
 
 if __name__ == "__main__":
