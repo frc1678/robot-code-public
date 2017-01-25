@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "queue_manager.h"
+#include "generic_robot/queue_manager/queue_manager.h"
 
 TEST(QueueManager, Initalizes) { generic_robot::QueueManager::GetInstance(); }
 

@@ -1,4 +1,4 @@
-#include "queue_manager.h"
+#include "generic_robot/queue_manager/queue_manager.h"
 
 namespace generic_robot {
 
@@ -13,4 +13,4 @@ MessageQueue<muan::proto::StackProto<PdpStatus, 512>>& QueueManager::pdp_status_
 
 muan::wpilib::DriverStationQueue& QueueManager::driver_station_queue() { return driver_station_queue_; }
 
-}  // generic_robot
+}  // namespace generic_robot
