@@ -1,12 +1,12 @@
-#ifndef MUAN_WPILIB_GYRO_GYROREADER_H_
-#define MUAN_WPILIB_GYRO_GYROREADER_H_
+#ifndef MUAN_WPILIB_GYRO_GYRO_READER_H_
+#define MUAN_WPILIB_GYRO_GYRO_READER_H_
 
 #include <WPILib.h>
-#include "gyro_interface.h"
+#include "muan/wpilib/gyro/gyro_interface.h"
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
 #include "muan/units/units.h"
-#include "queue_types.h"
+#include "muan/wpilib/gyro/queue_types.h"
 #include "third_party/aos/common/time.h"
 
 namespace muan {
@@ -51,10 +51,10 @@ class GyroReader {
   std::atomic<GyroState> calibration_state_{GyroState::kUninitialized};
 };
 
-}  // gyro
+}  // namespace gyro
 
-}  // wpilib
+}  // namespace wpilib
 
-}  // muan
+}  // namespace muan
 
-#endif
+#endif  // MUAN_WPILIB_GYRO_GYRO_READER_H_

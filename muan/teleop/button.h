@@ -29,8 +29,8 @@ class Button {
   bool current_{false}, last_{false};
 };
 
-}  // teleop
+}  // namespace teleop
 
-}  // muan
+}  // namespace muan
 
 #endif  // MUAN_TELEOP_BUTTON_H_

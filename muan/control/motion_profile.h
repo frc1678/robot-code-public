@@ -34,4 +34,4 @@ class MotionProfile {
 
 }  // namespace muan
 
-#endif /* MUAN_CONTROL_MOTION_PROFILE_H_ */
+#endif  // MUAN_CONTROL_MOTION_PROFILE_H_

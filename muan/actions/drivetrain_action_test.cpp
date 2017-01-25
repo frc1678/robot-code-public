@@ -1,6 +1,6 @@
+#include <memory>
 #include "muan/actions/drivetrain_action.h"
 #include "gtest/gtest.h"
-#include <memory>
 
 using namespace muan::actions;
 

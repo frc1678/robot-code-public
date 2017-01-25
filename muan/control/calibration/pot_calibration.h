@@ -33,7 +33,9 @@ class PotCalibration {
   int offset_;
   bool calibrated_, index_error_;
 };
-}
-}
+
+}  // namespace control
+
+}  // namespace muan
 
 #endif  // MUAN_CONTROL_CALIBRATION_POT_CALIBRATION_H_

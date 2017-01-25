@@ -1,7 +1,7 @@
 #ifndef MUAN_QUEUES_MESSAGE_QUEUE_HPP_
 #define MUAN_QUEUES_MESSAGE_QUEUE_HPP_
 
-#include "message_queue.h"
+#include "muan/queues/message_queue.h"
 
 namespace muan {
 
@@ -98,4 +98,4 @@ std::experimental::optional<T> MessageQueue<T, size>::QueueReader::ReadLastMessa
 
 }  // namespace muan
 
-#endif /* MUAN_QUEUES_MESSAGE_QUEUE_HPP_ */
+#endif  // MUAN_QUEUES_MESSAGE_QUEUE_HPP_

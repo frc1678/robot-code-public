@@ -22,7 +22,8 @@ class TextLogger {
   TextQueuePtr log_queue_;
   std::array<char, 1024> buffer_;
 };
-}
-}
 
-#endif
+}  // namespace logging
+} // namespace muan
+
+#endif  // MUAN_LOGGING_TEXTLOGGER_H_

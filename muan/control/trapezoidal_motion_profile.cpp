@@ -1,4 +1,4 @@
-#include "trapezoidal_motion_profile.h"
+#include "muan/control/trapezoidal_motion_profile.h"
 
 namespace muan {
 

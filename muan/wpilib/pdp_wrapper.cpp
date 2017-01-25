@@ -40,6 +40,6 @@ void PdpWrapper::SendValues() {
 
 void PdpWrapper::SetQueue(Queue* pdp_queue) { queue_ = pdp_queue; }
 
-}  // wpilib
+}  // namespace wpilib
 
-}  // muan
+}  // namespace muan

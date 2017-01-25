@@ -20,8 +20,8 @@ TEST(GeneratedCppControlsTest, CorrectTransposition) {
   ASSERT_EQ(frc1678::cpp_test::controller::A_c()(1, 0), -1.0);
 }
 
-}  // controls
+}  // namespace controls
 
-}  // muan
+}  // namespace muan
 
 #endif  // ifndef MUAN_CONTROL_GENERATED_CPP_TEST_

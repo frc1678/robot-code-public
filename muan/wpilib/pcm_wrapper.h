@@ -49,8 +49,8 @@ class PcmWrapper {
   int32_t module_;
 };
 
-}  // wpilib
+}  // namespace wpilib
 
-}  // muan
+}  // namespace muan
 
 #endif  // MUAN_WPILIB_PCM_WRAPPER_H_

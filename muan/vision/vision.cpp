@@ -144,4 +144,4 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
   return retval;
 }
 
-}
+}  // namespace muan

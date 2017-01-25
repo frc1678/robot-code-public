@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <random>
+#include <algorithm>
 #include "Eigen/Core"
 
 namespace muan {
@@ -55,7 +56,7 @@ Eigen::Matrix<double, A, 1> GaussianNoise(
 // Perform a modulo operation that is relative to negative infinity, not 0
 uint32_t true_modulo(int a, int b);
 
-}  // utils
-}  // muan
+}  // namespace utils
+}  // namespace muan
 
-#endif /* MUAN_UTILS_MATH_UTILS_H_ */
+#endif  // MUAN_UTILS_MATH_UTILS_H_

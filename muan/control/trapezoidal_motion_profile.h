@@ -1,9 +1,9 @@
-#ifndef MUAN_CONTROL_TRAPEZOIDALMOTIONPROFILE_H_
-#define MUAN_CONTROL_TRAPEZOIDALMOTIONPROFILE_H_
+#ifndef MUAN_CONTROL_TRAPEZOIDAL_MOTION_PROFILE_H_
+#define MUAN_CONTROL_TRAPEZOIDAL_MOTION_PROFILE_H_
 
 #include <cmath>
 #include <type_traits>
-#include "motion_profile.h"
+#include "muan/control/motion_profile.h"
 
 namespace muan {
 
@@ -80,4 +80,4 @@ class TrapezoidalMotionProfile : public MotionProfile {
 
 }  // namespace muan
 
-#endif /* SRC_ROBOTCODE_TRAPEZOIDALMOTIONPROFILE_H_ */
+#endif  // MUAN_CONTROL_TRAPEZOIDAL_MOTION_PROFILE_H_

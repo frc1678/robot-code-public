@@ -1,7 +1,7 @@
 #ifndef MUAN_CONTROL_AVERAGE_FILTER_PID_H_
 #define MUAN_CONTROL_AVERAGE_FILTER_PID_H_
 
-#include "pid_controller.h"
+#include "muan/control/pid_controller.h"
 #include "utils/history.h"
 
 namespace muan {
@@ -30,6 +30,7 @@ class AverageFilterPidController : public PidController {
 
   History<double, HistLength> hist_;
 };
-}
 
-#endif
+}  // namespace muan
+
+#endif  // MUAN_CONTROL_AVERAGE_FILTER_PID_H_

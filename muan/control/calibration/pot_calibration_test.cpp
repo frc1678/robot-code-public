@@ -1,4 +1,6 @@
-#include "pot_calibration.h"
+#include <tuple>
+#include <algorithm>
+#include "muan/control/calibration/pot_calibration.h"
 #include "gtest/gtest.h"
 #include "muan/utils/math_utils.h"
 

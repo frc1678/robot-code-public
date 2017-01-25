@@ -23,9 +23,9 @@ class LinearInterpolation {
   static bool ComparePoints(const std::pair<double, T> &a, const std::pair<double, T> &b);
 };
 
-}  //  utils
+}  // namespace utils
 
-}  //  muan
+}  // namespace muan
 
 
 #include "linear_interpolation.hpp"

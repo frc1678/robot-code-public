@@ -1,11 +1,10 @@
 #include "gtest/gtest.h"
-#include "pid_controller.h"
+#include "muan/control/pid_controller.h"
 
-using muan::PidController;
 
 TEST(PidController, GoesToPosition) {
   using namespace muan::units;
-  PidController p(1 * V / m, 1 * V / m / s, 0 * V * s / m);
+  muan::PidController p(1 * V / m, 1 * V / m / s, 0 * V * s / m);
   Length h = 1.0 * m;
   for (int i = 0; i < 10000; i++) {
     Time dt = s / 1000;

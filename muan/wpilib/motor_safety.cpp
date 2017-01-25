@@ -1,4 +1,4 @@
-#include "motor_safety.h"
+#include "muan/wpilib/motor_safety.h"
 
 namespace muan {
 
@@ -52,5 +52,6 @@ void MotorSafety::Reset() {
 }
 
 bool MotorSafety::is_stalled() { return is_stalled_; }
-}
-}
+
+}  // namespace wpilib
+}  // namespace muan

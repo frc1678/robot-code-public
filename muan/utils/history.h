@@ -2,6 +2,7 @@
 #define MUAN_UTILS_HISTORY_H_
 
 #include <array>
+#include <algorithm>
 #include "muan/units/units.h"
 #include "third_party/aos/common/die.h"
 
@@ -11,7 +12,7 @@ namespace utils {
 template <class T, int size>
 class History {
  public:
-  explicit History(muan::units::Time time_step_) : current_pos_(0), time_step_(time_step_) {}
+  explicit History(muan::units::Time time_step) : current_pos_(0), time_step_(time_step) {}
 
   void Update(T val) {
     hist_arr_[current_pos_] = val;
@@ -50,7 +51,7 @@ class History {
   std::array<T, size> hist_arr_;
 };
 
-}  // utils
-}  // muan
+}  // namespace utils
+}  // namespace muan
 
-#endif /* MUAN_UTILS_HISTORY_H_ */
+#endif  // MUAN_UTILS_HISTORY_H_
