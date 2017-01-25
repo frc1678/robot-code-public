@@ -1,7 +1,6 @@
-#include "ground_gear_intake.h"
+#include "c2017/subsystems/superstructure/ground_gear_intake/ground_gear_intake.h"
 
 namespace c2017 {
-
 namespace ground_gear_intake {
 
 GroundGearIntakeOutputProto GroundGearIntake::Update(GroundGearIntakeInputProto input) {
@@ -31,17 +30,15 @@ GroundGearIntakeOutputProto GroundGearIntake::Update(GroundGearIntakeInputProto 
       intake_down_ = false;
       has_current_spiked_ = false;
       break;
-  }  
-  
+  }
+
   GroundGearIntakeOutputProto output;
   output->set_roller_voltage(voltage);
   output->set_intake_down(intake_down_);
-  return output; // sends voltage and solenoid output
-
+  return output;  // sends voltage and solenoid output
 }
 
 void GroundGearIntake::SetGoal(GroundGearIntakeGoalProto goal) { goal_state_ = goal->goal(); }
 
-}  // ground_gear_intake
-
-}  // c2017
+}  // namespace ground_gear_intake
+}  // namespace c2017

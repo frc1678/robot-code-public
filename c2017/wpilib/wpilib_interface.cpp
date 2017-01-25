@@ -1,9 +1,8 @@
-#include "wpilib_interface.h"
+#include "c2017/wpilib/wpilib_interface.h"
 #include "muan/units/units.h"
 #include "c2017/queue_manager/queue_manager.h"
 
 namespace c2017 {
-
 namespace wpilib {
 
 WpilibInterface::WpilibInterface()
@@ -18,16 +17,15 @@ WpilibInterface::WpilibInterface()
   gyro_thread.detach();
 }
 
-void WpilibInterface::WriteActuators() { 
+void WpilibInterface::WriteActuators() {
   drivetrain_.WriteActuators();
   superstructure_.WriteActuators();
 }
 
-void WpilibInterface::ReadSensors() { 
-  drivetrain_.ReadSensors(); 
+void WpilibInterface::ReadSensors() {
+  drivetrain_.ReadSensors();
   superstructure_.ReadSensors();
 }
 
-}  // wpilib
-
-}  // c2017
+}  // namespace wpilib
+}  // namespace c2017

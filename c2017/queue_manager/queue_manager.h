@@ -1,5 +1,5 @@
-#ifndef C2017_QUEUEMANAGER_QUEUEMANAGER_H_
-#define C2017_QUEUEMANAGER_QUEUEMANAGER_H_
+#ifndef C2017_QUEUE_MANAGER_QUEUE_MANAGER_H_
+#define C2017_QUEUE_MANAGER_QUEUE_MANAGER_H_
 
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
@@ -10,12 +10,9 @@
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
 #include "c2017/subsystems/superstructure/ground_ball_intake/queue_types.h"
 #include "c2017/subsystems/superstructure/trigger/queue_types.h"
-
 #include "c2017/subsystems/superstructure/shooter/queue_types.h"
 #include "c2017/subsystems/superstructure/magazine/queue_types.h"
-#include "c2017/subsystems/superstructure/trigger/queue_types.h"
 #include "c2017/subsystems/superstructure/ground_gear_intake/queue_types.h"
-#include "c2017/subsystems/superstructure/ground_ball_intake/queue_types.h"
 #include "c2017/subsystems/superstructure/climber/queue_types.h"
 #include "c2017/subsystems/superstructure/queue_types.h"
 #include "c2017/wpilib/queue_types.h"
@@ -82,6 +79,7 @@ class QueueManager {
 
   c2017::intake_group::IntakeGroupGoalQueue& intake_group_goal_queue();
   c2017::shooter_group::ShooterGroupGoalQueue& shooter_group_goal_queue();
+
  private:
   QueueManager() = default;
   ~QueueManager() = default;
@@ -131,6 +129,6 @@ class QueueManager {
   c2017::shooter_group::ShooterGroupGoalQueue shooter_group_goal_queue_;
 };
 
-}  // c2017
+}  // namespace c2017
 
-#endif
+#endif  // C2017_QUEUE_MANAGER_QUEUE_MANAGER_H_

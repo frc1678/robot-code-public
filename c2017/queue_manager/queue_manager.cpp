@@ -1,4 +1,4 @@
-#include "queue_manager.h"
+#include "c2017/queue_manager/queue_manager.h"
 #include "c2017/subsystems/superstructure/trigger/queue_types.h"
 
 namespace c2017 {
@@ -176,4 +176,4 @@ c2017::trigger::TriggerStatusQueue& QueueManager::trigger_status_queue() {
   return trigger_status_queue_;
 }
 
-}  // c2017
+}  // namespace c2017
