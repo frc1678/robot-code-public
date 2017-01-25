@@ -28,7 +28,7 @@ void MessageQueue<T, size>::Reset() {
 }
 
 template <typename T, uint64_t size>
-std::experimental::optional<T> MessageQueue<T, size>::NextMessage(uint64_t& next) const {
+std::experimental::optional<T> MessageQueue<T, size>::NextMessage(uint64_t& next) const { //NOLINT
   aos::MutexLocker locker_{&queue_lock_};
 
   // Make sure the reader's index is within the bounds of still-valid messages,
