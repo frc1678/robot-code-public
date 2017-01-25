@@ -58,8 +58,9 @@ def main():
         print_colored("Testing only the following targets:\n" + "\n".join([target[0] for target in targets]))
 
     for target in targets:
+        vision_exclude_string = get_exclude_string(target[1], "//muan/vision")
         if args.no_vision:
-            vision_excludes = get_exclude_string(target[1], "//muan/vision")
+            vision_excludes = vision_exclude_string
         else:
             vision_excludes = ""
 
@@ -71,7 +72,7 @@ def main():
             print_colored("Running command: {}".format(bazel_command))
             subprocess.check_call(bazel_command, shell=True)
         if target[3]: # Build target
-            bazel_command = "bazel build {} --cpu=roborio -- {}".format(target[1], vision_excludes)
+            bazel_command = "bazel build {} --cpu=roborio -- {}".format(target[1], vision_exclude_string)
             print_colored("Running command: {}".format(bazel_command))
             subprocess.check_call(bazel_command, shell=True)
 
