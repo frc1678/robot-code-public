@@ -7,28 +7,45 @@ package c2017.magazine;
 message MagazineStatus {
   required bool has_gear = 1;
   required bool current_spiked = 2;
-  required bool is_running = 3;
+  required bool is_running = 3; 
+  required bool extended = 4; // if magazine is extended
 }
 
 message MagazineInput {
   required double conveyor_current = 1;
+  required bool has_hp_gear = 2; // senses distance
 }
 
 message MagazineOutput {
-  // Voltage running conveyor system to shooter - positve is towards shooter, negative is away
-  required double conveyor_motor_voltage = 1;
-  // Extends solenoids to expand magazine capacity
-  required bool magazine_cylinder_extend = 2;
-  required bool gear_hp_open = 3;
-  required bool gear_shutter_open = 4;
+  required bool gear_intake_covered = 1;
+  required bool magazine_extended = 2;
+  required bool gear_shutter_open = 3;
+  required double gear_rotator_voltage = 4;
+  required double conveyer_voltage = 5;
 }
 
-enum MotorStatus {
+enum ConveyorGoalState {
+  IDLE = 0;
+  FORWARD = 1;
+  BACKWARD = 2;
+}
+
+enum HPIntakeGoalState {
+  NONE = 0;
+  BALLS = 1;
+  GEAR = 2;
+  BOTH = 3;
+}
+
+enum BrushGoalState {
   IDLE = 0;
   FORWARD = 1;
   BACKWARD = 2;
 }
 
 message MagazineGoal {
-  required MotorStatus conveyor = 1;
+  required ConveyorGoalState conveyor_goal = 1;
+  required HPIntakeGoalState hp_intake_goal = 2;
+  required BrushGoalState brush_goal = 3;
+  required bool score_gear = 4; 
 }
