@@ -1,5 +1,5 @@
-#ifndef O2016_SUBSYSTEMS_SUPERSTRUCTURE_CATAPULT_QUEUETYPES_H_
-#define O2016_SUBSYSTEMS_SUPERSTRUCTURE_CATAPULT_QUEUETYPES_H_
+#ifndef O2016_SUBSYSTEMS_SUPERSTRUCTURE_CATAPULT_QUEUE_TYPES_H_
+#define O2016_SUBSYSTEMS_SUPERSTRUCTURE_CATAPULT_QUEUE_TYPES_H_
 
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
@@ -19,8 +19,8 @@ using CatapultStatusQueue = muan::queues::MessageQueue<CatapultStatusProto, 100>
 using CatapultInputQueue = muan::queues::MessageQueue<CatapultInputProto, 100>;
 using CatapultGoalQueue = muan::queues::MessageQueue<CatapultGoalProto, 100>;
 
-}  // catapult
+}  // namespace catapult
 
-}  // o2016
+}  // namespace o2016
 
-#endif  // O2016_SUBSYSTEMS_SUPERSTRUCTURE_CATAPULT_QUEUETYPES_H_
+#endif  // O2016_SUBSYSTEMS_SUPERSTRUCTURE_CATAPULT_QUEUE_TYPES_H_

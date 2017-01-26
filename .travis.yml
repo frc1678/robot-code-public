@@ -35,6 +35,7 @@ install:
   - sudo apt-get install frc-toolchain -y
   - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.9
   # Bazel
+  - rm -rf $HOME/.cache/bazel/_bazel_travis/install
   - wget 'https://github.com/bazelbuild/bazel/releases/download/0.4.1/bazel-0.4.1-installer-linux-x86_64.sh'
   - chmod +x bazel-0.4.1-installer-linux-x86_64.sh
   - ./bazel-0.4.1-installer-linux-x86_64.sh --user
@@ -47,8 +48,14 @@ install:
 
 # TODO(Wesley) Add to pre-push git hook?
 script:
-  - ./tests.sh
+  - ./scripts/tests.py
+  # Delete the bazel install so it doesn't get cached
+  - rm -rf $HOME/.cache/bazel/_bazel_travis/install/
 notifications:
   slack:
     secure: KXEl4nh1859SwDZH8BsfKipNUjl/mLDwvgahQxfQp3A9sCsfK7PelOh6yNGNPQopWYD7U0wFSqdacIkPM3E+NWAdTtQBX4w4DnqlB3gBYzcEYqjHnjBV0oQPG47xkZOUFumqbpT4yqVxqvSitqHjLDv/HSv93ZyB1APq8mD+TEJWIrMmT6DMlQL7La3gSP0rQeUWD2C6FyMoGjblbwtwOwshDCwPM/2A66icjvQ9KaCJ3rqh94lkeoM0LDzKmBbtV+avcf+xvfRqmpkSvXwfBcSW+hnnCPvWhENMvHKxVUOR5Jy2qWhN9joEfqL0dlan5wHofLnq4Umrqhc+raBTA8Azdxw3mRvEwxSmjBHlN3QEDSqkxyFwmgEvYS/H8i2ZM1YqimXOWoj2StuR2P6hnxnxxa6gkvdLXnSF83KqthD/8bWW9kgKStZbIGVu7Fjj5fMSnW2VQbG1pdnG495nQNKgbBkf6+u5V+1z1Sb5KGTvdC9dSTVsPdowiK/0P2GwgZqdZXLrfSRiBD6WEteE9fbLHUfO/h2AfKW7ZOFL9nbJTWiLtcOS+claKOFUg+9Of/n76pHkHMqAtcyDE9mEwmxeJYqnaNMwcPXk1Q8LBDIewSuR9xxNGXM8jd0PRGzTsryBcY97kX0iwaB4wJ3Ft+oq/ckVEMKcQ0uCLRUl39A=
     secure: GaRXYrAcBx/anzAdA5OBN++AU366RIVCxke0+qZmF+dZ4FW2bGA+TgOxbLk3trliJAHhYFtsXx+GJzyo05fTiMxftAtA6EUE2PXM2G2+OMFgPcSo/2fIHVuwxmTGa9mEBlD8fs6Dguc43qwedlJ9vqjlgk7d9w6mw+P9bzfJWWHPybaZXcZn28GM85Wsw+eIPj3j81raMXTNkXGPB8dUSC9HaK0pK97eD+4a+vxGgQZeLxq9e+G7nQDlIkSriHniCTAnBpO8AUhE5bR+QW9X8U6d44dBn+v+yWEZG0R19ZIHt/FnxQ7Y7yc1FrFLz/liQ4Zls1wbn8yKsIodCmu+jyz18aOd7R8kP7dWjNjpf9VO7ITPJqWOwk321jIa87GFrhwoapjmzddGjh0j9cRdDHm77ikPZJnPVFBdFmes2vWiDLrbluEp+ror4OZFl4Xf67jP0vL+RysEQJhmUO1OpqJbivuvAEBktbrYyxzvICcfX6F1hhWb1G8jUK7L3MIs963lmq7f2Y8cEnExFvjVBNgIpJEcmNhiZyJcVZzGWsmUEjPucg4hR1b1wPkcHR6uZKcH1ubcKf/fwoaKdmuQ+NoAfnYPI3C+0VnW8GL14UnHx6WLT9klQE7S6enhKD2pY9jjvw0nvxW/eLDXDhh+UQ+Kcmma8k274pzOIalDGYk=
+
+cache:
+  directories:
+  - $HOME/.cache/bazel

@@ -23,12 +23,11 @@ class MotorSafety {
   double time_above_, time_below_;
   bool is_stalled_;
 
-  static constexpr uint32_t kHistorySize = 20;
-  muan::utils::History<double, kHistorySize> current_history_;
+  muan::utils::History<double> current_history_;
 };
 
-}  // wpilib
+}  // namespace wpilib
 
-}  // muan
+}  // namespace muan
 
 #endif  // MUAN_WPILIB_MOTOR_SAFETY_H_

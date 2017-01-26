@@ -4,14 +4,14 @@ package c2017.ball_intake;
 
 option cc_enable_arenas = true;
 
-message IntakeOutput {
-  required double roller_voltage = 1; //positive is intaking, negative is outtaking
-  required bool intake_up = 2; //controls pneumatic cylinder
+message BallIntakeOutput {
+  required double roller_voltage = 1; // positive is intaking, negative is outtaking
+  required bool intake_up = 2; // controls pneumatic cylinder
 }
 
-message IntakeStatus {
-  required bool is_intake_up = 1; //is intake letting in balls
-  required RollerGoal running = 2; //is it running or idle
+message BallIntakeStatus {
+  required bool is_intake_up = 1; // is intake letting in balls
+  required RollerGoal running = 2; // is it running or idle
 }
 
 enum RollerGoal {
@@ -20,7 +20,7 @@ enum RollerGoal {
   OUTTAKE = 2;
 }
 
-message IntakeGoal {
-  required bool intake_up = 1; //whether it is down or up
-  required RollerGoal run_intake = 2;  
+message BallIntakeGoal {
+  required bool intake_up = 1; // whether it is down or up
+  required RollerGoal run_intake = 2;
 }

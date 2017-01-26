@@ -1,4 +1,4 @@
-#include "secondaries.h"
+#include "o2016/subsystems/superstructure/secondaries/secondaries.h"
 
 namespace o2016 {
 namespace secondaries {
@@ -22,5 +22,5 @@ SecondariesOutputProto Secondaries::Update(SecondariesGoalProto goal) {
   return output;
 }
 
-}  // o2016
-}  // secondaries
+}  // namespace secondaries
+}  // namespace o2016

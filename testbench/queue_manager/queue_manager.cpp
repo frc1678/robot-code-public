@@ -1,4 +1,4 @@
-#include "queue_manager.h"
+#include "testbench/queue_manager/queue_manager.h"
 
 namespace testbench {
 
@@ -40,4 +40,4 @@ QueueManager::drivetrain_output_queue() {
   return &drivetrain_output_queue_;
 }
 
-}  // testbench
+}  // namespace testbench

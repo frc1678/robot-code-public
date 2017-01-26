@@ -1,4 +1,4 @@
-#include "textlogger.h"
+#include "muan/logging/textlogger.h"
 #include <iostream>
 #include "gtest/gtest.h"
 #include "muan/queues/message_queue.h"

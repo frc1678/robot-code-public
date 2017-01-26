@@ -1,8 +1,8 @@
 #ifndef MUAN_WPILIB_CAN_WRAPPER_H_
 #define MUAN_WPILIB_CAN_WRAPPER_H_
 
-#include "pcm_wrapper.h"
-#include "pdp_wrapper.h"
+#include "muan/wpilib/pcm_wrapper.h"
+#include "muan/wpilib/pdp_wrapper.h"
 
 namespace muan {
 
@@ -21,7 +21,7 @@ namespace wpilib {
  */
 class CanWrapper {
  public:
-  CanWrapper(PdpWrapper::Queue* pdp_queue = nullptr);
+  explicit CanWrapper(PdpWrapper::Queue* pdp_queue = nullptr);
   ~CanWrapper() = default;
 
   // Call this to run the loop forever (or until Stop() is called)
@@ -39,8 +39,8 @@ class CanWrapper {
   std::atomic<bool> running_{false};
 };
 
-}  // wpilib
+}  // namespace wpilib
 
-}  // muan
+}  // namespace muan
 
 #endif  // MUAN_WPILIB_CAN_WRAPPER_H_

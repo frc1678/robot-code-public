@@ -2,7 +2,7 @@
 #define O2016_SUBSYSTEMS_SUPERSTRUCTURE_SECONDARIES_SECONDARIES_H_
 
 #include "muan/proto/stack_proto.h"
-#include "queue_types.h"
+#include "o2016/subsystems/superstructure/secondaries/queue_types.h"
 
 namespace o2016 {
 namespace secondaries {
@@ -13,7 +13,7 @@ class Secondaries {
   SecondariesOutputProto Update(SecondariesGoalProto goal);
 };
 
-}  // secondaries
-}  // o2016
+}  // namespace secondaries
+}  // namespace o2016
 
-#endif
+#endif  // O2016_SUBSYSTEMS_SUPERSTRUCTURE_SECONDARIES_SECONDARIES_H_

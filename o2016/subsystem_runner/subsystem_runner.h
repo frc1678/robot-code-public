@@ -1,5 +1,5 @@
-#ifndef O2016_SUBSYSTEMRUNNER_SUBSYSTEMRUNNER_H_
-#define O2016_SUBSYSTEMRUNNER_SUBSYSTEMRUNNER_H_
+#ifndef O2016_SUBSYSTEM_RUNNER_SUBSYSTEM_RUNNER_H_
+#define O2016_SUBSYSTEM_RUNNER_SUBSYSTEM_RUNNER_H_
 
 #include <atomic>
 
@@ -25,5 +25,7 @@ class SubsystemRunner {
   secondaries::Secondaries secondaries_;
   wpilib::WpilibInterface wpilib_;
 };
-}
-#endif
+
+}  // namespace o2016
+
+#endif  // O2016_SUBSYSTEM_RUNNER_SUBSYSTEM_RUNNER_H_

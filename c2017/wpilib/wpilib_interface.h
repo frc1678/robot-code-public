@@ -8,9 +8,9 @@
 #include "muan/utils/math_utils.h"
 
 #include "c2017/wpilib/drivetrain_interface.h"
+#include "c2017/wpilib/superstructure_interface.h"
 
 namespace c2017 {
-
 namespace wpilib {
 
 class WpilibInterface {
@@ -25,10 +25,10 @@ class WpilibInterface {
 
   muan::wpilib::gyro::GyroReader gyro_;
   DrivetrainInterface drivetrain_;
+  SuperStructureInterface superstructure_;
 };
 
-}  // wpilib
-
-}  // c2017
+}  // namespace wpilib
+}  // namespace c2017
 
 #endif  // C2017_WPILIB_WPILIB_INTERFACE_H_

@@ -1,25 +1,24 @@
 #ifndef MUAN_LOGGING_LOGGER_H_
 #define MUAN_LOGGING_LOGGER_H_
 
-#include "filewriter.h"
-#include "gtest/gtest_prod.h"
-#include "muan/queues/message_queue.h"
-#include "muan/units/units.h"
-#include "muan/utils/proto_utils.h"
-#include "textlogger.h"
-#include "third_party/aos/common/time.h"
-#include "third_party/aos/common/util/phased_loop.h"
-#include "third_party/aos/linux_code/init.h"
-#include "third_party/optional/optional.hpp"
-
 #include <iostream>
-
 #include <atomic>
 #include <map>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
+
+#include "muan/logging/filewriter.h"
+#include "gtest/gtest_prod.h"
+#include "muan/queues/message_queue.h"
+#include "muan/units/units.h"
+#include "muan/utils/proto_utils.h"
+#include "muan/logging/textlogger.h"
+#include "third_party/aos/common/time.h"
+#include "third_party/aos/common/util/phased_loop.h"
+#include "third_party/aos/linux_code/init.h"
+#include "third_party/optional/optional.hpp"
 
 namespace muan {
 namespace logging {
@@ -62,22 +61,20 @@ class Logger {
 
  public:
   Logger();
-  Logger(std::unique_ptr<FileWriter>&& writer);
+  explicit Logger(std::unique_ptr<FileWriter>&& writer);
   virtual ~Logger() = default;
 
   // Adds a QueueReader<protobuf_class> to the list of queues to be logged,
   // under the name "name". The name will determine the file that it logs to,
   // as well as serving as a human-readable name in other places.
   template <class T>
-  void AddQueue(const std::string& name, T* queue_reader);
+  void AddQueue(const std::string& name, T* queue);
 
   // This is designed to be used with std::thread to run the logger. It will
   // run forever, calling the Update function.
-  void Run();
+  void operator()();
 
   // This starts the logger if you have previously stopped it by calling Stop().
-  // You do not need to call this if you have just called Run() - Run() will
-  // automatically start the logger.
   void Start();
 
   // This stops the logger from running. It can be resumed calling Start().
@@ -94,23 +91,24 @@ class Logger {
 
   class GenericReader {
    public:
-    virtual std::experimental::optional<std::string> GetMessageAsCSV() = 0;
+    virtual std::experimental::optional<std::string> GetMessageAsCSV(bool header) = 0;
   };
 
-  template <class T>
+  template <class R>
   class Reader : public GenericReader {
    public:
-    Reader(T* reader);
-    std::experimental::optional<std::string> GetMessageAsCSV() override;
+    explicit Reader(R reader);
+    std::experimental::optional<std::string> GetMessageAsCSV(bool header) override;
 
    private:
-    T* reader_;
+    R reader_;
   };
 
   struct QueueLog {
     std::unique_ptr<GenericReader> reader;
     std::string name;  // Human friendly name for this log
     std::string filename;
+    bool write_header;  // Do we still need to write the header?
   };
 
   struct TextLog {
@@ -121,10 +119,11 @@ class Logger {
 
   std::vector<std::unique_ptr<QueueLog>> queue_logs_;
   std::vector<TextLog> text_logs_;
-
 };  // class Logger
 
 }  // namespace logging
 }  // namespace muan
 
-#endif
+#include "logger.hpp"
+
+#endif  // MUAN_LOGGING_LOGGER_H_

@@ -30,7 +30,7 @@ bazel test //c2017/submarine_subsystem/...
 Before you push your code, you can run our automated test script. This is what Travis CI runs, so if you don't like failed travis builds you should always run it before pushing:
 
 ```
-./tests.sh
+./scripts/tests.py
 ```
 
 ## Style Guide
@@ -45,6 +45,14 @@ In addition to the Google C++ style guide, you should also make sure that you ar
 Particularly, you should make sure to write your commits in the imperative mood ("Add thingamadoodle", not "Added thingamadoodle") and capitalize the first word. If the change is complicated, use multiple lines to describe it.
 
 Additionally, you should try to make your commits as small as possible (often referred to as making "atomic" commits). This helps other people understand what you are doing.
+
+We also use bazel's [Buildifier](https://github.com/bazelbuild/buildifier) to format BUILD files. The formatter
+establishes quite a few
+[conventions](https://github.com/bazelbuild/bazel/blob/master/site/versions/master/docs/skylark/build-style.md).
+Highlights include:
+
+ - Use four spaces for indenting
+ - Use double quotes (") instead of single quotes (')
 
 ## Contributing
 

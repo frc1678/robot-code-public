@@ -1,10 +1,10 @@
 cc_library(
-  name = 'main',
-  srcs = ['main.cpp'],
-  hdrs = ['main.h'],
-  deps = [
-    '//muan/teleop:joystick',
-    '//generic_robot/queue_manager'
-  ],
-  visibility = ['//visibility:public']
+    name = "main",
+    srcs = ["main.cpp"],
+    hdrs = ["main.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//generic_robot/queue_manager",
+        "//muan/teleop:joystick",
+    ],
 )

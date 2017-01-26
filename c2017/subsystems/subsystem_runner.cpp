@@ -1,4 +1,4 @@
-#include "subsystem_runner.h"
+#include "c2017/subsystems/subsystem_runner.h"
 
 namespace c2017 {
 
@@ -9,7 +9,8 @@ SubsystemRunner::SubsystemRunner()
                   QueueManager::GetInstance().drivetrain_output_queue(),
                   QueueManager::GetInstance().drivetrain_status_queue(),
                   QueueManager::GetInstance().driver_station_queue(),
-                  QueueManager::GetInstance().gyro_queue()} {}
+                  QueueManager::GetInstance().gyro_queue()},
+      superstructure_{} {}
 
 void SubsystemRunner::operator()() {
   aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(5));
@@ -25,6 +26,8 @@ void SubsystemRunner::operator()() {
 
     drivetrain_.Update();
 
+    superstructure_.Update();
+
     wpilib_.WriteActuators();
 
     phased_loop.SleepUntilNext();
@@ -32,4 +35,5 @@ void SubsystemRunner::operator()() {
 }
 
 void SubsystemRunner::Stop() { running_ = false; }
-}
+
+}  // namespace c2017

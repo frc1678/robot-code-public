@@ -1,4 +1,4 @@
-#include "queue_manager.h"
+#include "o2016/queue_manager/queue_manager.h"
 
 namespace o2016 {
 
@@ -57,4 +57,4 @@ o2016::secondaries::SecondariesOutputQueue& QueueManager::secondaries_output_que
   return secondaries_output_queue_;
 }
 
-}  // o2016
+}  // namespace o2016
