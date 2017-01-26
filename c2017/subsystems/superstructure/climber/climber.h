@@ -5,7 +5,7 @@
 #include "muan/wpilib/queue_types.h"
 #include "muan/units/units.h"
 #include "c2017/subsystems/superstructure/climber/queue_types.h"
-#include "muan/wpilib/motor_safety.h"
+#include "muan/utils/monitor.h"
 #include "c2017/queue_manager/queue_manager.h"
 
 namespace c2017 {
@@ -26,8 +26,8 @@ class Climber {
   double last_position_;
   bool to_climb_;
   ClimberStatusQueue& status_queue_;
-  muan::wpilib::MotorSafety climber_position_watcher_;
-  muan::wpilib::MotorSafety climber_current_watcher_;
+  muan::utils::Monitor climber_position_watcher_;
+  muan::utils::Monitor climber_current_watcher_;
   bool on_rope_;
 };
 }  // namespace climber

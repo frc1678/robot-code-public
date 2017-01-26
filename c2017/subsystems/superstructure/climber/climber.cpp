@@ -4,14 +4,14 @@
 namespace c2017 {
 
 namespace climber {
-Climber::Climber()
-    : at_top_(false),
-      is_climbing_(false),
-      last_position_(0),
-      status_queue_(QueueManager::GetInstance().climber_status_queue()),
-      climber_position_watcher_(1 / 0.001, 0.25, std::numeric_limits<int>::max(), 0.005),
-      climber_current_watcher_(100, 0.1, std::numeric_limits<int>::max(), 0.005),
-      on_rope_(false) {}
+Climber::Climber() :
+  at_top_(false),
+  is_climbing_(false),
+  last_position_(0),
+  status_queue_(QueueManager::GetInstance().climber_status_queue()),
+  climber_position_watcher_(0.001, 0.25, std::numeric_limits<int>::max(), 0.005, false),
+  climber_current_watcher_(100, 0.1, std::numeric_limits<int>::max(), 0.005),
+  on_rope_(false) {}
 
 void Climber::SetGoal(const ClimberGoalProto& goal) { to_climb_ = goal->climbing(); }
 
@@ -25,13 +25,13 @@ ClimberOutputProto Climber::Update(const ClimberInputProto& input,
   if (robot_state == RobotMode::TELEOP) {
     if (to_climb_) {
       if (on_rope_) {
-        voltage_ = climber_position_watcher_.Update(12, 1 / (input->position() - last_position_));
+        voltage_ = climber_position_watcher_.Update(12, (input->position() - last_position_));
       } else {
         voltage_ = climber_current_watcher_.Update(12, input->current());
-        on_rope_ = climber_current_watcher_.is_stalled();
+        on_rope_ = climber_current_watcher_.is_at_thresh();
       }
       is_climbing_ = true;
-      at_top_ = climber_position_watcher_.is_stalled();
+      at_top_ = climber_position_watcher_.is_at_thresh();
 
     } else {
       is_climbing_ = false;
