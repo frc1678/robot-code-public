@@ -1,6 +1,7 @@
 #ifndef MUAN_UTILS_HISTORY_H_
 #define MUAN_UTILS_HISTORY_H_
 
+#include <algorithm>
 #include <vector>
 #include <cmath>
 #include "muan/units/units.h"

@@ -21,7 +21,7 @@ TEST(History, Sizing) {
 
   EXPECT_EQ(hist.num_samples(), 100);
   EXPECT_TRUE(hist.is_full());
-  
+
   // Make sure it doesn't think we have >100 samples!
   hist.Update(0);
 
@@ -46,7 +46,7 @@ TEST(History, Iterates) {
 TEST(History, GoBack) {
   History<int> hist(100);
 
-  for (int i = 0; i < 50; i++ ) {
+  for (int i = 0; i < 50; i++) {
     hist.Update(i);
   }
 
@@ -58,7 +58,7 @@ TEST(History, GoBack) {
 TEST(History, GoBackFull) {
   History<int> hist(100);
 
-  for (int i = 0; i < 100; i++ ) {
+  for (int i = 0; i < 100; i++) {
     hist.Update(i);
   }
 
@@ -70,7 +70,7 @@ TEST(History, GoBackFull) {
 TEST(History, OverwriteOldHistory) {
   History<int> hist(100);
 
-  for (int i = 0; i < 200; i++ ) {
+  for (int i = 0; i < 200; i++) {
     hist.Update(i);
   }
 
@@ -90,7 +90,7 @@ TEST(History, FailsOnOldHistory) {
   History<int> hist(100);
 
   EXPECT_DEATH(hist.GoBack(0), "unrecorded history");
-  for (int i = 0; i < 100; i++ ) {
+  for (int i = 0; i < 100; i++) {
     hist.Update(i);
   }
   hist.GoBack(99);
