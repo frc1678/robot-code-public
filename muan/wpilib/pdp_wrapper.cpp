@@ -1,4 +1,4 @@
-#include "pdp_wrapper.h"
+#include "muan/wpilib/pdp_wrapper.h"
 #include "third_party/aos/common/die.h"
 
 namespace muan {
@@ -40,6 +40,6 @@ void PdpWrapper::SendValues() {
 
 void PdpWrapper::SetQueue(Queue* pdp_queue) { queue_ = pdp_queue; }
 
-}  // wpilib
+}  // namespace wpilib
 
-}  // muan
+}  // namespace muan

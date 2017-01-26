@@ -1,7 +1,6 @@
-#include "lemonscript.h"
 #include <stdio.h>
 
-using namespace lemonscript;
+#include "generic_robot/lemonscript/lemonscript.h"
 
 int main() {
   genericrobot::lemonscript::Lemonscript ls;

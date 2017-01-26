@@ -4,7 +4,6 @@
 #include "testbench/subsystems/drivetrain/drivetrain_base.h"
 
 namespace testbench {
-
 namespace teleop {
 
 using frc971::control_loops::drivetrain::GoalProto;
@@ -97,6 +96,5 @@ void Teleop::SendDrivetrainMessage() {
   }
 }
 
-}  // teleop
-
-}  // testbench
+}  // namespace teleop
+}  // namespace testbench

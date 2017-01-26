@@ -1,7 +1,8 @@
 #ifndef MUAN_QUEUES_MESSAGE_QUEUE_HPP_
 #define MUAN_QUEUES_MESSAGE_QUEUE_HPP_
 
-#include "message_queue.h"
+#include <algorithm>
+#include "muan/queues/message_queue.h"
 
 namespace muan {
 
@@ -27,7 +28,7 @@ void MessageQueue<T, size>::Reset() {
 }
 
 template <typename T, uint64_t size>
-std::experimental::optional<T> MessageQueue<T, size>::NextMessage(uint64_t& next) const {
+std::experimental::optional<T> MessageQueue<T, size>::NextMessage(uint64_t& next) const { //NOLINT
   aos::MutexLocker locker_{&queue_lock_};
 
   // Make sure the reader's index is within the bounds of still-valid messages,
@@ -98,4 +99,4 @@ std::experimental::optional<T> MessageQueue<T, size>::QueueReader::ReadLastMessa
 
 }  // namespace muan
 
-#endif /* MUAN_QUEUES_MESSAGE_QUEUE_HPP_ */
+#endif  // MUAN_QUEUES_MESSAGE_QUEUE_HPP_

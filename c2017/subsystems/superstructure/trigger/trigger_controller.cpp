@@ -1,11 +1,10 @@
-#include "trigger_controller.h"
+#include "c2017/subsystems/superstructure/trigger/trigger_controller.h"
 
 namespace c2017 {
-
 namespace trigger {
 
 // Constructor
-TriggerController::TriggerController() 
+TriggerController::TriggerController()
     :  status_queue_{QueueManager::GetInstance().trigger_status_queue()} {
   auto ss_plant = muan::control::StateSpacePlant<1, 3, 1>(frc1678::trigger_controller::controller::A(),
                                                           frc1678::trigger_controller::controller::B(),
@@ -19,7 +18,7 @@ TriggerController::TriggerController()
       muan::control::StateSpaceObserver<1, 3, 1>(ss_plant, frc1678::trigger_controller::controller::L());
 
   // Tolerance in rad/sec
-  velocity_tolerance_ = 1;  // TODO tune this
+  velocity_tolerance_ = 1;  // TODO(ahill) tune this
 }
 
 TriggerOutputProto TriggerController::Update(const TriggerInputProto& input,
@@ -29,13 +28,13 @@ TriggerOutputProto TriggerController::Update(const TriggerInputProto& input,
   // Checking if E-Stop/brownout/disabled from driver station proto
   // Trigger should not be running if any of these are true
   bool enable_outputs = !(robot_state->mode() == RobotMode::ESTOP ||
-                          robot_state->mode() == RobotMode::DISABLED || 
+                          robot_state->mode() == RobotMode::DISABLED ||
                           robot_state->brownout());
 
   Eigen::Matrix<double, 1, 1> y;
   y << input->encoder_position();
 
-  if (enable_outputs && balls_per_second_ > 0) {  // I didn't see the point in adding another if statement that does the same thing as this one
+  if (enable_outputs && balls_per_second_ > 0) {
     // r is the goal
     Eigen::Matrix<double, 3, 1> r;
     r << 0.0, ((muan::units::pi / 2) * balls_per_second_), 0.0;
@@ -71,6 +70,5 @@ muan::units::AngularVelocity TriggerController::get_velocity_tolerance() { retur
 
 double TriggerController::get_bps() { return balls_per_second_; }
 
-}  // trigger
-
-}  // c2017
+}  // namespace trigger
+}  // namespace c2017

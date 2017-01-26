@@ -13,8 +13,8 @@ using DriverStationProto = muan::proto::StackProto<DriverStationStatus, 256>;
 
 using DriverStationQueue = muan::queues::MessageQueue<DriverStationProto, 200>;
 
-}  // wpilib
+}  // namespace wpilib
 
-}  // muan
+}  // namespace muan
 
 #endif  // MUAN_WPILIB_QUEUE_TYPES_H_

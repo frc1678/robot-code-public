@@ -36,4 +36,4 @@ void SubsystemRunner::operator()() {
 
 void SubsystemRunner::Stop() { running_ = false; }
 
-}  // testbench
+}  // namespace testbench

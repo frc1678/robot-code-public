@@ -2,7 +2,6 @@
 #include "c2017/queue_manager/queue_manager.h"
 
 namespace c2017 {
-
 namespace ground_ball_intake {
 
 GroundBallIntake::GroundBallIntake()
@@ -49,6 +48,5 @@ void GroundBallIntake::set_goal(GroundBallIntakeGoalProto goal) {
   run_intake_ = goal->run_intake();
 }
 
-}  // ground_ball_intake
-
-}  // c2017
+}  // namespace ground_ball_intake
+}  // namespace c2017

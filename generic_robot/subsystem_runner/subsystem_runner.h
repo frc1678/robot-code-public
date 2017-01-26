@@ -1,5 +1,5 @@
-#ifndef GENERICROBOT_SUBSYSTEMRUNNER_SUBSYSTEMRUNNER_H_
-#define GENERICROBOT_SUBSYSTEMRUNNER_SUBSYSTEMRUNNER_H_
+#ifndef GENERIC_ROBOT_SUBSYSTEM_RUNNER_SUBSYSTEM_RUNNER_H_
+#define GENERIC_ROBOT_SUBSYSTEM_RUNNER_SUBSYSTEM_RUNNER_H_
 
 #include <atomic>
 
@@ -22,5 +22,7 @@ class SubsystemRunner {
   std::atomic<bool> running_;
   wpilib::WpilibInterface wpilib_;
 };
-}
-#endif
+
+}  // namespace generic_robot
+
+#endif  // GENERIC_ROBOT_SUBSYSTEM_RUNNER_SUBSYSTEM_RUNNER_H_

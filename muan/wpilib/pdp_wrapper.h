@@ -32,8 +32,8 @@ class PdpWrapper {
   Queue* queue_{nullptr};
 };
 
-}  // wpilib
+}  // namespace wpilib
 
-}  // muan
+}  // namespace muan
 
 #endif  // MUAN_WPILIB_PDP_WRAPPER_H_

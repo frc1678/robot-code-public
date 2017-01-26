@@ -6,7 +6,7 @@
 
 namespace c2017 {
 
-namespace citrus_robot{
+namespace citrus_robot {
 
 class CitrusRobot {
  public:
@@ -29,8 +29,8 @@ class CitrusRobot {
   void SendDSMessage();
 };
 
-}  // citrus_robot 
+}  // namespace citrus_robot
 
-}  // c2017
+}  // namespace c2017
 
-#endif  // C2017_WPILIBUPDATE_MAIN_H_
+#endif  // C2017_WPILIB_UPDATE_MAIN_H_

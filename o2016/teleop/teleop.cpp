@@ -4,7 +4,6 @@
 #include "o2016/queue_manager/queue_manager.h"
 
 namespace o2016 {
-
 namespace teleop {
 
 Teleop::Teleop() : throttle_{1}, wheel_{0}, gamepad_{2} {
@@ -73,6 +72,5 @@ void Teleop::SendDrivetrainMessage() {
   o2016::QueueManager::GetInstance().drivetrain_goal_queue().WriteMessage(drivetrain_goal);
 }
 
-}  // teleop
-
-}  // o2016
+}  // namespace teleop
+}  // namespace o2016

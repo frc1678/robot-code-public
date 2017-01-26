@@ -1,5 +1,5 @@
-#ifndef GENERICROBOT_WPILIB_WPILIB_INTERFACE_H_
-#define GENERICROBOT_WPILIB_WPILIB_INTERFACE_H_
+#ifndef GENERIC_ROBOT_WPILIB_WPILIB_INTERFACE_H_
+#define GENERIC_ROBOT_WPILIB_WPILIB_INTERFACE_H_
 
 #include "WPILib.h"
 #include "muan/wpilib/can_wrapper.h"
@@ -19,8 +19,8 @@ class WpilibInterface {
   muan::wpilib::CanWrapper can_;
 };
 
-}  // wpilib
+}  // namespace wpilib
 
-}  // generic_robot
+}  // namespace generic_robot
 
-#endif  // GENERICROBOT_WPILIB_WPILIB_INTERFACE_H_
+#endif  // GENERIC_ROBOT_WPILIB_WPILIB_INTERFACE_H_

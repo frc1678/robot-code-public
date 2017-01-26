@@ -23,4 +23,6 @@ bazel build //c2017/... --cpu=roborio
 
 bazel test --test_output=errors //third_party/frc971/control_loops/drivetrain:drivetrain_lib_test
 
+./scripts/cpplint/run-cpplint.sh
+
 ./check-format.py --no-fail

@@ -1,5 +1,5 @@
-#ifndef GENERICROBOT_WPILIBUPDATE_MAIN_H_
-#define GENERICROBOT_WPILIBUPDATE_MAIN_H_
+#ifndef GENERIC_ROBOT_WPILIB_UPDATE_MAIN_H_
+#define GENERIC_ROBOT_WPILIB_UPDATE_MAIN_H_
 
 #include "muan/teleop/joystick.h"
 
@@ -25,8 +25,8 @@ class Main {
   void SendDSMessage();
 };
 
-}  // wpilib_update
+}  // namespace wpilib_update
 
-}  // generic_robot
+}  // namespace generic_robot
 
-#endif  // GENERICROBOT_WPILIBUPDATE_MAIN_H_
+#endif  // GENERIC_ROBOT_WPILIB_UPDATE_MAIN_H_

@@ -1,5 +1,5 @@
-#include "joystick.h"
-#include "button.h"
+#include "muan/teleop/joystick.h"
+#include "muan/teleop/button.h"
 
 namespace muan {
 
@@ -20,6 +20,6 @@ void Joystick::Update() {
   }
 }
 
-}  // teleop
+}  // namespace teleop
 
-}  // muan
+}  // namespace muan

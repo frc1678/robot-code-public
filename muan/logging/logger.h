@@ -1,25 +1,24 @@
 #ifndef MUAN_LOGGING_LOGGER_H_
 #define MUAN_LOGGING_LOGGER_H_
 
-#include "filewriter.h"
-#include "gtest/gtest_prod.h"
-#include "muan/queues/message_queue.h"
-#include "muan/units/units.h"
-#include "muan/utils/proto_utils.h"
-#include "textlogger.h"
-#include "third_party/aos/common/time.h"
-#include "third_party/aos/common/util/phased_loop.h"
-#include "third_party/aos/linux_code/init.h"
-#include "third_party/optional/optional.hpp"
-
 #include <iostream>
-
 #include <atomic>
 #include <map>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
+
+#include "muan/logging/filewriter.h"
+#include "gtest/gtest_prod.h"
+#include "muan/queues/message_queue.h"
+#include "muan/units/units.h"
+#include "muan/utils/proto_utils.h"
+#include "muan/logging/textlogger.h"
+#include "third_party/aos/common/time.h"
+#include "third_party/aos/common/util/phased_loop.h"
+#include "third_party/aos/linux_code/init.h"
+#include "third_party/optional/optional.hpp"
 
 namespace muan {
 namespace logging {
@@ -62,7 +61,7 @@ class Logger {
 
  public:
   Logger();
-  Logger(std::unique_ptr<FileWriter>&& writer);
+  explicit Logger(std::unique_ptr<FileWriter>&& writer);
   virtual ~Logger() = default;
 
   // Adds a QueueReader<protobuf_class> to the list of queues to be logged,
@@ -98,7 +97,7 @@ class Logger {
   template <class R>
   class Reader : public GenericReader {
    public:
-    Reader(R reader);
+    explicit Reader(R reader);
     std::experimental::optional<std::string> GetMessageAsCSV(bool header) override;
 
    private:
@@ -120,7 +119,6 @@ class Logger {
 
   std::vector<std::unique_ptr<QueueLog>> queue_logs_;
   std::vector<TextLog> text_logs_;
-
 };  // class Logger
 
 }  // namespace logging
@@ -128,4 +126,4 @@ class Logger {
 
 #include "logger.hpp"
 
-#endif
+#endif  // MUAN_LOGGING_LOGGER_H_

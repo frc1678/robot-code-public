@@ -1,12 +1,12 @@
+#include <math.h>
+#include <iostream>
+#include <fstream>
 #include "gtest/gtest.h"
 #include "c2017/subsystems/superstructure/trigger/trigger_constants.h"
 #include "c2017/subsystems/superstructure/trigger/trigger_controller.h"
 #include "muan/control/state_space_plant.h"
 #include "muan/control/state_space_controller.h"
 #include "c2017/queue_manager/queue_manager.h"
-#include <iostream>
-#include <fstream>
-#include <math.h>
 
 
 TEST(TriggerController, ZeroInput) {
@@ -241,7 +241,6 @@ TEST(TriggerController, BallResistance) {
   plant.x()[2] = 0.0;
 
   for (int i = 0; i <= 3000; i++) {
-
     if (i % 20 == 0) {
       plant.x()[1] *= 0.96;
     }
@@ -281,7 +280,7 @@ TEST(TriggerController, DisabledtoNormal) {
   plant.x()[1] = 0.0;
   plant.x()[2] = 0.0;
 
-  //First, run normally
+  // First, run normally
   for (int i = 0; i <= 500; i++) {
     goal->set_balls_per_second(16);
     input->set_encoder_position(plant.x()[0]);
@@ -300,7 +299,7 @@ TEST(TriggerController, DisabledtoNormal) {
     EXPECT_NEAR(output->voltage(), 0., 12.);
   }
 
-  //Disable robot and run a velocity to change encoder position
+  // Disable robot and run a velocity to change encoder position
   for (int i = 0; i <= 200; i++) {
     goal->set_balls_per_second(16);
     input->set_encoder_position(plant.x()[0]);
@@ -325,7 +324,7 @@ TEST(TriggerController, DisabledtoNormal) {
     FAIL();
   }
 
-  //Run normally again and see if works
+  // Run normally again and see if works
   for (int i = 0; i <= 1000; i++) {
     goal->set_balls_per_second(16);
     input->set_encoder_position(plant.x()[0]);

@@ -1,5 +1,8 @@
-#include "logger.h"
-#include "filewriter.h"
+#include <utility>
+#include <memory>
+#include <string>
+#include "muan/logging/logger.hpp"
+#include "muan/logging/filewriter.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "muan/logging/logger_test.pb.h"
@@ -8,14 +11,14 @@
 
 using muan::logging::Logger;
 using muan::queues::MessageQueue;
-using namespace ::testing;
+using namespace ::testing;  //NOLINT
 
 namespace muan {
 namespace logging {
 
 class MockFileWriter : public muan::logging::FileWriter {
  public:
-  MockFileWriter() : muan::logging::FileWriter("/"){};
+  MockFileWriter() : muan::logging::FileWriter("/") {}
   MOCK_METHOD2(WriteLine, void(const std::string &filename, const std::string &line));
 };
 
@@ -121,5 +124,5 @@ TEST(Logger, TextLogger) {
   textlog("test");
   logger.Update();
 }
-}
-}
+}  // namespace logging
+}  // namespace muan

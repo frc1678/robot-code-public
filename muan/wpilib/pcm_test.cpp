@@ -1,5 +1,5 @@
 #include <WPILib.h>
-#include "can_wrapper.h"
+#include "muan/wpilib/can_wrapper.h"
 #include "third_party/aos/common/time.h"
 #include "third_party/aos/common/util/phased_loop.h"
 

@@ -1,5 +1,5 @@
-#ifndef C2017_QUEUEMANAGER_QUEUEMANAGER_H_
-#define C2017_QUEUEMANAGER_QUEUEMANAGER_H_
+#ifndef C2017_QUEUE_MANAGER_QUEUE_MANAGER_H_
+#define C2017_QUEUE_MANAGER_QUEUE_MANAGER_H_
 
 #include <thread>
 #include <functional>
@@ -13,12 +13,9 @@
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
 #include "c2017/subsystems/superstructure/ground_ball_intake/queue_types.h"
 #include "c2017/subsystems/superstructure/trigger/queue_types.h"
-
 #include "c2017/subsystems/superstructure/shooter/queue_types.h"
 #include "c2017/subsystems/superstructure/magazine/queue_types.h"
-#include "c2017/subsystems/superstructure/trigger/queue_types.h"
 #include "c2017/subsystems/superstructure/ground_gear_intake/queue_types.h"
-#include "c2017/subsystems/superstructure/ground_ball_intake/queue_types.h"
 #include "c2017/subsystems/superstructure/climber/queue_types.h"
 #include "c2017/subsystems/superstructure/queue_types.h"
 #include "c2017/wpilib/queue_types.h"
@@ -50,7 +47,6 @@ class QueueManager {
   frc971::control_loops::drivetrain::OutputQueue* drivetrain_output_queue();
   frc971::control_loops::drivetrain::StatusQueue* drivetrain_status_queue();
 
-  
   c2017::wpilib::WpilibOutputQueue& superstructure_output_queue();
 
   c2017::trigger::TriggerInputQueue& trigger_input_queue();
@@ -119,6 +115,6 @@ class QueueManager {
 #endif  // FRC1678_NO_QUEUE_LOGGING
 };
 
-}  // c2017
+}  // namespace c2017
 
-#endif
+#endif  // C2017_QUEUE_MANAGER_QUEUE_MANAGER_H_
