@@ -15,7 +15,7 @@ namespace wpilib {
 
 class DrivetrainInterface {
  public:
-  DrivetrainInterface(muan::wpilib::CanWrapper* can_wrapper);
+  explicit DrivetrainInterface(muan::wpilib::CanWrapper* can_wrapper);
 
   void WriteActuators();
   void ReadSensors();
@@ -69,7 +69,7 @@ class IntakeInterface {
 
 class CatapultInterface {
  public:
-  CatapultInterface(muan::wpilib::CanWrapper* can);
+  explicit CatapultInterface(muan::wpilib::CanWrapper* can);
 
   void WriteActuators();
   void ReadSensors();
@@ -89,7 +89,7 @@ class CatapultInterface {
 
 class SecondariesInterface {
  public:
-  SecondariesInterface(muan::wpilib::CanWrapper* can);
+  explicit SecondariesInterface(muan::wpilib::CanWrapper* can);
 
   void WriteActuators();
 
@@ -116,8 +116,8 @@ class WpilibInterface {
   SecondariesInterface secondaries_;
 };
 
-}  // wpilib
+}  // namespace wpilib
 
-}  // o2016
+}  // namespace o2016
 
 #endif  // O2016_WPILIB_WPILIB_INTERFACE_H_

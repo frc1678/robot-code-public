@@ -1,5 +1,5 @@
-#include "button.h"
-#include "joystick.h"
+#include "muan/teleop/button.h"
+#include "muan/teleop/joystick.h"
 
 namespace muan {
 
@@ -20,6 +20,6 @@ void Button::Update(bool value) {
   current_ = value;
 }
 
-}  // teleop
+}  // namespace teleop
 
-}  // muan
+}  // namespace muan

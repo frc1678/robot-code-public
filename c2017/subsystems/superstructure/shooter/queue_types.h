@@ -1,5 +1,5 @@
-#ifndef C2017_SUBSYSTEMS_SUPERSTRUCTURE_SHOOTER_QUEUETYPES_H_
-#define C2017_SUBSYSTEMS_SUPERSTRUCTURE_SHOOTER_QUEUETYPES_H_
+#ifndef C2017_SUBSYSTEMS_SUPERSTRUCTURE_SHOOTER_QUEUE_TYPES_H_
+#define C2017_SUBSYSTEMS_SUPERSTRUCTURE_SHOOTER_QUEUE_TYPES_H_
 
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
@@ -15,12 +15,10 @@ using ShooterStatusProto = muan::proto::StackProto<::c2017::shooter::ShooterStat
 using ShooterOutputProto = muan::proto::StackProto<::c2017::shooter::ShooterOutput, 256>;
 
 using ShooterInputQueue = muan::queues::MessageQueue<ShooterInputProto, 200>;
-using ShooterGoalQueue = muan::queues::MessageQueue<ShooterGoalProto, 200>;
-using ShooterOutputQueue = muan::queues::MessageQueue<ShooterOutputProto, 200>;
 using ShooterStatusQueue = muan::queues::MessageQueue<ShooterStatusProto, 200>;
 
 }  // namespace shooter
 
 }  // namespace c2017
 
-#endif  // C2017_SUBSYSTEMS_SUPERSTRUCTURE_SHOOTER_QUEUETYPES_H_
+#endif  // C2017_SUBSYSTEMS_SUPERSTRUCTURE_SHOOTER_QUEUE_TYPES_H_

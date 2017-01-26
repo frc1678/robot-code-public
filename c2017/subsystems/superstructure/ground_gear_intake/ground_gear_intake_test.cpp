@@ -1,5 +1,5 @@
-#include "ground_gear_intake.h"
-#include "queue_types.h"
+#include "c2017/subsystems/superstructure/ground_gear_intake/ground_gear_intake.h"
+#include "c2017/subsystems/superstructure/ground_gear_intake/queue_types.h"
 #include "gtest/gtest.h"
 
 class GroundGearIntakeTest : public ::testing::Test {

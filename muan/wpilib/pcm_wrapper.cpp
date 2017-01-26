@@ -1,4 +1,4 @@
-#include "pcm_wrapper.h"
+#include "muan/wpilib/pcm_wrapper.h"
 #include "third_party/aos/common/die.h"
 
 namespace muan {
@@ -81,6 +81,6 @@ void PcmWrapper::SetChannel(uint8_t channel, bool on) {
   }
 }
 
-}  // wpilib
+}  // namespace wpilib
 
-}  // muan
+}  // namespace muan

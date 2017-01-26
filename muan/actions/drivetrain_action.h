@@ -84,8 +84,8 @@ class DriveSCurveAction : public DrivetrainAction {
   DrivetrainProperties properties_;
 };
 
-}  // actions
+}  // namespace actions
 
-}  // muan
+}  // namespace muan
 
 #endif  // MUAN_ACTIONS_DRIVETRAIN_ACTION_H_

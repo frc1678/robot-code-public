@@ -2,6 +2,7 @@
 #define MUAN_CONTROL_STATE_SPACE_CONTROLLER_H_
 
 #include <cstdint>
+#include <limits>
 #include "Eigen/Core"
 
 namespace muan {
@@ -107,4 +108,4 @@ class StateSpaceController {
 
 #include "state_space_controller.hpp"
 
-#endif /* MUAN_CONTROL_STATE_SPACE_CONTROLLER_H_ */
+#endif  // MUAN_CONTROL_STATE_SPACE_CONTROLLER_H_

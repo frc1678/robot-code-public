@@ -1,4 +1,4 @@
-#include "subsystem_runner.h"
+#include "generic_robot/subsystem_runner/subsystem_runner.h"
 
 namespace generic_robot {
 
@@ -22,4 +22,5 @@ void SubsystemRunner::operator()() {
 }
 
 void SubsystemRunner::Stop() { running_ = false; }
-}
+
+}  // namespace generic_robot

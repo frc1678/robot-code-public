@@ -8,6 +8,6 @@ SuperStructure::SuperStructure() {}
 
 void SuperStructure::Update() {}
 
-} // namespace superstructure
+}  // namespace superstructure
 
-} // namespace c2017
+}  // namespace c2017

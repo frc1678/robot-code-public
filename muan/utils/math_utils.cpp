@@ -1,4 +1,4 @@
-#include "math_utils.h"
+#include "muan/utils/math_utils.h"
 
 namespace muan {
 namespace utils {
@@ -17,5 +17,5 @@ uint32_t true_modulo(int a, int b) {
   return signed_result >= 0 ? signed_result : signed_result + std::abs(b);
 }
 
-}  // utils
-}  // muan
+}  // namespace utils
+}  // namespace muan

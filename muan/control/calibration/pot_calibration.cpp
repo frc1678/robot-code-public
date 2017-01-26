@@ -1,4 +1,4 @@
-#include "pot_calibration.h"
+#include "muan/control/calibration/pot_calibration.h"
 #include <cmath>
 
 namespace muan {

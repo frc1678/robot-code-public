@@ -1,4 +1,4 @@
-#include "queue_manager.h"
+#include "testbench/queue_manager/queue_manager.h"
 #include "gtest/gtest.h"
 
 TEST(QueueManager, Initalizes) {

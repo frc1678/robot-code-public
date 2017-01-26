@@ -1,4 +1,4 @@
-#include "wpilib_interface.h"
+#include "o2016/wpilib/wpilib_interface.h"
 #include "muan/units/units.h"
 #include "o2016/queue_manager/queue_manager.h"
 
@@ -20,7 +20,7 @@ constexpr uint32_t kEncoderRightA = 12, kEncoderRightB = 13;
 
 constexpr uint32_t kShiftingA = 2, kShiftingB = 3;
 
-}  // drivetrain
+}  // namespace drivetrain
 
 namespace turret {
 
@@ -31,7 +31,7 @@ constexpr uint32_t kEncoderA = 14, kEncoderB = 15;
 constexpr uint32_t kPotentiometer = 4;
 constexpr uint32_t kIndex = 1;
 
-}  // turret
+}  // namespace turret
 
 namespace intake {
 
@@ -43,7 +43,7 @@ constexpr uint32_t kIndex = 2;
 
 constexpr uint32_t kRollerMotor = 8;
 
-}  // intake
+}  // namespace intake
 
 namespace catapult {
 
@@ -59,16 +59,16 @@ constexpr uint32_t kScoopPotentiometer = 5;
 constexpr uint32_t kCatapultCylinderA = 4, kCatapultCylinderB = 5, kCatapultCylinderC = 6,
                    kCatapultCylinderD = 7;
 
-}  // catapult
+}  // namespace catapult
 
 namespace secondaries {
 
 constexpr uint32_t kSecondariesMotor = 9;
 constexpr uint32_t kSecondariesCylinder = 0;
 
-}  // secondaries
+}  // namespace secondaries
 
-}  // ports
+}  // namespace ports
 
 constexpr double kMaxVoltage = 4;  // 4 volt bringup voltage
 
@@ -281,6 +281,6 @@ void WpilibInterface::ReadSensors() {
   catapult_.ReadSensors();
 }
 
-}  // wpilib
+}  // namespace wpilib
 
-}  // o2016
+}  // namespace o2016

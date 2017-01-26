@@ -11,7 +11,6 @@
 #include "c2017/queue_manager/queue_manager.h"
 
 namespace c2017 {
-
 namespace shooter {
 
 class ShooterController {
@@ -35,7 +34,8 @@ class ShooterController {
   double velocity_tolerance_;
   c2017::shooter::ShooterStatusQueue& shooter_status_queue_;
 };
-}
-}
+
+}  // namespace shooter
+}  // namespace c2017
 
 #endif  // C2017_SUBSYSTEMS_SUPERSTRUCTURE_SHOOTER_SHOOTER_CONTROLLER_H_
