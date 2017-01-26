@@ -4,19 +4,21 @@ load("//third_party/google/protobuf:protobuf.bzl", "cc_proto_library")
 
 cc_library(
     name = "logger",
-    srcs = ["logger.hpp"],
+    srcs = ["logger.hpp", "logger.cpp"],
     hdrs = ["logger.h"],
     deps = [
         "filewriter",
         "textlogger",
-        "//muan/queues",
+        "//muan/queues:queues",
         "//muan/utils:proto_utils",
-        "//third_party/aos/common:time",
-        "//third_party/aos/common/util:phased_loop",
         "//third_party/aos/linux_code:init",
+        "//third_party/aos/common/util:phased_loop",
+        "//third_party/aos/common:time",
         "//third_party/google/protobuf",
         "//third_party/optional",
+        "//third_party/google/googletest:googletest"
     ],
+    linkstatic = 1
 )
 
 cc_test(

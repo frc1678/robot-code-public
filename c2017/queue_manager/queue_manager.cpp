@@ -3,6 +3,42 @@
 
 namespace c2017 {
 
+void QueueManager::StartLogging() {
+#ifndef FRC1678_NO_QUEUE_LOGGING
+  logger_.AddQueue("pdp_status", &pdp_status_queue_);
+  logger_.AddQueue("driver_station", &driver_station_queue_);
+  logger_.AddQueue("gyro", &driver_station_queue_);
+
+  logger_.AddQueue("drivetrain_input", &drivetrain_input_queue_);
+  logger_.AddQueue("drivetrain_goal", &drivetrain_goal_queue_);
+  logger_.AddQueue("drivetrain_status", &drivetrain_status_queue_);
+  logger_.AddQueue("drivetrain_output", &drivetrain_output_queue_);
+
+  logger_.AddQueue("wpilib_output", &superstructure_output_queue_);
+
+  logger_.AddQueue("trigger_input", &trigger_input_queue_);
+  logger_.AddQueue("trigger_status", &trigger_status_queue_);
+
+  logger_.AddQueue("shooter_input", &shooter_input_queue_);
+  logger_.AddQueue("shooter_status", &shooter_status_queue_);
+
+  logger_.AddQueue("magazine_input", &magazine_input_queue_);
+  logger_.AddQueue("magazine_status", &magazine_status_queue_);
+
+  logger_.AddQueue("ground_gear_input", &ground_gear_input_queue_);
+  logger_.AddQueue("ground_gear_status", &ground_gear_status_queue_);
+
+  logger_.AddQueue("ground_ball_intake_status", &ground_ball_intake_status_queue_);
+
+  logger_.AddQueue("climber_input", &climber_input_queue_);
+  logger_.AddQueue("climber_goal", &climber_goal_queue_);
+  logger_.AddQueue("climber_status", &climber_status_queue_);
+
+  logger_.AddQueue("intake_group_goal", &intake_group_goal_queue_);
+  logger_.AddQueue("shooter_group_goal", &shooter_group_goal_queue_);
+#endif  // FRC1678_NO_QUEUE_LOGGING
+}
+
 QueueManager& QueueManager::GetInstance() {
   static QueueManager instance;
   return instance;
