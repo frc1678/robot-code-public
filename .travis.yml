@@ -48,7 +48,7 @@ install:
 
 # TODO(Wesley) Add to pre-push git hook?
 script:
-  - ./tests.sh
+  - ./scripts/tests.py
   # Delete the bazel install so it doesn't get cached
   - rm -rf $HOME/.cache/bazel/_bazel_travis/install/
 notifications:
