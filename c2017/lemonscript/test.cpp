@@ -1,7 +1,5 @@
-#include "lemonscript.h"
 #include <stdio.h>
-
-using namespace lemonscript;
+#include "c2017/lemonscript/lemonscript.h"
 
 int main() {
   c2017::lemonscript::Lemonscript ls;

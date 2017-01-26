@@ -9,9 +9,10 @@ message GroundGearIntakeInput {
 }
 
 message GroundGearIntakeOutput {
-  //Positive is pulling in gear
+  // Positive is pulling in gear
   required double roller_voltage = 1;
-  required bool solenoid = 2;
+  required bool intake_down = 2;
+  // intake is controlled by a solenoid
 }
 
 message GroundGearIntakeStatus {
@@ -21,11 +22,13 @@ message GroundGearIntakeStatus {
   required bool running = 4;
 }
 
+
+enum Goal {
+  CARRY = 0;
+  PICKUP = 1;
+  SCORE = 2;
+}
+
 message GroundGearIntakeGoal {
-  enum Goal {
-    CARRY = 0;
-    PICKUP = 1;
-    SCORE = 2;
-  }
   required Goal goal = 1;
 }

@@ -8,7 +8,7 @@ namespace muan {
 
 class DiskBrake {
  public:
-  DiskBrake(bool locked);
+  explicit DiskBrake(bool locked);
   DiskBrake(bool locked, units::Time change_state_time);
   enum BrakeState { LOCKED, UNLOCKED, CHANGING };
   // Update state based on whether it is being told to lock and returns a BrakeState

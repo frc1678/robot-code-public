@@ -72,7 +72,7 @@ class History {
   friend class Iterator;
 };
 
-}  // utils
-}  // muan
+}  // namespace utils
+}  // namespace muan
 
-#endif /* MUAN_UTILS_HISTORY_H_ */
+#endif  // MUAN_UTILS_HISTORY_H_

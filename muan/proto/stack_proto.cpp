@@ -1,4 +1,4 @@
-#include "stack_proto.h"
+#include "muan/proto/stack_proto.h"
 
 namespace muan {
 namespace proto {
@@ -18,5 +18,5 @@ void ProtoFailOnBlockFree(void*, size_t) {
   aos::Die("Oh dear...something has gone horribly wrong in " __FILE__);
 }
 
-}  // proto
+}  // namespace proto
 }  // namespace muan

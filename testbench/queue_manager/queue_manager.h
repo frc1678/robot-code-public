@@ -1,5 +1,5 @@
-#ifndef TESTBENCH_QUEUEMANAGER_QUEUEMANAGER_H_
-#define TESTBENCH_QUEUEMANAGER_QUEUEMANAGER_H_
+#ifndef TESTBENCH_QUEUE_MANAGER_QUEUE_MANAGER_H_
+#define TESTBENCH_QUEUE_MANAGER_QUEUE_MANAGER_H_
 
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
@@ -47,6 +47,6 @@ class QueueManager {
   frc971::control_loops::drivetrain::StatusQueue drivetrain_status_queue_;
 };
 
-}  // testbench
+}  // namespace testbench
 
 #endif  // TESTBENCH_QUEUE_MANAGER_QUEUE_MANAGER_H_

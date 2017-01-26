@@ -14,6 +14,9 @@ build --strip=never
 # Use the malloc we want.
 build --custom_malloc=//tools/cpp:malloc
 
+# Enable format macros.
+build --copt -D__STDC_FORMAT_MACROS
+
 build:asan --copt -fsanitize=address
 build:asan --linkopt -fsanitize=address --linkopt -ldl
 build:asan --platform_suffix=-asan

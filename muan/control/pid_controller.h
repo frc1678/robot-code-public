@@ -43,4 +43,4 @@ class PidController {
 
 }  // namespace muan
 
-#endif
+#endif  // MUAN_CONTROL_PID_CONTROLLER_H_

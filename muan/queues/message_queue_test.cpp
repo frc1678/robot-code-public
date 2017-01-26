@@ -1,4 +1,4 @@
-#include "message_queue.h"
+#include "muan/queues/message_queue.h"
 #include <thread>
 #include "gtest/gtest.h"
 

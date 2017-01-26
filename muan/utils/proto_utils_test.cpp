@@ -1,4 +1,4 @@
-#include "proto_utils.h"
+#include "muan/utils/proto_utils.h"
 #include <iostream>
 #include "gtest/gtest.h"
 #include "muan/utils/test_death_proto.pb.h"
