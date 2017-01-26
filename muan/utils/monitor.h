@@ -1,17 +1,19 @@
 #ifndef MUAN_UTILS_MONITOR_H_
 #define MUAN_UTILS_MONITOR_H_
 
-#include "muan/utils/history.h"
 #include <cinttypes>
+#include "muan/utils/history.h"
 
 namespace muan {
 
 namespace utils {
 
-// This Monitor class is intended to watch a value and return a voltage that changes based off of whether or not the value is above a threshold value. It's most commonly used for motor safety and current regulation.
+//  This Monitor class is intended to watch a value and return a voltage that changes based off of whether or
+//  not the value is above a threshold value. It's most commonly used for motor safety and current regulation.
 class Monitor {
  public:
-  Monitor(double threshold = 120., double delay_time = 2., double reset_time = 2., double dt = 0.005, bool check_above = true, double standing_voltage = 0., double size = 20);
+  Monitor(double threshold = 120., double delay_time = 2., double reset_time = 2., double dt = 0.005,
+          bool check_above = true, double standing_voltage = 0., double size = 20);
   // threshold is the value you must either surpass or go below
   // delay_time is the amount of time before it considers itself above or below te threshold
   // reset_time is the time it takes before it resets to reading live voltages
@@ -34,8 +36,8 @@ class Monitor {
   muan::utils::History<double> current_history_;
 };
 
-}  // utils 
+}  // namespace utils
 
-}  // muan
+}  // namespace muan
 
 #endif  // MUAN_UTILS_MONITOR_H_
