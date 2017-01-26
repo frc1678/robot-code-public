@@ -1,10 +1,11 @@
-#include "monitor.h"
+#include "muan/utils/monitor.h"
 
 namespace muan {
 
 namespace utils {
 
-Monitor::Monitor(double threshold, double delay_time, double reset_time, double dt, bool check_above, double standing_voltage, double size)
+Monitor::Monitor(double threshold, double delay_time, double reset_time, double dt, bool check_above,
+                 double standing_voltage, double size)
     : current_history_(size) {
   threshold_ = threshold;
   delay_time_ = delay_time;
@@ -15,7 +16,7 @@ Monitor::Monitor(double threshold, double delay_time, double reset_time, double 
 
   time_above_ = time_below_ = 0;
   is_at_thresh_ = false;
-  size_ =static_cast<uint32_t>(size); 
+  size_ = static_cast<uint32_t>(size);
 }
 
 double Monitor::Update(double voltage, double value) {
@@ -29,7 +30,7 @@ double Monitor::Update(double voltage, double value) {
   }
   double moving_avg = sum / current_history_.num_samples();
 
-  // Determine if the value is above/below the threshold or not 
+  // Determine if the value is above/below the threshold or not
   if ((moving_avg >= threshold_) == check_above_) {
     time_above_ += dt_;
     time_below_ = 0;
@@ -56,6 +57,6 @@ void Monitor::Reset() {
 
 bool Monitor::is_at_thresh() { return is_at_thresh_; }
 
-}
+}  // namespace utils
 
-}
+}  // namespace muan
