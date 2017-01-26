@@ -1,16 +1,16 @@
 cc_library(
-  name = 'wpilib_interface',
-  srcs = [
-    'wpilib_interface.cpp',
-  ],
-  hdrs = [
-    'wpilib_interface.h',
-  ],
-  deps = [
-    '//testbench/queue_manager',
-    '//muan/wpilib:can_wrapper',
-    '//muan/wpilib/gyro',
-    '//third_party/wpilibsuite:wpilib',
-  ],
-  visibility = ['//visibility:public']
+    name = "wpilib_interface",
+    srcs = [
+        "wpilib_interface.cpp",
+    ],
+    hdrs = [
+        "wpilib_interface.h",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//muan/wpilib:can_wrapper",
+        "//muan/wpilib/gyro",
+        "//testbench/queue_manager",
+        "//third_party/wpilibsuite:wpilib",
+    ],
 )
