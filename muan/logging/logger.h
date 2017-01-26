@@ -108,7 +108,7 @@ class Logger {
     std::unique_ptr<GenericReader> reader;
     std::string name;  // Human friendly name for this log
     std::string filename;
-    bool write_header; // Do we still need to write the header?
+    bool write_header;  // Do we still need to write the header?
   };
 
   struct TextLog {
