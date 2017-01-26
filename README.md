@@ -46,6 +46,14 @@ Particularly, you should make sure to write your commits in the imperative mood 
 
 Additionally, you should try to make your commits as small as possible (often referred to as making "atomic" commits). This helps other people understand what you are doing.
 
+We also use bazel's [Buildifier](https://github.com/bazelbuild/buildifier) to format BUILD files. The formatter
+establishes quite a few
+[conventions](https://github.com/bazelbuild/bazel/blob/master/site/versions/master/docs/skylark/build-style.md).
+Highlights include:
+
+ - Use four spaces for indenting
+ - Use double quotes (") instead of single quotes (')
+
 ## Contributing
 
 Here's how to get your code into the main robot repository:
