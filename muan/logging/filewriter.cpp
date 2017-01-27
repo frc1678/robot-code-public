@@ -20,7 +20,7 @@ void FileWriter::WriteLine(const std::string &filename, const std::string &line)
 }
 
 std::string FileWriter::GetBasePath() {
-  std::vector<std::string> paths = {"/mnt/sda1/", "/home/lvuser/"};
+  std::vector<std::string> paths = {"/media/sda1/", "/home/lvuser/"};
 
   // TODO(Wesley) Check for space
   for (auto const path : paths) {
