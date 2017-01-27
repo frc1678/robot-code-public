@@ -1,4 +1,6 @@
 #include <algorithm>
+#include <utility>
+#include <vector>
 #include "third_party/aos/common/die.h"
 
 namespace muan {
@@ -70,6 +72,6 @@ bool LinearInterpolation<T>::ComparePoints(const std::pair<double, T> &a, const 
   return a.first < b.first;
 }
 
-}  // utils
+}  // namespace utils
 
-}  // muan
+}  // namespace muan

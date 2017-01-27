@@ -1,4 +1,6 @@
-#include "lemonscript.h"
+#include "c2017/lemonscript/lemonscript.h"
+
+#include <string>
 
 namespace c2017 {
 
@@ -6,6 +8,8 @@ namespace lemonscript {
 
 Lemonscript::Lemonscript() {
   state_ = new ::lemonscript::LemonScriptState();
+  decls_ =
+      ::lemonscript::AvailableCppCommandDeclaration::parseCppCommands(AutoGenerator::GetAutoGenerators());
   decls_ =
       ::lemonscript::AvailableCppCommandDeclaration::parseCppCommands(AutoGenerator::GetAutoGenerators());
   state_->declareAvailableCppCommands(decls_);
@@ -41,5 +45,5 @@ void Lemonscript::operator()() {
   }
 }
 
-}  // lemonscript
-}  // c2017
+}  // namespace lemonscript
+}  // namespace c2017

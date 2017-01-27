@@ -3,7 +3,7 @@
 
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
-#include "c2017/wpilibwpilib.pb.h"
+#include "c2017/wpilib/wpilib_superstructure.pb.h"
 
 namespace c2017 {
 
@@ -13,8 +13,8 @@ using WpilibOutputProto = muan::proto::StackProto<WpilibOutput, 1024>;
 
 using WpilibOutputQueue = muan::queues::MessageQueue<WpilibOutputProto, 1024>;
 
-}  // wpilib
+}  // namespace wpilib
 
-}  // c2017
+}  // namespace c2017
 
-#endif
+#endif  // C2017_WPILIB_QUEUE_TYPES_H_

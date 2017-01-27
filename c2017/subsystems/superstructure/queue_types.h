@@ -1,5 +1,5 @@
-#ifndef C2017_SUBSYSTEMS_SUPERSTRUCTURE_QUEUETYPES_H_
-#define C2017_SUBSYSTEMS_SUPERSTRUCTURE_QUEUETYPES_H_
+#ifndef C2017_SUBSYSTEMS_SUPERSTRUCTURE_QUEUE_TYPES_H_
+#define C2017_SUBSYSTEMS_SUPERSTRUCTURE_QUEUE_TYPES_H_
 
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
@@ -10,9 +10,9 @@ namespace c2017 {
 
 namespace intake_group {
 
-using IntakeGroupGoalProto = muan::proto::StackProto<IntakeGoal, 256>;
+using IntakeGroupGoalProto = muan::proto::StackProto<IntakeGroupGoal, 256>;
 
-using IntakeGroupGoalQueue = muan::queues::MessageQueue<IntakeGoalProto, 200>;
+using IntakeGroupGoalQueue = muan::queues::MessageQueue<IntakeGroupGoalProto, 200>;
 
 }  // namespace intake_group
 

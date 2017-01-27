@@ -44,6 +44,6 @@ void Main::SendDSMessage() {
   generic_robot::QueueManager::GetInstance().driver_station_queue().WriteMessage(status);
 }
 
-}  // wpilib_update
+}  // namespace wpilib_update
 
-}  // generic_robot
+}  // namespace generic_robot

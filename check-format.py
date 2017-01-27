@@ -27,11 +27,11 @@ for f in files:
 
 clang_format_command = ''
 supported_clang_format_commands = [
-        'clang-format-3.5',
-        'clang-format-3.6',
+        #'clang-format-3.5',
+        #'clang-format-3.6',
         'clang-format-3.7',
-        'clang-format-3.8',
-        'clang-format'
+        #'clang-format-3.8',
+        #'clang-format'
         ]
 for com in supported_clang_format_commands:
     if distutils.spawn.find_executable(com):

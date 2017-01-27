@@ -1,10 +1,10 @@
 #ifndef MUAN_VISION_VISION_H_
 #define MUAN_VISION_VISION_H_
 
+#include <opencv2/opencv.hpp>
 #include <cmath>
 #include <memory>
 #include <vector>
-#include <opencv2/opencv.hpp>
 
 namespace muan {
 
@@ -15,8 +15,7 @@ class VisionScorer {
                           double skew,                    // of bounding box, in radians
                           double width,                   // in pixels
                           double height,                  // in pixels
-                          double fullness                 // area / bounding box area
-                          ) = 0;
+                          double fullness) = 0;           // area / bounding box area
 };
 
 class Vision {
@@ -59,5 +58,7 @@ class Vision {
   cv::Point2f last_pos_;
   ColorRange range_;
 };
-}
+
+}  // namespace muan
+
 #endif  // MUAN_VISION_VISION_H_

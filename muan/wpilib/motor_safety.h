@@ -27,8 +27,8 @@ class MotorSafety {
   muan::utils::History<double, kHistorySize> current_history_;
 };
 
-}  // wpilib
+}  // namespace wpilib
 
-}  // muan
+}  // namespace muan
 
 #endif  // MUAN_WPILIB_MOTOR_SAFETY_H_

@@ -1,8 +1,8 @@
 #include "gtest/gtest.h"
-#include "queue_types.h"
-#include "secondaries.h"
+#include "o2016/subsystems/superstructure/secondaries/queue_types.h"
+#include "o2016/subsystems/superstructure/secondaries/secondaries.h"
 
-using namespace o2016::secondaries;
+using namespace o2016::secondaries;  // NOLINT
 
 TEST(Secondaries, Down) {
   Secondaries secondaries;

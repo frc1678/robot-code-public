@@ -1,6 +1,9 @@
-#ifndef GENERIC_ROBOT_LEMONSCRIPT_LEMONSRCIPT_H_
-#define GENERIC_ROBOT_LEMONSCRIPT_LEMONSRCIPT_H_
+#ifndef GENERIC_ROBOT_LEMONSCRIPT_LEMONSCRIPT_H_
+#define GENERIC_ROBOT_LEMONSCRIPT_LEMONSCRIPT_H_
 
+#include <string.h>
+#include <atomic>
+#include <vector>
 #include "third_party/lemonscript_transpiler/example_func.h"
 #include "third_party/lemonscript/lemonscript/lemonscript.h"
 #include "third_party/lemonscript/lemonscript/AvailableCppCommandDeclaration.h"
@@ -8,8 +11,6 @@
 #include "third_party/aos/common/time.h"
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/aos/linux_code/init.h"
-#include <atomic>
-#include <string.h>
 
 namespace genericrobot {
 

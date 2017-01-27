@@ -1,5 +1,5 @@
-#ifndef C2017_SUBSYSTEMS_SUBSYSTEMRUNNER_H_
-#define C2017_SUBSYSTEMS_SUBSYSTEMRUNNER_H_
+#ifndef C2017_SUBSYSTEMS_SUBSYSTEM_RUNNER_H_
+#define C2017_SUBSYSTEMS_SUBSYSTEM_RUNNER_H_
 
 #include <atomic>
 
@@ -10,6 +10,7 @@
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/aos/linux_code/init.h"
 #include "third_party/frc971/control_loops/drivetrain/drivetrain.h"
+#include "c2017/subsystems/superstructure/superstructure.h"
 
 namespace c2017 {
 
@@ -24,6 +25,9 @@ class SubsystemRunner {
   std::atomic<bool> running_;
   wpilib::WpilibInterface wpilib_;
   frc971::control_loops::drivetrain::DrivetrainLoop drivetrain_;
+  c2017::superstructure::SuperStructure superstructure_;
 };
-}
-#endif
+
+}  // namespace c2017
+
+#endif  // C2017_SUBSYSTEMS_SUBSYSTEM_RUNNER_H_

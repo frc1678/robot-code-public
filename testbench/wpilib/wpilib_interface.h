@@ -7,12 +7,11 @@
 #include "testbench/queue_manager/queue_manager.h"
 
 namespace testbench {
-
 namespace wpilib {
 
 class DrivetrainInterface {
  public:
-  DrivetrainInterface(muan::wpilib::CanWrapper* can_wrapper);
+  explicit DrivetrainInterface(muan::wpilib::CanWrapper* can_wrapper);
 
   void WriteActuators();
   void ReadSensors();
@@ -43,8 +42,7 @@ class WpilibInterface {
   DrivetrainInterface drivetrain_;
 };
 
-}  // wpilib
-
-}  // testbench
+}  // namespace wpilib
+}  // namespace testbench
 
 #endif  // TESTBENCH_WPILIB_WPILIB_INTERFACE_H_

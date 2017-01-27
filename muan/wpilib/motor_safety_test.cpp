@@ -1,6 +1,7 @@
-#include "gtest/gtest.h"
-#include "motor_safety.h"
 #include <math.h>
+#include <limits>
+#include "gtest/gtest.h"
+#include "muan/wpilib/motor_safety.h"
 
 TEST(MotorSafetyTest, NeverOverCurrentThresh) {
   muan::wpilib::MotorSafety safety = muan::wpilib::MotorSafety(100., 2., 2., 0.005);
@@ -80,9 +81,8 @@ TEST(MotorSafetyTest, InfiniteReset) {
 TEST(MotorSafetyTest, SlowStall) {
   muan::wpilib::MotorSafety safety = muan::wpilib::MotorSafety(100., 1., 1., 0.005);
   for (double t = 0.005; t < 9; t += 0.005) {
-    double current = t < 4 ? 200 : t < 4.5 ? 20 : t < 6 ? 200 : 20;  // Makes the current fluctuate back
-                                                                     // above the threshold before it is done
-                                                                     // resetting
+    // Makes the current fluctuate back above the threshold before it is done resetting
+    double current = t < 4 ? 200 : t < 4.5 ? 20 : t < 6 ? 200 : 20;
     double voltage = 10;
     double safe_voltage = safety.Update(voltage, current);
     if (t < 1.0) {

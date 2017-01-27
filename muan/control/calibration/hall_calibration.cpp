@@ -1,4 +1,5 @@
-#include "hall_calibration.h"
+#include "muan/control/calibration/hall_calibration.h"
+
 namespace muan {
 
 namespace control {

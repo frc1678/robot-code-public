@@ -108,7 +108,7 @@ class StackProto {
   T* proto_message_{nullptr};
 };
 
-} /* proto */
-} /* muan */
+}  // namespace proto
+}  // namespace muan
 
 #endif  // MUAN_PROTO_STACK_PROTO_H_

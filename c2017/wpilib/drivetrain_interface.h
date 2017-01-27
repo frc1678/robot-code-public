@@ -7,7 +7,6 @@
 #include "muan/utils/math_utils.h"
 
 namespace c2017 {
-
 namespace wpilib {
 
 class DrivetrainInterface {
@@ -26,7 +25,8 @@ class DrivetrainInterface {
 
   Encoder encoder_left_, encoder_right_;
 };
-}
-}
 
-#endif
+}  // namespace wpilib
+}  // namespace c2017
+
+#endif  // C2017_WPILIB_DRIVETRAIN_INTERFACE_H_

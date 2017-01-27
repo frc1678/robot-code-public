@@ -1,4 +1,4 @@
-#include "queue_manager.h"
+#include "testbench/queue_manager/queue_manager.h"
 
 namespace testbench {
 
@@ -31,4 +31,4 @@ frc971::control_loops::drivetrain::OutputQueue* QueueManager::drivetrain_output_
   return &drivetrain_output_queue_;
 }
 
-}  // testbench
+}  // namespace testbench

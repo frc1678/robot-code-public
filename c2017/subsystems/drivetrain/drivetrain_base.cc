@@ -33,7 +33,7 @@ const DrivetrainConfig &GetDrivetrainConfig() {
       0.0};
 
   return kDrivetrainConfig;
-};
+}
 
 }  // namespace drivetrain
 

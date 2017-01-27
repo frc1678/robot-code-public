@@ -1,4 +1,4 @@
-#include "drivetrain_action.h"
+#include "muan/actions/drivetrain_action.h"
 
 namespace muan {
 
@@ -229,6 +229,6 @@ bool DriveSCurveAction::Update() {
   }
 }
 
-}  // actions
+}  // namespace actions
 
-}  // muan
+}  // namespace muan

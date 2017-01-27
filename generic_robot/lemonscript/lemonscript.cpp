@@ -1,4 +1,4 @@
-#include "lemonscript.h"
+#include "generic_robot/lemonscript/lemonscript.h"
 
 namespace genericrobot {
 
@@ -30,5 +30,5 @@ void Lemonscript::operator()() {
   }
 }
 
-}  // lemonscript
-}  // genericrobot
+}  // namespace lemonscript
+}  // namespace genericrobot
