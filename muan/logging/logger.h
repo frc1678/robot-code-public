@@ -1,7 +1,6 @@
 #ifndef MUAN_LOGGING_LOGGER_H_
 #define MUAN_LOGGING_LOGGER_H_
 
-#include <iostream>
 #include <atomic>
 #include <map>
 #include <memory>
