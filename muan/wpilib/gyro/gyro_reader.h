@@ -15,7 +15,7 @@ namespace wpilib {
 
 namespace gyro {
 
-using namespace muan::units;  //NOLINT
+using namespace muan::units;  // NOLINT
 
 class GyroReader {
  public:

@@ -93,7 +93,7 @@ class MessageQueue {
   // Gets the next message (or nullopt if all messages have been read) from the
   // position passed in. The parameter's value will be changed to the position
   // of the next valid message.
-  std::experimental::optional<T> NextMessage(uint64_t& next) const;  //NOLINT
+  std::experimental::optional<T> NextMessage(uint64_t& next) const;  // NOLINT
 
   // Gets the "front" (the oldest messages still kept) of the circular buffer,
   // either from the current value of _back or from a known value of back.

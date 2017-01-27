@@ -25,11 +25,8 @@ DrivetrainInterface::DrivetrainInterface()
       output_queue_(QueueManager::GetInstance().drivetrain_output_queue()->MakeReader()),
       motor_left_{ports::drivetrain::kMotorLeft},
       motor_right_{ports::drivetrain::kMotorRight},
-      encoder_left_{ports::drivetrain::kEncoderLeftA,
-                    ports::drivetrain::kEncoderLeftB},
-      encoder_right_{ports::drivetrain::kEncoderRightA,
-                     ports::drivetrain::kEncoderRightB} {
-}
+      encoder_left_{ports::drivetrain::kEncoderLeftA, ports::drivetrain::kEncoderLeftB},
+      encoder_right_{ports::drivetrain::kEncoderRightA, ports::drivetrain::kEncoderRightB} {}
 
 void DrivetrainInterface::ReadSensors() {
   frc971::control_loops::drivetrain::InputProto sensors;
@@ -44,15 +41,13 @@ void DrivetrainInterface::ReadSensors() {
 void DrivetrainInterface::WriteActuators() {
   auto outputs = output_queue_.ReadLastMessage();
   if (outputs) {
-    motor_left_.Set(
-        -muan::utils::Cap((*outputs)->left_voltage(),
-                          -ports::drivetrain::kMaxVoltage,
-                          ports::drivetrain::kMaxVoltage) / 12.0);
+    motor_left_.Set(-muan::utils::Cap((*outputs)->left_voltage(), -ports::drivetrain::kMaxVoltage,
+                                      ports::drivetrain::kMaxVoltage) /
+                    12.0);
 
-    motor_right_.Set(
-        muan::utils::Cap((*outputs)->right_voltage(),
-                         -ports::drivetrain::kMaxVoltage,
-                         ports::drivetrain::kMaxVoltage) / 12.0);
+    motor_right_.Set(muan::utils::Cap((*outputs)->right_voltage(), -ports::drivetrain::kMaxVoltage,
+                                      ports::drivetrain::kMaxVoltage) /
+                     12.0);
   } else {
     motor_left_.Set(0);
     motor_right_.Set(0);

@@ -62,8 +62,8 @@ TEST(MotorSafetyTest, CurrentSpikeThenDrop) {
 }
 
 TEST(MotorSafetyTest, InfiniteReset) {
-  muan::wpilib::MotorSafety safety = muan::wpilib::MotorSafety(
-      100., 2., std::numeric_limits<int>::max(), 0.01);
+  muan::wpilib::MotorSafety safety =
+      muan::wpilib::MotorSafety(100., 2., std::numeric_limits<int>::max(), 0.01);
   for (double t = 0.01; t < 100; t += 0.01) {
     double current = t < 4 ? 200 : 90;
     double voltage = 10;

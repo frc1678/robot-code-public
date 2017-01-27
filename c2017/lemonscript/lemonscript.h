@@ -22,8 +22,8 @@ class Lemonscript {
 
   void operator()();
   void Start();  // Start running lemonscript
-  void Stop();  // Pause running lemonscript
-  void Kill();  // Stop the thread
+  void Stop();   // Pause running lemonscript
+  void Kill();   // Stop the thread
  private:
   ::lemonscript::LemonScriptState *state_;
   ::lemonscript::LemonScriptCompiler *compiler_;

@@ -12,14 +12,11 @@ using frc971::control_loops::drivetrain::StatusProto;
 using frc971::control_loops::drivetrain::OutputProto;
 
 Teleop::Teleop()
-    : properties_{1, 1, 1, 1,
-                  testbench::drivetrain::GetDrivetrainConfig().robot_radius},
+    : properties_{1, 1, 1, 1, testbench::drivetrain::GetDrivetrainConfig().robot_radius},
       throttle_{1},
       wheel_{0},
-      action_(
-          0, 0, true, properties_,
-          testbench::QueueManager::GetInstance()->drivetrain_goal_queue(),
-          testbench::QueueManager::GetInstance()->drivetrain_status_queue()) {
+      action_(0, 0, true, properties_, testbench::QueueManager::GetInstance()->drivetrain_goal_queue(),
+              testbench::QueueManager::GetInstance()->drivetrain_status_queue()) {
   shifting_low_ = throttle_.MakeButton(4);
   shifting_high_ = throttle_.MakeButton(5);
   quickturn_ = wheel_.MakeButton(5);
@@ -52,15 +49,13 @@ void Teleop::SendDSMessage() {
   status->set_brownout(DriverStation::GetInstance().IsBrownedOut());
   status->set_has_ds_connection(DriverStation::GetInstance().IsDSAttached());
 
-  testbench::QueueManager::GetInstance()->driver_station_queue()->WriteMessage(
-      status);
+  testbench::QueueManager::GetInstance()->driver_station_queue()->WriteMessage(status);
 }
 
 void Teleop::SendDrivetrainMessage() {
   if (drive_profile_->was_clicked()) {
     action_ = muan::actions::DriveSCurveAction(
-        1, 0.5, true, properties_,
-        testbench::QueueManager::GetInstance()->drivetrain_goal_queue(),
+        1, 0.5, true, properties_, testbench::QueueManager::GetInstance()->drivetrain_goal_queue(),
         testbench::QueueManager::GetInstance()->drivetrain_status_queue());
     running_action_ = true;
   }
@@ -86,13 +81,10 @@ void Teleop::SendDrivetrainMessage() {
     drivetrain_goal->mutable_teleop_command()->set_throttle(throttle);
     drivetrain_goal->mutable_teleop_command()->set_quick_turn(quickturn);
 
-    drivetrain_goal->set_gear(
-        high_gear_ ? frc971::control_loops::drivetrain::Gear::kHighGear
-                   : frc971::control_loops::drivetrain::Gear::kLowGear);
+    drivetrain_goal->set_gear(high_gear_ ? frc971::control_loops::drivetrain::Gear::kHighGear
+                                         : frc971::control_loops::drivetrain::Gear::kLowGear);
 
-    testbench::QueueManager::GetInstance()
-        ->drivetrain_goal_queue()
-        ->WriteMessage(drivetrain_goal);
+    testbench::QueueManager::GetInstance()->drivetrain_goal_queue()->WriteMessage(drivetrain_goal);
   }
 }
 

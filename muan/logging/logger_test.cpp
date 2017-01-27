@@ -11,7 +11,7 @@
 
 using muan::logging::Logger;
 using muan::queues::MessageQueue;
-using namespace ::testing;  //NOLINT
+using namespace ::testing;  // NOLINT
 
 namespace muan {
 namespace logging {

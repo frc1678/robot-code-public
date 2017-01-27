@@ -4,8 +4,7 @@ namespace c2017 {
 namespace trigger {
 
 // Constructor
-TriggerController::TriggerController()
-    :  status_queue_{QueueManager::GetInstance().trigger_status_queue()} {
+TriggerController::TriggerController() : status_queue_{QueueManager::GetInstance().trigger_status_queue()} {
   auto ss_plant = muan::control::StateSpacePlant<1, 3, 1>(frc1678::trigger_controller::controller::A(),
                                                           frc1678::trigger_controller::controller::B(),
                                                           frc1678::trigger_controller::controller::C());
@@ -28,8 +27,7 @@ TriggerOutputProto TriggerController::Update(const TriggerInputProto& input,
   // Checking if E-Stop/brownout/disabled from driver station proto
   // Trigger should not be running if any of these are true
   bool enable_outputs = !(robot_state->mode() == RobotMode::ESTOP ||
-                          robot_state->mode() == RobotMode::DISABLED ||
-                          robot_state->brownout());
+                          robot_state->mode() == RobotMode::DISABLED || robot_state->brownout());
 
   Eigen::Matrix<double, 1, 1> y;
   y << input->encoder_position();

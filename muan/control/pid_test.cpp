@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
 #include "muan/control/pid_controller.h"
 
-
 TEST(PidController, GoesToPosition) {
   using muan::units::V;
   using muan::units::m;

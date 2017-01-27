@@ -7,8 +7,7 @@ namespace c2017 {
 
 namespace drivetrain {
 
-const ::frc971::control_loops::drivetrain::DrivetrainConfig&
-GetDrivetrainConfig();
+const ::frc971::control_loops::drivetrain::DrivetrainConfig& GetDrivetrainConfig();
 
 }  // namespace drivetrain
 

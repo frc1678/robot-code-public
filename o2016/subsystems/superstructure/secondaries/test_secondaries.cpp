@@ -2,7 +2,7 @@
 #include "o2016/subsystems/superstructure/secondaries/queue_types.h"
 #include "o2016/subsystems/superstructure/secondaries/secondaries.h"
 
-using namespace o2016::secondaries;  //NOLINT
+using namespace o2016::secondaries;  // NOLINT
 
 TEST(Secondaries, Down) {
   Secondaries secondaries;
