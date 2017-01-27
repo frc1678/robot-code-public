@@ -8,9 +8,6 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input) {
   has_hp_gear_ = input->has_hp_gear();
   conveyor_current_ = input->conveyor_current();
 
-  magazine_extended_ = true;
-  gear_rotator_voltage_ = 3;
-
   switch (conveyor_goal_) {
     case CONVEYOR_IDLE:
       conveyor_voltage_ = 0;
