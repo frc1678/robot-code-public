@@ -8,7 +8,6 @@ message MagazineStatus {
   required bool has_gear = 1;
   required bool current_spiked = 2;
   required bool is_running = 3; 
-  required bool extended = 4; // if magazine is extended
 }
 
 message MagazineInput {
@@ -21,13 +20,14 @@ message MagazineOutput {
   required bool magazine_extended = 2;
   required bool gear_shutter_open = 3;
   required double gear_rotator_voltage = 4;
-  required double conveyer_voltage = 5;
+  required double conveyor_voltage = 5;
+  required double brush_voltage = 6;
 }
 
 enum ConveyorGoalState {
-  IDLE = 0;
-  FORWARD = 1;
-  BACKWARD = 2;
+  CONVEYOR_IDLE = 0;
+  CONVEYOR_FORWARD = 1;
+  CONVEYOR_BACKWARD = 2;
 }
 
 enum HPIntakeGoalState {
@@ -38,9 +38,9 @@ enum HPIntakeGoalState {
 }
 
 enum BrushGoalState {
-  IDLE = 0;
-  FORWARD = 1;
-  BACKWARD = 2;
+  BRUSH_IDLE = 0;
+  BRUSH_FORWARD = 1;
+  BRUSH_BACKWARD = 2;
 }
 
 message MagazineGoal {
