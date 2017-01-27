@@ -1,17 +1,20 @@
-load('//third_party/google/protobuf:protobuf.bzl', 'cc_proto_library')
+load("//third_party/google/protobuf:protobuf.bzl", "cc_proto_library")
 
 cc_library(
-  name = 'intake_queues',
-  hdrs = ['queue_types.h'],
-  deps = ['intake_proto', '//muan/proto:stack_proto', '//muan/queues:queues'],
-  visibility = ['//visibility:public']
+    name = "intake_queues",
+    hdrs = ["queue_types.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "intake_proto",
+        "//muan/proto:stack_proto",
+        "//muan/queues",
+    ],
 )
 
 cc_proto_library(
-  name = 'intake_proto',
-  srcs = ['intake.proto'],
-  protoc = '//third_party/google/protobuf:protoc',
-  default_runtime = '//third_party/google/protobuf',
-  visibility = ['//visibility:public']
+    name = "intake_proto",
+    srcs = ["intake.proto"],
+    default_runtime = "//third_party/google/protobuf",
+    protoc = "//third_party/google/protobuf:protoc",
+    visibility = ["//visibility:public"],
 )
-

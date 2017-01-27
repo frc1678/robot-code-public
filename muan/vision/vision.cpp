@@ -17,9 +17,9 @@ double Vision::CalculateDistance(std::vector<cv::Point> points, int rows) {
   return distance;
 }
 
-double Vision::CalculateSkew(std::vector<cv::Point> contour, std::vector<cv::Point>& out) {
-  out.resize(4);
-  std::vector<cv::Point>& quad = out;
+double Vision::CalculateSkew(std::vector<cv::Point> contour, std::vector<cv::Point>* out) {
+  out->resize(4);
+  std::vector<cv::Point>& quad = *out;
   // Find extrema for x + y and x - y to find the corners of the goal
   for (auto& p : contour) {
     if (p.x + p.y > quad[0].x + quad[0].y) {
@@ -98,7 +98,7 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
 
       std::vector<cv::Point> skewbox;
 
-      double skew = CalculateSkew(contours[i], skewbox);
+      double skew = CalculateSkew(contours[i], &skewbox);
       double distance_from_previous = cv::norm(bounding.center - last_pos_);
       double distance_to_target = CalculateDistance(contours[i], image.rows);
       double width = (skewbox[0] + skewbox[1] - skewbox[2] - skewbox[3]).x / 2;

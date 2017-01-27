@@ -49,7 +49,7 @@ class Vision {
 
  protected:
   double CalculateDistance(std::vector<cv::Point> points, int rows);
-  double CalculateSkew(std::vector<cv::Point> contour, std::vector<cv::Point>& out);
+  double CalculateSkew(std::vector<cv::Point> contour, std::vector<cv::Point>* out);
   // The formula to score the targets
   std::shared_ptr<VisionScorer> scorer_;
   // Robot constants relavent to vision

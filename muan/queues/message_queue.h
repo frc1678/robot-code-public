@@ -69,8 +69,8 @@ class MessageQueue {
     QueueReader(QueueReader&& move_from) noexcept;
     QueueReader& operator=(QueueReader&& move_from) = delete;
 
-    // Prevents copying.
-    QueueReader(const QueueReader&) = delete;
+    // Prevents assignment but allows copying
+    QueueReader(const QueueReader&) = default;
     const QueueReader& operator=(const QueueReader&) = delete;
 
     virtual ~QueueReader() = default;

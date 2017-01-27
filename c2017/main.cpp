@@ -4,7 +4,7 @@
 
 class WpilibRobot : public IterativeRobot {
  public:
-  WpilibRobot() = default;
+  WpilibRobot() { c2017::QueueManager::GetInstance().StartLogging(); }
 
   void TeleopPeriodic() override { main_.Update(); }
 
