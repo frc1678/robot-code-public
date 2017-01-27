@@ -16,7 +16,7 @@ addons:
     packages:
       - gcc-4.9
       - g++-4.9
-      - clang-format-3.6
+      - clang-format-3.7
       - clang-3.6
       - wget
       - libopencv-dev
