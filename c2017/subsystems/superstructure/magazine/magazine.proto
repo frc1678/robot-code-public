@@ -7,7 +7,7 @@ package c2017.magazine;
 message MagazineStatus {
   required bool has_gear = 1;
   required bool current_spiked = 2;
-  required bool is_running = 3; 
+  required bool is_running = 3;
 }
 
 message MagazineInput {
@@ -47,5 +47,5 @@ message MagazineGoal {
   required ConveyorGoalState conveyor_goal = 1;
   required HPIntakeGoalState hp_intake_goal = 2;
   required BrushGoalState brush_goal = 3;
-  required bool score_gear = 4; 
+  required bool score_gear = 4;
 }

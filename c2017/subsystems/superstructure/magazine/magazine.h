@@ -12,7 +12,7 @@ class Magazine {
   Magazine() = default;
   MagazineOutputProto Update(MagazineInputProto input);
   void SetGoal(MagazineGoalProto goal);
-  
+
  private:
   bool has_hp_gear_;
   bool gear_intake_covered_;
@@ -25,12 +25,12 @@ class Magazine {
   bool score_gear_;
   c2017::magazine::ConveyorGoalState conveyor_goal_;
   c2017::magazine::HPIntakeGoalState hp_intake_goal_;
-  c2017::magazine::BrushGoalState brush_goal_; 
+  c2017::magazine::BrushGoalState brush_goal_;
   c2017::magazine::MagazineOutputProto output_;
 };
 
-} // magazine
+}  // magazine
 
-} // c2017
+}  // c2017
 
-#endif // C2017_SUBSYSTEMS_SUPERSTRUCTURE_MAGAZINE_MAGAZINE_H_
+#endif  // C2017_SUBSYSTEMS_SUPERSTRUCTURE_MAGAZINE_MAGAZINE_H_
