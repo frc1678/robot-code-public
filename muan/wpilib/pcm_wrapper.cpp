@@ -53,13 +53,9 @@ void PcmWrapper::WriteSolenoid(uint8_t channel, bool on) { SetChannel(channel, o
 
 void PcmWrapper::Flush() {
   // Write the cached values to CAN
-  for (size_t i = 0; i < 8; i++) {
-    bool solenoid_set = current_values_ & (1 << i);
-    if (handles_[i] != HAL_kInvalidHandle) {
-      int status;
-      HAL_SetSolenoid(handles_[i], solenoid_set, &status);
-    }
-  }
+  int status;
+  HAL_SetAllSolenoids(module_, current_values_, &status);
+  // TODO(Kyle) Do something with status if it isn't zero
 }
 
 void PcmWrapper::CheckPortInitialized(uint8_t channel) {
