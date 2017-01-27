@@ -1,5 +1,4 @@
 #include <math.h>
-#include <iostream>
 #include <fstream>
 #include "gtest/gtest.h"
 #include "c2017/subsystems/superstructure/trigger/trigger_constants.h"

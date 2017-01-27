@@ -1,4 +1,3 @@
-#include <iostream>
 #include "gtest/gtest.h"
 #include "c2017/subsystems/superstructure/climber/climber.h"
 #include "c2017/queue_manager/queue_manager.h"
