@@ -65,8 +65,8 @@ TEST(MotorSafetyTest, CurrentSpikeThenDrop) {
 }
 
 TEST(MotorSafetyTest, InfiniteReset) {
-  muan::utils::Monitor safety = muan::utils::Monitor(100., 2., std::numeric_limits<int>::max(), 0.01);
-  for (int i = 0; i < 20000; i++) {
+  muan::utils::Monitor safety = muan::utils::Monitor(100., 2., std::numeric_limits<double>::max(), 0.01);
+  for (int i = 0; i < 10000; i++) {
     double t = i * 0.01;
     double current = t < 4 ? 200 : 90;
     double voltage = 10;
@@ -156,7 +156,7 @@ TEST(MonitorTest, CustomHistorySize) {
 
 TEST(MonitorTest, Resets) {
   muan::utils::Monitor monitor =
-      muan::utils::Monitor(100., 1., std::numeric_limits<int>::max(), 0.005, false, 5);
+      muan::utils::Monitor(100., 1., std::numeric_limits<double>::max(), 0.005, false, 5);
   for (int i = 0; i < 1800; i++) {
     double t = i * 0.005;
     double value = t < 2 ? 200 : t < 6 ? 20 : 200;
@@ -172,6 +172,26 @@ TEST(MonitorTest, Resets) {
       monitor.Reset();
     } else {
       EXPECT_NEAR(safe_voltage, voltage, 1e-5);
+      EXPECT_FALSE(monitor.is_at_thresh());
+    }
+  }
+}
+
+TEST(MonitorTest, CustomTimestep) {
+  muan::utils::Monitor monitor = muan::utils::Monitor(100., 2., 2., 0.01);
+  for (int i = 0; i < 700; i++) {
+    double t = i * 0.01;
+    double current = t < 4 ? 200 : 90;
+    double voltage = 10;
+    double safe_voltage = monitor.Update(voltage, current);
+    if (t < 1.990) {
+      EXPECT_NEAR(safe_voltage, voltage, 1e-5);
+      EXPECT_FALSE(monitor.is_at_thresh());
+    } else if (t < 6.17) {
+      EXPECT_NEAR(safe_voltage, 0, 1e-5);
+      EXPECT_TRUE(monitor.is_at_thresh());
+    } else {
+      EXPECT_NEAR(safe_voltage, 10, 1e-5);
       EXPECT_FALSE(monitor.is_at_thresh());
     }
   }
