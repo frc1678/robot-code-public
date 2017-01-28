@@ -2,6 +2,7 @@
 #define C2017_SUBSYSTEMS_SUPERSTRUCTURE_MAGAZINE_MAGAZINE_H_
 
 #include "queue_types.h"
+#include "c2017/queue_manager/queue_manager.h"
 
 namespace c2017 {
 
@@ -16,9 +17,8 @@ class Magazine {
  private:
   bool has_hp_gear_;
   bool gear_intake_covered_;
-  bool magazine_extended;
-  double conveyor_voltage;
-  double brush_voltage;
+  bool magazine_extended_;
+  double brush_voltage_;
 
   bool score_gear_;
   bool rotate_gear_;
@@ -26,7 +26,6 @@ class Magazine {
   c2017::magazine::ConveyorGoalState conveyor_goal_;
   c2017::magazine::HPIntakeGoalState hp_intake_goal_;
   c2017::magazine::BrushGoalState brush_goal_;
-  c2017::magazine::MagazineOutputProto output_;
 };
 
 }  // magazine

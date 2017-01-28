@@ -2,26 +2,6 @@
 #include "c2017/subsystems/superstructure/magazine/queue_types.h"
 #include "gtest/gtest.h"
 
-/*
-class MagazineTest : public ::testing::Test {
- public:
-  void Update(c2017::magazine::MagazineInputProto input) {
-    magazine.Update(input);
-  }
-
-  SetGoal(goal) {
-    magazine.SetGoal(goal);
-  }
-
-  void SetConveyorCurrent(double conveyor);
-
-
- private:
-  c2017::magazine::Magazine magazine;
-  
-}; */
-
-
 TEST(MagazineTest, CanExtendMagazine) {
   c2017::magazine::MagazineInputProto input;
   c2017::magazine::MagazineGoalProto goal;
@@ -37,4 +17,18 @@ TEST(MagazineTest, CanExtendMagazine) {
   magazine.SetGoal(goal);
   c2017::magazine::MagazineOutputProto output = magazine.Update(input);
   EXPECT_TRUE(output->magazine_extended());
+}
+
+TEST(MagazineTest, CantIntakeBoth) {
+  c2017::magazine::MagazineInputProto input;
+  c2017::magazine::MagazineGoalProto goal;
+  c2017::magazine::Magazine magazine;
+
+  goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::BOTH);
+  input->set_has_hp_gear(true);
+  
+  c2017::magazine::MagazineOutputProto output = magazine.Update(input);
+  magazine.SetGoal(goal);
+
+  EXPECT_TRUE(output->gear_intake_covered());
 }

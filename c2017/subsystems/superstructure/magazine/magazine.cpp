@@ -7,8 +7,8 @@ namespace magazine {
 MagazineOutputProto Magazine::Update(MagazineInputProto input) {
 
   has_hp_gear_ = input->has_hp_gear();
-  brush_voltage = input->brush_voltage();
-
+  brush_voltage_ = input->brush_voltage();
+  
   double conveyor_voltage_ = 0;
   switch (conveyor_goal_) {
     case CONVEYOR_IDLE:
@@ -48,35 +48,41 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input) {
   
   switch (brush_goal_) {
     case BRUSH_IDLE:
-      brush_voltage = 0;
+      brush_voltage_ = 0;
       break;
 
     case BRUSH_FORWARD:
-      brush_voltage = 12;
+      brush_voltage_ = 12;
       break;
 
     case BRUSH_BACKWARD:
-      brush_voltage = -12;
+      brush_voltage_ = -12;
       break;
   }
 
   double  gear_shutter_open = score_gear_;
   double gear_rotator_voltage = rotate_gear_ ? 3 : 0;
 
-  output_->set_gear_intake_covered(gear_intake_covered_);
-  output_->set_magazine_extended(magazine_extended);
+  c2017::magazine::MagazineOutputProto output_;
+  
+  c2017::magazine::MagazineOutputProto.gear_intake_covered(gear_intake_covered_);
+  output_->set_magazine_extended(magazine_extended_);
   output_->set_gear_shutter_open(gear_shutter_open);
   output_->set_gear_rotator_voltage(gear_rotator_voltage);
-  output_->set_conveyor_voltage(conveyor_voltage);
-  output_->set_brush_voltage(brush_voltage);
+  output_->set_conveyor_voltage(conveyor_voltage_);
+  output_->set_brush_voltage(brush_voltage_);
+
+  magazine_output_queue.WriteMessage(output_)
+
   return output_;
+
 }
 
 void Magazine::SetGoal(MagazineGoalProto goal) {
   conveyor_goal_ = goal->conveyor_goal();
   hp_intake_goal_ = goal->hp_intake_goal();
   brush_goal_ = goal->brush_goal();
-  magazine_extended = goal->magazine_extended();
+  magazine_extended_ = goal->magazine_extended();
   rotate_gear_ = goal->rotate_gear();
   score_gear_ = goal->score_gear();
   
