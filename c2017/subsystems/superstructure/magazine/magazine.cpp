@@ -5,10 +5,9 @@ namespace c2017 {
 namespace magazine {
 
 MagazineOutputProto Magazine::Update(MagazineInputProto input) {
-
   has_hp_gear_ = input->has_hp_gear();
   brush_voltage_ = input->brush_voltage();
-  
+
   double conveyor_voltage_ = 0;
   switch (conveyor_goal_) {
     case CONVEYOR_IDLE:
@@ -45,7 +44,7 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input) {
       }
       break;
   }
-  
+
   switch (brush_goal_) {
     case BRUSH_IDLE:
       brush_voltage_ = 0;
@@ -60,11 +59,11 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input) {
       break;
   }
 
-  double  gear_shutter_open = score_gear_;
+  double gear_shutter_open = score_gear_;
   double gear_rotator_voltage = rotate_gear_ ? 3 : 0;
 
   c2017::magazine::MagazineOutputProto output_;
-  
+
   output_->set_gear_intake_covered(gear_intake_covered_);
   output_->set_magazine_extended(magazine_extended_);
   output_->set_gear_shutter_open(gear_shutter_open);
@@ -74,7 +73,6 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input) {
   output_->set_score_gear(score_gear_);
 
   return output_;
-
 }
 
 void Magazine::SetGoal(MagazineGoalProto goal) {
@@ -84,7 +82,6 @@ void Magazine::SetGoal(MagazineGoalProto goal) {
   magazine_extended_ = goal->magazine_extended();
   rotate_gear_ = goal->rotate_gear();
   score_gear_ = goal->score_gear();
-  
 }
 
 }  // magazine
