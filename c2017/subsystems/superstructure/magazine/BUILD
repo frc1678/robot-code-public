@@ -5,8 +5,8 @@ cc_library(
     srcs = ["magazine.cpp"],
     hdrs = ["magazine.h"],
     deps = [
-    	":magazine_queues",
-    	"//c2017/queue_manager"
+        ":magazine_queues",
+        "//c2017/queue_manager"
     ],
 )
 
