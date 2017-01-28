@@ -8,7 +8,7 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input) {
   has_hp_gear_ = input->has_hp_gear();
   double brush_voltage = 0;
   double conveyor_voltage_ = 0;
- 
+
   switch (conveyor_goal_) {
     case CONVEYOR_IDLE:
       conveyor_voltage_ = 0;
@@ -77,6 +77,6 @@ void Magazine::SetGoal(MagazineGoalProto goal) {
   score_gear_ = goal->score_gear();
 }
 
-}  // magazine
+}  // namespace magazine
 
-}  // c2017
+}  // namespace c2017
