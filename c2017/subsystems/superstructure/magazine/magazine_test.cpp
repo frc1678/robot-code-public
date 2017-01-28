@@ -20,7 +20,7 @@ TEST(MagazineTest, CanExtendMagazine) {
   EXPECT_TRUE(output->magazine_extended());
 }
 
-TEST(MagazineTest, CantIntakeBoth) {
+TEST(MagazineTest, CanIntakeBoth) {
   c2017::magazine::MagazineInputProto input;
   c2017::magazine::MagazineGoalProto goal;
   c2017::magazine::Magazine magazine;
