@@ -101,10 +101,10 @@ TEST(MagazineTest, CanRotateGear) {
   magazine.SetGoal(goal);
   c2017::magazine::MagazineOutputProto output = magazine.Update(input);
   
-  EXPECT_FALSE(output->magazine_extended());
+  EXPECT_EQ(output->gear_rotator_voltage(), 3);
 }
 
-TEST(MagazineTest, CanScoreGearAfterRotating) {
+TEST(MagazineTest, CanScoreGearWhileRotating) {
   c2017::magazine::MagazineInputProto input;
   c2017::magazine::MagazineGoalProto goal;
   c2017::magazine::Magazine magazine;
@@ -119,7 +119,8 @@ TEST(MagazineTest, CanScoreGearAfterRotating) {
   magazine.SetGoal(goal);
   c2017::magazine::MagazineOutputProto output = magazine.Update(input);
   
-  EXPECT_FALSE(output->magazine_extended());
+  EXPECT_EQ(output->gear_rotator_voltage(), 3);
+  EXPECT_TRUE(output->score_gear());
 }
 
 TEST(MagazineTest,CanIntakeNothing) {
@@ -130,7 +131,7 @@ TEST(MagazineTest,CanIntakeNothing) {
   goal->set_conveyor_goal(c2017::magazine::ConveyorGoalState::CONVEYOR_IDLE);
   goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::NONE);
   goal->set_brush_goal(c2017::magazine::BrushGoalState::BRUSH_IDLE);
-  goal->set_score_gear(true);
+  goal->set_score_gear(false);
   goal->set_rotate_gear(true);
   goal->set_magazine_extended(false);
 
@@ -148,19 +149,19 @@ TEST(MagazineTest,ConveyorCanMoveForwardThenBackward) {
   goal->set_conveyor_goal(c2017::magazine::ConveyorGoalState::CONVEYOR_FORWARD);
   goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::NONE);
   goal->set_brush_goal(c2017::magazine::BrushGoalState::BRUSH_IDLE);
-  goal->set_score_gear(true);
+  goal->set_score_gear(false);
   goal->set_rotate_gear(true);
   goal->set_magazine_extended(false);
 
   magazine.SetGoal(goal);
   c2017::magazine::MagazineOutputProto output = magazine.Update(input);
 
-  EXPECT_FALSE(output->magazine_extended());
+  EXPECT_EQ(output->conveyor_voltage(), 12);
   
   goal->set_conveyor_goal(c2017::magazine::ConveyorGoalState::CONVEYOR_BACKWARD);
   goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::NONE);
   goal->set_brush_goal(c2017::magazine::BrushGoalState::BRUSH_IDLE);
-  goal->set_score_gear(true);
+  goal->set_score_gear(false);
   goal->set_rotate_gear(true);
   goal->set_magazine_extended(false);
 
@@ -168,6 +169,6 @@ TEST(MagazineTest,ConveyorCanMoveForwardThenBackward) {
   output = magazine.Update(input);
 
   
-  EXPECT_FALSE(output->magazine_extended());
+  EXPECT_EQ(output->conveyor_voltage(), -12);
 
 }

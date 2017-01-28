@@ -71,6 +71,7 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input) {
   output_->set_gear_rotator_voltage(gear_rotator_voltage);
   output_->set_conveyor_voltage(conveyor_voltage_);
   output_->set_brush_voltage(brush_voltage_);
+  output_->set_score_gear(score_gear_);
 
   return output_;
 

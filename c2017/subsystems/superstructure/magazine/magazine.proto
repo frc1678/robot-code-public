@@ -22,6 +22,7 @@ message MagazineOutput {
   required double gear_rotator_voltage = 4;
   required double conveyor_voltage = 5;
   required double brush_voltage = 6;
+  required bool score_gear = 7;
 }
 
 enum ConveyorGoalState {
