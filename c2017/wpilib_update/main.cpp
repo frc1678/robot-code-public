@@ -17,7 +17,7 @@ void CitrusRobot::Update() {
     lemonscript_.Start();  // Weird to call Start in a loop, but it's a setter so it's fine
 
   } else if (DriverStation::GetInstance().IsOperatorControl()) {
-    lemonscript_.Stop();  // Weirder to do this, but it works :/
+    //lemonscript_.Stop();  // Weirder to do this, but it works :/
 
     // Update joysticks
     throttle_.Update();
@@ -26,6 +26,7 @@ void CitrusRobot::Update() {
   }
 
   SendDSMessage();
+  SendDrivetrainMessage();
 }
 
 void CitrusRobot::SendDSMessage() {
@@ -47,6 +48,23 @@ void CitrusRobot::SendDSMessage() {
 
   c2017::QueueManager::GetInstance().driver_station_queue()->WriteMessage(status);
 }
+
+void CitrusRobot::SendDrivetrainMessage() {
+    frc971::control_loops::drivetrain::GoalProto drivetrain_goal;
+
+    double throttle = -throttle_.wpilib_joystick()->GetRawAxis(1);
+    double wheel = -wheel_.wpilib_joystick()->GetRawAxis(0);
+    bool quickturn = quickturn_->is_pressed();
+
+    drivetrain_goal->mutable_teleop_command()->set_steering(wheel);
+    drivetrain_goal->mutable_teleop_command()->set_throttle(throttle);
+    drivetrain_goal->mutable_teleop_command()->set_quick_turn(quickturn);
+
+    c2017::QueueManager::GetInstance()
+        .drivetrain_goal_queue()
+        ->WriteMessage(drivetrain_goal);
+}
+
 
 }  // namespace citrus_robot
 }  // namespace c2017
