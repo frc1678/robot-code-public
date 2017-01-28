@@ -1,4 +1,4 @@
-#include "queue_types.h"
+#include "muan/vision/queue_types.h"
 #include "gtest/gtest.h"
 
 TEST(Types, CanConstruct) {

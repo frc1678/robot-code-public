@@ -1,5 +1,5 @@
-#ifndef O2016_QUEUEMANAGER_QUEUEMANAGER_h_
-#define O2016_QUEUEMANAGER_QUEUEMANAGER_h_
+#ifndef O2016_QUEUE_MANAGER_QUEUE_MANAGER_H_
+#define O2016_QUEUE_MANAGER_QUEUE_MANAGER_H_
 
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
@@ -82,6 +82,6 @@ class QueueManager {
   o2016::secondaries::SecondariesOutputQueue secondaries_output_queue_;
 };
 
-}  // o2016
+}  // namespace o2016
 
-#endif
+#endif  // O2016_QUEUE_MANAGER_QUEUE_MANAGER_H_

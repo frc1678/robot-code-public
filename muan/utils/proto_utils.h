@@ -21,8 +21,8 @@ std::string ProtoToCSV(const google::protobuf::Message& message);
 std::string ProtoToCSVHeader(const google::protobuf::Message& message);
 std::string ProtoToCSVHeader(const google::protobuf::Message& message, const std::string& prefix);
 
-} /* util */
+}  // namespace util
 
-} /* muan */
+}  // namespace muan
 
-#endif /* MUAN_UTILS_PROTO_UTILS_H_ */
+#endif  // MUAN_UTILS_PROTO_UTILS_H_

@@ -1,5 +1,5 @@
-#ifndef MUAN_VISION_QUEUETYPES_H_
-#define MUAN_VISION_QUEUETYPES_H_
+#ifndef MUAN_VISION_QUEUE_TYPES_H_
+#define MUAN_VISION_QUEUE_TYPES_H_
 
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
@@ -10,8 +10,8 @@ namespace vision {
 
 using VisionPositionProto = muan::proto::StackProto<VisionPosition, 256>;
 using VisionPositionQueue = muan::queues::MessageQueue<VisionPositionProto, 100>;
- 
-} // namespace vision
-} // namespace muan
 
-#endif // MUAN_VISION_QUEUETYPES_H_
+}  // namespace vision
+}  // namespace muan
+
+#endif  // MUAN_VISION_QUEUE_TYPES_H_

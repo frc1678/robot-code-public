@@ -1,11 +1,14 @@
 load('//third_party/google/protobuf:protobuf.bzl', 'cc_proto_library')
 
 cc_library(
-  name = 'vision',
-  srcs = ['vision.cpp'],
-  hdrs = ['vision.h'],
-  visibility = ['//visibility:public'],
-  linkopts = ['-lopencv_imgproc', '-lopencv_core']
+    name = "vision",
+    srcs = ["vision.cpp"],
+    hdrs = ["vision.h"],
+    linkopts = [
+        "-lopencv_imgproc",
+        "-lopencv_core",
+    ],
+    visibility = ["//visibility:public"],
 )
 
 cc_library(

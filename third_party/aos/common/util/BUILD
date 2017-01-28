@@ -106,7 +106,6 @@ cc_library(
   deps = [
     '//third_party/eigen',
     '//third_party/aos/common:time',
-    # '//aos/common/logging',
     '//linux_libraries:libm',
   ],
 )
@@ -118,7 +117,7 @@ cc_test(
   ],
   deps = [
     ':trapezoid_profile',
-    '//aos/testing:googletest',
+    '//third_party/aos/testing:googletest',
   ],
 )
 

@@ -1,4 +1,4 @@
-#include "lemonscript.h"
+#include "generic_robot/lemonscript/lemonscript.h"
 
 namespace genericrobot {
 
@@ -6,7 +6,8 @@ namespace lemonscript {
 
 Lemonscript::Lemonscript() {
   state_ = new ::lemonscript::LemonScriptState();
-  decls_ = ::lemonscript::AvailableCppCommandDeclaration::parseCppCommands(AutoGenerator::GetAutoGenerators());
+  decls_ =
+      ::lemonscript::AvailableCppCommandDeclaration::parseCppCommands(AutoGenerator::GetAutoGenerators());
   state_->declareAvailableCppCommands(decls_);
   compiler_ = new ::lemonscript::LemonScriptCompiler("test.auto", state_);
 }
@@ -17,7 +18,7 @@ Lemonscript::~Lemonscript() {
 }
 
 void Lemonscript::operator()() {
-  aos::time::PhasedLoop phased_loop(aos::time::Time::InMS(5));
+  aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(5));
 
   aos::SetCurrentThreadRealtimePriority(10);
   aos::SetCurrentThreadName("Lemonscript");
@@ -27,9 +28,7 @@ void Lemonscript::operator()() {
     running_ = !compiler_->PeriodicUpdate();
     phased_loop.SleepUntilNext();
   }
-
 }
 
-} // lemonscript
-
-} // genericrobot
+}  // namespace lemonscript
+}  // namespace genericrobot

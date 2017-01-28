@@ -13,6 +13,7 @@ class VisionSubsystem {
   VisionSubsystem();
   void SetGoal(/* goal */);
   void Update();
+
  protected:
   bool running_;
   muan::actions::DrivetrainProperties properties_;

@@ -14,10 +14,10 @@ namespace gyro {
 using GyroMessageProto = muan::proto::StackProto<GyroMessage, 256>;
 using GyroQueue = muan::queues::MessageQueue<GyroMessageProto, 200>;
 
-}  // gyro
+}  // namespace gyro
 
-}  // wpilib
+}  // namespace wpilib
 
-}  // muan
+}  // namespace muan
 
 #endif  //  MUAN_WPILIB_GYRO_QUEUE_TYPES_H_

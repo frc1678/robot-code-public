@@ -1,5 +1,5 @@
-#ifndef GENERICROBOT_QUEUEMANAGER_QUEUEMANAGER_h_
-#define GENERICROBOT_QUEUEMANAGER_QUEUEMANAGER_h_
+#ifndef GENERIC_ROBOT_QUEUE_MANAGER_QUEUE_MANAGER_H_
+#define GENERIC_ROBOT_QUEUE_MANAGER_QUEUE_MANAGER_H_
 
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
@@ -32,6 +32,6 @@ class QueueManager {
   muan::wpilib::DriverStationQueue driver_station_queue_;
 };
 
-}  // generic_robot
+}  // namespace generic_robot
 
-#endif
+#endif  // GENERIC_ROBOT_QUEUE_MANAGER_QUEUE_MANAGER_H_

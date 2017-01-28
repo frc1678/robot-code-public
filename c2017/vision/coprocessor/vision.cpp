@@ -1,5 +1,6 @@
-#include "vision.h"
+#include "c2017/vision/coprocessor/vision.h"
 #include <opencv2/opencv.hpp>
+#include <memory>
 #include <thread>
 #include "muan/vision/vision.h"
 
@@ -8,7 +9,7 @@ namespace vision {
 
 class VisionScorer2017 : public muan::VisionScorer {
  public:
-  double GetScore(double , double /* unused */, double skew, double width, double height, double fullness) {
+  double GetScore(double, double /* unused */, double skew, double width, double height, double fullness) {
     double base_score = std::log(width * height) / (.1 + std::pow(fullness - .9, 2));
     double target_score = (base_score / (1 + skew));
     return target_score;
@@ -23,14 +24,12 @@ class VisionScorer2017 : public muan::VisionScorer {
 void RunVision() {
   cv::VideoCapture cap;
   cap.open(1);
-  muan::Vision::ColorRange range {
-    cv::Scalar(50, 200, 50), cv::Scalar(240, 255, 250), CV_BGR2RGB
-  };
-  muan::Vision::VisionConstants constants {1, 1, 0, 0, 0.9};
-  muan::Vision vision{ range, std::make_shared<VisionScorer2017>(), constants};
+  muan::Vision::ColorRange range{cv::Scalar(50, 200, 50), cv::Scalar(240, 255, 250), CV_BGR2RGB};
+  muan::Vision::VisionConstants constants{1, 1, 0, 0, 0.9};
+  muan::Vision vision{range, std::make_shared<VisionScorer2017>(), constants};
   cv::Mat raw;
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-  while(true) {
+  while (true) {
     cap >> raw;
     muan::Vision::VisionStatus status = vision.Update(raw);
     cv::imshow("vision", raw);
@@ -48,5 +47,5 @@ void RunVision() {
   }
 }
 
-}
-}
+}  // namespace vision
+}  // namespace c2017

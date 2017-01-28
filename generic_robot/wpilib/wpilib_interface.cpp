@@ -1,4 +1,4 @@
-#include "wpilib_interface.h"
+#include "generic_robot/wpilib/wpilib_interface.h"
 #include "muan/units/units.h"
 #include "generic_robot/queue_manager/queue_manager.h"
 
@@ -6,24 +6,19 @@ namespace generic_robot {
 
 namespace wpilib {
 
-namespace ports {
-
-}  // ports
+namespace ports {}  // namespace ports
 
 constexpr double kMaxVoltage = 4;  // 4 volt bringup voltage
 
-WpilibInterface::WpilibInterface()
-    : can_{&QueueManager::GetInstance().pdp_status_queue()} {
+WpilibInterface::WpilibInterface() : can_{&QueueManager::GetInstance().pdp_status_queue()} {
   std::thread can_thread(std::ref(can_));
   can_thread.detach();
 }
 
-void WpilibInterface::WriteActuators() {
-}
+void WpilibInterface::WriteActuators() {}
 
-void WpilibInterface::ReadSensors() {
-}
+void WpilibInterface::ReadSensors() {}
 
-}  // wpilib
+}  // namespace wpilib
 
-}  // generic_robot
+}  // namespace generic_robot

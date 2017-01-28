@@ -12,8 +12,7 @@ namespace vision {
 
 void RunSender();
 extern muan::vision::VisionPositionQueue vision_queue;
-
 }
 }
 
-#endif // C2017_VISION_COPROCESSOR_SENDER_H_
+#endif  // C2017_VISION_COPROCESSOR_SENDER_H_

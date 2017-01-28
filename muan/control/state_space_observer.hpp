@@ -1,7 +1,7 @@
 #ifndef MUAN_CONTROL_STATE_SPACE_OBSERVER_HPP_
 #define MUAN_CONTROL_STATE_SPACE_OBSERVER_HPP_
 
-#include "state_space_observer.h"
+#include "muan/control/state_space_observer.h"
 
 namespace muan {
 
@@ -82,4 +82,4 @@ double& StateSpaceObserver<kNumInputs, kNumStates, kNumOutputs>::L(uint32_t i, u
 
 }  // namespace muan
 
-#endif /* MUAN_CONTROL_STATE_SPACE_OBSERVER_HPP_ */
+#endif  // MUAN_CONTROL_STATE_SPACE_OBSERVER_HPP_

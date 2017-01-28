@@ -59,4 +59,4 @@ constexpr double convert(double val, double unit) { return val / unit; }
 
 }  // namespace muan
 
-#endif
+#endif  // MUAN_UNITS_UNITS_H_

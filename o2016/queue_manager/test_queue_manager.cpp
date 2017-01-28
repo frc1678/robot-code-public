@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "queue_manager.h"
+#include "o2016/queue_manager/queue_manager.h"
 
 TEST(QueueManager, Initalizes) { o2016::QueueManager::GetInstance(); }
 
