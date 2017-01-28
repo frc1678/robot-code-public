@@ -8,7 +8,7 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input) {
   has_hp_gear_ = input->has_hp_gear();
   double brush_voltage = 0;
   double conveyor_voltage_ = 0;
-
+ 
   switch (conveyor_goal_) {
     case CONVEYOR_IDLE:
       conveyor_voltage_ = 0;
@@ -49,7 +49,7 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input) {
       brush_voltage = 12;
       break;
     case BRUSH_BACKWARD:
-      brush_voltage_ = -12;
+      brush_voltage = -12;
       break;
   }
 
