@@ -3,7 +3,7 @@
 
 #include <thread>
 #include <chrono>
-#include "muan/vision/queue_types.h"
+#include "c2017/vision/queue_types.h"
 #include "c2017/vision/coprocessor/sender.h"
 
 namespace c2017 {

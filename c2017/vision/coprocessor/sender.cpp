@@ -17,7 +17,7 @@ void RunSender() {
   }
 }
 
-muan::vision::VisionPositionQueue vision_queue;
+c2017::vision::VisionInputQueue vision_queue;
 
 }  // namespace vision
 }  // namespace c2017

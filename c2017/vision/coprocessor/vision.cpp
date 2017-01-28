@@ -33,10 +33,9 @@ void RunVision() {
     cap >> raw;
     muan::Vision::VisionStatus status = vision.Update(raw);
     cv::imshow("vision", raw);
-    muan::vision::VisionPositionProto position;
+    c2017::vision::VisionInputProto position;
     position->set_target_found(status.target_exists);
     if (status.target_exists) {
-      position->set_target_id(0);
       position->set_distance_to_target(status.distance_to_target);
       position->set_angle_to_target(status.angle_to_target);
     }
