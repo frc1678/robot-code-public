@@ -1,3 +1,5 @@
+load("//muan/deploy:deploy.bzl", "muan_deploy")
+
 cc_binary(
     name = "frc1678",
     srcs = ["main.cpp"],
@@ -6,4 +8,9 @@ cc_binary(
         "//c2017/wpilib_update:main",
         "//third_party/wpilibsuite:wpilib",
     ],
+)
+
+muan_deploy(
+    name = "deploy",
+    main = ":frc1678",
 )
