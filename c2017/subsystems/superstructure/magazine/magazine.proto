@@ -11,7 +11,7 @@ message MagazineStatus {
 }
 
 message MagazineInput {
-  required double conveyor_current = 1;
+  required double brush_voltage = 1;
   required bool has_hp_gear = 2; // senses distance
 }
 
@@ -48,6 +48,6 @@ message MagazineGoal {
   required HPIntakeGoalState hp_intake_goal = 2;
   required BrushGoalState brush_goal = 3;
   required bool score_gear = 4;
-  required double gear_rotator_voltage = 5;
+  required bool rotate_gear = 5;
   required bool magazine_extended = 6;
 }
