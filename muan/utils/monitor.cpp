@@ -39,7 +39,7 @@ double Monitor::Update(double voltage, double value) {
     time_below_ += dt_;
   }
 
-  // Determine if the motor has been stalling
+  // Determine if the time threshold has been met
   if (time_above_ >= delay_time_) {
     is_at_thresh_ = true;
   } else if (time_below_ > reset_time_) {
