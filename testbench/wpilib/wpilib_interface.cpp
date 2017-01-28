@@ -1,4 +1,4 @@
-#include "wpilib_interface.h"
+#include "testbench/wpilib/wpilib_interface.h"
 #include "muan/units/units.h"
 #include "testbench/queue_manager/queue_manager.h"
 
@@ -20,23 +20,20 @@ constexpr uint32_t kEncoderRightA = 10, kEncoderRightB = 11;
 
 constexpr uint32_t kShifting = 7;
 
-}  // drivetrain
+}  // namespace drivetrain
 
-}  // ports
+}  // namespace ports
 
 constexpr double kMaxVoltage = 12;
 
 DrivetrainInterface::DrivetrainInterface(muan::wpilib::CanWrapper* can_wrapper)
     : pcm_{can_wrapper->pcm()},
       input_queue_(QueueManager::GetInstance()->drivetrain_input_queue()),
-      output_queue_(
-          QueueManager::GetInstance()->drivetrain_output_queue()->MakeReader()),
+      output_queue_(QueueManager::GetInstance()->drivetrain_output_queue()->MakeReader()),
       motor_left_{ports::drivetrain::kMotorLeft},
       motor_right_{ports::drivetrain::kMotorRight},
-      encoder_left_{ports::drivetrain::kEncoderLeftA,
-                    ports::drivetrain::kEncoderLeftB},
-      encoder_right_{ports::drivetrain::kEncoderRightA,
-                     ports::drivetrain::kEncoderRightB} {
+      encoder_left_{ports::drivetrain::kEncoderLeftA, ports::drivetrain::kEncoderLeftB},
+      encoder_right_{ports::drivetrain::kEncoderRightA, ports::drivetrain::kEncoderRightB} {
   pcm_->CreateSolenoid(ports::drivetrain::kShifting);
 }
 
@@ -53,13 +50,9 @@ void DrivetrainInterface::ReadSensors() {
 void DrivetrainInterface::WriteActuators() {
   auto outputs = output_queue_.ReadLastMessage();
   if (outputs) {
-    motor_left_.Set(
-        -muan::utils::Cap((*outputs)->left_voltage(), -kMaxVoltage, kMaxVoltage) /
-        12.0);
+    motor_left_.Set(-muan::utils::Cap((*outputs)->left_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
 
-    motor_right_.Set(
-        muan::utils::Cap((*outputs)->right_voltage(), -kMaxVoltage, kMaxVoltage) /
-        12.0);
+    motor_right_.Set(muan::utils::Cap((*outputs)->right_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
 
     // TODO(Wesley) Verify high gear/low gear
     pcm_->WriteSolenoid(ports::drivetrain::kShifting, (*outputs)->high_gear());
@@ -84,6 +77,6 @@ void WpilibInterface::WriteActuators() { drivetrain_.WriteActuators(); }
 
 void WpilibInterface::ReadSensors() { drivetrain_.ReadSensors(); }
 
-}  // wpilib
+}  // namespace wpilib
 
-}  // o2016
+}  // namespace testbench

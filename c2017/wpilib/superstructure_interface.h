@@ -8,12 +8,11 @@
 #include "muan/utils/math_utils.h"
 
 namespace c2017 {
-
 namespace wpilib {
 
 class SuperStructureInterface {
  public:
-  SuperStructureInterface(muan::wpilib::CanWrapper* can_wrapper);
+  explicit SuperStructureInterface(muan::wpilib::CanWrapper* can_wrapper);
 
   void WriteActuators();
   void ReadSensors();
@@ -40,8 +39,7 @@ class SuperStructureInterface {
   muan::wpilib::PcmWrapper* pcm_;
 };
 
-}
+}  // namespace wpilib
+}  // namespace c2017
 
-}
-
-#endif // C2017_WPILIB_SUPERSTURCTURE_INTERFACE_H_
+#endif  // C2017_WPILIB_SUPERSTRUCTURE_INTERFACE_H_

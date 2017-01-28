@@ -12,7 +12,6 @@
 #include "muan/wpilib/queue_types.h"
 
 namespace c2017 {
-
 namespace superstructure {
 
 class SuperStructure {
@@ -20,19 +19,19 @@ class SuperStructure {
   SuperStructure();
 
   void Update();
+
  private:
-    c2017::intake_group::IntakeGroupGoalQueue intake_group_goal_queue;
-    c2017::shooter_group::ShooterGroupGoalQueue shooter_group_goal_queue;
-    c2017::climber::ClimberGoalQueue climber_goal_queue;
-    c2017::shooter::ShooterInputQueue shooter_input_queue;
-    c2017::trigger::TriggerInputQueue trigger_input_queue;
-    c2017::magazine::MagazineInputQueue magazine_input_queue;
-    c2017::ground_gear_intake::GroundGearIntakeInputQueue ground_gear_input_queue;
-    c2017::climber::ClimberInputQueue climber_input_queue;
+  c2017::intake_group::IntakeGroupGoalQueue intake_group_goal_queue;
+  c2017::shooter_group::ShooterGroupGoalQueue shooter_group_goal_queue;
+  c2017::climber::ClimberGoalQueue climber_goal_queue;
+  c2017::shooter::ShooterInputQueue shooter_input_queue;
+  c2017::trigger::TriggerInputQueue trigger_input_queue;
+  c2017::magazine::MagazineInputQueue magazine_input_queue;
+  c2017::ground_gear_intake::GroundGearIntakeInputQueue ground_gear_input_queue;
+  c2017::climber::ClimberInputQueue climber_input_queue;
 };
 
-}
+}  // namespace superstructure
+}  // namespace c2017
 
-}
-#endif // C2017_SUBSYSTEMS_SUPERSTRUCTURE_SUPERSTRUCTURE_H_
-
+#endif  // C2017_SUBSYSTEMS_SUPERSTRUCTURE_SUPERSTRUCTURE_H_

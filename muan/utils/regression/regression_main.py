@@ -11,7 +11,9 @@ so if the .csv file had "state1, input1, debug, state2",
 state_order would be "xu-x".
 """
 
-assert len(sys.argv) == 3 || len(sys.argv) == 4, "Arguments must be a csv file and the order of states."
+if not (len(sys.argv) == 3 or len(sys.argv) == 4):
+    print("Arguments must be a csv file and the order of states.")
+    exit()
 
 csv = np.loadtxt(open(sys.argv[1], "rb"), delimiter=",", skiprows=1)
 order = sys.argv[2]

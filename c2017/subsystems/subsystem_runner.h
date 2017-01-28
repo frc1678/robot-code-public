@@ -1,5 +1,5 @@
-#ifndef C2017_SUBSYSTEMS_SUBSYSTEMRUNNER_H_
-#define C2017_SUBSYSTEMS_SUBSYSTEMRUNNER_H_
+#ifndef C2017_SUBSYSTEMS_SUBSYSTEM_RUNNER_H_
+#define C2017_SUBSYSTEMS_SUBSYSTEM_RUNNER_H_
 
 #include <atomic>
 
@@ -27,5 +27,7 @@ class SubsystemRunner {
   frc971::control_loops::drivetrain::DrivetrainLoop drivetrain_;
   c2017::superstructure::SuperStructure superstructure_;
 };
-}
-#endif
+
+}  // namespace c2017
+
+#endif  // C2017_SUBSYSTEMS_SUBSYSTEM_RUNNER_H_

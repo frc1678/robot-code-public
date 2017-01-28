@@ -14,7 +14,7 @@ def _diff(vector_hist):
     return [(np.zeros(vector_hist[0].shape) if i == 0 else vector_hist[i] - vector_hist[i - 1]) for i in range(len(vector_hist))]
 
 # Find discontinuities in an array of vectors
-def _find_discontinuities(vector_hist, thresh = 2):
+def _find_discontinuities(vector_hist, thresh = 200):
     values = []
     for i, d in enumerate(_diff(vector_hist)):
         if np.linalg.norm(d) > thresh:

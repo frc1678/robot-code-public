@@ -1,5 +1,6 @@
 package(default_visibility = ["//visibility:public"])
-load('/tools/cpp/toolchain_macros', 'generate_cc_toolchains', 'generate_cc_toolchain_suite')
+
+load("/tools/cpp/toolchain_macros", "generate_cc_toolchains", "generate_cc_toolchain_suite")
 
 cc_library(
     name = "malloc",
@@ -21,17 +22,17 @@ filegroup(
 
 # All of the cpus we want to support
 toolchain_cpus = [
-  'armeabi-v7a',
-  'darwin',
-  'freebsd',
-  'local',
-  'k8',
-  'roborio',
-  'roborio-osxbuild',
-  'empty',
+    "armeabi-v7a",
+    "darwin",
+    "freebsd",
+    "local",
+    "k8",
+    "roborio",
+    "roborio-osxbuild",
+    "empty",
 ]
 
-generate_cc_toolchain_suite('toolchain', toolchain_cpus)
+generate_cc_toolchain_suite("toolchain", toolchain_cpus)
 
 generate_cc_toolchains(toolchain_cpus)
 

@@ -33,8 +33,8 @@ const DrivetrainConfig &GetDrivetrainConfig() {
       0.0};
 
   return kDrivetrainConfig;
-};
+}
 
 }  // namespace drivetrain
 
-} // namespace c2017
+}  // namespace c2017

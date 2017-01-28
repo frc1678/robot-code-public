@@ -1,39 +1,38 @@
 #ifndef MUAN_VISION_VISION_H_
 #define MUAN_VISION_VISION_H_
 
+#include <opencv2/opencv.hpp>
 #include <cmath>
 #include <memory>
 #include <vector>
-#include <opencv2/opencv.hpp>
 
 namespace muan {
 
 class VisionScorer {
  public:
-  virtual double GetScore(double distance_to_target, // in meters
-                          double distance_from_previous, // in pixels
-                          double skew, // of bounding box, in radians
-                          double width, // in pixels
-                          double height, // in pixels
-                          double fullness // area / bounding box area
-                          ) = 0;
+  virtual double GetScore(double distance_to_target,      // in meters
+                          double distance_from_previous,  // in pixels
+                          double skew,                    // of bounding box, in radians
+                          double width,                   // in pixels
+                          double height,                  // in pixels
+                          double fullness) = 0;           // area / bounding box area
 };
 
 class Vision {
  public:
   struct VisionConstants {
-    double kFovX; // Horizontal field of view, in radians
-    double kFovY; // Vertical field of view, in radians
-    double kCameraAngle; // Angle of the camera above horizontal, in radians
-    double kHeightDifference; // Height of goal above camera, in meters
-    double kFullness; // area of target / area of bounding rect
+    double kFovX;              // Horizontal field of view, in radians
+    double kFovY;              // Vertical field of view, in radians
+    double kCameraAngle;       // Angle of the camera above horizontal, in radians
+    double kHeightDifference;  // Height of goal above camera, in meters
+    double kFullness;          // area of target / area of bounding rect
   };
 
   struct VisionStatus {
     bool target_exists;
-    double distance_to_target; // Distance to target, in meters
-    double angle_to_target; // Angle to target (too far to right is positive), in radians
-    cv::Mat image_canvas; // Display of what exactly the robot thinks it's seeing
+    double distance_to_target;  // Distance to target, in meters
+    double angle_to_target;     // Angle to target (too far to right is positive), in radians
+    cv::Mat image_canvas;       // Display of what exactly the robot thinks it's seeing
   };
 
   struct ColorRange {
@@ -50,8 +49,7 @@ class Vision {
 
  protected:
   double CalculateDistance(std::vector<cv::Point> points, int rows);
-  double CalculateSkew(std::vector<cv::Point> contour,
-                       std::vector<cv::Point>& out);
+  double CalculateSkew(std::vector<cv::Point> contour, std::vector<cv::Point>* out);
   // The formula to score the targets
   std::shared_ptr<VisionScorer> scorer_;
   // Robot constants relavent to vision
@@ -61,5 +59,6 @@ class Vision {
   ColorRange range_;
 };
 
-}
-#endif // MUAN_VISION_VISION_H_
+}  // namespace muan
+
+#endif  // MUAN_VISION_VISION_H_

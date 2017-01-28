@@ -11,7 +11,6 @@
 #include "c2017/wpilib/superstructure_interface.h"
 
 namespace c2017 {
-
 namespace wpilib {
 
 class WpilibInterface {
@@ -29,8 +28,7 @@ class WpilibInterface {
   SuperStructureInterface superstructure_;
 };
 
-}  // wpilib
-
-}  // c2017
+}  // namespace wpilib
+}  // namespace c2017
 
 #endif  // C2017_WPILIB_WPILIB_INTERFACE_H_

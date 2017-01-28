@@ -29,7 +29,7 @@ class TriggerController {
  private:
   // creates local protos for status and goal
   TriggerStatusProto status_;
-  double balls_per_second_; 
+  double balls_per_second_;
 
   muan::control::StateSpaceController<1, 3, 1> controller_;
   muan::control::StateSpaceObserver<1, 3, 1> observer_;
@@ -38,8 +38,8 @@ class TriggerController {
   TriggerStatusQueue& status_queue_;
 };
 
-}  // trigger
+}  // namespace trigger
 
-}  // c2017
+}  // namespace c2017
 
 #endif  // C2017_SUBSYSTEMS_SUPERSTRUCTURE_TRIGGER_TRIGGER_CONTROLLER_H_
