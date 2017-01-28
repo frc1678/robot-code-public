@@ -6,54 +6,48 @@ namespace magazine {
 
 MagazineOutputProto Magazine::Update(MagazineInputProto input) {
   has_hp_gear_ = input->has_hp_gear();
-  brush_voltage_ = input->brush_voltage();
-
+  double brush_voltage = 0;
   double conveyor_voltage_ = 0;
+
   switch (conveyor_goal_) {
     case CONVEYOR_IDLE:
       conveyor_voltage_ = 0;
       break;
-
     case CONVEYOR_FORWARD:
       conveyor_voltage_ = 12;
       break;
-
     case CONVEYOR_BACKWARD:
       conveyor_voltage_ = -12;
       break;
   }
 
+  bool gear_intake_covered = true;
   switch (hp_intake_goal_) {
     case NONE:
-      gear_intake_covered_ = true;
+      gear_intake_covered = true;
       break;
-
     case BALLS:
-      gear_intake_covered_ = true;
+      gear_intake_covered = true;
       break;
-
     case GEAR:
-      gear_intake_covered_ = false;
+      gear_intake_covered = false;
       break;
-
     case BOTH:
       if (input->has_hp_gear()) {
-        gear_intake_covered_ = true;
+        gear_intake_covered = true;
       } else {
-        gear_intake_covered_ = false;
+        gear_intake_covered = false;
       }
       break;
   }
 
   switch (brush_goal_) {
     case BRUSH_IDLE:
-      brush_voltage_ = 0;
+      brush_voltage = 0;
       break;
-
     case BRUSH_FORWARD:
-      brush_voltage_ = 12;
+      brush_voltage = 12;
       break;
-
     case BRUSH_BACKWARD:
       brush_voltage_ = -12;
       break;
@@ -62,17 +56,16 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input) {
   double gear_shutter_open = score_gear_;
   double gear_rotator_voltage = rotate_gear_ ? 3 : 0;
 
-  c2017::magazine::MagazineOutputProto output_;
+  c2017::magazine::MagazineOutputProto output;
 
-  output_->set_gear_intake_covered(gear_intake_covered_);
-  output_->set_magazine_extended(magazine_extended_);
-  output_->set_gear_shutter_open(gear_shutter_open);
-  output_->set_gear_rotator_voltage(gear_rotator_voltage);
-  output_->set_conveyor_voltage(conveyor_voltage_);
-  output_->set_brush_voltage(brush_voltage_);
-  output_->set_score_gear(score_gear_);
+  output->set_gear_intake_covered(gear_intake_covered);
+  output->set_magazine_extended(magazine_extended_);
+  output->set_gear_shutter_open(gear_shutter_open);
+  output->set_gear_rotator_voltage(gear_rotator_voltage);
+  output->set_conveyor_voltage(conveyor_voltage_);
+  output->set_brush_voltage(brush_voltage);
 
-  return output_;
+  return output;
 }
 
 void Magazine::SetGoal(MagazineGoalProto goal) {

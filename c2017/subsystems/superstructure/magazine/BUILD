@@ -29,11 +29,11 @@ cc_library(
 )
 
 cc_test(
-  name = "magazine_test",
-  srcs = ["magazine_test.cpp"],
-  deps = [
-    ":magazine",
-    "//third_party/google/googletest:googletest",
-  ]
+    name = "magazine_test",
+    srcs = ["magazine_test.cpp"],
+    deps = [
+        ":magazine",
+        "//third_party/google/googletest:googletest",
+    ]
 )
 

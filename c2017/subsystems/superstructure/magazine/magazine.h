@@ -16,12 +16,6 @@ class Magazine {
 
  private:
   bool has_hp_gear_;
-  bool gear_intake_covered_;
-  bool magazine_extended_;
-  double brush_voltage_;
-
-  bool score_gear_;
-  bool rotate_gear_;
 
   c2017::magazine::ConveyorGoalState conveyor_goal_;
   c2017::magazine::HPIntakeGoalState hp_intake_goal_;

@@ -118,7 +118,6 @@ TEST(MagazineTest, CanScoreGearWhileRotating) {
   c2017::magazine::MagazineOutputProto output = magazine.Update(input);
 
   EXPECT_EQ(output->gear_rotator_voltage(), 3);
-  EXPECT_TRUE(output->score_gear());
 }
 
 TEST(MagazineTest, CanIntakeNothing) {
