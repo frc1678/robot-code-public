@@ -19,3 +19,15 @@ cc_library(
   ],
   visibility = ['//visibility:public']
 )
+
+cc_library(
+  name = "vision_subsystem",
+  srcs = ["vision.cpp"],
+  hdrs = ["vision.h"],
+  deps = [
+    "//c2017/queue_manager",
+    "//c2017/subsystems/drivetrain:drivetrain_base",
+    "//muan/actions:drivetrain_action"
+  ],
+  visibility = ['//visibility:public']
+)
