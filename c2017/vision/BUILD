@@ -17,12 +17,3 @@ cc_proto_library(
     protoc = "//third_party/google/protobuf:protoc",
     default_runtime = "//third_party/google/protobuf",
 )
-
-cc_test(
-    name = "vision_queues_test",
-    srcs = ["queue_types_test.cpp"],
-    deps = [
-        "//third_party/google/googletest:googletest",
-        ":vision_queues"
-    ]
-)
