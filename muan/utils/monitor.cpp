@@ -5,7 +5,7 @@ namespace muan {
 namespace utils {
 
 Monitor::Monitor(double threshold, double delay_time, double reset_time, double dt, bool check_above,
-                 double standing_voltage, double size)
+                 double standing_voltage, size_t size)
     : current_history_(size) {
   threshold_ = threshold;
   delay_time_ = delay_time;
@@ -16,7 +16,7 @@ Monitor::Monitor(double threshold, double delay_time, double reset_time, double 
 
   time_above_ = time_below_ = 0;
   is_at_thresh_ = false;
-  size_ = static_cast<uint32_t>(size);
+  size_ = size;
 }
 
 double Monitor::Update(double voltage, double value) {

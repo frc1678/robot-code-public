@@ -13,7 +13,7 @@ namespace utils {
 class Monitor {
  public:
   Monitor(double threshold = 120., double delay_time = 2., double reset_time = 2., double dt = 0.005,
-          bool check_above = true, double standing_voltage = 0., double size = 20);
+          bool check_above = true, double standing_voltage = 0., size_t size = 20);
   // threshold is the value you must either surpass or go below
   // delay_time is the amount of time before it considers itself above or below te threshold
   // reset_time is the time it takes before it resets to reading live voltages
@@ -32,7 +32,7 @@ class Monitor {
   double time_above_, time_below_;
   bool is_at_thresh_;
 
-  uint32_t size_;
+  size_t size_;
   muan::utils::History<double> current_history_;
 };
 
