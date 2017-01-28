@@ -38,7 +38,7 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input) {
       break;
 
     case BOTH:
-      if (has_hp_gear_) {
+      if (input->has_hp_gear()) {
         gear_intake_covered_ = true;
       } else {
         gear_intake_covered_ = false;
@@ -65,14 +65,12 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input) {
 
   c2017::magazine::MagazineOutputProto output_;
   
-  c2017::magazine::MagazineOutputProto.gear_intake_covered(gear_intake_covered_);
+  output_->set_gear_intake_covered(gear_intake_covered_);
   output_->set_magazine_extended(magazine_extended_);
   output_->set_gear_shutter_open(gear_shutter_open);
   output_->set_gear_rotator_voltage(gear_rotator_voltage);
   output_->set_conveyor_voltage(conveyor_voltage_);
   output_->set_brush_voltage(brush_voltage_);
-
-  magazine_output_queue.WriteMessage(output_)
 
   return output_;
 

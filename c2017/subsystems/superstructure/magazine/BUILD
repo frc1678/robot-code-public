@@ -2,9 +2,12 @@ load("/third_party/google/protobuf/protobuf", "cc_proto_library")
 
 cc_library(
     name = "magazine",
-    srcs = ['magazine.cpp'],
-    hdrs = ['magazine.h'],
-    deps = [':magazine_queues']
+    srcs = ["magazine.cpp"],
+    hdrs = ["magazine.h"],
+    deps = [
+    	":magazine_queues",
+    	"//c2017/queue_manager"
+    ],
 )
 
 cc_proto_library(
@@ -26,11 +29,11 @@ cc_library(
 )
 
 cc_test(
-  name = 'magazine_test',
-  srcs = ['magazine_test.cpp'],
+  name = "magazine_test",
+  srcs = ["magazine_test.cpp"],
   deps = [
-    ':magazine',
-    '//third_party/google/googletest:googletest',
+    ":magazine",
+    "//third_party/google/googletest:googletest",
   ]
 )
 
