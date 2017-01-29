@@ -28,4 +28,16 @@ cc_library(
     ],
 )
 
+cc_test(
+    name = "lights_test",
+    srcs = ["lights_test.cpp"],
+    deps = [
+        ":lights", 
+        ":lights_queues",
+        "//third_party/google/googletest",
+    ],
+     
+      
+)
+
 

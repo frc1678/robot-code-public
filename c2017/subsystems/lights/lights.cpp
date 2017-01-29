@@ -11,7 +11,7 @@ void Lights::Update() {
   auto vision_status = QueueManager::GetInstance().vision_status_queue().ReadLastMessage();
 
   if (gyro_status_queue) {
-    if (gyro_status_queue.value()->calibration_time_left() == 0) {
+    if (gyro_status_queue.value()->calibration_time_left() <= 0) {
       if (intake_group_goal_queue) {
         switch (intake_group_goal_queue.value()->hp_load_type()) {
           case c2017::intake_group::HpLoadType::HP_LOAD_NONE:
@@ -29,6 +29,7 @@ void Lights::Update() {
             break;
         }
       }
+      // add the auto routines, not nessecarily here, but somewhere. 
     } else {
       light_color_ = LightColor::BLUE;
     }
