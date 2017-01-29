@@ -4,7 +4,7 @@ namespace c2017 {
 namespace vision {
 
 void RunSender() {
-  aos::vision::TXUdpSocket sender_socket("10.16.78.82", 1678);
+  aos::vision::TXUdpSocket sender_socket("10.86.78.20", 1678);
   auto queue_reader = vision_queue.MakeReader();
   void* buffer = malloc(1024);
   while(true) {

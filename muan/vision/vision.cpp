@@ -93,8 +93,8 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
     // A baseline score to determine whether or not it's even a target
     double base_score = area / (image.rows * image.cols);
 
-    // Check anything with area at least 1% of the image
-    if (base_score > 0.01) {
+    // Check anything with area at least 0.05% of the image
+    if (base_score > 0.0005) {
       targets.push_back(i);
 
       double hull_area = cv::contourArea(hull[i]);
