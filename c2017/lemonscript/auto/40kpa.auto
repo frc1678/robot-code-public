@@ -1,0 +1,8 @@
+DriveStraight: 1.2
+SwoopTurn: 1.0, -1.0
+// Place a gear
+DriveStraight: -0.7
+SwoopTurn: -1.75, -2.0
+DriveStraight: -1.0
+// Hopper is triggeredaf
+// Shoot em in the balllzzzz
