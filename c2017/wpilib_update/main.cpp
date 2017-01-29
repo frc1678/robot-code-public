@@ -9,15 +9,14 @@ namespace citrus_robot {
 CitrusRobot::CitrusRobot() : throttle_{1}, wheel_{0}, gamepad_{2} {
   shifting_low_ = throttle_.MakeButton(4);
   shifting_high_ = throttle_.MakeButton(5);
-  quickturn_ = throttle_.MakeButton(5);
+  quickturn_ = wheel_.MakeButton(5);
 }
 
 void CitrusRobot::Update() {
   if (DriverStation::GetInstance().IsAutonomous()) {
     lemonscript_.Start();  // Weird to call Start in a loop, but it's a setter so it's fine
-
   } else if (DriverStation::GetInstance().IsOperatorControl()) {
-    //lemonscript_.Stop();  // Weirder to do this, but it works :/
+    lemonscript_.Stop();  // Weirder to do this, but it works :/
 
     // Update joysticks
     throttle_.Update();
@@ -64,7 +63,6 @@ void CitrusRobot::SendDrivetrainMessage() {
         .drivetrain_goal_queue()
         ->WriteMessage(drivetrain_goal);
 }
-
 
 }  // namespace citrus_robot
 }  // namespace c2017
