@@ -32,6 +32,8 @@ void Lights::Update() {
     } else {
       light_color_ = LightColor::BLUE;
     }
+  } else {
+    light_color_ = LightColor::WHITE;
   }
 
   if (vision_status) {
