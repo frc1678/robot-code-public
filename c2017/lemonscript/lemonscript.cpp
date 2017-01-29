@@ -14,7 +14,7 @@ Lemonscript::Lemonscript() {
       ::lemonscript::AvailableCppCommandDeclaration::parseCppCommands(AutoGenerator::GetAutoGenerators());
   state_->declareAvailableCppCommands(decls_);
   try {
-    compiler_ = new ::lemonscript::LemonScriptCompiler("c2017/lemonscript/auto/40kpa.auto", state_);
+    compiler_ = new ::lemonscript::LemonScriptCompiler("c2017/lemonscript/auto/none.auto", state_);
   } catch (std::string e) {
     std::cerr << e << std::endl;
   }
@@ -40,8 +40,34 @@ void Lemonscript::operator()() {
   while (started_) {
     if (running_) {
       running_ = !compiler_->PeriodicUpdate();
+    } else {
+      UpdateAutoRoutine();
     }
     phased_loop.SleepUntilNext();
+  }
+}
+
+void Lemonscript::UpdateAutoRoutine() {
+  auto message = QueueManager::GetInstance().webdash_queue().ReadLastMessage();
+  std::string filename = "none.auto";
+  if (message) {
+    switch (message.value()->auto_mode()) {
+      case c2017::webdash::WebDash::NONE:
+        filename = "none.auto";
+      case c2017::webdash::WebDash::ONE_GEAR:
+        filename = "one_gear.auto";
+      case c2017::webdash::WebDash::TWO_GEAR:
+        filename = "two_gear.auto";
+      case c2017::webdash::WebDash::HELLA_KPA:
+        filename = "hella_kpa.auto";
+      case c2017::webdash::WebDash::HELLA_KPA_PLUS_GEAR:
+        filename = "hella_kpa_plus_gear.auto";
+      default:
+        filename = "none.auto";
+    }
+    delete compiler_;
+    compiler_ = new ::lemonscript::LemonScriptCompiler(
+        "c2017/lemonscript/auto/" + filename, state_);
   }
 }
 
