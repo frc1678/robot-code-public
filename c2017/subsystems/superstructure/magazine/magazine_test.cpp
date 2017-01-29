@@ -54,7 +54,7 @@ TEST(MagazineTest, CanHPIntakeGear) {
   goal->set_score_gear(false);
   goal->set_magazine_extended(true);
   input->set_has_hp_gear(false);
-  goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE); 
+  goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
 
   magazine.SetGoal(goal);
   c2017::magazine::MagazineOutputProto output = magazine.Update(input);
@@ -93,7 +93,7 @@ TEST(MagazineTest, CanAgitateMagazine) {
 
   magazine.SetGoal(goal);
   c2017::magazine::MagazineOutputProto output = magazine.Update(input);
-  
+
   EXPECT_EQ(output->side_voltage(), -12);
 }
 
@@ -110,7 +110,7 @@ TEST(MagazineTest, CanPullInBalls) {
 
   magazine.SetGoal(goal);
   c2017::magazine::MagazineOutputProto output = magazine.Update(input);
-  
+
   EXPECT_EQ(output->side_voltage(), 12);
 }
 
@@ -144,6 +144,6 @@ TEST(MagazineTest, UpperCanMove) {
 
   magazine.SetGoal(goal);
   c2017::magazine::MagazineOutputProto output = magazine.Update(input);
-  
+
   EXPECT_EQ(output->upper_voltage(), 12);
 }
