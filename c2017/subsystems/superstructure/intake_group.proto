@@ -20,6 +20,7 @@ message IntakeGroupGoal {//sorry about the bad naming
     ROLLERS_IDLE = 0;
     ROLLERS_INTAKE = 1;
     ROLLERS_OUTTAKE = 2;
+    ROLLERS_AGITATE = 3;
   }
   enum GearIntakeRollers {
     GEAR_IDLE = 0;
