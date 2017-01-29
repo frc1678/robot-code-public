@@ -48,23 +48,30 @@ void Lemonscript::operator()() {
 }
 
 void Lemonscript::UpdateAutoRoutine() {
-  auto message = QueueManager::GetInstance().webdash_queue().ReadLastMessage();
+  auto message = webdash_reader_.ReadMessage();
   std::string filename = "none.auto";
   if (message) {
     switch (message.value()->auto_mode()) {
       case c2017::webdash::WebDash::NONE:
         filename = "none.auto";
+        break;
       case c2017::webdash::WebDash::ONE_GEAR:
         filename = "one_gear.auto";
+        break;
       case c2017::webdash::WebDash::TWO_GEAR:
         filename = "two_gear.auto";
+        break;
       case c2017::webdash::WebDash::HELLA_KPA:
         filename = "hella_kpa.auto";
+        break;
       case c2017::webdash::WebDash::HELLA_KPA_PLUS_GEAR:
         filename = "hella_kpa_plus_gear.auto";
+        break;
       default:
         filename = "none.auto";
+        break;
     }
+    std::cout << filename << std::endl;
     delete compiler_;
     compiler_ = new ::lemonscript::LemonScriptCompiler(
         "c2017/lemonscript/auto/" + filename, state_);
