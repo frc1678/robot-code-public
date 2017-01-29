@@ -1,5 +1,5 @@
 #include <WPILib.h>
-#include "c2017/wpilib_update/main.h"
+#include "c2017/citrus_robot/main.h"
 #include "subsystems/subsystem_runner.h"
 
 class WpilibRobot : public IterativeRobot {
