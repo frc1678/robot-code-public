@@ -11,7 +11,7 @@ message MagazineStatus {
 }
 
 message MagazineInput {
-  required bool has_hp_gear = 1; // senses distance
+  required bool has_hp_gear = 1; // senses distance using proximity sensor to know if there is a gear
 }
 
 message MagazineOutput {
