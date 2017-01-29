@@ -27,6 +27,7 @@ class CitrusRobot {
   muan::teleop::Button* quickturn_;
 
   void SendDSMessage();
+  void SendDrivetrainMessage();
 };
 
 }  // namespace citrus_robot

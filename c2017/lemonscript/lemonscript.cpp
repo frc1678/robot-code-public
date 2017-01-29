@@ -14,7 +14,7 @@ Lemonscript::Lemonscript() {
       ::lemonscript::AvailableCppCommandDeclaration::parseCppCommands(AutoGenerator::GetAutoGenerators());
   state_->declareAvailableCppCommands(decls_);
   try {
-    compiler_ = new ::lemonscript::LemonScriptCompiler("test.auto", state_);
+    compiler_ = new ::lemonscript::LemonScriptCompiler("c2017/lemonscript/auto/40kpa.auto", state_);
   } catch (std::string e) {
     std::cerr << e << std::endl;
   }

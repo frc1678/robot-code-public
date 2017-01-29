@@ -63,7 +63,7 @@ class Drivetrain(control_loop.ControlLoop):
     # Number of motors per side
     self.num_motors = 2
     # Stall Torque in N m
-    self.stall_torque = 2.42 * self.num_motors * 0.4
+    self.stall_torque = 2.42 * self.num_motors * 0.60
     # Stall Current in Amps
     self.stall_current = 133.0 * self.num_motors
     # Free Speed in RPM. Used number from last year.
@@ -71,13 +71,13 @@ class Drivetrain(control_loop.ControlLoop):
     # Free Current in Amps
     self.free_current = 4.7 * self.num_motors
     # Moment of inertia of the drivetrain in kg m^2
-    self.J = 2.0
+    self.J = 0.35
     # Mass of the robot, in kg.
-    self.m = 100 # Wrong, but makes it work
+    self.m = 22
     # Radius of the robot, in meters (requires tuning by hand)
-    self.rb = 0.4
+    self.rb = 0.35
     # Radius of the wheels, in meters.
-    self.r = (3.25 / 2) * 0.0254
+    self.r = 0.041275
     # Resistance of the motor, divided by the number of motors.
     self.resistance = 12.0 / self.stall_current
     # Motor velocity constant
@@ -124,8 +124,8 @@ class Drivetrain(control_loop.ControlLoop):
     self.A, self.B = self.ContinuousToDiscrete(
         self.A_continuous, self.B_continuous, self.dt)
 
-    q_pos = 0.2
-    q_vel = 1.8
+    q_pos = 0.14
+    q_vel = 0.95
 
     self.Q = numpy.matrix([[(1.0 / (q_pos ** 2.0)), 0.0, 0.0, 0.0],
                            [0.0, (1.0 / (q_vel ** 2.0)), 0.0, 0.0],
@@ -191,7 +191,7 @@ class KFDrivetrain(Drivetrain):
 
     q_pos = 0.05
     q_vel = 1.00
-    q_voltage = 1.0
+    q_voltage = 10.0
     q_encoder_uncertainty = 2.00
 
     self.Q = numpy.matrix([[(q_pos ** 2.0), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],

@@ -9,6 +9,9 @@ cc_binary(
         "//c2017/wpilib_update:main",
         "//third_party/wpilibsuite:wpilib",
     ],
+    data = [
+        "//c2017/lemonscript/auto:auto_modes",
+    ]
 )
 
 muan_deploy(
