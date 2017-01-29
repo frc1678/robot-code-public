@@ -18,7 +18,7 @@ void WebDashController::save(Mongoose::Request &request, StreamResponse &respons
       response << "ERR" << std::endl << "Auto mode value is out of bounds" << std::endl;
     }
   } else {
-    response << "ERR" << std::endl << "No auto moe passed in" << std::endl;
+    response << "ERR" << std::endl << "No auto mode passed in" << std::endl;
   }
 }
 
