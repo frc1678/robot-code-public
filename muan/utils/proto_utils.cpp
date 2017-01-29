@@ -2,7 +2,6 @@
 #define MUAN_UTILS_PROTO_UTILS_HPP_
 
 #include "muan/utils/proto_utils.h"
-#include <iostream>
 #include <sstream>
 #include <vector>
 #include "google/protobuf/generated_message_reflection.h"

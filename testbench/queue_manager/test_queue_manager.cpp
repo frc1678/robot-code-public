@@ -1,9 +1,7 @@
 #include "testbench/queue_manager/queue_manager.h"
 #include "gtest/gtest.h"
 
-TEST(QueueManager, Initalizes) {
-  o2016::QueueManager::GetInstance();
-}
+TEST(QueueManager, Initalizes) { o2016::QueueManager::GetInstance(); }
 
 TEST(QueueManager, QueueWorks) {
   muan::proto::StackProto<PdpStatus, 512> p;

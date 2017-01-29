@@ -19,5 +19,4 @@ using GroundBallIntakeStatusQueue = muan::queues::MessageQueue<GroundBallIntakeS
 
 }  // namespace c2017
 
-
 #endif  // C2017_SUBSYSTEMS_SUPERSTRUCTURE_GROUND_BALL_INTAKE_QUEUE_TYPES_H_

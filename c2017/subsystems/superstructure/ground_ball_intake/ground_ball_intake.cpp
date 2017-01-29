@@ -12,8 +12,7 @@ GroundBallIntakeOutputProto GroundBallIntake::Update(const DriverStationStatus& 
   GroundBallIntakeOutputProto output;
   double roller_voltage = 0;
   bool enable_outputs = !(robot_state.mode() == RobotMode::DISABLED ||
-                          robot_state.mode() == RobotMode::ESTOP ||
-                          robot_state.brownout());
+                          robot_state.mode() == RobotMode::ESTOP || robot_state.brownout());
 
   if (enable_outputs) {
     switch (run_intake_) {

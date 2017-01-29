@@ -48,7 +48,6 @@ SuperStructureInterface::SuperStructureInterface(muan::wpilib::CanWrapper* can_w
       shooter_encoder_{ports::superstructure::kShooterEncoderA, ports::superstructure::kShooterEncoderB},
       trigger_encoder_{ports::superstructure::kTriggerEncoderA, ports::superstructure::kTriggerEncoderB},
       pcm_{can_wrapper->pcm()} {
-
   pcm_->CreateSolenoid(ports::superstructure::kBallIntakeSolenoid);
   pcm_->CreateSolenoid(ports::superstructure::kGroundGearIntakeSolenoid);
   pcm_->CreateSolenoid(ports::superstructure::kGearShutterSolenoid);
@@ -64,7 +63,7 @@ void SuperStructureInterface::ReadSensors() {
   c2017::magazine::MagazineInputProto magazine_sensors;
   c2017::ground_gear_intake::GroundGearIntakeInputProto ground_gear_sensors;
 
-  constexpr double kRadiansPerClick = M_PI * 2  / 512.0;
+  constexpr double kRadiansPerClick = M_PI * 2 / 512.0;
 
   shooter_sensors->set_encoder_position(shooter_encoder_.Get() * kRadiansPerClick);
   trigger_sensors->set_encoder_position(trigger_encoder_.Get() * kRadiansPerClick);
@@ -94,34 +93,31 @@ void SuperStructureInterface::WriteActuators() {
   auto current_reader = QueueManager::GetInstance().pdp_status_queue().MakeReader().ReadLastMessage();
   if (outputs) {
     // Shooter motors
-    shooter_motor_.Set(
-          -muan::utils::Cap((*outputs)->shooter_voltage(),
-                            -ports::superstructure::kMaxVoltage,
-                            ports::superstructure::kMaxVoltage) / 12.0);
+    shooter_motor_.Set(-muan::utils::Cap((*outputs)->shooter_voltage(), -ports::superstructure::kMaxVoltage,
+                                         ports::superstructure::kMaxVoltage) /
+                       12.0);
 
     // Trigger motor
-    trigger_motor_.Set(
-        -muan::utils::Cap((*outputs)->trigger_voltage(),
-                          -ports::superstructure::kMaxVoltage,
-                          ports::superstructure::kMaxVoltage) / 12.0);
+    trigger_motor_.Set(-muan::utils::Cap((*outputs)->trigger_voltage(), -ports::superstructure::kMaxVoltage,
+                                         ports::superstructure::kMaxVoltage) /
+                       12.0);
 
     // Brush motor
-    brush_motor_.Set(
-        -muan::utils::Cap((*outputs)->brush_voltage(),
-                          -ports::superstructure::kMaxVoltage,
-                          ports::superstructure::kMaxVoltage) / 12.0);
+    brush_motor_.Set(-muan::utils::Cap((*outputs)->brush_voltage(), -ports::superstructure::kMaxVoltage,
+                                       ports::superstructure::kMaxVoltage) /
+                     12.0);
 
     // Main ball intake motors
-    ball_intake_motor_.Set(
-        -muan::utils::Cap((*outputs)->main_roller_voltage(),
-                          -ports::superstructure::kMaxVoltage,
-                          ports::superstructure::kMaxVoltage) / 12.0);
+    ball_intake_motor_.Set(-muan::utils::Cap((*outputs)->main_roller_voltage(),
+                                             -ports::superstructure::kMaxVoltage,
+                                             ports::superstructure::kMaxVoltage) /
+                           12.0);
 
     // Ground gear intake motor
-    gear_intake_motor_.Set(
-        -muan::utils::Cap((*outputs)->trigger_voltage(),
-                          -ports::superstructure::kMaxVoltage,
-                          ports::superstructure::kMaxVoltage) / 12.0);
+    gear_intake_motor_.Set(-muan::utils::Cap((*outputs)->trigger_voltage(),
+                                             -ports::superstructure::kMaxVoltage,
+                                             ports::superstructure::kMaxVoltage) /
+                           12.0);
 
     // Solenoids
     pcm_->WriteSolenoid(ports::superstructure::kBallIntakeSolenoid, (*outputs)->ball_intake_down());

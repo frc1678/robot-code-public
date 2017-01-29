@@ -1,4 +1,3 @@
-#include <iostream>
 #include "gtest/gtest.h"
 #include "c2017/subsystems/superstructure/climber/climber.h"
 #include "c2017/queue_manager/queue_manager.h"
@@ -8,22 +7,18 @@ class ClimberTest : public ::testing::Test {
   ClimberTest() {}
 
   void Update(double voltage, bool on_rope) {
-     if (on_rope) {
-       current_position_ += (current_position_ - initial_rope_position) > 1 ? 0 : 0.00042 * voltage;
-       current_ = current_position_ > 2 ? 120 : 20;
-     } else {
-       current_position_ += 0.00042 * voltage;
-       current_ = current_position_ > 2 ? 120 : 10;
-       initial_rope_position = current_position_;
-     }
+    if (on_rope) {
+      current_position_ += (current_position_ - initial_rope_position) > 1 ? 0 : 0.00042 * voltage;
+      current_ = current_position_ > 2 ? 120 : 20;
+    } else {
+      current_position_ += 0.00042 * voltage;
+      current_ = current_position_ > 2 ? 120 : 10;
+      initial_rope_position = current_position_;
+    }
   }
-  double GetPosition() {
-    return current_position_;
-  }
+  double GetPosition() { return current_position_; }
 
-  double GetCurrent() {
-    return current_;
-  }
+  double GetCurrent() { return current_; }
 
   void Reset() {
     current_position_ = 0;
@@ -99,10 +94,9 @@ TEST_F(ClimberTest, Disabled) {
     }
   }
 
-
-    if (test_status) {
+  if (test_status) {
     EXPECT_FALSE(test_status.value()->currently_climbing());
     EXPECT_FALSE(test_status.value()->hit_top());
-    }
+  }
   EXPECT_NEAR(output->voltage(), 0, 1e-5);
 }

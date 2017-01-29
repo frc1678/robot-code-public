@@ -48,6 +48,6 @@ for f in to_format:
         fail = True
 
 if fail:
-    exit(0)
-else:
     exit(failcode)
+else:
+    exit(0)

@@ -4,21 +4,21 @@ namespace muan {
 
 namespace actions {
 
-DrivetrainAction::DrivetrainAction(
-    DrivetrainProperties properties, bool high_gear, double gl, double gr,
-    double gvl, double gvr, double td, double tv,
-    frc971::control_loops::drivetrain::GoalQueue* gq,
-    frc971::control_loops::drivetrain::StatusQueue* sq)
+DrivetrainAction::DrivetrainAction(DrivetrainProperties properties, bool high_gear, double goal_left,
+                                   double goal_right, double goal_velocity_left, double goal_velocity_right,
+                                   double threshold_distance, double threshold_velocity,
+                                   frc971::control_loops::drivetrain::GoalQueue* goal_queue,
+                                   frc971::control_loops::drivetrain::StatusQueue* status_queue)
     : properties_(properties),
-      goal_left_(gl),
-      goal_velocity_left_(gvl),
-      goal_right_(gr),
-      goal_velocity_right_(gvr),
-      threshold_distance_(td),
-      threshold_velocity_(tv),
+      goal_left_(goal_left),
+      goal_velocity_left_(goal_velocity_left),
+      goal_right_(goal_right),
+      goal_velocity_right_(goal_velocity_right),
+      threshold_distance_(threshold_distance),
+      threshold_velocity_(threshold_velocity),
       high_gear_(high_gear),
-      goal_queue_(gq),
-      status_queue_(sq) {}
+      goal_queue_(goal_queue),
+      status_queue_(status_queue) {}
 
 bool DrivetrainAction::Update() {
   if (!IsTerminated()) {
@@ -30,22 +30,16 @@ bool DrivetrainAction::Update() {
 
 void DrivetrainAction::SendMessage() {
   frc971::control_loops::drivetrain::GoalProto goal;
-  goal->mutable_angular_constraints()->set_max_velocity(
-      properties_.max_angular_velocity);
-  goal->mutable_angular_constraints()->set_max_acceleration(
-      properties_.max_angular_acceleration);
-  goal->mutable_linear_constraints()->set_max_velocity(
-      properties_.max_forward_velocity);
-  goal->mutable_linear_constraints()->set_max_acceleration(
-      properties_.max_forward_acceleration);
+  goal->mutable_angular_constraints()->set_max_velocity(properties_.max_angular_velocity);
+  goal->mutable_angular_constraints()->set_max_acceleration(properties_.max_angular_acceleration);
+  goal->mutable_linear_constraints()->set_max_velocity(properties_.max_forward_velocity);
+  goal->mutable_linear_constraints()->set_max_acceleration(properties_.max_forward_acceleration);
   goal->mutable_distance_command()->set_left_goal(goal_left_);
   goal->mutable_distance_command()->set_right_goal(goal_right_);
   goal->mutable_distance_command()->set_left_velocity_goal(goal_velocity_left_);
-  goal->mutable_distance_command()->set_right_velocity_goal(
-      goal_velocity_right_);
-  goal->set_gear(high_gear_
-                     ? frc971::control_loops::drivetrain::Gear::kHighGear
-                     : frc971::control_loops::drivetrain::Gear::kLowGear);
+  goal->mutable_distance_command()->set_right_velocity_goal(goal_velocity_right_);
+  goal->set_gear(high_gear_ ? frc971::control_loops::drivetrain::Gear::kHighGear
+                            : frc971::control_loops::drivetrain::Gear::kLowGear);
   goal_queue_->WriteMessage(goal);
 }
 
@@ -53,24 +47,20 @@ bool DrivetrainAction::IsTerminated() const {
   auto maybe_status = status_queue_->MakeReader().ReadLastMessage();
   if (maybe_status) {
     auto status = maybe_status.value();
-    return (std::abs(status->estimated_left_position() - goal_left_) <
-                threshold_distance_ &&
-            std::abs(status->estimated_right_position() - goal_right_) <
-                threshold_distance_ &&
-            std::abs(status->estimated_left_velocity() - goal_velocity_left_) <
-                threshold_velocity_ &&
-            std::abs(status->estimated_right_velocity() -
-                     goal_velocity_right_) < threshold_velocity_);
+    return (std::abs(status->estimated_left_position() - goal_left_) < threshold_distance_ &&
+            std::abs(status->estimated_right_position() - goal_right_) < threshold_distance_ &&
+            std::abs(status->estimated_left_velocity() - goal_velocity_left_) < threshold_velocity_ &&
+            std::abs(status->estimated_right_velocity() - goal_velocity_right_) < threshold_velocity_);
   } else {
     return false;
   }
 }
 
-DrivetrainAction DrivetrainAction::DriveStraight(
-    double distance, bool high_gear, DrivetrainProperties properties,
-    frc971::control_loops::drivetrain::GoalQueue* gq,
-    frc971::control_loops::drivetrain::StatusQueue* sq,
-    double termination_distance, double termination_velocity) {
+DrivetrainAction DrivetrainAction::DriveStraight(double distance, bool high_gear,
+                                                 DrivetrainProperties properties,
+                                                 frc971::control_loops::drivetrain::GoalQueue* gq,
+                                                 frc971::control_loops::drivetrain::StatusQueue* sq,
+                                                 double termination_distance, double termination_velocity) {
   double left_offset = 0, right_offset = 0;
   auto maybe_status = sq->MakeReader().ReadLastMessage();
   if (maybe_status) {
@@ -79,16 +69,14 @@ DrivetrainAction DrivetrainAction::DriveStraight(
     right_offset = status->estimated_right_position();
   }
 
-  return DrivetrainAction(properties, high_gear, left_offset + distance,
-                          right_offset + distance, 0, 0, termination_distance,
-                          termination_velocity, gq, sq);
+  return DrivetrainAction(properties, high_gear, left_offset + distance, right_offset + distance, 0, 0,
+                          termination_distance, termination_velocity, gq, sq);
 }
 
-DrivetrainAction DrivetrainAction::PointTurn(
-    double angle, bool high_gear, DrivetrainProperties properties,
-    frc971::control_loops::drivetrain::GoalQueue* gq,
-    frc971::control_loops::drivetrain::StatusQueue* sq,
-    double termination_distance, double termination_velocity) {
+DrivetrainAction DrivetrainAction::PointTurn(double angle, bool high_gear, DrivetrainProperties properties,
+                                             frc971::control_loops::drivetrain::GoalQueue* gq,
+                                             frc971::control_loops::drivetrain::StatusQueue* sq,
+                                             double termination_distance, double termination_velocity) {
   double left_offset = 0, right_offset = 0;
   auto maybe_status = sq->MakeReader().ReadLastMessage();
   if (maybe_status) {
@@ -98,17 +86,15 @@ DrivetrainAction DrivetrainAction::PointTurn(
   }
 
   double distance = angle * properties.wheelbase_radius;
-  return DrivetrainAction(properties, high_gear, left_offset - distance,
-                          right_offset + distance, 0, 0, termination_distance,
-                          termination_velocity, gq, sq);
+  return DrivetrainAction(properties, high_gear, left_offset - distance, right_offset + distance, 0, 0,
+                          termination_distance, termination_velocity, gq, sq);
 }
 
-DrivetrainAction DrivetrainAction::SwoopTurn(
-    double distance, double angle, bool high_gear,
-    DrivetrainProperties properties,
-    frc971::control_loops::drivetrain::GoalQueue* gq,
-    frc971::control_loops::drivetrain::StatusQueue* sq,
-    double termination_distance, double termination_velocity) {
+DrivetrainAction DrivetrainAction::SwoopTurn(double distance, double angle, bool high_gear,
+                                             DrivetrainProperties properties,
+                                             frc971::control_loops::drivetrain::GoalQueue* gq,
+                                             frc971::control_loops::drivetrain::StatusQueue* sq,
+                                             double termination_distance, double termination_velocity) {
   // Get offsets
   double left_offset = 0, right_offset = 0;
   auto maybe_status = sq->MakeReader().ReadLastMessage();
@@ -143,27 +129,22 @@ DrivetrainAction DrivetrainAction::SwoopTurn(
   // left/right)
   double max_forward_velocity = (rv_max + lv_max) / 2;
   double max_forward_acceleration = (ra_max + la_max) / 2;
-  double max_angular_velocity =
-      std::abs(rv_max - lv_max) / properties.wheelbase_radius / 2;
-  double max_angular_acceleration =
-      std::abs(ra_max - la_max) / properties.wheelbase_radius / 2;
+  double max_angular_velocity = std::abs(rv_max - lv_max) / properties.wheelbase_radius / 2;
+  double max_angular_acceleration = std::abs(ra_max - la_max) / properties.wheelbase_radius / 2;
 
   return DrivetrainAction(
-      DrivetrainProperties{max_angular_velocity, max_angular_acceleration,
-                           max_forward_velocity, max_forward_acceleration,
-                           properties.wheelbase_radius},
-      high_gear, left_offset + left_distance, right_offset + right_distance, 0,
-      0, termination_distance, termination_velocity, gq, sq);
+      DrivetrainProperties{max_angular_velocity, max_angular_acceleration, max_forward_velocity,
+                           max_forward_acceleration, properties.wheelbase_radius},
+      high_gear, left_offset + left_distance, right_offset + right_distance, 0, 0, termination_distance,
+      termination_velocity, gq, sq);
 }
 
-DriveSCurveAction::DriveSCurveAction(
-    double distance, double angle, bool high_gear,
-    DrivetrainProperties properties,
-    frc971::control_loops::drivetrain::GoalQueue* gq,
-    frc971::control_loops::drivetrain::StatusQueue* sq,
-    double termination_distance, double termination_velocity)
-    : DrivetrainAction(properties, high_gear, 0, 0, 0, 0, termination_distance,
-                       termination_velocity, gq, sq),
+DriveSCurveAction::DriveSCurveAction(double distance, double angle, bool high_gear,
+                                     DrivetrainProperties properties,
+                                     frc971::control_loops::drivetrain::GoalQueue* gq,
+                                     frc971::control_loops::drivetrain::StatusQueue* sq,
+                                     double termination_distance, double termination_velocity)
+    : DrivetrainAction(properties, high_gear, 0, 0, 0, 0, termination_distance, termination_velocity, gq, sq),
       end_left_(distance),
       end_right_(distance) {
   // Get offsets
@@ -200,10 +181,8 @@ DriveSCurveAction::DriveSCurveAction(
   // left/right)
   double max_forward_velocity = (rv_max + lv_max) / 2;
   double max_forward_acceleration = (ra_max + la_max) / 2;
-  double max_angular_velocity =
-      std::abs(rv_max - lv_max) / properties.wheelbase_radius / 2;
-  double max_angular_acceleration =
-      std::abs(ra_max - la_max) / properties.wheelbase_radius / 2;
+  double max_angular_velocity = std::abs(rv_max - lv_max) / properties.wheelbase_radius / 2;
+  double max_angular_acceleration = std::abs(ra_max - la_max) / properties.wheelbase_radius / 2;
 
   goal_left_ = left_distance + left_offset;
   goal_right_ = right_distance + right_offset;
@@ -214,9 +193,8 @@ DriveSCurveAction::DriveSCurveAction(
   end_left_ += left_offset;
   end_right_ += right_offset;
 
-  properties_ = DrivetrainProperties{
-      max_angular_velocity, max_angular_acceleration, max_forward_velocity,
-      max_forward_acceleration, properties.wheelbase_radius};
+  properties_ = DrivetrainProperties{max_angular_velocity, max_angular_acceleration, max_forward_velocity,
+                                     max_forward_acceleration, properties.wheelbase_radius};
 }
 
 bool DriveSCurveAction::FinishedFirst() {
@@ -225,9 +203,8 @@ bool DriveSCurveAction::FinishedFirst() {
     auto status = maybe_status.value();
     // Now we want to check against the profiled goal instead of position
     // estimate, because it should all be open-loop
-    return (
-        std::abs(status->profiled_left_position_goal() - goal_left_) < 1e-4 &&
-        std::abs(status->profiled_right_position_goal() - goal_right_) < 1e-4);
+    return (std::abs(status->profiled_left_position_goal() - goal_left_) < 1e-4 &&
+            std::abs(status->profiled_right_position_goal() - goal_right_) < 1e-4);
   } else {
     return false;
   }

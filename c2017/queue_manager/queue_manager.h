@@ -1,8 +1,11 @@
 #ifndef C2017_QUEUE_MANAGER_QUEUE_MANAGER_H_
 #define C2017_QUEUE_MANAGER_QUEUE_MANAGER_H_
 
+#include <thread>
+#include <functional>
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
+#include "muan/logging/logger.h"
 
 #include "muan/wpilib/gyro/queue_types.h"
 #include "muan/wpilib/queue_types.h"
@@ -29,6 +32,8 @@ namespace c2017 {
 class QueueManager {
  public:
   static QueueManager& GetInstance();
+
+  void StartLogging();
 
   // Note: This needs to be the same as the actual message queue in the
   // PdpWrapper class. If you change that, you will need to change this.
@@ -108,6 +113,11 @@ class QueueManager {
   c2017::shooter_group::ShooterGroupGoalQueue shooter_group_goal_queue_;
 
   c2017::webdash::WebDashQueue webdash_queue_;
+
+#ifndef FRC1678_NO_QUEUE_LOGGING
+  muan::logging::Logger logger_;
+  std::thread logger_thread_{std::ref(logger_)};
+#endif  // FRC1678_NO_QUEUE_LOGGING
 };
 
 }  // namespace c2017

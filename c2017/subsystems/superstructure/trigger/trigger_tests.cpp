@@ -1,5 +1,4 @@
 #include <math.h>
-#include <iostream>
 #include <fstream>
 #include "gtest/gtest.h"
 #include "c2017/subsystems/superstructure/trigger/trigger_constants.h"
@@ -7,7 +6,6 @@
 #include "muan/control/state_space_plant.h"
 #include "muan/control/state_space_controller.h"
 #include "c2017/queue_manager/queue_manager.h"
-
 
 TEST(TriggerController, ZeroInput) {
   c2017::trigger::TriggerInputProto input;
@@ -87,8 +85,7 @@ TEST(TriggerController, NormalInput) {
   }
 
   // Checking velocity
-  EXPECT_NEAR(plant.x()[1], trigger_.get_bps() * (muan::units::pi / 2),
-              trigger_.get_velocity_tolerance());
+  EXPECT_NEAR(plant.x()[1], trigger_.get_bps() * (muan::units::pi / 2), trigger_.get_velocity_tolerance());
 }
 
 TEST(TriggerController, BrownoutInput) {
@@ -185,7 +182,6 @@ TEST(TriggerController, SuddenChange) {
   EXPECT_NEAR(plant.x()[1], trigger_.get_bps() * (muan::units::pi / 2), trigger_.get_velocity_tolerance());
 }
 
-
 TEST(TriggerController, DisabledRobot) {
   c2017::trigger::TriggerInputProto input;
   c2017::trigger::TriggerOutputProto output;
@@ -224,7 +220,6 @@ TEST(TriggerController, DisabledRobot) {
   }
 }
 
-
 TEST(TriggerController, BallResistance) {
   c2017::trigger::TriggerInputProto input;
   c2017::trigger::TriggerOutputProto output;
@@ -257,14 +252,11 @@ TEST(TriggerController, BallResistance) {
 
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
 
-
-
     // Making sure voltage is capped
     EXPECT_NEAR(output->voltage(), 0., 12.);
   }
   EXPECT_NEAR(plant.x()[1], trigger_.get_bps() * (muan::units::pi / 2), trigger_.get_velocity_tolerance());
 }
-
 
 TEST(TriggerController, DisabledtoNormal) {
   c2017::trigger::TriggerInputProto input;

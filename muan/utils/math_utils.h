@@ -1,7 +1,6 @@
 #ifndef MUAN_UTILS_MATH_UTILS_H_
 #define MUAN_UTILS_MATH_UTILS_H_
 
-#include <iostream>
 #include <random>
 #include <algorithm>
 #include "Eigen/Core"

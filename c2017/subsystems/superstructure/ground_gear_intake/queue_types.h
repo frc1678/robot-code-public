@@ -18,6 +18,6 @@ using GroundGearIntakeInputQueue = muan::queues::MessageQueue<GroundGearIntakeIn
 using GroundGearIntakeStatusQueue = muan::queues::MessageQueue<GroundGearIntakeStatusProto, 200>;
 
 }  // namespace ground_gear_intake
-
 }  // namespace c2017
+
 #endif  // C2017_SUBSYSTEMS_SUPERSTRUCTURE_GROUND_GEAR_INTAKE_QUEUE_TYPES_H_

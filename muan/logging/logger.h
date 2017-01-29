@@ -1,7 +1,6 @@
 #ifndef MUAN_LOGGING_LOGGER_H_
 #define MUAN_LOGGING_LOGGER_H_
 
-#include <iostream>
 #include <atomic>
 #include <map>
 #include <memory>
@@ -68,15 +67,13 @@ class Logger {
   // under the name "name". The name will determine the file that it logs to,
   // as well as serving as a human-readable name in other places.
   template <class T>
-  void AddQueue(const std::string& name, T* queue_reader);
+  void AddQueue(const std::string& name, T* queue);
 
   // This is designed to be used with std::thread to run the logger. It will
   // run forever, calling the Update function.
-  void Run();
+  void operator()();
 
   // This starts the logger if you have previously stopped it by calling Stop().
-  // You do not need to call this if you have just called Run() - Run() will
-  // automatically start the logger.
   void Start();
 
   // This stops the logger from running. It can be resumed calling Start().
@@ -93,23 +90,24 @@ class Logger {
 
   class GenericReader {
    public:
-    virtual std::experimental::optional<std::string> GetMessageAsCSV() = 0;
+    virtual std::experimental::optional<std::string> GetMessageAsCSV(bool header) = 0;
   };
 
-  template <class T>
+  template <class R>
   class Reader : public GenericReader {
    public:
-    explicit Reader(T* reader);
-    std::experimental::optional<std::string> GetMessageAsCSV() override;
+    explicit Reader(R reader);
+    std::experimental::optional<std::string> GetMessageAsCSV(bool header) override;
 
    private:
-    T* reader_;
+    R reader_;
   };
 
   struct QueueLog {
     std::unique_ptr<GenericReader> reader;
     std::string name;  // Human friendly name for this log
     std::string filename;
+    bool write_header;  // Do we still need to write the header?
   };
 
   struct TextLog {
@@ -124,5 +122,7 @@ class Logger {
 
 }  // namespace logging
 }  // namespace muan
+
+#include "logger.hpp"
 
 #endif  // MUAN_LOGGING_LOGGER_H_
