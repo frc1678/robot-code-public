@@ -1,8 +1,7 @@
 #include <thread>
 #include "c2017/webdash/server.h"
 
-int main()
-{
+int main() {
   c2017::webdash::WebDashRunner runner;
   std::thread runner_thread{std::ref(runner)};
   while (true) {

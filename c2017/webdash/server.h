@@ -15,7 +15,7 @@ using Mongoose::StreamResponse;
 
 class WebDashController : public Mongoose::WebController {
  public:
-  void save(Mongoose::Request &request, StreamResponse &response);
+  void save(Mongoose::Request &request, StreamResponse &response);  //NOLINT
   void setup();
 };
 
