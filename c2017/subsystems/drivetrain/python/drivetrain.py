@@ -71,7 +71,7 @@ class Drivetrain(control_loop.ControlLoop):
     # Free Current in Amps
     self.free_current = 4.7 * self.num_motors
     # Moment of inertia of the drivetrain in kg m^2
-    self.J = 2.0
+    self.J = 0.6
     # Mass of the robot, in kg.
     self.m = 22
     # Radius of the robot, in meters (requires tuning by hand)
@@ -127,10 +127,10 @@ class Drivetrain(control_loop.ControlLoop):
     q_pos = 0.14
     q_vel = 0.95
 
-    self.Q = numpy.matrix([[(0.0 / (q_pos ** 2.0)), 0.0, 0.0, 0.0],
-                           [0.0, (0.0 / (q_vel ** 2.0)), 0.0, 0.0],
-                           [0.0, 0.0, (0.0 / (q_pos ** 2.0)), 0.0],
-                           [0.0, 0.0, 0.0, (0.0 / (q_vel ** 2.0))]])
+    self.Q = numpy.matrix([[(1.0 / (q_pos ** 2.0)), 0.0, 0.0, 0.0],
+                           [0.0, (1.0 / (q_vel ** 2.0)), 0.0, 0.0],
+                           [0.0, 0.0, (1.0 / (q_pos ** 2.0)), 0.0],
+                           [0.0, 0.0, 0.0, (1.0 / (q_vel ** 2.0))]])
 
     self.R = numpy.matrix([[(1.0 / (12.0 ** 2.0)), 0.0],
                            [0.0, (1.0 / (12.0 ** 2.0))]])
@@ -189,10 +189,10 @@ class KFDrivetrain(Drivetrain):
                            [0, 0],
                            [0, 0]])
 
-    q_pos = 0 #0.05
-    q_vel = 0 #1.00
-    q_voltage = 0 #10.0
-    q_encoder_uncertainty = 0 #2.00
+    q_pos = 0.05
+    q_vel = 1.00
+    q_voltage = 10.0
+    q_encoder_uncertainty = 2.00
 
     self.Q = numpy.matrix([[(q_pos ** 2.0), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                            [0.0, (q_vel ** 2.0), 0.0, 0.0, 0.0, 0.0, 0.0],
