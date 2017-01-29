@@ -1,9 +1,18 @@
+#include <iostream>
 #include "c2017/vision/robot/reader.h"
+#include "c2017/queue_manager/queue_manager.h"
+#include "third_party/aos/vision/events/udp.h"
+#include "third_party/aos/common/time.h"
+#include "third_party/aos/common/util/phased_loop.h"
+#include "third_party/aos/linux_code/init.h"
 
 namespace c2017 {
 namespace vision {
 
-VisionReader::VisionReader() {}
+VisionReader::VisionReader() : vision_input_queue_{QueueManager::GetInstance().vision_input_queue()} {
+  running_ = false;
+    std::cout << "Running!" << std::endl;
+}
 
 void VisionReader::operator()() {
   aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(20));
@@ -15,18 +24,14 @@ void VisionReader::operator()() {
   running_ = true;
 
   while (running_) {
-    std::cout << "Running!" << std::endl;
     read_socket.Recv(buffer, 1024);
-    c2017::vision::VisionInputProto position;
+    VisionInputProto position;
     position->ParseFromArray(buffer, 1024);
+    //position->set_target_found(true);  // TODO this is temporary
+    //position->set_angle_to_target(1);
+    //position->set_distance_to_target(2);
 
-    std::cout << "target found: " << position->target_found() << std::endl;
-    if (position->has_distance_to_target()) {
-      std::cout << "distance to target: " << position->distance_to_target() << std::endl;
-    }
-    if (position->has_angle_to_target()) {
-      std::cout << "angle target: " << position->angle_to_target() << std::endl;
-    }
+    vision_input_queue_.WriteMessage(position);
 
     phased_loop.SleepUntilNext();
   }

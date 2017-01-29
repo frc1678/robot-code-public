@@ -22,7 +22,7 @@ class CitrusRobot {
   c2017::lemonscript::Lemonscript lemonscript_;
   std::thread lemonscript_thread_{std::ref(lemonscript_)};
 
-  bool high_gear_;
+  // bool high_gear_;
   muan::teleop::Button *shifting_high_, *shifting_low_;
   muan::teleop::Button* quickturn_;
 

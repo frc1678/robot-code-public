@@ -108,6 +108,13 @@ c2017::climber::ClimberInputQueue& QueueManager::climber_input_queue() { return 
 
 c2017::climber::ClimberStatusQueue& QueueManager::climber_status_queue() { return climber_status_queue_; }
 
+// Vision
+c2017::vision::VisionInputQueue& QueueManager::vision_input_queue() { return vision_input_queue_; }
+
+c2017::vision::VisionStatusQueue& QueueManager::vision_status_queue() { return vision_status_queue_; }
+
+c2017::vision::VisionGoalQueue& QueueManager::vision_goal_queue() { return vision_goal_queue_; }
+
 // Group Goal Queues
 c2017::intake_group::IntakeGroupGoalQueue& QueueManager::intake_group_goal_queue() {
   return intake_group_goal_queue_;

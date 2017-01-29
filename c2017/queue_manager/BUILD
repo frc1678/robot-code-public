@@ -17,6 +17,7 @@ cc_library(
         "//c2017/subsystems/superstructure/climber:climber_queues",
         "//c2017/subsystems/superstructure:intake_group_queues",
         "//c2017/subsystems/superstructure:shooter_group_queues",
+        "//c2017/vision:vision_queues",
         "//c2017/wpilib:wpilib_queues",
     ],
     visibility = ["//visibility:public"]
