@@ -7,12 +7,11 @@ TEST(MagazineTest, CanExtendMagazine) {
   c2017::magazine::MagazineGoalProto goal;
   c2017::magazine::Magazine magazine;
 
-  goal->set_conveyor_goal(c2017::magazine::ConveyorGoalState::CONVEYOR_IDLE);
   goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::NONE);
-  goal->set_brush_goal(c2017::magazine::BrushGoalState::BRUSH_IDLE);
+  goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
   goal->set_score_gear(false);
-  goal->set_rotate_gear(true);
   goal->set_magazine_extended(true);
+  goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
 
   magazine.SetGoal(goal);
   c2017::magazine::MagazineOutputProto output = magazine.Update(input);
@@ -26,11 +25,10 @@ TEST(MagazineTest, CanIntakeBoth) {
   c2017::magazine::Magazine magazine;
 
   goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::BOTH);
-  goal->set_conveyor_goal(c2017::magazine::ConveyorGoalState::CONVEYOR_IDLE);
-  goal->set_brush_goal(c2017::magazine::BrushGoalState::BRUSH_IDLE);
+  goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
   goal->set_score_gear(false);
-  goal->set_rotate_gear(true);
   goal->set_magazine_extended(true);
+  goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
 
   input->set_has_hp_gear(false);
 
@@ -46,18 +44,17 @@ TEST(MagazineTest, CanIntakeBoth) {
   EXPECT_TRUE(output->gear_intake_covered());
 }
 
-TEST(MagazineTest, CanIntakeGear) {
+TEST(MagazineTest, CanHPIntakeGear) {
   c2017::magazine::MagazineInputProto input;
   c2017::magazine::MagazineGoalProto goal;
   c2017::magazine::Magazine magazine;
 
   goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::GEAR);
-  goal->set_conveyor_goal(c2017::magazine::ConveyorGoalState::CONVEYOR_IDLE);
-  goal->set_brush_goal(c2017::magazine::BrushGoalState::BRUSH_IDLE);
+  goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
   goal->set_score_gear(false);
-  goal->set_rotate_gear(true);
   goal->set_magazine_extended(true);
   input->set_has_hp_gear(false);
+  goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE); 
 
   magazine.SetGoal(goal);
   c2017::magazine::MagazineOutputProto output = magazine.Update(input);
@@ -71,12 +68,11 @@ TEST(MagazineTest, CanIntakeBalls) {
   c2017::magazine::Magazine magazine;
 
   goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::BALLS);
-  goal->set_conveyor_goal(c2017::magazine::ConveyorGoalState::CONVEYOR_IDLE);
-  goal->set_brush_goal(c2017::magazine::BrushGoalState::BRUSH_IDLE);
+  goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
   goal->set_score_gear(false);
-  goal->set_rotate_gear(true);
   goal->set_magazine_extended(true);
   input->set_has_hp_gear(false);
+  goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
 
   magazine.SetGoal(goal);
   c2017::magazine::MagazineOutputProto output = magazine.Update(input);
@@ -84,40 +80,38 @@ TEST(MagazineTest, CanIntakeBalls) {
   EXPECT_TRUE(output->gear_intake_covered());
 }
 
-TEST(MagazineTest, CanRotateGear) {
+TEST(MagazineTest, CanAgitateMagazine) {
   c2017::magazine::MagazineInputProto input;
   c2017::magazine::MagazineGoalProto goal;
   c2017::magazine::Magazine magazine;
 
-  goal->set_conveyor_goal(c2017::magazine::ConveyorGoalState::CONVEYOR_IDLE);
   goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::GEAR);
-  goal->set_brush_goal(c2017::magazine::BrushGoalState::BRUSH_IDLE);
+  goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
   goal->set_score_gear(false);
-  goal->set_rotate_gear(true);
   goal->set_magazine_extended(false);
+  goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_AGITATE);
 
   magazine.SetGoal(goal);
   c2017::magazine::MagazineOutputProto output = magazine.Update(input);
-
-  EXPECT_EQ(output->gear_rotator_voltage(), 3);
+  
+  EXPECT_EQ(output->side_voltage(), -12);
 }
 
-TEST(MagazineTest, CanScoreGearWhileRotating) {
+TEST(MagazineTest, CanPullInBalls) {
   c2017::magazine::MagazineInputProto input;
   c2017::magazine::MagazineGoalProto goal;
   c2017::magazine::Magazine magazine;
 
-  goal->set_conveyor_goal(c2017::magazine::ConveyorGoalState::CONVEYOR_IDLE);
   goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::GEAR);
-  goal->set_brush_goal(c2017::magazine::BrushGoalState::BRUSH_IDLE);
-  goal->set_score_gear(true);
-  goal->set_rotate_gear(true);
+  goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
+  goal->set_score_gear(false);
   goal->set_magazine_extended(false);
+  goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_PULL_IN);
 
   magazine.SetGoal(goal);
   c2017::magazine::MagazineOutputProto output = magazine.Update(input);
-
-  EXPECT_EQ(output->gear_rotator_voltage(), 3);
+  
+  EXPECT_EQ(output->side_voltage(), 12);
 }
 
 TEST(MagazineTest, CanIntakeNothing) {
@@ -125,45 +119,31 @@ TEST(MagazineTest, CanIntakeNothing) {
   c2017::magazine::MagazineGoalProto goal;
   c2017::magazine::Magazine magazine;
 
-  goal->set_conveyor_goal(c2017::magazine::ConveyorGoalState::CONVEYOR_IDLE);
   goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::NONE);
-  goal->set_brush_goal(c2017::magazine::BrushGoalState::BRUSH_IDLE);
+  goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
   goal->set_score_gear(false);
-  goal->set_rotate_gear(true);
   goal->set_magazine_extended(false);
+  goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
 
   magazine.SetGoal(goal);
   c2017::magazine::MagazineOutputProto output = magazine.Update(input);
 
-  EXPECT_FALSE(output->magazine_extended());
+  EXPECT_TRUE(output->gear_intake_covered());
 }
 
-TEST(MagazineTest, ConveyorCanMoveForwardThenBackward) {
+TEST(MagazineTest, UpperCanMove) {
   c2017::magazine::MagazineInputProto input;
   c2017::magazine::MagazineGoalProto goal;
   c2017::magazine::Magazine magazine;
 
-  goal->set_conveyor_goal(c2017::magazine::ConveyorGoalState::CONVEYOR_FORWARD);
   goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::NONE);
-  goal->set_brush_goal(c2017::magazine::BrushGoalState::BRUSH_IDLE);
+  goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_FORWARD);
   goal->set_score_gear(false);
-  goal->set_rotate_gear(true);
   goal->set_magazine_extended(false);
+  goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
 
   magazine.SetGoal(goal);
   c2017::magazine::MagazineOutputProto output = magazine.Update(input);
-
-  EXPECT_EQ(output->conveyor_voltage(), 12);
-
-  goal->set_conveyor_goal(c2017::magazine::ConveyorGoalState::CONVEYOR_BACKWARD);
-  goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::NONE);
-  goal->set_brush_goal(c2017::magazine::BrushGoalState::BRUSH_IDLE);
-  goal->set_score_gear(false);
-  goal->set_rotate_gear(true);
-  goal->set_magazine_extended(false);
-
-  magazine.SetGoal(goal);
-  output = magazine.Update(input);
-
-  EXPECT_EQ(output->conveyor_voltage(), -12);
+  
+  EXPECT_EQ(output->upper_voltage(), 12);
 }
