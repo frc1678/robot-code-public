@@ -11,6 +11,7 @@ cc_binary(
     ],
     data = [
         "//c2017/lemonscript/auto:auto_modes",
+        "//c2017/webdash:webdash_html"
     ]
 )
 

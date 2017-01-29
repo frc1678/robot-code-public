@@ -28,7 +28,7 @@ void WebDashController::setup() {
 
 void WebDashRunner::operator()() {
   server_.registerController(&controller_);
-
+  server_.setOption("document_root", "c2017/webdash/www/");
   server_.start();
 
   while (true) {

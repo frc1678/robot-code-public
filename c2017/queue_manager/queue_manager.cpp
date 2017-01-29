@@ -36,6 +36,8 @@ void QueueManager::StartLogging() {
 
   logger_.AddQueue("intake_group_goal", &intake_group_goal_queue_);
   logger_.AddQueue("shooter_group_goal", &shooter_group_goal_queue_);
+
+  logger_.AddQueue("webdash", &webdash_queue_);
 #endif  // FRC1678_NO_QUEUE_LOGGING
 }
 

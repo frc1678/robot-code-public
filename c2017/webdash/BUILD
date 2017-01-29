@@ -7,6 +7,11 @@ cc_binary(
   deps = [":server"]
 )
 
+filegroup(
+    name = "webdash_html",
+    srcs = glob(["www/**"]),
+)
+
 cc_library(
   name = "server",
   srcs = ["server.cpp"],
