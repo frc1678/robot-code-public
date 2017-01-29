@@ -11,22 +11,26 @@ namespace c2017 {
 namespace lights {
 
 enum class LightColor {
-  OFF = 0;
-  RED = 1;
-  BLUE = 2;
-  GREEN = 3;
-  YELLOW = 4;
-  TEAL = 5;
-  PINK = 6;
-  WHITE = 7;
-}
+  OFF = 0,
+  RED = 1,
+  BLUE = 2,
+  GREEN = 3,
+  YELLOW = 4,
+  TEAL = 5,
+  PINK = 6,
+  WHITE = 7,
+};
 
 class Lights {
  public:
   void Update();
  private:
   LightColor light_color_;
-  LightColor AllignedLights();
+  LightColor VisionAllignment();
+  LightColor FlashLights(LightColor, LightColor, bool);
+  bool GetRed();
+  bool GetGreen();
+  bool GetBlue();
 };
 
 }  // namespace lights
