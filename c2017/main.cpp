@@ -1,5 +1,6 @@
 #include <WPILib.h>
 #include "c2017/wpilib_update/main.h"
+#include "c2017/webdash/server.h"
 #include "subsystems/subsystem_runner.h"
 
 class WpilibRobot : public IterativeRobot {
@@ -13,6 +14,9 @@ class WpilibRobot : public IterativeRobot {
  private:
   c2017::SubsystemRunner subsystem_runner_;
   std::thread subsystem_thread{std::ref(subsystem_runner_)};
+
+  c2017::webdash::WebDashRunner runner;
+  std::thread runner_thread{std::ref(runner)};
 
   c2017::citrus_robot::CitrusRobot main_;
 };

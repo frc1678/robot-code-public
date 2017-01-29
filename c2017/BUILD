@@ -3,7 +3,8 @@ cc_binary(
   deps=[
       "//third_party/wpilibsuite:wpilib",
       "//c2017/subsystems:subsystem_runner",
-      "//c2017/wpilib_update:main"
+      "//c2017/wpilib_update:main",
+      "//c2017/webdash:server"
   ],
   srcs=["main.cpp"]
 )
