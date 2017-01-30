@@ -52,7 +52,7 @@ class QueueManager {
   c2017::trigger::TriggerInputQueue& trigger_input_queue();
   c2017::trigger::TriggerStatusQueue& trigger_status_queue();
 
-  ground_ball_intake::GroundBallIntakeStatusQueue& ground_ball_intake_status_queue();
+  c2017::ground_ball_intake::GroundBallIntakeStatusQueue& ground_ball_intake_status_queue();
 
   c2017::shooter::ShooterInputQueue& shooter_input_queue();
   c2017::shooter::ShooterStatusQueue& shooter_status_queue();
