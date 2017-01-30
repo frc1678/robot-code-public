@@ -111,7 +111,7 @@ TEST(LightColors, HpLoadBoth) {
   if (lights_reading) {
     EXPECT_TRUE(lights_reading.value()->red());
     EXPECT_FALSE(lights_reading.value()->green());
-    EXPECT_TRUE(lights_reading.value()->blue()); // creates pink
+    EXPECT_TRUE(lights_reading.value()->blue());  // creates pink
   }
   aos::time::IncrementMockTime(std::chrono::milliseconds(1000));
   lights.Update();
@@ -119,8 +119,8 @@ TEST(LightColors, HpLoadBoth) {
   if (lights_reading) {
     EXPECT_TRUE(lights_reading.value()->red());
     EXPECT_TRUE(lights_reading.value()->green());
-    EXPECT_FALSE(lights_reading.value()->blue()); // creates yellow
-  } 
+    EXPECT_FALSE(lights_reading.value()->blue());  // creates yellow
+  }
 }
 
 TEST(LightColors, VisionNotAlligned) {
