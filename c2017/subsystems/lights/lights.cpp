@@ -15,8 +15,7 @@ void Lights::Update() {
       if (intake_group_goal_queue) {
         switch (intake_group_goal_queue.value()->hp_load_type()) {
           case c2017::intake_group::HpLoadType::HP_LOAD_NONE:
-            light_color_ = LightColor::WHITE;
-            // call a function for the vision colors
+            light_color_ = VisionAllignment();
             break;
           case c2017::intake_group::HpLoadType::HP_LOAD_BALLS:
             light_color_ = LightColor::YELLOW;
@@ -29,7 +28,7 @@ void Lights::Update() {
             break;
         }
       }
-      // add the auto routines, not nessecarily here, but somewhere. 
+      // add the auto routines, not nessecarily here, but somewhere.
     } else {
       light_color_ = LightColor::BLUE;
     }
@@ -63,28 +62,29 @@ LightColor Lights::VisionAllignment() {
   }
   return LightColor::WHITE;
 }
-    bool Lights::GetRed() {
-      return (light_color_ == LightColor::RED || light_color_ == LightColor::YELLOW ||
-              light_color_ == LightColor::WHITE || light_color_ == LightColor::PINK);
-    }
+bool Lights::GetRed() {
+  return (light_color_ == LightColor::RED || light_color_ == LightColor::YELLOW ||
+          light_color_ == LightColor::WHITE || light_color_ == LightColor::PINK);
+}
 
-    LightColor Lights::FlashLights(LightColor color_one, LightColor color_two, bool off_between) {
-      double now = std::chrono::duration<double>(aos::monotonic_clock::now() - aos::monotonic_clock::epoch()).count();
-      auto color = (static_cast<int>(now) % 2) ? color_one : color_two;
-      if (off_between && fmod(now, 0.5) < 0.25) color = LightColor::OFF;
-      return color;
-    }
+LightColor Lights::FlashLights(LightColor color_one, LightColor color_two, bool off_between) {
+  double now =
+      std::chrono::duration<double>(aos::monotonic_clock::now() - aos::monotonic_clock::epoch()).count();
+  auto color = (static_cast<int>(now) % 2) ? color_one : color_two;
+  if (off_between && fmod(now, 0.5) < 0.25) color = LightColor::OFF;
+  return color;
+}
 
-    bool Lights::GetGreen() {
-      return (light_color_ == LightColor::GREEN || light_color_ == LightColor::TEAL ||
-              light_color_ == LightColor::YELLOW || light_color_ == LightColor::WHITE);
-    }
+bool Lights::GetGreen() {
+  return (light_color_ == LightColor::GREEN || light_color_ == LightColor::TEAL ||
+          light_color_ == LightColor::YELLOW || light_color_ == LightColor::WHITE);
+}
 
-    bool Lights::GetBlue() {
-      return (light_color_ == LightColor::BLUE || light_color_ == LightColor::TEAL ||
-              light_color_ == LightColor::PINK || light_color_ == LightColor::WHITE);
-    }
+bool Lights::GetBlue() {
+  return (light_color_ == LightColor::BLUE || light_color_ == LightColor::TEAL ||
+          light_color_ == LightColor::PINK || light_color_ == LightColor::WHITE);
+}
 
-  }  // namespace lights
+}  // namespace lights
 
 }  // namespace c2017
