@@ -1,0 +1,14 @@
+PrintBool(bool v)
+
+include {
+    <stdio.h>
+}
+
+init {
+    return false;
+}
+
+periodic {
+    printf("%s\n", v ? "true" : "false");
+    return true;
+}

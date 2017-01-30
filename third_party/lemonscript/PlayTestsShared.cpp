@@ -13,6 +13,7 @@
 #include <lemonscript/lemonscript.h>
 #include <lemonscript/AvailableCppCommandDeclaration.h>
 #include <lemonscript/LemonScriptState.h>
+#include <lemonscript/LemonScriptCompiler.h>
 
 #include "auto_functions.h"
 
@@ -27,4 +28,23 @@ LemonScriptState * PlayTestsShared::play_tests_make_state() {
     state->declareAvailableCppCommands(decls);
     
     return state;
+}
+
+void PlayTestsShared::run_at_path(std::string path, lemonscript::LemonScriptState *state) {
+    try {
+        lemonscript::LemonScriptCompiler *compiler = new lemonscript::LemonScriptCompiler(path, state);
+        
+        int i = 0;
+        while (true) {
+            std::cout << "Iteration " << i++ << ":" << std::endl;
+            
+            bool isDone = compiler->PeriodicUpdate();
+            if(isDone) { break; }
+        }
+        
+        delete compiler;
+        delete state;
+    } catch (std::string error) {
+        std::cerr << error << std::endl;
+    }
 }

@@ -1,0 +1,14 @@
+PrintInt(int v)
+
+include {
+    <stdio.h>
+}
+
+init {
+    return false;
+}
+
+periodic {
+    printf("%d\n", v);
+    return true;
+}

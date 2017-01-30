@@ -1,4 +1,0 @@
-WHILE:
-  Wait: 10
-ALSO:
-  Wait: 4

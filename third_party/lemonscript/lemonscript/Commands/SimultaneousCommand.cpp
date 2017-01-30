@@ -1,6 +1,6 @@
 //
 //  SimultaneousCommand.cpp
-//  FiniteStateMachine
+//  lemonscript
 //
 //  Created by Donald Pinckney on 1/16/16.
 //  Copyright © 2016 Donald Pinckney. All rights reserved.
@@ -10,7 +10,6 @@
 #include "LemonScriptTokenizer.h"
 
 #include "CppCommand.h"
-#include "WhileAlsoCommand.h"
 #include "CompleteAnyCommand.h"
 #include "CompleteCommand.h"
 #include "SetCommand.h"
@@ -58,7 +57,7 @@ bool lemonscript::SimultaneousCommand::Update() {
     for (size_t i = 0; i < len; i++) {
         Command *command = commands[i];
         bool alreadyDone = doneCommands[i];
-        bool isOptional = dynamic_cast<lemonscript::OptionalCommand *>(command);
+        bool isOptional = dynamic_cast<lemonscript::OptionalCommand *>(command) != nullptr;
         
         if(alreadyDone && !isOptional) {
             anyDone = true;

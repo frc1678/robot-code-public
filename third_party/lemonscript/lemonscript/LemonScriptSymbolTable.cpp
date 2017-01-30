@@ -37,13 +37,6 @@ void LemonScriptSymbolTable::declareVariable(int line, const std::string &name, 
             address = malloc(sizeof(bool));
             memcpy(address, pointerToValue, sizeof(bool));
             break;
-            
-        case DataType::TYPE:
-            throw "Line " + std::to_string(line) + ": Declaring type variables not yet supported: " + name;
-            
-        case DataType::UNIT:
-            throw "Line " + std::to_string(line) + ": Declaring unit variables not yet supported: " + name;
-            
     }
     
     variableAddresses[name] = address;

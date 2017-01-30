@@ -1,0 +1,14 @@
+PrintFloat(float v)
+
+include {
+    <stdio.h>
+}
+
+init {
+    return false;
+}
+
+periodic {
+    printf("%f\n", v);
+    return true;
+}

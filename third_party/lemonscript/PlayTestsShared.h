@@ -10,9 +10,12 @@
 #define PlayTestsShared_hpp
 
 #include <lemonscript/lemonscript.h>
+#include <string>
 
 namespace PlayTestsShared {
     lemonscript::LemonScriptState * play_tests_make_state();
+    void run_at_path(std::string path, lemonscript::LemonScriptState *state);
+
 }
 
 

@@ -1,6 +1,6 @@
 //
 //  LemonScriptParser.cpp
-//  FiniteStateMachine
+//  lemonscript
 //
 //  Created by Donald Pinckney on 12/30/15.
 //  Copyright © 2015 Donald Pinckney. All rights reserved.
@@ -45,10 +45,7 @@ tuple<string, TokenType, int> lemonscript::LemonScriptTokenizer::nextToken() {
     int startLine = currentLine;
     bool isScoping = false;
     TokenType type;
-    if(beginsWith(firstLine, "WHILE:")) {
-        isScoping = true;
-        type = WhileAlsoToken;
-    } else if(beginsWith(firstLine, "SET ")) {
+    if(beginsWith(firstLine, "SET ")) {
         type = SetToken;
     } else if(beginsWith(firstLine, "DEF ")) {
         type = DefToken;
@@ -69,6 +66,9 @@ tuple<string, TokenType, int> lemonscript::LemonScriptTokenizer::nextToken() {
         type = NotToken;
     } else if(beginsWith(firstLine, "? ")) {
         type = OptionalCommandToken;
+    } else if(beginsWith(firstLine, "SEQUENCE:")) {
+        isScoping = true;
+        type = SequenceToken;
     } else {
         type = CppToken;
     }
@@ -78,21 +78,6 @@ tuple<string, TokenType, int> lemonscript::LemonScriptTokenizer::nextToken() {
     ostringstream tempTokenStorage;
     if(!isScoping) {
         tempTokenStorage << firstLine;
-    } else if(type == WhileAlsoToken) {
-        while(true) {
-            tempTokenStorage << firstLine << endl;
-        
-
-            string nextLine = peekLine(*input);
-            if((!beginsWith(nextLine, "  ") && !beginsWith(nextLine, "ALSO:") && isExecutableLine(nextLine)) || isEof(input)) {
-                break;
-            }
-
-            getline(*input, firstLine);
-            currentLine++;
-            
-            
-        }
     } else if(type == CompleteToken || type == CompleteAnyToken) {
         while(true) {
             tempTokenStorage << firstLine << endl;
@@ -114,6 +99,18 @@ tuple<string, TokenType, int> lemonscript::LemonScriptTokenizer::nextToken() {
                 break;
             }
             
+            
+            getline(*input, firstLine);
+            currentLine++;
+        }
+    } else if(type == SequenceToken) {
+        while(true) {
+            tempTokenStorage << firstLine << endl;
+            
+            string nextLine = peekLine(*input);
+            if((!beginsWith(nextLine, "  ") && isExecutableLine(nextLine)) || isEof(input)) {
+                break;
+            }
             
             getline(*input, firstLine);
             currentLine++;
