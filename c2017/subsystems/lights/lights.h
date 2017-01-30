@@ -36,4 +36,4 @@ class Lights {
 }  // namespace lights
 
 }  // namespace c2017
-#endif  // C2017_SUBSYSTEMS_CLIMBER_CLIMBER_H_
+#endif  // C2017_SUBSYSTEMS_LIGHTS_LIGHTS_H_
