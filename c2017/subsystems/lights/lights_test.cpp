@@ -2,7 +2,8 @@
 #include "c2017/subsystems/lights/lights.h"
 #include "c2017/queue_manager/queue_manager.h"
 
-//not doing test fixture because the time it would take to make it work outweighs the time it takes to do everything else
+// not doing test fixture because the time it would take to make it work 
+// outweighs the time it takes to do everything else
 
 TEST(LightColors, NoVisionSignal) {
   c2017::vision::VisionStatusProto vision_status;
@@ -110,7 +111,7 @@ TEST(LightColors, HpLoadBoth) {
   if (lights_reading) {
     EXPECT_TRUE(lights_reading.value()->red());
     EXPECT_FALSE(lights_reading.value()->green());
-    EXPECT_TRUE(lights_reading.value()->blue());  // creates pink
+    EXPECT_TRUE(lights_reading.value()->blue()); // creates pink
   }
   aos::time::IncrementMockTime(std::chrono::milliseconds(1000));
   lights.Update();
@@ -118,7 +119,7 @@ TEST(LightColors, HpLoadBoth) {
   if (lights_reading) {
     EXPECT_TRUE(lights_reading.value()->red());
     EXPECT_TRUE(lights_reading.value()->green());
-    EXPECT_FALSE(lights_reading.value()->blue());  // creates yellow
+    EXPECT_FALSE(lights_reading.value()->blue()); // creates yellow
   } 
 }
 
