@@ -42,9 +42,9 @@ void Lights::Update() {
 
   LightsOutputProto output;
 
-  output->set_red(GetRed());
-  output->set_green(GetGreen());
-  output->set_blue(GetBlue());
+  output->set_red(is_red());
+  output->set_green(is_green());
+  output->set_blue(is_blue());
 
   QueueManager::GetInstance().lights_output_queue().WriteMessage(output);
 }
@@ -62,7 +62,7 @@ LightColor Lights::VisionAllignment() {
   }
   return LightColor::WHITE;
 }
-bool Lights::GetRed() {
+bool Lights::is_red() const {
   return (light_color_ == LightColor::RED || light_color_ == LightColor::YELLOW ||
           light_color_ == LightColor::WHITE || light_color_ == LightColor::PINK);
 }
@@ -75,12 +75,12 @@ LightColor Lights::FlashLights(LightColor color_one, LightColor color_two, bool 
   return color;
 }
 
-bool Lights::GetGreen() {
+bool Lights::is_green() const {
   return (light_color_ == LightColor::GREEN || light_color_ == LightColor::TEAL ||
           light_color_ == LightColor::YELLOW || light_color_ == LightColor::WHITE);
 }
 
-bool Lights::GetBlue() {
+bool Lights::is_blue() const {
   return (light_color_ == LightColor::BLUE || light_color_ == LightColor::TEAL ||
           light_color_ == LightColor::PINK || light_color_ == LightColor::WHITE);
 }

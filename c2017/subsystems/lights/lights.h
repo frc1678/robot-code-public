@@ -28,9 +28,9 @@ class Lights {
   LightColor light_color_;
   LightColor VisionAllignment();
   LightColor FlashLights(LightColor, LightColor, bool);
-  bool GetRed();
-  bool GetGreen();
-  bool GetBlue();
+  bool is_red() const;
+  bool is_green() const;
+  bool is_blue() const;
 };
 
 }  // namespace lights

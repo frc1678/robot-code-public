@@ -35,9 +35,5 @@ cc_test(
         ":lights", 
         ":lights_queues",
         "//third_party/google/googletest",
-    ],
-     
-      
+    ], 
 )
-
-
