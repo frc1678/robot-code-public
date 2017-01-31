@@ -55,6 +55,12 @@ Eigen::Matrix<double, A, 1> GaussianNoise(
 // Perform a modulo operation that is relative to negative infinity, not 0
 uint32_t true_modulo(int a, int b);
 
+// Checks if b is either in [a, c] or [c, a]
+template<typename T>
+bool ordered(T a, T b, T c) {
+  return (a <= b && b <= c) || (c <= b && b <= a);
+}
+
 }  // namespace utils
 }  // namespace muan
 
