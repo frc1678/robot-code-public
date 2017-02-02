@@ -6,11 +6,15 @@ namespace vision {
 
 VisionSubsystem::VisionSubsystem()
     : should_align_{true},
+      running_{false},
       properties_{7.0, 5.0, 3.0, 2.0, c2017::drivetrain::GetDrivetrainConfig().robot_radius},
       vision_input_reader_{QueueManager::GetInstance().vision_input_queue().MakeReader()},
       driverstation_reader_{QueueManager::GetInstance().driver_station_queue()->MakeReader()},
       dt_goal_queue_{c2017::QueueManager::GetInstance().drivetrain_goal_queue()},
-      dt_status_reader_{c2017::QueueManager::GetInstance().drivetrain_status_queue()->MakeReader()} {}
+      dt_status_reader_{c2017::QueueManager::GetInstance().drivetrain_status_queue()->MakeReader()},
+      action_{muan::actions::DrivetrainAction(properties_,
+              c2017::QueueManager::GetInstance().drivetrain_goal_queue(),
+              c2017::QueueManager::GetInstance().drivetrain_status_queue())} {}
 
 void VisionSubsystem::Update() {
   auto ds = driverstation_reader_.ReadLastMessage();
@@ -34,36 +38,18 @@ void VisionSubsystem::Update() {
   }
 
   bool terminated = false;
-  if (!disabled && should_align_) {
-    // Send drivetrain goal
-    double left_offset = 0, right_offset = 0;
-    auto maybe_status = dt_status_reader_.ReadLastMessage();
-    if (maybe_status) {
-      auto dt_status = maybe_status.value();
-      left_offset = dt_status->estimated_left_position();
-      right_offset = dt_status->estimated_right_position();
+  if (!disabled) {
+    if (!running_) {
+      muan::actions::DrivetrainActionParams params;
+      params.termination = muan::actions::DrivetrainTermination{0.05, 0.05, 0.05, 0.05};
+      params.desired_angular_displacement = -status->angle_to_target();
+      action_.ExecuteDrive(params);
+      running_ = true;
+    } else {
+      terminated = !action_.Update();
     }
-    double distance = -status->angle_to_target() * properties_.wheelbase_radius;
-
-    frc971::control_loops::drivetrain::GoalProto goal;
-    goal->mutable_angular_constraints()->set_max_velocity(properties_.max_angular_velocity);
-    goal->mutable_angular_constraints()->set_max_acceleration(properties_.max_angular_acceleration);
-    goal->mutable_linear_constraints()->set_max_velocity(properties_.max_forward_velocity);
-    goal->mutable_linear_constraints()->set_max_acceleration(properties_.max_forward_acceleration);
-    goal->mutable_distance_command()->set_left_goal(left_offset - distance);
-    goal->mutable_distance_command()->set_right_goal(right_offset + distance);
-    goal->mutable_distance_command()->set_left_velocity_goal(0);
-    goal->mutable_distance_command()->set_right_velocity_goal(0);
-    goal->set_gear(frc971::control_loops::drivetrain::Gear::kHighGear);
-    dt_goal_queue_->WriteMessage(goal);
-
-    // Determine if it is terminated
-    if (maybe_status && status->has_angle_to_target()) {
-      auto dt_status = maybe_status.value();
-      terminated = std::abs(status->angle_to_target()) < 0.02 &&
-                   std::abs(dt_status->estimated_left_velocity()) < 0.01 &&
-                   std::abs(dt_status->estimated_right_velocity()) < 0.01;
-    }
+  } else {
+    running_ = false;
   }
   status->set_aligned(terminated);
   QueueManager::GetInstance().vision_status_queue().WriteMessage(status);
