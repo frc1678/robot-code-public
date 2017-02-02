@@ -49,6 +49,7 @@ void CitrusRobot::SendDSMessage() {
 }
 
 void CitrusRobot::SendDrivetrainMessage() {
+    return;  /// TODO: this is only to allow vision to run
     frc971::control_loops::drivetrain::GoalProto drivetrain_goal;
 
     double throttle = -throttle_.wpilib_joystick()->GetRawAxis(1);

@@ -27,9 +27,6 @@ void VisionReader::operator()() {
     read_socket.Recv(buffer, 1024);
     VisionInputProto position;
     position->ParseFromArray(buffer, 1024);
-    //position->set_target_found(true);  // TODO this is temporary
-    //position->set_angle_to_target(1);
-    //position->set_distance_to_target(2);
 
     vision_input_queue_.WriteMessage(position);
 
