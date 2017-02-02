@@ -2,9 +2,6 @@
 #include "c2017/subsystems/lights/lights.h"
 #include "c2017/queue_manager/queue_manager.h"
 
-// not doing test fixture because the time it would take to make it work
-// outweighs the time it takes to do everything else
-
 TEST(LightColors, NoVisionSignal) {
   c2017::vision::VisionStatusProto vision_status;
 
