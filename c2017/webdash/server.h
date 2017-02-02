@@ -27,7 +27,7 @@ class WebDashRunner {
   void operator()();
  private:
   c2017::webdash::WebDashController controller_;
-  Mongoose::Server server_{1678};
+  Mongoose::Server server_{8080};
 };
 
 }  // namespace webdash
