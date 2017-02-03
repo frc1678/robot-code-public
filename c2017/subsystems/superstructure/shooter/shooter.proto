@@ -10,6 +10,7 @@ message ShooterInput {
 
 message ShooterOutput {
   required double voltage = 1;
+  required double hood_solenoid = 2;
 }
 
 message ShooterStatus {
