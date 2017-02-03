@@ -1,8 +1,8 @@
-#include "gtest/gtest.h"
 #include "c2017/subsystems/superstructure/shooter/shooter_controller.h"
 #include "c2017/subsystems/superstructure/shooter/queue_types.h"
-#include "muan/wpilib/queue_types.h"
 #include "c2017/subsystems/superstructure/shooter/shooter.pb.h"
+#include "gtest/gtest.h"
+#include "muan/wpilib/queue_types.h"
 
 TEST(ShooterControllerTest, IsSane) {
   auto plant = muan::control::StateSpacePlant<1, 3, 1>(frc1678::shooter_controller::controller::A(),
@@ -54,6 +54,7 @@ TEST(ShooterControllerTest, PositiveVelocity) {
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
 
     EXPECT_NEAR(output->voltage(), 0., 12.);
+    EXPECT_TRUE(output->hood_solenoid());
   }
   if (status) {
     EXPECT_NEAR(status.value()->observed_velocity(), 300, 10);
@@ -96,6 +97,7 @@ TEST(ShooterControllerTest, CantTakeNegativeVoltage) {
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
 
     EXPECT_NEAR(output->voltage(), 0., 12.);
+    EXPECT_TRUE(output->hood_solenoid());
   }
 
   EXPECT_EQ(output->voltage(), 0);
@@ -140,6 +142,7 @@ TEST(ShooterControllerTest, CanStop) {
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
 
     EXPECT_NEAR(output->voltage(), 0., 12.);
+    EXPECT_TRUE(output->hood_solenoid());
   }
 
   if (status) {
