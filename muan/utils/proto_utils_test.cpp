@@ -24,6 +24,7 @@ TEST(ProtoUtils, Repeated) {
   // Test that we die on repeated fields
   DeathProto p;
   p.add_test_string("aaa");
+  EXPECT_DEATH(muan::util::ProtoToCsvHeader(p), "repeated message");
   EXPECT_DEATH(muan::util::ProtoToCsv(p), "repeated message");
 }
 
