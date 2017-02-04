@@ -70,19 +70,11 @@ cc_proto_library(
     protoc = "//third_party/google/protobuf:protoc",
 )
 
-cc_proto_library(
-    name = "test_death_proto",
-    srcs = ["test_death_proto.proto"],
-    default_runtime = "//third_party/google/protobuf",
-    protoc = "//third_party/google/protobuf:protoc",
-)
-
 cc_test(
     name = "proto_utils_test",
     srcs = ["proto_utils_test.cpp"],
     deps = [
         ":proto_utils",
-        ":test_death_proto",
         ":test_proto",
         "//third_party/google/googletest",
     ],

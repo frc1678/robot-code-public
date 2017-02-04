@@ -1,6 +1,5 @@
 #include "muan/utils/proto_utils.h"
 #include "gtest/gtest.h"
-#include "muan/utils/test_death_proto.pb.h"
 #include "muan/utils/test_proto.pb.h"
 
 TEST(ProtoUtils, ProtoToCsv) {
@@ -23,7 +22,7 @@ TEST(ProtoUtils, OptionalFields) {
 
 TEST(ProtoUtils, Repeated) {
   // Test that we die on repeated fields
-  TestDeathProto p;
+  DeathProto p;
   p.add_test_string("aaa");
   EXPECT_DEATH(muan::util::ProtoToCsv(p), "repeated message");
 }
