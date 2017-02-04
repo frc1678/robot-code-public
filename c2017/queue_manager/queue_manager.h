@@ -19,6 +19,7 @@
 #include "c2017/subsystems/superstructure/climber/queue_types.h"
 #include "c2017/subsystems/superstructure/queue_types.h"
 #include "c2017/wpilib/queue_types.h"
+#include "c2017/webdash/queue_types.h"
 #include "c2017/subsystems/lights/queue_types.h"
 #include "c2017/vision/queue_types.h"
 
@@ -74,6 +75,8 @@ class QueueManager {
   c2017::intake_group::IntakeGroupGoalQueue& intake_group_goal_queue();
   c2017::shooter_group::ShooterGroupGoalQueue& shooter_group_goal_queue();
 
+  c2017::webdash::WebDashQueue& webdash_queue();
+
   c2017::lights::LightsOutputQueue& lights_output_queue();
 
   c2017::vision::VisionStatusQueue& vision_status_queue();
@@ -114,6 +117,8 @@ class QueueManager {
 
   c2017::intake_group::IntakeGroupGoalQueue intake_group_goal_queue_;
   c2017::shooter_group::ShooterGroupGoalQueue shooter_group_goal_queue_;
+
+  c2017::webdash::WebDashQueue webdash_queue_;
 
   c2017::lights::LightsOutputQueue lights_output_queue_;
 

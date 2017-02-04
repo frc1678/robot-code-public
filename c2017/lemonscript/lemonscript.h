@@ -21,10 +21,14 @@ class Lemonscript {
   ~Lemonscript();
 
   void operator()();
+
   void Start();  // Start running lemonscript
   void Stop();   // Pause running lemonscript
   void Kill();   // Stop the thread
  private:
+  void UpdateAutoRoutine();
+  c2017::webdash::WebDashQueue::QueueReader webdash_reader_ =
+    QueueManager::GetInstance().webdash_queue().MakeReader();
   ::lemonscript::LemonScriptState *state_;
   ::lemonscript::LemonScriptCompiler *compiler_;
   std::vector<const ::lemonscript::AvailableCppCommandDeclaration *> decls_;

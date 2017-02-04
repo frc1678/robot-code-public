@@ -1,7 +1,5 @@
 filegroup(
     name = "auto_modes",
-    srcs = [
-        "40kpa.auto",
-    ],
+    srcs = glob(["*.auto"]),
     visibility = ["//visibility:public"],
 )
