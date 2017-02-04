@@ -4,13 +4,11 @@ option cc_enable_arenas = true;
 
 package c2017.shooter;
 
-message ShooterInput {
-  required double encoder_position = 1;
-}
+message ShooterInput { required double encoder_position = 1; }
 
 message ShooterOutput {
   required double voltage = 1;
-  required double hood_solenoid = 2;
+  required bool hood_solenoid = 2; // true = fender; false = hopper
 }
 
 message ShooterStatus {
