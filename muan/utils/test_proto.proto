@@ -10,3 +10,26 @@ message TestProto {
   optional SubProto sub_message = 3;
   optional bool is_sane = 4;
 }
+
+message EnumTest {
+  enum TestEnum {
+    DEFAULT = 0;
+    SOME_OPTION = 1;
+    OPTION_2 = 2;
+  }
+  optional TestEnum test_enum = 1;
+}
+
+message OneofTest {
+  message Test1 {
+    optional double val = 1;
+  }
+  message Test2 {
+    optional string val = 1;
+  }
+
+  oneof test {
+    Test1 test_1 = 1;
+    Test2 test_2 = 2;
+  }
+}
