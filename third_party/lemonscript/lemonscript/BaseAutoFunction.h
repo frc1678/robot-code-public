@@ -1,13 +1,13 @@
 //
-//  asdf.hpp
+//  BaseAutoFunction.h
 //  lemonscript
 //
 //  Created by Donald Pinckney on 5/25/16.
 //  Copyright © 2016 Donald Pinckney. All rights reserved.
 //
 
-#ifndef asdf_hpp
-#define asdf_hpp
+#ifndef BaseAutoFunction_h
+#define BaseAutoFunction_h
 
 #include <stdio.h>
 
@@ -23,4 +23,4 @@ namespace lemonscript {
 }
 
 
-#endif /* asdf_hpp */
+#endif /* BaseAutoFunction_h */

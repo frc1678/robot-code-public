@@ -1,6 +1,6 @@
 //
 //  LemonScriptCompiler.hpp
-//  FiniteStateMachine
+//  lemonscript
 //
 //  Created by Donald Pinckney on 12/30/15.
 //  Copyright © 2015 Donald Pinckney. All rights reserved.
@@ -40,7 +40,7 @@ public:
         }
         
         // THIS DOES ALL THE PARSING / COMPILATION
-        rootSequence = new SequentialCommand(1, state, ParsingUtils::readWholeStream(toParse));
+        rootSequence = new SequentialCommand(1, state, ParsingUtils::readWholeStream(toParse), false);
         
         if(rootSequence->getSequenceCount() == 0) {
             printf("Warning: empty file provided to Lemon Script\n");

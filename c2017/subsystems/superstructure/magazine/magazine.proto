@@ -11,23 +11,15 @@ message MagazineStatus {
 }
 
 message MagazineInput {
-  required double conveyor_current = 1;
-  required bool has_hp_gear = 2; // senses distance
+  required bool has_hp_gear = 1; // senses distance using proximity sensor to know if there is a gear
 }
 
 message MagazineOutput {
   required bool gear_intake_covered = 1;
   required bool magazine_extended = 2;
   required bool gear_shutter_open = 3;
-  required double gear_rotator_voltage = 4;
-  required double conveyor_voltage = 5;
-  required double brush_voltage = 6;
-}
-
-enum ConveyorGoalState {
-  CONVEYOR_IDLE = 0;
-  CONVEYOR_FORWARD = 1;
-  CONVEYOR_BACKWARD = 2;
+  required double upper_voltage = 4;
+  required double side_voltage = 5;
 }
 
 enum HPIntakeGoalState {
@@ -37,17 +29,22 @@ enum HPIntakeGoalState {
   BOTH = 3;
 }
 
-enum BrushGoalState {
-  BRUSH_IDLE = 0;
-  BRUSH_FORWARD = 1;
-  BRUSH_BACKWARD = 2;
+enum UpperGoalState {
+  UPPER_IDLE = 0;
+  UPPER_FORWARD = 1;
+  UPPER_BACKWARD = 2;
+}
+
+enum SideGoalState {
+  SIDE_IDLE = 0;
+  SIDE_PULL_IN = 1;
+  SIDE_AGITATE = 2;
 }
 
 message MagazineGoal {
-  required ConveyorGoalState conveyor_goal = 1;
-  required HPIntakeGoalState hp_intake_goal = 2;
-  required BrushGoalState brush_goal = 3;
-  required bool score_gear = 4;
-  required bool rotate_gear = 5;
-  required bool magazine_extended = 6;
+  required HPIntakeGoalState hp_intake_goal = 1;
+  required UpperGoalState upper_goal = 2;
+  required bool score_gear = 3;
+  required bool magazine_extended = 4;
+  required SideGoalState side_goal = 5;
 }

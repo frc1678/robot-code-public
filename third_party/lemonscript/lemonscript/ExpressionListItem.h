@@ -20,9 +20,7 @@ class lemonscript_expressions::ExpressionListItem {
     
     
 public:
-    
-//    ~ExpressionListItem();
-    
+        
     bool isOperator; // Otherwise is prefix expression
     
     

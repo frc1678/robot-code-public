@@ -10,6 +10,7 @@
 #define expressions_h
 
 #include <iostream>
+#include <string>
 
 namespace lemonscript_expressions {
     class Expression;
@@ -25,6 +26,10 @@ namespace lemonscript_expressions {
     struct ExpressionTreeRecurseAttributes;
     enum class TK : char;
     enum class NonTerminal;
+    
+    struct HaltError {
+        std::string message;
+    };
     
     std::ostream & operator<<(std::ostream &os, const Token &tok);
     std::ostream & operator<<(std::ostream &o, const lemonscript_expressions::Atom &a);

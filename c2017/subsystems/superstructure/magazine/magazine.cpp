@@ -6,22 +6,10 @@ namespace magazine {
 
 MagazineOutputProto Magazine::Update(MagazineInputProto input) {
   has_hp_gear_ = input->has_hp_gear();
-  double brush_voltage = 0;
-  double conveyor_voltage_ = 0;
-
-  switch (conveyor_goal_) {
-    case CONVEYOR_IDLE:
-      conveyor_voltage_ = 0;
-      break;
-    case CONVEYOR_FORWARD:
-      conveyor_voltage_ = 12;
-      break;
-    case CONVEYOR_BACKWARD:
-      conveyor_voltage_ = -12;
-      break;
-  }
-
+  double upper_voltage = 0;
+  double side_voltage = 0;
   bool gear_intake_covered = true;
+
   switch (hp_intake_goal_) {
     case NONE:
       gear_intake_covered = true;
@@ -41,40 +29,49 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input) {
       break;
   }
 
-  switch (brush_goal_) {
-    case BRUSH_IDLE:
-      brush_voltage = 0;
+  switch (side_goal_) {
+    case SIDE_IDLE:
+      side_voltage = 0;
       break;
-    case BRUSH_FORWARD:
-      brush_voltage = 12;
+    case SIDE_PULL_IN:
+      side_voltage = 12;
       break;
-    case BRUSH_BACKWARD:
-      brush_voltage = -12;
+    case SIDE_AGITATE:
+      side_voltage = -12;
+      break;
+  }
+
+  switch (upper_goal_) {
+    case UPPER_IDLE:
+      upper_voltage = 0;
+      break;
+    case UPPER_FORWARD:
+      upper_voltage = 12;
+      break;
+    case UPPER_BACKWARD:
+      upper_voltage = -12;
       break;
   }
 
   double gear_shutter_open = score_gear_;
-  double gear_rotator_voltage = rotate_gear_ ? 3 : 0;
 
   c2017::magazine::MagazineOutputProto output;
 
   output->set_gear_intake_covered(gear_intake_covered);
   output->set_magazine_extended(magazine_extended_);
   output->set_gear_shutter_open(gear_shutter_open);
-  output->set_gear_rotator_voltage(gear_rotator_voltage);
-  output->set_conveyor_voltage(conveyor_voltage_);
-  output->set_brush_voltage(brush_voltage);
+  output->set_upper_voltage(upper_voltage);
+  output->set_side_voltage(side_voltage);
 
   return output;
 }
 
 void Magazine::SetGoal(MagazineGoalProto goal) {
-  conveyor_goal_ = goal->conveyor_goal();
   hp_intake_goal_ = goal->hp_intake_goal();
-  brush_goal_ = goal->brush_goal();
+  upper_goal_ = goal->upper_goal();
   magazine_extended_ = goal->magazine_extended();
-  rotate_gear_ = goal->rotate_gear();
   score_gear_ = goal->score_gear();
+  side_goal_ = goal->side_goal();
 }
 
 }  // namespace magazine

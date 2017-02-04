@@ -1,6 +1,6 @@
 //
 //  LemonScriptParser.hpp
-//  FiniteStateMachine
+//  lemonscript
 //
 //  Created by Donald Pinckney on 12/30/15.
 //  Copyright © 2015 Donald Pinckney. All rights reserved.
@@ -22,11 +22,11 @@ typedef enum {
     ImportToken,
     RunToken,
     NotToken,
-    WhileAlsoToken,
     CompleteAnyToken,
     CompleteToken,
     IfElseIfElseToken,
     OptionalCommandToken,
+    SequenceToken,
     NOT_A_TOKEN
 } TokenType;
 

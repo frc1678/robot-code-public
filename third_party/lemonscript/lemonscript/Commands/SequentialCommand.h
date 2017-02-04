@@ -1,6 +1,6 @@
 //
 //  SequentialCommand.hpp
-//  FiniteStateMachine
+//  lemonscript
 //
 //  Created by Donald Pinckney on 1/16/16.
 //  Copyright © 2016 Donald Pinckney. All rights reserved.
@@ -20,8 +20,10 @@ class lemonscript::SequentialCommand : public Command {
 
     std::vector<Command *> sequence;
     int currentIndex = 0;
+    bool isExplicit;
+    LemonScriptSymbolTableStack sequenceScope;
 public:
-    SequentialCommand(int l, LemonScriptState *s, const std::string &sequenceString);
+    SequentialCommand(int l, LemonScriptState *s, const std::string &sequenceString, bool explicitSequence);
     virtual ~SequentialCommand();
 
     bool Update();

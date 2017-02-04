@@ -212,7 +212,10 @@ TypeSpecification generateTypeSpecificationBinaryGenericUniformSpecificReturn(Da
     spec.returnType = u;
     spec.func = [f] (std::vector<int> xs) {
         
-        U retVal = f(*(T *)&xs[0], *(T *)&xs[1]);
+        T lhs = *(T *)&xs[0];
+        T rhs = *(T *)&xs[1];
+        
+        U retVal = f(lhs, rhs);
         
         int retInt;
         bzero(&retInt, sizeof(int));
@@ -291,9 +294,8 @@ OperatorType OperatorType::lookupOperatorType(std::string opString) {
     } else if(opString == "==") {
         TypeSpecification binaryBool = generateTypeSpecificationBinaryGenericUniformSpecificReturn<bool, bool>(DataType::BOOLEAN, DataType::BOOLEAN, equal<bool>);
         TypeSpecification binaryInt = generateTypeSpecificationBinaryGenericUniformSpecificReturn<int, bool>(DataType::INT, DataType::BOOLEAN, equal<int>);
-        TypeSpecification binaryFloat = generateTypeSpecificationBinaryGenericUniformSpecificReturn<float, bool>(DataType::FLOAT, DataType::BOOLEAN, equal<float>);
 
-        typeSpecs = {binaryBool, binaryInt, binaryFloat};
+        typeSpecs = {binaryBool, binaryInt};
         precedence = 130;
     } else if(opString == "!=") {
         TypeSpecification binaryBool = generateTypeSpecificationBinaryGenericUniformSpecificReturn<bool, bool>(DataType::BOOLEAN, DataType::BOOLEAN, notEqual<bool>);

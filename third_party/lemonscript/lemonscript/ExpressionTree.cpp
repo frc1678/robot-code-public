@@ -156,7 +156,9 @@ ExpressionTreeRecurseAttributes ExpressionTree::compileTree(DataType neededType)
 
         if(atom.isIdentifier) {
             if(state->addressOfVariable(atom.text) == NULL) {
-                throw "Unknown variable: " + atom.text;
+                HaltError err;
+                err.message = "Unknown variable: " + atom.text;
+                throw err;
             }
             currentType = state->typeOfVariable(atom.text);
             recurseValues.isConstant = false;
@@ -394,6 +396,10 @@ void ExpressionTree::print(std::ostream &os, int depth) const {
         std::cerr << "This should never have happened" << std::endl;
         exit(1);
     }
+    
+    if (depth == 0) {
+        os << endl;
+    }
 }
 
 
@@ -404,10 +410,5 @@ ExpressionTree::~ExpressionTree() {
     if(rightTree) {
         delete rightTree;
     }
-}
-
-std::ostream & operator<<(std::ostream &os, const lemonscript_expressions::ExpressionTree &tree) {
-    tree.print(os, 0);
-    return os;
 }
 

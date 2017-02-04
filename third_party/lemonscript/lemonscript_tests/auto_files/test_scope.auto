@@ -1,0 +1,9 @@
+DEF x = 5
+DEF y = 5
+DEF z = 7
+
+
+SEQUENCE:
+  DEF x = 7
+  PrintBool: x == y
+  PrintBool: x == z

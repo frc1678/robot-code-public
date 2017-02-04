@@ -11,6 +11,8 @@
 #include <lemonscript/lemonscript.h>
 #include <lemonscript/LemonScriptCompiler.h>
 #include <string>
+#include "StdCapture.h"
+#include <fstream>
 
 #include "PlayTestsShared.h"
 
@@ -42,46 +44,55 @@ using namespace lemonscript;
 
 // Helper Methods
 
-- (std::string)auto_test_file_path:(NSString *)auto_name {
-    NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-    NSString *path = [bundle pathForResource:auto_name ofType:@""];
-    if(path == nil) {
-        return "DID NOT LOAD FILE";
-    }
-    
-    return std::string([path cStringUsingEncoding:NSUTF8StringEncoding]);
-}
-
-- (void)test_compile:(NSString *)file {
-    try {
-        [self measureMetrics:[[self class] defaultPerformanceMetrics] automaticallyStartMeasuring:NO forBlock:^{
-            LemonScriptState *state = PlayTestsShared::play_tests_make_state();
-            std::string fileName = [self auto_test_file_path:file];
-
-            [self startMeasuring];
-            lemonscript::LemonScriptCompiler *compiler = new lemonscript::LemonScriptCompiler(fileName, state);
-            [self stopMeasuring];
-            
-            delete state;
-            delete compiler;
-        }];
-    } catch (std::string err) {
-        XCTFailString(err);
-    }
-}
-
-
-// Tests
-
-// Test to see that we can create C++ function bindings, and add them to a lemonscript state.
-- (void)test_make_state {
+- (void)test_run:(NSString *)file {
     try {
         LemonScriptState *state = PlayTestsShared::play_tests_make_state();
-        delete state;
+        std::string workingDir([[file stringByDeletingLastPathComponent] cStringUsingEncoding:NSASCIIStringEncoding]);
+        state->setSearchPath(workingDir);
+        
+        NSString *autoName = [file lastPathComponent];
+        std::string fileName = std::string([autoName cStringUsingEncoding:NSASCIIStringEncoding]);
+        if(fileName == "") {
+            NSLog(@"Error loading auto file: %@", file);
+            XCTFail(@"File not found");
+        }
+        
+        NSString *correctName = [file stringByAppendingString:@".correct"];
+        
+        NSError *err = nil;
+        NSString *correct = [[NSString alloc] initWithContentsOfFile:correctName encoding:NSUTF8StringEncoding error:&err];
+        if(err != nil) {
+            NSLog(@"Error loading correct file: %@", correctName);
+//            XCTFail(@"FIle not found");
+        }
+        
+        StdCapture::BeginCapture();
+        
+        PlayTestsShared::run_at_path(fileName, state);
+        
+        StdCapture::EndCapture();
+        std::string cap = StdCapture::GetCapture();
+        NSString *strCap = [[NSString alloc] initWithCString:cap.c_str() encoding:NSUTF8StringEncoding];
+
+        XCTAssertEqualObjects(strCap, correct);
+        
+        if(err != nil) {
+            [strCap writeToFile:[NSString stringWithFormat:@"/Users/donaldpinckney/Stack/%@.correct", autoName] atomically:YES encoding:NSUTF8StringEncoding error:nil];
+        }
     } catch (std::string err) {
         XCTFailString(err);
     }
 }
+
+- (void)testAll {
+    NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+    NSArray *paths = [bundle pathsForResourcesOfType:@"auto" inDirectory:nil];
+    for(NSString *path in paths) {
+        [self test_run:path];
+    }
+}
+
+
 
 
 //// Performance and correctness tests for compilation only.

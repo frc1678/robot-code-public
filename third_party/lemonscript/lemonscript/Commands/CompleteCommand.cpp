@@ -1,6 +1,6 @@
 //
 //  CompleteCommand.cpp
-//  FiniteStateMachine
+//  lemonscript
 //
 //  Created by Donald Pinckney on 1/16/16.
 //  Copyright © 2016 Donald Pinckney. All rights reserved.
@@ -11,7 +11,7 @@
 #include "ParsingUtils.h"
 
 lemonscript::CompleteCommand::CompleteCommand(int l, LemonScriptState *s, const std::string &commandString) : Command(l, s) {
-    const std::string allDelim = "COMPLETE ALL:\n";
+    const std::string allDelim = "COMPLETE:\n";
     size_t allLoc = commandString.find(allDelim);
     size_t endOfAllLoc = allLoc + allDelim.length();
     

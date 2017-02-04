@@ -1,6 +1,6 @@
 //
 //  AvailableCppCommand.cpp
-//  FiniteStateMachine
+//  lemonscript
 //
 //  Created by Donald Pinckney on 12/24/15.
 //  Copyright © 2015 Donald Pinckney. All rights reserved.
@@ -18,9 +18,7 @@ using lemonscript::DataType;
 
 // This could be build into a more general tree, but whatever
 bool lemonscript::DataTypeIsSubtypeOf(DataType subtype, DataType type) {
-    if(subtype == DataType::TYPE) {
-        return subtype == type;
-    } else if(subtype == DataType::BOOLEAN) {
+    if(subtype == DataType::BOOLEAN) {
         return subtype == type;
     } else if(subtype == DataType::FLOAT) {
         return subtype == type;
@@ -87,10 +85,6 @@ std::string dataTypeDescription(DataType t) {
             return "FLOAT";
         case DataType::BOOLEAN:
             return "BOOLEAN";
-        case DataType::TYPE:
-            return "TYPE";
-        case DataType::UNIT:
-            return "UNIT";
     }
 }
 
@@ -118,8 +112,6 @@ std::vector<const lemonscript::AvailableCppCommandDeclaration *> lemonscript::Av
                 t = DataType::FLOAT;
             } else if(ts == "bool") {
                 t = DataType::BOOLEAN;
-            } else {
-                t = DataType::UNIT;
             }
             types.push_back(t);
         }

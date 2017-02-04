@@ -1,0 +1,20 @@
+SEQUENCE:
+  PrintInt: 1
+  PrintFloat: 2
+  PrintBool: true
+PrintInt: 4
+
+COMPLETE:
+  SEQUENCE:
+    PrintInt: 1
+    PrintInt: 2
+  SEQUENCE:
+    PrintInt: 1
+    PrintInt: 2
+    PrintInt: 3
+  SEQUENCE:
+    PrintInt: 1
+    PrintInt: 2
+    PrintInt: 3
+    PrintInt: 4
+

@@ -1,5 +1,5 @@
-#ifndef C2017_WPILIB_UPDATE_MAIN_H_
-#define C2017_WPILIB_UPDATE_MAIN_H_
+#ifndef C2017_CITRUS_ROBOT_MAIN_H_
+#define C2017_CITRUS_ROBOT_MAIN_H_
 
 #include "muan/teleop/joystick.h"
 #include "c2017/lemonscript/lemonscript.h"
@@ -34,4 +34,4 @@ class CitrusRobot {
 
 }  // namespace c2017
 
-#endif  // C2017_WPILIB_UPDATE_MAIN_H_
+#endif  // C2017_CITRUS_ROBOT_MAIN_H_

@@ -8,7 +8,7 @@ parser = argparse.ArgumentParser(description='Pull log files from the roboRIO')
 parser.add_argument('--team', default='1678', help='What team number to use for the roboRIO.')
 parser.add_argument('--address', help='What IP address to fetch from. Not compatible with --team')
 parser.add_argument('--user', default='admin', help='What user to log in as on the roboRIO')
-parser.add_argument('--remote-path', default='/home/lvuser/logs/', help='What path to fetch logs from.')
+parser.add_argument('--remote-path', default='/media/sda1/logs/', help='What path to fetch logs from.')
 parser.add_argument('--local-path', default=None, help="What path to write logs to. Defaults to logs/[roborio address] in the repo's root")
 
 args = parser.parse_args()

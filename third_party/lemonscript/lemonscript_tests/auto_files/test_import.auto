@@ -1,0 +1,5 @@
+IMPORT test_constants.auto
+
+PrintFloat: e
+PrintFloat: pi
+PrintFloat: e*pi
