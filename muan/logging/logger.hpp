@@ -28,9 +28,9 @@ std::experimental::optional<std::string> Logger::Reader<R>::GetMessageAsCSV(bool
   if (message) {
     std::string out = "";
     if (header) {
-      out = out + muan::util::ProtoToCSVHeader(*message.value().get()) + "\n";
+      out = out + muan::util::ProtoToCsvHeader(*message.value().get()) + "\n";
     }
-    out = out + muan::util::ProtoToCSV(*message.value().get());
+    out = out + muan::util::ProtoToCsv(*message.value().get());
     return out;
   } else {
     return std::experimental::nullopt;
