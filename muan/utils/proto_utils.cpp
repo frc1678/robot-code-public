@@ -3,6 +3,7 @@
 
 #include "muan/utils/proto_utils.h"
 #include <sstream>
+#include <string>
 #include <vector>
 #include "google/protobuf/generated_message_reflection.h"
 #include "google/protobuf/message.h"
@@ -11,22 +12,22 @@ namespace muan {
 
 namespace util {
 
-void DefaultFieldToCsv(const google::protobuf::FieldDescriptor* descriptor, std::ostringstream* serialize);
+void DefaultFieldToCsv(const google::protobuf::FieldDescriptor* descriptor, std::ostream& serialize);
 void FieldToCsv(const google::protobuf::Message& message, const google::protobuf::Reflection* reflection,
-                const google::protobuf::FieldDescriptor* descriptor, std::ostringstream* serialize);
+                const google::protobuf::FieldDescriptor* descriptor, std::ostream& serialize);
 
-void DefaultSubmessageToCsv(const google::protobuf::Descriptor* descriptor, std::ostringstream* serialize) {
+void DefaultSubmessageToCsv(const google::protobuf::Descriptor* descriptor, std::ostream& serialize) {
   for (int i = 0; i < descriptor->field_count(); i++) {
     DefaultFieldToCsv(descriptor->field(i), serialize);
 
     if (i != descriptor->field_count() - 1) {
-      *serialize << ',';
+      serialize << ',';
     }
   }
 }
 
 void SubmessageToCsv(const google::protobuf::Message& message, const google::protobuf::Reflection* reflection,
-                     const google::protobuf::Descriptor* descriptor, std::ostringstream* serialize) {
+                     const google::protobuf::Descriptor* descriptor, std::ostream& serialize) {
   for (int i = 0; i < descriptor->field_count(); i++) {
     if (descriptor->field(i)->is_repeated()) {
       aos::Die("Logging protos with repeated messages is not supported!");
@@ -38,43 +39,43 @@ void SubmessageToCsv(const google::protobuf::Message& message, const google::pro
     }
 
     if (i != descriptor->field_count() - 1) {
-      *serialize << ',';
+      serialize << ',';
     }
   }
 }
 
 void FieldToCsv(const google::protobuf::Message& message, const google::protobuf::Reflection* reflection,
-                const google::protobuf::FieldDescriptor* descriptor, std::ostringstream* serialize) {
+                const google::protobuf::FieldDescriptor* descriptor, std::ostream& serialize) {
   if (descriptor->is_repeated()) {
     aos::Die("Logging protos with repeated messages is not supported!");
   } else {
     switch (descriptor->cpp_type()) {
       case google::protobuf::FieldDescriptor::CPPTYPE_ENUM:
-        *serialize << reflection->GetEnumValue(message, descriptor);
+        serialize << reflection->GetEnumValue(message, descriptor);
         break;
       case google::protobuf::FieldDescriptor::CPPTYPE_STRING:
-        *serialize << reflection->GetString(message, descriptor);
+        serialize << reflection->GetString(message, descriptor);
         break;
       case google::protobuf::FieldDescriptor::CPPTYPE_FLOAT:
-        *serialize << reflection->GetFloat(message, descriptor);
+        serialize << reflection->GetFloat(message, descriptor);
         break;
       case google::protobuf::FieldDescriptor::CPPTYPE_DOUBLE:
-        *serialize << reflection->GetDouble(message, descriptor);
+        serialize << reflection->GetDouble(message, descriptor);
         break;
       case google::protobuf::FieldDescriptor::CPPTYPE_INT32:
-        *serialize << reflection->GetInt32(message, descriptor);
+        serialize << reflection->GetInt32(message, descriptor);
         break;
       case google::protobuf::FieldDescriptor::CPPTYPE_INT64:
-        *serialize << reflection->GetInt64(message, descriptor);
+        serialize << reflection->GetInt64(message, descriptor);
         break;
       case google::protobuf::FieldDescriptor::CPPTYPE_BOOL:
-        *serialize << reflection->GetBool(message, descriptor);
+        serialize << reflection->GetBool(message, descriptor);
         break;
       case google::protobuf::FieldDescriptor::CPPTYPE_UINT32:
-        *serialize << reflection->GetUInt32(message, descriptor);
+        serialize << reflection->GetUInt32(message, descriptor);
         break;
       case google::protobuf::FieldDescriptor::CPPTYPE_UINT64:
-        *serialize << reflection->GetUInt64(message, descriptor);
+        serialize << reflection->GetUInt64(message, descriptor);
         break;
       case google::protobuf::FieldDescriptor::CPPTYPE_MESSAGE:
         const google::protobuf::Message& sub = reflection->GetMessage(message, descriptor);
@@ -84,7 +85,7 @@ void FieldToCsv(const google::protobuf::Message& message, const google::protobuf
   }
 }
 
-void DefaultFieldToCsv(const google::protobuf::FieldDescriptor* descriptor, std::ostringstream* serialize) {
+void DefaultFieldToCsv(const google::protobuf::FieldDescriptor* descriptor, std::ostream& serialize) {
   if (descriptor->is_repeated()) {
     aos::Die("Logging protos with repeated messages is not supported!");
   } else {
@@ -100,7 +101,7 @@ void DefaultFieldToCsv(const google::protobuf::FieldDescriptor* descriptor, std:
       case google::protobuf::FieldDescriptor::CPPTYPE_BOOL:
       case google::protobuf::FieldDescriptor::CPPTYPE_UINT32:
       case google::protobuf::FieldDescriptor::CPPTYPE_UINT64:
-        *serialize << "0";
+        serialize << "0";
         break;
       case google::protobuf::FieldDescriptor::CPPTYPE_MESSAGE:
         DefaultSubmessageToCsv(descriptor->message_type(), serialize);
@@ -109,18 +110,14 @@ void DefaultFieldToCsv(const google::protobuf::FieldDescriptor* descriptor, std:
   }
 }
 
-std::string ProtoToCsv(const google::protobuf::Message& message) {
+void ProtoToCsv(const google::protobuf::Message& message, std::ostream& serialize) {
   auto reflection = message.GetReflection();
   auto descriptor = message.GetDescriptor();
 
-  std::ostringstream ss;
-
-  SubmessageToCsv(message, reflection, descriptor, &ss);
-
-  return ss.str();
+  SubmessageToCsv(message, reflection, descriptor, serialize);
 }
 
-void FieldToCsvHeader(const google::protobuf::FieldDescriptor* descriptor, std::ostringstream* serialize,
+void FieldToCsvHeader(const google::protobuf::FieldDescriptor* descriptor, std::ostream& serialize,
                       const char* prefix) {
   if (descriptor->is_repeated()) {
     aos::Die("Logging protos with repeated messages is not supported!");
@@ -133,32 +130,28 @@ void FieldToCsvHeader(const google::protobuf::FieldDescriptor* descriptor, std::
       FieldToCsvHeader(field, serialize, (prefix + std::string(descriptor->name()) + ".").c_str());
 
       if (i != message->field_count() - 1) {
-        *serialize << ',';
+        serialize << ',';
       }
     }
   } else {
-    *serialize << prefix << descriptor->name();
+    serialize << prefix << descriptor->name();
   }
 }
 
-std::string ProtoToCsvHeader(const google::protobuf::Message& message) {
+void ProtoToCsvHeader(const google::protobuf::Message& message, std::ostream& serialize) {
   auto descriptor = message.GetDescriptor();
 
   if (descriptor->is_placeholder()) {
-    return "";
+    return;
   }
-
-  std::ostringstream ss;
 
   for (int i = 0; i < descriptor->field_count(); i++) {
-    FieldToCsvHeader(descriptor->field(i), &ss, "");
+    FieldToCsvHeader(descriptor->field(i), serialize, "");
 
     if (i != descriptor->field_count() - 1) {
-      ss << ',';
+      serialize << ',';
     }
   }
-
-  return ss.str();
 }
 
 }  // namespace util
