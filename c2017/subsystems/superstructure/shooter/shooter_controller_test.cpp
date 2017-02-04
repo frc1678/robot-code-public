@@ -157,7 +157,7 @@ TEST(ShooterControllerTest, FenderMode) {
   c2017::shooter::ShooterOutputProto output;
   c2017::shooter::ShooterGoalProto goal;
   muan::wpilib::DriverStationProto ds;
-  
+
   ds->set_mode(RobotMode::TELEOP);
 
   c2017::shooter::ShooterController shooter_;
@@ -191,7 +191,7 @@ TEST(ShooterControllerTest, HopperMode) {
   c2017::shooter::ShooterOutputProto output;
   c2017::shooter::ShooterGoalProto goal;
   muan::wpilib::DriverStationProto ds;
-  
+
   ds->set_mode(RobotMode::TELEOP);
 
   c2017::shooter::ShooterController shooter_;
