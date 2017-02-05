@@ -4,7 +4,7 @@ def gflags_sources(namespace=["google", "gflags"]):
     native.genrule(
         name = "config_h",
         srcs = ["src/config.h.in"],
-        outs = ["config.h"],
+        outs = ["include/config.h"],
         cmd  = "awk '{ gsub(/^#cmakedefine/, \"//cmakedefine\"); print; }' $(<) > $(@)"
     )
     native.genrule(
