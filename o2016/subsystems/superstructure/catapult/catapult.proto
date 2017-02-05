@@ -5,42 +5,46 @@ option cc_enable_arenas = true;
 package o2016.catapult;
 
 message CatapultOutput {
-  required double scoop_output = 1;
-  required double hardstop_output = 2;
-  required bool cylinder_extend = 3;
-  required bool disc_brake_activate = 4;
+  required double timestamp = 1;
+  required double scoop_output = 2;
+  required double hardstop_output = 3;
+  required bool cylinder_extend = 4;
+  required bool disc_brake_activate = 5;
 }
 
 message CatapultStatus {
+  required double timestamp = 1;
   // In radians, 0 is open, more positive is more closed
-  required double scoop_angle = 1;
-  required double scoop_angular_velocity = 2;
-  // In radians of winch rotation, 0 is when the catapult
+  required double scoop_angle = 2;
+  required double scoop_angular_velocity = 3;
+  // In radians of winch rotation, 1 is when the catapult
   // cannot be moved, more positive is more movement allowed
-  required double hardstop_angle = 3;
-  required double hardstop_angular_velocity = 4;
-  required double scoop_goal = 5;
-  required double hardstop_goal = 6;
-  required CylinderStatus catapult_status = 7;
-  required bool disk_brake_locked = 8;
-  required bool scoop_at_goal = 9;
-  required bool hardstop_at_goal = 10;
-  required bool at_goal = 11;
-  required bool can_shoot = 12;
+  required double hardstop_angle = 4;
+  required double hardstop_angular_velocity = 5;
+  required double scoop_goal = 6;
+  required double hardstop_goal = 7;
+  required CylinderStatus catapult_status = 8;
+  required bool disk_brake_locked = 9;
+  required bool scoop_at_goal = 10;
+  required bool hardstop_at_goal = 11;
+  required bool at_goal = 12;
+  required bool can_shoot = 13;
 }
 
 message CatapultInput {
-  required double scoop_pot = 1;
-  required double hardstop_pot = 2;
+  required double timestamp = 1;
+  required double scoop_pot = 2;
+  required double hardstop_pot = 3;
 }
 
 message CatapultGoal {
+  required double timestamp = 1;
   enum Goal {
     INTAKE = 0;
     PREP_SHOT = 1;
     SHOOT = 2;
   }
-  required Goal goal = 1;
+  required Goal goal = 2;
 }
 
 enum CylinderStatus {

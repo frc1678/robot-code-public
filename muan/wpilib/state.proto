@@ -10,35 +10,37 @@ enum RobotMode {
 }
 
 message DriverStationStatus {
-  required RobotMode mode = 1;
-  optional double battery_voltage = 2;
+  required double timestamp = 1;
+  required RobotMode mode = 2;
+  optional double battery_voltage = 3;
 
-  optional bool brownout = 3;
-  optional bool has_ds_connection = 4;
+  optional bool brownout = 4;
+  optional bool has_ds_connection = 5;
 }
 
 message PdpStatus {
-  required double current0 = 1;
-  required double current1 = 2;
-  required double current2 = 3;
-  required double current3 = 4;
-  required double current4 = 5;
-  required double current5 = 6;
-  required double current6 = 7;
-  required double current7 = 8;
-  required double current8 = 9;
-  required double current9 = 10;
-  required double current10 = 11;
-  required double current11 = 12;
-  required double current12 = 13;
-  required double current13 = 14;
-  required double current14 = 15;
-  required double current15 = 16;
+  required double timestamp = 1;
+  required double current0 = 2;
+  required double current1 = 3;
+  required double current2 = 4;
+  required double current3 = 5;
+  required double current4 = 6;
+  required double current5 = 7;
+  required double current6 = 8;
+  required double current7 = 9;
+  required double current8 = 10;
+  required double current9 = 11;
+  required double current10 = 12;
+  required double current11 = 13;
+  required double current12 = 14;
+  required double current13 = 15;
+  required double current14 = 16;
+  required double current15 = 17;
 
-  required double voltage_in = 17;
-  required double temperature = 18;
+  required double voltage_in = 18;
+  required double temperature = 19;
 
-  optional double total_current = 19;
-  optional double total_energy = 20;
-  optional double total_power = 21;
-};
+  optional double total_current = 20;
+  optional double total_energy = 21;
+  optional double total_power = 22;
+}

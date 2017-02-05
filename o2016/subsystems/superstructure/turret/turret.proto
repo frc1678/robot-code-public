@@ -5,22 +5,26 @@ option cc_enable_arenas = true;
 package o2016.turret;
 
 message TurretStatus {
-  required double observed_position = 1;
-  required double observed_velocity = 2;
-  required double filtered_goal = 3;
-  required bool at_goal = 4;
+  required double timestamp = 1;
+  required double observed_position = 2;
+  required double observed_velocity = 3;
+  required double filtered_goal = 4;
+  required bool at_goal = 5;
 }
 
 message TurretOutput {
-  required double voltage = 1;
+  required double timestamp = 1;
+  required double voltage = 2;
 }
 
 message TurretInput {
-  required double encoder_position = 1;
-  required double pot_position = 2;
-  required bool index_click = 3;
+  required double timer = 1;
+  required double encoder_position = 2;
+  required double pot_position = 3;
+  required bool index_click = 4;
 }
 
 message TurretGoal {
-  required double goal_angle = 1;
+  required double timer = 1;
+  required double goal_angle = 2;
 }

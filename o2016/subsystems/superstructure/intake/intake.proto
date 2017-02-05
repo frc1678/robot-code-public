@@ -5,26 +5,30 @@ option cc_enable_arenas = true;
 package o2016.intake;
 
 message IntakeInput {
-  required double encoder_position = 1;
-  required bool index_click = 2;
+  required double timestamp = 1;
+  required double encoder_position = 2;
+  required bool index_click = 3;
 }
 
 message IntakeGoal {
-  required double goal_angle = 1;
-  required RollerGoal intake_speed = 2;
+  required double timestamp = 1;
+  required double goal_angle = 2;
+  required RollerGoal intake_speed = 3;
 }
 
 message IntakeOutput {
-  required double arm_voltage = 1;
-  required double roller_voltage = 2;
+  required double timestamp = 1;
+  required double arm_voltage = 2;
+  required double roller_voltage = 3;
 }
 
 message IntakeStatus {
-  required double intake_position = 1;
-  required double intake_velocity = 2;
-  required double filtered_angle_goal = 3;
-  required bool at_goal = 4;
-  required RollerGoal current_roller_goal = 5;
+  required double timestamp = 1;
+  required double intake_position = 2;
+  required double intake_velocity = 3;
+  required double filtered_angle_goal = 4;
+  required bool at_goal = 5;
+  required RollerGoal current_roller_goal = 6;
 }
 
 enum RollerGoal {
