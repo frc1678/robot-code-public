@@ -15,7 +15,7 @@ class VisionScorer2017 : public muan::VisionScorer {
     return target_score;
   }
 
-  void Morph(cv::Mat img) {
+  void Morph(cv::Mat /* img */) {
     //cv::erode(img, img, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 5), cv::Point(1, 2)));
     //cv::dilate(img, img, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1, 31), cv::Point(0, 15)));
   }
