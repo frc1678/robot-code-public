@@ -15,6 +15,7 @@ message MotionProfileConstraints {
 }
 
 message DrivetrainGoal {
+  required uint64 timestamp = 1;
   message TeleopCommand {
     // Positive is left, -1 to 1
     required double steering = 1;
@@ -53,56 +54,59 @@ message DrivetrainGoal {
 }
 
 message DrivetrainInput {
+  required uint64 timestamp = 1;
   // In meters, positive is forwards
-  required double left_encoder = 1;
-  required double right_encoder = 2;
+  required double left_encoder = 2;
+  required double right_encoder = 3;
 }
 
 message DrivetrainOutput {
+  required uint64 timestamp = 1;
   // Voltage, positive is forwards
-  required double left_voltage = 1;
-  required double right_voltage = 2;
+  required double left_voltage = 2;
+  required double right_voltage = 3;
 
   // True is high gear
-  required bool high_gear = 3;
+  required bool high_gear = 4;
 }
 
 message DrivetrainStatus {
+  required uint64 timestamp = 1;
   // Estimated forwards velocity (of the center of the robot) in m/s, forwards
   // is positive
-  required double forward_velocity = 1;
+  required double forward_velocity = 2;
 
   // Estimated position of each drivetrain side in meters, forwards is positive
-  required double estimated_left_position = 2;
-  required double estimated_right_position = 3;
+  required double estimated_left_position = 3;
+  required double estimated_right_position = 4;
 
   // Estimated velocity of each drivetrain side in m/s, forwards is positive
-  required double estimated_left_velocity = 4;
-  required double estimated_right_velocity = 5;
+  required double estimated_left_velocity = 5;
+  required double estimated_right_velocity = 6;
 
   // The voltage we wanted to send to each drivetrain side last cycle.
-  required double uncapped_left_voltage = 6;
-  required double uncapped_right_voltage = 7;
+  required double uncapped_left_voltage = 7;
+  required double uncapped_right_voltage = 8;
 
   // The goal velocities for the polydrive controller.
-  required double left_velocity_goal = 8;
-  required double right_velocity_goal = 9;
+  required double left_velocity_goal = 9;
+  required double right_velocity_goal = 10;
 
   // The voltage error for the left and right sides.
-  required double left_voltage_error = 10;
-  required double right_voltage_error = 11;
+  required double left_voltage_error = 11;
+  required double right_voltage_error = 12;
 
   // The profiled goal states.
-  required double profiled_left_position_goal = 12;
-  required double profiled_right_position_goal = 13;
-  required double profiled_left_velocity_goal = 14;
-  required double profiled_right_velocity_goal = 15;
+  required double profiled_left_position_goal = 13;
+  required double profiled_right_position_goal = 14;
+  required double profiled_left_velocity_goal = 15;
+  required double profiled_right_velocity_goal = 16;
 
   // The KF offset
-  required double estimated_angular_velocity_error = 16;
+  required double estimated_angular_velocity_error = 17;
   // The KF estimated heading.
-  required double estimated_heading = 17;
+  required double estimated_heading = 18;
 
   // True if the output voltage was capped last cycle.
-  required bool output_was_capped = 18;
+  required bool output_was_capped = 19;
 }
