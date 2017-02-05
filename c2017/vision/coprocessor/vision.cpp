@@ -21,9 +21,9 @@ class VisionScorer2017 : public muan::VisionScorer {
   }
 };
 
-void RunVision() {
+void RunVision(int camera_index) {
   cv::VideoCapture cap;
-  cap.open(1);
+  cap.open(camera_index);
   muan::Vision::ColorRange range {
     cv::Scalar(0, 100, 0), cv::Scalar(120, 255, 120), CV_BGR2RGB
   };

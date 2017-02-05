@@ -9,7 +9,7 @@
 namespace c2017 {
 namespace vision {
 
-void RunVision();
+void RunVision(int camera_index);
 
 }  // namespace vision
 }  // namespace c2017
