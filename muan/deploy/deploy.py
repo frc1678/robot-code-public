@@ -77,12 +77,6 @@ def main():
     # This will look like (cd /home/lvuser/robot_code && ./c2017/frc1678).
     robot_command_contents = '''\\$(cd {} && ./{})'''.format(options.deploy_path, options.main_binary)
 
-    # Kill the user program before copying things
-    ssh_kill_command = ssh_command + [
-        ssh_target,
-        '/usr/local/frc/bin/frcKillRobot.sh -r',
-    ]
-
     # The ssh command that we're going to run to create robotCommand
     ssh = ssh_command + [
            ssh_target,
@@ -93,8 +87,6 @@ def main():
 
     # Try to rsync the files over and run an ssh command to create the robotCommand.
     try:
-        print("Running kill robot command: {}".format(' '.join(ssh_kill_command)))
-        sp.check_call(ssh_kill_command)
         print("Running rsync command: {}".format(' '.join(rsync)))
         sp.check_call(rsync)
         print("Running ssh command: {}".format(' '.join(ssh)))
