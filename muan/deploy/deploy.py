@@ -100,7 +100,7 @@ def main():
         sp.check_call(rsync)
         print("Running ssh command: {}".format(' '.join(ssh)))
         sp.check_call(ssh)
-        print("Running set SUID command: {}".format(' '.join(ssh)))
+        print("Running set SUID command: {}".format(' '.join(ssh_suid_command)))
         sp.check_call(ssh_suid_command)
         print("Deploying completed successfully.")
     except sp.CalledProcessError as e:
