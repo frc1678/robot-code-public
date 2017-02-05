@@ -22,9 +22,9 @@ class VisionScorer2017 : public muan::VisionScorer {
 
 void RunVision() {
   cv::VideoCapture cap;
-  cap.open(2);
+  cap.open(1);
   muan::Vision::ColorRange range {
-    cv::Scalar(0, 100, 0), cv::Scalar(130, 255, 130), CV_BGR2RGB
+    cv::Scalar(0, 100, 0), cv::Scalar(120, 255, 120), CV_BGR2RGB
   };
   muan::Vision::VisionConstants constants {1.28, 1, -.1, -.2, 1};
   muan::Vision vision{ range, std::make_shared<VisionScorer2017>(), constants};
