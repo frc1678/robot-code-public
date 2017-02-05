@@ -24,7 +24,6 @@ class VisionSubsystem {
   muan::wpilib::DriverStationQueue::QueueReader driverstation_reader_;
   frc971::control_loops::drivetrain::GoalQueue* dt_goal_queue_;
   frc971::control_loops::drivetrain::StatusQueue::QueueReader dt_status_reader_;
-  muan::utils::History<double> moving_average_l_, moving_average_r_;
 };
 
 }  // namespace vision
