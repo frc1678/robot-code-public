@@ -17,7 +17,6 @@ class VisionSubsystem {
   void Update();
 
  protected:
-  bool running_;
   bool should_align_;
   muan::actions::DrivetrainProperties properties_;
   VisionInputQueue::QueueReader vision_input_reader_;

@@ -5,8 +5,7 @@ namespace c2017 {
 namespace vision {
 
 VisionSubsystem::VisionSubsystem()
-    : running_{false},
-      should_align_{false},
+    : should_align_{false},
       properties_{1.0, 1.0, 1.0, 1.0, c2017::drivetrain::GetDrivetrainConfig().robot_radius},
       vision_input_reader_{QueueManager::GetInstance().vision_input_queue().MakeReader()},
       driverstation_reader_{QueueManager::GetInstance().driver_station_queue()->MakeReader()},
@@ -28,16 +27,12 @@ void VisionSubsystem::Update() {
     }
     if ((*input)->has_angle_to_target()) {
       status->set_angle_to_target((*input)->angle_to_target());
-      status->set_aligned(std::abs((*input)->angle_to_target()) < 0.05);
-    } else {
-      status->set_aligned(false);
-    }
   } else {
     status->set_has_connection(false);
     status->set_target_found(false);
-    status->set_aligned(false);
   }
 
+  bool terminated = false;
   if (!disabled && should_align_) {
     // Send drivetrain goal
     double left_offset = 0, right_offset = 0;
@@ -62,17 +57,14 @@ void VisionSubsystem::Update() {
     dt_goal_queue_->WriteMessage(goal);
 
     // Determine if it is terminated
-    bool terminated = false;
-    if (maybe_status) {
+    if (maybe_status && status->has_angle_to_target()) {
       auto dt_status = maybe_status.value();
       terminated = std::abs(status->angle_to_target()) < 0.02 &&
                    std::abs(dt_status->estimated_left_velocity()) < 0.01 &&
                    std::abs(dt_status->estimated_right_velocity()) < 0.01;
     }
-    if (terminated) {
-      running_ = false;
-    }
   }
+  status->set_aligned(terminated);
   QueueManager::GetInstance().vision_status_queue().WriteMessage(status);
 }
 
