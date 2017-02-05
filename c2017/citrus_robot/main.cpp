@@ -22,10 +22,10 @@ void CitrusRobot::Update() {
     throttle_.Update();
     wheel_.Update();
     gamepad_.Update();
+    SendDrivetrainMessage();
   }
 
   SendDSMessage();
-  SendDrivetrainMessage();
 }
 
 void CitrusRobot::SendDSMessage() {
