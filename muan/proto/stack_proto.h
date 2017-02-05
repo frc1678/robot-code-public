@@ -4,6 +4,7 @@
 #include <array>
 #include <cstdint>
 #include "google/protobuf/arena.h"
+#include "third_party/aos/common/time.h"
 #include "third_party/aos/common/die.h"
 
 namespace muan {
@@ -107,6 +108,25 @@ class StackProto {
   // The message we're wrapping
   T* proto_message_{nullptr};
 };
+
+// This is a catch-all function overload, essentially if the other WriteTimestamp function doesn't compile the
+// compiler will select this function which does nothing.
+void WriteTimestamp(...) {}
+
+// If the timestamp exists in the message that we're writing to a queue, this function is called. If it fails
+// to compile, then the compiler will fall back to the other WriteTimestamp function. The decltype is there to
+// check if the timestamp exists, and if it doesn't it fails to compile.
+template <typename T>
+auto WriteTimestamp(T* message) -> decltype((*message)->set_timestamp(0), void()) {
+  (*message)->set_timestamp(std::chrono::duration_cast<std::chrono::milliseconds>(
+                                aos::monotonic_clock::now() - aos::monotonic_clock::epoch()).count());
+}
+
+template <typename T>
+auto WriteTimestamp(T* message) -> decltype(message->set_timestamp(0), void()) {
+  message->set_timestamp(std::chrono::duration_cast<std::chrono::milliseconds>(
+                             aos::monotonic_clock::now() - aos::monotonic_clock::epoch()).count());
+}
 
 }  // namespace proto
 }  // namespace muan
