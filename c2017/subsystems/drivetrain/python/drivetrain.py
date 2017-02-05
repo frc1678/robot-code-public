@@ -3,6 +3,7 @@
 from third_party.frc971.control_loops.python import control_loop
 from third_party.frc971.control_loops.python import controls
 import numpy
+import numpy.linalg
 import sys
 import argparse
 from matplotlib import pylab
@@ -56,26 +57,25 @@ class CIM(control_loop.ControlLoop):
 
     self.InitializeState()
 
-
 class Drivetrain(control_loop.ControlLoop):
   def __init__(self, name="Drivetrain", left_low=True, right_low=True):
     super(Drivetrain, self).__init__(name)
     # Number of motors per side
     self.num_motors = 2
     # Stall Torque in N m
-    self.stall_torque = 2.42 * self.num_motors * 0.60
+    self.stall_torque = 2.42 * self.num_motors
     # Stall Current in Amps
     self.stall_current = 133.0 * self.num_motors
     # Free Speed in RPM. Used number from last year.
-    self.free_speed = 5500.0
+    self.free_speed = 4650.0
     # Free Current in Amps
-    self.free_current = 4.7 * self.num_motors
+    self.free_current = 2.7 * self.num_motors
     # Moment of inertia of the drivetrain in kg m^2
     self.J = 0.35
     # Mass of the robot, in kg.
-    self.m = 22
+    self.m = 50
     # Radius of the robot, in meters (requires tuning by hand)
-    self.rb = 0.35
+    self.rb = 0.46
     # Radius of the wheels, in meters.
     self.r = 0.041275
     # Resistance of the motor, divided by the number of motors.
@@ -86,7 +86,7 @@ class Drivetrain(control_loop.ControlLoop):
     # Torque constant
     self.Kt = self.stall_torque / self.stall_current
     # Gear ratios
-    self.gear = 1 / 4.55
+    self.gear = 1 / 6.0
     self.Gl = self.gear
     self.Gr = self.gear
 
@@ -106,26 +106,38 @@ class Drivetrain(control_loop.ControlLoop):
     # State feedback matrices
     # X will be of the format
     # [[positionl], [velocityl], [positionr], [velocityr]]
-    self.A_continuous = numpy.matrix(
-        [[0, 1, 0, 0],
-         [0, self.msp * self.tcl, 0, self.msn * self.tcr],
-         [0, 0, 0, 1],
-         [0, self.msn * self.tcl, 0, self.msp * self.tcr]])
-    self.B_continuous = numpy.matrix(
-        [[0, 0],
-         [self.msp * self.mpl, self.msn * self.mpr],
-         [0, 0],
-         [self.msn * self.mpl, self.msp * self.mpr]])
+    self.A_c_anglin = numpy.matrix([
+        [0., 1., 0., 0.],
+        [0., -2.324, 0., 0.],
+        [0., 0., 0., 1.],
+        [0., 0., 0., -7.5],
+    ])
+    self.B_c_anglin = numpy.matrix([
+        [0., 0.],
+        [0.5, 0.5],
+        [0., 0.],
+        [-1.2, 1.2],
+    ])
     self.C = numpy.matrix([[1, 0, 0, 0],
                            [0, 0, 1, 0]])
     self.D = numpy.matrix([[0, 0],
                            [0, 0]])
 
-    self.A, self.B = self.ContinuousToDiscrete(
-        self.A_continuous, self.B_continuous, self.dt)
+    af_to_lr = numpy.matrix([
+        [1.0, 0.0, -self.rb, 0.0],
+        [0.0, 1.0, 0.0, -self.rb],
+        [1.0, 0.0, self.rb, 0.0],
+        [0.0, 1.0, 0.0, self.rb],
+    ])
 
-    q_pos = 0.9
-    q_vel = 4.0
+    self.A_continuous = af_to_lr * self.A_c_anglin * numpy.linalg.inv(af_to_lr)
+    self.B_continuous = af_to_lr * self.B_c_anglin
+
+    self.A, self.B = self.ContinuousToDiscrete(
+        af_to_lr * self.A_c_anglin * numpy.linalg.inv(af_to_lr), af_to_lr * self.B_c_anglin, self.dt)
+
+    q_pos = 0.1
+    q_vel = 2.0
 
     self.Q = numpy.matrix([[(1.0 / (q_pos ** 2.0)), 0.0, 0.0, 0.0],
                            [0.0, (1.0 / (q_vel ** 2.0)), 0.0, 0.0],
@@ -135,6 +147,8 @@ class Drivetrain(control_loop.ControlLoop):
     self.R = numpy.matrix([[(1.0 / (12.0 ** 2.0)), 0.0],
                            [0.0, (1.0 / (12.0 ** 2.0))]])
     self.K = controls.dlqr(self.A, self.B, self.Q, self.R)
+
+    print("K = " + str(self.K))
 
     glog.debug('DT q_pos %f q_vel %s %s', q_pos, q_vel, name)
     glog.debug(str(numpy.linalg.eig(self.A - self.B * self.K)[0]))
@@ -149,6 +163,10 @@ class Drivetrain(control_loop.ControlLoop):
 
     self.InitializeState()
 
+    self.Qff = numpy.matrix(numpy.zeros((4, 4)))
+    self.Qff[1, 1] = self.Qff[3,3] = 1.0
+    self.Kff = controls.TwoStateFeedForwards(self.B, self.Qff)
+    print(self.Kff)
 
 class KFDrivetrain(Drivetrain):
   def __init__(self, name="KFDrivetrain", left_low=True, right_low=True):
@@ -189,9 +207,9 @@ class KFDrivetrain(Drivetrain):
                            [0, 0],
                            [0, 0]])
 
-    q_pos = 0.05
-    q_vel = 1.00
-    q_voltage = 10.0
+    q_pos = 0.1
+    q_vel = 2.0
+    q_voltage = 1.0
     q_encoder_uncertainty = 2.00
 
     self.Q = numpy.matrix([[(q_pos ** 2.0), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -245,7 +263,7 @@ def main(argv):
   simulated_left = []
   simulated_right = []
   for _ in xrange(100):
-    drivetrain.Update(numpy.matrix([[12.0], [12.0]]))
+    drivetrain.Update(numpy.matrix([[6.0], [6.0]]))
     simulated_left.append(drivetrain.X[0, 0])
     simulated_right.append(drivetrain.X[2, 0])
 
@@ -262,13 +280,19 @@ def main(argv):
   left_power = []
   right_power = []
   R = numpy.matrix([[1.0], [0.0], [1.0], [0.0]])
+  print(drivetrain.A)
   for _ in xrange(300):
-    U = numpy.clip(drivetrain.K * (R - drivetrain.X_hat),
+    next_R = R.copy()[:]
+    next_R[1] += 0.005
+    next_R[3] += 0.005
+    print (next_R - drivetrain.A * R)[1]
+    U = numpy.clip(drivetrain.Kff * (next_R - drivetrain.A * R),
                    drivetrain.U_min, drivetrain.U_max)
+    R = next_R
     drivetrain.UpdateObserver(U)
     drivetrain.Update(U)
-    close_loop_left.append(drivetrain.X[0, 0])
-    close_loop_right.append(drivetrain.X[2, 0])
+    close_loop_left.append(R[1, 0])
+    close_loop_right.append(drivetrain.X[1, 0])
     left_power.append(U[0, 0])
     right_power.append(U[1, 0])
 
