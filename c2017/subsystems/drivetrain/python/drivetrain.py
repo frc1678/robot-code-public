@@ -63,17 +63,17 @@ class Drivetrain(control_loop.ControlLoop):
     # Number of motors per side
     self.num_motors = 2
     # Stall Torque in N m
-    self.stall_torque = 2.42 * self.num_motors
+    self.stall_torque = 2.42 * self.num_motors * 0.60
     # Stall Current in Amps
     self.stall_current = 133.0 * self.num_motors
     # Free Speed in RPM. Used number from last year.
-    self.free_speed = 4650.0
+    self.free_speed = 5500.0
     # Free Current in Amps
-    self.free_current = 2.7 * self.num_motors
+    self.free_current = 4.7 * self.num_motors
     # Moment of inertia of the drivetrain in kg m^2
     self.J = 0.35
     # Mass of the robot, in kg.
-    self.m = 50
+    self.m = 22
     # Radius of the robot, in meters (requires tuning by hand)
     self.rb = 0.46
     # Radius of the wheels, in meters.
@@ -86,22 +86,9 @@ class Drivetrain(control_loop.ControlLoop):
     # Torque constant
     self.Kt = self.stall_torque / self.stall_current
     # Gear ratios
-    self.gear = 1 / 6.0
-    self.Gl = self.gear
-    self.Gr = self.gear
-
+    self.gear = 1 / 4.55
     # Control loop time step
     self.dt = 0.005
-
-    # These describe the way that a given side of a robot will be influenced
-    # by the other side. Units of 1 / kg.
-    self.msp = 1.0 / self.m + self.rb * self.rb / self.J
-    self.msn = 1.0 / self.m - self.rb * self.rb / self.J
-    # The calculations which we will need for A and B.
-    self.tcl = -self.Kt / self.Kv / (self.Gl * self.Gl * self.resistance * self.r * self.r)
-    self.tcr = -self.Kt / self.Kv / (self.Gr * self.Gr * self.resistance * self.r * self.r)
-    self.mpl = self.Kt / (self.Gl * self.resistance * self.r)
-    self.mpr = self.Kt / (self.Gr * self.resistance * self.r)
 
     # State feedback matrices
     # X will be of the format
@@ -130,11 +117,14 @@ class Drivetrain(control_loop.ControlLoop):
         [0.0, 1.0, 0.0, self.rb],
     ])
 
+    # We're modelling the system from empirical constants in the state-space of [forward, forward_velocity, angular,
+    # angular_velocity]. Then, the af_to_lr matrix above converts all of the matrices from angular+forward to a
+    # left+right state-space, which is what 971's code actually uses.
     self.A_continuous = af_to_lr * self.A_c_anglin * numpy.linalg.inv(af_to_lr)
     self.B_continuous = af_to_lr * self.B_c_anglin
 
     self.A, self.B = self.ContinuousToDiscrete(
-        af_to_lr * self.A_c_anglin * numpy.linalg.inv(af_to_lr), af_to_lr * self.B_c_anglin, self.dt)
+        self.A_continuous, self.B_continuous, self.dt)
 
     q_pos = 0.1
     q_vel = 2.0
@@ -260,7 +250,7 @@ def main(argv):
   simulated_left = []
   simulated_right = []
   for _ in xrange(100):
-    drivetrain.Update(numpy.matrix([[6.0], [6.0]]))
+    drivetrain.Update(numpy.matrix([[12.0], [12.0]]))
     simulated_left.append(drivetrain.X[0, 0])
     simulated_right.append(drivetrain.X[2, 0])
 
@@ -278,16 +268,12 @@ def main(argv):
   right_power = []
   R = numpy.matrix([[1.0], [0.0], [1.0], [0.0]])
   for _ in xrange(300):
-    next_R = R.copy()[:]
-    next_R[1] += 0.005
-    next_R[3] += 0.005
-    U = numpy.clip(drivetrain.Kff * (next_R - drivetrain.A * R),
+    U = numpy.clip(drivetrain.K * (R - drivetrain.X_hat),
                    drivetrain.U_min, drivetrain.U_max)
-    R = next_R
     drivetrain.UpdateObserver(U)
     drivetrain.Update(U)
-    close_loop_left.append(R[1, 0])
-    close_loop_right.append(drivetrain.X[1, 0])
+    close_loop_left.append(drivetrain.X[0, 0])
+    close_loop_right.append(drivetrain.X[2, 0])
     left_power.append(U[0, 0])
     right_power.append(U[1, 0])
 
