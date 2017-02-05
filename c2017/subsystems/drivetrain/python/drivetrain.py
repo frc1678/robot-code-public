@@ -148,8 +148,6 @@ class Drivetrain(control_loop.ControlLoop):
                            [0.0, (1.0 / (12.0 ** 2.0))]])
     self.K = controls.dlqr(self.A, self.B, self.Q, self.R)
 
-    print("K = " + str(self.K))
-
     glog.debug('DT q_pos %f q_vel %s %s', q_pos, q_vel, name)
     glog.debug(str(numpy.linalg.eig(self.A - self.B * self.K)[0]))
     glog.debug('K %s', repr(self.K))
@@ -166,7 +164,6 @@ class Drivetrain(control_loop.ControlLoop):
     self.Qff = numpy.matrix(numpy.zeros((4, 4)))
     self.Qff[1, 1] = self.Qff[3,3] = 1.0
     self.Kff = controls.TwoStateFeedForwards(self.B, self.Qff)
-    print(self.Kff)
 
 class KFDrivetrain(Drivetrain):
   def __init__(self, name="KFDrivetrain", left_low=True, right_low=True):
@@ -280,12 +277,10 @@ def main(argv):
   left_power = []
   right_power = []
   R = numpy.matrix([[1.0], [0.0], [1.0], [0.0]])
-  print(drivetrain.A)
   for _ in xrange(300):
     next_R = R.copy()[:]
     next_R[1] += 0.005
     next_R[3] += 0.005
-    print (next_R - drivetrain.A * R)[1]
     U = numpy.clip(drivetrain.Kff * (next_R - drivetrain.A * R),
                    drivetrain.U_min, drivetrain.U_max)
     R = next_R
