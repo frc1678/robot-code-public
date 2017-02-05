@@ -111,7 +111,7 @@ class StackProto {
 
 // This is a catch-all function overload, essentially if the other WriteTimestamp function doesn't compile the
 // compiler will select this function which does nothing.
-void WriteTimestamp(...) {}
+inline void WriteTimestamp(...) {}
 
 // If the timestamp exists in the message that we're writing to a queue, this function is called. If it fails
 // to compile, then the compiler will fall back to the other WriteTimestamp function. The decltype is there to
