@@ -135,8 +135,4 @@ c2017::lights::LightsOutputQueue& QueueManager::lights_output_queue() {
   return lights_output_queue_;
 }
 
-c2017::vision::VisionStatusQueue& QueueManager::vision_status_queue() {
-  return vision_status_queue_;
-}
-
 }  // namespace c2017

@@ -21,7 +21,6 @@ cc_library(
         "//c2017/wpilib:wpilib_queues",
         "//c2017/webdash:webdash_queues",
         "//c2017/subsystems/lights:lights_queues",
-        "//c2017/vision:vision_queues"
     ],
     visibility = ["//visibility:public"]
 )

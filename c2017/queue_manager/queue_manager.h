@@ -22,7 +22,6 @@
 #include "c2017/wpilib/queue_types.h"
 #include "c2017/webdash/queue_types.h"
 #include "c2017/subsystems/lights/queue_types.h"
-#include "c2017/vision/queue_types.h"
 
 using muan::queues::MessageQueue;
 
@@ -84,8 +83,6 @@ class QueueManager {
 
   c2017::lights::LightsOutputQueue& lights_output_queue();
 
-  c2017::vision::VisionStatusQueue& vision_status_queue();
-
  private:
   QueueManager() = default;
   ~QueueManager() = default;
@@ -130,8 +127,6 @@ class QueueManager {
   c2017::webdash::WebDashQueue webdash_queue_;
 
   c2017::lights::LightsOutputQueue lights_output_queue_;
-
-  c2017::vision::VisionStatusQueue vision_status_queue_;
 #ifndef FRC1678_NO_QUEUE_LOGGING
   muan::logging::Logger logger_;
   std::thread logger_thread_{std::ref(logger_)};
