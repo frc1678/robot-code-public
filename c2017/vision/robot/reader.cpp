@@ -1,4 +1,3 @@
-#include <iostream>
 #include "c2017/vision/robot/reader.h"
 #include "c2017/queue_manager/queue_manager.h"
 #include "third_party/aos/vision/events/udp.h"
@@ -11,7 +10,6 @@ namespace vision {
 
 VisionReader::VisionReader() : vision_input_queue_{QueueManager::GetInstance().vision_input_queue()} {
   running_ = false;
-    std::cout << "Running!" << std::endl;
 }
 
 void VisionReader::operator()() {

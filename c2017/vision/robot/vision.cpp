@@ -65,19 +65,18 @@ void VisionSubsystem::Update() {
     bool terminated = false;
     if (maybe_status) {
       auto dt_status = maybe_status.value();
-      terminated =
-          std::abs(status->angle_to_target()) < 0.02 &&
-          std::abs(dt_status->estimated_left_velocity()) < 0.01 &&
-          std::abs(dt_status->estimated_right_velocity()) < 0.01;
+      terminated = std::abs(status->angle_to_target()) < 0.02 &&
+                   std::abs(dt_status->estimated_left_velocity()) < 0.01 &&
+                   std::abs(dt_status->estimated_right_velocity()) < 0.01;
     }
-    if (terminated) { running_ = false; }
+    if (terminated) {
+      running_ = false;
+    }
   }
   QueueManager::GetInstance().vision_status_queue().WriteMessage(status);
 }
 
-void VisionSubsystem::SetGoal(VisionGoalProto goal) {
-  should_align_ = goal->should_align();
-}
+void VisionSubsystem::SetGoal(VisionGoalProto goal) { should_align_ = goal->should_align(); }
 
 }  // namespace vision
 }  // namespace c2017

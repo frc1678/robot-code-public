@@ -24,10 +24,8 @@ class VisionScorer2017 : public muan::VisionScorer {
 void RunVision(int camera_index) {
   cv::VideoCapture cap;
   cap.open(camera_index);
-  muan::Vision::ColorRange range {
-    cv::Scalar(0, 100, 0), cv::Scalar(120, 255, 120), CV_BGR2RGB
-  };
-  muan::Vision::VisionConstants constants {1.28, 1, -.1, -.2, 1};
+  muan::Vision::ColorRange range{cv::Scalar(0, 100, 0), cv::Scalar(120, 255, 120), CV_BGR2RGB};
+  muan::Vision::VisionConstants constants{1.28, 1, -.1, -.2, 1};
   muan::Vision vision{range, std::make_shared<VisionScorer2017>(), constants};
   cv::Mat raw;
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
