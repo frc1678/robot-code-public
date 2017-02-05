@@ -14,7 +14,6 @@ namespace lemonscript {
     class CppCommand;
     class SequentialCommand;
     class SimultaneousCommand;
-    class WhileAlsoCommand;
     class CompleteAnyCommand;
     class CompleteCommand;
     class SetCommand;
@@ -29,7 +28,7 @@ namespace lemonscript {
     class BaseAutoFunction;
     
     enum class DataType {
-        INT, FLOAT, BOOLEAN, UNIT, TYPE
+        INT, FLOAT, BOOLEAN
     };    
 }
 

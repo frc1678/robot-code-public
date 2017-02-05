@@ -7,7 +7,7 @@ void QueueManager::StartLogging() {
 #ifndef FRC1678_NO_QUEUE_LOGGING
   logger_.AddQueue("pdp_status", &pdp_status_queue_);
   logger_.AddQueue("driver_station", &driver_station_queue_);
-  logger_.AddQueue("gyro", &driver_station_queue_);
+  logger_.AddQueue("gyro", &gyro_queue_);
 
   logger_.AddQueue("drivetrain_input", &drivetrain_input_queue_);
   logger_.AddQueue("drivetrain_goal", &drivetrain_goal_queue_);
@@ -36,6 +36,8 @@ void QueueManager::StartLogging() {
 
   logger_.AddQueue("intake_group_goal", &intake_group_goal_queue_);
   logger_.AddQueue("shooter_group_goal", &shooter_group_goal_queue_);
+
+  logger_.AddQueue("webdash", &webdash_queue_);
 #endif  // FRC1678_NO_QUEUE_LOGGING
 }
 
@@ -122,6 +124,19 @@ c2017::intake_group::IntakeGroupGoalQueue& QueueManager::intake_group_goal_queue
 
 c2017::shooter_group::ShooterGroupGoalQueue& QueueManager::shooter_group_goal_queue() {
   return shooter_group_goal_queue_;
+}
+
+c2017::webdash::WebDashQueue&
+QueueManager::webdash_queue() {
+  return webdash_queue_;
+}
+
+c2017::lights::LightsOutputQueue& QueueManager::lights_output_queue() {
+  return lights_output_queue_;
+}
+
+c2017::vision::VisionStatusQueue& QueueManager::vision_status_queue() {
+  return vision_status_queue_;
 }
 
 }  // namespace c2017

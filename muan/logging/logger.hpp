@@ -26,12 +26,15 @@ template <class R>
 std::experimental::optional<std::string> Logger::Reader<R>::GetMessageAsCSV(bool header) {
   auto message = reader_.ReadMessage();
   if (message) {
-    std::string out = "";
+    std::stringstream ss;
     if (header) {
-      out = out + muan::util::ProtoToCSVHeader(*message.value().get()) + "\n";
+      muan::util::ProtoToCsvHeader(*message.value().get(), ss);
+      ss << "\n";
     }
-    out = out + muan::util::ProtoToCSV(*message.value().get());
-    return out;
+
+    // TODO(Kyle) Refactor Reader's interface to have GetMessageAsCSV write directly to an ostream.
+    muan::util::ProtoToCsv(*message.value().get(), ss);
+    return ss.str();
   } else {
     return std::experimental::nullopt;
   }

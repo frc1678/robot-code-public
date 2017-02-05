@@ -17,7 +17,6 @@
 
 #include "PrefixExpression.h"
 
-std::ostream & operator<<(std::ostream &os, const lemonscript_expressions::ExpressionTree &tree);
 
 struct lemonscript_expressions::ExpressionTreeRecurseAttributes {
     bool CANT_MATCH_TYPE; // !!!
@@ -37,7 +36,6 @@ class lemonscript_expressions::ExpressionTree {
     lemonscript_expressions::Atom atom;
     lemonscript_expressions::OperatorType op;
     
-    void print(std::ostream &os, int depth) const;
     
     lemonscript::LemonScriptState *state;
     
@@ -49,10 +47,10 @@ public:
     lemonscript_expressions::ExpressionTreeRecurseAttributes compileTree();
     
     int evaluate();
+    void print(std::ostream &os, int depth = 0) const;
+
     
-    
-    friend std::ostream & (::operator<<)(std::ostream &os, const lemonscript_expressions::ExpressionTree &tree);
-    
+
 };
 
 

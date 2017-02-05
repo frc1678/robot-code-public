@@ -77,7 +77,6 @@ void SuperStructureInterface::ReadSensors() {
     // Ground gear intake, climber
     ground_gear_sensors->set_current((*current_reader)->current4());
     climber_sensors->set_current((*current_reader)->current5());
-    magazine_sensors->set_conveyor_current((*current_reader)->current6());
   }
 
   shooter_input_queue_.WriteMessage(shooter_sensors);

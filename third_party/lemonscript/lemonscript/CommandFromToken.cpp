@@ -9,7 +9,6 @@
 #include "CommandFromToken.h"
 
 #include "CppCommand.h"
-#include "WhileAlsoCommand.h"
 #include "CompleteAnyCommand.h"
 #include "CompleteCommand.h"
 #include "SetCommand.h"
@@ -23,8 +22,6 @@ lemonscript::Command *lemonscript::commandFromToken(const std::string &token, To
     Command *command;
     if(type == CppToken) {
         command = new CppCommand(lineNum, state, token);
-    } else if(type == WhileAlsoToken) {
-        command = new WhileAlsoCommand(lineNum, state, token);
     } else if(type == CompleteAnyToken) {
         command = new CompleteAnyCommand(lineNum, state, token);
     } else if(type == CompleteToken) {
@@ -39,7 +36,10 @@ lemonscript::Command *lemonscript::commandFromToken(const std::string &token, To
         command = new RunCommand(lineNum, state, token);
     } else if(type == OptionalCommandToken) {
         command = new OptionalCommand(lineNum, state, token);
-    } else {
+    } else if(type == SequenceToken) {
+        command = new SequentialCommand(lineNum, state, token, true);
+    }
+    else {
         throw "Unknow token type: " + std::to_string(type);
     }
     

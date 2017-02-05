@@ -124,8 +124,8 @@ class Drivetrain(control_loop.ControlLoop):
     self.A, self.B = self.ContinuousToDiscrete(
         self.A_continuous, self.B_continuous, self.dt)
 
-    q_pos = 0.14
-    q_vel = 0.95
+    q_pos = 0.9
+    q_vel = 4.0
 
     self.Q = numpy.matrix([[(1.0 / (q_pos ** 2.0)), 0.0, 0.0, 0.0],
                            [0.0, (1.0 / (q_vel ** 2.0)), 0.0, 0.0],

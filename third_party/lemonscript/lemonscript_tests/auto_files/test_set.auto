@@ -1,0 +1,8 @@
+DEF y = 6
+DEF x = 5
+DEF t = 1 + x
+
+SET x = 9
+
+PrintBool: t == y
+PrintBool: x == y

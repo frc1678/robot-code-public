@@ -1,6 +1,6 @@
 //
 //  CompleteAnyToken.hpp
-//  FiniteStateMachine
+//  lemonscript
 //
 //  Created by Donald Pinckney on 1/16/16.
 //  Copyright © 2016 Donald Pinckney. All rights reserved.

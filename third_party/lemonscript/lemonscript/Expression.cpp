@@ -32,14 +32,16 @@ Expression::Expression(const std::string &str, lemonscript::LemonScriptState *st
     
     if(attribs.isConstant) {
         size_t dataSize;
-        if (t == lemonscript::DataType::INT) {
-            dataSize = sizeof(int);
-        } else if(t == lemonscript::DataType::FLOAT) {
-            dataSize = sizeof(float);
-        } else if(t == lemonscript::DataType::BOOLEAN) {
-            dataSize = sizeof(bool);
-        } else {
-            throw "Type expressions not yet supported";
+        switch (t) {
+            case lemonscript::DataType::INT:
+                dataSize = sizeof(int);
+                break;
+            case lemonscript::DataType::FLOAT:
+                dataSize = sizeof(float);
+                break;
+            case lemonscript::DataType::BOOLEAN:
+                dataSize = sizeof(bool);
+                break;
         }
         
         

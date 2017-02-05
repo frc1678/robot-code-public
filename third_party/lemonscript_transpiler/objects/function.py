@@ -46,7 +46,7 @@ class Function(object):
                line.strip()[:len(section_name)] == section_name and \
                line.strip()[-1] == "{":
                 found_section = True
-            elif found_section and not line[0] == "}":
+            elif found_section and line != "" and line[0] != "}":
                 text_in_section.append(line)
             elif found_section:
                 return '\n'.join(text_in_section)

@@ -1,5 +1,6 @@
 #include <WPILib.h>
-#include "c2017/wpilib_update/main.h"
+#include "c2017/citrus_robot/main.h"
+#include "c2017/webdash/server.h"
 #include "subsystems/subsystem_runner.h"
 #include "vision/robot/reader.h"
 
@@ -16,6 +17,9 @@ class WpilibRobot : public IterativeRobot {
   c2017::vision::VisionReader vision_reader_;
   std::thread subsystem_thread{std::ref(subsystem_runner_)};
   std::thread vision_thread{std::ref(vision_reader_)};
+
+  c2017::webdash::WebDashRunner runner;
+  std::thread runner_thread{std::ref(runner)};
 
   c2017::citrus_robot::CitrusRobot main_;
 };
