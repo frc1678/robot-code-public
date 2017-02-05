@@ -5,15 +5,14 @@
 #include <chrono>
 #include <iostream>
 #include "third_party/aos/vision/events/udp.h"
-#include "muan/vision/queue_types.h"
+#include "c2017/vision/queue_types.h"
 
 namespace c2017 {
 namespace vision {
 
 void RunSender();
-extern muan::vision::VisionPositionQueue vision_queue;
-
+extern c2017::vision::VisionInputQueue vision_queue;
 }
 }
 
-#endif // C2017_VISION_COPROCESSOR_SENDER_H_
+#endif  // C2017_VISION_COPROCESSOR_SENDER_H_

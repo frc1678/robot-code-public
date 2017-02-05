@@ -1,9 +1,9 @@
-#include "subsystem_runner.h"
+#include "generic_robot/subsystem_runner/subsystem_runner.h"
 
 namespace generic_robot {
 
 void SubsystemRunner::operator()() {
-  aos::time::PhasedLoop phased_loop(aos::time::Time::InMS(5));
+  aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(5));
 
   // TODO(Kyle or Wesley) Come up with some actual value for this...
   aos::SetCurrentThreadRealtimePriority(10);
@@ -22,4 +22,5 @@ void SubsystemRunner::operator()() {
 }
 
 void SubsystemRunner::Stop() { running_ = false; }
-}
+
+}  // namespace generic_robot

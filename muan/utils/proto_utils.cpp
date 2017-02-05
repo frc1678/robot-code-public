@@ -1,8 +1,7 @@
 #ifndef MUAN_UTILS_PROTO_UTILS_HPP_
 #define MUAN_UTILS_PROTO_UTILS_HPP_
 
-#include "proto_utils.h"
-#include <iostream>
+#include "muan/utils/proto_utils.h"
 #include <sstream>
 #include <vector>
 #include "google/protobuf/generated_message_reflection.h"
@@ -117,8 +116,8 @@ std::string ProtoToCSVHeader(const google::protobuf::Message& message, const std
   return ss.str();
 }
 
-} /* util */
+}  // namespace util
 
-} /* muan */
+}  // namespace muan
 
-#endif /* MUAN_UTILS_PROTO_UTILS_HPP_ */
+#endif  // MUAN_UTILS_PROTO_UTILS_HPP_

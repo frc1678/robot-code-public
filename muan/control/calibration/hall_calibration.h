@@ -1,5 +1,5 @@
-#ifndef MUAN_HALL_CALIBRATION_H_
-#define MUAN_HALL_CALIBRATION_H_
+#ifndef MUAN_CONTROL_CALIBRATION_HALL_CALIBRATION_H_
+#define MUAN_CONTROL_CALIBRATION_HALL_CALIBRATION_H_
 
 namespace muan {
 
@@ -52,4 +52,4 @@ class HallCalibration {
 
 }  // namespace muan
 
-#endif  // MUAN_HALL_CALIBRATION_H_
+#endif  // MUAN_CONTROL_CALIBRATION_HALL_CALIBRATION_H_

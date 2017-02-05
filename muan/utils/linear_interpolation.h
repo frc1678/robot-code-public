@@ -1,5 +1,5 @@
-#ifndef MUAN_UTILS_LINEAR_INTERPOLATION_
-#define MUAN_UTILS_LINEAR_INTERPOLATION_
+#ifndef MUAN_UTILS_LINEAR_INTERPOLATION_H_
+#define MUAN_UTILS_LINEAR_INTERPOLATION_H_
 
 #include <functional>
 #include <utility>
@@ -11,7 +11,7 @@ namespace utils {
 template <typename T>
 class LinearInterpolation {
  public:
-  LinearInterpolation(std::vector<std::pair<double, T>> data);
+  explicit LinearInterpolation(std::vector<std::pair<double, T>> data);
   T operator()(double x) const;
   void AddControlPoint(std::pair<double, T> point);
   double lower_boundary() const;
@@ -23,11 +23,10 @@ class LinearInterpolation {
   static bool ComparePoints(const std::pair<double, T> &a, const std::pair<double, T> &b);
 };
 
-}  //  utils
+}  // namespace utils
 
-}  //  muan
-
+}  // namespace muan
 
 #include "linear_interpolation.hpp"
 
-#endif  // MUAN_UTILS_LINEAR_INTERPOLATION_
+#endif  // MUAN_UTILS_LINEAR_INTERPOLATION_H_

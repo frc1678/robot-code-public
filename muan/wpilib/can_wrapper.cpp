@@ -1,4 +1,4 @@
-#include "can_wrapper.h"
+#include "muan/wpilib/can_wrapper.h"
 #include "third_party/aos/common/time.h"
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/aos/linux_code/init.h"
@@ -10,7 +10,7 @@ namespace wpilib {
 CanWrapper::CanWrapper(PdpWrapper::Queue* pdp_queue) { pdp_.SetQueue(pdp_queue); }
 
 void CanWrapper::operator()() {
-  aos::time::PhasedLoop phased_loop(aos::time::Time::InMS(20));
+  aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(20));
 
   // TODO(Kyle) Come up with some actual value for this...
   aos::SetCurrentThreadRealtimePriority(10);
@@ -31,6 +31,6 @@ PdpWrapper* CanWrapper::pdp() { return &pdp_; }
 
 PcmWrapper* CanWrapper::pcm() { return &pcm_; }
 
-}  // wpilib
+}  // namespace wpilib
 
-}  // muan
+}  // namespace muan

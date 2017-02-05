@@ -12,7 +12,7 @@ cc_library(
   hdrs = ['sender.h'],
   deps = [
     '//third_party/aos/vision/events:udp',
-    '//muan/vision:vision_queues'
+    '//c2017/vision:vision_queues'
   ]
 )
 

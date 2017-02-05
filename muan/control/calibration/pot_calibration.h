@@ -1,5 +1,5 @@
-#ifndef MUAN_UTILS_OFFSET_PROFILED_CONTROLLER_POT_CALIBRATION_H_
-#define MUAN_UTILS_OFFSET_PROFILED_CONTROLLER_POT_CALIBRATION_H_
+#ifndef MUAN_CONTROL_CALIBRATION_POT_CALIBRATION_H_
+#define MUAN_CONTROL_CALIBRATION_POT_CALIBRATION_H_
 
 namespace muan {
 
@@ -7,7 +7,7 @@ namespace control {
 
 class PotCalibration {
  public:
-  PotCalibration(double units_per_index);
+  explicit PotCalibration(double units_per_index);
   ~PotCalibration();
 
   double Update(double enc_value, double pot_value, bool index_click);
@@ -33,7 +33,9 @@ class PotCalibration {
   int offset_;
   bool calibrated_, index_error_;
 };
-}
-}
 
-#endif  // MUAN_UTILS_OFFSET_PROFILED_CONTROLLER_POT_CALIBRATION_H_
+}  // namespace control
+
+}  // namespace muan
+
+#endif  // MUAN_CONTROL_CALIBRATION_POT_CALIBRATION_H_

@@ -15,13 +15,12 @@ Main::Main() : throttle_{1}, wheel_{0}, gamepad_{2} {
 
 void Main::Update() {
   if (DriverStation::GetInstance().IsAutonomous()) {
-
-  } else if (DriverStation::GetInstance().IsOperatorControl())
-  // Update joysticks
-  throttle_.Update();
-  wheel_.Update();
-  gamepad_.Update();
-
+  } else if (DriverStation::GetInstance().IsOperatorControl()) {
+    // Update joysticks
+    throttle_.Update();
+    wheel_.Update();
+    gamepad_.Update();
+  }
   SendDSMessage();
 }
 
@@ -45,6 +44,6 @@ void Main::SendDSMessage() {
   generic_robot::QueueManager::GetInstance().driver_station_queue().WriteMessage(status);
 }
 
-}  // wpilib_update
+}  // namespace wpilib_update
 
-}  // generic_robot
+}  // namespace generic_robot

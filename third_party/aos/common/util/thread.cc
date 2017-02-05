@@ -11,7 +11,9 @@ namespace util {
 
 Thread::Thread() : started_(false), joined_(false), should_terminate_(false) {}
 
-Thread::~Thread() { CHECK(!(started_ && !joined_)); }
+Thread::~Thread() {
+  CHECK(!(started_ && !joined_));
+}
 
 void Thread::Start() {
   CHECK(!started_);

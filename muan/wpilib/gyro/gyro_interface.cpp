@@ -1,4 +1,4 @@
-#include "gyro_interface.h"
+#include "muan/wpilib/gyro/gyro_interface.h"
 
 #include <inttypes.h>
 #include <unistd.h>

@@ -1,9 +1,9 @@
-#include "subsystem_runner.h"
+#include "o2016/subsystem_runner/subsystem_runner.h"
 
 namespace o2016 {
 
 void SubsystemRunner::operator()() {
-  aos::time::PhasedLoop phased_loop(aos::time::Time::InMS(5));
+  aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(5));
 
   // TODO(Kyle or Wesley) Come up with some actual value for this...
   aos::SetCurrentThreadRealtimePriority(10);
@@ -27,4 +27,5 @@ void SubsystemRunner::operator()() {
 }
 
 void SubsystemRunner::Stop() { running_ = false; }
-}
+
+}  // namespace o2016

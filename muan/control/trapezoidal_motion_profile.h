@@ -1,17 +1,17 @@
-#ifndef MUAN_CONTROL_TRAPEZOIDALMOTIONPROFILE_H_
-#define MUAN_CONTROL_TRAPEZOIDALMOTIONPROFILE_H_
+#ifndef MUAN_CONTROL_TRAPEZOIDAL_MOTION_PROFILE_H_
+#define MUAN_CONTROL_TRAPEZOIDAL_MOTION_PROFILE_H_
 
 #include <cmath>
 #include <type_traits>
-#include "motion_profile.h"
+#include "muan/control/motion_profile.h"
 
 namespace muan {
 
 namespace control {
 
 struct MotionProfileConstraints {
-  Velocity max_velocity;
-  Acceleration max_acceleration;
+  muan::units::Velocity max_velocity;
+  muan::units::Acceleration max_acceleration;
 };
 
 /*
@@ -36,9 +36,9 @@ class TrapezoidalMotionProfile : public MotionProfile {
 
   // Calculate the correct position and velocity for the profile at a time t
   // where the beginning of the profile was at time t=0
-  MotionProfilePosition Calculate(Time t) const override;
+  MotionProfilePosition Calculate(muan::units::Time t) const override;
 
-  Time total_time() const override { return end_deccel_; }
+  muan::units::Time total_time() const override { return end_deccel_; }
 
   MotionProfileConstraints& constraints() { return constraints_; }
 
@@ -50,11 +50,11 @@ class TrapezoidalMotionProfile : public MotionProfile {
     // Calculate the distance travelled by a linear velocity ramp
     // from the initial to the final velocity and compare it to the desired
     // distance. If it is smaller, invert the profile.
-    Velocity velocity_change = goal.velocity - initial.velocity;
+    muan::units::Velocity velocity_change = goal.velocity - initial.velocity;
 
-    Length distance_change = goal.position - initial.position;
+    muan::units::Length distance_change = goal.position - initial.position;
 
-    Time t = std::abs(velocity_change) / constraints.max_acceleration;
+    muan::units::Time t = std::abs(velocity_change) / constraints.max_acceleration;
     bool is_acceleration_flipped = t * (velocity_change / 2 + initial.velocity) > distance_change;
     return is_acceleration_flipped;
   }
@@ -73,13 +73,11 @@ class TrapezoidalMotionProfile : public MotionProfile {
   MotionProfileConstraints constraints_;
   MotionProfilePosition initial_, goal_;
 
-  Time end_accel_, end_full_speed_, end_deccel_;
+  muan::units::Time end_accel_, end_full_speed_, end_deccel_;
 };
 
 }  // namespace control
 
 }  // namespace muan
 
-#include "trapezoidal_motion_profile.hpp"
-
-#endif /* SRC_ROBOTCODE_TRAPEZOIDALMOTIONPROFILE_H_ */
+#endif  // MUAN_CONTROL_TRAPEZOIDAL_MOTION_PROFILE_H_

@@ -1,9 +1,10 @@
 #ifndef MUAN_CONTROL_STATE_SPACE_CONTROLLER_HPP_
 #define MUAN_CONTROL_STATE_SPACE_CONTROLLER_HPP_
 
+#include <limits>
 #include <numeric>
 #include "muan/utils/math_utils.h"
-#include "state_space_controller.h"
+#include "muan/control/state_space_controller.h"
 
 namespace muan {
 

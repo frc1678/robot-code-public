@@ -13,15 +13,13 @@ double Vision::CalculateDistance(std::vector<cv::Point> points, int rows) {
   // Scale angle from -fov/2 to fov/2
   angle = (angle / rows - 0.5) * constants_.kFovY;
 
-  double distance = constants_.kHeightDifference /
-                    std::tan(angle + constants_.kCameraAngle);
+  double distance = constants_.kHeightDifference / std::tan(angle + constants_.kCameraAngle);
   return distance;
 }
 
-double Vision::CalculateSkew(std::vector<cv::Point> contour,
-                             std::vector<cv::Point>& out) {
-  out.resize(4);
-  std::vector<cv::Point>& quad = out;
+double Vision::CalculateSkew(std::vector<cv::Point> contour, std::vector<cv::Point>* out) {
+  out->resize(4);
+  std::vector<cv::Point>& quad = *out;
   // Find extrema for x + y and x - y to find the corners of the goal
   for (auto& p : contour) {
     if (p.x + p.y > quad[0].x + quad[0].y) {
@@ -50,7 +48,7 @@ Vision::Vision(ColorRange range, std::shared_ptr<VisionScorer> scorer, VisionCon
   range_ = range;
   scorer_ = scorer;
   constants_ = k;
-  last_pos_  = cv::Point2f();
+  last_pos_ = cv::Point2f();
   // It has to be set to something, right?
   last_pos_.x = 0;
   last_pos_.y = 0;
@@ -71,8 +69,7 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
   std::vector<cv::Vec4i> hierarchy;
 
   cv::cvtColor(image, image_canvas, CV_GRAY2BGR);
-  cv::findContours(image, contours, hierarchy, CV_RETR_TREE,
-                   CV_CHAIN_APPROX_SIMPLE);
+  cv::findContours(image, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
 
   std::vector<std::vector<cv::Point>> hull(contours.size());
   std::vector<size_t> targets;
@@ -103,19 +100,15 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
 
       std::vector<cv::Point> skewbox;
 
-      double skew = CalculateSkew(contours[i], skewbox);
+      double skew = CalculateSkew(contours[i], &skewbox);
       double distance_from_previous = cv::norm(bounding.center - last_pos_);
       double distance_to_target = CalculateDistance(contours[i], image.rows);
       double width = (skewbox[0] + skewbox[1] - skewbox[2] - skewbox[3]).x / 2;
       double height = (skewbox[0] - skewbox[1] - skewbox[2] + skewbox[3]).y / 2;
 
       // Formula subject to tuning
-      double target_score = scorer_->GetScore(distance_to_target,
-                                              distance_from_previous,
-                                              skew,
-                                              width,
-                                              height,
-                                              fullness);
+      double target_score =
+          scorer_->GetScore(distance_to_target, distance_from_previous, skew, width, height, fullness);
 
       if (target_score > best_score) {
         best_target = i;
@@ -146,4 +139,4 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
   return retval;
 }
 
-}
+}  // namespace muan
