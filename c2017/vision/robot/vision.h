@@ -12,11 +12,12 @@ namespace vision {
 class VisionSubsystem {
  public:
   VisionSubsystem();
-  void SetGoal(/* goal */);
+  void SetGoal(VisionGoalProto goal);
   void Update();
 
  protected:
   bool running_;
+  bool should_align_;
   muan::actions::DrivetrainProperties properties_;
   VisionInputQueue::QueueReader vision_input_reader_;
   muan::wpilib::DriverStationQueue::QueueReader driverstation_reader_;

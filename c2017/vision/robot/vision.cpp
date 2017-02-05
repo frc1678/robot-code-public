@@ -6,6 +6,7 @@ namespace vision {
 
 VisionSubsystem::VisionSubsystem()
     : running_{false},
+      should_align_{false},
       properties_{1.0, 1.0, 1.0, 1.0, c2017::drivetrain::GetDrivetrainConfig().robot_radius},
       vision_input_reader_{QueueManager::GetInstance().vision_input_queue().MakeReader()},
       driverstation_reader_{QueueManager::GetInstance().driver_station_queue()->MakeReader()},
@@ -28,12 +29,16 @@ void VisionSubsystem::Update() {
     }
     if ((*input)->has_angle_to_target()) {
       status->set_angle_to_target((*input)->angle_to_target());
-    }
+      status->set_aligned(std::abs((*input)->angle_to_target()) < 0.05);
+    } else {
+      status->set_aligned(false);
   } else {
     status->set_has_connection(false);
     status->set_target_found(false);
+    status->set_aligned(false);
   }
-  if (!disabled) {
+
+  if (!disabled && should_align_) {
     if (!running_) {
       running_ = true;
       action_ = muan::actions::DrivetrainAction::PointTurn(-status->angle_to_target(), true, properties_,
@@ -45,6 +50,11 @@ void VisionSubsystem::Update() {
   } else {
     running_ = false;
   }
+  QueueManager::GetInstance().vision_status_queue().WriteMessage(status);
+}
+
+void VisionSubsystem::SetGoal(VisionGoalProto goal) {
+  should_align_ = goal->should_align();
 }
 
 }  // namespace vision
