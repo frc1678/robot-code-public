@@ -5,19 +5,19 @@ option cc_enable_arenas = true;
 package c2017.magazine;
 
 message MagazineStatus {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required bool has_gear = 2;
   required bool current_spiked = 3;
   required bool is_running = 4;
 }
 
 message MagazineInput {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required bool has_hp_gear = 2; // senses distance using proximity sensor to know if there is a gear
 }
 
 message MagazineOutput {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required bool gear_intake_covered = 2;
   required bool magazine_extended = 3;
   required bool gear_shutter_open = 4;
@@ -45,7 +45,7 @@ enum SideGoalState {
 }
 
 message MagazineGoal {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required HPIntakeGoalState hp_intake_goal = 2;
   required UpperGoalState upper_goal = 3;
   required bool score_gear = 4;

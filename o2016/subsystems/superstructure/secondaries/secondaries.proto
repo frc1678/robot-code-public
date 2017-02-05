@@ -16,13 +16,13 @@ enum Position {
 }
 
 message SecondariesOutput {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required double voltage = 2;
   required bool is_down = 3;
 }
 
 message SecondariesGoal {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required Direction direction = 2;
   required Position position = 3;
 }

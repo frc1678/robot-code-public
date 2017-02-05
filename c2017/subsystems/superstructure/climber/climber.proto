@@ -5,24 +5,24 @@ option cc_enable_arenas = true;
 package c2017.climber;
 
 message ClimberStatus {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required bool currently_climbing = 2;
   required bool hit_top = 3;
   required bool on_rope = 4;
 }
 
 message ClimberInput {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required double current = 2;
   required double position = 3; // encoder position, helps find the rate
 }
 
 message ClimberOutput {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required double voltage = 2; // Positive is moving up
 }
 
 message ClimberGoal {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required bool climbing = 2;
 }

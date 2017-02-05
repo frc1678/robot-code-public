@@ -13,7 +13,7 @@ enum GyroState {
 }
 
 message GyroMessage {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required GyroState state = 2;
 
   optional double current_angle = 3;

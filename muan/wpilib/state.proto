@@ -10,7 +10,7 @@ enum RobotMode {
 }
 
 message DriverStationStatus {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required RobotMode mode = 2;
   optional double battery_voltage = 3;
 
@@ -19,7 +19,7 @@ message DriverStationStatus {
 }
 
 message PdpStatus {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required double current0 = 2;
   required double current1 = 3;
   required double current2 = 4;

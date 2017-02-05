@@ -5,7 +5,7 @@ option cc_enable_arenas = true;
 package o2016.turret;
 
 message TurretStatus {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required double observed_position = 2;
   required double observed_velocity = 3;
   required double filtered_goal = 4;
@@ -13,7 +13,7 @@ message TurretStatus {
 }
 
 message TurretOutput {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required double voltage = 2;
 }
 

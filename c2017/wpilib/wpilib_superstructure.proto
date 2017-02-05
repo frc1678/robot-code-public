@@ -5,7 +5,7 @@ package c2017.wpilib;
 option cc_enable_arenas = true;
 
 message WpilibOutput {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   // Intake Group
   required double main_roller_voltage = 2;
   required bool ball_intake_down = 3;

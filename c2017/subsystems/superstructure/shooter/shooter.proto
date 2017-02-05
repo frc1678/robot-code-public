@@ -5,17 +5,17 @@ option cc_enable_arenas = true;
 package c2017.shooter;
 
 message ShooterInput {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required double encoder_position = 2;
 }
 
 message ShooterOutput {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required double voltage = 2;
 }
 
 message ShooterStatus {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required double observed_velocity = 2; // Positive velocity = forwards
 }
 
@@ -25,7 +25,7 @@ enum ShotMode {
 }
 
 message ShooterGoal {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required ShotMode goal_mode = 2;
   required double goal_velocity = 3; // Positive velocity = forwards
 }

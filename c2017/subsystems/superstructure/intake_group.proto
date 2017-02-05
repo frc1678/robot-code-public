@@ -29,7 +29,7 @@ message IntakeGroupGoal {//sorry about the bad naming
     GEAR_OUTTAKE = 2;
   }
 
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required GroundIntakePosition ground_intake_position = 2;
   required HpLoadType hp_load_type = 3;
   required BallIntakeRollers roller = 4;

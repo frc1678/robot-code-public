@@ -15,7 +15,7 @@ enum DriveType {
 }
 
 message DrivetrainState {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required double forward_distance = 2;
   required double heading = 3;
   required double forward_velocity = 4;
@@ -23,7 +23,7 @@ message DrivetrainState {
 }
 
 message DrivetrainGoal {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   message VelocityCommand {
     required double forward_velocity = 1;
     required double angular_velocity = 2;
@@ -42,7 +42,7 @@ message DrivetrainGoal {
 }
 
 message DrivetrainStatus {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required DrivetrainState observed_state = 2;
 
   required DriveType current_driving_type = 3;
@@ -50,7 +50,7 @@ message DrivetrainStatus {
 }
 
 message DrivetrainInput {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   // Encoders in meters
   required double left_encoder = 2;
   required double right_encoder = 3;
@@ -59,7 +59,7 @@ message DrivetrainInput {
 }
 
 message DrivetrainOutput {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required double left_voltage = 2;
   required double right_voltage = 3;
   required bool high_gear = 4;

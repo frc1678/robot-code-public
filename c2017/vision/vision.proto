@@ -5,14 +5,14 @@ option cc_enable_arenas = true;
 package c2017.vision;
 
 message VisionInput {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required bool target_found = 2;
   optional double angle_to_target = 3; // Number of radians the robot is left of the target
   optional double distance_to_target = 4; // In meters
 }
 
 message VisionStatus {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required bool target_found = 2;
   optional double angle_to_target = 3; // Number of radians the robot is left of the target
   optional double distance_to_target = 4; // In meters
@@ -21,6 +21,6 @@ message VisionStatus {
 }
 
 message VisionGoal {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required bool should_align = 2;
 }

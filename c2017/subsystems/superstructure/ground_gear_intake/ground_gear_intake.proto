@@ -5,12 +5,12 @@ option cc_enable_arenas = true;
 package c2017.ground_gear_intake;
 
 message GroundGearIntakeInput {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required double current = 2;
 }
 
 message GroundGearIntakeOutput {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   // Positive is pulling in gear
   required double roller_voltage = 2;
   required bool intake_down = 3;
@@ -18,7 +18,7 @@ message GroundGearIntakeOutput {
 }
 
 message GroundGearIntakeStatus {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required bool current_spiked = 2;
   required bool has_gear = 3;
   required bool down = 4;
@@ -33,6 +33,6 @@ enum Goal {
 }
 
 message GroundGearIntakeGoal {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required Goal goal = 2;
 }

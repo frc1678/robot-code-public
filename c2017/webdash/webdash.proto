@@ -12,6 +12,6 @@ message WebDash {
     HELLA_KPA = 3;
     HELLA_KPA_PLUS_GEAR = 4;
   }
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required Auto auto_mode = 2;
 }

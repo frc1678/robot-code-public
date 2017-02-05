@@ -5,7 +5,7 @@ option cc_enable_arenas = true;
 package o2016.catapult;
 
 message CatapultOutput {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required double scoop_output = 2;
   required double hardstop_output = 3;
   required bool cylinder_extend = 4;
@@ -13,7 +13,7 @@ message CatapultOutput {
 }
 
 message CatapultStatus {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   // In radians, 0 is open, more positive is more closed
   required double scoop_angle = 2;
   required double scoop_angular_velocity = 3;
@@ -32,13 +32,13 @@ message CatapultStatus {
 }
 
 message CatapultInput {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   required double scoop_pot = 2;
   required double hardstop_pot = 3;
 }
 
 message CatapultGoal {
-  required double timestamp = 1;
+  required uint64 timestamp = 1;
   enum Goal {
     INTAKE = 0;
     PREP_SHOT = 1;
