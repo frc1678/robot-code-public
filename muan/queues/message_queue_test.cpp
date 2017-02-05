@@ -1,4 +1,6 @@
 #include "muan/queues/message_queue.h"
+#include "muan/queues/test_proto.pb.h"
+#include "muan/proto/stack_proto.h"
 #include <thread>
 #include "gtest/gtest.h"
 
@@ -223,4 +225,23 @@ TEST(MessageQueue, Reset) {
   EXPECT_TRUE(reader.ReadLastMessage());
   test_queue.Reset();
   EXPECT_FALSE(reader.ReadLastMessage());
+}
+
+TEST(MessageQueue, TimestampMessage) {
+  muan::proto::StackProto<muan::queues::TimestampTestMessage, 256> stack_test_message;
+  MessageQueue<muan::proto::StackProto<muan::queues::TimestampTestMessage, 256>, 10> stack_test_queue;
+
+  aos::time::EnableMockTime(aos::monotonic_clock::now());
+
+  stack_test_queue.WriteMessage(stack_test_message);
+  EXPECT_EQ(stack_test_queue.ReadLastMessage().value()->timestamp(),
+            std::chrono::duration_cast<std::chrono::milliseconds>(aos::monotonic_clock::now() -
+                                                                  aos::monotonic_clock::epoch()).count());
+  muan::queues::TimestampTestMessage test_message;
+  MessageQueue<muan::queues::TimestampTestMessage, 10> test_queue;
+
+  test_queue.WriteMessage(test_message);
+  EXPECT_EQ(test_queue.ReadLastMessage().value().timestamp(),
+            std::chrono::duration_cast<std::chrono::milliseconds>(aos::monotonic_clock::now() -
+                                                                  aos::monotonic_clock::epoch()).count());
 }
