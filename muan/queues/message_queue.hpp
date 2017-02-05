@@ -19,6 +19,9 @@ void MessageQueue<T, size>::WriteMessage(const T& message) {
   // Push messages into the back
   messages_[back_ % size] = message;
 
+  // If the message contains a timestamp, add it to the message
+  muan::proto::WriteTimestamp(&messages_[back_ % size]);
+
   back_++;
 }
 

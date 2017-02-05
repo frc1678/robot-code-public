@@ -4,6 +4,7 @@
 #include <array>
 #include <cstdint>
 #include "muan/utils/math_utils.h"
+#include "muan/proto/stack_proto.h"
 #include "third_party/aos/common/mutex.h"
 #include "third_party/optional/optional.hpp"
 
