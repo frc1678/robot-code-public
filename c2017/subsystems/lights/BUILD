@@ -3,9 +3,11 @@ load('/third_party/google/protobuf/protobuf', 'cc_proto_library')
 cc_library(
     name = "lights_queues",
     hdrs = ["queue_types.h"],
-    deps = [":lights_proto",
-          "//muan/proto:stack_proto",
-          "//muan/queues:queues"],
+    deps = [
+        ":lights_proto",
+        "//muan/proto:stack_proto",
+        "//muan/queues:queues"
+    ],
     visibility = ["//visibility:public"]
 )
 
@@ -21,10 +23,11 @@ cc_library(
     srcs = ["lights.cpp"],
     hdrs = ["lights.h"],
     visibility = ["//visibility:public"],
-    deps = [":lights_queues",
-            "//c2017/queue_manager",
-            "//muan/units",
-            "//muan/wpilib:wpilib_queues",
+    deps = [
+        ":lights_queues",
+        "//c2017/queue_manager",
+        "//muan/units",
+        "//muan/wpilib:wpilib_queues",
     ],
 )
 
