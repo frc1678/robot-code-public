@@ -10,10 +10,10 @@ namespace wpilib {
 
 namespace gyro {
 
-GyroReader::GyroReader(GyroQueue* queue, bool invert, int calib_time) :
+GyroReader::GyroReader(GyroQueue* queue, int calib_time, bool invert) :
     gyro_queue_{queue},
-    should_invert_{invert},
-    calib_time_{std::chrono::seconds(calib_time)} {}
+    calib_time_{std::chrono::seconds(calib_time)},
+    should_invert_{invert} {}
 
 void GyroReader::Reset() { should_reset_ = true; }
 

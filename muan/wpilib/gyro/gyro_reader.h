@@ -21,7 +21,7 @@ class GyroReader {
  public:
   // If invert is set to true, clockwise on the robot is positive. Useful for
   // when mechanical decides that the RoboRIO should be upside down for some reason.
-  explicit GyroReader(GyroQueue* queue, bool invert = false, int calib_time = 45);
+  explicit GyroReader(GyroQueue* queue, int calib_time, bool invert = false);
 
   // Run forever. This should be passed as an argument to the constructor of
   // std::thread.
@@ -45,11 +45,11 @@ class GyroReader {
 
   GyroQueue* gyro_queue_;
 
-  // Is the RIO upside down?
-  bool should_invert_;
-
   // How long should we calibrate for?
   const std::chrono::seconds calib_time_;
+
+  // Is the RIO upside down?
+  bool should_invert_;
 
   // The rate at which the gyro will drift, in radians per tick (at 200hz)
   double drift_rate_ = 0;
