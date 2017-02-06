@@ -12,7 +12,7 @@ genrule(
         "ls_gen.cpp",
         "ls_gen.h",
     ],
-    cmd = "$(location //third_party/lemonscript_transpiler:lemonscript_transpiler) --input-files $(locations :lemonscript_funcs) --output-cpp $(location ls_gen.cpp) --output-header $(location ls_gen.h)",
+    cmd = "$(location //third_party/lemonscript_transpiler:lemonscript_transpiler) --input-files $(locations :lemonscript_funcs) --output-cpp $(location ls_gen.cpp) --output-header $(location ls_gen.h) -qq",
     tools = [
         "//third_party/lemonscript_transpiler",
     ],
