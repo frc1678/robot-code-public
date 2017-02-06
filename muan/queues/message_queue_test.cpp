@@ -236,12 +236,14 @@ TEST(MessageQueue, TimestampMessage) {
   stack_test_queue.WriteMessage(stack_test_message);
   EXPECT_EQ(stack_test_queue.ReadLastMessage().value()->timestamp(),
             std::chrono::duration_cast<std::chrono::milliseconds>(aos::monotonic_clock::now() -
-                                                                  aos::monotonic_clock::epoch()).count());
+                                                                  aos::monotonic_clock::epoch()).count() -
+                muan::proto::start_time);
   muan::queues::TimestampTestMessage test_message;
   MessageQueue<muan::queues::TimestampTestMessage, 10> test_queue;
 
   test_queue.WriteMessage(test_message);
   EXPECT_EQ(test_queue.ReadLastMessage().value().timestamp(),
             std::chrono::duration_cast<std::chrono::milliseconds>(aos::monotonic_clock::now() -
-                                                                  aos::monotonic_clock::epoch()).count());
+                                                                  aos::monotonic_clock::epoch()).count() -
+                muan::proto::start_time);
 }

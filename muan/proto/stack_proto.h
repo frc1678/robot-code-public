@@ -2,6 +2,7 @@
 #define MUAN_PROTO_STACK_PROTO_H_
 
 #include <array>
+#include <atomic>
 #include <cstdint>
 #include "google/protobuf/arena.h"
 #include "third_party/aos/common/time.h"
@@ -109,6 +110,10 @@ class StackProto {
   T* proto_message_{nullptr};
 };
 
+static const std::atomic<int64_t> start_time{
+    std::chrono::duration_cast<std::chrono::milliseconds>(aos::monotonic_clock::now() -
+                                                          aos::monotonic_clock::epoch()).count()};
+
 // This is a catch-all function overload, essentially if the other WriteTimestamp function doesn't compile the
 // compiler will select this function which does nothing.
 inline void WriteTimestamp(...) {}
@@ -119,13 +124,15 @@ inline void WriteTimestamp(...) {}
 template <typename T>
 auto WriteTimestamp(T* message) -> decltype((*message)->set_timestamp(0), void()) {
   (*message)->set_timestamp(std::chrono::duration_cast<std::chrono::milliseconds>(
-                                aos::monotonic_clock::now() - aos::monotonic_clock::epoch()).count());
+                                aos::monotonic_clock::now() - aos::monotonic_clock::epoch()).count() -
+                            start_time);
 }
 
 template <typename T>
 auto WriteTimestamp(T* message) -> decltype(message->set_timestamp(0), void()) {
   message->set_timestamp(std::chrono::duration_cast<std::chrono::milliseconds>(
-                             aos::monotonic_clock::now() - aos::monotonic_clock::epoch()).count());
+                             aos::monotonic_clock::now() - aos::monotonic_clock::epoch()).count() -
+                         start_time);
 }
 
 }  // namespace proto
