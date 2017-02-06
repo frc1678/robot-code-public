@@ -6,6 +6,7 @@
 #include "muan/wpilib/gyro/gyro_reader.h"
 #include "c2017/queue_manager/queue_manager.h"
 #include "muan/utils/math_utils.h"
+#include "gflags/gflags.h"
 
 #include "c2017/wpilib/drivetrain_interface.h"
 #include "c2017/wpilib/superstructure_interface.h"
@@ -13,6 +14,8 @@
 
 namespace c2017 {
 namespace wpilib {
+
+DECLARE_int32(gyro_time);
 
 class WpilibInterface {
  public:
