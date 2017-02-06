@@ -1,7 +1,7 @@
+#include <thread>
 #include "muan/queues/message_queue.h"
 #include "muan/queues/test_proto.pb.h"
 #include "muan/proto/stack_proto.h"
-#include <thread>
 #include "gtest/gtest.h"
 
 using muan::queues::MessageQueue;
