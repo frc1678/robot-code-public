@@ -114,7 +114,6 @@ def make_augmented_gains():
 
     K = np.zeros((1, 3))
     K[:, :2] = unaugmented_gains.K
-    print(K)
     K[0, 2] = 1.
 
     Q_noise = np.zeros((3, 3))
