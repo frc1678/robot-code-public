@@ -1,6 +1,6 @@
 import numpy as np
 import sys
- 
+
 from muan.control.state_space_gains import StateSpaceGains
 from muan.control.state_space_plant import StateSpacePlant
 from muan.control.state_space_controller import StateSpaceController
@@ -58,7 +58,7 @@ def make_gains():
         [sensor_ratio, 0.]
     ])
 
-    # Controller weighting 
+    # Controller weighting
     Q_controller = np.asmatrix([
         [0., 0.],
         [0., 5e-1]
@@ -109,7 +109,7 @@ def make_augmented_gains():
 
     C = np.asmatrix(np.zeros((1, 3)))
     C[:, :2] = unaugmented_gains.C
-    
+
     D = np.asmatrix(np.zeros((1, 1)))
 
     K = np.zeros((1, 3))
@@ -124,7 +124,7 @@ def make_augmented_gains():
         [0.1]
     ])
 
-    # Kalman noise matrix 
+    # Kalman noise matrix
     Q_kalman = np.asmatrix([
         [1.0, 0.0, 0.0],
         [0.0, 2e3, 0.0],
@@ -145,7 +145,7 @@ def make_augmented_gains():
     name = unaugmented_gains.name + '_integral'
 
     gains = StateSpaceGains(name, dt, A_d, B_d, C, None, Q_d, R_noise, K, Kff, L)
-    
+
     return gains
 
 
