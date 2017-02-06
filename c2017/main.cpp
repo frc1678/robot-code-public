@@ -22,8 +22,7 @@ class WpilibRobot : public IterativeRobot {
   c2017::citrus_robot::CitrusRobot main_;
 };
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   if (!HAL_Initialize(0)) {
     std::cerr << "FATAL ERROR: HAL could not be initialized" << std::endl;
