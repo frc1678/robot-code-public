@@ -4,7 +4,7 @@
 TEST(QueueManager, Initalizes) { generic_robot::QueueManager::GetInstance(); }
 
 TEST(QueueManager, QueueWorks) {
-  muan::proto::StackProto<PdpStatus, 512> p;
+  muan::proto::StackProto<PdpStatus, 1024> p;
   generic_robot::QueueManager::GetInstance().pdp_status_queue().WriteMessage(p);
 
   auto pdp_status_reader = generic_robot::QueueManager::GetInstance().pdp_status_queue().MakeReader();
