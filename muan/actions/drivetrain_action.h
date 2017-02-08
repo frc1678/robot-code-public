@@ -9,14 +9,19 @@ namespace actions {
 
 // Drivetrain properties we use in actions
 struct DrivetrainProperties {
-  double max_angular_velocity, max_angular_acceleration;
-  double max_forward_velocity, max_forward_acceleration;
-  double wheelbase_radius;
+  double max_angular_velocity{0.0}, max_angular_acceleration{0.0};
+  double max_forward_velocity{0.0}, max_forward_acceleration{0.0};
+  double wheelbase_radius{0.0};
+
+  DrivetrainProperties(double max_angular_velocity, double max_angular_acceleration,
+                       double max_forward_velocity, double max_forward_acceleration, double wheelbase_radius);
 };
 
 struct DrivetrainTermination {
-  double forward = 0.0, forward_velocity = 0.0;
-  double angular = 0.0, angular_velocity = 0.0;
+  double forward{0.0}, forward_velocity{0.0};
+  double angular{0.0}, angular_velocity{0.0};
+
+  DrivetrainTermination(double forward, double forward_velocity, double angular, double angular_velocity);
 };
 
 struct DrivetrainActionParams {
@@ -36,7 +41,7 @@ struct DrivetrainActionParams {
   bool closed_loop_termination{true};
 
   // The termination condition. Ignored if closed_loop_termination is false.
-  DrivetrainTermination termination{.02, .02, .04, .02};
+  DrivetrainTermination termination{0.02, 0.02, 0.04, 0.02};
 };
 
 class DrivetrainAction {
@@ -61,7 +66,7 @@ class DrivetrainAction {
   const DrivetrainProperties properties_;
   DrivetrainActionParams current_params_;
 
-  DrivetrainTermination termination_;
+  DrivetrainTermination termination_{0.02, 0.02, 0.04, 0.02};
 
   double goal_left_, goal_velocity_left_, goal_right_, goal_velocity_right_;
 
@@ -77,6 +82,29 @@ class DrivetrainAction {
 
   frc971::control_loops::drivetrain::GoalQueue* const goal_queue_;
   const frc971::control_loops::drivetrain::StatusQueue* const status_queue_;
+};
+
+class DriveSCurveAction : public DrivetrainAction {
+ public:
+  DriveSCurveAction(DrivetrainProperties properties, frc971::control_loops::drivetrain::GoalQueue* gq,
+                    frc971::control_loops::drivetrain::StatusQueue* sq);
+
+  // Executes an S-curve style drive. This will make a shape similar to two connected arc-turns, one turning
+  // to the desired angular displacement and one turning back to zero. The total arc length of the turn will
+  // be equal to the desired forward distance. Finishing strong/open-loop termination will be set to true and
+  // false respectively for the first turn, and the values from the params will be applied to the second turn.
+  void ExecuteDrive(DrivetrainActionParams params);
+
+  bool Update() override;
+
+  bool FinishedFirst();
+
+ private:
+  // Have we finished the first turn?
+  bool finished_first_{false};
+
+  // The final left and right positions for the drivetrain
+  double end_left_, end_right_;
 };
 
 }  // namespace actions

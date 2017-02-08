@@ -1,9 +1,24 @@
 #include "muan/actions/drivetrain_action.h"
-#include <iostream>
 
 namespace muan {
 
 namespace actions {
+
+DrivetrainTermination::DrivetrainTermination(double forward, double forward_velocity, double angular,
+                                             double angular_velocity)
+    : forward{forward},
+      forward_velocity{forward_velocity},
+      angular{angular},
+      angular_velocity{angular_velocity} {}
+
+DrivetrainProperties::DrivetrainProperties(double max_angular_velocity, double max_angular_acceleration,
+                                           double max_forward_velocity, double max_forward_acceleration,
+                                           double wheelbase_radius)
+    : max_angular_velocity(max_angular_velocity),
+      max_angular_acceleration(max_angular_acceleration),
+      max_forward_velocity(max_forward_velocity),
+      max_forward_acceleration(max_forward_acceleration),
+      wheelbase_radius(wheelbase_radius) {}
 
 DrivetrainAction::DrivetrainAction(DrivetrainProperties properties,
                                    frc971::control_loops::drivetrain::GoalQueue* goal_queue,
@@ -130,6 +145,70 @@ void DrivetrainAction::ExecuteDrive(DrivetrainActionParams params) {
   this->right_complete_ = false;
   last_left_ = left_offset;
   last_right_ = right_offset;
+}
+
+DriveSCurveAction::DriveSCurveAction(DrivetrainProperties properties,
+                                     frc971::control_loops::drivetrain::GoalQueue* goal_queue,
+                                     frc971::control_loops::drivetrain::StatusQueue* status_queue)
+    : DrivetrainAction(properties, goal_queue, status_queue) {}
+
+bool DriveSCurveAction::FinishedFirst() { return finished_first_ || IsTerminated(); }
+
+void DriveSCurveAction::ExecuteDrive(DrivetrainActionParams /* params */) {
+  // Get the offsets (initial positions) from the status
+  /*
+  double left_offset = 0, right_offset = 0;
+  auto maybe_status = status_queue_->MakeReader().ReadLastMessage();
+  if (maybe_status) {
+    auto status = maybe_status.value();
+    left_offset = status->estimated_left_position();
+    right_offset = status->estimated_right_position();
+  }
+  */
+
+  // The first half of the drive should look like this:
+  //        ______________linear_______________________
+  //       /
+  //      /
+  //     /
+  //    /      ' ' ' ' ' ' angle ' ' ' ' ' ' '
+  //   /    '                                   '
+  //  /  '                                         '
+  // /'                                               '
+  // The maximum linear velocity (mlv) is determined by the constraints.
+  // total_dist = mlv * (lvt + lat / 2);
+  // total_angular_dist = mav * (avt + aat);
+  // lvt + lat == 2 * aat + avt;
+  // avt = lvt + lat - 2aat
+  // tad = mav * (lvt + lat - aat)
+
+  /*
+  double linear_acceleration_time = properties_.max_forward_velocity / properties_.max_forward_acceleration;
+  double total_time =
+      (params.desired_forward_distance -
+       linear_acceleration_time * linear_acceleration_time * properties_.max_forward_acceleration / 2.0) /
+      properties_.max_forward_velocity;
+  double angular_acceleration_time = 0.0;
+  */
+}
+
+bool DriveSCurveAction::Update() {
+  if (!finished_first_) {
+    SendMessage();
+    if (FinishedFirst()) {
+      goal_left_ = end_left_;
+      goal_right_ = end_right_;
+      goal_velocity_left_ = current_params_.follow_through ? max_forward_velocity_ : 0.0;
+      goal_velocity_right_ = current_params_.follow_through ? max_forward_velocity_ : 0.0;
+      finished_first_ = true;
+    }
+    return true;
+  } else if (!IsTerminated()) {
+    SendMessage();
+    return true;
+  } else {
+    return false;
+  }
 }
 
 }  // namespace actions
