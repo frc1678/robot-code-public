@@ -1,7 +1,7 @@
 #include "c2017/citrus_robot/main.h"
 #include "WPILib.h"
-#include "muan/wpilib/queue_types.h"
 #include "c2017/queue_manager/queue_manager.h"
+#include "muan/wpilib/queue_types.h"
 
 namespace c2017 {
 namespace citrus_robot {
