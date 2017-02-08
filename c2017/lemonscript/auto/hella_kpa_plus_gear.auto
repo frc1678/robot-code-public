@@ -1,7 +1,7 @@
-DriveStraight: 1.4
+DriveStraight: 1.45
 SwoopTurn: 1.4, -1.04
 // Place a gear
-DriveStraight: -1.35
+DriveStraight: -1.45
 SwoopTurn: -1.15, -2.0
 // Hopper is triggered
 // Shoot hella balls
