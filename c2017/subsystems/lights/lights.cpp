@@ -1,5 +1,5 @@
 #include "c2017/subsystems/lights/lights.h"
-#include <iostream>
+
 namespace c2017 {
 
 namespace lights {
@@ -35,7 +35,6 @@ void Lights::Update() {
     light_color_ = FlashLights(LightColor::OFF, LightColor::RED, false);
   }
 
-  std::cout << int (light_color_) << std::endl;
   if (vision_status) {
     light_color_ = FlashLights(light_color_, light_color_, !vision_status.value()->has_connection());
   }
