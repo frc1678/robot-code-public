@@ -11,6 +11,7 @@
 #include "third_party/aos/linux_code/init.h"
 #include "third_party/frc971/control_loops/drivetrain/drivetrain.h"
 #include "c2017/subsystems/superstructure/superstructure.h"
+#include "c2017/subsystems/lights/lights.h"
 
 namespace c2017 {
 
@@ -26,6 +27,7 @@ class SubsystemRunner {
   wpilib::WpilibInterface wpilib_;
   frc971::control_loops::drivetrain::DrivetrainLoop drivetrain_;
   c2017::superstructure::SuperStructure superstructure_;
+  c2017::lights::Lights lights_;
 };
 
 }  // namespace c2017

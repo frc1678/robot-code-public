@@ -1,10 +1,9 @@
 #include "c2017/subsystems/lights/lights.h"
-
+#include <iostream>
 namespace c2017 {
 
 namespace lights {
 void Lights::Update() {
-  // auto x_status = QueueManager::x_status_queue()->MakeReader().ReadLastMessage();
   auto intake_group_goal_queue = QueueManager::GetInstance().intake_group_goal_queue().ReadLastMessage();
   auto drivetrain_status_queue = QueueManager::GetInstance().drivetrain_status_queue()->ReadLastMessage();
   auto gyro_status_queue = QueueManager::GetInstance().gyro_queue()->ReadLastMessage();
@@ -30,17 +29,19 @@ void Lights::Update() {
       }
       // add the auto routines, not nessecarily here, but somewhere.
     } else {
-      light_color_ = LightColor::BLUE;
+      light_color_ = FlashLights(LightColor::OFF, LightColor::RED, false);
     }
   } else {
-    light_color_ = LightColor::WHITE;
+    light_color_ = FlashLights(LightColor::OFF, LightColor::RED, false);
   }
 
+  std::cout << int (light_color_) << std::endl;
   if (vision_status) {
     light_color_ = FlashLights(light_color_, light_color_, !vision_status.value()->has_connection());
   }
 
   LightsOutputProto output;
+
 
   output->set_red(is_red());
   output->set_green(is_green());
