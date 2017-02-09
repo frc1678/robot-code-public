@@ -14,12 +14,3 @@ cc_library(
         "//o2016/subsystems/superstructure/turret:turret_queues",
     ],
 )
-
-cc_test(
-    name = "queue_manager_test",
-    srcs = ["test_queue_manager.cpp"],
-    deps = [
-        ":queue_manager",
-        "//third_party/google/googletest",
-    ],
-)
