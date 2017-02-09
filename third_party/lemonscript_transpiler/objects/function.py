@@ -42,14 +42,15 @@ class Function(object):
         found_section = False
         text_in_section = []
         for line in self.text.split("\n"):
-            if not found_section and \
-               line.strip()[:len(section_name)] == section_name and \
-               line.strip()[-1] == "{":
-                found_section = True
-            elif found_section and line != "" and line[0] != "}":
-                text_in_section.append(line)
-            elif found_section:
-                return '\n'.join(text_in_section)
+            if line != "":
+                if not found_section and \
+                   line.strip()[:len(section_name)] == section_name and \
+                   line.strip()[-1] == "{":
+                    found_section = True
+                elif found_section and line[0] != "}":
+                    text_in_section.append(line)
+                elif found_section and line[0] == "}":
+                    return '\n'.join(text_in_section)
         Logger.warn("Section {0} not found in {1}!".format(section_name, self.get_name()))
         return '' #TODO(Wesley) Better way of indicating failure
 

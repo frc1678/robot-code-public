@@ -1,8 +1,8 @@
-#include "gtest/gtest.h"
 #include "c2017/subsystems/superstructure/shooter/shooter_controller.h"
 #include "c2017/subsystems/superstructure/shooter/queue_types.h"
-#include "muan/wpilib/queue_types.h"
 #include "c2017/subsystems/superstructure/shooter/shooter.pb.h"
+#include "gtest/gtest.h"
+#include "muan/wpilib/queue_types.h"
 
 TEST(ShooterControllerTest, IsSane) {
   auto plant = muan::control::StateSpacePlant<1, 3, 1>(frc1678::shooter_controller::controller::A(),
@@ -54,6 +54,7 @@ TEST(ShooterControllerTest, PositiveVelocity) {
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
 
     EXPECT_NEAR(output->voltage(), 0., 12.);
+    EXPECT_TRUE(output->hood_solenoid());
   }
   if (status) {
     EXPECT_NEAR(status.value()->observed_velocity(), 300, 10);
@@ -96,6 +97,7 @@ TEST(ShooterControllerTest, CantTakeNegativeVoltage) {
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
 
     EXPECT_NEAR(output->voltage(), 0., 12.);
+    EXPECT_TRUE(output->hood_solenoid());
   }
 
   EXPECT_EQ(output->voltage(), 0);
@@ -140,6 +142,7 @@ TEST(ShooterControllerTest, CanStop) {
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
 
     EXPECT_NEAR(output->voltage(), 0., 12.);
+    EXPECT_TRUE(output->hood_solenoid());
   }
 
   if (status) {
@@ -147,4 +150,72 @@ TEST(ShooterControllerTest, CanStop) {
   } else {
     FAIL();
   }
+}
+
+TEST(ShooterControllerTest, FenderMode) {
+  c2017::shooter::ShooterInputProto input;
+  c2017::shooter::ShooterOutputProto output;
+  c2017::shooter::ShooterGoalProto goal;
+  muan::wpilib::DriverStationProto ds;
+
+  ds->set_mode(RobotMode::TELEOP);
+
+  c2017::shooter::ShooterController shooter_;
+
+  auto plant = muan::control::StateSpacePlant<1, 3, 1>(frc1678::shooter_controller::controller::A(),
+                                                       frc1678::shooter_controller::controller::B(),
+                                                       frc1678::shooter_controller::controller::C());
+
+  plant.x(0) = 0.0;
+  plant.x(1) = 0.0;
+  plant.x(2) = 0.0;
+
+  goal->set_goal_mode(c2017::shooter::ShotMode::FENDER);
+
+  shooter_.SetGoal(goal);
+
+  output = shooter_.Update(input, ds);
+
+  plant.Update((Eigen::Matrix<double, 1, 1>() << 0.).finished());
+
+  EXPECT_TRUE(output->hood_solenoid());
+  EXPECT_EQ(goal->goal_mode(), c2017::shooter::ShotMode::FENDER);
+
+  EXPECT_NEAR(plant.x(0), 0, 1e-5);
+  EXPECT_NEAR(plant.x(1), 0, 1e-5);
+  EXPECT_NEAR(plant.x(2), 0, 1e-5);
+}
+
+TEST(ShooterControllerTest, HopperMode) {
+  c2017::shooter::ShooterInputProto input;
+  c2017::shooter::ShooterOutputProto output;
+  c2017::shooter::ShooterGoalProto goal;
+  muan::wpilib::DriverStationProto ds;
+
+  ds->set_mode(RobotMode::TELEOP);
+
+  c2017::shooter::ShooterController shooter_;
+
+  auto plant = muan::control::StateSpacePlant<1, 3, 1>(frc1678::shooter_controller::controller::A(),
+                                                       frc1678::shooter_controller::controller::B(),
+                                                       frc1678::shooter_controller::controller::C());
+
+  plant.x(0) = 0.0;
+  plant.x(1) = 0.0;
+  plant.x(2) = 0.0;
+
+  goal->set_goal_mode(c2017::shooter::ShotMode::HOPPER);
+
+  shooter_.SetGoal(goal);
+
+  output = shooter_.Update(input, ds);
+
+  plant.Update((Eigen::Matrix<double, 1, 1>() << 0.).finished());
+
+  EXPECT_FALSE(output->hood_solenoid());
+  EXPECT_EQ(goal->goal_mode(), c2017::shooter::ShotMode::HOPPER);
+
+  EXPECT_NEAR(plant.x(0), 0, 1e-5);
+  EXPECT_NEAR(plant.x(1), 0, 1e-5);
+  EXPECT_NEAR(plant.x(2), 0, 1e-5);
 }

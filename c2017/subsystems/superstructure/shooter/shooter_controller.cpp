@@ -47,6 +47,12 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
 
   output->set_voltage(u);
 
+  if (shot_mode_ == ShotMode::FENDER) {
+    output->set_hood_solenoid(true);
+  } else {
+    output->set_hood_solenoid(false);
+  }
+
   status_->set_observed_velocity(observer_.x()(1, 0));
 
   shooter_status_queue_.WriteMessage(status_);

@@ -17,13 +17,13 @@ def make_gains():
 
     name = 'gains'
 
-    # Parameters (WE DONT ACTAULLY KNOW ANY OF THESE VALUES LOL
+    # Parameters (WE DONT ACTAULLY KNOW ANY OF THESE VALUES LOL)
     moment_inertia =  (0.05**2) * 3.0 / 2.0
-    gear_ratio = 1.0 / 4.0  #ALSO GET FROM MECHANICAL
-    efficiency = .8 #motor = 775pro
+    gear_ratio = 1.0 / 4.0  # ALSO GET FROM MECHANICAL
+    efficiency = .8
 
-    #Motor characteristics
-    #defining the plant's (simulation) characteristics
+    # Motor characteristics (775pro)
+    # Defining the plant's (simulation) characteristics
     free_speed = 18700.
     free_current = .67
     stall_torque = .71
@@ -34,16 +34,15 @@ def make_gains():
 
     num_motors = 1
 
-    #back emf torque
+    # Back emf torque
     emf = -(torque_constant * velocity_constant) / ( num_motors * resistance * gear_ratio**2.)
 
-    #motor torque
+    # Motor torque
     mtq = efficiency * torque_constant / (gear_ratio * resistance * num_motors)
 
-    #rotational acceleration
+    # Rotational acceleration
     t2a = 1. / moment_inertia
 
-    #matrix math
     A_c = np.asmatrix([
         [0., 1.],
         [0., t2a * emf * 2.0]
@@ -58,7 +57,7 @@ def make_gains():
         [1.0, 0.]
     ])
 
-    #Controller weighting
+    # Controller weighting
     Q_controller = np.asmatrix([
         [0., 0.],
         [0., 1e-1]
@@ -68,7 +67,7 @@ def make_gains():
         [1.]
     ])
 
-    #noise
+    # Noise
     Q_noise = np.asmatrix([
         [1e-2, 0.],
         [0., 1e-1]
@@ -88,7 +87,6 @@ def make_gains():
     Kff = feedforwards(A_d, B_d, Q_ff)
     L = dkalman(A_d, C, Q_d, R_d)
 
-    #matrix math
     gains = StateSpaceGains(name, dt, A_d, B_d, C, None, Q_d, R_noise, K, Kff, L)
     gains.A_c = A_c
     gains.B_c = B_c
@@ -101,7 +99,6 @@ def make_augmented_gains():
 
     dt = unaugmented_gains.dt
 
-    #matrix math
     A_c = np.asmatrix(np.zeros((3,3)))
     A_c[:2, :2] = unaugmented_gains.A_c
     A_c[:2, 2:3] = unaugmented_gains.B_c
@@ -116,7 +113,6 @@ def make_augmented_gains():
 
     K = np.zeros((1, 3))
     K[:, :2] = unaugmented_gains.K
-    print(K)
     K[0, 2] = 1.
 
     Q_noise = np.zeros((3, 3))
@@ -139,7 +135,7 @@ def make_augmented_gains():
         [0.0, 1.0, 0.0],
         [0.0, 0.0, 0.0],
     ])
-    #matrix math
+
     A_d, B_d, Q_d, R_d = c2d(A_c, B_c, dt, Q_noise, R_noise)
     _, _, Q_dkalman, R_dkalman = c2d(A_c, B_c, dt, Q_kalman, R_noise)
     L = dkalman(A_d, C, Q_dkalman, R_dkalman)
@@ -161,7 +157,6 @@ plant = StateSpacePlant(gains, x0)
 controller = StateSpaceController(gains, -u_max, u_max)
 observer = StateSpaceObserver(gains, x0)
 
-#I really don't get matrices yet please ask Kyle if you have questions
 def goal(t):
     return np.asmatrix([0., 10., 0.]).T
 

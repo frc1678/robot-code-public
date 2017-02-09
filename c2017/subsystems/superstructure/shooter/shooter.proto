@@ -12,6 +12,7 @@ message ShooterInput {
 message ShooterOutput {
   required uint64 timestamp = 1;
   required double voltage = 2;
+  required bool hood_solenoid = 3; // true = fender; false = hopper
 }
 
 message ShooterStatus {

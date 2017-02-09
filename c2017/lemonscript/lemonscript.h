@@ -11,9 +11,12 @@
 #include "third_party/aos/common/time.h"
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/aos/linux_code/init.h"
+#include "gflags/gflags.h"
 
 namespace c2017 {
 namespace lemonscript {
+
+DECLARE_string(auto_mode);
 
 class Lemonscript {
  public:

@@ -3,6 +3,7 @@
 from third_party.frc971.control_loops.python import control_loop
 from third_party.frc971.control_loops.python import controls
 import numpy
+import numpy.linalg
 import sys
 import argparse
 from matplotlib import pylab
@@ -56,7 +57,6 @@ class CIM(control_loop.ControlLoop):
 
     self.InitializeState()
 
-
 class Drivetrain(control_loop.ControlLoop):
   def __init__(self, name="Drivetrain", left_low=True, right_low=True):
     super(Drivetrain, self).__init__(name)
@@ -75,7 +75,7 @@ class Drivetrain(control_loop.ControlLoop):
     # Mass of the robot, in kg.
     self.m = 22
     # Radius of the robot, in meters (requires tuning by hand)
-    self.rb = 0.35
+    self.rb = 0.46
     # Radius of the wheels, in meters.
     self.r = 0.041275
     # Resistance of the motor, divided by the number of motors.
@@ -87,45 +87,47 @@ class Drivetrain(control_loop.ControlLoop):
     self.Kt = self.stall_torque / self.stall_current
     # Gear ratios
     self.gear = 1 / 4.55
-    self.Gl = self.gear
-    self.Gr = self.gear
-
     # Control loop time step
     self.dt = 0.005
-
-    # These describe the way that a given side of a robot will be influenced
-    # by the other side. Units of 1 / kg.
-    self.msp = 1.0 / self.m + self.rb * self.rb / self.J
-    self.msn = 1.0 / self.m - self.rb * self.rb / self.J
-    # The calculations which we will need for A and B.
-    self.tcl = -self.Kt / self.Kv / (self.Gl * self.Gl * self.resistance * self.r * self.r)
-    self.tcr = -self.Kt / self.Kv / (self.Gr * self.Gr * self.resistance * self.r * self.r)
-    self.mpl = self.Kt / (self.Gl * self.resistance * self.r)
-    self.mpr = self.Kt / (self.Gr * self.resistance * self.r)
 
     # State feedback matrices
     # X will be of the format
     # [[positionl], [velocityl], [positionr], [velocityr]]
-    self.A_continuous = numpy.matrix(
-        [[0, 1, 0, 0],
-         [0, self.msp * self.tcl, 0, self.msn * self.tcr],
-         [0, 0, 0, 1],
-         [0, self.msn * self.tcl, 0, self.msp * self.tcr]])
-    self.B_continuous = numpy.matrix(
-        [[0, 0],
-         [self.msp * self.mpl, self.msn * self.mpr],
-         [0, 0],
-         [self.msn * self.mpl, self.msp * self.mpr]])
+    self.A_c_anglin = numpy.matrix([
+        [0., 1., 0., 0.],
+        [0., -2.324, 0., 0.],
+        [0., 0., 0., 1.],
+        [0., 0., 0., -7.5],
+    ])
+    self.B_c_anglin = numpy.matrix([
+        [0., 0.],
+        [0.5, 0.5],
+        [0., 0.],
+        [-1.2, 1.2],
+    ])
     self.C = numpy.matrix([[1, 0, 0, 0],
                            [0, 0, 1, 0]])
     self.D = numpy.matrix([[0, 0],
                            [0, 0]])
 
+    af_to_lr = numpy.matrix([
+        [1.0, 0.0, -self.rb, 0.0],
+        [0.0, 1.0, 0.0, -self.rb],
+        [1.0, 0.0, self.rb, 0.0],
+        [0.0, 1.0, 0.0, self.rb],
+    ])
+
+    # We're modelling the system from empirical constants in the state-space of [forward, forward_velocity, angular,
+    # angular_velocity]. Then, the af_to_lr matrix above converts all of the matrices from angular+forward to a
+    # left+right state-space, which is what 971's code actually uses.
+    self.A_continuous = af_to_lr * self.A_c_anglin * numpy.linalg.inv(af_to_lr)
+    self.B_continuous = af_to_lr * self.B_c_anglin
+
     self.A, self.B = self.ContinuousToDiscrete(
         self.A_continuous, self.B_continuous, self.dt)
 
-    q_pos = 0.9
-    q_vel = 4.0
+    q_pos = 0.1
+    q_vel = 2.0
 
     self.Q = numpy.matrix([[(1.0 / (q_pos ** 2.0)), 0.0, 0.0, 0.0],
                            [0.0, (1.0 / (q_vel ** 2.0)), 0.0, 0.0],
@@ -149,6 +151,9 @@ class Drivetrain(control_loop.ControlLoop):
 
     self.InitializeState()
 
+    self.Qff = numpy.matrix(numpy.zeros((4, 4)))
+    self.Qff[1, 1] = self.Qff[3,3] = 1.0
+    self.Kff = controls.TwoStateFeedForwards(self.B, self.Qff)
 
 class KFDrivetrain(Drivetrain):
   def __init__(self, name="KFDrivetrain", left_low=True, right_low=True):
@@ -189,9 +194,9 @@ class KFDrivetrain(Drivetrain):
                            [0, 0],
                            [0, 0]])
 
-    q_pos = 0.05
-    q_vel = 1.00
-    q_voltage = 10.0
+    q_pos = 0.1
+    q_vel = 2.0
+    q_voltage = 1.0
     q_encoder_uncertainty = 2.00
 
     self.Q = numpy.matrix([[(q_pos ** 2.0), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
