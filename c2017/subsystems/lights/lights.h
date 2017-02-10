@@ -24,6 +24,7 @@ enum class LightColor {
 class Lights {
  public:
   void Update();
+
  private:
   LightColor light_color_;
   LightColor VisionAllignment();

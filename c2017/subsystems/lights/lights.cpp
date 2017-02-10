@@ -25,22 +25,27 @@ void Lights::Update() {
           case c2017::intake_group::HpLoadType::HP_LOAD_BOTH:
             light_color_ = FlashLights(LightColor::YELLOW, LightColor::PINK, false);
             break;
+          default:
+            light_color_ = FlashLights(LightColor::OFF, LightColor::TEAL, false);
         }
+      } else {
+        light_color_ = FlashLights(LightColor::OFF, LightColor::TEAL, false);
       }
       // add the auto routines, not nessecarily here, but somewhere.
     } else {
-      light_color_ = FlashLights(LightColor::OFF, LightColor::RED, false);
+      light_color_ = LightColor::RED;
     }
   } else {
-    light_color_ = FlashLights(LightColor::OFF, LightColor::RED, false);
+    light_color_ = FlashLights(LightColor::OFF, LightColor::TEAL, false);
   }
 
   if (vision_status) {
     light_color_ = FlashLights(light_color_, light_color_, !vision_status.value()->has_connection());
+  } else {
+    light_color_ = FlashLights(light_color_, light_color_, true);
   }
 
   LightsOutputProto output;
-
 
   output->set_red(is_red());
   output->set_green(is_green());
