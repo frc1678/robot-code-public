@@ -21,14 +21,14 @@ class QueueManager {
   // Note: This needs to be the same as the actual message queue in the
   // PdpWrapper class. If you change that, you will need to change this.
   // It is like this to avoid making QueueManager rely on WPILib.
-  MessageQueue<muan::proto::StackProto<PdpStatus, 1024>>& pdp_status_queue();
+  MessageQueue<muan::proto::StackProto<PdpStatus, 512>>& pdp_status_queue();
   muan::wpilib::DriverStationQueue& driver_station_queue();
 
  private:
   QueueManager() = default;
   ~QueueManager() = default;
 
-  MessageQueue<muan::proto::StackProto<PdpStatus, 1024>> pdp_status_queue_;
+  MessageQueue<muan::proto::StackProto<PdpStatus, 512>> pdp_status_queue_;
   muan::wpilib::DriverStationQueue driver_station_queue_;
 };
 

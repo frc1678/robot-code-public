@@ -4,7 +4,7 @@
 TEST(QueueManager, Initalizes) { c2017::QueueManager::GetInstance(); }
 
 TEST(QueueManager, QueueWorks) {
-  muan::proto::StackProto<PdpStatus, 1024> p;
+  muan::proto::StackProto<PdpStatus, 512> p;
   c2017::QueueManager::GetInstance().pdp_status_queue().WriteMessage(p);
 
   auto pdp_status_reader = c2017::QueueManager::GetInstance().pdp_status_queue().MakeReader();

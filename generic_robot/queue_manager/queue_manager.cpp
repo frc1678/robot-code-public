@@ -7,7 +7,7 @@ QueueManager& QueueManager::GetInstance() {
   return instance;
 }
 
-MessageQueue<muan::proto::StackProto<PdpStatus, 1024>>& QueueManager::pdp_status_queue() {
+MessageQueue<muan::proto::StackProto<PdpStatus, 512>>& QueueManager::pdp_status_queue() {
   return pdp_status_queue_;
 }
 
