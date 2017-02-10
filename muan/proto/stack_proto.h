@@ -128,6 +128,8 @@ auto WriteTimestamp(T* message) -> decltype((*message)->set_timestamp(0), void()
                             start_time);
 }
 
+// This secondary WriteTimestamp function makes it work if the message getting passed in is a pointer to a
+// normal proto instead of a stack proto
 template <typename T>
 auto WriteTimestamp(T* message) -> decltype(message->set_timestamp(0), void()) {
   message->set_timestamp(std::chrono::duration_cast<std::chrono::milliseconds>(
