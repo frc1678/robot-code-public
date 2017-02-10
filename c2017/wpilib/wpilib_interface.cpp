@@ -9,7 +9,8 @@ WpilibInterface::WpilibInterface()
     : can_{&QueueManager::GetInstance().pdp_status_queue()},
       gyro_{QueueManager::GetInstance().gyro_queue(), true},
       drivetrain_{},
-      superstructure_{&can_} {
+      superstructure_{&can_},
+      lights_{} {
   std::thread can_thread(std::ref(can_));
   can_thread.detach();
 
@@ -20,6 +21,7 @@ WpilibInterface::WpilibInterface()
 void WpilibInterface::WriteActuators() {
   drivetrain_.WriteActuators();
   superstructure_.WriteActuators();
+  lights_.WriteActuators();
 }
 
 void WpilibInterface::ReadSensors() {
