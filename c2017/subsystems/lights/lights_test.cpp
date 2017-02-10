@@ -57,7 +57,7 @@ TEST(LightColors, HpLoadBalls) {
   c2017::QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal_queue);
   c2017::QueueManager::GetInstance().gyro_queue()->WriteMessage(gyro_queue);
   c2017::QueueManager::GetInstance().vision_status_queue().WriteMessage(vision_status);
-  
+
   c2017::lights::Lights lights;
   lights.Update();
   auto lights_reading = c2017::QueueManager::GetInstance().lights_output_queue().ReadLastMessage();
@@ -72,16 +72,16 @@ TEST(LightColors, HpLoadGear) {
   c2017::vision::VisionStatusProto vision_status;
   muan::wpilib::gyro::GyroMessageProto gyro_queue;
   c2017::intake_group::IntakeGroupGoalProto intake_group_goal_queue;
-  
+
   vision_status->set_has_connection(true);
   gyro_queue->set_calibration_time_left(0);
   intake_group_goal_queue->set_hp_load_type(c2017::intake_group::HpLoadType::HP_LOAD_GEAR);
-  
+
   c2017::QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal_queue);
   c2017::QueueManager::GetInstance().gyro_queue()->WriteMessage(gyro_queue);
-  c2017::QueueManager::GetInstance().vision_status_queue().WriteMessage(vision_status); 
+  c2017::QueueManager::GetInstance().vision_status_queue().WriteMessage(vision_status);
 
-  c2017::lights::Lights lights; 
+  c2017::lights::Lights lights;
   lights.Update();
   auto lights_reading = c2017::QueueManager::GetInstance().lights_output_queue().ReadLastMessage();
   if (lights_reading) {
