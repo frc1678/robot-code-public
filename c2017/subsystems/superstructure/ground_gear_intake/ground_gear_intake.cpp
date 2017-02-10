@@ -5,9 +5,11 @@ namespace c2017 {
 
 namespace ground_gear_intake {
 
-GroundGearIntakeOutputProto GroundGearIntake::Update(GroundGearIntakeInputProto input, const DriverStationStatus& robot_state) {
+GroundGearIntakeOutputProto GroundGearIntake::Update(GroundGearIntakeInputProto input,
+                                                     const DriverStationStatus& robot_state) {
   double voltage = 0;
-  bool enable_outputs = !(robot_state.mode() == RobotMode::DISABLED || robot_state.mode() == RobotMode::ESTOP || robot_state.brownout());
+  bool enable_outputs = !(robot_state.mode() == RobotMode::DISABLED ||
+                          robot_state.mode() == RobotMode::ESTOP || robot_state.brownout());
 
   if (enable_outputs) {
     switch (goal_state_) {

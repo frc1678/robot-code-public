@@ -8,11 +8,11 @@ class GroundGearIntakeTest : public ::testing::Test {
     for (int i = 0; i < 1000; i++) {
       input->set_current(current);
       if (robot_disabled) {
-        robot_state.set_mode(RobotMode::DISABLED); // for testing purposes
+        robot_state.set_mode(RobotMode::DISABLED);  //  for testing purposes
       } else {
         robot_state.set_mode(RobotMode::TELEOP);
       }
-      robot_state.set_brownout(false); 
+      robot_state.set_brownout(false);
       output = gear_intake.Update(input, robot_state);
     }
   }

@@ -12,7 +12,8 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input, const DriverStati
 
   double gear_shutter_open = score_gear_;
 
-  bool enable_outputs = !(robot_state.mode() == RobotMode::DISABLED || robot_state.mode() == RobotMode::ESTOP || robot_state.brownout());
+  bool enable_outputs = !(robot_state.mode() == RobotMode::DISABLED ||
+                          robot_state.mode() == RobotMode::ESTOP || robot_state.brownout());
 
   if (enable_outputs) {
     switch (hp_intake_goal_) {
@@ -59,7 +60,7 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input, const DriverStati
     }
   } else {
     gear_intake_covered = false;
-    magazine_extended_ = false; // true?
+    magazine_extended_ = false;
     gear_shutter_open = false;
     upper_voltage = 0;
     side_voltage = 0;

@@ -11,7 +11,8 @@ namespace ground_gear_intake {
 class GroundGearIntake {
  public:
   GroundGearIntake() = default;
-  GroundGearIntakeOutputProto Update(GroundGearIntakeInputProto input, const DriverStationStatus& robot_state);
+  GroundGearIntakeOutputProto Update(GroundGearIntakeInputProto input,
+                                     const DriverStationStatus& robot_state);
   void SetGoal(GroundGearIntakeGoalProto goal);
 
  private:
