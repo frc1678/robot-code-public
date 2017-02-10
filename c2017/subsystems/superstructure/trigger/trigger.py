@@ -17,7 +17,7 @@ def make_gains():
 
     name = 'gains'
 
-    # Parameters (WE DONT ACTAULLY KNOW ANY OF THESE VALUES LOL)
+    # Parameters (WE DONT ACTUALLY KNOW ANY OF THESE VALUES LOL)
     moment_inertia =  (0.05**2) * 3.0 / 2.0
     gear_ratio = 1.0 / 4.0  # ALSO GET FROM MECHANICAL
     efficiency = .8
