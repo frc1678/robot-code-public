@@ -14,7 +14,7 @@ void Lights::Update() {
       if (intake_group_goal_queue) {
         switch (intake_group_goal_queue.value()->hp_load_type()) {
           case c2017::intake_group::HpLoadType::HP_LOAD_NONE:
-            light_color_ = VisionAllignment();
+            light_color_ = VisionAlignment();
             break;
           case c2017::intake_group::HpLoadType::HP_LOAD_BALLS:
             light_color_ = LightColor::YELLOW;
@@ -54,7 +54,7 @@ void Lights::Update() {
   QueueManager::GetInstance().lights_output_queue().WriteMessage(output);
 }
 
-LightColor Lights::VisionAllignment() {
+LightColor Lights::VisionAlignment() {
   auto vision_status = QueueManager::GetInstance().vision_status_queue().ReadLastMessage();
   if (vision_status) {
     if (!vision_status.value()->target_found()) {

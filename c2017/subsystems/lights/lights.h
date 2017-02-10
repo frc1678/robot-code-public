@@ -27,7 +27,7 @@ class Lights {
 
  private:
   LightColor light_color_;
-  LightColor VisionAllignment();
+  LightColor VisionAlignment();
   LightColor FlashLights(LightColor, LightColor, bool);
   bool is_red() const;
   bool is_green() const;
