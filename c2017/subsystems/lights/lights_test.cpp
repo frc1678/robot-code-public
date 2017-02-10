@@ -22,9 +22,9 @@ TEST(LightColors, NoVisionSignal) {
   lights.Update();
   lights_reading = c2017::QueueManager::GetInstance().lights_output_queue().ReadLastMessage();
   if (lights_reading) {
-    EXPECT_TRUE(lights_reading.value()->red());
-    EXPECT_FALSE(lights_reading.value()->green());
-    EXPECT_FALSE(lights_reading.value()->blue());  // creates red
+    EXPECT_FALSE(lights_reading.value()->red());
+    EXPECT_TRUE(lights_reading.value()->green());
+    EXPECT_TRUE(lights_reading.value()->blue());  // creates teal
   }
 }
 
@@ -42,14 +42,6 @@ TEST(LightColors, NotCalibrated) {
     EXPECT_TRUE(lights_reading.value()->red());
     EXPECT_FALSE(lights_reading.value()->green());
     EXPECT_FALSE(lights_reading.value()->blue());  // creates red
-  }
-  aos::time::IncrementMockTime(std::chrono::milliseconds(250));
-  lights.Update();
-  lights_reading = c2017::QueueManager::GetInstance().lights_output_queue().ReadLastMessage();
-  if (lights_reading) {
-    EXPECT_FALSE(lights_reading.value()->red());
-    EXPECT_FALSE(lights_reading.value()->green());
-    EXPECT_FALSE(lights_reading.value()->blue());  // is off
   }
 }
 
