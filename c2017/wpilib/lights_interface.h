@@ -16,7 +16,7 @@ class LightsInterface {
   DigitalOutput red_, green_, blue_;
 };
 
-} // namespace wpilib
-} // namespace c2017
+}  // namespace wpilib
+}  // namespace c2017
 
-#endif // C2017_WPILIB_LIGHTS_INTERFACE_H_
+#endif  // C2017_WPILIB_LIGHTS_INTERFACE_H_

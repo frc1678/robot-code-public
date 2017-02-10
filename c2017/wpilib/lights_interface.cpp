@@ -15,7 +15,10 @@ constexpr uint32_t kBlue = 4;
 
 }  // namespace ports
 
-LightsInterface::LightsInterface() : red_(c2017::wpilib::ports::lights::kRed), green_(c2017::wpilib::ports::lights::kGreen), blue_(c2017::wpilib::ports::lights::kBlue){}
+LightsInterface::LightsInterface()
+    : red_(c2017::wpilib::ports::lights::kRed),
+      green_(c2017::wpilib::ports::lights::kGreen),
+      blue_(c2017::wpilib::ports::lights::kBlue) {}
 
 void LightsInterface::WriteActuators() {
   auto lights_output = QueueManager::GetInstance().lights_output_queue().MakeReader().ReadLastMessage();
