@@ -13,10 +13,11 @@ enum GyroState {
 }
 
 message GyroMessage {
-  required GyroState state = 1;
+  required uint64 timestamp = 1;
+  required GyroState state = 2;
 
-  optional double current_angle = 2;
-  optional double current_angular_velocity = 3;
+  optional double current_angle = 3;
+  optional double current_angular_velocity = 4;
 
-  optional double calibration_time_left = 4;
+  optional double calibration_time_left = 5;
 }

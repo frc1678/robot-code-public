@@ -119,17 +119,10 @@ c2017::shooter_group::ShooterGroupGoalQueue& QueueManager::shooter_group_goal_qu
   return shooter_group_goal_queue_;
 }
 
-c2017::webdash::WebDashQueue&
-QueueManager::webdash_queue() {
-  return webdash_queue_;
-}
+c2017::webdash::WebDashQueue& QueueManager::webdash_queue() { return webdash_queue_; }
 
-c2017::lights::LightsOutputQueue& QueueManager::lights_output_queue() {
-  return lights_output_queue_;
-}
+c2017::lights::LightsOutputQueue& QueueManager::lights_output_queue() { return lights_output_queue_; }
 
-c2017::vision::VisionStatusQueue& QueueManager::vision_status_queue() {
-  return vision_status_queue_;
-}
+c2017::vision::VisionStatusQueue& QueueManager::vision_status_queue() { return vision_status_queue_; }
 
 }  // namespace c2017

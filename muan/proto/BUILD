@@ -7,6 +7,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "//third_party/aos/common:die",
+        "//third_party/aos/common:time",
         "//third_party/google/protobuf",
     ],
 )
