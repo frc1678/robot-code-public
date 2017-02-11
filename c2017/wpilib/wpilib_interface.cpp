@@ -9,7 +9,7 @@ DEFINE_int32(gyro_time, 45, "How long to calibrate the gyro for.");
 
 WpilibInterface::WpilibInterface()
     : can_{&QueueManager::GetInstance().pdp_status_queue()},
-      gyro_{QueueManager::GetInstance().gyro_queue(), true, FLAGS_gyro_time},
+      gyro_{QueueManager::GetInstance().gyro_queue(), FLAGS_gyro_time, true},
       drivetrain_{},
       superstructure_{&can_},
       lights_{} {
