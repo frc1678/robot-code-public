@@ -8,7 +8,7 @@ void Lights::Update() {
   auto drivetrain_status_queue = QueueManager::GetInstance().drivetrain_status_queue()->ReadLastMessage();
   auto gyro_status_queue = QueueManager::GetInstance().gyro_queue()->ReadLastMessage();
   auto vision_status = QueueManager::GetInstance().vision_status_queue().ReadLastMessage();
-  auto ds_status = QueueManager::GetInstance().driver_station_queue()->ReadLastMessage(); 
+  auto ds_status = QueueManager::GetInstance().driver_station_queue()->ReadLastMessage();
 
   if (gyro_status_queue) {
     if (gyro_status_queue.value()->calibration_time_left() <= 0) {
@@ -36,7 +36,7 @@ void Lights::Update() {
           }
         } else {
           light_color_ = FlashLights(LightColor::OFF, LightColor::TEAL, false);
-        }// add auto routines in here
+        }  // add auto routines in here
       } else {
         light_color_ = FlashLights(LightColor::OFF, LightColor::TEAL, false);
       }

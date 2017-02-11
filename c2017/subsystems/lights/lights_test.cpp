@@ -33,7 +33,6 @@ TEST(LightColors, NoVisionSignal) {
   } else {
     FAIL();
   }
-
 }
 
 TEST(LightColors, NotCalibrated) {
@@ -55,7 +54,6 @@ TEST(LightColors, NotCalibrated) {
   } else {
     FAIL();
   }
-
 }
 
 TEST(LightColors, HpLoadBalls) {
@@ -86,7 +84,6 @@ TEST(LightColors, HpLoadBalls) {
   } else {
     FAIL();
   }
-
 }
 
 TEST(LightColors, HpLoadGear) {
@@ -117,7 +114,6 @@ TEST(LightColors, HpLoadGear) {
   } else {
     FAIL();
   }
-
 }
 
 TEST(LightColors, HpLoadBoth) {
@@ -160,7 +156,6 @@ TEST(LightColors, HpLoadBoth) {
   } else {
     FAIL();
   }
-
 }
 
 TEST(LightColors, VisionNotAlligned) {
@@ -195,7 +190,6 @@ TEST(LightColors, VisionNotAlligned) {
   } else {
     FAIL();
   }
-
 }
 
 TEST(LightColors, VisionTargetNotFound) {
@@ -230,7 +224,6 @@ TEST(LightColors, VisionTargetNotFound) {
   } else {
     FAIL();
   }
-
 }
 
 TEST(LightColors, VisionAligned) {
@@ -265,7 +258,6 @@ TEST(LightColors, VisionAligned) {
   } else {
     FAIL();
   }
-
 }
 
 TEST(LightColors, NoDsQueue) {
@@ -273,15 +265,12 @@ TEST(LightColors, NoDsQueue) {
 
   muan::wpilib::gyro::GyroMessageProto gyro_proto;
   c2017::vision::VisionStatusProto vision_status;
-  //muan::wpilib::DriverStationProto driver_station_proto;
 
   gyro_proto->set_calibration_time_left(0);
   vision_status->set_has_connection(true);
-  //driver_station_proto->set_mode(RobotMode::DISABLED);
 
   c2017::QueueManager::GetInstance().gyro_queue()->WriteMessage(gyro_proto);
   c2017::QueueManager::GetInstance().vision_status_queue().WriteMessage(vision_status);
-  //c2017::QueueManager::GetInstance().driver_station_queue()->WriteMessage(driver_station_proto);
 
   c2017::lights::Lights lights;
   aos::time::EnableMockTime(aos::monotonic_clock::epoch());
@@ -304,5 +293,4 @@ TEST(LightColors, NoDsQueue) {
   } else {
     FAIL();
   }
-
 }
