@@ -8,9 +8,9 @@ namespace ports {
 
 namespace lights {
 
-constexpr uint32_t kRed = 2;
-constexpr uint32_t kGreen = 5;
-constexpr uint32_t kBlue = 4;
+constexpr uint32_t kRed = 0;
+constexpr uint32_t kGreen = 1;
+constexpr uint32_t kBlue = 2;
 }  // namespace lights
 
 }  // namespace ports
