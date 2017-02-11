@@ -9,8 +9,12 @@ namespace c2017 {
 namespace joystick {
 
 using XboxJoystickProto = muan::proto::StackProto<XboxJoystickStatus, 512>;
+using WheelStatusProto = muan::proto::StackProto<WheelStatus, 512>;
+using ThrottleStatusProto = muan::proto::StackProto<ThrottleStatus, 512>;
 
 using XboxJoystickQueue = muan::queues::MessageQueue<XboxJoystickProto, 512>;
+using WheelStatusQueue = muan::queues::MessageQueue<WheelStatusProto, 512>;
+using ThrottleStatusQueue = muan::queues::MessageQueue<ThrottleStatusProto, 512>;
 
 }  // namespace joystick
 }  // namespace c2017
