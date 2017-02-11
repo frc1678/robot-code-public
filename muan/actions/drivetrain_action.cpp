@@ -1,4 +1,5 @@
 #include "muan/actions/drivetrain_action.h"
+#include <iostream>
 
 namespace muan {
 
@@ -121,48 +122,68 @@ void DrivetrainAction::ExecuteDrive(DrivetrainActionParams params) {
   double left_distance =
       params.desired_forward_distance - params.desired_angular_displacement * properties_.wheelbase_radius;
 
-  // The faster side of the drivetrain will go at full speed, the slower side
-  // will be slower by a factor of the ratio of the distances
-  double left_velocity_max = 0.0, right_velocity_max = 0.0, left_acceleration = 0.0, right_acceleration = 0.0;
-  if (std::abs(right_distance) > std::abs(left_distance)) {
-    double ratio = std::abs(left_distance / right_distance);
+  if (std::abs(params.desired_forward_distance) > std::abs(params.desired_angular_displacement)) {
+    // da / df = va / vf = aa / af
+    double dratio = std::abs(params.desired_angular_displacement / params.desired_forward_distance);
 
-    right_velocity_max = properties_.max_forward_velocity;
-    right_acceleration = properties_.max_forward_acceleration;
-    left_velocity_max = right_velocity_max * ratio;
-    left_acceleration = right_acceleration * ratio;
-  } else {
-    double ratio = std::abs(right_distance / left_distance);
+    // Calculate max velocities
+    max_forward_velocity_ = properties_.max_forward_velocity;
+    max_angular_velocity_ = dratio * max_forward_velocity_;
+    if (max_angular_velocity_ > properties_.max_angular_velocity) {
+      double vratio = properties_.max_angular_velocity / max_angular_velocity_;
+      max_forward_velocity_ *= vratio;
+      max_angular_velocity_ = properties_.max_angular_velocity;
+    }
 
-    left_velocity_max = properties_.max_forward_velocity;
-    left_acceleration = properties_.max_forward_acceleration;
-    right_velocity_max = left_velocity_max * ratio;
-    right_acceleration = left_acceleration * ratio;
+    // Calculate max accelerations
+    max_forward_acceleration_ = properties_.max_forward_acceleration;
+    max_angular_acceleration_ = dratio * max_forward_acceleration_;
+    if (max_angular_acceleration_ > properties_.max_angular_acceleration) {
+      double aratio = properties_.max_angular_acceleration / max_angular_acceleration_;
+      max_forward_acceleration_ *= aratio;
+      max_angular_acceleration_ = properties_.max_angular_acceleration;
+    }
+  } else if (std::abs(params.desired_angular_displacement) > std::abs(params.desired_forward_distance)) {
+    // da / df = va / vf = aa / af
+    double dratio = std::abs(params.desired_forward_distance / params.desired_angular_displacement);
+
+    // Calculate max velocities
+    max_angular_velocity_ = properties_.max_angular_velocity;
+    max_forward_velocity_ = dratio * max_angular_velocity_;
+    if (max_forward_velocity_ > properties_.max_forward_velocity) {
+      double vratio = properties_.max_forward_velocity / max_forward_velocity_;
+      max_angular_velocity_ *= vratio;
+      max_forward_velocity_ = properties_.max_forward_velocity;
+    }
+
+    // Calculate max accelerations
+    max_angular_acceleration_ = properties_.max_angular_acceleration;
+    max_forward_acceleration_ = dratio * max_angular_acceleration_;
+    if (max_forward_acceleration_ > properties_.max_forward_acceleration) {
+      double aratio = properties_.max_forward_acceleration / max_forward_acceleration_;
+      max_angular_acceleration_ *= aratio;
+      max_forward_acceleration_ = properties_.max_forward_acceleration;
+    }
   }
 
-  // Calculate the constraints in terms of angular and forward (instead of left/right)
-  max_forward_velocity_ = std::abs(left_velocity_max + right_velocity_max) / 2;
-  max_forward_acceleration_ = std::abs(left_acceleration + right_acceleration) / 2;
-  max_angular_velocity_ = std::abs(right_velocity_max - left_velocity_max) / properties_.wheelbase_radius / 2;
-  max_angular_acceleration_ =
-      std::abs(right_acceleration - left_acceleration) / properties_.wheelbase_radius / 2;
+  std::cout << params.desired_forward_distance << " " << params.desired_angular_displacement << " " << max_forward_velocity_ << " " << max_forward_acceleration_ << " " << max_angular_velocity_ << " " << max_angular_acceleration_ << std::endl;
 
   // If max_velocity_ is zero, then the profile isn't actually doing anything. However, 971's trapezoidal
   // motion code doesn't support constraints being zero, so as a workaround, set them to some dummy values
   // when it's just a point turn or forward drive.
   if (max_forward_velocity_ == 0.0) {
-    max_forward_velocity_ = 1.0;
-    max_forward_velocity_ = 1.0;
+    max_forward_velocity_ = 1e-4;
+    max_forward_velocity_ = 1e-4;
   }
   if (max_angular_velocity_ == 0.0) {
-    max_angular_velocity_ = 1.0;
-    max_angular_acceleration_ = 1.0;
+    max_angular_velocity_ = 1e-4;
+    max_angular_acceleration_ = 1e-4;
   }
 
   this->goal_left_ = left_offset + left_distance;
   this->goal_right_ = right_offset + right_distance;
-  this->goal_velocity_left_ = params.follow_through ? left_velocity_max : 0.0;
-  this->goal_velocity_right_ = params.follow_through ? right_velocity_max : 0.0;
+  this->goal_velocity_left_ = 0.0;
+  this->goal_velocity_right_ = 0.0;
 
   this->closed_loop_termination_ = params.closed_loop_termination;
   this->termination_ = params.termination;
