@@ -1,8 +1,8 @@
 #ifndef MUAN_UTILS_MATH_UTILS_H_
 #define MUAN_UTILS_MATH_UTILS_H_
 
-#include <random>
 #include <algorithm>
+#include <random>
 #include "Eigen/Core"
 
 namespace muan {
@@ -56,9 +56,14 @@ Eigen::Matrix<double, A, 1> GaussianNoise(
 uint32_t true_modulo(int a, int b);
 
 // Checks if b is either in [a, c] or [c, a]
-template<typename T>
+template <typename T>
 bool ordered(T a, T b, T c) {
   return (a <= b && b <= c) || (c <= b && b <= a);
+}
+
+template <typename T>
+int signum(T val) {
+  return (T(0) < val) - (val < T(0));
 }
 
 }  // namespace utils
