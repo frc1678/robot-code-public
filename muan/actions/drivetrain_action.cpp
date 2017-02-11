@@ -41,10 +41,28 @@ void DrivetrainAction::SendMessage() {
   goal->mutable_linear_constraints()->set_max_velocity(max_forward_velocity_);
   goal->mutable_linear_constraints()->set_max_acceleration(max_forward_acceleration_);
 
-  goal->mutable_distance_command()->set_left_goal(goal_left_);
-  goal->mutable_distance_command()->set_right_goal(goal_right_);
-  goal->mutable_distance_command()->set_left_velocity_goal(goal_velocity_left_);
-  goal->mutable_distance_command()->set_right_velocity_goal(goal_velocity_right_);
+  double distance_goal_left = goal_left_;
+  double distance_goal_right = goal_right_;
+  if (current_params_.follow_through) {
+    using muan::utils::signum;
+    // Add a value equal to the upper bound of the distance that it'll drive to deccelerate.
+    distance_goal_right += signum(current_params_.desired_forward_distance) * max_forward_velocity_ *
+                           max_forward_velocity_ / (2.0 * max_forward_acceleration_);
+    distance_goal_left += signum(current_params_.desired_forward_distance) * max_forward_velocity_ *
+                          max_forward_velocity_ / (2.0 * max_forward_acceleration_);
+
+    distance_goal_right += signum(current_params_.desired_angular_displacement) *
+                           properties_.wheelbase_radius * max_angular_velocity_ * max_angular_velocity_ /
+                           (2.0 * max_angular_acceleration_);
+    distance_goal_left += -signum(current_params_.desired_angular_displacement) *
+                          properties_.wheelbase_radius * max_angular_velocity_ * max_angular_velocity_ /
+                          (2.0 * max_angular_acceleration_);
+  }
+
+  goal->mutable_distance_command()->set_left_goal(distance_goal_left);
+  goal->mutable_distance_command()->set_right_goal(distance_goal_right);
+  goal->mutable_distance_command()->set_left_velocity_goal(0.0);
+  goal->mutable_distance_command()->set_right_velocity_goal(0.0);
 
   goal->set_gear(high_gear_ ? frc971::control_loops::drivetrain::Gear::kHighGear
                             : frc971::control_loops::drivetrain::Gear::kLowGear);
@@ -128,6 +146,18 @@ void DrivetrainAction::ExecuteDrive(DrivetrainActionParams params) {
   max_angular_velocity_ = std::abs(right_velocity_max - left_velocity_max) / properties_.wheelbase_radius / 2;
   max_angular_acceleration_ =
       std::abs(right_acceleration - left_acceleration) / properties_.wheelbase_radius / 2;
+
+  // If max_velocity_ is zero, then the profile isn't actually doing anything. However, 971's trapezoidal
+  // motion code doesn't support constraints being zero, so as a workaround, set them to some dummy values
+  // when it's just a point turn or forward drive.
+  if (max_forward_velocity_ == 0.0) {
+    max_forward_velocity_ = 1.0;
+    max_forward_velocity_ = 1.0;
+  }
+  if (max_angular_velocity_ == 0.0) {
+    max_angular_velocity_ = 1.0;
+    max_angular_acceleration_ = 1.0;
+  }
 
   this->goal_left_ = left_offset + left_distance;
   this->goal_right_ = right_offset + right_distance;
