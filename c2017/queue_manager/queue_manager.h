@@ -81,6 +81,8 @@ class QueueManager {
 
   c2017::vision::VisionStatusQueue& vision_status_queue();
 
+  void Reset();
+
  private:
   QueueManager() = default;
   ~QueueManager() = default;

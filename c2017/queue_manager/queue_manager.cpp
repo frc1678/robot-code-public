@@ -125,4 +125,45 @@ c2017::lights::LightsOutputQueue& QueueManager::lights_output_queue() { return l
 
 c2017::vision::VisionStatusQueue& QueueManager::vision_status_queue() { return vision_status_queue_; }
 
+void QueueManager::Reset() {
+  pdp_status_queue_.Reset();
+  driver_station_queue_.Reset();
+
+  gyro_queue_.Reset();
+
+  drivetrain_goal_queue_.Reset();
+  drivetrain_input_queue_.Reset();
+  drivetrain_output_queue_.Reset();
+  drivetrain_status_queue_.Reset();
+
+  superstructure_output_queue_.Reset();
+
+  trigger_input_queue_.Reset();
+  trigger_status_queue_.Reset();
+
+  shooter_input_queue_.Reset();
+  shooter_status_queue_.Reset();
+
+  magazine_input_queue_.Reset();
+  magazine_status_queue_.Reset();
+
+  ground_gear_input_queue_.Reset();
+  ground_gear_status_queue_.Reset();
+
+  ground_ball_intake_status_queue_.Reset();
+
+  climber_goal_queue_.Reset();
+  climber_input_queue_.Reset();
+  climber_status_queue_.Reset();
+
+  intake_group_goal_queue_.Reset();
+  shooter_group_goal_queue_.Reset();
+
+  webdash_queue_.Reset();
+
+  lights_output_queue_.Reset();
+
+  vision_status_queue_.Reset();
+}
+
 }  // namespace c2017
