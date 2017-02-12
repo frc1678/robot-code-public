@@ -1,0 +1,11 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+package muan.queues;
+
+message TimestampTestMessage {
+  required uint64 timestamp = 1;
+  required double test1 = 2;
+  required bool test2 = 3;
+}

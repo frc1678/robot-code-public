@@ -5,18 +5,19 @@ package c2017.wpilib;
 option cc_enable_arenas = true;
 
 message WpilibOutput {
+  required uint64 timestamp = 1;
   // Intake Group
-  required double main_roller_voltage = 1;
-  required bool ball_intake_down = 2;
-  required double ground_gear_voltage = 3;
-  required bool ground_gear_down = 4;
-  required double brush_voltage = 5;
+  required double main_roller_voltage = 2;
+  required bool ball_intake_down = 3;
+  required double ground_gear_voltage = 4;
+  required bool ground_gear_down = 5;
+  required double brush_voltage = 6;
 
-  required bool gear_shutter_open = 6;
-  required bool hp_gear_open = 7;
-  required bool magazine_open = 8;
+  required bool gear_shutter_open = 7;
+  required bool hp_gear_open = 8;
+  required bool magazine_open = 9;
   // Shooter/Climber Group
   // shooter_voltage is also the climber_voltage, since they run together
-  required double shooter_voltage = 9;
-  required double trigger_voltage = 10;
+  required double shooter_voltage = 10;
+  required double trigger_voltage = 11;
 }

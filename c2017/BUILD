@@ -8,7 +8,8 @@ cc_binary(
         "//c2017/vision/robot:reader",
         "//c2017/citrus_robot:main",
         "//third_party/wpilibsuite:wpilib",
-        "//c2017/webdash:server"
+        "//c2017/webdash:server",
+        "//third_party/gflags:gflags"
     ],
     data = [
         "//c2017/lemonscript/auto:auto_modes",

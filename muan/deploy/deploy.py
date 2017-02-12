@@ -14,13 +14,13 @@ def get_args():
     parser = argparse.ArgumentParser(description = "Deploy a robot program and all related files needed for execution")
     parser.add_argument('--main', dest='main_binary', help="The main binary to run with robotCommand", required=True)
     parser.add_argument('--default-target', dest='default_target', help="The default target to deploy to. Should only be set by the muan_deploy bazel rule.", required=True)
-    parser.add_argument('--user', dest='user', help="The user to log in and deploy as", default='lvuser')
+    parser.add_argument('--user', dest='user', help="The user to log in and deploy as", default='admin')
     parser.add_argument('--target', dest='target', help="The address of the RoboRIO to deploy to", default=None)
     parser.add_argument('--team', dest='team', help="The team number to deploy to. Setting this option will override --target as roborio-####-frc.local.", default=None)
     parser.add_argument('--port', dest='port', default='22')
     parser.add_argument('--deploy-path', dest='deploy_path', help="The path on the RoboRIO to deploy code to", default='/home/lvuser/robot_code')
     parser.add_argument('--robot-command', dest='command', help="The robotCommand file to create", default='/home/lvuser/robotCommand')
-    parser.add_argument('--password', dest='password', help="The password for the user on the RoboRIO", default='')
+    parser.add_argument('--password', dest='password', help="The password for the user on the RoboRIO")
     args = parser.parse_args()
     if args.target is None:
         if args.team is not None:
@@ -57,6 +57,9 @@ def main():
 
     options = get_args()
 
+    if options.password is None:
+        options.password = ""
+
     # Set the password to be used by sshpass
     os.environ["SSHPASS"] = options.password
 
@@ -85,12 +88,20 @@ def main():
                robot_command_path = options.command)
     ]
 
+    # The ssh command that's used to set the SUID bit on the robot code
+    ssh_suid_command = ssh_command + [
+        ssh_target,
+        "chmod +s {}".format(os.path.join(options.deploy_path, options.main_binary))
+    ]
+
     # Try to rsync the files over and run an ssh command to create the robotCommand.
     try:
         print("Running rsync command: {}".format(' '.join(rsync)))
         sp.check_call(rsync)
         print("Running ssh command: {}".format(' '.join(ssh)))
         sp.check_call(ssh)
+        print("Running set SUID command: {}".format(' '.join(ssh_suid_command)))
+        sp.check_call(ssh_suid_command)
         print("Deploying completed successfully.")
     except sp.CalledProcessError as e:
         # If it doesn't work, try installing rsync on the RoboRIO.

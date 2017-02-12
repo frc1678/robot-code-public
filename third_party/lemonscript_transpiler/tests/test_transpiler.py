@@ -67,6 +67,8 @@ class TestTranspiler:
         assert os.path.isfile("/tmp/auto_functions.h")
         assert "Whitespace" in open("/tmp/auto_functions.h").read()
         assert "Whitespace" in open("/tmp/auto_functions.cpp").read()
+        for x in range(1,6):
+            assert "//PASS" + str(x) in open("/tmp/auto_functions.cpp").read()
 
     def test_run_transpiler_as_process(self):
         self.clean_auto_funcs()

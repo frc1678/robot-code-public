@@ -1,15 +1,18 @@
 #ifndef C2017_SUBSYSTEMS_SUPERSTRUCTURE_GROUND_GEAR_INTAKE_GROUND_GEAR_INTAKE_H_
 #define C2017_SUBSYSTEMS_SUPERSTRUCTURE_GROUND_GEAR_INTAKE_GROUND_GEAR_INTAKE_H_
 
+#include "muan/wpilib/queue_types.h"
 #include "c2017/subsystems/superstructure/ground_gear_intake/queue_types.h"
 
 namespace c2017 {
+
 namespace ground_gear_intake {
 
 class GroundGearIntake {
  public:
   GroundGearIntake() = default;
-  GroundGearIntakeOutputProto Update(GroundGearIntakeInputProto input);
+  GroundGearIntakeOutputProto Update(GroundGearIntakeInputProto input,
+                                     const DriverStationStatus& robot_state);
   void SetGoal(GroundGearIntakeGoalProto goal);
 
  private:
@@ -19,6 +22,7 @@ class GroundGearIntake {
 };
 
 }  // namespace ground_gear_intake
+
 }  // namespace c2017
 
 #endif  // C2017_SUBSYSTEMS_SUPERSTRUCTURE_GROUND_GEAR_INTAKE_GROUND_GEAR_INTAKE_H_

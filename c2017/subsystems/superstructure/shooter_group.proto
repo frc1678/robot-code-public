@@ -15,7 +15,9 @@ message ShooterGroupGoal {
     SPINUP = 1;
     SHOOT = 2;
   }
-  required Position positon = 1;
-  required Wheel wheel = 2;
+
+  required uint64 timestamp = 1;
+  required Position positon = 2;
+  required Wheel wheel = 3;
 }
 

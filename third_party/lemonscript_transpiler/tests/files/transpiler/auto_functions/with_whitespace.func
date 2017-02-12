@@ -9,11 +9,15 @@ global {
 }
 
 init {
-  printf("Starting countdown!\n");
-  // There is whitespace here:
+  //PASS1
 
-  count = time;
-  return false;
+  //PASS2
+
+//PASS3
+  
+  //PASS4
+  
+//PASS5
 }
 
 periodic {

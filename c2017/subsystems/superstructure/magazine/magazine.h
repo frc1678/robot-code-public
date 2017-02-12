@@ -11,7 +11,7 @@ namespace magazine {
 class Magazine {
  public:
   Magazine() = default;
-  MagazineOutputProto Update(MagazineInputProto input);
+  MagazineOutputProto Update(MagazineInputProto input, const DriverStationStatus& robot_state);
   void SetGoal(MagazineGoalProto goal);
 
  private:
