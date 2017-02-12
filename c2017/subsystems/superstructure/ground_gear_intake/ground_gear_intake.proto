@@ -29,7 +29,8 @@ message GroundGearIntakeStatus {
 enum Goal {
   CARRY = 0;
   PICKUP = 1;
-  SCORE = 2;
+  IDLE = 2;
+  SCORE = 3;
 }
 
 message GroundGearIntakeGoal {

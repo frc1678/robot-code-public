@@ -16,6 +16,7 @@ using GroundGearIntakeGoalProto = muan::proto::StackProto<GroundGearIntakeGoal, 
 
 using GroundGearIntakeInputQueue = muan::queues::MessageQueue<GroundGearIntakeInputProto, 200>;
 using GroundGearIntakeStatusQueue = muan::queues::MessageQueue<GroundGearIntakeStatusProto, 200>;
+using GroundGearIntakeOutputQueue = muan::queues::MessageQueue<GroundGearIntakeOutputProto, 200>;
 
 }  // namespace ground_gear_intake
 }  // namespace c2017

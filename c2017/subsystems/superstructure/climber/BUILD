@@ -13,16 +13,16 @@ cc_library(
 
 cc_library(
     name = "climber",
-    hdrs = ["climber.h"],
     srcs = ["climber.cpp"],
+    hdrs = ["climber.h"],
+    visibility = ["//visibility:public"],
     deps = [
-        "//muan/units:units",
         ":climber_queues",
-        "//muan/wpilib:wpilib_queues",
+        "//c2017/queue_manager",
+        "//muan/units",
         "//muan/utils:monitor",
-        "//c2017/queue_manager:queue_manager"
+        "//muan/wpilib:wpilib_queues",
     ],
-    visibility = ["//visibility:public"]
 )
 
 cc_proto_library(

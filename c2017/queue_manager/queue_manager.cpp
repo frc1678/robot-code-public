@@ -1,5 +1,4 @@
 #include "c2017/queue_manager/queue_manager.h"
-#include "c2017/subsystems/superstructure/trigger/queue_types.h"
 
 namespace c2017 {
 
@@ -74,6 +73,11 @@ c2017::wpilib::WpilibOutputQueue& QueueManager::superstructure_output_queue() {
   return superstructure_output_queue_;
 }
 
+c2017::superstructure::SuperstructureStatusQueue&
+QueueManager::superstructure_status_queue() {
+  return superstructure_status_queue_;
+}
+
 // Trigger Queues
 c2017::trigger::TriggerInputQueue& QueueManager::trigger_input_queue() { return trigger_input_queue_; }
 
@@ -92,6 +96,10 @@ c2017::magazine::MagazineStatusQueue& QueueManager::magazine_status_queue() { re
 // Ground Gear Intake
 c2017::ground_gear_intake::GroundGearIntakeInputQueue& QueueManager::ground_gear_input_queue() {
   return ground_gear_input_queue_;
+}
+
+c2017::ground_gear_intake::GroundGearIntakeOutputQueue& QueueManager::ground_gear_output_queue() {
+  return ground_gear_output_queue_;
 }
 
 c2017::ground_gear_intake::GroundGearIntakeStatusQueue& QueueManager::ground_gear_status_queue() {

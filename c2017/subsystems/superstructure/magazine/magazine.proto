@@ -6,9 +6,11 @@ package c2017.magazine;
 
 message MagazineStatus {
   required uint64 timestamp = 1;
-  required bool has_gear = 2;
-  required bool current_spiked = 3;
-  required bool is_running = 4;
+  required bool current_spiked = 2;
+  required bool has_hp_gear = 3;
+  required bool side_conveyor_running = 4;
+  required bool upper_conveyor_running = 5;
+  required bool lower_conveyor_running = 6;
 }
 
 message MagazineInput {
@@ -18,11 +20,12 @@ message MagazineInput {
 
 message MagazineOutput {
   required uint64 timestamp = 1;
-  required bool gear_intake_covered = 2;
+  required bool gear_intake_closed = 2;
   required bool magazine_extended = 3;
   required bool gear_shutter_open = 4;
   required double upper_voltage = 5;
   required double side_voltage = 6;
+  required double lower_voltage = 7;
 }
 
 enum HPIntakeGoalState {
@@ -44,6 +47,12 @@ enum SideGoalState {
   SIDE_AGITATE = 2;
 }
 
+enum LowerGoalState {
+  LOWER_IDLE = 0;
+  LOWER_FORWARD = 1;
+  LOWER_BACKWARD = 2;
+}
+
 message MagazineGoal {
   required uint64 timestamp = 1;
   required HPIntakeGoalState hp_intake_goal = 2;
@@ -51,4 +60,5 @@ message MagazineGoal {
   required bool score_gear = 4;
   required bool magazine_extended = 5;
   required SideGoalState side_goal = 6;
+  required LowerGoalState lower_goal = 7;
 }

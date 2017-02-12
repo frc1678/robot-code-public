@@ -1,21 +1,21 @@
-load('/third_party/google/protobuf/protobuf', 'cc_proto_library')
+load("/third_party/google/protobuf/protobuf", "cc_proto_library")
 
 cc_library(
     name = "lights_queues",
     hdrs = ["queue_types.h"],
+    visibility = ["//visibility:public"],
     deps = [
         ":lights_proto",
         "//muan/proto:stack_proto",
-        "//muan/queues:queues"
+        "//muan/queues",
     ],
-    visibility = ["//visibility:public"]
 )
 
 cc_proto_library(
     name = "lights_proto",
     srcs = ["lights.proto"],
+    default_runtime = "//third_party/google/protobuf",
     protoc = "//third_party/google/protobuf:protoc",
-    default_runtime = "//third_party/google/protobuf"
 )
 
 cc_library(

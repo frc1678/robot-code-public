@@ -9,9 +9,9 @@ using namespace c2017::ground_ball_intake;  // NOLINT
 TEST(TestGroundBallIntake, RollerIntakeGoingDown) {
   GroundBallIntakeOutputProto output;
   GroundBallIntakeGoalProto goal;
-  DriverStationStatus ds_status;
-  ds_status.set_mode(RobotMode::TELEOP);
-  ds_status.set_brownout(false);
+  muan::wpilib::DriverStationProto ds_status;
+  ds_status->set_mode(RobotMode::TELEOP);
+  ds_status->set_brownout(false);
   RollerGoal roller_goal = RollerGoal::INTAKE;
   goal->set_intake_up(false);
   goal->set_run_intake(roller_goal);
@@ -19,7 +19,7 @@ TEST(TestGroundBallIntake, RollerIntakeGoingDown) {
   intake.set_goal(goal);
   output = intake.Update(ds_status);
   auto status = c2017::QueueManager::GetInstance().ground_ball_intake_status_queue().ReadLastMessage();
-  EXPECT_NEAR(output->roller_voltage(), 12, 1e-5);
+  EXPECT_NEAR(output->roller_voltage(), 8, 1e-5);
   EXPECT_FALSE(output->intake_up());
   if (status) {
     EXPECT_FALSE(status.value()->is_intake_up());
@@ -32,8 +32,8 @@ TEST(TestGroundBallIntake, RollerIntakeGoingDown) {
 TEST(TestGroundBallIntake, RollerIntakeGoingUp) {
   GroundBallIntakeOutputProto output;
   GroundBallIntakeGoalProto goal;
-  DriverStationStatus ds_status;
-  ds_status.set_mode(RobotMode::TELEOP);
+  muan::wpilib::DriverStationProto ds_status;
+  ds_status->set_mode(RobotMode::TELEOP);
   RollerGoal roller_goal = RollerGoal::INTAKE;
   goal->set_intake_up(true);
   goal->set_run_intake(roller_goal);
@@ -41,7 +41,7 @@ TEST(TestGroundBallIntake, RollerIntakeGoingUp) {
   intake.set_goal(goal);
   output = intake.Update(ds_status);
   auto status = c2017::QueueManager::GetInstance().ground_ball_intake_status_queue().ReadLastMessage();
-  EXPECT_NEAR(output->roller_voltage(), 12, 1e-5);
+  EXPECT_NEAR(output->roller_voltage(), 8, 1e-5);
   EXPECT_TRUE(output->intake_up());
   if (status) {
     EXPECT_TRUE(status.value()->is_intake_up());
@@ -54,8 +54,8 @@ TEST(TestGroundBallIntake, RollerIntakeGoingUp) {
 TEST(TestGroundBallIntake, RollerOuttakeGoingDown) {
   GroundBallIntakeOutputProto output;
   GroundBallIntakeGoalProto goal;
-  DriverStationStatus ds_status;
-  ds_status.set_mode(RobotMode::TELEOP);
+  muan::wpilib::DriverStationProto ds_status;
+  ds_status->set_mode(RobotMode::TELEOP);
   RollerGoal roller_goal = RollerGoal::OUTTAKE;
   goal->set_intake_up(false);
   goal->set_run_intake(roller_goal);
@@ -63,7 +63,7 @@ TEST(TestGroundBallIntake, RollerOuttakeGoingDown) {
   intake.set_goal(goal);
   output = intake.Update(ds_status);
   auto status = c2017::QueueManager::GetInstance().ground_ball_intake_status_queue().ReadLastMessage();
-  EXPECT_NEAR(output->roller_voltage(), -12, 1e-5);
+  EXPECT_NEAR(output->roller_voltage(), -8, 1e-5);
   EXPECT_FALSE(output->intake_up());
   if (status) {
     EXPECT_FALSE(status.value()->is_intake_up());
@@ -76,8 +76,8 @@ TEST(TestGroundBallIntake, RollerOuttakeGoingDown) {
 TEST(TestGroundBallIntake, RollerOuttakeGoingUp) {
   GroundBallIntakeOutputProto output;
   GroundBallIntakeGoalProto goal;
-  DriverStationStatus ds_status;
-  ds_status.set_mode(RobotMode::TELEOP);
+  muan::wpilib::DriverStationProto ds_status;
+  ds_status->set_mode(RobotMode::TELEOP);
   RollerGoal roller_goal = RollerGoal::OUTTAKE;
   goal->set_intake_up(true);
   goal->set_run_intake(roller_goal);
@@ -85,7 +85,7 @@ TEST(TestGroundBallIntake, RollerOuttakeGoingUp) {
   intake.set_goal(goal);
   output = intake.Update(ds_status);
   auto status = c2017::QueueManager::GetInstance().ground_ball_intake_status_queue().ReadLastMessage();
-  EXPECT_NEAR(output->roller_voltage(), -12, 1e-5);
+  EXPECT_NEAR(output->roller_voltage(), -8, 1e-5);
   EXPECT_TRUE(output->intake_up());
   if (status) {
     EXPECT_TRUE(status.value()->is_intake_up());
@@ -98,8 +98,8 @@ TEST(TestGroundBallIntake, RollerOuttakeGoingUp) {
 TEST(TestGroundBallIntake, RollerIdleGoingDown) {
   GroundBallIntakeOutputProto output;
   GroundBallIntakeGoalProto goal;
-  DriverStationStatus ds_status;
-  ds_status.set_mode(RobotMode::TELEOP);
+  muan::wpilib::DriverStationProto ds_status;
+  ds_status->set_mode(RobotMode::TELEOP);
   RollerGoal roller_goal = RollerGoal::IDLE;
   goal->set_intake_up(false);
   goal->set_run_intake(roller_goal);
@@ -120,8 +120,8 @@ TEST(TestGroundBallIntake, RollerIdleGoingDown) {
 TEST(TestGroundBallIntake, RollerIdleGoingUp) {
   GroundBallIntakeOutputProto output;
   GroundBallIntakeGoalProto goal;
-  DriverStationStatus ds_status;
-  ds_status.set_mode(RobotMode::TELEOP);
+  muan::wpilib::DriverStationProto ds_status;
+  ds_status->set_mode(RobotMode::TELEOP);
   RollerGoal roller_goal = RollerGoal::IDLE;
   goal->set_intake_up(true);
   goal->set_run_intake(roller_goal);
@@ -142,8 +142,8 @@ TEST(TestGroundBallIntake, RollerIdleGoingUp) {
 TEST(TestGroundBallIntake, DISABLED) {
   GroundBallIntakeOutputProto output;
   GroundBallIntakeGoalProto goal;
-  DriverStationStatus ds_status;
-  ds_status.set_mode(RobotMode::DISABLED);
+  muan::wpilib::DriverStationProto ds_status;
+  ds_status->set_mode(RobotMode::DISABLED);
   RollerGoal roller_goal = RollerGoal::INTAKE;
   goal->set_intake_up(false);
   goal->set_run_intake(roller_goal);
@@ -164,8 +164,8 @@ TEST(TestGroundBallIntake, DISABLED) {
 TEST(TestGroundBallIntake, ESTOP) {
   GroundBallIntakeOutputProto output;
   GroundBallIntakeGoalProto goal;
-  DriverStationStatus ds_status;
-  ds_status.set_mode(RobotMode::ESTOP);
+  muan::wpilib::DriverStationProto ds_status;
+  ds_status->set_mode(RobotMode::ESTOP);
   RollerGoal roller_goal = RollerGoal::INTAKE;
   goal->set_intake_up(false);
   goal->set_run_intake(roller_goal);
@@ -186,9 +186,9 @@ TEST(TestGroundBallIntake, ESTOP) {
 TEST(TestGroundBallIntake, Brownout) {
   GroundBallIntakeOutputProto output;
   GroundBallIntakeGoalProto goal;
-  DriverStationStatus ds_status;
-  ds_status.set_mode(RobotMode::TELEOP);
-  ds_status.set_brownout(true);
+  muan::wpilib::DriverStationProto ds_status;
+  ds_status->set_mode(RobotMode::TELEOP);
+  ds_status->set_brownout(true);
   RollerGoal roller_goal = RollerGoal::INTAKE;
   goal->set_intake_up(false);
   goal->set_run_intake(roller_goal);

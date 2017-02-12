@@ -4,33 +4,34 @@ namespace c2017 {
 
 namespace magazine {
 
-MagazineOutputProto Magazine::Update(MagazineInputProto input, const DriverStationStatus& robot_state) {
+MagazineOutputProto Magazine::Update(MagazineInputProto input, muan::wpilib::DriverStationProto robot_state) {
   has_hp_gear_ = input->has_hp_gear();
   double upper_voltage = 0;
   double side_voltage = 0;
-  bool gear_intake_covered = true;
+  double lower_voltage = 0;
+  bool gear_intake_closed = true;
 
   double gear_shutter_open = score_gear_;
 
-  bool enable_outputs = !(robot_state.mode() == RobotMode::DISABLED ||
-                          robot_state.mode() == RobotMode::ESTOP || robot_state.brownout());
+  bool enable_outputs = !(robot_state->mode() == RobotMode::DISABLED ||
+                          robot_state->mode() == RobotMode::ESTOP || robot_state->brownout());
 
   if (enable_outputs) {
     switch (hp_intake_goal_) {
       case NONE:
-        gear_intake_covered = true;
+        gear_intake_closed = true;
         break;
       case BALLS:
-        gear_intake_covered = true;
+        gear_intake_closed = true;
         break;
       case GEAR:
-        gear_intake_covered = false;
+        gear_intake_closed = false;
         break;
       case BOTH:
         if (input->has_hp_gear()) {
-          gear_intake_covered = true;
+          gear_intake_closed = true;
         } else {
-          gear_intake_covered = false;
+          gear_intake_closed = false;
         }
         break;
     }
@@ -38,28 +39,49 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input, const DriverStati
     switch (side_goal_) {
       case SIDE_IDLE:
         side_voltage = 0;
+        magazine_status_->set_side_conveyor_running(false);
         break;
       case SIDE_PULL_IN:
-        side_voltage = 12;
+        side_voltage = 9;
+        magazine_status_->set_side_conveyor_running(true);
         break;
       case SIDE_AGITATE:
-        side_voltage = -12;
+        side_voltage = -9;
+        magazine_status_->set_side_conveyor_running(true);
         break;
     }
 
     switch (upper_goal_) {
       case UPPER_IDLE:
         upper_voltage = 0;
+        magazine_status_->set_upper_conveyor_running(false);
         break;
       case UPPER_FORWARD:
         upper_voltage = 12;
+        magazine_status_->set_upper_conveyor_running(true);
         break;
       case UPPER_BACKWARD:
         upper_voltage = -12;
+        magazine_status_->set_upper_conveyor_running(true);
+        break;
+    }
+
+    switch (lower_goal_) {
+      case LOWER_IDLE:
+        lower_voltage = 0;
+        magazine_status_->set_lower_conveyor_running(false);
+        break;
+      case LOWER_FORWARD:
+        lower_voltage = 12;
+        magazine_status_->set_lower_conveyor_running(true);
+        break;
+      case LOWER_BACKWARD:
+        lower_voltage = -12;
+        magazine_status_->set_lower_conveyor_running(true);
         break;
     }
   } else {
-    gear_intake_covered = false;
+    gear_intake_closed = false;
     magazine_extended_ = false;
     gear_shutter_open = false;
     upper_voltage = 0;
@@ -68,13 +90,15 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input, const DriverStati
 
   c2017::magazine::MagazineOutputProto output;
 
-  output->set_gear_intake_covered(gear_intake_covered);
-  output->set_magazine_extended(magazine_extended_);
-  output->set_gear_shutter_open(gear_shutter_open);
-  output->set_upper_voltage(upper_voltage);
-  output->set_side_voltage(side_voltage);
+  output_->set_gear_intake_closed(gear_intake_closed);
+  output_->set_magazine_extended(magazine_extended_);
+  output_->set_gear_shutter_open(gear_shutter_open);
+  output_->set_upper_voltage(upper_voltage);
+  output_->set_side_voltage(side_voltage);
+  output_->set_lower_voltage(lower_voltage);
+  magazine_status_->set_has_hp_gear(has_hp_gear_);
 
-  return output;
+  return output_;
 }
 
 void Magazine::SetGoal(MagazineGoalProto goal) {
@@ -83,6 +107,7 @@ void Magazine::SetGoal(MagazineGoalProto goal) {
   magazine_extended_ = goal->magazine_extended();
   score_gear_ = goal->score_gear();
   side_goal_ = goal->side_goal();
+  lower_goal_ = goal->lower_goal();
 }
 
 }  // namespace magazine
