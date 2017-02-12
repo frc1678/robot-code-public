@@ -95,13 +95,13 @@ class Drivetrain(control_loop.ControlLoop):
     # [[positionl], [velocityl], [positionr], [velocityr]]
     self.A_c_anglin = numpy.matrix([
         [0., 1., 0., 0.],
-        [0., -2.324, 0., 0.],
+        [0., -2.0, 0., 0.],
         [0., 0., 0., 1.],
         [0., 0., 0., -7.5],
     ])
     self.B_c_anglin = numpy.matrix([
         [0., 0.],
-        [0.5, 0.5],
+        [0.33, 0.33],
         [0., 0.],
         [-1.2, 1.2],
     ])
@@ -126,8 +126,8 @@ class Drivetrain(control_loop.ControlLoop):
     self.A, self.B = self.ContinuousToDiscrete(
         self.A_continuous, self.B_continuous, self.dt)
 
-    q_pos = 0.1
-    q_vel = 2.0
+    q_pos = 0.05
+    q_vel = 1.0
 
     self.Q = numpy.matrix([[(1.0 / (q_pos ** 2.0)), 0.0, 0.0, 0.0],
                            [0.0, (1.0 / (q_vel ** 2.0)), 0.0, 0.0],
@@ -196,7 +196,7 @@ class KFDrivetrain(Drivetrain):
 
     q_pos = 0.1
     q_vel = 2.0
-    q_voltage = 1.0
+    q_voltage = 3.0
     q_encoder_uncertainty = 2.00
 
     self.Q = numpy.matrix([[(q_pos ** 2.0), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
