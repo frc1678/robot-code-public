@@ -2,9 +2,9 @@ syntax = "proto2";
 
 option cc_enable_arenas = true;
 
-package c2017.joystick;
+package muan.teleop;
 
-message XboxJoystickStatus {
+message JoystickStatus {
   required bool button_one = 1;
   required bool button_two = 2;
   required bool button_three = 3;
@@ -18,45 +18,8 @@ message XboxJoystickStatus {
   required bool button_eleven = 11;
   required bool button_twelve = 12;
 
-  required double axis_left_y = 13;
-  required double axis_left_x = 14;
-  required double axis_right_y = 15;
-  required double axis_right_x = 16;
-
-}
-
-message WheelStatus {
-  required bool button_one = 1;
-  required bool button_two = 2;
-  required bool button_three = 3;
-  required bool button_four = 4;
-  required bool button_five = 5;
-  required bool button_six = 6;
-  required bool button_seven = 7;
-  required bool button_eight = 8;
-  required bool button_nine = 9;
-  required bool button_ten = 10;
-  required bool button_eleven = 11;
-  required bool button_twelve = 12;
-
-  required double axis = 13;
-}
-
-message ThrottleStatus {
-  required bool button_one = 1;
-  required bool button_two = 2;
-  required bool button_three = 3;
-  required bool button_four = 4;
-  required bool button_five = 5;
-  required bool button_six = 6;
-  required bool button_seven = 7;
-  required bool button_eight = 8;
-  required bool button_nine = 9;
-  required bool button_ten = 10;
-  required bool button_eleven = 11;
-  required bool button_twelve = 12;
-  
-  required double axis_x = 13;
-  required double axis_y = 14;
-  required double axis_z = 15;
+  required double axis_one = 13;
+  required double axis_two = 14;
+  required double axis_three = 15;
+  required double axis_four = 16;
 }

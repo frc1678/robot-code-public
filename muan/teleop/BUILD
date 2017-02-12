@@ -13,7 +13,10 @@ cc_library(
         "joystick.h",
     ],
     visibility = ["//visibility:public"],
-    deps = ["//third_party/wpilibsuite:wpilib"],
+    deps = [
+        "//third_party/wpilibsuite:wpilib",
+        ":joystick_queues",
+    ],
 )
 
 cc_library(
@@ -22,7 +25,6 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":joystick_proto",
-        "//muan/proto:stack_proto",
         "//muan/queues",
     ],
 )

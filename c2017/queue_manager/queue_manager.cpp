@@ -38,6 +38,10 @@ void QueueManager::StartLogging() {
   logger_.AddQueue("shooter_group_goal", &shooter_group_goal_queue_);
 
   logger_.AddQueue("webdash", &webdash_queue_);
+
+  logger_.AddQueue("manipulator_status", &manipulator_status_queue_);
+  logger_.AddQueue("wheel_status", &wheel_status_queue_);
+  logger_.AddQueue("throttle_status", &throttle_status_queue_);
 #endif  // FRC1678_NO_QUEUE_LOGGING
 }
 
@@ -124,5 +128,14 @@ c2017::webdash::WebDashQueue& QueueManager::webdash_queue() { return webdash_que
 c2017::lights::LightsOutputQueue& QueueManager::lights_output_queue() { return lights_output_queue_; }
 
 c2017::vision::VisionStatusQueue& QueueManager::vision_status_queue() { return vision_status_queue_; }
+
+//  Joystick Queues
+muan::teleop::JoystickStatusQueue& QueueManager::manipulator_status_queue() {
+  return manipulator_status_queue_;
+}
+
+muan::teleop::JoystickStatusQueue& QueueManager::wheel_status_queue() { return wheel_status_queue_; }
+
+muan::teleop::JoystickStatusQueue& QueueManager::throttle_status_queue() { return throttle_status_queue_; }
 
 }  // namespace c2017

@@ -6,6 +6,7 @@
 #include <vector>
 #include "WPILib.h"
 #include "muan/teleop/button.h"
+#include "muan/teleop/queue_types.h"
 
 namespace muan {
 
@@ -14,14 +15,22 @@ namespace teleop {
 class Joystick {
  public:
   explicit Joystick(int32_t port);
+  explicit Joystick(int32_t port, JoystickStatusQueue* queue);
+
   void Update();
 
-  muan::teleop::Button* MakeButton(uint32_t button);
+  Button* MakeButton(uint32_t button);
 
   ::Joystick* wpilib_joystick();
 
  private:
-  std::vector<std::unique_ptr<muan::teleop::Button>> buttons_;
+  void LogButtons(uint32_t dummy);
+  void LogButtons(int dummy);
+
+
+  JoystickStatusQueue* queue_ = nullptr;
+
+  std::vector<std::unique_ptr<Button>> buttons_;
   ::Joystick wpilib_joystick_;
 };
 
