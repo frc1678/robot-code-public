@@ -5,21 +5,22 @@ option cc_enable_arenas = true;
 package muan.teleop;
 
 message JoystickStatus {
-  required bool button_one = 1;
-  required bool button_two = 2;
-  required bool button_three = 3;
-  required bool button_four = 4;
-  required bool button_five = 5;
-  required bool button_six = 6;
-  required bool button_seven = 7;
-  required bool button_eight = 8;
-  required bool button_nine = 9;
-  required bool button_ten = 10;
-  required bool button_eleven = 11;
-  required bool button_twelve = 12;
+  required uint64 timestamp = 1;
+  required bool button_one = 2;
+  required bool button_two = 3;
+  required bool button_three = 4;
+  required bool button_four = 5;
+  required bool button_five = 6;
+  required bool button_six = 7;
+  required bool button_seven = 8;
+  required bool button_eight = 9;
+  required bool button_nine = 10;
+  required bool button_ten = 11;
+  required bool button_eleven = 12;
+  required bool button_twelve = 13;
 
-  required double axis_one = 13;
-  required double axis_two = 14;
-  required double axis_three = 15;
-  required double axis_four = 16;
+  required double axis_one = 14;
+  required double axis_two = 15;
+  required double axis_three = 16;
+  required double axis_four = 17;
 }
