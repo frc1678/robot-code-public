@@ -5,7 +5,7 @@
 namespace c2017 {
 namespace wpilib {
 
-DEFINE_int32(gyro_time, 45, "How long to calibrate the gyro for.");
+DEFINE_int32(gyro_time, 10, "How long to calibrate the gyro for.");
 
 WpilibInterface::WpilibInterface()
     : can_{&QueueManager::GetInstance().pdp_status_queue()},
