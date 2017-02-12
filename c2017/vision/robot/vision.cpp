@@ -27,6 +27,7 @@ void VisionSubsystem::Update() {
     }
     if ((*input)->has_angle_to_target()) {
       status->set_angle_to_target((*input)->angle_to_target());
+    }
   } else {
     status->set_has_connection(false);
     status->set_target_found(false);
