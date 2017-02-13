@@ -220,6 +220,11 @@ void SuperStructure::SetWpilibOutput() {
       QueueManager::GetInstance().driver_station_queue()->ReadLastMessage();
 
   if (driver_station) {
+    auto robot_state = driver_station.value();
+    bool enable_outputs = !(robot_state->mode() == RobotMode::DISABLED ||
+                            robot_state->mode() == RobotMode::ESTOP ||
+                            robot_state->brownout());
+
     if (ground_gear_input) {
       auto ground_gear_intake_output =
           ground_gear_intake_.Update(ground_gear_input.value(), driver_station.value());
@@ -229,7 +234,7 @@ void SuperStructure::SetWpilibOutput() {
 
     if (climber_goal_->climbing()) {
       if (climber_input) {
-        auto climber_output = climber_.Update(climber_input.value(), driver_station.value());
+        auto climber_output = climber_.Update(climber_input.value(), enable_outputs);
         wpilib_output->set_shooter_voltage(climber_output->voltage());
       }
     } else {
