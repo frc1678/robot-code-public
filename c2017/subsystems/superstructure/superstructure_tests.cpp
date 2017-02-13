@@ -47,7 +47,7 @@ class SuperstructureTest : public ::testing::Test {
   }
 };
 
-TEST_F(SuperstructureTest, GearIntaking) {
+TEST_F(SuperstructureTest, GroundGearIntaking) {
   climber_input_proto->set_current(0);
   climber_input_proto->set_position(0);
   shooter_input_proto->set_encoder_position(0);
