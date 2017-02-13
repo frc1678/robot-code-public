@@ -1,0 +1,35 @@
+LiteralDrive(float distance, float angle, bool follow_through, bool closed_loop_termination, float max_forward_velocity, float max_forward_acceleration, float max_angular_velocity, float max_angular_acceleration)
+
+include {
+  "c2017/queue_manager/queue_manager.h"
+  "c2017/subsystems/drivetrain/drivetrain_base.h"
+  "muan/actions/drivetrain_action.h"
+}
+
+global {
+  std::unique_ptr<muan::actions::DrivetrainAction> action;
+}
+
+init {
+  muan::actions::DrivetrainProperties properties{max_angular_velocity, max_angular_acceleration,
+                                                 max_forward_velocity, max_forward_acceleration,
+                                                 c2017::drivetrain::GetDrivetrainConfig().robot_radius};
+  muan::actions::DrivetrainActionParams params;
+
+  params.termination = muan::actions::DrivetrainTermination{0.05, 0.05, 0.05, 0.05};
+  params.desired_forward_distance = distance;
+  params.desired_angular_displacement = angle;
+  params.closed_loop_termination = closed_loop_termination;
+  params.follow_through = follow_through;
+  params.literal_constraints = true;
+
+  action = std::make_unique<muan::actions::DrivetrainAction>(
+      properties, c2017::QueueManager::GetInstance().drivetrain_goal_queue(),
+      c2017::QueueManager::GetInstance().drivetrain_status_queue());
+  action->ExecuteDrive(params);
+  return false;
+}
+
+periodic {
+  return !action->Update();
+}
