@@ -4,7 +4,7 @@ namespace c2017 {
 
 namespace magazine {
 
-MagazineOutputProto Magazine::Update(MagazineInputProto input, bool enabled) {
+MagazineOutputProto Magazine::Update(MagazineInputProto input, bool outputs_enabled) {
   has_hp_gear_ = input->has_hp_gear();
   double upper_voltage = 0;
   double side_voltage = 0;
@@ -13,7 +13,7 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input, bool enabled) {
 
   bool gear_shutter_open = score_gear_;
 
-  if (enabled) {
+  if (outputs_enabled) {
     switch (hp_intake_goal_) {
       case NONE:
         gear_intake_closed = true;

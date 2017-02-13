@@ -15,12 +15,12 @@ Climber::Climber() :
 
 void Climber::SetGoal(const ClimberGoalProto& goal) { to_climb_ = goal->climbing(); }
 
-ClimberOutputProto Climber::Update(const ClimberInputProto& input, bool enabled) {
+ClimberOutputProto Climber::Update(const ClimberInputProto& input, bool outputs_enabled) {
   double voltage_;
 
   ClimberStatusProto status;
   ClimberOutputProto output;
-  if (enabled) {
+  if (outputs_enabled) {
     if (to_climb_) {
       if (on_rope_) {
         voltage_ = climber_position_watcher_.Update(12, (input->position() - last_position_));

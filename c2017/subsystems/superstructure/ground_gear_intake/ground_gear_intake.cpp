@@ -5,10 +5,10 @@ namespace c2017 {
 
 namespace ground_gear_intake {
 
-GroundGearIntakeOutputProto GroundGearIntake::Update(GroundGearIntakeInputProto input, bool enabled) {
+GroundGearIntakeOutputProto GroundGearIntake::Update(GroundGearIntakeInputProto input, bool outputs_enabled) {
   double voltage = 0;
 
-  if (enabled) {
+  if (outputs_enabled) {
     switch (goal_state_) {
       case CARRY:
         voltage = 0;

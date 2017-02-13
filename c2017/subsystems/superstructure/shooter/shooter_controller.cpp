@@ -21,7 +21,7 @@ ShooterController::ShooterController()
 }
 
 c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::ShooterInputProto input,
-                                                             bool enabled) {
+                                                             bool outputs_enabled) {
   Eigen::Matrix<double, 3, 1> r_;
 
   auto y = (Eigen::Matrix<double, 1, 1>() << input->encoder_position()).finished();
@@ -31,7 +31,7 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
 
   auto u = controller_.Update(observer_.x(), r_)(0, 0);
 
-  if (!enabled || goal_velocity_ <= 0) {
+  if (!outputs_enabled || goal_velocity_ <= 0) {
     u = 0.0;
   }
 

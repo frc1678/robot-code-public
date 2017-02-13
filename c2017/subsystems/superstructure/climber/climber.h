@@ -16,7 +16,7 @@ class Climber {
  public:
   Climber();
   void SetGoal(const ClimberGoalProto& goal);
-  ClimberOutputProto Update(const ClimberInputProto& input, bool enabled);
+  ClimberOutputProto Update(const ClimberInputProto& input, bool outputs_enabled);
   void Reset();
 
  private:

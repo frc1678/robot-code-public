@@ -7,12 +7,12 @@ namespace ground_ball_intake {
 GroundBallIntake::GroundBallIntake()
     : status_queue_{QueueManager::GetInstance().ground_ball_intake_status_queue()} {}
 
-GroundBallIntakeOutputProto GroundBallIntake::Update(bool enabled) {
+GroundBallIntakeOutputProto GroundBallIntake::Update(bool outputs_enabled) {
   GroundBallIntakeStatusProto status;
   GroundBallIntakeOutputProto output;
   double roller_voltage = 0;
 
-  if (enabled) {
+  if (outputs_enabled) {
     switch (run_intake_) {
       case RollerGoal::INTAKE:
         roller_voltage = 8;
