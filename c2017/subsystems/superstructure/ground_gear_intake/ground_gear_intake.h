@@ -3,6 +3,7 @@
 
 #include "muan/wpilib/queue_types.h"
 #include "c2017/subsystems/superstructure/ground_gear_intake/queue_types.h"
+#include "c2017/queue_manager/queue_manager.h"
 
 namespace c2017 {
 

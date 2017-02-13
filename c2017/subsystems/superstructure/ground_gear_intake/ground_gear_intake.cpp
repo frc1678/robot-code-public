@@ -44,8 +44,13 @@ GroundGearIntakeOutputProto GroundGearIntake::Update(GroundGearIntakeInputProto 
     }
   }
   GroundGearIntakeOutputProto output;
+  GroundGearIntakeStatusProto ground_gear_status;
   output->set_roller_voltage(voltage);
   output->set_intake_down(intake_down_);
+  ground_gear_status->set_current_spiked(has_current_spiked_);
+  ground_gear_status->set_down(intake_down_);
+  ground_gear_status->set_running(voltage != 0.0);
+  QueueManager::GetInstance().ground_gear_status_queue().WriteMessage(ground_gear_status);
   return output;  // Sends voltage and solenoid output
 }
 

@@ -8,6 +8,7 @@ cc_library(
     deps = [
         "ground_gear_intake_queues",
         "//muan/wpilib:wpilib_queues",
+        "//c2017/queue_manager:queue_manager",
     ],
 )
 
