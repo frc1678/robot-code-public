@@ -45,7 +45,9 @@ cc_library(
     name = "filewriter",
     srcs = ["filewriter.cpp"],
     hdrs = ["filewriter.h"],
-    deps = ["//third_party/boost:filesystem"],
+    deps = [
+        "//third_party/boost:filesystem",
+        "//third_party/gflags:gflags"],
 )
 
 cc_library(

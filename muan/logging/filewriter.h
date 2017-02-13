@@ -7,6 +7,7 @@
 #include <string>
 #include <map>
 #include "boost/filesystem.hpp"
+#include "gflags/gflags.h"
 
 /*
  * This class deals with writing to files, making sure that the needed folders
@@ -18,6 +19,8 @@
 
 namespace muan {
 namespace logging {
+
+DECLARE_string(log_dir);
 
 class FileWriter {
  public:

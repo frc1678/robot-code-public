@@ -6,6 +6,8 @@
 namespace muan {
 namespace logging {
 
+DEFINE_string(log_dir, "", "What directory to put logs in. Defaults to the current unix timestamp.");
+
 FileWriter::FileWriter() { base_path_ = GetBasePath(); }
 
 FileWriter::FileWriter(const std::string &base_path) { base_path_ = base_path; }
@@ -26,7 +28,8 @@ std::string FileWriter::GetBasePath() {
   for (auto const path : paths) {
     if (boost::filesystem::is_directory(path)) {
       try {
-        auto final_path = path + "logs/" + std::to_string(std::time(0)) + "/";
+        std::string log_dir = FLAGS_log_dir.empty() ? std::to_string(std::time(0)) : FLAGS_log_dir;
+        auto final_path = path + "logs/" + log_dir + "/";
         boost::filesystem::create_directories(final_path);
         return final_path;
       } catch (const boost::filesystem::filesystem_error &e) {
