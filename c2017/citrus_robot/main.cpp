@@ -7,10 +7,9 @@ namespace c2017 {
 namespace citrus_robot {
 
 CitrusRobot::CitrusRobot()
-    : throttle_{1, &QueueManager::GetInstance().throttle_status_queue(),
-                muan::teleop::JoystickType::THROTTLE},
-      wheel_{0, &QueueManager::GetInstance().wheel_status_queue(), muan::teleop::JoystickType::WHEEL},
-      gamepad_{2, &QueueManager::GetInstance().manipulator_status_queue(), muan::teleop::JoystickType::XBOX} {
+    : throttle_{1, &QueueManager::GetInstance().throttle_status_queue()},
+      wheel_{0, &QueueManager::GetInstance().wheel_status_queue()},
+      gamepad_{2, &QueueManager::GetInstance().manipulator_status_queue()} {
   fender_align_shoot_ = throttle_.MakeButton(1);  // Joystick Trigger
   score_hp_gear_ = throttle_.MakeButton(2);       // Joystick Button
 

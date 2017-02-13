@@ -12,12 +12,10 @@ namespace muan {
 
 namespace teleop {
 
-enum class JoystickType { WHEEL = 0, THROTTLE = 1, XBOX = 2 };
-
 class Joystick {
  public:
-  explicit Joystick(int32_t port, JoystickType type = JoystickType::WHEEL);
-  explicit Joystick(int32_t port, JoystickStatusQueue* queue, JoystickType type = JoystickType::WHEEL);
+  explicit Joystick(int32_t port);
+  explicit Joystick(int32_t port, JoystickStatusQueue* queue);
 
   void Update();
 
@@ -29,10 +27,8 @@ class Joystick {
 
  private:
   void LogButtons();
-  uint32_t get_button_count();
 
   JoystickStatusQueue* queue_;
-  JoystickType type_;
 
   std::vector<std::unique_ptr<Button>> buttons_;
   ::Joystick wpilib_joystick_;
