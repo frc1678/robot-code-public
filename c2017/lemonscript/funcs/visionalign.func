@@ -1,0 +1,42 @@
+visionalign()
+
+include {
+  "c2017/vision/robot/vision.h"
+  "c2017/queue_manager/queue_manager.h"
+}
+
+global {}
+
+init {
+  // If there is no vision connection don't bother running.
+  // It will miss the shots, but won't block auto from drive afterwards.
+  auto status = c2017::QueueManager::GetInstance().vision_status_queue().MakeReader().ReadLastMessage();
+  if (status) {
+    if (status.value()->has_connection()) {
+      c2017::vision::VisionGoalProto goal;
+      goal->set_should_align(true);
+      c2017::QueueManager::GetInstance().vision_goal_queue().WriteMessage(goal);
+      return false;
+    } else {
+      return true;
+    }
+  } else {
+    return true;
+  }
+}
+
+periodic {
+  auto status = c2017::QueueManager::GetInstance().vision_status_queue().MakeReader().ReadLastMessage();
+  if (status) {
+    if (status.value()->aligned()) {
+      c2017::vision::VisionGoalProto goal;
+      goal->set_should_align(false);
+      c2017::QueueManager::GetInstance().vision_goal_queue().WriteMessage(goal);
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return false;
+  }
+}
