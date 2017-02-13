@@ -33,6 +33,10 @@ void QueueManager::StartLogging() {
   logger_.AddQueue("climber_goal", &climber_goal_queue_);
   logger_.AddQueue("climber_status", &climber_status_queue_);
 
+  logger_.AddQueue("vision_input_queue", &vision_input_queue_);
+  logger_.AddQueue("vision_status_queue", &vision_status_queue_);
+  logger_.AddQueue("vision_goal_queue", &vision_goal_queue_);
+
   logger_.AddQueue("intake_group_goal", &intake_group_goal_queue_);
   logger_.AddQueue("shooter_group_goal", &shooter_group_goal_queue_);
 
