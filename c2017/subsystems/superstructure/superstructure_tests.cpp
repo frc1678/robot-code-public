@@ -169,6 +169,13 @@ TEST_F(SuperstructureTest, Shoot) {
 
   ASSERT_TRUE(superstructure_status);
   EXPECT_TRUE(superstructure_status.value()->shooting());
+
+  auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
+
+  ASSERT_TRUE(superstructure_output);
+  EXPECT_NEAR(superstructure_output.value()->main_roller_voltage(), 12, 1e-4);
+  // TODO(Wesley) Figure out why this fails
+  // EXPECT_NEAR(superstructure_output.value()->upper_conveyor_voltage(), 12, 1e-4);
   Reset();
 }
 
