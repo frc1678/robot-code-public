@@ -121,6 +121,15 @@ TEST_F(SuperstructureTest, BallIntaking) {
 
   ASSERT_TRUE(superstructure_status);
   EXPECT_TRUE(superstructure_status.value()->ball_intaking());
+
+  auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
+
+  ASSERT_TRUE(superstructure_output);
+  EXPECT_TRUE(superstructure_output.value()->ball_intake_down());
+  // TODO(Wesley) Figure out why this is not working:
+  // EXPECT_FALSE(superstructure_output.value()->ground_gear_down());
+  EXPECT_NEAR(superstructure_output.value()->main_roller_voltage(), 8, 1e-4);
+
   Reset();
 }
 
@@ -140,6 +149,11 @@ TEST_F(SuperstructureTest, BallReverse) {
 
   ASSERT_TRUE(superstructure_status);
   EXPECT_TRUE(superstructure_status.value()->ball_reverse());
+
+  auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
+
+  ASSERT_TRUE(superstructure_output);
+  EXPECT_NEAR(superstructure_output.value()->main_roller_voltage(), -8, 1e-4);
   Reset();
 }
 
