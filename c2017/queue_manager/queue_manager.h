@@ -51,6 +51,7 @@ class QueueManager {
   frc971::control_loops::drivetrain::StatusQueue* drivetrain_status_queue();
 
   c2017::wpilib::WpilibOutputQueue& superstructure_output_queue();
+  c2017::superstructure::SuperstructureStatusQueue& superstructure_status_queue();
 
   c2017::trigger::TriggerInputQueue& trigger_input_queue();
   c2017::trigger::TriggerStatusQueue& trigger_status_queue();
@@ -65,6 +66,7 @@ class QueueManager {
 
   c2017::ground_gear_intake::GroundGearIntakeInputQueue& ground_gear_input_queue();
   c2017::ground_gear_intake::GroundGearIntakeStatusQueue& ground_gear_status_queue();
+  c2017::ground_gear_intake::GroundGearIntakeOutputQueue& ground_gear_output_queue();
 
   c2017::ground_ball_intake::GroundBallIntakeStatusQueue& ball_intake_status_queue();
 
@@ -83,6 +85,8 @@ class QueueManager {
 
   c2017::lights::LightsOutputQueue& lights_output_queue();
 
+  void Reset();
+
  private:
   QueueManager() = default;
   ~QueueManager() = default;
@@ -98,18 +102,20 @@ class QueueManager {
   frc971::control_loops::drivetrain::StatusQueue drivetrain_status_queue_;
 
   c2017::wpilib::WpilibOutputQueue superstructure_output_queue_;
-
-  c2017::trigger::TriggerInputQueue trigger_input_queue_;
-  c2017::trigger::TriggerStatusQueue trigger_status_queue_;
+  c2017::superstructure::SuperstructureStatusQueue superstructure_status_queue_;
 
   c2017::shooter::ShooterInputQueue shooter_input_queue_;
   c2017::shooter::ShooterStatusQueue shooter_status_queue_;
+
+  c2017::trigger::TriggerInputQueue trigger_input_queue_;
+  c2017::trigger::TriggerStatusQueue trigger_status_queue_;
 
   c2017::magazine::MagazineInputQueue magazine_input_queue_;
   c2017::magazine::MagazineStatusQueue magazine_status_queue_;
 
   c2017::ground_gear_intake::GroundGearIntakeInputQueue ground_gear_input_queue_;
   c2017::ground_gear_intake::GroundGearIntakeStatusQueue ground_gear_status_queue_;
+  c2017::ground_gear_intake::GroundGearIntakeOutputQueue ground_gear_output_queue_;
 
   c2017::ground_ball_intake::GroundBallIntakeStatusQueue ground_ball_intake_status_queue_;
 

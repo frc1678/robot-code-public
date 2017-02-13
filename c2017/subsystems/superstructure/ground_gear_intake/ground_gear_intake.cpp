@@ -6,10 +6,11 @@ namespace c2017 {
 namespace ground_gear_intake {
 
 GroundGearIntakeOutputProto GroundGearIntake::Update(GroundGearIntakeInputProto input,
-                                                     const DriverStationStatus& robot_state) {
+                                                     muan::wpilib::DriverStationProto robot_state) {
   double voltage = 0;
-  bool enable_outputs = !(robot_state.mode() == RobotMode::DISABLED ||
-                          robot_state.mode() == RobotMode::ESTOP || robot_state.brownout());
+
+  bool enable_outputs = !(robot_state->mode() == RobotMode::DISABLED ||
+                          robot_state->mode() == RobotMode::ESTOP || robot_state->brownout());
 
   if (enable_outputs) {
     switch (goal_state_) {
@@ -36,16 +37,16 @@ GroundGearIntakeOutputProto GroundGearIntake::Update(GroundGearIntakeInputProto 
         intake_down_ = false;
         has_current_spiked_ = false;
         break;
-    }
-  } else {
-    voltage = 0;
-    intake_down_ = false;
-  }
 
+      case IDLE:
+        voltage = 0;
+        break;
+    }
+  }
   GroundGearIntakeOutputProto output;
   output->set_roller_voltage(voltage);
   output->set_intake_down(intake_down_);
-  return output;  // sends voltage and solenoid output
+  return output;  // Sends voltage and solenoid output
 }
 
 void GroundGearIntake::SetGoal(GroundGearIntakeGoalProto goal) { goal_state_ = goal->goal(); }

@@ -12,7 +12,7 @@ class GroundGearIntake {
  public:
   GroundGearIntake() = default;
   GroundGearIntakeOutputProto Update(GroundGearIntakeInputProto input,
-                                     const DriverStationStatus& robot_state);
+                                     muan::wpilib::DriverStationProto robot_state);
   void SetGoal(GroundGearIntakeGoalProto goal);
 
  private:

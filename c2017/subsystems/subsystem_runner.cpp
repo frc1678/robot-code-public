@@ -29,6 +29,8 @@ void SubsystemRunner::operator()() {
 
     superstructure_.Update();
 
+    lights_.Update();
+
     vision_.Update();
 
     wpilib_.WriteActuators();

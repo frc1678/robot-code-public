@@ -11,7 +11,7 @@ namespace ground_ball_intake {
 class GroundBallIntake {
  public:
   GroundBallIntake();
-  GroundBallIntakeOutputProto Update(const DriverStationStatus& robot_state);
+  GroundBallIntakeOutputProto Update(const muan::wpilib::DriverStationProto& robot_state);
   GroundBallIntakeStatusProto get_status();
   void set_goal(GroundBallIntakeGoalProto goal);
 

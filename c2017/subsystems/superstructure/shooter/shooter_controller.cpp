@@ -1,4 +1,5 @@
 #include "c2017/subsystems/superstructure/shooter/shooter_controller.h"
+#include <cmath>
 
 namespace c2017 {
 namespace shooter {
@@ -16,8 +17,7 @@ ShooterController::ShooterController()
 
   at_goal_ = false;
 
-  angle_tolerance_ = 2;     // Radians
-  velocity_tolerance_ = 2;  // Radians per second
+  velocity_tolerance_ = 60;  // Radians per second
 }
 
 c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::ShooterInputProto input,
@@ -41,7 +41,7 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
 
   auto absolute_error = r_ - observer_.x().cwiseAbs();
 
-  at_goal_ = (absolute_error(0, 0) < angle_tolerance_) && (absolute_error(1, 0) < velocity_tolerance_);
+  at_goal_ = absolute_error(1, 0) < velocity_tolerance_;
 
   c2017::shooter::ShooterOutputProto output;
 
@@ -54,8 +54,10 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
   }
 
   status_->set_observed_velocity(observer_.x()(1, 0));
-
-  shooter_status_queue_.WriteMessage(status_);
+  status_->set_at_goal(at_goal_);
+  status_->set_currently_running(std::fabs(goal_velocity_) <= 1e-3);
+  status_->set_voltage(u);
+  QueueManager::GetInstance().shooter_status_queue().WriteMessage(status_);
 
   return output;
 }

@@ -22,11 +22,28 @@ class CitrusRobot {
   c2017::lemonscript::Lemonscript lemonscript_;
   std::thread lemonscript_thread_{std::ref(lemonscript_)};
 
-  // bool high_gear_;
-  muan::teleop::Button *shifting_high_, *shifting_low_;
-  muan::teleop::Button* quickturn_;
+  muan::teleop::Button *quickturn_;
+
+  // Superstructure buttons
+  // Throttle button
+  muan::teleop::Button *fender_align_shoot_, *score_hp_gear_;
+  // Gamepad buttons
+  muan::teleop::Button *ball_intake_toggle_, *gear_intake_down_, *ground_gear_score_, *ball_reverse_,
+      *just_shoot_, *climb_, *just_spinup_, *stop_shooting_;
+  // Gamepad D-Pad
+  muan::teleop::Button *hp_load_gears_, *hp_load_balls_, *hp_load_both_;
+  // Gamepad Triggers
+  muan::teleop::Button *agitate_, *ball_intake_run_;
+
+  bool ball_intake_down_ = false;
+  bool currently_climbing_ = false;
+
+  c2017::intake_group::IntakeGroupGoalProto intake_group_goal;
+  c2017::shooter_group::ShooterGroupGoalProto shooter_group_goal;
+  c2017::climber::ClimberGoalProto climber_goal;
 
   void SendDSMessage();
+  void SendSuperstructureMessage();
   void SendDrivetrainMessage();
 };
 

@@ -7,20 +7,20 @@ namespace ground_ball_intake {
 GroundBallIntake::GroundBallIntake()
     : status_queue_{QueueManager::GetInstance().ground_ball_intake_status_queue()} {}
 
-GroundBallIntakeOutputProto GroundBallIntake::Update(const DriverStationStatus& robot_state) {
+GroundBallIntakeOutputProto GroundBallIntake::Update(const muan::wpilib::DriverStationProto& robot_state) {
   GroundBallIntakeStatusProto status;
   GroundBallIntakeOutputProto output;
   double roller_voltage = 0;
-  bool enable_outputs = !(robot_state.mode() == RobotMode::DISABLED ||
-                          robot_state.mode() == RobotMode::ESTOP || robot_state.brownout());
+  bool enable_outputs = !(robot_state->mode() == RobotMode::DISABLED ||
+                          robot_state->mode() == RobotMode::ESTOP || robot_state->brownout());
 
   if (enable_outputs) {
     switch (run_intake_) {
       case RollerGoal::INTAKE:
-        roller_voltage = 12;
+        roller_voltage = 8;
         break;
       case RollerGoal::OUTTAKE:
-        roller_voltage = -12;
+        roller_voltage = -8;
         break;
       case RollerGoal::IDLE:
         roller_voltage = 0;

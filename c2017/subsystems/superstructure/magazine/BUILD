@@ -4,9 +4,11 @@ cc_library(
     name = "magazine",
     srcs = ["magazine.cpp"],
     hdrs = ["magazine.h"],
+    visibility = ["//visibility:public"],
     deps = [
         ":magazine_queues",
-        "//c2017/queue_manager"
+        "//c2017/queue_manager",
+        "//muan/wpilib:wpilib_queues",
     ],
 )
 
@@ -33,7 +35,6 @@ cc_test(
     srcs = ["magazine_test.cpp"],
     deps = [
         ":magazine",
-        "//third_party/google/googletest:googletest",
-    ]
+        "//third_party/google/googletest",
+    ],
 )
-
