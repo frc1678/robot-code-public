@@ -219,48 +219,49 @@ void SuperStructure::SetWpilibOutput() {
   const auto driver_station =
       QueueManager::GetInstance().driver_station_queue()->ReadLastMessage();
 
+  bool enable_outputs = true;
   if (driver_station) {
     auto robot_state = driver_station.value();
-    bool enable_outputs = !(robot_state->mode() == RobotMode::DISABLED ||
+    enable_outputs = !(robot_state->mode() == RobotMode::DISABLED ||
                             robot_state->mode() == RobotMode::ESTOP ||
                             robot_state->brownout());
+  }
 
-    if (ground_gear_input) {
-      auto ground_gear_intake_output =
-          ground_gear_intake_.Update(ground_gear_input.value(), enable_outputs);
-      wpilib_output->set_ground_gear_down(ground_gear_intake_output->intake_down());
-      wpilib_output->set_ground_gear_voltage(ground_gear_intake_output->roller_voltage());
+  if (ground_gear_input) {
+    auto ground_gear_intake_output =
+        ground_gear_intake_.Update(ground_gear_input.value(), enable_outputs);
+    wpilib_output->set_ground_gear_down(ground_gear_intake_output->intake_down());
+    wpilib_output->set_ground_gear_voltage(ground_gear_intake_output->roller_voltage());
+  }
+
+  if (climber_goal_->climbing()) {
+    if (climber_input) {
+      auto climber_output = climber_.Update(climber_input.value(), enable_outputs);
+      wpilib_output->set_shooter_voltage(climber_output->voltage());
     }
+  } else {
+    if (shooter_input) {
+      auto shooter_output = shooter_.Update(shooter_input.value(), enable_outputs);
+      wpilib_output->set_shooter_hood_up(shooter_output->hood_solenoid());
+      wpilib_output->set_shooter_voltage(shooter_output->voltage());
+    }
+  }
 
-    if (climber_goal_->climbing()) {
-      if (climber_input) {
-        auto climber_output = climber_.Update(climber_input.value(), enable_outputs);
-        wpilib_output->set_shooter_voltage(climber_output->voltage());
-      }
+  if (magazine_input) {
+    auto magazine_output = magazine_.Update(magazine_input.value(), enable_outputs);
+    auto ground_ball_intake_output = ground_ball_intake_.Update(enable_outputs);
+    wpilib_output->set_gear_shutter_open(magazine_output->gear_shutter_open());
+    wpilib_output->set_upper_conveyor_voltage(magazine_output->upper_voltage());
+    wpilib_output->set_side_conveyor_voltage(magazine_output->side_voltage());
+    wpilib_output->set_hp_gear_open(!magazine_output->gear_intake_closed());
+    wpilib_output->set_magazine_open(magazine_output->magazine_extended());
+    wpilib_output->set_ball_intake_down(!ground_ball_intake_output->intake_up());
+    if (is_shooting_) {
+      // If shooting, we want to have the magazine run the lower conveyor
+      wpilib_output->set_main_roller_voltage(magazine_output->lower_voltage());
     } else {
-      if (shooter_input) {
-        auto shooter_output = shooter_.Update(shooter_input.value(), enable_outputs);
-        wpilib_output->set_shooter_hood_up(shooter_output->hood_solenoid());
-        wpilib_output->set_shooter_voltage(shooter_output->voltage());
-      }
-    }
-
-    if (magazine_input) {
-      auto magazine_output = magazine_.Update(magazine_input.value(), enable_outputs);
-      auto ground_ball_intake_output = ground_ball_intake_.Update(enable_outputs);
-      wpilib_output->set_gear_shutter_open(magazine_output->gear_shutter_open());
-      wpilib_output->set_upper_conveyor_voltage(magazine_output->upper_voltage());
-      wpilib_output->set_side_conveyor_voltage(magazine_output->side_voltage());
-      wpilib_output->set_hp_gear_open(!magazine_output->gear_intake_closed());
-      wpilib_output->set_magazine_open(magazine_output->magazine_extended());
-      wpilib_output->set_ball_intake_down(!ground_ball_intake_output->intake_up());
-      if (is_shooting_) {
-        // If shooting, we want to have the magazine run the lower conveyor
-        wpilib_output->set_main_roller_voltage(magazine_output->lower_voltage());
-      } else {
-        // If not shooting, the ball intake should control the lower conveyor
-        wpilib_output->set_main_roller_voltage(ground_ball_intake_output->roller_voltage());
-      }
+      // If not shooting, the ball intake should control the lower conveyor
+      wpilib_output->set_main_roller_voltage(ground_ball_intake_output->roller_voltage());
     }
   }
 
