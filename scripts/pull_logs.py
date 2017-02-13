@@ -10,6 +10,7 @@ parser.add_argument('--address', help='What IP address to fetch from. Not compat
 parser.add_argument('--user', default='admin', help='What user to log in as on the roboRIO')
 parser.add_argument('--remote-path', default='/media/sda1/logs/', help='What path to fetch logs from.')
 parser.add_argument('--local-path', default=None, help="What path to write logs to. Defaults to logs/[roborio address] in the repo's root")
+parser.add_argument('--num-logs', default=10, help="How many logs (from the current log) do you want to pull")
 
 args = parser.parse_args()
 
@@ -25,8 +26,19 @@ else:
     local_path = args.local_path
 subprocess.call(["mkdir", "-p", local_path])
 
+# Get directory names of the past n logs
+proc = subprocess.Popen(("ssh", "{user}@{address}".format(user=rio_user, address=rio_address), "ls", "-1", "{}".format(rio_path), "|", "grep" , "-E", "[0-9]{9}", "|", "tail" , "-n", "{}".format(args.num_logs)), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+stdout, stderr = proc.communicate()
+
+rsync_remote_path = []
+first_path = True;
+for line in stdout.split():
+    if first_path:
+        first_path = False
+        rsync_remote_path = ["{user}@{address}:{path}".format(user=rio_user, address=rio_address, path=line)]
+    rsync_remote_path.append(":" + rio_path + line + " ")
+
 rsync_args = ["--verbose", "--archive", "--times", "--human-readable", "--progress"]
-rsync_remote_path = "{user}@{address}:{path}".format(user=rio_user, address=rio_address, path=rio_path)
-rsync_command = ["rsync"] + rsync_args + [rsync_remote_path, local_path]
+rsync_command = ["rsync"] + rsync_args + rsync_remote_path + [local_path]
 
 subprocess.call(rsync_command)
