@@ -247,7 +247,7 @@ void SuperStructure::SetWpilibOutput() {
 
     if (magazine_input) {
       auto magazine_output = magazine_.Update(magazine_input.value(), driver_station.value());
-      auto ground_ball_intake_output = ground_ball_intake_.Update(driver_station.value());
+      auto ground_ball_intake_output = ground_ball_intake_.Update(enable_outputs);
       wpilib_output->set_gear_shutter_open(magazine_output->gear_shutter_open());
       wpilib_output->set_upper_conveyor_voltage(magazine_output->upper_voltage());
       wpilib_output->set_side_conveyor_voltage(magazine_output->side_voltage());
