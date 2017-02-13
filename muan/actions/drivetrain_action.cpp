@@ -1,5 +1,4 @@
 #include "muan/actions/drivetrain_action.h"
-#include <iostream>
 
 namespace muan {
 
