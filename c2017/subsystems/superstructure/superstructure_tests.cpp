@@ -92,12 +92,8 @@ TEST_F(SuperstructureTest, GearScoring) {
 
   auto superstructure_status = QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage();
 
-  if (superstructure_status) {
-    ASSERT_TRUE(superstructure_status);
-    EXPECT_TRUE(superstructure_status.value()->gear_scoring());
-  } else {
-    FAIL();
-  }
+  ASSERT_TRUE(superstructure_status);
+  EXPECT_TRUE(superstructure_status.value()->gear_scoring());
   Reset();
 }
 
@@ -116,12 +112,8 @@ TEST_F(SuperstructureTest, BallIntaking) {
 
   auto superstructure_status = QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage();
 
-  if (superstructure_status) {
-    ASSERT_TRUE(superstructure_status);
-    EXPECT_TRUE(superstructure_status.value()->ball_intaking());
-  } else {
-    FAIL();
-  }
+  ASSERT_TRUE(superstructure_status);
+  EXPECT_TRUE(superstructure_status.value()->ball_intaking());
   Reset();
 }
 
@@ -139,12 +131,8 @@ TEST_F(SuperstructureTest, BallReverse) {
 
   auto superstructure_status = QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage();
 
-  if (superstructure_status) {
-    ASSERT_TRUE(superstructure_status);
-    EXPECT_TRUE(superstructure_status.value()->ball_reverse());
-  } else {
-    FAIL();
-  }
+  ASSERT_TRUE(superstructure_status);
+  EXPECT_TRUE(superstructure_status.value()->ball_reverse());
   Reset();
 }
 
@@ -157,12 +145,8 @@ TEST_F(SuperstructureTest, ClimberTest) {
   superstructure.Update();
 
   auto superstructure_status = QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage();
-  if (superstructure_status) {
-    ASSERT_TRUE(superstructure_status);
-    EXPECT_TRUE(superstructure_status.value()->climbing());
-  } else {
-    FAIL();
-  }
+  ASSERT_TRUE(superstructure_status);
+  EXPECT_TRUE(superstructure_status.value()->climbing());
   Reset();
 }
 
@@ -183,12 +167,8 @@ TEST_F(SuperstructureTest, Shoot) {
 
   auto superstructure_status = QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage();
 
-  if (superstructure_status) {
-    ASSERT_TRUE(superstructure_status);
-    EXPECT_TRUE(superstructure_status.value()->shooting());
-  } else {
-    FAIL();
-  }
+  ASSERT_TRUE(superstructure_status);
+  EXPECT_TRUE(superstructure_status.value()->shooting());
   Reset();
 }
 
