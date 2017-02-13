@@ -123,51 +123,54 @@ void DrivetrainAction::ExecuteDrive(DrivetrainActionParams params) {
   double left_distance =
       params.desired_forward_distance - params.desired_angular_displacement * properties_.wheelbase_radius;
 
-  if (std::abs(params.desired_forward_distance) > std::abs(params.desired_angular_displacement)) {
-    // da / df = va / vf = aa / af
-    double dratio = std::abs(params.desired_angular_displacement / params.desired_forward_distance);
-
-    // Calculate max velocities
+  if (params.literal_constraints) {
     max_forward_velocity_ = properties_.max_forward_velocity;
-    max_angular_velocity_ = dratio * max_forward_velocity_;
-    if (max_angular_velocity_ > properties_.max_angular_velocity) {
-      double vratio = properties_.max_angular_velocity / max_angular_velocity_;
-      max_forward_velocity_ *= vratio;
-      max_angular_velocity_ = properties_.max_angular_velocity;
-    }
-
-    // Calculate max accelerations
     max_forward_acceleration_ = properties_.max_forward_acceleration;
-    max_angular_acceleration_ = dratio * max_forward_acceleration_;
-    if (max_angular_acceleration_ > properties_.max_angular_acceleration) {
-      double aratio = properties_.max_angular_acceleration / max_angular_acceleration_;
-      max_forward_acceleration_ *= aratio;
-      max_angular_acceleration_ = properties_.max_angular_acceleration;
-    }
-  } else if (std::abs(params.desired_angular_displacement) > std::abs(params.desired_forward_distance)) {
-    // da / df = va / vf = aa / af
-    double dratio = std::abs(params.desired_forward_distance / params.desired_angular_displacement);
-
-    // Calculate max velocities
     max_angular_velocity_ = properties_.max_angular_velocity;
-    max_forward_velocity_ = dratio * max_angular_velocity_;
-    if (max_forward_velocity_ > properties_.max_forward_velocity) {
-      double vratio = properties_.max_forward_velocity / max_forward_velocity_;
-      max_angular_velocity_ *= vratio;
-      max_forward_velocity_ = properties_.max_forward_velocity;
-    }
-
-    // Calculate max accelerations
     max_angular_acceleration_ = properties_.max_angular_acceleration;
-    max_forward_acceleration_ = dratio * max_angular_acceleration_;
-    if (max_forward_acceleration_ > properties_.max_forward_acceleration) {
-      double aratio = properties_.max_forward_acceleration / max_forward_acceleration_;
-      max_angular_acceleration_ *= aratio;
-      max_forward_acceleration_ = properties_.max_forward_acceleration;
-    }
-  }
+  } else {
+    if (std::abs(params.desired_forward_distance) > std::abs(params.desired_angular_displacement)) {
+      // da / df = va / vf = aa / af
+      double dratio = std::abs(params.desired_angular_displacement / params.desired_forward_distance);
 
-  std::cout << params.desired_forward_distance << " " << params.desired_angular_displacement << " " << max_forward_velocity_ << " " << max_forward_acceleration_ << " " << max_angular_velocity_ << " " << max_angular_acceleration_ << std::endl;
+      // Calculate max velocities
+      max_forward_velocity_ = properties_.max_forward_velocity;
+      max_angular_velocity_ = dratio * max_forward_velocity_;
+
+      // Calculate max accelerations
+      max_forward_acceleration_ = properties_.max_forward_acceleration;
+      max_angular_acceleration_ = dratio * max_forward_acceleration_;
+    } else if (std::abs(params.desired_angular_displacement) > std::abs(params.desired_forward_distance)) {
+      // da / df = va / vf = aa / af
+      double dratio = std::abs(params.desired_forward_distance / params.desired_angular_displacement);
+
+      // Calculate max velocities
+      max_angular_velocity_ = properties_.max_angular_velocity;
+      max_forward_velocity_ = dratio * max_angular_velocity_;
+
+      // Calculate max accelerations
+      max_angular_acceleration_ = properties_.max_angular_acceleration;
+      max_forward_acceleration_ = dratio * max_angular_acceleration_;
+    } else {
+      double dratio = 1.0;
+
+      max_angular_velocity_ = properties_.max_angular_velocity;
+      max_forward_velocity_ = dratio * max_angular_velocity_;
+
+      max_angular_acceleration_ = properties_.max_angular_acceleration;
+      max_forward_acceleration_ = dratio * max_angular_acceleration_;
+    }
+
+    double velocity_overkill = max_forward_velocity_ / properties_.max_forward_velocity +
+                               max_angular_velocity_ / properties_.max_angular_velocity;
+    max_forward_velocity_ /= velocity_overkill;
+    max_angular_velocity_ /= velocity_overkill;
+
+    double acceleration_overkill = max_forward_acceleration_ / properties_.max_forward_acceleration +
+                                   max_angular_acceleration_ / properties_.max_angular_acceleration;
+    max_forward_acceleration_ /= acceleration_overkill;
+    max_angular_acceleration_ /= acceleration_overkill;
+  }
 
   // If max_velocity_ is zero, then the profile isn't actually doing anything. However, 971's trapezoidal
   // motion code doesn't support constraints being zero, so as a workaround, set them to some dummy values

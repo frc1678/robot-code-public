@@ -40,6 +40,10 @@ struct DrivetrainActionParams {
   // completes.
   bool closed_loop_termination{true};
 
+  // True means to avoid doing any calculations on the constraints and to just tell the robot to use the
+  // constraints specified in the properties.
+  bool literal_constraints{false};
+
   // The termination condition. Ignored if closed_loop_termination is false.
   DrivetrainTermination termination{0.02, 0.02, 0.04, 0.02};
 };
