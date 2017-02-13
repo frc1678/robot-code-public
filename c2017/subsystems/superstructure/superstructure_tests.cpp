@@ -201,4 +201,22 @@ TEST_F(SuperstructureTest, Shoot) {
   Reset();
 }
 
+TEST_F(SuperstructureTest, HPGearScoring) {
+  ds->set_mode(RobotMode::TELEOP);
+  shooter_status_proto->set_at_goal(true);
+
+  intake_group_goal_proto->set_score_hp_gear(true);
+
+  WriteQueues();
+
+  superstructure.Update();
+
+  auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
+
+  ASSERT_TRUE(superstructure_output);
+  EXPECT_TRUE(superstructure_output.value()->gear_shutter_open());
+
+  Reset();
+}
+
 }  // namespace c2017

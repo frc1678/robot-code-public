@@ -11,7 +11,7 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input, muan::wpilib::Dri
   double lower_voltage = 0;
   bool gear_intake_closed = true;
 
-  double gear_shutter_open = score_gear_;
+  bool gear_shutter_open = score_gear_;
 
   bool enable_outputs = !(robot_state->mode() == RobotMode::DISABLED ||
                           robot_state->mode() == RobotMode::ESTOP || robot_state->brownout());
