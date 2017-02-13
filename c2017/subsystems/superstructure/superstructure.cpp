@@ -227,13 +227,15 @@ void SuperStructure::SetWpilibOutput() {
       wpilib_output->set_ground_gear_voltage(ground_gear_intake_output->roller_voltage());
     }
 
-    if (shooter_input && climber_input) {
-      auto shooter_output = shooter_.Update(shooter_input.value(), driver_station.value());
-      auto climber_output = climber_.Update(climber_input.value(), driver_station.value());
-      wpilib_output->set_shooter_hood_up(shooter_output->hood_solenoid());
-      if (climber_goal_->climbing()) {
+    if (climber_goal_->climbing()) {
+      if (climber_input) {
+        auto climber_output = climber_.Update(climber_input.value(), driver_station.value());
         wpilib_output->set_shooter_voltage(climber_output->voltage());
-      } else {
+      }
+    } else {
+      if (shooter_input) {
+        auto shooter_output = shooter_.Update(shooter_input.value(), driver_station.value());
+        wpilib_output->set_shooter_hood_up(shooter_output->hood_solenoid());
         wpilib_output->set_shooter_voltage(shooter_output->voltage());
       }
     }
