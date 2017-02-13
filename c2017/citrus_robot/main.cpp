@@ -6,7 +6,11 @@
 namespace c2017 {
 namespace citrus_robot {
 
-CitrusRobot::CitrusRobot() : throttle_{1}, wheel_{0}, gamepad_{2} {
+CitrusRobot::CitrusRobot()
+    : throttle_{1, &QueueManager::GetInstance().throttle_status_queue(),
+                muan::teleop::JoystickType::THROTTLE},
+      wheel_{0, &QueueManager::GetInstance().wheel_status_queue(), muan::teleop::JoystickType::WHEEL},
+      gamepad_{2, &QueueManager::GetInstance().manipulator_status_queue(), muan::teleop::JoystickType::XBOX} {
   shifting_low_ = throttle_.MakeButton(4);
   shifting_high_ = throttle_.MakeButton(5);
   quickturn_ = wheel_.MakeButton(5);
@@ -49,19 +53,17 @@ void CitrusRobot::SendDSMessage() {
 }
 
 void CitrusRobot::SendDrivetrainMessage() {
-    frc971::control_loops::drivetrain::GoalProto drivetrain_goal;
+  frc971::control_loops::drivetrain::GoalProto drivetrain_goal;
 
-    double throttle = -throttle_.wpilib_joystick()->GetRawAxis(1);
-    double wheel = -wheel_.wpilib_joystick()->GetRawAxis(0);
-    bool quickturn = quickturn_->is_pressed();
+  double throttle = -throttle_.wpilib_joystick()->GetRawAxis(1);
+  double wheel = -wheel_.wpilib_joystick()->GetRawAxis(0);
+  bool quickturn = quickturn_->is_pressed();
 
-    drivetrain_goal->mutable_teleop_command()->set_steering(wheel);
-    drivetrain_goal->mutable_teleop_command()->set_throttle(throttle);
-    drivetrain_goal->mutable_teleop_command()->set_quick_turn(quickturn);
+  drivetrain_goal->mutable_teleop_command()->set_steering(wheel);
+  drivetrain_goal->mutable_teleop_command()->set_throttle(throttle);
+  drivetrain_goal->mutable_teleop_command()->set_quick_turn(quickturn);
 
-    c2017::QueueManager::GetInstance()
-        .drivetrain_goal_queue()
-        ->WriteMessage(drivetrain_goal);
+  c2017::QueueManager::GetInstance().drivetrain_goal_queue()->WriteMessage(drivetrain_goal);
 }
 
 }  // namespace citrus_robot
