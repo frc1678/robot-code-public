@@ -206,13 +206,19 @@ void SuperStructure::UpdateIntake() {
 
 void SuperStructure::SetWpilibOutput() {
   wpilib::WpilibOutputProto wpilib_output;
-  const auto ground_gear_input = QueueManager::GetInstance().ground_gear_input_queue().ReadLastMessage();
-  const auto magazine_input = QueueManager::GetInstance().magazine_input_queue().ReadLastMessage();
-  const auto shooter_input = QueueManager::GetInstance().shooter_input_queue().ReadLastMessage();
-  const auto climber_input = QueueManager::GetInstance().climber_input_queue().ReadLastMessage();
-  const auto climber_status = QueueManager::GetInstance().climber_status_queue().ReadLastMessage();
+  const auto ground_gear_input =
+      QueueManager::GetInstance().ground_gear_input_queue().ReadLastMessage();
+  const auto magazine_input =
+      QueueManager::GetInstance().magazine_input_queue().ReadLastMessage();
+  const auto shooter_input =
+      QueueManager::GetInstance().shooter_input_queue().ReadLastMessage();
+  const auto climber_input =
+      QueueManager::GetInstance().climber_input_queue().ReadLastMessage();
+  const auto climber_status =
+      QueueManager::GetInstance().climber_status_queue().ReadLastMessage();
+  const auto driver_station =
+      QueueManager::GetInstance().driver_station_queue()->ReadLastMessage();
 
-  const auto driver_station = QueueManager::GetInstance().driver_station_queue()->ReadLastMessage();
   if (ground_gear_input && driver_station) {
     auto ground_gear_intake_output =
         ground_gear_intake_.Update(ground_gear_input.value(), driver_station.value());
