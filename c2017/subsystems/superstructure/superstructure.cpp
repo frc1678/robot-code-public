@@ -223,7 +223,7 @@ void SuperStructure::SetWpilibOutput() {
   if (shooter_input && driver_station && climber_input) {
     auto shooter_output = shooter_.Update(shooter_input.value(), driver_station.value());
     auto climber_output = climber_.Update(climber_input.value(), driver_station.value());
-    wpilib_output->set_shooter_hood_up(shooter_goal_->goal_mode());
+    wpilib_output->set_shooter_hood_up(shooter_output->hood_solenoid());
     if (climber_goal_->climbing()) {
       wpilib_output->set_shooter_voltage(climber_output->voltage());
     } else {

@@ -54,7 +54,7 @@ TEST(ShooterControllerTest, PositiveVelocity) {
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
 
     EXPECT_NEAR(output->voltage(), 0., 12.);
-    EXPECT_TRUE(output->hood_solenoid());
+    EXPECT_FALSE(output->hood_solenoid());
   }
   if (status) {
     EXPECT_NEAR(status.value()->observed_velocity(), 300, 10);
@@ -97,7 +97,7 @@ TEST(ShooterControllerTest, CantTakeNegativeVoltage) {
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
 
     EXPECT_NEAR(output->voltage(), 0., 12.);
-    EXPECT_TRUE(output->hood_solenoid());
+    EXPECT_FALSE(output->hood_solenoid());
   }
 
   EXPECT_EQ(output->voltage(), 0);
@@ -142,7 +142,7 @@ TEST(ShooterControllerTest, CanStop) {
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
 
     EXPECT_NEAR(output->voltage(), 0., 12.);
-    EXPECT_TRUE(output->hood_solenoid());
+    EXPECT_FALSE(output->hood_solenoid());
   }
 
   if (status) {
@@ -178,7 +178,7 @@ TEST(ShooterControllerTest, FenderMode) {
 
   plant.Update((Eigen::Matrix<double, 1, 1>() << 0.).finished());
 
-  EXPECT_TRUE(output->hood_solenoid());
+  EXPECT_FALSE(output->hood_solenoid());
   EXPECT_EQ(goal->goal_mode(), c2017::shooter::ShotMode::FENDER);
 
   EXPECT_NEAR(plant.x(0), 0, 1e-5);
@@ -212,7 +212,7 @@ TEST(ShooterControllerTest, HopperMode) {
 
   plant.Update((Eigen::Matrix<double, 1, 1>() << 0.).finished());
 
-  EXPECT_FALSE(output->hood_solenoid());
+  EXPECT_TRUE(output->hood_solenoid());
   EXPECT_EQ(goal->goal_mode(), c2017::shooter::ShotMode::HOPPER);
 
   EXPECT_NEAR(plant.x(0), 0, 1e-5);
