@@ -77,7 +77,7 @@ TEST_F(SuperstructureTest, GearIntaking) {
   Reset();
 }
 
-TEST_F(SuperstructureTest, GearScoring) {
+TEST_F(SuperstructureTest, GroundGearScoring) {
   ds->set_mode(RobotMode::TELEOP);
   shooter_status_proto->set_at_goal(true);
 
@@ -94,6 +94,13 @@ TEST_F(SuperstructureTest, GearScoring) {
 
   ASSERT_TRUE(superstructure_status);
   EXPECT_TRUE(superstructure_status.value()->gear_scoring());
+
+  auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
+
+  ASSERT_TRUE(superstructure_output);
+  EXPECT_NEAR(superstructure_output.value()->ground_gear_voltage(), -12, 1e-4);
+  EXPECT_FALSE(superstructure_output.value()->ground_gear_down());
+
   Reset();
 }
 
