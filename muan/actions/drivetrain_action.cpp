@@ -76,9 +76,11 @@ bool DrivetrainAction::IsTerminated() {
     auto status = maybe_status.value();
 
     if (!closed_loop_termination_) {
-      left_complete_ |= muan::utils::ordered(last_left_, goal_left_, status->profiled_left_position_goal());
+      left_complete_ |= muan::utils::ordered(last_left_, goal_left_, status->profiled_left_position_goal()) ||
+                        std::abs(status->profiled_left_position_goal() - goal_left_) < termination_.forward;
       right_complete_ |=
-          muan::utils::ordered(last_right_, goal_right_, status->profiled_right_position_goal());
+          muan::utils::ordered(last_right_, goal_right_, status->profiled_right_position_goal()) ||
+          std::abs(status->profiled_right_position_goal() - goal_right_) < termination_.forward;
       last_left_ = status->profiled_left_position_goal();
       last_right_ = status->profiled_right_position_goal();
       return left_complete_ && right_complete_;
