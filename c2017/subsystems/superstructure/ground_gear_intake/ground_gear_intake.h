@@ -12,8 +12,7 @@ namespace ground_gear_intake {
 class GroundGearIntake {
  public:
   GroundGearIntake() = default;
-  GroundGearIntakeOutputProto Update(GroundGearIntakeInputProto input,
-                                     muan::wpilib::DriverStationProto robot_state);
+  GroundGearIntakeOutputProto Update(GroundGearIntakeInputProto input, bool enabled);
   void SetGoal(GroundGearIntakeGoalProto goal);
 
  private:

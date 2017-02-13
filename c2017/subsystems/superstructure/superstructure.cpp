@@ -227,7 +227,7 @@ void SuperStructure::SetWpilibOutput() {
 
     if (ground_gear_input) {
       auto ground_gear_intake_output =
-          ground_gear_intake_.Update(ground_gear_input.value(), driver_station.value());
+          ground_gear_intake_.Update(ground_gear_input.value(), enable_outputs);
       wpilib_output->set_ground_gear_down(ground_gear_intake_output->intake_down());
       wpilib_output->set_ground_gear_voltage(ground_gear_intake_output->roller_voltage());
     }

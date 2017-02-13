@@ -7,13 +7,7 @@ class GroundGearIntakeTest : public ::testing::Test {
   void Update(double current, bool robot_disabled) {
     for (int i = 0; i < 1000; i++) {
       input->set_current(current);
-      if (robot_disabled) {
-        robot_state->set_mode(RobotMode::DISABLED);  //  for testing purposes
-      } else {
-        robot_state->set_mode(RobotMode::TELEOP);
-      }
-      robot_state->set_brownout(false);
-      output = gear_intake.Update(input, robot_state);
+      output = gear_intake.Update(input, !robot_disabled);
     }
   }
 
@@ -29,7 +23,6 @@ class GroundGearIntakeTest : public ::testing::Test {
   c2017::ground_gear_intake::GroundGearIntake gear_intake;
   c2017::ground_gear_intake::GroundGearIntakeInputProto input;
   c2017::ground_gear_intake::GroundGearIntakeGoalProto goal;
-  muan::wpilib::DriverStationProto robot_state;
   c2017::ground_gear_intake::GroundGearIntakeOutputProto output;
   // put in any custom data members that you need
 };
