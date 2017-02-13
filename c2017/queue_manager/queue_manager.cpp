@@ -77,8 +77,7 @@ c2017::wpilib::WpilibOutputQueue& QueueManager::superstructure_output_queue() {
   return superstructure_output_queue_;
 }
 
-c2017::superstructure::SuperstructureStatusQueue&
-QueueManager::superstructure_status_queue() {
+c2017::superstructure::SuperstructureStatusQueue& QueueManager::superstructure_status_queue() {
   return superstructure_status_queue_;
 }
 
