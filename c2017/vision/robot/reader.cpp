@@ -18,7 +18,7 @@ void VisionReader::operator()() {
   aos::SetCurrentThreadName("VisionReader");
 
   aos::vision::RXUdpSocket read_socket(1678);
-  void* buffer = malloc(1024);
+  char buffer[1024];
   running_ = true;
 
   while (running_) {
