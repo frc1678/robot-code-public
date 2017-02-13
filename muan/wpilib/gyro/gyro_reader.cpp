@@ -1,5 +1,6 @@
 #include "muan/wpilib/gyro/gyro_reader.h"
 #include "third_party/aos/common/util/phased_loop.h"
+#include "third_party/aos/linux_code/init.h"
 
 // Gyro datasheet:
 // http://www.analog.com/media/en/technical-documentation/data-sheets/ADXRS453.pdf
@@ -18,6 +19,9 @@ GyroReader::GyroReader(GyroQueue* queue, int calib_time, bool invert) :
 void GyroReader::Reset() { should_reset_ = true; }
 
 void GyroReader::operator()() {
+  aos::SetCurrentThreadRealtimePriority(30);
+  aos::SetCurrentThreadName("Gyro");
+
   if (gyro_queue_ == nullptr) {
     aos::Die(
         "Please supply a queue to the gyro reader - otherwise there's no "
