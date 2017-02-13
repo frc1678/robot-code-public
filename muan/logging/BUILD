@@ -47,7 +47,8 @@ cc_library(
     hdrs = ["filewriter.h"],
     deps = [
         "//third_party/boost:filesystem",
-        "//third_party/gflags:gflags"],
+        "//third_party/gflags:gflags"
+    ],
 )
 
 cc_library(
