@@ -42,11 +42,11 @@ class SuperStructure {
 
   bool is_shooting_ = false;
 
-  void SetWpilibOutput();
   void UpdateShooter();
-  void UpdateIntake();
   void Shoot(const c2017::shooter::ShooterStatusProto& s_s);
   void Spinup(const c2017::shooter_group::ShooterGroupGoalProto& s_g);
+  void UpdateIntake();
+  void SetWpilibOutput();
 };
 
 }  // namespace superstructure

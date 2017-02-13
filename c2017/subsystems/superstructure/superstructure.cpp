@@ -11,6 +11,76 @@ constexpr double kHopperVelocity = 3000 * (M_PI * 2) / 60;
 
 SuperStructure::SuperStructure() {}
 
+void SuperStructure::Update() {
+  UpdateShooter();
+  UpdateIntake();
+
+  ground_gear_intake_.SetGoal(ground_gear_intake_goal_);
+  magazine_.SetGoal(magazine_goal_);
+  ground_ball_intake_.set_goal(ground_ball_intake_goal_);
+  shooter_.SetGoal(shooter_goal_);
+
+  SetWpilibOutput();
+  QueueManager::GetInstance().superstructure_status_queue().WriteMessage(superstructure_status_proto_);
+}
+
+void SuperStructure::UpdateShooter() {
+  auto shooter_group_goal = QueueManager::GetInstance().shooter_group_goal_queue().ReadLastMessage();
+  auto shooter_status = QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+
+  if (shooter_group_goal && shooter_status) {
+    // MUST call spinup before you call shoot
+    switch (shooter_group_goal.value()->wheel()) {
+      case c2017::shooter_group::Wheel::BOTH:
+        Spinup(shooter_group_goal.value());
+        Shoot(shooter_status.value());
+        break;
+      case c2017::shooter_group::Wheel::SHOOT:
+        Shoot(shooter_status.value());
+        break;
+      case c2017::shooter_group::Wheel::SPINUP:
+        Spinup(shooter_group_goal.value());
+        break;
+      case c2017::shooter_group::Wheel::IDLE:
+        magazine_goal_->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
+        magazine_goal_->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
+        magazine_goal_->set_lower_goal(c2017::magazine::LowerGoalState::LOWER_IDLE);
+        superstructure_status_proto_->set_shooting(false);
+        shooter_goal_->set_goal_velocity(0.0);
+        break;
+    }
+
+    superstructure_status_proto_->set_shooting(is_shooting_);
+
+    // Climbing!
+    superstructure_status_proto_->set_climbing(shooter_group_goal.value()->should_climb());
+    magazine_goal_->set_magazine_extended(!shooter_group_goal.value()->should_climb());
+    climber_goal_->set_climbing(shooter_group_goal.value()->should_climb());
+  }
+}
+
+void SuperStructure::Shoot(const c2017::shooter::ShooterStatusProto& shooter_status) {
+  if (shooter_status->at_goal() && shooter_status->currently_running()) {
+    magazine_goal_->set_side_goal(c2017::magazine::SideGoalState::SIDE_PULL_IN);
+    magazine_goal_->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_FORWARD);
+    magazine_goal_->set_lower_goal(c2017::magazine::LowerGoalState::LOWER_FORWARD);
+    is_shooting_ = true;
+  } else {  // Shooter not at speed
+    is_shooting_ = false;
+    magazine_goal_->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
+  }
+}
+
+void SuperStructure::Spinup(const c2017::shooter_group::ShooterGroupGoalProto& shooter_group_goal) {
+  if (shooter_group_goal->position() == c2017::shooter_group::Position::FENDER) {
+    shooter_goal_->set_goal_mode(c2017::shooter::ShotMode::FENDER);
+    shooter_goal_->set_goal_velocity(kFenderVelocity);
+  } else if (shooter_group_goal->position() == c2017::shooter_group::Position::HOPPER) {
+    shooter_goal_->set_goal_mode(c2017::shooter::ShotMode::HOPPER);
+    shooter_goal_->set_goal_velocity(kHopperVelocity);
+  }
+}
+
 void SuperStructure::UpdateIntake() {
   // Reading the group goal queues
   auto intake_group_goal = QueueManager::GetInstance().intake_group_goal_queue().ReadLastMessage();
@@ -180,76 +250,6 @@ void SuperStructure::SetWpilibOutput() {
   }
 
   QueueManager::GetInstance().superstructure_output_queue().WriteMessage(wpilib_output);
-}
-
-void SuperStructure::UpdateShooter() {
-  auto shooter_group_goal = QueueManager::GetInstance().shooter_group_goal_queue().ReadLastMessage();
-  auto shooter_status = QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
-
-  if (shooter_group_goal && shooter_status) {
-    // MUST call spinup before you call shoot
-    switch (shooter_group_goal.value()->wheel()) {
-      case c2017::shooter_group::Wheel::BOTH:
-        Spinup(shooter_group_goal.value());
-        Shoot(shooter_status.value());
-        break;
-      case c2017::shooter_group::Wheel::SHOOT:
-        Shoot(shooter_status.value());
-        break;
-      case c2017::shooter_group::Wheel::SPINUP:
-        Spinup(shooter_group_goal.value());
-        break;
-      case c2017::shooter_group::Wheel::IDLE:
-        magazine_goal_->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
-        magazine_goal_->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
-        magazine_goal_->set_lower_goal(c2017::magazine::LowerGoalState::LOWER_IDLE);
-        superstructure_status_proto_->set_shooting(false);
-        shooter_goal_->set_goal_velocity(0.0);
-        break;
-    }
-
-    superstructure_status_proto_->set_shooting(is_shooting_);
-
-    // Climbing!
-    superstructure_status_proto_->set_climbing(shooter_group_goal.value()->should_climb());
-    magazine_goal_->set_magazine_extended(!shooter_group_goal.value()->should_climb());
-    climber_goal_->set_climbing(shooter_group_goal.value()->should_climb());
-  }
-}
-
-void SuperStructure::Update() {
-  UpdateShooter();
-  UpdateIntake();
-
-  ground_gear_intake_.SetGoal(ground_gear_intake_goal_);
-  magazine_.SetGoal(magazine_goal_);
-  ground_ball_intake_.set_goal(ground_ball_intake_goal_);
-  shooter_.SetGoal(shooter_goal_);
-
-  SetWpilibOutput();
-  QueueManager::GetInstance().superstructure_status_queue().WriteMessage(superstructure_status_proto_);
-}
-
-void SuperStructure::Shoot(const c2017::shooter::ShooterStatusProto& shooter_status) {
-  if (shooter_status->at_goal() && shooter_status->currently_running()) {
-    magazine_goal_->set_side_goal(c2017::magazine::SideGoalState::SIDE_PULL_IN);
-    magazine_goal_->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_FORWARD);
-    magazine_goal_->set_lower_goal(c2017::magazine::LowerGoalState::LOWER_FORWARD);
-    is_shooting_ = true;
-  } else {  // Shooter not at speed
-    is_shooting_ = false;
-    magazine_goal_->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
-  }
-}
-
-void SuperStructure::Spinup(const c2017::shooter_group::ShooterGroupGoalProto& shooter_group_goal) {
-  if (shooter_group_goal->position() == c2017::shooter_group::Position::FENDER) {
-    shooter_goal_->set_goal_mode(c2017::shooter::ShotMode::FENDER);
-    shooter_goal_->set_goal_velocity(kFenderVelocity);
-  } else if (shooter_group_goal->position() == c2017::shooter_group::Position::HOPPER) {
-    shooter_goal_->set_goal_mode(c2017::shooter::ShotMode::HOPPER);
-    shooter_goal_->set_goal_velocity(kHopperVelocity);
-  }
 }
 
 }  // namespace superstructure
