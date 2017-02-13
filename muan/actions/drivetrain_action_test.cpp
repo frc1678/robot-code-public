@@ -1,5 +1,5 @@
-#include <memory>
 #include "muan/actions/drivetrain_action.h"
+#include <memory>
 #include "gtest/gtest.h"
 
 using namespace muan::actions;  // NOLINT
@@ -21,15 +21,18 @@ class DrivetrainActionTest : public ::testing::Test {
     status_queue.WriteMessage(status);
   }
 
-  void CheckGoal(double left, double right, double left_velocity = 0.0, double right_velocity = 0.0) {
+  void CheckGoal(double left, double right, double left_velocity = 0.0, double right_velocity = 0.0,
+                 double left_acceleration = 1.0, double right_acceleration = 1.0) {
     auto maybe_goal = goal_queue.MakeReader().ReadLastMessage();
     EXPECT_TRUE(maybe_goal);
     auto goal = maybe_goal.value();
     EXPECT_TRUE(goal->has_distance_command());
-    EXPECT_EQ(goal->distance_command().left_goal(), left);
-    EXPECT_EQ(goal->distance_command().right_goal(), right);
-    EXPECT_EQ(goal->distance_command().left_velocity_goal(), left_velocity);
-    EXPECT_EQ(goal->distance_command().right_velocity_goal(), right_velocity);
+    EXPECT_EQ(goal->distance_command().left_goal(),
+              left + left_velocity * left_velocity / left_acceleration / 2.0);
+    EXPECT_EQ(goal->distance_command().right_goal(),
+              right + right_velocity * right_velocity / right_acceleration / 2.0);
+    EXPECT_EQ(goal->distance_command().left_velocity_goal(), 0);
+    EXPECT_EQ(goal->distance_command().right_velocity_goal(), 0);
   }
 };
 
@@ -212,7 +215,7 @@ TEST_F(DrivetrainActionTest, FollowThrough) {
   action.ExecuteDrive(params);
 
   EXPECT_TRUE(action.Update());
-  CheckGoal(1.0, 1.0, 1.0, 1.0);
+  CheckGoal(1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
   WriteStatus(0.0, 0.0, 1.0, 1.0);
   EXPECT_FALSE(action.Update());
 }
