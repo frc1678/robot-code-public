@@ -219,39 +219,41 @@ void SuperStructure::SetWpilibOutput() {
   const auto driver_station =
       QueueManager::GetInstance().driver_station_queue()->ReadLastMessage();
 
-  if (ground_gear_input && driver_station) {
-    auto ground_gear_intake_output =
-        ground_gear_intake_.Update(ground_gear_input.value(), driver_station.value());
-    wpilib_output->set_ground_gear_down(ground_gear_intake_output->intake_down());
-    wpilib_output->set_ground_gear_voltage(ground_gear_intake_output->roller_voltage());
-  }
-
-  if (shooter_input && driver_station && climber_input) {
-    auto shooter_output = shooter_.Update(shooter_input.value(), driver_station.value());
-    auto climber_output = climber_.Update(climber_input.value(), driver_station.value());
-    wpilib_output->set_shooter_hood_up(shooter_output->hood_solenoid());
-    if (climber_goal_->climbing()) {
-      wpilib_output->set_shooter_voltage(climber_output->voltage());
-    } else {
-      wpilib_output->set_shooter_voltage(shooter_output->voltage());
+  if (driver_station) {
+    if (ground_gear_input) {
+      auto ground_gear_intake_output =
+          ground_gear_intake_.Update(ground_gear_input.value(), driver_station.value());
+      wpilib_output->set_ground_gear_down(ground_gear_intake_output->intake_down());
+      wpilib_output->set_ground_gear_voltage(ground_gear_intake_output->roller_voltage());
     }
-  }
 
-  if (magazine_input && driver_station) {
-    auto magazine_output = magazine_.Update(magazine_input.value(), driver_station.value());
-    auto ground_ball_intake_output = ground_ball_intake_.Update(driver_station.value());
-    wpilib_output->set_gear_shutter_open(magazine_output->gear_shutter_open());
-    wpilib_output->set_upper_conveyor_voltage(magazine_output->upper_voltage());
-    wpilib_output->set_side_conveyor_voltage(magazine_output->side_voltage());
-    wpilib_output->set_hp_gear_open(!magazine_output->gear_intake_closed());
-    wpilib_output->set_magazine_open(magazine_output->magazine_extended());
-    wpilib_output->set_ball_intake_down(!ground_ball_intake_output->intake_up());
-    if (is_shooting_) {
-      // If shooting, we want to have the magazine run the lower conveyor
-      wpilib_output->set_main_roller_voltage(magazine_output->lower_voltage());
-    } else {
-      // If not shooting, the ball intake should control the lower conveyor
-      wpilib_output->set_main_roller_voltage(ground_ball_intake_output->roller_voltage());
+    if (shooter_input && climber_input) {
+      auto shooter_output = shooter_.Update(shooter_input.value(), driver_station.value());
+      auto climber_output = climber_.Update(climber_input.value(), driver_station.value());
+      wpilib_output->set_shooter_hood_up(shooter_output->hood_solenoid());
+      if (climber_goal_->climbing()) {
+        wpilib_output->set_shooter_voltage(climber_output->voltage());
+      } else {
+        wpilib_output->set_shooter_voltage(shooter_output->voltage());
+      }
+    }
+
+    if (magazine_input) {
+      auto magazine_output = magazine_.Update(magazine_input.value(), driver_station.value());
+      auto ground_ball_intake_output = ground_ball_intake_.Update(driver_station.value());
+      wpilib_output->set_gear_shutter_open(magazine_output->gear_shutter_open());
+      wpilib_output->set_upper_conveyor_voltage(magazine_output->upper_voltage());
+      wpilib_output->set_side_conveyor_voltage(magazine_output->side_voltage());
+      wpilib_output->set_hp_gear_open(!magazine_output->gear_intake_closed());
+      wpilib_output->set_magazine_open(magazine_output->magazine_extended());
+      wpilib_output->set_ball_intake_down(!ground_ball_intake_output->intake_up());
+      if (is_shooting_) {
+        // If shooting, we want to have the magazine run the lower conveyor
+        wpilib_output->set_main_roller_voltage(magazine_output->lower_voltage());
+      } else {
+        // If not shooting, the ball intake should control the lower conveyor
+        wpilib_output->set_main_roller_voltage(ground_ball_intake_output->roller_voltage());
+      }
     }
   }
 
