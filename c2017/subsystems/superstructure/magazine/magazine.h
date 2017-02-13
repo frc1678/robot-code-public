@@ -12,7 +12,7 @@ namespace magazine {
 class Magazine {
  public:
   Magazine() = default;
-  MagazineOutputProto Update(MagazineInputProto input, muan::wpilib::DriverStationProto robot_state);
+  MagazineOutputProto Update(MagazineInputProto input, bool enabled);
   void SetGoal(MagazineGoalProto goal);
 
  private:
