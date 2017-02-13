@@ -5,7 +5,9 @@ include {
   "c2017/queue_manager/queue_manager.h"
 }
 
-global {}
+global {
+  bool should_attempt;
+}
 
 init {
   // If there is no vision connection don't bother running.
@@ -16,16 +18,20 @@ init {
       c2017::vision::VisionGoalProto goal;
       goal->set_should_align(true);
       c2017::QueueManager::GetInstance().vision_goal_queue().WriteMessage(goal);
-      return false;
+      should_attempt = true;
     } else {
-      return true;
+      should_attempt = false;
     }
   } else {
-    return true;
+    should_attempt = false;
   }
+  return true;
 }
 
 periodic {
+  if (!should_attempt) {
+    return true;
+  }
   auto status = c2017::QueueManager::GetInstance().vision_status_queue().MakeReader().ReadLastMessage();
   if (status) {
     if (status.value()->aligned()) {
