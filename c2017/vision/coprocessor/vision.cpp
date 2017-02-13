@@ -2,34 +2,34 @@
 #include <opencv2/opencv.hpp>
 #include <memory>
 #include <thread>
-#include "muan/vision/vision.h"
 
 namespace c2017 {
 namespace vision {
 
-double VisionScorer2017::GetScore(double, double /* unused */, double skew,
-                                  double width, double height, double fullness) {
+Vision2017::Vision2017(int camera_index)
+    : range_{cv::Scalar(0, 100, 0), cv::Scalar(120, 255, 120), CV_BGR2RGB},
+      constants_{1.28, 1, -.1, -.2, 1},
+      vision_{range_, shared_from_this(), constants_} {
+  cap_.open(camera_index);
+}
+
+double Vision2017::GetScore(double, double /* unused */, double skew, double width, double height,
+                            double fullness) {
   double base_score = std::log(width * height) / (1 + std::pow(fullness - 1, 2));
   double target_score = (base_score / (1 + skew));
   return target_score;
 }
 
-void VisionScorer2017::Morph(cv::Mat /* img */) {
+void Vision2017::Morph(cv::Mat /* img */) {
   // cv::erode(img, img, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 5), cv::Point(1, 2)));
   // cv::dilate(img, img, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1, 31), cv::Point(0, 15)));
 }
 
-void RunVision(int camera_index) {
-  cv::VideoCapture cap;
-  cap.open(camera_index);
-  muan::Vision::ColorRange range{cv::Scalar(0, 100, 0), cv::Scalar(120, 255, 120), CV_BGR2RGB};
-  muan::Vision::VisionConstants constants{1.28, 1, -.1, -.2, 1};
-  muan::Vision vision{range, std::make_shared<VisionScorer2017>(), constants};
+void Vision2017::operator()() {
   cv::Mat raw;
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   while (true) {
-    cap >> raw;
-    muan::Vision::VisionStatus status = vision.Update(raw);
+    cap_ >> raw;
+    muan::Vision::VisionStatus status = vision_.Update(raw);
     cv::imshow("vision", status.image_canvas);
     c2017::vision::VisionInputProto position;
     position->set_target_found(status.target_exists);
@@ -39,8 +39,6 @@ void RunVision(int camera_index) {
     }
     vision_queue.WriteMessage(position);
     cv::waitKey(1);
-    status.image_canvas.release();
-    raw.release();
   }
 }
 
