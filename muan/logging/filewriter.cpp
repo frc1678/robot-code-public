@@ -40,7 +40,8 @@ std::string FileWriter::GetBasePath() {
 
   std::cerr << "Could not find valid path for logging!\n"
                "Attempting to use /, but most likely no logs will be created.\n"
-               "If you are seeing this error while running tests, use `bazel test` instead of `bazel run`\n";
+               "If you are seeing this error while running tests, use `bazel test` instead of `bazel run`, "
+               "or pass --copt='-DFRC1678_NO_QUEUE_LOGGING'.\n";
   return "/";
 }
 
