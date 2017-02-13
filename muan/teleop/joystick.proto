@@ -18,9 +18,12 @@ message JoystickStatus {
   required bool button_ten = 11;
   required bool button_eleven = 12;
   required bool button_twelve = 13;
+  required bool button_thirteen = 14;
 
-  required double axis_one = 14;
-  required double axis_two = 15;
-  required double axis_three = 16;
-  required double axis_four = 17;
+  required double axis_one = 17;
+  required double axis_two = 18;
+  required double axis_three = 19;
+  required double axis_four = 20;
+  required double axis_five = 21;
+  required double axis_six = 22;
 }
