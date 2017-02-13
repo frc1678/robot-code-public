@@ -73,6 +73,7 @@ TEST_F(SuperstructureTest, GroundGearIntaking) {
   EXPECT_TRUE(superstructure_status.value()->gear_intaking());
   EXPECT_NE(superstructure_output.value()->ground_gear_voltage(), 0);
   EXPECT_TRUE(superstructure_output.value()->ground_gear_down());
+  EXPECT_FALSE(superstructure_output.value()->ball_intake_down());
 
   Reset();
 }
