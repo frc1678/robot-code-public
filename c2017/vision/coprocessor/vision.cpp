@@ -7,19 +7,17 @@
 namespace c2017 {
 namespace vision {
 
-class VisionScorer2017 : public muan::VisionScorer {
- public:
-  double GetScore(double, double /* unused */, double skew, double width, double height, double fullness) {
-    double base_score = std::log(width * height) / (1 + std::pow(fullness - 1, 2));
-    double target_score = (base_score / (1 + skew));
-    return target_score;
-  }
+double VisionScorer2017::GetScore(double, double /* unused */, double skew,
+                                  double width, double height, double fullness) {
+  double base_score = std::log(width * height) / (1 + std::pow(fullness - 1, 2));
+  double target_score = (base_score / (1 + skew));
+  return target_score;
+}
 
-  void Morph(cv::Mat /* img */) {
-    // cv::erode(img, img, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 5), cv::Point(1, 2)));
-    // cv::dilate(img, img, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1, 31), cv::Point(0, 15)));
-  }
-};
+void VisionScorer2017::Morph(cv::Mat /* img */) {
+  // cv::erode(img, img, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 5), cv::Point(1, 2)));
+  // cv::dilate(img, img, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1, 31), cv::Point(0, 15)));
+}
 
 void RunVision(int camera_index) {
   cv::VideoCapture cap;
