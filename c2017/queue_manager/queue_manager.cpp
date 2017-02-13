@@ -165,6 +165,10 @@ void QueueManager::Reset() {
 
   ground_ball_intake_status_queue_.Reset();
 
+  vision_input_queue_.Reset();
+  vision_status_queue_.Reset();
+  vision_goal_queue_.Reset();
+
   climber_goal_queue_.Reset();
   climber_input_queue_.Reset();
   climber_status_queue_.Reset();
