@@ -16,8 +16,7 @@ class Climber {
  public:
   Climber();
   void SetGoal(const ClimberGoalProto& goal);
-  ClimberOutputProto Update(const ClimberInputProto& input,
-                            const muan::wpilib::DriverStationProto& ds_status);
+  ClimberOutputProto Update(const ClimberInputProto& input, bool outputs_enabled);
   void Reset();
 
  private:

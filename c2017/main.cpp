@@ -8,9 +8,7 @@ class WpilibRobot : public IterativeRobot {
  public:
   WpilibRobot() { c2017::QueueManager::GetInstance().StartLogging(); }
 
-  void TeleopPeriodic() override { main_.Update(); }
-
-  void AutonomousPeriodic() override { main_.Update(); }
+  void RobotPeriodic() override { main_.Update(); }
 
  private:
   c2017::SubsystemRunner subsystem_runner_;

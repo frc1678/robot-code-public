@@ -18,6 +18,9 @@ message ShooterOutput {
 message ShooterStatus {
   required uint64 timestamp = 1;
   required double observed_velocity = 2; // Positive velocity = forwards
+  required double voltage = 3;
+  required bool at_goal = 4;
+  required bool currently_running = 5;
 }
 
 enum ShotMode {

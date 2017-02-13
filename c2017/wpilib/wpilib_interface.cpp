@@ -5,11 +5,14 @@
 namespace c2017 {
 namespace wpilib {
 
+DEFINE_int32(gyro_time, 10, "How long to calibrate the gyro for.");
+
 WpilibInterface::WpilibInterface()
     : can_{&QueueManager::GetInstance().pdp_status_queue()},
-      gyro_{QueueManager::GetInstance().gyro_queue(), true},
+      gyro_{QueueManager::GetInstance().gyro_queue(), FLAGS_gyro_time, true},
       drivetrain_{},
-      superstructure_{&can_} {
+      superstructure_{&can_},
+      lights_{} {
   std::thread can_thread(std::ref(can_));
   can_thread.detach();
 
@@ -20,6 +23,7 @@ WpilibInterface::WpilibInterface()
 void WpilibInterface::WriteActuators() {
   drivetrain_.WriteActuators();
   superstructure_.WriteActuators();
+  lights_.WriteActuators();
 }
 
 void WpilibInterface::ReadSensors() {

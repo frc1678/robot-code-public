@@ -21,7 +21,9 @@ class Joystick {
 
   void Update();
 
-  Button* MakeButton(uint32_t button);
+  muan::teleop::Button* MakeButton(uint32_t button);
+  muan::teleop::Button* MakePov(uint32_t pov, Pov position);
+  muan::teleop::Button* MakeAxis(uint32_t button);
 
   ::Joystick* wpilib_joystick();
 

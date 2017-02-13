@@ -5,6 +5,7 @@
 #include "muan/queues/message_queue.h"
 #include "c2017/subsystems/superstructure/intake_group.pb.h"
 #include "c2017/subsystems/superstructure/shooter_group.pb.h"
+#include "c2017/subsystems/superstructure/superstructure.pb.h"
 
 namespace c2017 {
 
@@ -23,6 +24,12 @@ using ShooterGroupGoalProto = muan::proto::StackProto<::c2017::shooter_group::Sh
 using ShooterGroupGoalQueue = muan::queues::MessageQueue<ShooterGroupGoalProto, 200>;
 
 }  // namespace shooter_group
+
+namespace superstructure {
+using SuperstructureStatusProto = muan::proto::StackProto<SuperstructureStatus, 256>;
+
+using SuperstructureStatusQueue = muan::queues::MessageQueue<SuperstructureStatusProto, 200>;
+}  // namespace superstructure
 
 }  // namespace c2017
 
