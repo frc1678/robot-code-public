@@ -21,10 +21,6 @@ class Teleop {
   bool high_gear_;
   muan::teleop::Button *shifting_high_, *shifting_low_;
   muan::teleop::Button* quickturn_;
-  muan::teleop::Button* drive_profile_;
-
-  bool running_action_{false};
-  muan::actions::DriveSCurveAction action_;
 
   void SendDSMessage();
   void SendDrivetrainMessage();

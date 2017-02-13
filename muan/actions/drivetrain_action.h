@@ -88,29 +88,6 @@ class DrivetrainAction {
   const frc971::control_loops::drivetrain::StatusQueue* const status_queue_;
 };
 
-class DriveSCurveAction : public DrivetrainAction {
- public:
-  DriveSCurveAction(DrivetrainProperties properties, frc971::control_loops::drivetrain::GoalQueue* gq,
-                    frc971::control_loops::drivetrain::StatusQueue* sq);
-
-  // Executes an S-curve style drive. This will make a shape similar to two connected arc-turns, one turning
-  // to the desired angular displacement and one turning back to zero. The total arc length of the turn will
-  // be equal to the desired forward distance. Finishing strong/open-loop termination will be set to true and
-  // false respectively for the first turn, and the values from the params will be applied to the second turn.
-  void ExecuteDrive(DrivetrainActionParams params);
-
-  bool Update() override;
-
-  bool FinishedFirst();
-
- private:
-  // Have we finished the first turn?
-  bool finished_first_{false};
-
-  // The final left and right positions for the drivetrain
-  double end_left_, end_right_;
-};
-
 }  // namespace actions
 
 }  // namespace muan
