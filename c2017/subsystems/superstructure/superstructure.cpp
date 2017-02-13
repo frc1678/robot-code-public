@@ -239,7 +239,7 @@ void SuperStructure::SetWpilibOutput() {
       }
     } else {
       if (shooter_input) {
-        auto shooter_output = shooter_.Update(shooter_input.value(), driver_station.value());
+        auto shooter_output = shooter_.Update(shooter_input.value(), enable_outputs);
         wpilib_output->set_shooter_hood_up(shooter_output->hood_solenoid());
         wpilib_output->set_shooter_voltage(shooter_output->voltage());
       }

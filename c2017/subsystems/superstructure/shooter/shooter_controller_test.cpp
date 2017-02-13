@@ -24,11 +24,8 @@ TEST(ShooterControllerTest, PositiveVelocity) {
   c2017::shooter::ShooterInputProto input;
   c2017::shooter::ShooterOutputProto output;
   c2017::shooter::ShooterGoalProto goal;
-  muan::wpilib::DriverStationProto ds;
 
   auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
-
-  ds->set_mode(RobotMode::TELEOP);
 
   c2017::shooter::ShooterController shooter_;
 
@@ -48,7 +45,7 @@ TEST(ShooterControllerTest, PositiveVelocity) {
 
     shooter_.SetGoal(goal);
 
-    output = shooter_.Update(input, ds);
+    output = shooter_.Update(input, true);
     status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
 
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
@@ -67,11 +64,8 @@ TEST(ShooterControllerTest, CantTakeNegativeVoltage) {
   c2017::shooter::ShooterInputProto input;
   c2017::shooter::ShooterOutputProto output;
   c2017::shooter::ShooterGoalProto goal;
-  muan::wpilib::DriverStationProto ds;
 
   auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
-
-  ds->set_mode(RobotMode::TELEOP);
 
   c2017::shooter::ShooterController shooter_;
 
@@ -91,7 +85,7 @@ TEST(ShooterControllerTest, CantTakeNegativeVoltage) {
 
     shooter_.SetGoal(goal);
 
-    output = shooter_.Update(input, ds);
+    output = shooter_.Update(input, true);
     status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
 
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
@@ -112,9 +106,6 @@ TEST(ShooterControllerTest, CanStop) {
   c2017::shooter::ShooterInputProto input;
   c2017::shooter::ShooterOutputProto output;
   c2017::shooter::ShooterGoalProto goal;
-  muan::wpilib::DriverStationProto ds;
-
-  ds->set_mode(RobotMode::TELEOP);
 
   c2017::shooter::ShooterController shooter_;
 
@@ -136,7 +127,7 @@ TEST(ShooterControllerTest, CanStop) {
 
     shooter_.SetGoal(goal);
 
-    output = shooter_.Update(input, ds);
+    output = shooter_.Update(input, true);
     status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
 
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
@@ -156,9 +147,6 @@ TEST(ShooterControllerTest, FenderMode) {
   c2017::shooter::ShooterInputProto input;
   c2017::shooter::ShooterOutputProto output;
   c2017::shooter::ShooterGoalProto goal;
-  muan::wpilib::DriverStationProto ds;
-
-  ds->set_mode(RobotMode::TELEOP);
 
   c2017::shooter::ShooterController shooter_;
 
@@ -174,7 +162,7 @@ TEST(ShooterControllerTest, FenderMode) {
 
   shooter_.SetGoal(goal);
 
-  output = shooter_.Update(input, ds);
+  output = shooter_.Update(input, true);
 
   plant.Update((Eigen::Matrix<double, 1, 1>() << 0.).finished());
 
@@ -190,9 +178,6 @@ TEST(ShooterControllerTest, HopperMode) {
   c2017::shooter::ShooterInputProto input;
   c2017::shooter::ShooterOutputProto output;
   c2017::shooter::ShooterGoalProto goal;
-  muan::wpilib::DriverStationProto ds;
-
-  ds->set_mode(RobotMode::TELEOP);
 
   c2017::shooter::ShooterController shooter_;
 
@@ -208,7 +193,7 @@ TEST(ShooterControllerTest, HopperMode) {
 
   shooter_.SetGoal(goal);
 
-  output = shooter_.Update(input, ds);
+  output = shooter_.Update(input, true);
 
   plant.Update((Eigen::Matrix<double, 1, 1>() << 0.).finished());
 

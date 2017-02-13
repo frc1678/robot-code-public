@@ -21,10 +21,8 @@ ShooterController::ShooterController()
 }
 
 c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::ShooterInputProto input,
-                                                             muan::wpilib::DriverStationProto ds) {
+                                                             bool enabled) {
   Eigen::Matrix<double, 3, 1> r_;
-
-  bool disabled = ds->mode() == RobotMode::DISABLED || ds->mode() == RobotMode::ESTOP;
 
   auto y = (Eigen::Matrix<double, 1, 1>() << input->encoder_position()).finished();
   r_ = (Eigen::Matrix<double, 3, 1>() << 0.0, goal_velocity_, 0.0).finished();
@@ -33,7 +31,7 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
 
   auto u = controller_.Update(observer_.x(), r_)(0, 0);
 
-  if (disabled || goal_velocity_ <= 0) {
+  if (!enabled || goal_velocity_ <= 0) {
     u = 0.0;
   }
 
