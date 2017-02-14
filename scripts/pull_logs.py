@@ -27,15 +27,16 @@ else:
 subprocess.call(["mkdir", "-p", local_path])
 
 # Get directory names of the past n logs
-proc = subprocess.Popen(("ssh", "{user}@{address}".format(user=rio_user, address=rio_address), "ls", "-1", "{}".format(rio_path), "|", "grep" , "-E", "[0-9]{9}", "|", "tail" , "-n", "{}".format(args.num_logs)), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+file_list_command = ["ssh", "{user}@{address}".format(user=rio_user, address=rio_address),
+                     "ls", "-1", "{}".format(rio_path), "|",
+                     "grep" , "-E", "[0-9]{9}", "|",
+                     "tail" , "-n", "{}".format(args.num_logs)]
+proc = subprocess.Popen(file_list_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 stdout, stderr = proc.communicate()
 
 rsync_remote_path = []
-first_path = True;
+rsync_remote_path = ["{user}@{address}:{path}".format(user=rio_user, address=rio_address, path=line)]
 for line in stdout.split():
-    if first_path:
-        first_path = False
-        rsync_remote_path = ["{user}@{address}:{path}".format(user=rio_user, address=rio_address, path=line)]
     rsync_remote_path.append(":" + rio_path + line + " ")
 
 rsync_args = ["--verbose", "--archive", "--times", "--human-readable", "--progress"]
