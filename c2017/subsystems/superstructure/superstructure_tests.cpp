@@ -127,8 +127,7 @@ TEST_F(SuperstructureTest, BallIntaking) {
 
   ASSERT_TRUE(superstructure_output);
   EXPECT_TRUE(superstructure_output.value()->ball_intake_down());
-  // TODO(Wesley) Figure out why this is not working:
-  // EXPECT_FALSE(superstructure_output.value()->ground_gear_down());
+  EXPECT_FALSE(superstructure_output.value()->ground_gear_down());
   EXPECT_NEAR(superstructure_output.value()->main_roller_voltage(), 8, 1e-4);
 
   Reset();
@@ -197,8 +196,7 @@ TEST_F(SuperstructureTest, SpinupShootFender) {
   ASSERT_TRUE(superstructure_output);
   EXPECT_NEAR(superstructure_output.value()->main_roller_voltage(), 12, 1e-4);
   EXPECT_FALSE(superstructure_output.value()->shooter_hood_up());
-  // TODO(Wesley) Figure out why this fails
-  // EXPECT_NEAR(superstructure_output.value()->upper_conveyor_voltage(), 12, 1e-4);
+  EXPECT_NEAR(superstructure_output.value()->upper_conveyor_voltage(), 12, 1e-4);
   Reset();
 }
 
@@ -227,8 +225,7 @@ TEST_F(SuperstructureTest, SpinupShootHopper) {
   ASSERT_TRUE(superstructure_output);
   EXPECT_NEAR(superstructure_output.value()->main_roller_voltage(), 12, 1e-4);
   EXPECT_TRUE(superstructure_output.value()->shooter_hood_up());
-  // TODO(Wesley) Figure out why this fails
-  // EXPECT_NEAR(superstructure_output.value()->upper_conveyor_voltage(), 12, 1e-4);
+  EXPECT_NEAR(superstructure_output.value()->upper_conveyor_voltage(), 12, 1e-4);
   Reset();
 }
 

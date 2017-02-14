@@ -58,7 +58,7 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input, bool outputs_enab
         magazine_status_->set_upper_conveyor_running(true);
         break;
       case UPPER_BACKWARD:
-        upper_voltage = -12;
+        upper_voltage = -4;
         magazine_status_->set_upper_conveyor_running(true);
         break;
     }

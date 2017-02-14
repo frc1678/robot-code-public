@@ -33,10 +33,6 @@ GroundGearIntakeOutputProto GroundGearIntake::Update(GroundGearIntakeInputProto 
         intake_down_ = false;
         has_current_spiked_ = false;
         break;
-
-      case IDLE:
-        voltage = 0;
-        break;
     }
   }
   GroundGearIntakeOutputProto output;
