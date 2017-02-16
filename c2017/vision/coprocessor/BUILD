@@ -2,7 +2,6 @@ cc_binary(
     name = "main",
     srcs = ["main.cpp"],
     deps = [":sender", ":vision"],
-    data = glob(["*.avi"]), # For debugging
     linkopts = ["-lpthread"]
 )
 
