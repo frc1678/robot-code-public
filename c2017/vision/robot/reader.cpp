@@ -14,7 +14,6 @@ VisionReader::VisionReader() : vision_input_queue_{QueueManager::GetInstance().v
 
 void VisionReader::operator()() {
   aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(20));
-  // aos::SetCurrentThreadRealtimePriority(10); // TODO: what is low priority?
   aos::SetCurrentThreadName("VisionReader");
 
   aos::vision::RXUdpSocket read_socket(1678);

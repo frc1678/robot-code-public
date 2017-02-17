@@ -6,7 +6,7 @@ namespace vision {
 
 VisionSubsystem::VisionSubsystem()
     : should_align_{false},
-      properties_{1.0, 1.0, 1.0, 1.0, c2017::drivetrain::GetDrivetrainConfig().robot_radius},
+      properties_{7.0, 5.0, 3.0, 2.0, c2017::drivetrain::GetDrivetrainConfig().robot_radius},
       vision_input_reader_{QueueManager::GetInstance().vision_input_queue().MakeReader()},
       driverstation_reader_{QueueManager::GetInstance().driver_station_queue()->MakeReader()},
       dt_goal_queue_{c2017::QueueManager::GetInstance().drivetrain_goal_queue()},
