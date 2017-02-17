@@ -14,7 +14,6 @@ class VisionScorer2017 : public muan::VisionScorer {
  public:
   double GetScore(double, double /* unused */, double skew, double width,
                   double height, double fullness);
-  void Morph(cv::Mat img);
 };
 
 void RunVision(int camera_index);

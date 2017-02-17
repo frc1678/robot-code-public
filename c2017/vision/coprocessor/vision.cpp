@@ -14,11 +14,6 @@ double VisionScorer2017::GetScore(double, double /* unused */, double skew,
   return target_score;
 }
 
-void VisionScorer2017::Morph(cv::Mat /* img */) {
-  // cv::erode(img, img, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 5), cv::Point(1, 2)));
-  // cv::dilate(img, img, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1, 31), cv::Point(0, 15)));
-}
-
 void RunVision(int camera_index) {
   cv::VideoCapture cap;
   cap.open(camera_index);
