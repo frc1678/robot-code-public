@@ -51,10 +51,12 @@ cc_library(
     deps = [
         ":drivetrain_interface",
         ":superstructure_interface",
+        ":lights_interface",
         "//c2017/queue_manager",
         "//muan/wpilib:can_wrapper",
         "//muan/wpilib/gyro",
         "//third_party/wpilibsuite:wpilib",
+        "//third_party/gflags:gflags",
     ],
 )
 
@@ -71,5 +73,20 @@ cc_library(
         "//muan/utils:math_utils",
         "//muan/wpilib/gyro",
         "//third_party/wpilibsuite:wpilib",
+    ],
+)
+
+cc_library(
+    name = "lights_interface",
+    srcs = [
+        "lights_interface.cpp",
+    ],
+    hdrs = [
+        "lights_interface.h",
+    ],
+    deps = [
+        "//c2017/subsystems/lights:lights",
+        "//third_party/wpilibsuite:wpilib",
+        "//c2017/queue_manager",
     ],
 )

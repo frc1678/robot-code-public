@@ -4,7 +4,12 @@ cc_library(
     name = "ground_gear_intake",
     srcs = ["ground_gear_intake.cpp"],
     hdrs = ["ground_gear_intake.h"],
-    deps = ["ground_gear_intake_queues"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "ground_gear_intake_queues",
+        "//muan/wpilib:wpilib_queues",
+        "//c2017/queue_manager:queue_manager",
+    ],
 )
 
 cc_library(

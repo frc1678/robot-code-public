@@ -10,7 +10,10 @@ namespace wpilib {
 
 namespace gyro {
 
-GyroReader::GyroReader(GyroQueue* queue, bool invert) : gyro_queue_{queue}, should_invert_{invert} {}
+GyroReader::GyroReader(GyroQueue* queue, int calib_time, bool invert) :
+    gyro_queue_{queue},
+    calib_time_{std::chrono::seconds(calib_time)},
+    should_invert_{invert} {}
 
 void GyroReader::Reset() { should_reset_ = true; }
 
@@ -57,12 +60,9 @@ void GyroReader::RunCalibration() {
     gyro_.GetReading();
   }
 
-  // Calibrate for 45 seconds
-  const auto calib_time = std::chrono::seconds(45);
-
   // Setup for averaging over calibration period
   size_t num_cycles;
-  const size_t calib_cycles = calib_time / loop_time;
+  const size_t calib_cycles = calib_time_ / loop_time;
   double drift_sum = 0.0;
 
   if (calibration_state_ == GyroState::kInitialized) {

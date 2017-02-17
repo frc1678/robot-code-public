@@ -1,5 +1,4 @@
 #include "c2017/queue_manager/queue_manager.h"
-#include "c2017/subsystems/superstructure/trigger/queue_types.h"
 
 namespace c2017 {
 
@@ -78,6 +77,10 @@ c2017::wpilib::WpilibOutputQueue& QueueManager::superstructure_output_queue() {
   return superstructure_output_queue_;
 }
 
+c2017::superstructure::SuperstructureStatusQueue& QueueManager::superstructure_status_queue() {
+  return superstructure_status_queue_;
+}
+
 // Trigger Queues
 c2017::trigger::TriggerInputQueue& QueueManager::trigger_input_queue() { return trigger_input_queue_; }
 
@@ -96,6 +99,10 @@ c2017::magazine::MagazineStatusQueue& QueueManager::magazine_status_queue() { re
 // Ground Gear Intake
 c2017::ground_gear_intake::GroundGearIntakeInputQueue& QueueManager::ground_gear_input_queue() {
   return ground_gear_input_queue_;
+}
+
+c2017::ground_gear_intake::GroundGearIntakeOutputQueue& QueueManager::ground_gear_output_queue() {
+  return ground_gear_output_queue_;
 }
 
 c2017::ground_gear_intake::GroundGearIntakeStatusQueue& QueueManager::ground_gear_status_queue() {
@@ -137,5 +144,46 @@ muan::teleop::JoystickStatusQueue& QueueManager::manipulator_status_queue() {
 muan::teleop::JoystickStatusQueue& QueueManager::wheel_status_queue() { return wheel_status_queue_; }
 
 muan::teleop::JoystickStatusQueue& QueueManager::throttle_status_queue() { return throttle_status_queue_; }
+
+void QueueManager::Reset() {
+  pdp_status_queue_.Reset();
+  driver_station_queue_.Reset();
+
+  gyro_queue_.Reset();
+
+  drivetrain_goal_queue_.Reset();
+  drivetrain_input_queue_.Reset();
+  drivetrain_output_queue_.Reset();
+  drivetrain_status_queue_.Reset();
+
+  superstructure_output_queue_.Reset();
+
+  trigger_input_queue_.Reset();
+  trigger_status_queue_.Reset();
+
+  shooter_input_queue_.Reset();
+  shooter_status_queue_.Reset();
+
+  magazine_input_queue_.Reset();
+  magazine_status_queue_.Reset();
+
+  ground_gear_input_queue_.Reset();
+  ground_gear_status_queue_.Reset();
+
+  ground_ball_intake_status_queue_.Reset();
+
+  climber_goal_queue_.Reset();
+  climber_input_queue_.Reset();
+  climber_status_queue_.Reset();
+
+  intake_group_goal_queue_.Reset();
+  shooter_group_goal_queue_.Reset();
+
+  webdash_queue_.Reset();
+
+  lights_output_queue_.Reset();
+
+  vision_status_queue_.Reset();
+}
 
 }  // namespace c2017

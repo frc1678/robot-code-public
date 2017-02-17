@@ -43,7 +43,6 @@ void Joystick::Update() {
 }
 
 void Joystick::LogButtons() {
-
   JoystickStatusProto joystick_status;
   joystick_status->set_button1(buttons_[1].get()->is_pressed());
   joystick_status->set_button2(buttons_[1].get()->is_pressed());

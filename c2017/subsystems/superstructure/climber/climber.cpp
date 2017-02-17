@@ -15,14 +15,12 @@ Climber::Climber() :
 
 void Climber::SetGoal(const ClimberGoalProto& goal) { to_climb_ = goal->climbing(); }
 
-ClimberOutputProto Climber::Update(const ClimberInputProto& input,
-                                   const muan::wpilib::DriverStationProto& ds_status) {
-  RobotMode robot_state = ds_status->mode();
+ClimberOutputProto Climber::Update(const ClimberInputProto& input, bool outputs_enabled) {
   double voltage_;
 
   ClimberStatusProto status;
   ClimberOutputProto output;
-  if (robot_state == RobotMode::TELEOP) {
+  if (outputs_enabled) {
     if (to_climb_) {
       if (on_rope_) {
         voltage_ = climber_position_watcher_.Update(12, (input->position() - last_position_));
