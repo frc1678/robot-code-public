@@ -19,16 +19,16 @@ class Joystick {
 
   void Update();
 
-  Button* GetButton(uint32_t button);
+  muan::teleop::Button* GetButton(uint32_t button);
+  muan::teleop::Button* MakePov(uint32_t pov, Pov position);
+  muan::teleop::Button* MakeAxis(uint32_t button);
 
   ::Joystick* wpilib_joystick();
 
  private:
-  void LogButtons(uint32_t dummy);
-  void LogButtons(int dummy);
+  void LogButtons();
 
-
-  JoystickStatusQueue* queue_ = nullptr;
+  JoystickStatusQueue* queue_;
 
   std::vector<std::unique_ptr<Button>> buttons_;
   ::Joystick wpilib_joystick_;
