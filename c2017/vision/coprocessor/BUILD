@@ -1,7 +1,11 @@
 cc_binary(
     name = "main",
     srcs = ["main.cpp"],
-    deps = [":sender", ":vision"],
+    deps = [
+        ":sender",
+        ":vision",
+        "//third_party/gflags:gflags"
+    ],
     linkopts = ["-lpthread"]
 )
 

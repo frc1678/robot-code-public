@@ -10,7 +10,7 @@
 namespace c2017 {
 namespace vision {
 
-void RunSender(char* target_ip);
+void RunSender(const char* target_ip);
 extern c2017::vision::VisionInputQueue vision_queue;
 }
 }
