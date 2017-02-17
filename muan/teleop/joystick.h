@@ -15,11 +15,11 @@ namespace teleop {
 class Joystick {
  public:
   explicit Joystick(int32_t port);
-  explicit Joystick(int32_t port, JoystickStatusQueue* queue);
+  Joystick(int32_t port, JoystickStatusQueue* queue);
 
   void Update();
 
-  Button* MakeButton(uint32_t button);
+  Button* GetButton(uint32_t button);
 
   ::Joystick* wpilib_joystick();
 
