@@ -10,19 +10,14 @@
 namespace c2017 {
 namespace vision {
 
-class Vision2017 : public muan::VisionScorer, public std::enable_shared_from_this<Vision2017> {
+class VisionScorer2017 : public muan::VisionScorer {
  public:
-  explicit Vision2017(int camera_index);
-  double GetScore(double, double /* unused */, double skew, double width, double height, double fullness);
+  double GetScore(double, double /* unused */, double skew, double width,
+                  double height, double fullness);
   void Morph(cv::Mat img);
-  void operator()();
-
- protected:
-  muan::Vision::ColorRange range_;
-  muan::Vision::VisionConstants constants_;
-  cv::VideoCapture cap_;
-  muan::Vision vision_;
 };
+
+void RunVision(int camera_index);
 
 }  // namespace vision
 }  // namespace c2017

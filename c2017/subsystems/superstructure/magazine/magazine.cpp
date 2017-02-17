@@ -4,19 +4,16 @@ namespace c2017 {
 
 namespace magazine {
 
-MagazineOutputProto Magazine::Update(MagazineInputProto input, muan::wpilib::DriverStationProto robot_state) {
+MagazineOutputProto Magazine::Update(MagazineInputProto input, bool outputs_enabled) {
   has_hp_gear_ = input->has_hp_gear();
   double upper_voltage = 0;
   double side_voltage = 0;
   double lower_voltage = 0;
   bool gear_intake_closed = true;
 
-  double gear_shutter_open = score_gear_;
+  bool gear_shutter_open = score_gear_;
 
-  bool enable_outputs = !(robot_state->mode() == RobotMode::DISABLED ||
-                          robot_state->mode() == RobotMode::ESTOP || robot_state->brownout());
-
-  if (enable_outputs) {
+  if (outputs_enabled) {
     switch (hp_intake_goal_) {
       case NONE:
         gear_intake_closed = true;
@@ -61,7 +58,7 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input, muan::wpilib::Dri
         magazine_status_->set_upper_conveyor_running(true);
         break;
       case UPPER_BACKWARD:
-        upper_voltage = -12;
+        upper_voltage = -4;
         magazine_status_->set_upper_conveyor_running(true);
         break;
     }

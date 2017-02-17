@@ -7,10 +7,6 @@ TEST(MagazineTest, CanExtendMagazine) {
   c2017::magazine::MagazineGoalProto goal;
   c2017::magazine::Magazine magazine;
 
-  muan::wpilib::DriverStationProto robot_state;
-  robot_state->set_mode(RobotMode::TELEOP);
-  robot_state->set_brownout(false);
-
   goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::NONE);
   goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
   goal->set_score_gear(false);
@@ -18,7 +14,7 @@ TEST(MagazineTest, CanExtendMagazine) {
   goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
 
   magazine.SetGoal(goal);
-  c2017::magazine::MagazineOutputProto output = magazine.Update(input, robot_state);
+  c2017::magazine::MagazineOutputProto output = magazine.Update(input, true);
 
   EXPECT_TRUE(output->magazine_extended());
 }
@@ -27,10 +23,6 @@ TEST(MagazineTest, CanIntakeBoth) {
   c2017::magazine::MagazineInputProto input;
   c2017::magazine::MagazineGoalProto goal;
   c2017::magazine::Magazine magazine;
-
-  muan::wpilib::DriverStationProto robot_state;
-  robot_state->set_mode(RobotMode::TELEOP);
-  robot_state->set_brownout(false);
 
   goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::BOTH);
   goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
@@ -41,13 +33,13 @@ TEST(MagazineTest, CanIntakeBoth) {
   input->set_has_hp_gear(false);
 
   magazine.SetGoal(goal);
-  c2017::magazine::MagazineOutputProto output = magazine.Update(input, robot_state);
+  c2017::magazine::MagazineOutputProto output = magazine.Update(input, true);
 
   EXPECT_FALSE(output->gear_intake_closed());
 
   input->set_has_hp_gear(true);
 
-  output = magazine.Update(input, robot_state);
+  output = magazine.Update(input, true);
 
   EXPECT_TRUE(output->gear_intake_closed());
 }
@@ -64,12 +56,8 @@ TEST(MagazineTest, CanHPIntakeGear) {
   input->set_has_hp_gear(false);
   goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
 
-  muan::wpilib::DriverStationProto robot_state;
-  robot_state->set_mode(RobotMode::TELEOP);
-  robot_state->set_brownout(false);
-
   magazine.SetGoal(goal);
-  c2017::magazine::MagazineOutputProto output = magazine.Update(input, robot_state);
+  c2017::magazine::MagazineOutputProto output = magazine.Update(input, true);
 
   EXPECT_FALSE(output->gear_intake_closed());
 }
@@ -86,12 +74,8 @@ TEST(MagazineTest, CanIntakeBalls) {
   input->set_has_hp_gear(false);
   goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
 
-  muan::wpilib::DriverStationProto robot_state;
-  robot_state->set_mode(RobotMode::TELEOP);
-  robot_state->set_brownout(false);
-
   magazine.SetGoal(goal);
-  c2017::magazine::MagazineOutputProto output = magazine.Update(input, robot_state);
+  c2017::magazine::MagazineOutputProto output = magazine.Update(input, true);
 
   EXPECT_TRUE(output->gear_intake_closed());
 }
@@ -107,12 +91,8 @@ TEST(MagazineTest, CanAgitateMagazine) {
   goal->set_magazine_extended(false);
   goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_AGITATE);
 
-  muan::wpilib::DriverStationProto robot_state;
-  robot_state->set_mode(RobotMode::TELEOP);
-  robot_state->set_brownout(false);
-
   magazine.SetGoal(goal);
-  c2017::magazine::MagazineOutputProto output = magazine.Update(input, robot_state);
+  c2017::magazine::MagazineOutputProto output = magazine.Update(input, true);
 
   EXPECT_EQ(output->side_voltage(), -9);
 }
@@ -128,12 +108,8 @@ TEST(MagazineTest, CanPullInBalls) {
   goal->set_magazine_extended(false);
   goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_PULL_IN);
 
-  muan::wpilib::DriverStationProto robot_state;
-  robot_state->set_mode(RobotMode::TELEOP);
-  robot_state->set_brownout(false);
-
   magazine.SetGoal(goal);
-  c2017::magazine::MagazineOutputProto output = magazine.Update(input, robot_state);
+  c2017::magazine::MagazineOutputProto output = magazine.Update(input, true);
 
   EXPECT_EQ(output->side_voltage(), 9);
 }
@@ -149,12 +125,8 @@ TEST(MagazineTest, CanIntakeNothing) {
   goal->set_magazine_extended(false);
   goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
 
-  muan::wpilib::DriverStationProto robot_state;
-  robot_state->set_mode(RobotMode::TELEOP);
-  robot_state->set_brownout(false);
-
   magazine.SetGoal(goal);
-  c2017::magazine::MagazineOutputProto output = magazine.Update(input, robot_state);
+  c2017::magazine::MagazineOutputProto output = magazine.Update(input, true);
 
   EXPECT_TRUE(output->gear_intake_closed());
 }
@@ -170,12 +142,8 @@ TEST(MagazineTest, UpperCanMove) {
   goal->set_magazine_extended(false);
   goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
 
-  muan::wpilib::DriverStationProto robot_state;
-  robot_state->set_mode(RobotMode::TELEOP);
-  robot_state->set_brownout(false);
-
   magazine.SetGoal(goal);
-  c2017::magazine::MagazineOutputProto output = magazine.Update(input, robot_state);
+  c2017::magazine::MagazineOutputProto output = magazine.Update(input, true);
 
   EXPECT_EQ(output->upper_voltage(), 12);
 }
@@ -191,12 +159,8 @@ TEST(MagazineTest, SendsNoVoltageWhenDisabled) {
   goal->set_magazine_extended(false);
   goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
 
-  muan::wpilib::DriverStationProto robot_state;
-  robot_state->set_mode(RobotMode::TELEOP);
-  robot_state->set_brownout(true);
-
   magazine.SetGoal(goal);
-  c2017::magazine::MagazineOutputProto output = magazine.Update(input, robot_state);
+  c2017::magazine::MagazineOutputProto output = magazine.Update(input, false);
 
   EXPECT_EQ(output->upper_voltage(), 0);
 }

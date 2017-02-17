@@ -37,9 +37,6 @@ TEST_F(ClimberTest, ClimbsToTheTop) {
   c2017::climber::ClimberInputProto input;
   c2017::climber::ClimberOutputProto output;
 
-  muan::wpilib::DriverStationProto ds_status;
-  ds_status->set_mode(RobotMode::TELEOP);
-
   goal->set_climbing(true);
 
   c2017::climber::Climber test_climber;
@@ -51,7 +48,7 @@ TEST_F(ClimberTest, ClimbsToTheTop) {
   for (double t = 0; t < 5; t += 0.005) {
     input->set_position(GetPosition());
     input->set_current(GetCurrent());
-    output = test_climber.Update(input, ds_status);
+    output = test_climber.Update(input, true);
     test_status = c2017::QueueManager::GetInstance().climber_status_queue().ReadLastMessage();
     if (test_status) {
       Update(output->voltage(), test_status.value()->on_rope());
@@ -69,9 +66,6 @@ TEST_F(ClimberTest, Disabled) {
   c2017::climber::ClimberInputProto input;
   c2017::climber::ClimberOutputProto output;
 
-  muan::wpilib::DriverStationProto ds_status;
-  ds_status->set_mode(RobotMode::DISABLED);
-
   goal->set_climbing(true);
   input->set_position(GetPosition());  // position helps find the rate of the encoder.
 
@@ -84,7 +78,7 @@ TEST_F(ClimberTest, Disabled) {
   for (double t = 0; t < 2; t += 0.005) {
     input->set_position(GetPosition());
     input->set_current(GetCurrent());
-    output = test_climber.Update(input, ds_status);
+    output = test_climber.Update(input, false);
     test_status = c2017::QueueManager::GetInstance().climber_status_queue().ReadLastMessage();
     if (test_status) {
       Update(output->voltage(), test_status.value()->on_rope());

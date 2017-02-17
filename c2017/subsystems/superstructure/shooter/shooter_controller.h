@@ -17,8 +17,7 @@ class ShooterController {
  public:
   ShooterController();
 
-  c2017::shooter::ShooterOutputProto Update(c2017::shooter::ShooterInputProto input,
-                                            muan::wpilib::DriverStationProto ds);
+  c2017::shooter::ShooterOutputProto Update(c2017::shooter::ShooterInputProto input, bool outputs_enabled);
   void SetGoal(c2017::shooter::ShooterGoalProto goal);
 
  private:

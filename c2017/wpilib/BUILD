@@ -56,6 +56,7 @@ cc_library(
         "//muan/wpilib:can_wrapper",
         "//muan/wpilib/gyro",
         "//third_party/wpilibsuite:wpilib",
+        "//third_party/gflags:gflags",
     ],
 )
 

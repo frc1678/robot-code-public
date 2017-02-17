@@ -1,4 +1,4 @@
-SwoopTurn(float distance, float angle)
+SwoopTurn(float distance, float angle, bool follow_through)
 
 include {
   "c2017/queue_manager/queue_manager.h"
@@ -11,12 +11,18 @@ global {
 }
 
 init {
-  muan::actions::DrivetrainProperties properties = muan::actions::DrivetrainProperties{7.0, 5.0, 3.0, 2.0, c2017::drivetrain::GetDrivetrainConfig().robot_radius};
+  muan::actions::DrivetrainProperties properties{7.0, 5.0, 3.0, 2.0,
+                                                 c2017::drivetrain::GetDrivetrainConfig().robot_radius};
+  muan::actions::DrivetrainActionParams params;
+  params.termination = muan::actions::DrivetrainTermination{0.05, 0.05, 0.05, 0.05};
+  params.desired_forward_distance = distance;
+  params.desired_angular_displacement = angle;
+  params.closed_loop_termination = !follow_through;
+  params.follow_through = follow_through;
   action = std::make_unique<muan::actions::DrivetrainAction>(
-      muan::actions::DrivetrainAction::SwoopTurn(distance, angle, true, properties,
-      c2017::QueueManager::GetInstance().drivetrain_goal_queue(),
-      c2017::QueueManager::GetInstance().drivetrain_status_queue(),
-      0.05, 0.1));
+      properties, c2017::QueueManager::GetInstance().drivetrain_goal_queue(),
+      c2017::QueueManager::GetInstance().drivetrain_status_queue());
+  action->ExecuteDrive(params);
   return false;
 }
 

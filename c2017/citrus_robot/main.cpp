@@ -1,7 +1,7 @@
 #include "c2017/citrus_robot/main.h"
 #include "WPILib.h"
-#include "muan/wpilib/queue_types.h"
 #include "c2017/queue_manager/queue_manager.h"
+#include "muan/wpilib/queue_types.h"
 
 namespace c2017 {
 namespace citrus_robot {
@@ -27,7 +27,7 @@ CitrusRobot::CitrusRobot() : throttle_{1}, wheel_{0}, gamepad_{2} {
 }
 
 void CitrusRobot::Update() {
-  if (DriverStation::GetInstance().IsAutonomous()) {
+  if (DriverStation::GetInstance().IsAutonomous() && DriverStation::GetInstance().IsEnabled()) {
     lemonscript_.Start();  // Weird to call Start in a loop, but it's a setter so it's fine
   } else if (DriverStation::GetInstance().IsOperatorControl()) {
     lemonscript_.Stop();  // Weirder to do this, but it works :/

@@ -5,14 +5,10 @@ namespace c2017 {
 
 namespace ground_gear_intake {
 
-GroundGearIntakeOutputProto GroundGearIntake::Update(GroundGearIntakeInputProto input,
-                                                     muan::wpilib::DriverStationProto robot_state) {
+GroundGearIntakeOutputProto GroundGearIntake::Update(GroundGearIntakeInputProto input, bool outputs_enabled) {
   double voltage = 0;
 
-  bool enable_outputs = !(robot_state->mode() == RobotMode::DISABLED ||
-                          robot_state->mode() == RobotMode::ESTOP || robot_state->brownout());
-
-  if (enable_outputs) {
+  if (outputs_enabled) {
     switch (goal_state_) {
       case CARRY:
         voltage = 0;
@@ -37,15 +33,16 @@ GroundGearIntakeOutputProto GroundGearIntake::Update(GroundGearIntakeInputProto 
         intake_down_ = false;
         has_current_spiked_ = false;
         break;
-
-      case IDLE:
-        voltage = 0;
-        break;
     }
   }
   GroundGearIntakeOutputProto output;
+  GroundGearIntakeStatusProto ground_gear_status;
   output->set_roller_voltage(voltage);
   output->set_intake_down(intake_down_);
+  ground_gear_status->set_current_spiked(has_current_spiked_);
+  ground_gear_status->set_down(intake_down_);
+  ground_gear_status->set_running(fabs(voltage) <= 1e-3);
+  QueueManager::GetInstance().ground_gear_status_queue().WriteMessage(ground_gear_status);
   return output;  // Sends voltage and solenoid output
 }
 

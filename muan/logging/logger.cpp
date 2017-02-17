@@ -10,9 +10,6 @@ Logger::Logger(std::unique_ptr<FileWriter>&& writer) : writer_(std::move(writer)
 void Logger::operator()() {
   aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(20));
 
-  aos::SetCurrentThreadRealtimePriority(20);
-  aos::SetCurrentThreadName("Logger");
-
   running_ = true;
 
   while (running_) {
