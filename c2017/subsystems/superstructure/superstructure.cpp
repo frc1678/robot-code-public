@@ -131,7 +131,7 @@ void SuperStructure::UpdateIntake() {
         break;
       case c2017::intake_group::GearIntakeRollers::GEAR_IDLE:
         // Gear rollers idle: idle gear
-        ground_gear_intake_goal_->set_goal(ground_gear_intake::IDLE);
+        ground_gear_intake_goal_->set_goal(ground_gear_intake::CARRY);
         superstructure_status_proto_->set_gear_scoring(false);
         break;
     }
@@ -141,9 +141,11 @@ void SuperStructure::UpdateIntake() {
       case c2017::intake_group::BallIntakeRollers::ROLLERS_INTAKE:
         // Rollers intake
         ground_ball_intake_goal_->set_run_intake(c2017::ground_ball_intake::RollerGoal::INTAKE);
-        magazine_goal_->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_BACKWARD);
         superstructure_status_proto_->set_ball_intaking(true);
         superstructure_status_proto_->set_ball_reverse(false);
+        if (!is_shooting_) {
+          magazine_goal_->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_BACKWARD);
+        }
         break;
       case c2017::intake_group::BallIntakeRollers::ROLLERS_OUTTAKE:
         // Rollers outtake
@@ -223,8 +225,8 @@ void SuperStructure::SetWpilibOutput() {
   if (driver_station) {
     auto robot_state = driver_station.value();
     enable_outputs = !(robot_state->mode() == RobotMode::DISABLED ||
-                            robot_state->mode() == RobotMode::ESTOP ||
-                            robot_state->brownout());
+                       robot_state->mode() == RobotMode::ESTOP ||
+                       robot_state->brownout());
   }
 
   if (ground_gear_input) {

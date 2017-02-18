@@ -24,6 +24,7 @@ cc_library(
         "//muan/queues",
         "//muan/units",
         "//third_party/aos/common/util:phased_loop",
+        "//third_party/aos/linux_code:init",
         "//third_party/wpilibsuite:wpilib",
     ],
 )
