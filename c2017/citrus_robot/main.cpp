@@ -13,19 +13,19 @@ CitrusRobot::CitrusRobot()
   fender_align_shoot_ = throttle_.GetButton(1);  // Joystick Trigger
   score_hp_gear_ = throttle_.GetButton(2);       // Joystick Button
 
-  ball_intake_toggle_ = gamepad_.GetButton(6);                      // Right Bumper
-  ball_intake_run_ = gamepad_.MakeAxis(3);                          // Right Trigger
-  gear_intake_down_ = gamepad_.GetButton(1);                        // Button A
-  ground_gear_score_ = gamepad_.GetButton(2);                       // Button B
-  ball_reverse_ = gamepad_.GetButton(3);                            // Button X
-  just_shoot_ = gamepad_.GetButton(4);                              // Button Y
-  stop_shooting_ = gamepad_.GetButton(5);                           // Left bumper
-  hp_load_gears_ = gamepad_.MakePov(0, muan::teleop::Pov::kNorth);  // D-Pad up
-  hp_load_balls_ = gamepad_.MakePov(0, muan::teleop::Pov::kSouth);  // D-Pad down
-  hp_load_both_ = gamepad_.MakePov(0, muan::teleop::Pov::kEast);    // D-Pad right
-  agitate_ = gamepad_.MakeAxis(2);                                  // Left Trigger
-  climb_ = gamepad_.GetButton(7);                                   // Back Button
-  just_spinup_ = gamepad_.GetButton(8);                             // Start Button
+  ball_intake_toggle_ = gamepad_.GetButton(6);                     // Right Bumper
+  ball_intake_run_ = gamepad_.GetAxis(3);                          // Right Trigger
+  gear_intake_down_ = gamepad_.GetButton(1);                       // Button A
+  ground_gear_score_ = gamepad_.GetButton(2);                      // Button B
+  ball_reverse_ = gamepad_.GetButton(3);                           // Button X
+  just_shoot_ = gamepad_.GetButton(4);                             // Button Y
+  stop_shooting_ = gamepad_.GetButton(5);                          // Left bumper
+  hp_load_gears_ = gamepad_.GetPov(0, muan::teleop::Pov::kNorth);  // D-Pad up
+  hp_load_balls_ = gamepad_.GetPov(0, muan::teleop::Pov::kSouth);  // D-Pad down
+  hp_load_both_ = gamepad_.GetPov(0, muan::teleop::Pov::kEast);    // D-Pad right
+  agitate_ = gamepad_.GetAxis(2);                                  // Left Trigger
+  climb_ = gamepad_.GetButton(7);                                  // Back Button
+  just_spinup_ = gamepad_.GetButton(8);                            // Start Button
   quickturn_ = wheel_.GetButton(5);
 }
 

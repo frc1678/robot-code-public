@@ -11,10 +11,10 @@ using frc971::control_loops::drivetrain::InputProto;
 using frc971::control_loops::drivetrain::StatusProto;
 using frc971::control_loops::drivetrain::OutputProto;
 
-Teleop::Teleop() {
+Teleop::Teleop()
     : properties_{1, 1, 1, 1, testbench::drivetrain::GetDrivetrainConfig().robot_radius},
       throttle_{1},
-      wheel_{0},
+      wheel_{0} {
   shifting_low_ = throttle_.GetButton(4);
   shifting_high_ = throttle_.GetButton(5);
   quickturn_ = wheel_.GetButton(5);
