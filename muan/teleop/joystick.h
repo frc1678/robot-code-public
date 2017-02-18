@@ -12,6 +12,19 @@ namespace muan {
 
 namespace teleop {
 
+enum class XBox {
+  A_BUTTON = 1,
+  B_BUTTON = 2,
+  X_BUTTON = 3,
+  Y_BUTTON = 4,
+  LEFT_BUMPER = 5,
+  RIGHT_BUMPER = 6,
+  BACK = 7,
+  START = 8,
+  LEFT_CLICK_IN = 9,
+  RIGHT_CLICK_IN = 10,
+};
+
 class Joystick {
  public:
   explicit Joystick(int32_t port);
