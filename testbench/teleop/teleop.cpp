@@ -15,12 +15,9 @@ Teleop::Teleop()
     : properties_{1, 1, 1, 1, testbench::drivetrain::GetDrivetrainConfig().robot_radius},
       throttle_{1},
       wheel_{0},
-      action_(0, 0, true, properties_, testbench::QueueManager::GetInstance()->drivetrain_goal_queue(),
-              testbench::QueueManager::GetInstance()->drivetrain_status_queue()) {
   shifting_low_ = throttle_.GetButton(4);
   shifting_high_ = throttle_.GetButton(5);
   quickturn_ = wheel_.GetButton(5);
-  drive_profile_ = throttle_.GetButton(6);
 }
 
 void Teleop::Update() {
