@@ -7,22 +7,22 @@ namespace c2017 {
 namespace citrus_robot {
 
 CitrusRobot::CitrusRobot() : throttle_{1}, wheel_{0}, gamepad_{2} {
-  fender_align_shoot_ = throttle_.MakeButton(1);  // Joystick Trigger
-  score_hp_gear_ = throttle_.MakeButton(2);       // Joystick Button
+  fender_align_shoot_ = throttle_.MakeButton(1);                                          // Joystick Trigger
+  score_hp_gear_ = throttle_.MakeButton(2);                                               // Joystick Button
 
-  ball_intake_toggle_ = gamepad_.MakeButton(6);                     // Right Bumper
-  ball_intake_run_ = gamepad_.MakeAxis(3);                          // Right Trigger
-  gear_intake_down_ = gamepad_.MakeButton(1);                       // Button A
-  ground_gear_score_ = gamepad_.MakeButton(2);                      // Button B
-  ball_reverse_ = gamepad_.MakeButton(3);                           // Button X
-  just_shoot_ = gamepad_.MakeButton(4);                             // Button Y
-  stop_shooting_ = gamepad_.MakeButton(5);                          // Left bumper
-  hp_load_gears_ = gamepad_.MakePov(0, muan::teleop::Pov::kNorth);  // D-Pad up
-  hp_load_balls_ = gamepad_.MakePov(0, muan::teleop::Pov::kSouth);  // D-Pad down
-  hp_load_both_ = gamepad_.MakePov(0, muan::teleop::Pov::kEast);    // D-Pad right
-  agitate_ = gamepad_.MakeAxis(2);                                  // Left Trigger
-  climb_ = gamepad_.MakeButton(7);                                  // Back Button
-  just_spinup_ = gamepad_.MakeButton(8);                            // Start Button
+  ball_intake_toggle_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::RIGHT_BUMPER));  // Right Bumper
+  ball_intake_run_ = gamepad_.MakeAxis(3);                                                // Right Trigger
+  gear_intake_down_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::A_BUTTON));        // Button A
+  ground_gear_score_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::B_BUTTON));       // Button B
+  ball_reverse_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::X_BUTTON));            // Button X
+  just_shoot_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::Y_BUTTON));              // Button Y
+  stop_shooting_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_BUMPER));        // Left bumper
+  hp_load_gears_ = gamepad_.MakePov(0, muan::teleop::Pov::kNorth);                        // D-Pad up
+  hp_load_balls_ = gamepad_.MakePov(0, muan::teleop::Pov::kSouth);                        // D-Pad down
+  hp_load_both_ = gamepad_.MakePov(0, muan::teleop::Pov::kEast);                          // D-Pad right
+  agitate_ = gamepad_.MakeAxis(2);                                                        // Left Trigger
+  climb_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::BACK));                       // Back Button
+  just_spinup_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::START));                // Start Button
   quickturn_ = wheel_.MakeButton(5);
 }
 
