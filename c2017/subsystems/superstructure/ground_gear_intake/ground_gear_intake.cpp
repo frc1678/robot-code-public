@@ -7,46 +7,79 @@ namespace ground_gear_intake {
 
 GroundGearIntakeOutputProto GroundGearIntake::Update(GroundGearIntakeInputProto input, bool outputs_enabled) {
   double voltage = 0;
+  bool intake_down = false;
+  bool current_spiked = false;
 
   if (outputs_enabled) {
-    switch (goal_state_) {
-      case CARRY:
-        voltage = 0;
-        intake_down_ = false;
-        has_current_spiked_ = false;
+    switch (current_state_) {
+      case IDLE:
+        voltage = 0.0;
+        intake_down = false;
         break;
-
-      case PICKUP:
-        voltage = 12;
-        intake_down_ = true;
-        if (input->current() > 120) {  // the intake stalls when its current spikes
-          has_current_spiked_ = true;
-        }
-        if (has_current_spiked_) {
-          voltage = 0;  // stop moving when the motor stalls
-          intake_down_ = false;
+      case INTAKING:
+        voltage = 12.0;
+        intake_down = true;
+        if (input->current() > 60) {
+          current_spiked = true;
+          current_state_ = PICKING_UP;
+          pickup_timer_ = kPickupTicks;
         }
         break;
-
-      case SCORE:
-        voltage = -12;  // outtake
-        intake_down_ = false;
-        has_current_spiked_ = false;
+      case PICKING_UP:
+        voltage = 2.5;
+        intake_down = false;
+        if (--pickup_timer_ >= 0) {
+          current_state_ = CARRYING;
+        }
+        break;
+      case CARRYING:
+        voltage = 1.5;
+        intake_down = false;
+        break;
+      case SCORING:
+        voltage = -12.0;
+        intake_down = false;
         break;
     }
   }
+
   GroundGearIntakeOutputProto output;
   GroundGearIntakeStatusProto ground_gear_status;
   output->set_roller_voltage(voltage);
-  output->set_intake_down(intake_down_);
-  ground_gear_status->set_current_spiked(has_current_spiked_);
-  ground_gear_status->set_down(intake_down_);
+  output->set_intake_down(intake_down);
+  ground_gear_status->set_current_spiked(current_spiked);
+  ground_gear_status->set_current_state(current_state_);
   ground_gear_status->set_running(fabs(voltage) <= 1e-3);
   QueueManager::GetInstance().ground_gear_status_queue().WriteMessage(ground_gear_status);
   return output;  // Sends voltage and solenoid output
 }
 
-void GroundGearIntake::SetGoal(GroundGearIntakeGoalProto goal) { goal_state_ = goal->goal(); }
+void GroundGearIntake::SetGoal(GroundGearIntakeGoalProto goal) {
+  switch (goal->goal()) {
+    case DROP:
+      current_state_ = INTAKING;
+      break;
+    case RISE:
+      if (current_state_ == INTAKING) {
+        current_state_ = IDLE;
+      }
+      break;
+    case SCORE:
+      if (current_state_ == CARRYING || current_state_ == IDLE) {
+        current_state_ = SCORING;
+      }
+      break;
+    case NONE:
+      if (current_state_ == SCORING) {
+        current_state_ = IDLE;
+      }
+      break;
+  }
+}
+
+State GroundGearIntake::current_state() const {
+  return current_state_;
+}
 
 }  // namespace ground_gear_intake
 

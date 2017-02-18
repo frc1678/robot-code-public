@@ -15,10 +15,13 @@ class GroundGearIntake {
   GroundGearIntakeOutputProto Update(GroundGearIntakeInputProto input, bool outputs_enabled);
   void SetGoal(GroundGearIntakeGoalProto goal);
 
+  State current_state() const;
+
  private:
-  Goal goal_state_;
-  bool intake_down_ = true;  // will lift when intake stalls
-  bool has_current_spiked_ = false;
+  static constexpr int kPickupTicks = 300;
+
+  State current_state_ = IDLE;
+  int pickup_timer_ = 0;
 };
 
 }  // namespace ground_gear_intake

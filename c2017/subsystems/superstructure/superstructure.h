@@ -32,8 +32,6 @@ class SuperStructure {
   c2017::magazine::Magazine magazine_;
   c2017::climber::Climber climber_;
 
-  c2017::ground_gear_intake::GroundGearIntakeGoalProto ground_gear_intake_goal_;
-  c2017::ground_ball_intake::GroundBallIntakeGoalProto ground_ball_intake_goal_;
   c2017::magazine::MagazineGoalProto magazine_goal_;
   c2017::shooter::ShooterGoalProto shooter_goal_;
   c2017::climber::ClimberGoalProto climber_goal_;

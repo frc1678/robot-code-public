@@ -15,9 +15,7 @@ void SuperStructure::Update() {
   UpdateShooter();
   UpdateIntake();
 
-  ground_gear_intake_.SetGoal(ground_gear_intake_goal_);
   magazine_.SetGoal(magazine_goal_);
-  ground_ball_intake_.set_goal(ground_ball_intake_goal_);
   shooter_.SetGoal(shooter_goal_);
 
   SetWpilibOutput();
@@ -83,94 +81,54 @@ void SuperStructure::Spinup(const c2017::shooter_group::ShooterGroupGoalProto& s
 
 void SuperStructure::UpdateIntake() {
   // Reading the group goal queues
-  auto intake_group_goal = QueueManager::GetInstance().intake_group_goal_queue().ReadLastMessage();
+  auto maybe_intake_group_goal = QueueManager::GetInstance().intake_group_goal_queue().ReadLastMessage();
 
-  // GOAL SETTING
-  if (intake_group_goal) {
-    switch (intake_group_goal.value()->ground_intake_position()) {
-      case c2017::intake_group::GroundIntakePosition::INTAKE_BALLS:
-        // Intake balls: ball intake down
-        ground_ball_intake_goal_->set_intake_up(false);
-        superstructure_status_proto_->set_gear_intaking(false);
-        superstructure_status_proto_->set_ball_reverse(false);
-        superstructure_status_proto_->set_ball_intaking(true);
-        // Gear idle: carry gear
-        ground_gear_intake_goal_->set_goal(ground_gear_intake::CARRY);
-        break;
-      case c2017::intake_group::GroundIntakePosition::INTAKE_GEAR:
-        // Ground intake gear: ball intake up
-        ground_ball_intake_goal_->set_intake_up(true);
-        superstructure_status_proto_->set_ball_intaking(false);
-        superstructure_status_proto_->set_gear_intaking(true);
-        superstructure_status_proto_->set_ball_reverse(false);
+  c2017::ground_gear_intake::GroundGearIntakeGoalProto ground_gear_intake_goal;
+  c2017::ground_ball_intake::GroundBallIntakeGoalProto ground_ball_intake_goal;
 
-        // Gear intake rollers: pickup gear
-        ground_gear_intake_goal_->set_goal(ground_gear_intake::PICKUP);
+  if (maybe_intake_group_goal) {
+    auto intake_group_goal = maybe_intake_group_goal.value();
+    using c2017::intake_group::GroundGearIntakeGoal;
+    switch (intake_group_goal->ground_gear_intake()) {
+      case intake_group::GROUND_GEAR_NONE:
+        ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::NONE);
         break;
-      case c2017::intake_group::GroundIntakePosition::INTAKE_NONE:
-        // Intake none: ball intake up, carry gear
-        ground_ball_intake_goal_->set_intake_up(true);
-        ground_gear_intake_goal_->set_goal(ground_gear_intake::CARRY);
-        superstructure_status_proto_->set_gear_intaking(false);
-        superstructure_status_proto_->set_ball_intaking(false);
-        superstructure_status_proto_->set_ball_reverse(false);
+      case intake_group::GROUND_GEAR_DROP:
+        ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::DROP);
+        break;
+      case intake_group::GROUND_GEAR_RISE:
+        ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::RISE);
+        break;
+      case intake_group::GROUND_GEAR_SCORE:
+        ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::SCORE);
         break;
     }
 
-    switch (intake_group_goal.value()->gear_intake()) {
-      case c2017::intake_group::GearIntakeRollers::GEAR_OUTTAKE:
-        // Gear rollers outtake: score gear, ball intake up
-        ground_gear_intake_goal_->set_goal(ground_gear_intake::SCORE);
-        superstructure_status_proto_->set_gear_scoring(true);
+    bool allow_ground_intake = ground_gear_intake_.current_state() == ground_gear_intake::IDLE ||
+                               ground_gear_intake_.current_state() == ground_gear_intake::CARRYING;
+
+    ground_ball_intake_goal->set_intake_up(!(
+        allow_ground_intake && intake_group_goal->ground_ball_position() == intake_group::GROUND_BALL_DOWN));
+
+    switch (intake_group_goal->ground_ball_rollers()) {
+      case intake_group::GROUND_BALL_NONE:
+        ground_ball_intake_goal->set_run_intake(c2017::ground_ball_intake::IDLE);
         break;
-      case c2017::intake_group::GearIntakeRollers::GEAR_INTAKE:
-        // Gear rollers intake: intake gear, ball intake up
-        ground_gear_intake_goal_->set_goal(ground_gear_intake::PICKUP);
-        superstructure_status_proto_->set_gear_intaking(true);
-        superstructure_status_proto_->set_gear_scoring(false);
+      case intake_group::GROUND_BALL_IN:
+        ground_ball_intake_goal->set_run_intake(c2017::ground_ball_intake::INTAKE);
         break;
-      case c2017::intake_group::GearIntakeRollers::GEAR_IDLE:
-        // Gear rollers idle: idle gear
-        ground_gear_intake_goal_->set_goal(ground_gear_intake::CARRY);
-        superstructure_status_proto_->set_gear_scoring(false);
+      case intake_group::GROUND_BALL_OUT:
+        ground_ball_intake_goal->set_run_intake(c2017::ground_ball_intake::OUTTAKE);
         break;
     }
 
-    // Ball intake rollers
-    switch (intake_group_goal.value()->roller()) {
-      case c2017::intake_group::BallIntakeRollers::ROLLERS_INTAKE:
-        // Rollers intake
-        ground_ball_intake_goal_->set_run_intake(c2017::ground_ball_intake::RollerGoal::INTAKE);
-        superstructure_status_proto_->set_ball_intaking(true);
-        superstructure_status_proto_->set_ball_reverse(false);
-        if (!is_shooting_) {
-          magazine_goal_->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_BACKWARD);
-        }
-        break;
-      case c2017::intake_group::BallIntakeRollers::ROLLERS_OUTTAKE:
-        // Rollers outtake
-        superstructure_status_proto_->set_ball_intaking(false);
-        superstructure_status_proto_->set_ball_reverse(true);
-        ground_ball_intake_goal_->set_run_intake(c2017::ground_ball_intake::RollerGoal::OUTTAKE);
-        break;
-      case c2017::intake_group::BallIntakeRollers::ROLLERS_AGITATE:
-        magazine_goal_->set_side_goal(c2017::magazine::SideGoalState::SIDE_AGITATE);
-        magazine_goal_->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
-        break;
-      case c2017::intake_group::BallIntakeRollers::ROLLERS_IDLE:
-        if (!is_shooting_) {
-          // We don't want to read if the shooter is shooting from the status because that isn't accurate, so
-          // we have a member variable to track this
-          magazine_goal_->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
-          magazine_goal_->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
-          ground_ball_intake_goal_->set_run_intake(c2017::ground_ball_intake::RollerGoal::IDLE);
-          superstructure_status_proto_->set_ball_intaking(false);
-          superstructure_status_proto_->set_ball_reverse(false);
-        }
-        break;
+    if (intake_group_goal->agitate()) {
+      magazine_goal_->set_side_goal(c2017::magazine::SideGoalState::SIDE_AGITATE);
+      magazine_goal_->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
     }
+
     // HP logic
-    switch (intake_group_goal.value()->hp_load_type()) {
+    switch (intake_group_goal->hp_load_type()) {
       case c2017::intake_group::HpLoadType::HP_LOAD_BALLS:
         // hp load balls: hp goal = balls
         magazine_goal_->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::BALLS);
@@ -202,36 +160,36 @@ void SuperStructure::UpdateIntake() {
     }
 
     // This doesn't need to be in any specific it's just passed through to the magazine
-    magazine_goal_->set_score_gear(intake_group_goal.value()->score_hp_gear());
+    if (intake_group_goal->score_hp_gear()) {
+      magazine_goal_->set_score_gear(true);
+      ground_ball_intake_goal->set_intake_up(false);
+    } else {
+      magazine_goal_->set_score_gear(false);
+    }
   }
+
+  ground_gear_intake_.SetGoal(ground_gear_intake_goal);
+  ground_ball_intake_.set_goal(ground_ball_intake_goal);
 }
 
 void SuperStructure::SetWpilibOutput() {
   wpilib::WpilibOutputProto wpilib_output;
-  const auto ground_gear_input =
-      QueueManager::GetInstance().ground_gear_input_queue().ReadLastMessage();
-  const auto magazine_input =
-      QueueManager::GetInstance().magazine_input_queue().ReadLastMessage();
-  const auto shooter_input =
-      QueueManager::GetInstance().shooter_input_queue().ReadLastMessage();
-  const auto climber_input =
-      QueueManager::GetInstance().climber_input_queue().ReadLastMessage();
-  const auto climber_status =
-      QueueManager::GetInstance().climber_status_queue().ReadLastMessage();
-  const auto driver_station =
-      QueueManager::GetInstance().driver_station_queue()->ReadLastMessage();
+  const auto ground_gear_input = QueueManager::GetInstance().ground_gear_input_queue().ReadLastMessage();
+  const auto magazine_input = QueueManager::GetInstance().magazine_input_queue().ReadLastMessage();
+  const auto shooter_input = QueueManager::GetInstance().shooter_input_queue().ReadLastMessage();
+  const auto climber_input = QueueManager::GetInstance().climber_input_queue().ReadLastMessage();
+  const auto climber_status = QueueManager::GetInstance().climber_status_queue().ReadLastMessage();
+  const auto driver_station = QueueManager::GetInstance().driver_station_queue()->ReadLastMessage();
 
   bool enable_outputs = true;
   if (driver_station) {
     auto robot_state = driver_station.value();
     enable_outputs = !(robot_state->mode() == RobotMode::DISABLED ||
-                       robot_state->mode() == RobotMode::ESTOP ||
-                       robot_state->brownout());
+                       robot_state->mode() == RobotMode::ESTOP || robot_state->brownout());
   }
 
   if (ground_gear_input) {
-    auto ground_gear_intake_output =
-        ground_gear_intake_.Update(ground_gear_input.value(), enable_outputs);
+    auto ground_gear_intake_output = ground_gear_intake_.Update(ground_gear_input.value(), enable_outputs);
     wpilib_output->set_ground_gear_down(ground_gear_intake_output->intake_down());
     wpilib_output->set_ground_gear_voltage(ground_gear_intake_output->roller_voltage());
   }
