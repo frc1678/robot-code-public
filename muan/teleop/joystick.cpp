@@ -12,8 +12,7 @@ Joystick::Joystick(int32_t port) : wpilib_joystick_{port} {
   }
 }
 
-Joystick::Joystick(int32_t port, JoystickStatusQueue* queue) : wpilib_joystick_{port} {
-  queue_ = queue;
+Joystick::Joystick(int32_t port, JoystickStatusQueue* queue) : queue_{queue}, wpilib_joystick_{port} {
   for (uint32_t button_id = 1; button_id <= uint32_t(wpilib_joystick_.GetButtonCount()); button_id++) {
     buttons_.emplace_back(new Button(this, button_id));
   }

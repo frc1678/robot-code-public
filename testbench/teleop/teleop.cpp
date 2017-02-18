@@ -17,10 +17,10 @@ Teleop::Teleop()
       wheel_{0},
       action_(0, 0, true, properties_, testbench::QueueManager::GetInstance()->drivetrain_goal_queue(),
               testbench::QueueManager::GetInstance()->drivetrain_status_queue()) {
-  shifting_low_ = throttle_.MakeButton(4);
-  shifting_high_ = throttle_.MakeButton(5);
-  quickturn_ = wheel_.MakeButton(5);
-  drive_profile_ = throttle_.MakeButton(6);
+  shifting_low_ = throttle_.GetButton(4);
+  shifting_high_ = throttle_.GetButton(5);
+  quickturn_ = wheel_.GetButton(5);
+  drive_profile_ = throttle_.GetButton(6);
 }
 
 void Teleop::Update() {
