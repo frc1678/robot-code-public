@@ -4,14 +4,14 @@
 namespace c2017 {
 
 namespace climber {
-Climber::Climber()
-    : at_top_(false),
-      is_climbing_(false),
-      last_position_(0),
-      status_queue_(QueueManager::GetInstance().climber_status_queue()),
-      climber_position_watcher_(0.001, 0.25, std::numeric_limits<int>::max(), 0.005, false),
-      climber_current_watcher_(100, 0.1, std::numeric_limits<int>::max(), 0.005),
-      on_rope_(false) {}
+Climber::Climber() :
+  at_top_(false),
+  is_climbing_(false),
+  last_position_(0),
+  status_queue_(QueueManager::GetInstance().climber_status_queue()),
+  climber_position_watcher_(0.001, 0.25, std::numeric_limits<int>::max(), 0.005, false),
+  climber_current_watcher_(100, 0.1, std::numeric_limits<int>::max(), 0.005),
+  on_rope_(false) {}
 
 void Climber::SetGoal(const ClimberGoalProto& goal) { to_climb_ = goal->climbing(); }
 

@@ -42,12 +42,10 @@ void DrivetrainInterface::WriteActuators() {
   auto outputs = output_queue_.ReadLastMessage();
   if (outputs) {
     motor_left_.Set(-muan::utils::Cap((*outputs)->left_voltage(), -ports::drivetrain::kMaxVoltage,
-                                      ports::drivetrain::kMaxVoltage) /
-                    12.0);
+                                      ports::drivetrain::kMaxVoltage) / 12.0);
 
     motor_right_.Set(muan::utils::Cap((*outputs)->right_voltage(), -ports::drivetrain::kMaxVoltage,
-                                      ports::drivetrain::kMaxVoltage) /
-                     12.0);
+                                      ports::drivetrain::kMaxVoltage) / 12.0);
   } else {
     motor_left_.Set(0);
     motor_right_.Set(0);

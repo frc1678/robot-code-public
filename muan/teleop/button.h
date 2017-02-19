@@ -54,7 +54,6 @@ class AxisButton : public Button {
  public:
   AxisButton(Joystick* joystick, uint32_t button, double trigger_threshold);
   void Update();
-
  private:
   double trigger_threshold_;
 };

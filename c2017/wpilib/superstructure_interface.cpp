@@ -79,6 +79,7 @@ void SuperStructureInterface::ReadSensors() {
     climber_sensors->set_current((*current_reader)->current5());
   }
 
+
   QueueManager::GetInstance().shooter_input_queue().WriteMessage(shooter_sensors);
   QueueManager::GetInstance().climber_input_queue().WriteMessage(climber_sensors);
   QueueManager::GetInstance().magazine_input_queue().WriteMessage(magazine_sensors);

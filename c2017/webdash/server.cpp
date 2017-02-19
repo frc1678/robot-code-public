@@ -22,7 +22,9 @@ void WebDashController::save(Mongoose::Request &request, StreamResponse &respons
   }
 }
 
-void WebDashController::setup() { addRoute("GET", "/save", WebDashController, save); }
+void WebDashController::setup() {
+  addRoute("GET", "/save", WebDashController, save);
+}
 
 void WebDashRunner::operator()() {
   server_.registerController(&controller_);
