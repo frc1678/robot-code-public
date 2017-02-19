@@ -94,7 +94,7 @@ TEST(MagazineTest, CanAgitateMagazine) {
   magazine.SetGoal(goal);
   c2017::magazine::MagazineOutputProto output = magazine.Update(input, true);
 
-  EXPECT_EQ(output->side_voltage(), -9);
+  EXPECT_EQ(output->side_voltage(), -6);
 }
 
 TEST(MagazineTest, CanPullInBalls) {
@@ -111,7 +111,7 @@ TEST(MagazineTest, CanPullInBalls) {
   magazine.SetGoal(goal);
   c2017::magazine::MagazineOutputProto output = magazine.Update(input, true);
 
-  EXPECT_EQ(output->side_voltage(), 9);
+  EXPECT_EQ(output->side_voltage(), 6);
 }
 
 TEST(MagazineTest, CanIntakeNothing) {

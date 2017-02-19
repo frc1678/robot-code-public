@@ -229,6 +229,8 @@ void SuperStructure::SetWpilibOutput() {
                        robot_state->brownout());
   }
 
+  superstructure_status_proto_->set_enable_outputs(enable_outputs);
+
   if (ground_gear_input) {
     auto ground_gear_intake_output =
         ground_gear_intake_.Update(ground_gear_input.value(), enable_outputs);

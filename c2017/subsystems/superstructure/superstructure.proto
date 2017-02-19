@@ -14,4 +14,5 @@ message SuperstructureStatus {
   required bool load_hp_both = 7;
   required bool load_hp_balls = 8;
   required bool climbing = 9;
+  required bool enable_outputs = 10;
 }

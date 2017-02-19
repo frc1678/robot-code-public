@@ -1,0 +1,18 @@
+Wait(float seconds)
+
+include {
+  "third_party/aos/common/time.h"
+}
+
+global {
+  aos::monotonic_clock::time_point finish;
+}
+
+init {
+  finish = aos::monotonic_clock::now() + std::chrono::milliseconds(static_cast<int>(seconds * 1000));
+  return true;
+}
+
+periodic {
+  return aos::monotonic_clock::now() >= finish;
+}
