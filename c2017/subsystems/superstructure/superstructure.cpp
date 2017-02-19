@@ -47,11 +47,11 @@ void SuperStructure::Update() {
     }
 
     if (shooter_group_goal->wheel() == c2017::shooter_group::Wheel::IDLE) {
-        magazine_goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
-        magazine_goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
-        magazine_goal->set_lower_goal(c2017::magazine::LowerGoalState::LOWER_IDLE);
-        superstructure_status_proto_->set_shooting(false);
-        shooter_goal_->set_goal_velocity(0.0);
+      magazine_goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
+      magazine_goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
+      magazine_goal->set_lower_goal(c2017::magazine::LowerGoalState::LOWER_IDLE);
+      superstructure_status_proto_->set_shooting(false);
+      shooter_goal_->set_goal_velocity(0.0);
     }
 
     superstructure_status_proto_->set_shooting(is_shooting_);
@@ -86,7 +86,8 @@ void SuperStructure::Update() {
         break;
     }
 
-    bool allow_ground_intake = ground_gear_intake_.current_state() == ground_gear_intake::IDLE ||
+    bool allow_ground_intake = intake_group_goal->score_hp_gear() ||
+                               ground_gear_intake_.current_state() == ground_gear_intake::IDLE ||
                                ground_gear_intake_.current_state() == ground_gear_intake::CARRYING;
 
     ground_ball_intake_goal->set_intake_up(!(
@@ -133,6 +134,7 @@ void SuperStructure::Update() {
     if (intake_group_goal->score_hp_gear()) {
       magazine_goal->set_score_gear(true);
       ground_ball_intake_goal->set_intake_up(false);
+      ground_gear_intake_goal->set_goal(ground_gear_intake::RISE);
     } else {
       magazine_goal->set_score_gear(false);
     }

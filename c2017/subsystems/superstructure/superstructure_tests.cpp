@@ -305,4 +305,40 @@ TEST_F(SuperstructureTest, Brownout) {
   Reset();
 }
 
+TEST_F(SuperstructureTest, ThinkInsideTheBox) {
+  // Make sure that if you tell both the ball intake and the gear intake to go down, only the gear intake will move.
+  intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_UP);
+  intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_DROP);
+  ds->set_mode(RobotMode::TELEOP);
+
+  WriteQueues();
+  superstructure.Update();
+
+  auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
+
+  ASSERT_TRUE(superstructure_output);
+
+  EXPECT_TRUE(superstructure_output.value()->ground_gear_down());
+  EXPECT_FALSE(superstructure_output.value()->ball_intake_down());
+
+  Reset();
+
+  // Also, when you're trying to HP-gear score and the gear intake is down, it should put it back up so that it can put the ball intake down
+  intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_DROP);
+  ds->set_mode(RobotMode::TELEOP);
+  WriteQueues();
+  superstructure.Update();
+  intake_group_goal_proto_->set_score_hp_gear(true);
+  WriteQueues();
+  superstructure.Update();
+
+  superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
+
+  ASSERT_TRUE(superstructure_output);
+
+  EXPECT_FALSE(superstructure_output.value()->ground_gear_down());
+  EXPECT_TRUE(superstructure_output.value()->ball_intake_down());
+  EXPECT_TRUE(superstructure_output.value()->gear_shutter_open());
+}
+
 }  // namespace c2017
