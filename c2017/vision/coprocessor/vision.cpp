@@ -19,7 +19,7 @@ void RunVision(int camera_index) {
   // cv::VideoWriter output{"output.avi", CV_FOURCC('M', 'J', 'P', 'G'), 30, cv::Size(640 * 2, 480)};
   cv::VideoCapture cap;
   cap.open(camera_index);
-  muan::Vision::ColorRange range{cv::Scalar(0, 30, 0), cv::Scalar(30, 160, 30), CV_BGR2RGB};
+  muan::Vision::ColorRange range{cv::Scalar(0, 50, 0), cv::Scalar(50, 180, 50), CV_BGR2RGB};
   muan::Vision::VisionConstants constants{1.14, 1, -.1, -.2, 1};
   muan::Vision vision{range, std::make_shared<VisionScorer2017>(), constants};
   cv::Mat raw;
