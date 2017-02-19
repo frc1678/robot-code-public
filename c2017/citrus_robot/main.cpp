@@ -131,23 +131,29 @@ void CitrusRobot::SendSuperstructureMessage() {
   // Shooting buttons
   if (fender_align_shoot_->was_clicked()) {
     // Avery - Throttle Button
-    intake_group_goal->set_ground_intake_position(intake_group::INTAKE_BALLS);
+    //intake_group_goal->set_ground_intake_position(intake_group::INTAKE_BALLS);
+    //shooter_group_goal->set_position(shooter_group::Position::FENDER);
+    //shooter_group_goal->set_wheel(shooter_group::Wheel::BOTH);
     shooter_group_goal->set_position(shooter_group::Position::FENDER);
-    shooter_group_goal->set_wheel(shooter_group::Wheel::BOTH);
+    shooter_group_goal->set_wheel(shooter_group::Wheel::SPINUP);
+    using_vision_ = true;
   } else if (just_spinup_->is_pressed()) {
     // Kelly - Gamepad Button
     shooter_group_goal->set_position(shooter_group::Position::FENDER);
     shooter_group_goal->set_wheel(shooter_group::Wheel::SPINUP);
+    using_vision_ = false;
   } else if (just_shoot_->is_pressed()) {
     // Kelly - Gamepad Button
     intake_group_goal->set_ground_intake_position(intake_group::INTAKE_BALLS);
     shooter_group_goal->set_position(shooter_group::Position::FENDER);
     shooter_group_goal->set_wheel(shooter_group::Wheel::SHOOT);
+    using_vision_ = false;
   } else if (stop_shooting_->was_clicked()) {
     // Kelly - Gamepad Button
     shooter_group_goal->set_wheel(shooter_group::Wheel::IDLE);
     intake_group_goal->set_roller(intake_group::ROLLERS_IDLE);
     intake_group_goal->set_ground_intake_position(intake_group::INTAKE_NONE);
+    using_vision_ = false;
   }
 
   c2017::QueueManager::GetInstance().climber_goal_queue().WriteMessage(climber_goal);
@@ -156,6 +162,9 @@ void CitrusRobot::SendSuperstructureMessage() {
 }
 
 void CitrusRobot::SendDrivetrainMessage() {
+  c2017::vision::VisionGoalProto vision_goal;
+  vision_goal->set_should_align(using_vision_);
+
   frc971::control_loops::drivetrain::GoalProto drivetrain_goal;
 
   double throttle = -throttle_.wpilib_joystick()->GetRawAxis(1);
@@ -166,7 +175,13 @@ void CitrusRobot::SendDrivetrainMessage() {
   drivetrain_goal->mutable_teleop_command()->set_throttle(throttle);
   drivetrain_goal->mutable_teleop_command()->set_quick_turn(quickturn);
 
-  // c2017::QueueManager::GetInstance().drivetrain_goal_queue()->WriteMessage(drivetrain_goal);
+  auto vision_status =
+      c2017::QueueManager::GetInstance().vision_status_queue().ReadLastMessage();
+  if (!using_vision_ || !vision_status || vision_status.value()->aligned()) {
+    using_vision_ = false;
+    c2017::QueueManager::GetInstance().drivetrain_goal_queue()->WriteMessage(drivetrain_goal);
+  }
+  c2017::QueueManager::GetInstance().vision_goal_queue().WriteMessage(vision_goal);
 }
 
 }  // namespace citrus_robot

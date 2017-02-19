@@ -5,7 +5,7 @@ namespace c2017 {
 namespace vision {
 
 VisionSubsystem::VisionSubsystem()
-    : should_align_{true},
+    : should_align_{false},
       running_{false},
       properties_{7.0, 5.0, 3.0, 2.0, c2017::drivetrain::GetDrivetrainConfig().robot_radius},
       vision_input_reader_{QueueManager::GetInstance().vision_input_queue().MakeReader()},
@@ -19,6 +19,10 @@ VisionSubsystem::VisionSubsystem()
 void VisionSubsystem::Update() {
   auto ds = driverstation_reader_.ReadLastMessage();
   bool disabled = ds ? ((*ds)->mode() == RobotMode::DISABLED || (*ds)->mode() == RobotMode::ESTOP) : true;
+  auto goal = QueueManager::GetInstance().vision_goal_queue().ReadLastMessage();
+  if (goal) {
+    should_align_ = goal.value()->should_align();
+  }
 
   VisionStatusProto status;
   status->set_target_found(false);
@@ -38,7 +42,7 @@ void VisionSubsystem::Update() {
   }
 
   bool terminated = false;
-  if (!disabled) {
+  if (!disabled && should_align_) {
     if (!running_) {
       muan::actions::DrivetrainActionParams params;
       params.termination = muan::actions::DrivetrainTermination{0.05, 0.05, 0.05, 0.05};
@@ -46,7 +50,11 @@ void VisionSubsystem::Update() {
       action_.ExecuteDrive(params);
       running_ = true;
     } else {
-      terminated = !action_.Update();
+      // Once it is aligned stop trying to align more. If the profile
+      // is done but vision isn't, reset the profile.
+      running_ = action_.Update();
+      should_align_ = running_ || std::abs(status->angle_to_target()) > 0.02;
+      terminated = !should_align_;
     }
   } else {
     running_ = false;
@@ -54,8 +62,6 @@ void VisionSubsystem::Update() {
   status->set_aligned(terminated);
   QueueManager::GetInstance().vision_status_queue().WriteMessage(status);
 }
-
-void VisionSubsystem::SetGoal(VisionGoalProto goal) { should_align_ = goal->should_align(); }
 
 }  // namespace vision
 }  // namespace c2017

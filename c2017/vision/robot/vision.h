@@ -12,7 +12,6 @@ namespace vision {
 class VisionSubsystem {
  public:
   VisionSubsystem();
-  void SetGoal(VisionGoalProto goal);
   void Update();
 
  protected:

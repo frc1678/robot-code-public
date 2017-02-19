@@ -37,6 +37,7 @@ class CitrusRobot {
 
   bool ball_intake_down_ = false;
   bool currently_climbing_ = false;
+  bool using_vision_ = false;
 
   c2017::intake_group::IntakeGroupGoalProto intake_group_goal;
   c2017::shooter_group::ShooterGroupGoalProto shooter_group_goal;
