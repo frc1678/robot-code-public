@@ -131,9 +131,9 @@ void CitrusRobot::SendSuperstructureMessage() {
   // Shooting buttons
   if (fender_align_shoot_->was_clicked()) {
     // Avery - Throttle Button
-    //intake_group_goal->set_ground_intake_position(intake_group::INTAKE_BALLS);
-    //shooter_group_goal->set_position(shooter_group::Position::FENDER);
-    //shooter_group_goal->set_wheel(shooter_group::Wheel::BOTH);
+    // intake_group_goal->set_ground_intake_position(intake_group::INTAKE_BALLS);
+    // shooter_group_goal->set_position(shooter_group::Position::FENDER);
+    // shooter_group_goal->set_wheel(shooter_group::Wheel::BOTH);
     shooter_group_goal->set_position(shooter_group::Position::FENDER);
     shooter_group_goal->set_wheel(shooter_group::Wheel::SPINUP);
     using_vision_ = true;
@@ -175,8 +175,7 @@ void CitrusRobot::SendDrivetrainMessage() {
   drivetrain_goal->mutable_teleop_command()->set_throttle(throttle);
   drivetrain_goal->mutable_teleop_command()->set_quick_turn(quickturn);
 
-  auto vision_status =
-      c2017::QueueManager::GetInstance().vision_status_queue().ReadLastMessage();
+  auto vision_status = c2017::QueueManager::GetInstance().vision_status_queue().ReadLastMessage();
   if (!using_vision_ || !vision_status || vision_status.value()->aligned()) {
     using_vision_ = false;
     c2017::QueueManager::GetInstance().drivetrain_goal_queue()->WriteMessage(drivetrain_goal);
