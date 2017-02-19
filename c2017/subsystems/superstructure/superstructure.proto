@@ -5,13 +5,7 @@ package c2017.superstructure;
 option cc_enable_arenas = true;
 
 message SuperstructureStatus {
-  required bool gear_intaking = 1;
-  required bool gear_scoring = 2;
-  required bool ball_intaking = 3;
-  required bool ball_reverse = 4;
-  required bool shooting = 5;
-  required bool load_hp_gear = 6;
-  required bool load_hp_both = 7;
-  required bool load_hp_balls = 8;
-  required bool climbing = 9;
+  required bool gear_intake_down = 1;
+  required bool shooting = 2;
+  required bool climbing = 3;
 }

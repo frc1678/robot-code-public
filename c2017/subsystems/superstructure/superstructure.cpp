@@ -114,30 +114,18 @@ void SuperStructure::Update() {
       case c2017::intake_group::HpLoadType::HP_LOAD_BALLS:
         // hp load balls: hp goal = balls
         magazine_goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::BALLS);
-        superstructure_status_proto_->set_load_hp_balls(true);
-        superstructure_status_proto_->set_load_hp_gear(false);
-        superstructure_status_proto_->set_load_hp_both(false);
         break;
       case c2017::intake_group::HpLoadType::HP_LOAD_GEAR:
         // hp load gear: hp goal = gear
         magazine_goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::GEAR);
-        superstructure_status_proto_->set_load_hp_balls(false);
-        superstructure_status_proto_->set_load_hp_gear(true);
-        superstructure_status_proto_->set_load_hp_both(false);
         break;
       case c2017::intake_group::HpLoadType::HP_LOAD_NONE:
         // hp load none: hp goal = none
         magazine_goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::NONE);
-        superstructure_status_proto_->set_load_hp_balls(false);
-        superstructure_status_proto_->set_load_hp_gear(false);
-        superstructure_status_proto_->set_load_hp_both(false);
         break;
       case c2017::intake_group::HpLoadType::HP_LOAD_BOTH:
         // hp load both: hp goal = both
         magazine_goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::BOTH);
-        superstructure_status_proto_->set_load_hp_balls(false);
-        superstructure_status_proto_->set_load_hp_gear(false);
-        superstructure_status_proto_->set_load_hp_both(true);
         break;
     }
 
