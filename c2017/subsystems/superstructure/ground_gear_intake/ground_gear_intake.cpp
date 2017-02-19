@@ -17,27 +17,28 @@ GroundGearIntakeOutputProto GroundGearIntake::Update(GroundGearIntakeInputProto 
         intake_down = false;
         break;
       case INTAKING:
-        voltage = 12.0;
+        voltage = kIntakeVoltage;
         intake_down = true;
-        if (input->current() > 60) {
+        if (input->current() > kCurrentThreshold) {
           current_spiked = true;
           current_state_ = PICKING_UP;
           pickup_timer_ = kPickupTicks;
+          voltage = kPickupVoltage;
         }
         break;
       case PICKING_UP:
-        voltage = 2.5;
+        voltage = kPickupVoltage;
         intake_down = false;
-        if (--pickup_timer_ >= 0) {
+        if (--pickup_timer_ < 0) {
           current_state_ = CARRYING;
         }
         break;
       case CARRYING:
-        voltage = 1.5;
+        voltage = kCarryVoltage;
         intake_down = false;
         break;
       case SCORING:
-        voltage = -12.0;
+        voltage = kScoreVoltage;
         intake_down = false;
         break;
     }

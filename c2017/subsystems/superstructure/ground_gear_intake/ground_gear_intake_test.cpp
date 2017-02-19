@@ -4,8 +4,8 @@
 
 class GroundGearIntakeTest : public ::testing::Test {
  public:
-  void Update(double current, bool robot_disabled) {
-    for (int i = 0; i < 1000; i++) {
+  void Update(double current, bool robot_disabled, int num_ticks) {
+    for (int i = 0; i < num_ticks; i++) {
       input->set_current(current);
       output = gear_intake.Update(input, !robot_disabled);
     }
@@ -17,113 +17,83 @@ class GroundGearIntakeTest : public ::testing::Test {
   }
 
   double GetVoltage() { return output->roller_voltage(); }
-  bool GetIntakeState() { return output->intake_down(); }
+  bool IsDown() { return output->intake_down(); }
+  c2017::ground_gear_intake::State GetIntakeState() { return gear_intake.current_state(); }
 
  private:
   c2017::ground_gear_intake::GroundGearIntake gear_intake;
   c2017::ground_gear_intake::GroundGearIntakeInputProto input;
   c2017::ground_gear_intake::GroundGearIntakeGoalProto goal;
   c2017::ground_gear_intake::GroundGearIntakeOutputProto output;
-  // put in any custom data members that you need
 };
 
-TEST_F(GroundGearIntakeTest, CanPickupWithoutCurrentSpike) {
-  SetGoal(c2017::ground_gear_intake::PICKUP);
-  Update(20, false);
-  EXPECT_TRUE(GetIntakeState());
-  EXPECT_NEAR(GetVoltage(), 12., 1e-5);
+TEST_F(GroundGearIntakeTest, Idling) {
+  SetGoal(c2017::ground_gear_intake::NONE);
+  Update(0, false, 1);
+
+  EXPECT_EQ(GetIntakeState(), c2017::ground_gear_intake::IDLE);
+  EXPECT_EQ(GetVoltage(), 0.0);
 }
 
-TEST_F(GroundGearIntakeTest, CanCarryWithoutCurrentSpike) {
-  SetGoal(c2017::ground_gear_intake::CARRY);
-  Update(20, false);
-  EXPECT_FALSE(GetIntakeState());
-  EXPECT_NEAR(GetVoltage(), 0., 1e-5);
+TEST_F(GroundGearIntakeTest, Intaking) {
+  SetGoal(c2017::ground_gear_intake::DROP);
+  Update(0, false, 1);
+
+  EXPECT_EQ(GetIntakeState(), c2017::ground_gear_intake::INTAKING);
+  EXPECT_EQ(GetVoltage(), 12.0);
+
+  SetGoal(c2017::ground_gear_intake::NONE);
+  Update(0, false, 10);
+
+  EXPECT_EQ(GetIntakeState(), c2017::ground_gear_intake::INTAKING);
+  EXPECT_EQ(GetVoltage(), 12.0);
 }
 
-TEST_F(GroundGearIntakeTest, CanScoreWithoutCurrentSpike) {
+TEST_F(GroundGearIntakeTest, FullSequence) {
+  SetGoal(c2017::ground_gear_intake::DROP);
+  Update(0, false, 1);
+
+  SetGoal(c2017::ground_gear_intake::NONE);
+  Update(15.0, false, 1);
+
+  EXPECT_EQ(GetIntakeState(), c2017::ground_gear_intake::INTAKING);
+
+  Update(70.0, false, 1);
+
+  EXPECT_EQ(GetIntakeState(), c2017::ground_gear_intake::PICKING_UP);
+  EXPECT_LT(GetVoltage(), 6.0);
+  EXPECT_GT(GetVoltage(), 0.0);
+
+  Update(15.0, false, 500);
+
+  EXPECT_EQ(GetIntakeState(), c2017::ground_gear_intake::CARRYING);
+  // 775pros will stall out at stall at voltages >= 2.5 if left indefinitely.
+  EXPECT_LT(GetVoltage(), 2.5);
+  EXPECT_GT(GetVoltage(), 0.0);
+
+  Update(15.0, false, 100);
+
+  EXPECT_EQ(GetIntakeState(), c2017::ground_gear_intake::CARRYING);
+  
   SetGoal(c2017::ground_gear_intake::SCORE);
-  Update(20., false);
-  EXPECT_FALSE(GetIntakeState());
-  EXPECT_NEAR(GetVoltage(), -12., 1e-5);
+  Update(15.0, false, 1);
+
+  EXPECT_EQ(GetIntakeState(), c2017::ground_gear_intake::SCORING);
+  EXPECT_LT(GetVoltage(), 0.0);
 }
 
-TEST_F(GroundGearIntakeTest, CanScoreWithCurrentSpike) {
-  SetGoal(c2017::ground_gear_intake::SCORE);
-  Update(134., false);
-  EXPECT_FALSE(GetIntakeState());
-  EXPECT_NEAR(GetVoltage(), -12., 1e-5);
+TEST_F(GroundGearIntakeTest, RiseFromIntaking) {
+  SetGoal(c2017::ground_gear_intake::DROP);
+  Update(0, false, 1);
+  SetGoal(c2017::ground_gear_intake::RISE);
+  Update(0, false, 1);
+  EXPECT_EQ(GetIntakeState(), c2017::ground_gear_intake::IDLE);
 }
 
-// TODO(Kelly) Make this test work
-/* Commented out for now, will be addressed later when current is reviewed
-  TEST_F(GroundGearIntakeTest, CanCarryAfterPickingUpStalls) {
-  SetGoal(c2017::ground_gear_intake::PICKUP);
-  Update(20., false);
-  EXPECT_TRUE(GetIntakeState());
-  EXPECT_NEAR(GetVoltage(), 12., 1e-5);
-
-  SetGoal(c2017::ground_gear_intake::PICKUP);
-  Update(134., false);
-  EXPECT_FALSE(GetIntakeState());
-  EXPECT_NEAR(GetVoltage(), 0., 1e-5);
-
-  SetGoal(c2017::ground_gear_intake::CARRY);
-  Update(20., false);
-  EXPECT_FALSE(GetIntakeState());
-  EXPECT_NEAR(GetVoltage(), 0., 1e-5);
-} */
-
-TEST_F(GroundGearIntakeTest, CanScoreAfterCarrying) {
-  SetGoal(c2017::ground_gear_intake::CARRY);
-  Update(20., false);
-  EXPECT_FALSE(GetIntakeState());
-  EXPECT_NEAR(GetVoltage(), 0., 1e-5);
-
-  SetGoal(c2017::ground_gear_intake::SCORE);
-  Update(20., false);
-  EXPECT_FALSE(GetIntakeState());
-  EXPECT_NEAR(GetVoltage(), -12., 1e-5);
+TEST_F(GroundGearIntakeTest, NoRiseFromPickup) {
+  SetGoal(c2017::ground_gear_intake::DROP);
+  Update(90.0, false, 10);
+  SetGoal(c2017::ground_gear_intake::RISE);
+  Update(0, false, 1);
+  EXPECT_EQ(GetIntakeState(), c2017::ground_gear_intake::PICKING_UP);
 }
-
-TEST_F(GroundGearIntakeTest, CanScoreAfterPickup) {
-  SetGoal(c2017::ground_gear_intake::PICKUP);
-  Update(20., false);
-  EXPECT_TRUE(GetIntakeState());
-  EXPECT_NEAR(GetVoltage(), 12., 1e-5);
-
-  SetGoal(c2017::ground_gear_intake::SCORE);
-  Update(20., false);
-  EXPECT_FALSE(GetIntakeState());
-  EXPECT_NEAR(GetVoltage(), -12., 1e-5);
-}
-
-/* Same as above
-TEST_F(GroundGearIntakeTest, PickupStallCarryPickup) {
-  SetGoal(c2017::ground_gear_intake::PICKUP);
-  Update(20., false);
-  EXPECT_TRUE(GetIntakeState());
-  EXPECT_NEAR(GetVoltage(), 12., 1e-5);
-
-  SetGoal(c2017::ground_gear_intake::PICKUP);
-  Update(134., false);
-  EXPECT_FALSE(GetIntakeState());
-  EXPECT_NEAR(GetVoltage(), 0., 1e-5);
-
-  SetGoal(c2017::ground_gear_intake::CARRY);
-  Update(0., false);
-  EXPECT_FALSE(GetIntakeState());
-  EXPECT_NEAR(GetVoltage(), 0., 1e-5);
-
-  SetGoal(c2017::ground_gear_intake::PICKUP);
-  Update(20., false);
-  EXPECT_TRUE(GetIntakeState());
-  EXPECT_NEAR(GetVoltage(), 12., 1e-5);
-}
-
-TEST_F(GroundGearIntakeTest, DoesntTryToMoveWhenDisabled) {
-  SetGoal(c2017::ground_gear_intake::PICKUP);
-  Update(20., true);
-  EXPECT_FALSE(GetIntakeState());
-  EXPECT_EQ(GetVoltage(), 0);
-}*/
