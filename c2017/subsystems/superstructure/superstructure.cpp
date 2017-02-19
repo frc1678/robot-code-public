@@ -160,15 +160,6 @@ void SuperStructure::Update() {
   QueueManager::GetInstance().superstructure_status_queue().WriteMessage(superstructure_status_proto_);
 }
 
-void SuperStructure::Shoot(const c2017::shooter::ShooterStatusProto& shooter_status) {
-}
-
-void SuperStructure::Spinup(const c2017::shooter_group::ShooterGroupGoalProto& shooter_group_goal) {
-}
-
-void SuperStructure::UpdateIntake() {
-}
-
 void SuperStructure::SetWpilibOutput() {
   wpilib::WpilibOutputProto wpilib_output;
   const auto ground_gear_input = QueueManager::GetInstance().ground_gear_input_queue().ReadLastMessage();
