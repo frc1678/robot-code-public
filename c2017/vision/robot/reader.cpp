@@ -4,7 +4,6 @@
 #include "third_party/aos/common/time.h"
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/aos/linux_code/init.h"
-#include <iostream>
 
 namespace c2017 {
 namespace vision {
@@ -27,7 +26,6 @@ void VisionReader::operator()() {
     position->ParseFromArray(buffer, 1024);
 
     vision_input_queue_.WriteMessage(position);
-    std::cout << position->angle_to_target() << std::endl;
 
     phased_loop.SleepUntilNext();
   }
