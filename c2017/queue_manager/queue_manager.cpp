@@ -14,6 +14,7 @@ void QueueManager::StartLogging() {
   logger_.AddQueue("drivetrain_output", &drivetrain_output_queue_);
 
   logger_.AddQueue("wpilib_output", &superstructure_output_queue_);
+  logger_.AddQueue("superstructure_status", &superstructure_status_queue_);
 
   logger_.AddQueue("trigger_input", &trigger_input_queue_);
   logger_.AddQueue("trigger_status", &trigger_status_queue_);

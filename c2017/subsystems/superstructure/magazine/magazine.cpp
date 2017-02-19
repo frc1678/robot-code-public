@@ -39,11 +39,11 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input, bool outputs_enab
         magazine_status_->set_side_conveyor_running(false);
         break;
       case SIDE_PULL_IN:
-        side_voltage = 9;
+        side_voltage = 6;
         magazine_status_->set_side_conveyor_running(true);
         break;
       case SIDE_AGITATE:
-        side_voltage = -9;
+        side_voltage = -6;
         magazine_status_->set_side_conveyor_running(true);
         break;
     }
@@ -78,8 +78,8 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input, bool outputs_enab
         break;
     }
   } else {
-    gear_intake_closed = false;
-    magazine_extended_ = false;
+    gear_intake_closed = true;
+    magazine_extended_ = true;
     gear_shutter_open = false;
     upper_voltage = 0;
     side_voltage = 0;
@@ -94,6 +94,7 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input, bool outputs_enab
   output_->set_side_voltage(side_voltage);
   output_->set_lower_voltage(lower_voltage);
   magazine_status_->set_has_hp_gear(has_hp_gear_);
+  QueueManager::GetInstance().magazine_status_queue().WriteMessage(magazine_status_);
 
   return output_;
 }
