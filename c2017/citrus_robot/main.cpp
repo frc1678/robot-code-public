@@ -64,82 +64,81 @@ void CitrusRobot::SendDSMessage() {
 }
 
 void CitrusRobot::SendSuperstructureMessage() {
-  c2017::intake_group::IntakeGroupGoalProto intake_group_goal;
   c2017::climber::ClimberGoalProto climber_goal;
 
   if (ball_intake_run_->is_pressed()) {
-    intake_group_goal->set_ground_ball_rollers(intake_group::GROUND_BALL_IN);
+    intake_group_goal_->set_ground_ball_rollers(intake_group::GROUND_BALL_IN);
   } else if (ball_reverse_->is_pressed()) {
-    intake_group_goal->set_ground_ball_rollers(intake_group::GROUND_BALL_OUT);
+    intake_group_goal_->set_ground_ball_rollers(intake_group::GROUND_BALL_OUT);
   } else {
-    intake_group_goal->set_ground_ball_rollers(intake_group::GROUND_BALL_NONE);
+    intake_group_goal_->set_ground_ball_rollers(intake_group::GROUND_BALL_NONE);
   }
 
-  intake_group_goal->set_agitate(agitate_->is_pressed());
+  intake_group_goal_->set_agitate(agitate_->is_pressed());
 
   if (gear_intake_down_->was_clicked()) {
-    intake_group_goal->set_ground_gear_intake(intake_group::GROUND_GEAR_DROP);
+    intake_group_goal_->set_ground_gear_intake(intake_group::GROUND_GEAR_DROP);
   } else if (gear_intake_down_->was_released()) {
-    intake_group_goal->set_ground_gear_intake(intake_group::GROUND_GEAR_RISE);
+    intake_group_goal_->set_ground_gear_intake(intake_group::GROUND_GEAR_RISE);
   } else if (ground_gear_score_->is_pressed()) {
-    intake_group_goal->set_ground_gear_intake(intake_group::GROUND_GEAR_SCORE);
+    intake_group_goal_->set_ground_gear_intake(intake_group::GROUND_GEAR_SCORE);
   } else {
-    intake_group_goal->set_ground_gear_intake(intake_group::GROUND_GEAR_NONE);
+    intake_group_goal_->set_ground_gear_intake(intake_group::GROUND_GEAR_NONE);
   }
 
   // Toggle the ball intake
   ball_intake_down_ = (ball_intake_down_ != ball_intake_toggle_->was_clicked());
 
-  intake_group_goal->set_ground_ball_position(ball_intake_down_ ? intake_group::GROUND_BALL_DOWN
+  intake_group_goal_->set_ground_ball_position(ball_intake_down_ ? intake_group::GROUND_BALL_DOWN
                                                                 : intake_group::GROUND_BALL_UP);
 
   // Hp load buttons
   if (hp_load_gears_->is_pressed()) {
     // Kelly - Gamepad D-Pad
-    intake_group_goal->set_hp_load_type(intake_group::HP_LOAD_GEAR);
+    intake_group_goal_->set_hp_load_type(intake_group::HP_LOAD_GEAR);
   } else if (hp_load_balls_->is_pressed()) {
     // Kelly - Gamepad D-Pad
-    intake_group_goal->set_hp_load_type(intake_group::HP_LOAD_BALLS);
+    intake_group_goal_->set_hp_load_type(intake_group::HP_LOAD_BALLS);
   } else if (hp_load_both_->is_pressed()) {
     // Kelly - Gamepad D-Pad
-    intake_group_goal->set_hp_load_type(intake_group::HP_LOAD_BOTH);
+    intake_group_goal_->set_hp_load_type(intake_group::HP_LOAD_BOTH);
   } else {
-    intake_group_goal->set_hp_load_type(intake_group::HP_LOAD_NONE);
+    intake_group_goal_->set_hp_load_type(intake_group::HP_LOAD_NONE);
   }
 
-  intake_group_goal->set_score_hp_gear(score_hp_gear_->is_pressed());
+  intake_group_goal_->set_score_hp_gear(score_hp_gear_->is_pressed());
 
   if (climb_->was_released()) {
     // Kelly - Gamepad Button
     currently_climbing_ = !currently_climbing_;
-    shooter_group_goal->set_should_climb(currently_climbing_);
+    shooter_group_goal_->set_should_climb(currently_climbing_);
   }
 
   // Shooting buttons
   if (fender_align_shoot_->was_clicked()) {
     // Avery - Throttle Button
-    intake_group_goal->set_ground_ball_position(intake_group::GROUND_BALL_DOWN);
-    shooter_group_goal->set_position(shooter_group::Position::FENDER);
-    shooter_group_goal->set_wheel(shooter_group::Wheel::BOTH);
+    intake_group_goal_->set_ground_ball_position(intake_group::GROUND_BALL_DOWN);
+    shooter_group_goal_->set_position(shooter_group::Position::FENDER);
+    shooter_group_goal_->set_wheel(shooter_group::Wheel::BOTH);
   } else if (just_spinup_->is_pressed()) {
     // Kelly - Gamepad Button
-    shooter_group_goal->set_position(shooter_group::Position::FENDER);
-    shooter_group_goal->set_wheel(shooter_group::Wheel::SPINUP);
+    shooter_group_goal_->set_position(shooter_group::Position::FENDER);
+    shooter_group_goal_->set_wheel(shooter_group::Wheel::SPINUP);
   } else if (just_shoot_->is_pressed()) {
     // Kelly - Gamepad Button
-    intake_group_goal->set_ground_ball_position(intake_group::GROUND_BALL_DOWN);
-    shooter_group_goal->set_position(shooter_group::Position::FENDER);
-    shooter_group_goal->set_wheel(shooter_group::Wheel::SHOOT);
+    intake_group_goal_->set_ground_ball_position(intake_group::GROUND_BALL_DOWN);
+    shooter_group_goal_->set_position(shooter_group::Position::FENDER);
+    shooter_group_goal_->set_wheel(shooter_group::Wheel::SHOOT);
   } else if (stop_shooting_->was_clicked()) {
     // Kelly - Gamepad Button
-    shooter_group_goal->set_wheel(shooter_group::Wheel::IDLE);
-    intake_group_goal->set_ground_ball_rollers(intake_group::GROUND_BALL_NONE);
-    intake_group_goal->set_ground_ball_position(intake_group::GROUND_BALL_DOWN);
+    shooter_group_goal_->set_wheel(shooter_group::Wheel::IDLE);
+    intake_group_goal_->set_ground_ball_rollers(intake_group::GROUND_BALL_NONE);
+    intake_group_goal_->set_ground_ball_position(intake_group::GROUND_BALL_UP);
   }
 
   c2017::QueueManager::GetInstance().climber_goal_queue().WriteMessage(climber_goal);
-  c2017::QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal);
-  c2017::QueueManager::GetInstance().shooter_group_goal_queue().WriteMessage(shooter_group_goal);
+  c2017::QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal_);
+  c2017::QueueManager::GetInstance().shooter_group_goal_queue().WriteMessage(shooter_group_goal_);
 }
 
 void CitrusRobot::SendDrivetrainMessage() {

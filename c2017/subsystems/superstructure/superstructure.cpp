@@ -12,74 +12,56 @@ constexpr double kHopperVelocity = 3000 * (M_PI * 2) / 60;
 SuperStructure::SuperStructure() {}
 
 void SuperStructure::Update() {
-  UpdateShooter();
-  UpdateIntake();
+  c2017::magazine::MagazineGoalProto magazine_goal;
 
-  magazine_.SetGoal(magazine_goal_);
-  shooter_.SetGoal(shooter_goal_);
+  auto maybe_shooter_group_goal = QueueManager::GetInstance().shooter_group_goal_queue().ReadLastMessage();
+  auto maybe_shooter_status = QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
 
-  SetWpilibOutput();
-  QueueManager::GetInstance().superstructure_status_queue().WriteMessage(superstructure_status_proto_);
-}
-
-void SuperStructure::UpdateShooter() {
-  auto shooter_group_goal = QueueManager::GetInstance().shooter_group_goal_queue().ReadLastMessage();
-  auto shooter_status = QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
-
-  if (shooter_group_goal && shooter_status) {
+  if (maybe_shooter_group_goal && maybe_shooter_status) {
     // MUST call spinup before you call shoot
-    switch (shooter_group_goal.value()->wheel()) {
-      case c2017::shooter_group::Wheel::BOTH:
-        Spinup(shooter_group_goal.value());
-        Shoot(shooter_status.value());
-        break;
-      case c2017::shooter_group::Wheel::SHOOT:
-        Shoot(shooter_status.value());
-        break;
-      case c2017::shooter_group::Wheel::SPINUP:
-        Spinup(shooter_group_goal.value());
-        break;
-      case c2017::shooter_group::Wheel::IDLE:
-        magazine_goal_->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
-        magazine_goal_->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
-        magazine_goal_->set_lower_goal(c2017::magazine::LowerGoalState::LOWER_IDLE);
+    auto shooter_group_goal = maybe_shooter_group_goal.value();
+    auto shooter_status = maybe_shooter_status.value();
+
+    if (shooter_group_goal->wheel() == c2017::shooter_group::Wheel::SPINUP ||
+        shooter_group_goal->wheel() == c2017::shooter_group::Wheel::BOTH) {
+      if (shooter_group_goal->position() == c2017::shooter_group::Position::FENDER) {
+        shooter_goal_->set_goal_mode(c2017::shooter::ShotMode::FENDER);
+        shooter_goal_->set_goal_velocity(kFenderVelocity);
+      } else if (shooter_group_goal->position() == c2017::shooter_group::Position::HOPPER) {
+        shooter_goal_->set_goal_mode(c2017::shooter::ShotMode::HOPPER);
+        shooter_goal_->set_goal_velocity(kHopperVelocity);
+      }
+    }
+
+    if (shooter_group_goal->wheel() == c2017::shooter_group::Wheel::SHOOT ||
+        shooter_group_goal->wheel() == c2017::shooter_group::Wheel::BOTH) {
+      if (shooter_status->at_goal() && shooter_status->currently_running()) {
+        magazine_goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_PULL_IN);
+        magazine_goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_FORWARD);
+        magazine_goal->set_lower_goal(c2017::magazine::LowerGoalState::LOWER_FORWARD);
+        is_shooting_ = true;
+      } else {  // Shooter not at speed
+        is_shooting_ = false;
+        magazine_goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
+      }
+    }
+
+    if (shooter_group_goal->wheel() == c2017::shooter_group::Wheel::IDLE) {
+        magazine_goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
+        magazine_goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
+        magazine_goal->set_lower_goal(c2017::magazine::LowerGoalState::LOWER_IDLE);
         superstructure_status_proto_->set_shooting(false);
         shooter_goal_->set_goal_velocity(0.0);
-        break;
     }
 
     superstructure_status_proto_->set_shooting(is_shooting_);
 
     // Climbing!
-    superstructure_status_proto_->set_climbing(shooter_group_goal.value()->should_climb());
-    magazine_goal_->set_magazine_extended(!shooter_group_goal.value()->should_climb());
-    climber_goal_->set_climbing(shooter_group_goal.value()->should_climb());
+    superstructure_status_proto_->set_climbing(shooter_group_goal->should_climb());
+    magazine_goal->set_magazine_extended(!shooter_group_goal->should_climb());
+    climber_goal_->set_climbing(shooter_group_goal->should_climb());
   }
-}
 
-void SuperStructure::Shoot(const c2017::shooter::ShooterStatusProto& shooter_status) {
-  if (shooter_status->at_goal() && shooter_status->currently_running()) {
-    magazine_goal_->set_side_goal(c2017::magazine::SideGoalState::SIDE_PULL_IN);
-    magazine_goal_->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_FORWARD);
-    magazine_goal_->set_lower_goal(c2017::magazine::LowerGoalState::LOWER_FORWARD);
-    is_shooting_ = true;
-  } else {  // Shooter not at speed
-    is_shooting_ = false;
-    magazine_goal_->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
-  }
-}
-
-void SuperStructure::Spinup(const c2017::shooter_group::ShooterGroupGoalProto& shooter_group_goal) {
-  if (shooter_group_goal->position() == c2017::shooter_group::Position::FENDER) {
-    shooter_goal_->set_goal_mode(c2017::shooter::ShotMode::FENDER);
-    shooter_goal_->set_goal_velocity(kFenderVelocity);
-  } else if (shooter_group_goal->position() == c2017::shooter_group::Position::HOPPER) {
-    shooter_goal_->set_goal_mode(c2017::shooter::ShotMode::HOPPER);
-    shooter_goal_->set_goal_velocity(kHopperVelocity);
-  }
-}
-
-void SuperStructure::UpdateIntake() {
   // Reading the group goal queues
   auto maybe_intake_group_goal = QueueManager::GetInstance().intake_group_goal_queue().ReadLastMessage();
 
@@ -123,36 +105,36 @@ void SuperStructure::UpdateIntake() {
     }
 
     if (intake_group_goal->agitate()) {
-      magazine_goal_->set_side_goal(c2017::magazine::SideGoalState::SIDE_AGITATE);
-      magazine_goal_->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
+      magazine_goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_AGITATE);
+      magazine_goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
     }
 
     // HP logic
     switch (intake_group_goal->hp_load_type()) {
       case c2017::intake_group::HpLoadType::HP_LOAD_BALLS:
         // hp load balls: hp goal = balls
-        magazine_goal_->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::BALLS);
+        magazine_goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::BALLS);
         superstructure_status_proto_->set_load_hp_balls(true);
         superstructure_status_proto_->set_load_hp_gear(false);
         superstructure_status_proto_->set_load_hp_both(false);
         break;
       case c2017::intake_group::HpLoadType::HP_LOAD_GEAR:
         // hp load gear: hp goal = gear
-        magazine_goal_->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::GEAR);
+        magazine_goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::GEAR);
         superstructure_status_proto_->set_load_hp_balls(false);
         superstructure_status_proto_->set_load_hp_gear(true);
         superstructure_status_proto_->set_load_hp_both(false);
         break;
       case c2017::intake_group::HpLoadType::HP_LOAD_NONE:
         // hp load none: hp goal = none
-        magazine_goal_->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::NONE);
+        magazine_goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::NONE);
         superstructure_status_proto_->set_load_hp_balls(false);
         superstructure_status_proto_->set_load_hp_gear(false);
         superstructure_status_proto_->set_load_hp_both(false);
         break;
       case c2017::intake_group::HpLoadType::HP_LOAD_BOTH:
         // hp load both: hp goal = both
-        magazine_goal_->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::BOTH);
+        magazine_goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::BOTH);
         superstructure_status_proto_->set_load_hp_balls(false);
         superstructure_status_proto_->set_load_hp_gear(false);
         superstructure_status_proto_->set_load_hp_both(true);
@@ -161,15 +143,30 @@ void SuperStructure::UpdateIntake() {
 
     // This doesn't need to be in any specific it's just passed through to the magazine
     if (intake_group_goal->score_hp_gear()) {
-      magazine_goal_->set_score_gear(true);
+      magazine_goal->set_score_gear(true);
       ground_ball_intake_goal->set_intake_up(false);
     } else {
-      magazine_goal_->set_score_gear(false);
+      magazine_goal->set_score_gear(false);
     }
   }
 
   ground_gear_intake_.SetGoal(ground_gear_intake_goal);
   ground_ball_intake_.set_goal(ground_ball_intake_goal);
+
+  magazine_.SetGoal(magazine_goal);
+  shooter_.SetGoal(shooter_goal_);
+
+  SetWpilibOutput();
+  QueueManager::GetInstance().superstructure_status_queue().WriteMessage(superstructure_status_proto_);
+}
+
+void SuperStructure::Shoot(const c2017::shooter::ShooterStatusProto& shooter_status) {
+}
+
+void SuperStructure::Spinup(const c2017::shooter_group::ShooterGroupGoalProto& shooter_group_goal) {
+}
+
+void SuperStructure::UpdateIntake() {
 }
 
 void SuperStructure::SetWpilibOutput() {
