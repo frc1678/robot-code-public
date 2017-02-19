@@ -57,20 +57,17 @@ TEST_F(SuperstructureTest, GroundGearIntaking) {
   shooter_status_proto_->set_at_goal(true);
 
   ds->set_mode(RobotMode::TELEOP);
-  intake_group_goal_proto_->set_ground_intake_position(intake_group::INTAKE_GEAR);
-  intake_group_goal_proto_->set_gear_intake(intake_group::GEAR_INTAKE);
+  intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_UP);
+  intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_DROP);
 
   WriteQueues();
 
   superstructure.Update();
 
-  auto superstructure_status = QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage();
   auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
 
-  ASSERT_TRUE(superstructure_status);
   ASSERT_TRUE(superstructure_output);
 
-  EXPECT_TRUE(superstructure_status.value()->gear_intaking());
   EXPECT_NE(superstructure_output.value()->ground_gear_voltage(), 0);
   EXPECT_TRUE(superstructure_output.value()->ground_gear_down());
   EXPECT_FALSE(superstructure_output.value()->ball_intake_down());
@@ -82,19 +79,14 @@ TEST_F(SuperstructureTest, GroundGearScoring) {
   ds->set_mode(RobotMode::TELEOP);
   shooter_status_proto_->set_at_goal(true);
 
-  intake_group_goal_proto_->set_ground_intake_position(intake_group::INTAKE_NONE);
+  intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_UP);
   intake_group_goal_proto_->set_hp_load_type(intake_group::HP_LOAD_NONE);
-  intake_group_goal_proto_->set_roller(intake_group::ROLLERS_IDLE);
-  intake_group_goal_proto_->set_gear_intake(intake_group::GEAR_OUTTAKE);
+  intake_group_goal_proto_->set_ground_ball_rollers(intake_group::GROUND_BALL_NONE);
+  intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_SCORE);
 
   WriteQueues();
 
   superstructure.Update();
-
-  auto superstructure_status = QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage();
-
-  ASSERT_TRUE(superstructure_status);
-  EXPECT_TRUE(superstructure_status.value()->gear_scoring());
 
   auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
 
@@ -109,19 +101,14 @@ TEST_F(SuperstructureTest, BallIntaking) {
   ds->set_mode(RobotMode::TELEOP);
   shooter_status_proto_->set_at_goal(true);
 
-  intake_group_goal_proto_->set_ground_intake_position(intake_group::INTAKE_BALLS);
+  intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_DOWN);
   intake_group_goal_proto_->set_hp_load_type(intake_group::HP_LOAD_NONE);
-  intake_group_goal_proto_->set_roller(intake_group::ROLLERS_INTAKE);
-  intake_group_goal_proto_->set_gear_intake(intake_group::GEAR_IDLE);
+  intake_group_goal_proto_->set_ground_ball_rollers(intake_group::GROUND_BALL_IN);
+  intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_NONE);
 
   WriteQueues();
 
   superstructure.Update();
-
-  auto superstructure_status = QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage();
-
-  ASSERT_TRUE(superstructure_status);
-  EXPECT_TRUE(superstructure_status.value()->ball_intaking());
 
   auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
 
@@ -137,18 +124,13 @@ TEST_F(SuperstructureTest, BallReverse) {
   shooter_status_proto_->set_at_goal(true);
 
   ds->set_mode(RobotMode::TELEOP);
-  intake_group_goal_proto_->set_ground_intake_position(intake_group::INTAKE_BALLS);
+  intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_DOWN);
   intake_group_goal_proto_->set_hp_load_type(intake_group::HP_LOAD_NONE);
-  intake_group_goal_proto_->set_roller(intake_group::ROLLERS_OUTTAKE);
-  intake_group_goal_proto_->set_gear_intake(intake_group::GEAR_IDLE);
+  intake_group_goal_proto_->set_ground_ball_rollers(intake_group::GROUND_BALL_OUT);
+  intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_NONE);
 
   WriteQueues();
   superstructure.Update();
-
-  auto superstructure_status = QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage();
-
-  ASSERT_TRUE(superstructure_status);
-  EXPECT_TRUE(superstructure_status.value()->ball_reverse());
 
   auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
 
@@ -175,10 +157,10 @@ TEST_F(SuperstructureTest, SpinupShootFender) {
   ds->set_mode(RobotMode::TELEOP);
   shooter_status_proto_->set_at_goal(true);
   shooter_status_proto_->set_currently_running(true);
-  intake_group_goal_proto_->set_ground_intake_position(intake_group::INTAKE_BALLS);
+  intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_DOWN);
   intake_group_goal_proto_->set_hp_load_type(intake_group::HP_LOAD_NONE);
-  intake_group_goal_proto_->set_roller(intake_group::ROLLERS_INTAKE);
-  intake_group_goal_proto_->set_gear_intake(intake_group::GEAR_IDLE);
+  intake_group_goal_proto_->set_ground_ball_rollers(intake_group::GROUND_BALL_IN);
+  intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_NONE);
   shooter_group_goal_proto_->set_wheel(shooter_group::BOTH);
   shooter_group_goal_proto_->set_position(shooter_group::FENDER);
 
@@ -204,10 +186,10 @@ TEST_F(SuperstructureTest, SpinupShootHopper) {
   ds->set_mode(RobotMode::TELEOP);
   shooter_status_proto_->set_at_goal(true);
   shooter_status_proto_->set_currently_running(true);
-  intake_group_goal_proto_->set_ground_intake_position(intake_group::INTAKE_BALLS);
+  intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_DOWN);
   intake_group_goal_proto_->set_hp_load_type(intake_group::HP_LOAD_NONE);
-  intake_group_goal_proto_->set_roller(intake_group::ROLLERS_INTAKE);
-  intake_group_goal_proto_->set_gear_intake(intake_group::GEAR_IDLE);
+  intake_group_goal_proto_->set_ground_ball_rollers(intake_group::GROUND_BALL_IN);
+  intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_NONE);
   shooter_group_goal_proto_->set_wheel(shooter_group::BOTH);
   shooter_group_goal_proto_->set_position(shooter_group::HOPPER);
 
@@ -243,6 +225,27 @@ TEST_F(SuperstructureTest, HPGearScoring) {
 
   ASSERT_TRUE(superstructure_output);
   EXPECT_TRUE(superstructure_output.value()->gear_shutter_open());
+  EXPECT_TRUE(superstructure_output.value()->ball_intake_down());
+
+  // Update it again to make sure it stays open
+  superstructure.Update();
+
+  superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
+
+  ASSERT_TRUE(superstructure_output);
+  EXPECT_TRUE(superstructure_output.value()->gear_shutter_open());
+  EXPECT_TRUE(superstructure_output.value()->ball_intake_down());
+
+  // And then make sure it all closes when it should
+  intake_group_goal_proto_->set_score_hp_gear(false);
+  WriteQueues();
+  superstructure.Update();
+
+  superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
+
+  ASSERT_TRUE(superstructure_output);
+  EXPECT_FALSE(superstructure_output.value()->gear_shutter_open());
+  EXPECT_FALSE(superstructure_output.value()->ball_intake_down());
 
   Reset();
 }
@@ -253,10 +256,10 @@ TEST_F(SuperstructureTest, Disabled) {
   // Just make a bunch of things spin, since we're testing disabled.
   shooter_status_proto_->set_at_goal(true);
   shooter_status_proto_->set_currently_running(true);
-  intake_group_goal_proto_->set_ground_intake_position(intake_group::INTAKE_BALLS);
+  intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_DOWN);
   intake_group_goal_proto_->set_hp_load_type(intake_group::HP_LOAD_NONE);
-  intake_group_goal_proto_->set_roller(intake_group::ROLLERS_INTAKE);
-  intake_group_goal_proto_->set_gear_intake(intake_group::GEAR_IDLE);
+  intake_group_goal_proto_->set_ground_ball_rollers(intake_group::GROUND_BALL_IN);
+  intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_NONE);
   shooter_group_goal_proto_->set_wheel(shooter_group::BOTH);
   shooter_group_goal_proto_->set_position(shooter_group::HOPPER);
 
@@ -281,10 +284,10 @@ TEST_F(SuperstructureTest, Brownout) {
   // Just make a bunch of things spin, since we're testing brownout.
   shooter_status_proto_->set_at_goal(true);
   shooter_status_proto_->set_currently_running(true);
-  intake_group_goal_proto_->set_ground_intake_position(intake_group::INTAKE_BALLS);
+  intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_DOWN);
   intake_group_goal_proto_->set_hp_load_type(intake_group::HP_LOAD_NONE);
-  intake_group_goal_proto_->set_roller(intake_group::ROLLERS_INTAKE);
-  intake_group_goal_proto_->set_gear_intake(intake_group::GEAR_IDLE);
+  intake_group_goal_proto_->set_ground_ball_rollers(intake_group::GROUND_BALL_IN);
+  intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_NONE);
   shooter_group_goal_proto_->set_wheel(shooter_group::BOTH);
   shooter_group_goal_proto_->set_position(shooter_group::HOPPER);
 
