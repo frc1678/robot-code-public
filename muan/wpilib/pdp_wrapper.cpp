@@ -8,6 +8,10 @@ namespace wpilib {
 void PdpWrapper::SendValues() {
   PdpMessage message;
 
+  if (pdp_.StatusIsFatal()) {
+    pdp_.ClearError();
+  }
+
   message->set_current0(pdp_.GetCurrent(0));
   message->set_current1(pdp_.GetCurrent(1));
   message->set_current2(pdp_.GetCurrent(2));

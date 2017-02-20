@@ -12,7 +12,6 @@ global {
 init {
   c2017::intake_group::IntakeGroupGoalProto intake_group_goal;
   intake_group_goal->set_score_hp_gear(true);
-  intake_group_goal->set_ground_intake_position(c2017::intake_group::GroundIntakePosition::INTAKE_BALLS);
   c2017::QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal);
   return true;
 }

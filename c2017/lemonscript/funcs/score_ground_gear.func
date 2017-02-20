@@ -11,8 +11,7 @@ global {
 
 init {
   c2017::intake_group::IntakeGroupGoalProto intake_group_goal;
-  intake_group_goal->set_ground_intake_position(c2017::intake_group::GroundIntakePosition::INTAKE_BALLS);
-  intake_group_goal->set_gear_intake(c2017::intake_group::GearIntakeRollers::GEAR_OUTTAKE);
+  intake_group_goal->set_ground_gear_intake(c2017::intake_group::GROUND_GEAR_SCORE);
   c2017::QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal);
   return true;
 }

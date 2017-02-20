@@ -4,12 +4,6 @@ option cc_enable_arenas = true;
 
 package c2017.intake_group;
 
-enum GroundIntakePosition {
-  INTAKE_NONE = 0;
-  INTAKE_GEAR = 1;
-  INTAKE_BALLS = 2;
-}
-
 enum HpLoadType {
   HP_LOAD_NONE = 0;
   HP_LOAD_GEAR = 1;
@@ -17,24 +11,34 @@ enum HpLoadType {
   HP_LOAD_BOTH = 3;
 }
 
-enum BallIntakeRollers {
-  ROLLERS_IDLE = 0;
-  ROLLERS_INTAKE = 1;
-  ROLLERS_OUTTAKE = 2;
-  ROLLERS_AGITATE = 3;
+enum GroundGearIntakeGoal {
+  GROUND_GEAR_NONE = 0;
+  GROUND_GEAR_DROP = 1;
+  GROUND_GEAR_RISE = 2;
+  GROUND_GEAR_SCORE = 3;
 }
 
-enum GearIntakeRollers {
-  GEAR_IDLE = 0;
-  GEAR_INTAKE = 1;
-  GEAR_OUTTAKE = 2;
+// Will be overridden by gear intake position to stay in the correct volume.
+enum GroundBallIntakePosition {
+  GROUND_BALL_UP = 0;
+  GROUND_BALL_DOWN = 1;
 }
 
-message IntakeGroupGoal {//sorry about the bad naming
+enum GroundBallIntakeRollers {
+  GROUND_BALL_NONE = 0;
+  GROUND_BALL_IN = 1;
+  GROUND_BALL_OUT = 2;
+}
+
+message IntakeGroupGoal {
   required uint64 timestamp = 1;
-  required GroundIntakePosition ground_intake_position = 2;
-  required HpLoadType hp_load_type = 3;
-  required BallIntakeRollers roller = 4;
-  required GearIntakeRollers gear_intake = 5;
+  required HpLoadType hp_load_type = 2;
+
+  required GroundGearIntakeGoal ground_gear_intake = 3;
+  required GroundBallIntakePosition ground_ball_position = 4;
+  required GroundBallIntakeRollers ground_ball_rollers = 5;
+
   required bool score_hp_gear = 6;
+
+  required bool agitate = 7;
 }
