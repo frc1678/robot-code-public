@@ -36,7 +36,7 @@ void PdpWrapper::SendValues() {
   message->set_total_power(HAL_GetPDPTotalPower(module_, &status_));
 
   if (status_ != 0) {
-    std::cout << "Error in PDP wrapper: " << HAL_GetErrorMessage(status_) << std::endl;
+    std::cerr << "Error in PDP wrapper: " << HAL_GetErrorMessage(status_) << std::endl;
   }
 
   if (queue_ != nullptr) {
