@@ -20,7 +20,7 @@ class ShooterController {
 
   c2017::shooter::ShooterOutputProto Update(c2017::shooter::ShooterInputProto input, bool outputs_enabled);
   void SetGoal(c2017::shooter::ShooterGoalProto goal);
-  double GetProfiledGoalVelocity(double unprofiled_goal_velocity);
+  double update_profiled_goal_velocity(double unprofiled_goal_velocity);
 
  private:
   muan::control::StateSpaceController<1, 3, 1> controller_;

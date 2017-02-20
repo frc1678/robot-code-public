@@ -25,7 +25,7 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
   Eigen::Matrix<double, 3, 1> r_;
 
   auto y = (Eigen::Matrix<double, 1, 1>() << input->encoder_position()).finished();
-  r_ = (Eigen::Matrix<double, 3, 1>() << 0.0, GetProfiledGoalVelocity(unprofiled_goal_velocity_), 0.0)
+  r_ = (Eigen::Matrix<double, 3, 1>() << 0.0, update_profiled_goal_velocity(unprofiled_goal_velocity_), 0.0)
            .finished();
 
   y(0) = (input->encoder_position());
@@ -71,7 +71,7 @@ void ShooterController::SetGoal(c2017::shooter::ShooterGoalProto goal) {
   shot_mode_ = goal->goal_mode();
 }
 
-double ShooterController::GetProfiledGoalVelocity(double unprofiled_goal_velocity) {
+double ShooterController::update_profiled_goal_velocity(double unprofiled_goal_velocity) {
   profiled_goal_velocity_ =
       std::min(profiled_goal_velocity_ + kShooterAcceleration, unprofiled_goal_velocity);
   return profiled_goal_velocity_;
