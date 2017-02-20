@@ -1,5 +1,4 @@
 #include "c2017/vision/robot/vision.h"
-#include <iostream>
 
 namespace c2017 {
 namespace vision {
@@ -62,6 +61,7 @@ void VisionSubsystem::Update() {
       muan::actions::DrivetrainActionParams params;
       params.termination = muan::actions::DrivetrainTermination{0.05, 0.05, 0.05, 0.05};
       params.desired_angular_displacement = -status->angle_to_target();
+      params.desired_forward_distance = status->distance_to_target() - constants::kShotDistance;
       action_.ExecuteDrive(params);
       running_ = true;
     } else {
