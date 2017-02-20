@@ -14,7 +14,7 @@ CitrusRobot::CitrusRobot() : throttle_{1}, wheel_{0}, gamepad_{2} {
   ball_intake_toggle_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::RIGHT_BUMPER));      // Right Bumper
   ball_intake_run_ = gamepad_.MakeAxis(3);                                                    // Right Trigger
   gear_intake_down_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::A_BUTTON));            // Button A
-  operator_ground_gear_score_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::B_BUTTON));  // Button B
+  operator_score_ground_gear_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::B_BUTTON));  // Button B
   ball_reverse_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::X_BUTTON));                // Button X
   just_shoot_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::Y_BUTTON));                  // Button Y
   stop_shooting_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_BUMPER));            // Left bumper
