@@ -7,9 +7,9 @@ namespace o2016 {
 namespace teleop {
 
 Teleop::Teleop() : throttle_{1}, wheel_{0}, gamepad_{2} {
-  shifting_low_ = throttle_.GetButton(4);
-  shifting_high_ = throttle_.GetButton(5);
-  quickturn_ = throttle_.GetButton(5);
+  shifting_low_ = throttle_.MakeButton(4);
+  shifting_high_ = throttle_.MakeButton(5);
+  quickturn_ = throttle_.MakeButton(5);
 }
 
 void Teleop::Update() {
