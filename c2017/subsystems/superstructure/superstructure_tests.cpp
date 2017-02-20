@@ -306,7 +306,8 @@ TEST_F(SuperstructureTest, Brownout) {
 }
 
 TEST_F(SuperstructureTest, ThinkInsideTheBox) {
-  // Make sure that if you tell both the ball intake and the gear intake to go down, only the gear intake will move.
+  // Make sure that if you tell both the ball intake and the gear intake to go down, only the gear intake will
+  // move.
   intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_UP);
   intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_DROP);
   ds->set_mode(RobotMode::TELEOP);
@@ -323,7 +324,8 @@ TEST_F(SuperstructureTest, ThinkInsideTheBox) {
 
   Reset();
 
-  // Also, when you're trying to HP-gear score and the gear intake is down, it should put it back up so that it can put the ball intake down
+  // Also, when you're trying to HP-gear score and the gear intake is down, it should put it back up so that
+  // it can put the ball intake down
   intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_DROP);
   ds->set_mode(RobotMode::TELEOP);
   WriteQueues();

@@ -74,7 +74,7 @@ TEST_F(GroundGearIntakeTest, FullSequence) {
   Update(15.0, false, 100);
 
   EXPECT_EQ(GetIntakeState(), c2017::ground_gear_intake::CARRYING);
-  
+
   SetGoal(c2017::ground_gear_intake::SCORE);
   Update(15.0, false, 1);
 
