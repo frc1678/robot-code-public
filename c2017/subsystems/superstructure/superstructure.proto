@@ -8,4 +8,5 @@ message SuperstructureStatus {
   required bool gear_intake_down = 1;
   required bool shooting = 2;
   required bool climbing = 3;
+  required bool enable_outputs = 4;
 }
