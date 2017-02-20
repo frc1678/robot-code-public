@@ -12,8 +12,9 @@ VisionSubsystem::VisionSubsystem()
       dt_goal_queue_{c2017::QueueManager::GetInstance().drivetrain_goal_queue()},
       dt_status_reader_{c2017::QueueManager::GetInstance().drivetrain_status_queue()->MakeReader()},
       action_{muan::actions::DrivetrainAction(properties_,
-              c2017::QueueManager::GetInstance().drivetrain_goal_queue(),
-              c2017::QueueManager::GetInstance().drivetrain_status_queue())} {}
+                                              c2017::QueueManager::GetInstance().drivetrain_goal_queue(),
+                                              c2017::QueueManager::GetInstance().drivetrain_status_queue())} {
+}
 
 void VisionSubsystem::Update() {
   auto ds = driverstation_reader_.ReadLastMessage();
@@ -50,9 +51,9 @@ void VisionSubsystem::Update() {
   }
 
   bool terminated = std::abs(status->angle_to_target()) < 0.02 &&
-          std::abs(status->distance_to_target() - constants::kShotDistance) < 0.05;
+                    std::abs(status->distance_to_target() - constants::kShotDistance) < 0.05;
 
-    if (auto dt_status_message = dt_status_reader_.ReadLastMessage()) {
+  if (auto dt_status_message = dt_status_reader_.ReadLastMessage()) {
     terminated = terminated && std::abs(dt_status_message.value()->forward_velocity()) < 0.05;
   }
 
@@ -67,7 +68,7 @@ void VisionSubsystem::Update() {
     } else {
       // Once it is aligned stop trying to align more. If the profile
       // is done but vision isn't, reset the profile.
-      running_ = action_.Update(); // Returns true if profile isn't completed
+      running_ = action_.Update();  // Returns true if profile isn't completed
       should_align_ = running_ || !terminated;
     }
   } else {

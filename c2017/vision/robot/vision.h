@@ -10,7 +10,7 @@ namespace c2017 {
 namespace vision {
 
 namespace constants {
-  constexpr static double kShotDistance = 2.2; // meters
+constexpr static double kShotDistance = 2.2;  // meters
 }
 
 class VisionSubsystem {
