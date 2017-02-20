@@ -13,7 +13,8 @@ CitrusRobot::CitrusRobot() : throttle_{1}, wheel_{0}, gamepad_{2} {
   ball_intake_toggle_ = gamepad_.MakeButton(6);                     // Right Bumper
   ball_intake_run_ = gamepad_.MakeAxis(3);                          // Right Trigger
   gear_intake_down_ = gamepad_.MakeButton(1);                       // Button A
-  ground_gear_score_ = gamepad_.MakeButton(2);                      // Button B
+  operator_score_ground_gear_ = gamepad_.MakeButton(2);             // Button B
+  driver_score_ground_gear_ = throttle_.MakeButton(3);              // Throttle 3
   ball_reverse_ = gamepad_.MakeButton(3);                           // Button X
   just_shoot_ = gamepad_.MakeButton(4);                             // Button Y
   stop_shooting_ = gamepad_.MakeButton(5);                          // Left bumper
@@ -80,7 +81,7 @@ void CitrusRobot::SendSuperstructureMessage() {
     intake_group_goal_->set_ground_gear_intake(intake_group::GROUND_GEAR_DROP);
   } else if (gear_intake_down_->was_released()) {
     intake_group_goal_->set_ground_gear_intake(intake_group::GROUND_GEAR_RISE);
-  } else if (ground_gear_score_->is_pressed()) {
+  } else if (operator_score_ground_gear_->is_pressed() || driver_score_ground_gear_->is_pressed()) {
     intake_group_goal_->set_ground_gear_intake(intake_group::GROUND_GEAR_SCORE);
   } else {
     intake_group_goal_->set_ground_gear_intake(intake_group::GROUND_GEAR_NONE);
@@ -108,11 +109,12 @@ void CitrusRobot::SendSuperstructureMessage() {
 
   intake_group_goal_->set_score_hp_gear(score_hp_gear_->is_pressed());
 
-  if (climb_->was_released()) {
+  if (climb_->was_clicked()) {
     // Kelly - Gamepad Button
     currently_climbing_ = !currently_climbing_;
-    shooter_group_goal_->set_should_climb(currently_climbing_);
   }
+
+  shooter_group_goal_->set_should_climb(currently_climbing_);
 
   // Shooting buttons
   if (fender_align_shoot_->was_clicked()) {
