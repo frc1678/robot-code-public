@@ -22,6 +22,8 @@ void VisionSubsystem::Update() {
   auto goal = QueueManager::GetInstance().vision_goal_queue().ReadLastMessage();
   if (goal) {
     should_align_ = goal.value()->should_align();
+  } else {
+    should_align_ = false;
   }
 
   VisionStatusProto status;
@@ -30,18 +32,31 @@ void VisionSubsystem::Update() {
   if (auto input = vision_input_reader_.ReadLastMessage()) {
     status->set_has_connection(true);
     status->set_target_found((*input)->target_found());
-    if ((*input)->has_distance_to_target()) {
+    if ((*input)->has_distance_to_target() && status->target_found()) {
       status->set_distance_to_target((*input)->distance_to_target());
+    } else {
+      status->set_distance_to_target(constants::kShotDistance);
     }
-    if ((*input)->has_angle_to_target()) {
+
+    if ((*input)->has_angle_to_target() && status->target_found()) {
       status->set_angle_to_target((*input)->angle_to_target());
+    } else {
+      status->set_angle_to_target(0);
     }
   } else {
+    status->set_angle_to_target(0);
+    status->set_distance_to_target(constants::kShotDistance);
     status->set_has_connection(false);
     status->set_target_found(false);
   }
 
-  bool terminated = false;
+  bool terminated = std::abs(status->angle_to_target()) < 0.02 &&
+          std::abs(status->distance_to_target() - constants::kShotDistance) < 0.05;
+
+    if (auto dt_status_message = dt_status_reader_.ReadLastMessage()) {
+    terminated = terminated && std::abs(dt_status_message.value()->forward_velocity()) < 0.05;
+  }
+
   if (!disabled && should_align_) {
     if (!running_) {
       muan::actions::DrivetrainActionParams params;
@@ -52,14 +67,14 @@ void VisionSubsystem::Update() {
     } else {
       // Once it is aligned stop trying to align more. If the profile
       // is done but vision isn't, reset the profile.
-      running_ = action_.Update();
-      should_align_ = running_ || std::abs(status->angle_to_target()) > 0.02;
-      terminated = !should_align_;
+      running_ = action_.Update(); // Returns true if profile isn't completed
+      should_align_ = running_ || !terminated;
     }
   } else {
     running_ = false;
   }
   status->set_aligned(terminated);
+  status->set_aligning(running_);
   QueueManager::GetInstance().vision_status_queue().WriteMessage(status);
 }
 
