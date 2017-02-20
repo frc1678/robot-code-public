@@ -20,7 +20,7 @@ void RunVision(int camera_index) {
   cv::VideoCapture cap;
   cap.open(camera_index);
   muan::Vision::ColorRange range{cv::Scalar(0, 50, 0), cv::Scalar(50, 180, 50), CV_BGR2RGB};
-  muan::Vision::VisionConstants constants{1.14, 1, -.1, -.2, 1};
+  muan::Vision::VisionConstants constants{1.14, 0.599, 0.524, 1.66, 1};
   muan::Vision vision{range, std::make_shared<VisionScorer2017>(), constants};
   cv::Mat raw;
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));

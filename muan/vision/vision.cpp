@@ -7,11 +7,12 @@ double Vision::CalculateDistance(std::vector<cv::Point> points, int rows) {
   // Average together height of each point
   double angle = 0;
   for (auto& p : points) {
-    angle += p.y;
+    // Stupid inverted y axis
+    angle -= p.y;
   }
   angle /= points.size();
   // Scale angle from -fov/2 to fov/2
-  angle = (angle / rows - 0.5) * constants_.kFovY;
+  angle = (angle / rows + 0.5) * constants_.kFovY;
 
   double distance = constants_.kHeightDifference / std::tan(angle + constants_.kCameraAngle);
   return distance;
