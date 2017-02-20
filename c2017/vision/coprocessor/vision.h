@@ -12,8 +12,8 @@ namespace vision {
 
 class VisionScorer2017 : public muan::VisionScorer {
  public:
-  double GetScore(double, double /* unused */, double skew, double width,
-                  double height, double fullness);
+  double GetScore(double /* distance_to_target */, double /* distance_from_previous */, double skew,
+                  double width, double height, double fullness);
 };
 
 void RunVision(int camera_index);

@@ -14,7 +14,7 @@ double Vision::CalculateDistance(std::vector<cv::Point> points, int rows) {
   // Scale angle from -fov/2 to fov/2
   angle = (angle / rows + 0.5) * constants_.kFovY;
 
-  double distance = constants_.kHeightDifference / std::tan(angle + constants_.kCameraAngle);
+  double distance = constants_.kHeightDifference / std::tan(angle + constants_.kCameraAngleY);
   return distance;
 }
 
@@ -91,8 +91,7 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
     // A baseline score to determine whether or not it's even a target
     double base_score = area / (image.rows * image.cols);
 
-    // Check anything with area at least 0.05% of the image
-    if (base_score > 0.0005) {
+    if (base_score > constants_.kMinTargetArea) {
       targets.push_back(i);
 
       double hull_area = cv::contourArea(hull[i]);
@@ -118,9 +117,8 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
 
         retval.target_exists = true;
         retval.distance_to_target = distance_to_target;
-        // average together points
         double angle_to_target = bounding.center.x;
-        angle_to_target = (angle_to_target / image.cols - 0.5) * constants_.kFovX;
+        angle_to_target = (angle_to_target / image.cols - 0.5) * constants_.kFovX + constants_.kCameraAngleX;
         retval.angle_to_target = angle_to_target;
       }
     }

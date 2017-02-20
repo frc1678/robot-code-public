@@ -29,11 +29,13 @@ int main() {
   cv::namedWindow("vision", cv::WINDOW_AUTOSIZE);
 #endif
 
-  muan::Vision::VisionConstants constants{1,     // kFovX
-                                          1,     // kFovY
-                                          0.3,   // kCameraAngle
-                                          1,     // kHeightDifference
-                                          0.2};  // kFullness
+  muan::Vision::VisionConstants constants{1,        // kFovX
+                                          1,        // kFovY
+                                          0,        // kCameraAngleX
+                                          0.3,      // kCameraAngleY
+                                          1,        // kHeightDifference
+                                          0.2,      // kFullness
+                                          0.0005};  // kMinTargetArea
 
   muan::Vision::ColorRange range{cv::Scalar(50, 0, 60), cv::Scalar(100, 255, 255), CV_BGR2HSV};
   muan::Vision vision(range, std::make_shared<ExampleVisionScorer>(), constants);

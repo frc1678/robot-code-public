@@ -25,9 +25,11 @@ class Vision {
   struct VisionConstants {
     double kFovX;              // Horizontal field of view, in radians
     double kFovY;              // Vertical field of view, in radians
-    double kCameraAngle;       // Angle of the camera above horizontal, in radians
+    double kCameraAngleX;      // Angle of the camera to the left of the robot, radians
+    double kCameraAngleY;      // Angle of the camera above horizontal, in radians
     double kHeightDifference;  // Height of goal above camera, in meters
     double kFullness;          // area of target / area of bounding rect
+    double kMinTargetArea;     // Minumum area of a target compared with image area
   };
 
   struct VisionStatus {
