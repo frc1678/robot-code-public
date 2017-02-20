@@ -53,8 +53,6 @@ void RunVision(int camera_index) {
 #if VIDEO_OUTPUT
     output.write(splitscreen);
 #endif
-    status.image_canvas.release();
-    raw.release();
   }
 }
 
