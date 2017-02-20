@@ -25,19 +25,22 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
   Eigen::Matrix<double, 3, 1> r_;
 
   auto y = (Eigen::Matrix<double, 1, 1>() << input->encoder_position()).finished();
-  r_ = (Eigen::Matrix<double, 3, 1>() << 0.0, goal_velocity_, 0.0).finished();
+  r_ = (Eigen::Matrix<double, 3, 1>() << 0.0, GetProfiledGoalVelocity(unprofiled_goal_velocity_), 0.0)
+           .finished();
 
   y(0) = (input->encoder_position());
 
   auto u = controller_.Update(observer_.x(), r_)(0, 0);
 
-  if (!outputs_enabled || goal_velocity_ <= 0) {
+  if (!outputs_enabled || unprofiled_goal_velocity_ <= 0) {
     u = 0.0;
   }
 
   observer_.Update((Eigen::Matrix<double, 1, 1>() << u).finished(), y);
 
-  auto absolute_error = (r_ - observer_.x()).cwiseAbs();
+  auto absolute_error =
+      ((Eigen::Matrix<double, 3, 1>() << 0.0, unprofiled_goal_velocity_, 0.0).finished() - observer_.x())
+          .cwiseAbs();
 
   at_goal_ = absolute_error(1, 0) < velocity_tolerance_;
 
@@ -53,16 +56,25 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
 
   status_->set_observed_velocity(observer_.x()(1, 0));
   status_->set_at_goal(at_goal_);
-  status_->set_currently_running(std::fabs(goal_velocity_) >= 1e-3);
+  status_->set_currently_running(std::fabs(unprofiled_goal_velocity_) >= 1e-3);
   status_->set_voltage(u);
+  status_->set_profiled_goal_velocity(profiled_goal_velocity_);
+  status_->set_unprofiled_goal_velocity(unprofiled_goal_velocity_);
+  status_->set_voltage_error(observer_.x(2));
   QueueManager::GetInstance().shooter_status_queue().WriteMessage(status_);
 
   return output;
 }
 
 void ShooterController::SetGoal(c2017::shooter::ShooterGoalProto goal) {
-  goal_velocity_ = goal->goal_velocity();
+  unprofiled_goal_velocity_ = goal->goal_velocity();
   shot_mode_ = goal->goal_mode();
+}
+
+double ShooterController::GetProfiledGoalVelocity(double unprofiled_goal_velocity) {
+  profiled_goal_velocity_ =
+      std::min(profiled_goal_velocity_ + kShooterAcceleration, unprofiled_goal_velocity);
+  return profiled_goal_velocity_;
 }
 
 }  // namespace shooter

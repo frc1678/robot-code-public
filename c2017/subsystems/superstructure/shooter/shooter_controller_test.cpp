@@ -25,8 +25,6 @@ TEST(ShooterControllerTest, PositiveVelocity) {
   c2017::shooter::ShooterOutputProto output;
   c2017::shooter::ShooterGoalProto goal;
 
-  auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
-
   c2017::shooter::ShooterController shooter_;
 
   auto plant = muan::control::StateSpacePlant<1, 3, 1>(frc1678::shooter_controller::controller::A(),
@@ -46,13 +44,15 @@ TEST(ShooterControllerTest, PositiveVelocity) {
     shooter_.SetGoal(goal);
 
     output = shooter_.Update(input, true);
-    status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
 
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->voltage()).finished());
 
     EXPECT_NEAR(output->voltage(), 0., 12.);
     EXPECT_FALSE(output->hood_solenoid());
   }
+
+  auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+
   if (status) {
     EXPECT_NEAR(status.value()->observed_velocity(), 300, 10);
   } else {
