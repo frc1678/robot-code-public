@@ -1,0 +1,22 @@
+SpinupShooter()
+
+include {
+  "c2017/queue_manager/queue_manager.h"
+  "c2017/subsystems/superstructure/superstructure.h"
+}
+
+global {
+  // Don't put anything here yet
+}
+
+init {
+  c2017::shooter_group::ShooterGroupGoalProto shooter_group_goal;
+  shooter_group_goal->set_position(c2017::shooter_group::Position::HOPPER);
+  shooter_group_goal->set_wheel(c2017::shooter_group::Wheel::SPINUP);
+  c2017::QueueManager::GetInstance().shooter_group_goal_queue().WriteMessage(shooter_group_goal);
+  return true;
+}
+
+periodic {
+  return true;
+}

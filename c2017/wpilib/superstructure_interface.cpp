@@ -77,6 +77,7 @@ void SuperStructureInterface::ReadSensors() {
     // TODO(Kelly) figure out what exactly needs current inputs and what ports it is in
     // Ground gear intake, climber
     climber_sensors->set_current((*current_reader)->current5());
+    ground_gear_sensors->set_current((*current_reader)->current11());
   }
 
 

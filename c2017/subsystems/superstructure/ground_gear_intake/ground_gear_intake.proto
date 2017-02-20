@@ -17,18 +17,36 @@ message GroundGearIntakeOutput {
   // intake is controlled by a solenoid
 }
 
+enum State {
+  // Not actually running or holding a gear
+  IDLE = 0;
+  // Actively intaking a gear
+  INTAKING = 1;
+  // Picking up a gear (while the intake is moving)
+  PICKING_UP = 2;
+  // Carrying a gear
+  CARRYING = 3;
+  // Scoring a gear
+  SCORING = 4;
+}
+
 message GroundGearIntakeStatus {
   required uint64 timestamp = 1;
   required bool current_spiked = 2;
-  required bool down = 3;
+  required State current_state = 3;
   required bool running = 4;
 }
 
 
 enum Goal {
-  CARRY = 0;
-  PICKUP = 1;
-  SCORE = 2;
+  // Let the state machine progress normally
+  NONE = 0;
+  // Force-drop the intake into INTAKING
+  DROP = 1;
+  // Pick the intake up into IDLE, but only if it's still down
+  RISE = 2;
+  // Score the gear if it's in CARRY
+  SCORE = 3;
 }
 
 message GroundGearIntakeGoal {

@@ -30,6 +30,7 @@ cc_library(
     deps = [
         "//c2017/queue_manager",
         "//c2017/subsystems/drivetrain:drivetrain_base",
+        "//c2017/subsystems/superstructure:superstructure_subsystem",
         "//muan/actions:drivetrain_action",
         "//third_party/lemonscript",
     ],
@@ -46,6 +47,7 @@ cc_library(
         ":lemonscript_funcs_cpp",
         "//c2017/queue_manager",
         "//c2017/subsystems/drivetrain:drivetrain_base",
+        "//c2017/subsystems/superstructure:superstructure_subsystem",
         "//muan/actions:drivetrain_action",
         "//third_party/aos/common:time",
         "//third_party/aos/common/util:phased_loop",

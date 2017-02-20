@@ -1,8 +1,12 @@
-DriveStraight: 1.2, true
-SwoopTurn: 1.0, -1.0
-// Place a gear
-DriveStraight: -1.0, true
-SwoopTurn: -1.75, -2.0
-DriveStraight: -1.0, false
-// Hopper is triggered
-// Shoot hella balls
+DriveStraight: 1.43, true
+LiteralDrive: 1.4, -1.07, false, true, 0.7, 3.0, 3.0, 4.0
+ScoreHPGear
+SpinupShooter
+Wait: 0.2
+DriveStraight: -1.065, true
+CloseHPGearShutter
+LiteralDrive: -1.38, -1.92, false, false, 0.7, 1.0, 5.0, 5.0
+LiteralDrive: -0.2, -0.45, false, false, 0.7, 1.0, 5.0, 5.0
+StartShoot
+Wait: 15
+// TODO(Kelly) Shooting a little too far, change the RPM

@@ -1,0 +1,21 @@
+EndAgitateMagazine()
+
+include {
+  "c2017/queue_manager/queue_manager.h"
+  "c2017/subsystems/superstructure/superstructure.h"
+}
+
+global {
+  // Don't put anything here yet
+}
+
+init {
+  c2017::intake_group::IntakeGroupGoalProto intake_group_goal;
+  intake_group_goal->set_agitate(false);
+  c2017::QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal);
+  return true;
+}
+
+periodic {
+  return true;
+}
