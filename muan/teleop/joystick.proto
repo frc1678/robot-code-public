@@ -1,0 +1,29 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+package muan.teleop;
+
+message JoystickStatus {
+  required uint64 timestamp = 1;
+  required bool button1 = 2;
+  required bool button2 = 3;
+  required bool button3 = 4;
+  required bool button4 = 5;
+  required bool button5 = 6;
+  required bool button6 = 7;
+  required bool button7 = 8;
+  required bool button8 = 9;
+  required bool button9 = 10;
+  required bool button10 = 11;
+  required bool button11 = 12;
+  required bool button12 = 13;
+  required bool button13 = 14;
+
+  required double axis1 = 17;
+  required double axis2 = 18;
+  required double axis3 = 19;
+  required double axis4 = 20;
+  required double axis5 = 21;
+  required double axis6 = 22;
+}

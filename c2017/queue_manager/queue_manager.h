@@ -9,6 +9,7 @@
 
 #include "muan/wpilib/gyro/queue_types.h"
 #include "muan/wpilib/queue_types.h"
+#include "muan/teleop/queue_types.h"
 
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
 #include "c2017/subsystems/superstructure/ground_ball_intake/queue_types.h"
@@ -85,6 +86,10 @@ class QueueManager {
 
   c2017::lights::LightsOutputQueue& lights_output_queue();
 
+  muan::teleop::JoystickStatusQueue& manipulator_status_queue();
+  muan::teleop::JoystickStatusQueue& wheel_status_queue();
+  muan::teleop::JoystickStatusQueue& throttle_status_queue();
+
   void Reset();
 
  private:
@@ -133,6 +138,11 @@ class QueueManager {
   c2017::webdash::WebDashQueue webdash_queue_;
 
   c2017::lights::LightsOutputQueue lights_output_queue_;
+
+  muan::teleop::JoystickStatusQueue manipulator_status_queue_;
+  muan::teleop::JoystickStatusQueue wheel_status_queue_;
+  muan::teleop::JoystickStatusQueue throttle_status_queue_;
+
 #ifndef FRC1678_NO_QUEUE_LOGGING
   muan::logging::Logger logger_;
   std::thread logger_thread_{std::ref(logger_)};

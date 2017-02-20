@@ -15,9 +15,9 @@ Teleop::Teleop()
     : properties_{1, 1, 1, 1, testbench::drivetrain::GetDrivetrainConfig().robot_radius},
       throttle_{1},
       wheel_{0} {
-  shifting_low_ = throttle_.MakeButton(4);
-  shifting_high_ = throttle_.MakeButton(5);
-  quickturn_ = wheel_.MakeButton(5);
+  shifting_low_ = throttle_.GetButton(4);
+  shifting_high_ = throttle_.GetButton(5);
+  quickturn_ = wheel_.GetButton(5);
 }
 
 void Teleop::Update() {
