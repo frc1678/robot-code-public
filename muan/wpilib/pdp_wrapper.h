@@ -33,6 +33,7 @@ class PdpWrapper {
   Queue* queue_{nullptr};
 
   int status_;
+  uint64_t num_failures_ = 0;
 };
 
 }  // namespace wpilib

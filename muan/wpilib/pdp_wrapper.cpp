@@ -35,7 +35,10 @@ void PdpWrapper::SendValues() {
 
   if (status_ != 0) {
     std::cerr << "Error in PDP wrapper: " << HAL_GetErrorMessage(status_) << std::endl;
+    num_failures_++;
   }
+
+  message->set_num_failures(num_failures_);
 
   if (queue_ != nullptr) {
     queue_->WriteMessage(message);
