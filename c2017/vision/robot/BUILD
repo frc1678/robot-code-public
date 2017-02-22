@@ -1,10 +1,3 @@
-cc_binary(
-    name = "main", # For testing only
-    srcs = ["main.cpp"],
-    deps = [":reader"],
-    linkopts = ["-lpthread"]
-)
-
 cc_library(
     name = "reader",
     srcs = ["reader.cpp"],
