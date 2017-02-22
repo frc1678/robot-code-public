@@ -6,7 +6,7 @@
 #include "muan/vision/vision.h"
 
 #define VIDEO_OUTPUT_SCREEN 0
-#define VIDEO_OUTPUT_FILE 1
+#define VIDEO_OUTPUT_FILE 0
 
 namespace c2017 {
 namespace vision {
