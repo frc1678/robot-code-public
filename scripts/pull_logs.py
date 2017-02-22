@@ -34,8 +34,7 @@ def main():
     proc = subprocess.Popen(file_list_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = proc.communicate()
 
-    rsync_remote_path = []
-    rsync_remote_path = ["{user}@{address}:{path}".format(user=rio_user, address=rio_address, path=line)]
+    rsync_remote_path = ["{user}@{address}:{path}".format(user=rio_user, address=rio_address, path=rio_path)]
     for line in stdout.split():
         rsync_remote_path.append(":" + rio_path + line + " ")
 
