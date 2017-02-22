@@ -11,9 +11,7 @@ DEFINE_int32(camera_index, 1, "The index of the camera used for vision. 0 opens 
 int main(int n, char** args) {
   gflags::ParseCommandLineFlags(&n, &args, true);
   std::thread sender_thread(c2017::vision::RunSender, FLAGS_robot_ip.c_str());
-  std::thread vision_thread(c2017::vision::RunVision, FLAGS_camera_index);
-  while (true) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-  }
+  c2017::vision::RunVision(FLAGS_camera_index);
+  //  This line is never reached
   return 0;
 }

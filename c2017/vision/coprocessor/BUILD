@@ -14,6 +14,7 @@ cc_library(
     srcs = ["sender.cpp"],
     hdrs = ["sender.h"],
     deps = [
+        "//third_party/aos/common/util:phased_loop",
         "//third_party/aos/vision/events:udp",
         "//c2017/vision:vision_queues"
     ]

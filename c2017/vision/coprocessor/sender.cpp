@@ -1,14 +1,16 @@
 #include "c2017/vision/coprocessor/sender.h"
+#include "third_party/aos/common/util/phased_loop.h"
 
 namespace c2017 {
 namespace vision {
 
 void RunSender(const char* target_ip) {
   aos::vision::TXUdpSocket sender_socket(target_ip, 1678);
+  aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(50));
   auto queue_reader = vision_queue.MakeReader();
   char buffer[1024];
   while (true) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    phased_loop.SleepUntilNext();
     auto message = queue_reader.ReadLastMessage();
     if (message) {
       message.value()->SerializeToArray(buffer, 1024);
