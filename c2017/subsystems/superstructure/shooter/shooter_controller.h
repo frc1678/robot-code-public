@@ -26,6 +26,8 @@ class ShooterController {
   muan::control::StateSpaceController<1, 3, 1> controller_;
   muan::control::StateSpaceObserver<1, 3, 1> observer_;
 
+  double CapU(double u, bool outputs_enabled);
+
   bool at_goal_;
 
   c2017::shooter::ShotMode shot_mode_;

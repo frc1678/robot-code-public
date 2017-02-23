@@ -24,6 +24,7 @@ message ShooterStatus {
   required double unprofiled_goal_velocity = 6;
   required double profiled_goal_velocity = 7;
   required double voltage_error = 8;
+  required double uncapped_u = 9;
 }
 
 enum ShotMode {
