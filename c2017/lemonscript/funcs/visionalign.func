@@ -1,7 +1,6 @@
 VisionAlign()
 
 include {
-  "c2017/vision/robot/vision.h"
   "c2017/queue_manager/queue_manager.h"
 }
 

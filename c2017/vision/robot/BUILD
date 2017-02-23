@@ -14,7 +14,7 @@ cc_library(
 )
 
 cc_library(
-    name = "vision_subsystem",
+    name = "vision_action",
     srcs = ["vision.cpp"],
     hdrs = ["vision.h"],
     deps = [

@@ -29,7 +29,7 @@ class SubsystemRunner {
   frc971::control_loops::drivetrain::DrivetrainLoop drivetrain_;
   c2017::superstructure::SuperStructure superstructure_;
   c2017::lights::Lights lights_;
-  c2017::vision::VisionSubsystem vision_;
+  c2017::vision::VisionAction vision_;
 };
 
 }  // namespace c2017

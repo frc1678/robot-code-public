@@ -13,9 +13,9 @@ namespace constants {
 constexpr static double kShotDistance = 2.2;  // meters
 }
 
-class VisionSubsystem {
+class VisionAction {
  public:
-  VisionSubsystem();
+  VisionAction();
   void Update();
 
  protected:
