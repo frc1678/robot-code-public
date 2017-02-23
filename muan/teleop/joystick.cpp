@@ -37,7 +37,6 @@ void Joystick::Update() {
 
 void Joystick::LogButtons() {
   JoystickStatusProto joystick_status;
-
   joystick_status->set_button1(wpilib_joystick()->GetRawButton(1));
   joystick_status->set_button2(wpilib_joystick()->GetRawButton(2));
   joystick_status->set_button3(wpilib_joystick()->GetRawButton(3));

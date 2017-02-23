@@ -7,8 +7,8 @@ PidController::PidController(double kP, double kI, double kD)
 PidController::PidController(const PidGains& gains) : PidController(gains.kP, gains.kI, gains.kD) {}
 
 double PidController::Calculate(muan::units::Time dt, double error) {
-  return error * kP + CalculateIntegral(dt, error) * kI +
-         (last_derivative_ = CalculateDerivative(dt, error)) * kD;
+  return ((error * kP) + (CalculateIntegral(dt, error) * kI) +
+          (last_derivative_ = CalculateDerivative(dt, error)) * kD);
 }
 
 void PidController::SetProportionalConstant(double p) { kP = p; }

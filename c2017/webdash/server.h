@@ -15,7 +15,7 @@ using Mongoose::StreamResponse;
 
 class WebDashController : public Mongoose::WebController {
  public:
-  void save(Mongoose::Request &request, StreamResponse &response);  //NOLINT
+  void save(Mongoose::Request &request, StreamResponse &response);  // NOLINT
   void setup();
 };
 
@@ -25,6 +25,7 @@ class WebDashRunner {
   ~WebDashRunner() = default;
 
   void operator()();
+
  private:
   c2017::webdash::WebDashController controller_;
   Mongoose::Server server_{8080};

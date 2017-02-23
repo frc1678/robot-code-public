@@ -5,9 +5,7 @@ namespace muan {
 
 namespace wpilib {
 
-PdpWrapper::PdpWrapper(int module) : module_{module} {
-  HAL_InitializePDP(module_, &status_);
-}
+PdpWrapper::PdpWrapper(int module) : module_{module} { HAL_InitializePDP(module_, &status_); }
 
 void PdpWrapper::SendValues() {
   PdpMessage message;

@@ -139,7 +139,8 @@ c2017::vision::VisionStatusQueue& QueueManager::vision_status_queue() { return v
 
 //  Joystick Queues
 muan::teleop::JoystickStatusQueue& QueueManager::manipulator_status_queue() {
-  return manipulator_status_queue_;}
+  return manipulator_status_queue_;
+}
 
 muan::teleop::JoystickStatusQueue& QueueManager::wheel_status_queue() { return wheel_status_queue_; }
 

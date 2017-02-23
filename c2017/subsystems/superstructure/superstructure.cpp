@@ -90,8 +90,9 @@ void SuperStructure::Update() {
                                ground_gear_intake_.current_state() == ground_gear_intake::IDLE ||
                                ground_gear_intake_.current_state() == ground_gear_intake::CARRYING;
 
-    ground_ball_intake_goal->set_intake_up(!(
-        allow_ground_intake && intake_group_goal->ground_ball_position() == intake_group::GROUND_BALL_DOWN));
+    ground_ball_intake_goal->set_intake_up(
+        !(allow_ground_intake &&
+          intake_group_goal->ground_ball_position() == intake_group::GROUND_BALL_DOWN));
 
     switch (intake_group_goal->ground_ball_rollers()) {
       case intake_group::GROUND_BALL_NONE:

@@ -15,16 +15,16 @@ void WebDashController::save(Mongoose::Request &request, StreamResponse &respons
       QueueManager::GetInstance().webdash_queue().WriteMessage(output_proto);
       response << "OK" << std::endl;
     } else {
-      response << "ERR" << std::endl << "Auto mode value is out of bounds" << std::endl;
+      response << "ERR" << std::endl
+               << "Auto mode value is out of bounds" << std::endl;
     }
   } else {
-    response << "ERR" << std::endl << "No auto mode passed in" << std::endl;
+    response << "ERR" << std::endl
+             << "No auto mode passed in" << std::endl;
   }
 }
 
-void WebDashController::setup() {
-  addRoute("GET", "/save", WebDashController, save);
-}
+void WebDashController::setup() { addRoute("GET", "/save", WebDashController, save); }
 
 void WebDashRunner::operator()() {
   server_.registerController(&controller_);
