@@ -3,7 +3,7 @@
 namespace c2017 {
 namespace vision {
 
-VisionAction::VisionAction()
+VisionAlignment::VisionAlignment()
     : should_align_{false},
       running_{false},
       properties_{7.0, 5.0, 3.0, 2.0, c2017::drivetrain::GetDrivetrainConfig().robot_radius},
@@ -16,7 +16,7 @@ VisionAction::VisionAction()
                                               c2017::QueueManager::GetInstance().drivetrain_status_queue())} {
 }
 
-void VisionAction::Update() {
+void VisionAlignment::Update() {
   auto ds = driverstation_reader_.ReadLastMessage();
   bool disabled = ds ? ((*ds)->mode() == RobotMode::DISABLED || (*ds)->mode() == RobotMode::ESTOP) : true;
   auto goal = QueueManager::GetInstance().vision_goal_queue().ReadLastMessage();

@@ -14,7 +14,7 @@ cc_library(
 )
 
 cc_library(
-    name = "vision_action",
+    name = "vision_alignment",
     srcs = ["vision.cpp"],
     hdrs = ["vision.h"],
     deps = [
