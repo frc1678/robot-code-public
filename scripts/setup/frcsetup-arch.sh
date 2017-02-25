@@ -39,6 +39,10 @@ pacaur -S frc-2017
 # Bazel
 pacaur -S bazel
 
+#Clang
+pacaur -S clang
+pacaur -S clang-format
+
 # Fix Python (if /usr/bin/python isn't 2.7)
 if [ $PYV -eq "2.7" ]
 then

@@ -19,6 +19,9 @@ sudo apt-get -yq install git
 sudo apt-get -yq install curl 
 sudo apt-get -yq install htop
 
+# Clang
+sudo apt-get -yq install clang clang-format
+
 # Fix Python (if /usr/bin/python isn't 2.7)
 if [ $PYV -eq "2.7" ]
 then
