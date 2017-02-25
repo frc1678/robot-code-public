@@ -1,6 +1,8 @@
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <iostream>
+#include <fstream>
 
 #include "gflags/gflags.h"
 
@@ -24,11 +26,23 @@ int main(int argc, char **argv) {
 
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
-  // TODO(Wesley) Check if autostart is already running
+  std::string pidfile_name = "/tmp/autostart.pid";
+  struct stat pidfile_stat_buf;
+  if (stat(pidfile_name.c_str(), &pidfile_stat_buf) != -1) {
+    std::ifstream pidfile{pidfile_name};
+    int autostart_pid;
+    pidfile >> autostart_pid;
+    std::cout << "Autostart already running (PID " << autostart_pid << "), killing." << std::endl;
+    kill(autostart_pid, SIGTERM);
+  }
+
+  std::ofstream pidfile{pidfile_name};
+  pidfile << getpid();
+  pidfile.close();
 
   int status;
   while (true) {
-    code_pid = fork();
+    code_pid = vfork();
     switch (code_pid) {
       case -1:
         perror("fork");
