@@ -19,7 +19,7 @@ def get_args():
     parser.add_argument('--team', dest='team', help="The team number to deploy to. Setting this option will override --target as roborio-####-frc.local.", default=None)
     parser.add_argument('--port', dest='port', default='22')
     parser.add_argument('--deploy-path', dest='deploy_path', help="The path on the RoboRIO to deploy code to", default='/home/lvuser/robot_code')
-    parser.add_argument('--robot-command', dest='command', help="The robotCommand file to create", default='/home/lvuser/robotCommand')
+    parser.add_argument('--robot-command', dest='command', help="The robotCommand file to create", default='/home/lvuser/start_robot_code')
     parser.add_argument('--password', dest='password', help="The password for the user on the RoboRIO")
     args = parser.parse_args()
     if args.target is None:
@@ -78,7 +78,7 @@ def main():
     rsync = ['rsync', '-e', ' '.join(ssh_command), '-c', '-v', '-z', '-r', '-L', '.', ssh_deploy_path]
 
     # This will look like (cd /home/lvuser/robot_code && ./c2017/frc1678).
-    robot_command_contents = '''\\$(cd {} && ./{})'''.format(options.deploy_path, options.main_binary)
+    robot_command_contents = '''cd {};./muan/autostart/autostart {}'''.format(options.deploy_path, options.main_binary)
 
     # The ssh command that we're going to run to create robotCommand
     ssh = ssh_command + [
