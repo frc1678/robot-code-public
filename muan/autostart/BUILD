@@ -8,5 +8,6 @@ cc_binary(
     ],
     copts = [
         "-Wno-writable-strings"
-    ]
+    ],
+    visibility = ["//visibility:public"]
 )
