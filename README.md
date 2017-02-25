@@ -116,7 +116,7 @@ Although we have a third_party directory for the majority of our dependencies, o
   * `python2-pip` (optional; apt/aor package `python2-pip`) Installing from both aor/apt/aur and pip *WILL* break python.
   * Python Deps:
     * `numpy` (apt package: `python-numpy`; aor package: `python2-numpy`; pip package: `numpy`)
-    * `scipy (apt package: `python-scipy`; aor package: `python2-scipy`; pip package: `scipy`)
+    * `scipy` (apt package: `python-scipy`; aor package: `python2-scipy`; pip package: `scipy`)
     * `matplotlib` (apt package: `python-matplotlib`; aor package: `python2-matplotlib`; pip package `matplotlib`)
     * `tk` (apt package: `python-tk`; aor package: `tk`; pip package: none, apt/aor/aur/source required for install)
     * `gflags` (apt package: `python-gflags`; aor package: `python2-gflags`; pip package: `gflags`)
