@@ -240,10 +240,8 @@ TEST(ShooterControllerTest, SaturationTest) {
 
   bool saturation_works;
 
-  auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
-
   for (int i = 0; i <= 500; i++) {
-    status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+    auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
 
     saturation_works = saturation_works || status.value()->profiled_goal_velocity() < 300;
 
@@ -254,6 +252,8 @@ TEST(ShooterControllerTest, SaturationTest) {
   }
 
   EXPECT_TRUE(saturation_works);
+
+  auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
 
   if (status) {
     EXPECT_NEAR(status.value()->observed_velocity(), 300, 10);
