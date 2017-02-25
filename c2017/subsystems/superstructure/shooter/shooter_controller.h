@@ -37,7 +37,7 @@ class ShooterController {
   double velocity_tolerance_;
   c2017::shooter::ShooterStatusQueue& shooter_status_queue_;
 
-  static constexpr double kShooterAcceleration = 5;
+  static constexpr double kShooterAcceleration = 3;
 };
 
 }  // namespace shooter
