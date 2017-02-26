@@ -5,8 +5,6 @@
 #include <fstream>
 #include <string>
 
-#include "gflags/gflags.h"
-
 pid_t code_pid = 0;
 
 void handle_signal(int signum) {
@@ -24,8 +22,6 @@ void handle_signal(int signum) {
 int main(int argc, char **argv) {
   signal(SIGINT, handle_signal);
   signal(SIGTERM, handle_signal);
-
-  gflags::ParseCommandLineFlags(&argc, &argv, true);
 
   std::string pidfile_name = "/tmp/autostart.pid";
   struct stat pidfile_stat_buf;

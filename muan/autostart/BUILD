@@ -3,9 +3,6 @@ cc_binary(
     srcs = [
         "main.cpp"
     ],
-    deps = [
-        "//third_party/gflags:gflags"
-    ],
     copts = [
         "-Wno-writable-strings"
     ],
