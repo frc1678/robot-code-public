@@ -3,6 +3,7 @@
 #include <sys/stat.h>
 #include <iostream>
 #include <fstream>
+#include <string>
 
 #include "gflags/gflags.h"
 
