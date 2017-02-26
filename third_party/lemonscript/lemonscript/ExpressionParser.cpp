@@ -234,6 +234,8 @@ Atom ExpressionParser::identifier() {
         id = alpha();
     } else if(is(TK::UNDERSCORE)) {
         id = mustbe(TK::UNDERSCORE);
+    } else {
+        parse_error("Missing token");
     }
     
     while (inFirstSet(NonTerminal::identifier_character)) {
