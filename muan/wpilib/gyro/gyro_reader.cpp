@@ -67,7 +67,7 @@ void GyroReader::RunCalibration() {
 
   // Setup for averaging over calibration period
   const int calib_cycles = calib_time_ / loop_time;
-  muan::utils::History<double> raw_velocity{calib_cycles};
+  muan::utils::History<double> velocity_history{calib_cycles};
 
   if (calibration_state_ == GyroState::kInitialized) {
     calibration_state_ = GyroState::kCalibrating;
@@ -75,14 +75,16 @@ void GyroReader::RunCalibration() {
 
   bool robot_disabled = true;
   while (calibration_state_ == GyroState::kCalibrating && robot_disabled) {
-    raw_velocity.Update(AngleReading());
+    double raw_velocity = AngleReading();
+    velocity_history.Update(raw_velocity);
 
     // Send out a GyroMessage if the queue exists
     if (gyro_queue_ != nullptr) {
       GyroMessageProto gyro_message;
       gyro_message->set_state(GyroState::kCalibrating);
-      gyro_message->set_calibration_time_left((calib_cycles - raw_velocity.num_samples()) *
+      gyro_message->set_calibration_time_left((calib_cycles - velocity_history.num_samples()) *
                                               std::chrono::duration<double>(loop_time).count());
+      gyro_message->set_raw_angular_velocity(raw_velocity);
       gyro_queue_->WriteMessage(gyro_message);
     }
 
@@ -97,10 +99,10 @@ void GyroReader::RunCalibration() {
   }
 
   double drift_sum = 0;
-  for (auto i : raw_velocity) {
+  for (auto i : velocity_history) {
     drift_sum += i;
   }
-  drift_rate_ = drift_sum / raw_velocity.num_samples();
+  drift_rate_ = drift_sum / velocity_history.num_samples();
 }
 
 void GyroReader::RunReader() {
@@ -110,7 +112,8 @@ void GyroReader::RunReader() {
   calibration_state_ = GyroState::kRunning;
 
   while (calibration_state_ == GyroState::kRunning) {
-    double velocity = AngleReading() - drift_rate_;
+    double raw_velocity = AngleReading();
+    double velocity = raw_velocity - drift_rate_;
 
     // Integrate the gyro readings - the drift rate is in radians per cycle
     angle_ += velocity * std::chrono::duration<double>(loop_time).count();
@@ -125,6 +128,7 @@ void GyroReader::RunReader() {
       GyroMessageProto gyro_message;
       gyro_message->set_current_angle(angle_);
       gyro_message->set_current_angular_velocity(velocity);
+      gyro_message->set_raw_angular_velocity(raw_velocity);
       gyro_message->set_state(GyroState::kRunning);
       gyro_queue_->WriteMessage(gyro_message);
     }
