@@ -104,6 +104,15 @@ def main():
         "chmod +s {}".format(os.path.join(options.deploy_path, options.main_binary))
     ]
 
+    # The command to kill the currently running robot code. This will cause it
+    # to be restarted by the autostart script, *if* the autostart script is
+    # running. This means that the first time that this script is run on a
+    # newly-flashed roborio, the code will not get automatically started.
+    ssh_kill_code_command = ssh_command + [
+        ssh_target,
+        "kill $(pidof {})".format(options.main_binary)
+    ]
+
     # Try to rsync the files over and run an ssh command to create the robotCommand.
     try:
         print("Running rsync command: {}".format(' '.join(rsync)))
@@ -130,6 +139,8 @@ def main():
     sp.check_call(ssh_suid_command)
     print("Running set autostart setup command: {}".format(' '.join(ssh_autostart_command)))
     sp.check_call(ssh_autostart_command)
+    print("Running kill robot code command: {}".format(' '.join(ssh_kill_code_command)))
+    sp.check_call(ssh_kill_code_command)
     print("Deploying completed successfully.")
 
 if __name__ == '__main__':
