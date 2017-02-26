@@ -25,6 +25,7 @@ CitrusRobot::CitrusRobot() : throttle_{1}, wheel_{0}, gamepad_{2} {
   climb_ = gamepad_.GetButton(uint32_t(muan::teleop::XBox::BACK));                           // Back Button
   just_spinup_ = gamepad_.GetButton(uint32_t(muan::teleop::XBox::START));                    // Start Button
   quickturn_ = wheel_.GetButton(5);
+  toggle_distance_align_ = gamepad_.GetButton(uint32_t(muan::teleop::XBox::LEFT_CLICK_IN));
 }
 
 void CitrusRobot::Update() {
@@ -147,14 +148,16 @@ void CitrusRobot::SendSuperstructureMessage() {
 }
 
 void CitrusRobot::SendDrivetrainMessage() {
-  c2017::vision::VisionGoalProto vision_goal;
-  vision_goal->set_should_align(using_vision_);
-
   frc971::control_loops::drivetrain::GoalProto drivetrain_goal;
 
+  use_distance_align_ = (use_distance_align_ != toggle_distance_align_->was_clicked());
   double throttle = -throttle_.wpilib_joystick()->GetRawAxis(1);
   double wheel = -wheel_.wpilib_joystick()->GetRawAxis(0);
   bool quickturn = quickturn_->is_pressed();
+
+  c2017::vision::VisionGoalProto vision_goal;
+  vision_goal->set_should_align(using_vision_);
+  vision_goal->set_use_distance_align(use_distance_align_);
 
   drivetrain_goal->mutable_teleop_command()->set_steering(wheel);
   drivetrain_goal->mutable_teleop_command()->set_throttle(throttle);

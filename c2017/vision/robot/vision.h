@@ -20,6 +20,7 @@ class VisionAlignment {
 
  protected:
   bool should_align_;
+  bool use_distance_align_;
   bool running_;
   muan::actions::DrivetrainProperties properties_;
   VisionInputQueue::QueueReader vision_input_reader_;

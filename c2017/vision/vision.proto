@@ -24,4 +24,5 @@ message VisionStatus {
 message VisionGoal {
   required uint64 timestamp = 1;
   required bool should_align = 2;
+  required bool use_distance_align = 3;
 }
