@@ -43,8 +43,9 @@ double GyroReader::AngleReading() {
 
 void GyroReader::Init() {
   // Try to initialize repeatedly every 100ms until it works.
+  aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(100));
   while (calibration_state_ == GyroState::kUninitialized && !gyro_.InitializeGyro()) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    phased_loop.SleepUntilNext();
     if (gyro_queue_ != nullptr) {
       GyroMessageProto gyro_message;
       gyro_message->set_state(GyroState::kUninitialized);
