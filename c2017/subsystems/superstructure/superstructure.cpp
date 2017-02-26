@@ -13,6 +13,7 @@ SuperStructure::SuperStructure() {}
 
 void SuperStructure::Update() {
   c2017::magazine::MagazineGoalProto magazine_goal;
+  magazine_goal->set_magazine_extended(true);  // Default true whenever enabled
 
   auto maybe_shooter_group_goal = QueueManager::GetInstance().shooter_group_goal_queue().ReadLastMessage();
   auto maybe_shooter_status = QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
