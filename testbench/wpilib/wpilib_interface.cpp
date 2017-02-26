@@ -64,7 +64,8 @@ void DrivetrainInterface::WriteActuators() {
 
 WpilibInterface::WpilibInterface()
     : can_{QueueManager::GetInstance()->pdp_status_queue()},
-      gyro_{QueueManager::GetInstance()->gyro_queue(), 45},
+      gyro_{QueueManager::GetInstance()->gyro_queue(), QueueManager::GetInstance()->driver_station_queue(),
+            45},
       drivetrain_{&can_} {
   std::thread can_thread(std::ref(can_));
   can_thread.detach();

@@ -1,4 +1,5 @@
 #include "muan/wpilib/gyro/gyro_reader.h"
+#include "muan/utils/history.h"
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/aos/linux_code/init.h"
 
@@ -11,10 +12,11 @@ namespace wpilib {
 
 namespace gyro {
 
-GyroReader::GyroReader(GyroQueue* queue, int calib_time, bool invert)
-    : gyro_queue_{queue}, calib_time_{std::chrono::seconds(calib_time)}, should_invert_{invert} {}
-
-void GyroReader::Reset() { should_reset_ = true; }
+GyroReader::GyroReader(GyroQueue* queue, DriverStationQueue* ds_queue, int calib_time, bool invert)
+    : gyro_queue_{queue},
+      ds_queue_{ds_queue},
+      calib_time_{std::chrono::seconds(calib_time)},
+      should_invert_{invert} {}
 
 void GyroReader::operator()() {
   aos::SetCurrentThreadRealtimePriority(30);
@@ -57,37 +59,47 @@ void GyroReader::RunCalibration() {
   aos::time::PhasedLoop phased_loop(loop_time);
 
   const auto wait_time = std::chrono::seconds(5);
-  const size_t wait_cycles = wait_time / loop_time;
-  for (size_t num_cycles = 0; num_cycles < wait_cycles; num_cycles++) {
+  const int wait_cycles = wait_time / loop_time;
+  for (int num_cycles = 0; num_cycles < wait_cycles; num_cycles++) {
     gyro_.GetReading();
   }
 
   // Setup for averaging over calibration period
-  size_t num_cycles;
-  const size_t calib_cycles = calib_time_ / loop_time;
-  double drift_sum = 0.0;
+  const int calib_cycles = calib_time_ / loop_time;
+  muan::utils::History<double> raw_velocity{calib_cycles};
 
   if (calibration_state_ == GyroState::kInitialized) {
     calibration_state_ = GyroState::kCalibrating;
   }
 
-  for (num_cycles = 0; num_cycles < calib_cycles && calibration_state_ == GyroState::kCalibrating;
-       num_cycles++) {
-    drift_sum += AngleReading();
+  bool robot_disabled = true;
+  while (calibration_state_ == GyroState::kCalibrating && robot_disabled) {
+    raw_velocity.Update(AngleReading());
 
     // Send out a GyroMessage if the queue exists
     if (gyro_queue_ != nullptr) {
       GyroMessageProto gyro_message;
       gyro_message->set_state(GyroState::kCalibrating);
-      gyro_message->set_calibration_time_left((calib_cycles - num_cycles) *
+      gyro_message->set_calibration_time_left((calib_cycles - raw_velocity.num_samples()) *
                                               std::chrono::duration<double>(loop_time).count());
       gyro_queue_->WriteMessage(gyro_message);
     }
 
     phased_loop.SleepUntilNext();
+
+    if (ds_queue_ != nullptr) {
+      auto ds_message = ds_queue_->ReadLastMessage();
+      if (ds_message) {
+        robot_disabled = ds_message.value()->mode() == RobotMode::DISABLED;
+      }
+    }
   }
 
-  drift_rate_ = drift_sum / num_cycles;
+  double drift_sum = 0;
+  for (auto i : raw_velocity) {
+    drift_sum += i;
+  }
+  drift_rate_ = drift_sum / raw_velocity.num_samples();
 }
 
 void GyroReader::RunReader() {
@@ -119,6 +131,8 @@ void GyroReader::RunReader() {
     phased_loop.SleepUntilNext();
   }
 }
+
+void GyroReader::Reset() { should_reset_ = true; }
 
 void GyroReader::Quit() { calibration_state_ = GyroState::kKilled; }
 

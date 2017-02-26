@@ -23,6 +23,8 @@ cc_library(
         "//muan/proto:stack_proto",
         "//muan/queues",
         "//muan/units",
+        "//muan/utils:history",
+        "//muan/wpilib:wpilib_queues",
         "//third_party/aos/common/util:phased_loop",
         "//third_party/aos/linux_code:init",
         "//third_party/wpilibsuite:wpilib",
