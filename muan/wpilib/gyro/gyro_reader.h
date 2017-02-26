@@ -63,6 +63,10 @@ class GyroReader {
   std::atomic<bool> should_reset_{false};
 
   std::atomic<GyroState> calibration_state_{GyroState::kUninitialized};
+
+  // Based on logs, this gives plenty of room for bad luck, as actual values
+  // were less than 0.015, but being pushed will exceed this value.
+  const double calibration_velocity_limit_ = 0.05;
 };
 
 }  // namespace gyro

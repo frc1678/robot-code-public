@@ -74,9 +74,17 @@ void GyroReader::RunCalibration() {
   }
 
   bool robot_disabled = true;
+  int highest_sample_count = 0;
+
   while (calibration_state_ == GyroState::kCalibrating && robot_disabled) {
     double raw_velocity = AngleReading();
-    velocity_history.Update(raw_velocity);
+
+    // Reset calibration if robot is moved
+    if (std::abs(raw_velocity) < calibration_velocity_limit_) {
+      velocity_history.Update(raw_velocity);
+    } else {
+      velocity_history.reset();
+    }
 
     // Send out a GyroMessage if the queue exists
     if (gyro_queue_ != nullptr) {
@@ -88,6 +96,17 @@ void GyroReader::RunCalibration() {
       gyro_queue_->WriteMessage(gyro_message);
     }
 
+    // Use the most recent complete calibration. If no calibration was
+    // fully complete, use the one with the most samples.
+    if (velocity_history.num_samples() >= highest_sample_count) {
+      double drift_sum = 0;
+      for (auto i : velocity_history) {
+        drift_sum += i;
+      }
+      drift_rate_ = drift_sum / velocity_history.num_samples();
+      highest_sample_count = velocity_history.num_samples();
+    }
+
     phased_loop.SleepUntilNext();
 
     if (ds_queue_ != nullptr) {
@@ -97,12 +116,6 @@ void GyroReader::RunCalibration() {
       }
     }
   }
-
-  double drift_sum = 0;
-  for (auto i : velocity_history) {
-    drift_sum += i;
-  }
-  drift_rate_ = drift_sum / velocity_history.num_samples();
 }
 
 void GyroReader::RunReader() {
