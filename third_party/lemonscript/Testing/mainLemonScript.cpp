@@ -26,8 +26,8 @@ int main() {
 
     try {
         lemonscript::LemonScriptState *state = PlayTestsShared::play_tests_make_state();
-        
-        std::string fileName = "sequence_command.auto";
+//        state->setIMPORTs({"units.auto"});
+        std::string fileName = "test_underscore_var.auto";
 //        std::string fileName = "test_scope.auto";
 
         lemonscript::LemonScriptCompiler *compiler = new lemonscript::LemonScriptCompiler(fileName, state);

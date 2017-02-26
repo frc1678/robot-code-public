@@ -1,0 +1,2 @@
+DEF a_b = 5.6
+PrintFloat: 4.3 * a_b

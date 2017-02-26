@@ -37,7 +37,7 @@ lemonscript::Command *lemonscript::commandFromToken(const std::string &token, To
     } else if(type == OptionalCommandToken) {
         command = new OptionalCommand(lineNum, state, token);
     } else if(type == SequenceToken) {
-        command = new SequentialCommand(lineNum, state, token, true);
+        command = new SequentialCommand(lineNum, state, token, true, "");
     }
     else {
         throw "Unknow token type: " + std::to_string(type);

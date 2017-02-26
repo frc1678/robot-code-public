@@ -1,0 +1,14 @@
+PrintAll(int theInt, float theFloat, bool theBool)
+
+include {
+    <stdio.h>
+}
+
+init {
+    return false;
+}
+
+periodic {
+    printf("(%d, %f, "%s)\n", theInt, theFloat, theBool ? "true" : "false");
+    return true;
+}

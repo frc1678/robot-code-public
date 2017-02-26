@@ -100,6 +100,47 @@ namespace AutoClass {
         return true;
     }
     
+    
+    bool PrintAllClass::Init(std::vector<void *> ls_arg_list) {
+        // BEGIN AUTO GENERATED CODE
+        int theInt = ConvertArgs::Convert<int>()(ls_arg_list[0+1]);
+        float theFloat = ConvertArgs::Convert<float>()(ls_arg_list[1+1]);
+        bool theBool = ConvertArgs::Convert<bool>()(ls_arg_list[2+1]);
+        // END AUTO GENERATED CODE
+        
+        return false;
+    }
+    
+    bool PrintAllClass::Periodic(std::vector<void *> ls_arg_list) {
+        // BEGIN AUTO GENERATED CODE
+        int theInt = ConvertArgs::Convert<int>()(ls_arg_list[0+1]);
+        float theFloat = ConvertArgs::Convert<float>()(ls_arg_list[1+1]);
+        bool theBool = ConvertArgs::Convert<bool>()(ls_arg_list[2+1]);
+        // END AUTO GENERATED CODE
+        
+        printf("(%d, %f, %s)\n", theInt, theFloat, theBool ? "true" : "false");
+        return true;
+    }
+    
+    
+    bool DoNothingClass::Init(std::vector<void *> /* ls_arg_list */) {
+        // BEGIN AUTO GENERATED CODE
+        
+        // END AUTO GENERATED CODE
+        
+        printf("Do nothing INIT\n");
+        return false;
+    }
+    
+    bool DoNothingClass::Periodic(std::vector<void *> /* ls_arg_list */) {
+        // BEGIN AUTO GENERATED CODE
+        
+        // END AUTO GENERATED CODE
+        
+        printf("Do nothing PERIODIC\n");
+        return true;
+    }
+    
 }
 
 namespace AutoGenerator {
@@ -116,6 +157,14 @@ namespace AutoGenerator {
         return std::make_unique<AutoClass::PrintBoolClass>();
     }
     
+    std::unique_ptr<BaseAutoFunction> NewPrintAllCommand() {
+        return std::make_unique<AutoClass::PrintAllClass>();
+    }
+    
+    std::unique_ptr<BaseAutoFunction> NewDoNothingCommand() {
+        return std::make_unique<AutoClass::DoNothingClass>();
+    }
+    
     
     std::map<std::string, std::function<std::unique_ptr<BaseAutoFunction>()>> GetAutoGenerators() {
         std::map<std::string, std::function<std::unique_ptr<BaseAutoFunction>()>> return_map;
@@ -129,6 +178,12 @@ namespace AutoGenerator {
         
         std::function<std::unique_ptr<BaseAutoFunction>()> NewPrintBoolGenerator = NewPrintBoolCommand;
         return_map["PrintBool-bool"] = NewPrintBoolCommand;
+        
+        std::function<std::unique_ptr<BaseAutoFunction>()> NewPrintAllGenerator = NewPrintAllCommand;
+        return_map["PrintAll-int-float-bool"] = NewPrintAllCommand;
+        
+        std::function<std::unique_ptr<BaseAutoFunction>()> NewDoNothingGenerator = NewDoNothingCommand;
+        return_map["DoNothing-"] = NewDoNothingCommand;
         
         
         return return_map;

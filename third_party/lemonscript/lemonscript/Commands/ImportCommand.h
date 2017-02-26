@@ -24,7 +24,8 @@ public:
     virtual ~ImportCommand();
     
     bool Update();
-    
+    bool fastForward();
+
 };
 
 #endif /* ImportCommand_hpp */

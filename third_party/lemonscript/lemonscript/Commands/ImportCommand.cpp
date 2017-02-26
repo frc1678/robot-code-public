@@ -20,14 +20,30 @@ lemonscript::ImportCommand::ImportCommand(int l, LemonScriptState *s, const std:
     std::string importFileName = commandString.substr(endOfImportLoc);
     importFileName = ParsingUtils::trimWhitespace(importFileName);
     
-    importCompiler = new lemonscript::LemonScriptCompiler(importFileName, s);
+    if(s->alreadyEvaluatedIMPORT(importFileName)) {
+        importCompiler = nullptr;
+        _hasExternalCode = false;
+    } else {
+        s->addEvaluatedIMPORT(importFileName);
+        importCompiler = new lemonscript::LemonScriptCompiler(importFileName, s);
+        _hasExternalCode = importCompiler->RootSequence()->HasExternalCode();
+    }
 }
 
 lemonscript::ImportCommand::~ImportCommand() {
-    delete importCompiler;
+    if(importCompiler != nullptr) {
+        delete importCompiler;
+    }
 }
 
 
 bool lemonscript::ImportCommand::Update() {
+    if(importCompiler == nullptr) {
+        return true;
+    }
     return importCompiler->PeriodicUpdate();
+}
+
+bool lemonscript::ImportCommand::fastForward() {
+    return !HasExternalCode();
 }

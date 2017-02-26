@@ -76,6 +76,8 @@ Token ExpressionScanner::scan() {
         } else {
 // "(", ",", ")", "true", "false", digit, alpha, "/", "*", "=", "-", "+", "!", "%", "<", ">", "&", "|", "^"
             switch (c) {
+                case '_':
+                    return ccase1(c, TK::UNDERSCORE);
                 case '(':
                     return ccase1(c, TK::LPAREN);
                 case ',':

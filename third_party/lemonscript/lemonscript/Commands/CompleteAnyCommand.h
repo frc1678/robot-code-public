@@ -27,7 +27,8 @@ public:
     virtual ~CompleteAnyCommand();
     
     bool Update();
-    
+    bool fastForward();
+
 };
 
 

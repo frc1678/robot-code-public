@@ -24,13 +24,13 @@ class lemonscript::SetCommand : public lemonscript::Command {
     void *variableAddress;
     lemonscript::LemonScriptState *state;
     
-    
 public:
     SetCommand(int l, LemonScriptState *s, const std::string &commandString);
     virtual ~SetCommand();
     
     bool Update();
-    
+    bool fastForward();
+
 };
 
 

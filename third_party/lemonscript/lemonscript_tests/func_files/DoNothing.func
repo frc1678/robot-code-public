@@ -1,0 +1,15 @@
+DoNothing()
+
+include {
+    <stdio.h>
+}
+
+init {
+    printf("Do nothing INIT\n");
+    return false;
+}
+
+periodic {
+    printf("Do nothing PERIODIC\n");
+    return true;
+}

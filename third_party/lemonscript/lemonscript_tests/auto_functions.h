@@ -23,12 +23,14 @@
 #include <functional>
 #include <memory>
 #include <map>
-#include <string>
 #include "BaseAutoFunction.h"
+#include <string>
 
 using lemonscript::BaseAutoFunction;
 
 //<<<include>>>
+#include <stdio.h>
+#include <stdio.h>
 #include <stdio.h>
 #include <stdio.h>
 #include <stdio.h>
@@ -39,28 +41,46 @@ namespace AutoClass {
     //<<<classes>>>
     
     class PrintIntClass : public BaseAutoFunction {
-    public:
+        public:
         bool Init(std::vector<void *> ls_arg_list);
         bool Periodic(std::vector<void *> ls_arg_list);
-    private:
+        private:
         //<<<vars>>>
     };
     
     
     class PrintFloatClass : public BaseAutoFunction {
-    public:
+        public:
         bool Init(std::vector<void *> ls_arg_list);
         bool Periodic(std::vector<void *> ls_arg_list);
-    private:
+        private:
         //<<<vars>>>
     };
     
     
     class PrintBoolClass : public BaseAutoFunction {
-    public:
+        public:
         bool Init(std::vector<void *> ls_arg_list);
         bool Periodic(std::vector<void *> ls_arg_list);
-    private:
+        private:
+        //<<<vars>>>
+    };
+    
+    
+    class PrintAllClass : public BaseAutoFunction {
+        public:
+        bool Init(std::vector<void *> ls_arg_list);
+        bool Periodic(std::vector<void *> ls_arg_list);
+        private:
+        //<<<vars>>>
+    };
+    
+    
+    class DoNothingClass : public BaseAutoFunction {
+        public:
+        bool Init(std::vector<void *> ls_arg_list);
+        bool Periodic(std::vector<void *> ls_arg_list);
+        private:
         //<<<vars>>>
     };
     
@@ -73,6 +93,10 @@ namespace AutoGenerator {
     std::unique_ptr<BaseAutoFunction> NewPrintFloatCommand();
     
     std::unique_ptr<BaseAutoFunction> NewPrintBoolCommand();
+    
+    std::unique_ptr<BaseAutoFunction> NewPrintAllCommand();
+    
+    std::unique_ptr<BaseAutoFunction> NewDoNothingCommand();
     
     
     std::map<std::string, std::function<std::unique_ptr<BaseAutoFunction>()>> GetAutoGenerators();

@@ -1,4 +1,4 @@
-IMPORT test_constants.auto
+IMPORT constants.auto
 
 PrintFloat: e
 PrintFloat: pi

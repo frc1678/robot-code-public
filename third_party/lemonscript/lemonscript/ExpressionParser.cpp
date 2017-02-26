@@ -227,9 +227,14 @@ std::string ExpressionParser::operator_character() {
     }
 }
 
-//  identifier = alpha {identifier_character};
+//  identifier = (alpha | underscore) { identifier_character };
 Atom ExpressionParser::identifier() {
-    string id = alpha();
+    string id;
+    if(is(TK::ALPHA)) {
+        id = alpha();
+    } else if(is(TK::UNDERSCORE)) {
+        id = mustbe(TK::UNDERSCORE);
+    }
     
     while (inFirstSet(NonTerminal::identifier_character)) {
         id += identifier_character();
@@ -242,12 +247,14 @@ Atom ExpressionParser::identifier() {
     return a;
 }
 
-//  identifier_character = alpha | digit;
+//  identifier_character = alpha | digit | underscore;
 std::string ExpressionParser::identifier_character() {
     if(inFirstSet(NonTerminal::alpha)) {
         return alpha();
     } else if(inFirstSet(NonTerminal::digit)) {
         return digit();
+    } else if(is(TK::UNDERSCORE)) {
+        return mustbe(TK::UNDERSCORE);
     } else {
         parse_error("Missing token");
     }
@@ -383,9 +390,9 @@ set<TK> ExpressionParser::firstSet(lemonscript_expressions::NonTerminal nt) {
             return {TK::FORWARD_SLASH, TK::ASTERISK, TK::EQUALS, TK::MINUS, TK::PLUS, TK::EXCLAMATION_MARK, TK::PERCENT, TK::LANGLE, TK::RANGLE, TK::AMPERSAND, TK::PIPE, TK::CARET};
             
         case NonTerminal::identifier:
-            return firstSet(NonTerminal::alpha);
+            return sunion(firstSet(NonTerminal::alpha), {TK::UNDERSCORE});
         case NonTerminal::identifier_character:
-            return sunion(firstSet(NonTerminal::alpha), firstSet(NonTerminal::digit));
+            return sunion(sunion(firstSet(NonTerminal::alpha), firstSet(NonTerminal::digit)), {TK::UNDERSCORE});
         case NonTerminal::literal:
             return sunion(firstSet(NonTerminal::numeric_literal), firstSet(NonTerminal::boolean_literal));
         case NonTerminal::boolean_literal:

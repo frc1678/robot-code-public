@@ -1,0 +1,7 @@
+DEF x = 5
+DEF z = 3
+DEF w = 89
+SEQUENCE:
+  DEF y = x + 2
+  PrintInt: y
+    

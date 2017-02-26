@@ -26,7 +26,7 @@
 class lemonscript::LemonScriptCompiler {
     
     LemonScriptState *state;
-    SequentialCommand *rootSequence;
+    SequentialCommand *_rootSequence;
     bool isDone = false;
     std::ifstream toParse;
     
@@ -39,23 +39,35 @@ public:
             throw "File not found: " + toParseFileName;
         }
         
-        // THIS DOES ALL THE PARSING / COMPILATION
-        rootSequence = new SequentialCommand(1, state, ParsingUtils::readWholeStream(toParse), false);
+        // Convert IMPORTs to lemonscript string code.
+        std::string importCode = "";
+        for(auto it = state->getIMPORTs().begin(); it != state->getIMPORTs().end(); ++it) {
+            importCode += "IMPORT " + *it + "\n";
+        }
         
-        if(rootSequence->getSequenceCount() == 0) {
+        // THIS DOES ALL THE PARSING / COMPILATION
+        _rootSequence = new SequentialCommand(1, state, ParsingUtils::readWholeStream(toParse), false, importCode);
+        
+        if(_rootSequence->getSequenceCount() == 0) {
             printf("Warning: empty file provided to Lemon Script\n");
         }
+        
+        isDone = _rootSequence->fastForward();
     }
     
     bool PeriodicUpdate() {
         if(!isDone) {
-            isDone = rootSequence->Update();
+            isDone = _rootSequence->Update();
         }
         return isDone;
     }
+    
+    const SequentialCommand *RootSequence() const {
+        return _rootSequence;
+    }
   
     ~LemonScriptCompiler() {
-        delete rootSequence;
+        delete _rootSequence;
     }
 };
 
