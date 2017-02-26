@@ -88,6 +88,16 @@ def main():
                robot_command_path = options.command)
     ]
 
+    # The command to set up running the autostart script on startup
+    # TODO(Wesley) Make this only run when needed. Also, condense everything
+    # into one ssh session.
+    ssh_autostart_command = ssh_command + [
+        ssh_target,
+        'echo "{} &&" > /etc/init.d/start_robot_code && \
+         chmod +x /etc/init.d/start_robot_code && \
+         update-rc.d start_robot_code defaults 100'.format(options.command)
+    ]
+
     # The ssh command that's used to set the SUID bit on the robot code
     ssh_suid_command = ssh_command + [
         ssh_target,
@@ -98,11 +108,6 @@ def main():
     try:
         print("Running rsync command: {}".format(' '.join(rsync)))
         sp.check_call(rsync)
-        print("Running ssh command: {}".format(' '.join(ssh)))
-        sp.check_call(ssh)
-        print("Running set SUID command: {}".format(' '.join(ssh_suid_command)))
-        sp.check_call(ssh_suid_command)
-        print("Deploying completed successfully.")
     except sp.CalledProcessError as e:
         # If it doesn't work, try installing rsync on the RoboRIO.
         if e.returncode == 127:
@@ -119,6 +124,13 @@ def main():
             return e.returncode
         else:
             raise e
+    print("Running ssh command: {}".format(' '.join(ssh)))
+    sp.check_call(ssh)
+    print("Running set SUID command: {}".format(' '.join(ssh_suid_command)))
+    sp.check_call(ssh_suid_command)
+    print("Running set autostart setup command: {}".format(' '.join(ssh_autostart_command)))
+    sp.check_call(ssh_autostart_command)
+    print("Deploying completed successfully.")
 
 if __name__ == '__main__':
     exit(main())
