@@ -111,9 +111,9 @@ You can add "remotes" to github that refer to other people's robot code repos. T
 Although we have a third_party directory for the majority of our dependencies, our code still requires some external ones. These are (for manual installation):
   * `opencv2` (apt package: `libopencv-dev`; aur package `opencv2-git`)
   * `clang` (apt/aor package:`clang`)
-  * `clang-format` (apt/aor packange: `clang-format`)
-  * `python2` (apt/aor package: `python2`)
-  * `python2-pip` (optional; apt/aor package `python2-pip`) Installing from both aor/apt/aur and pip *WILL* break python.
+  * `clang-format` (apt/aor package: `clang-format`)
+  * `python2` (apt package: `python`; aor package: `python2`)
+  * `python2-pip` (optional; apt package: `python-pip`; aor package `python2-pip`) Installing from both aor/apt/aur and pip *WILL* break python.
   * Python Deps:
     * `numpy` (apt package: `python-numpy`; aor package: `python2-numpy`; pip package: `numpy`)
     * `scipy` (apt package: `python-scipy`; aor package: `python2-scipy`; pip package: `scipy`)
