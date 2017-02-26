@@ -96,3 +96,14 @@ TEST(History, FailsOnOldHistory) {
   hist.GoBack(99);
   EXPECT_DEATH(hist.GoBack(100), "unrecorded history");
 }
+
+TEST(History, Resets) {
+  History<int> hist(100);
+  for (int i = 0; i < 100; i++) {
+    hist.Update(10);
+  }
+  hist.reset();
+  EXPECT_DEATH(hist.GoBack(0), "unrecorded history");
+  hist.Update(0);
+  EXPECT_EQ(hist.GoBack(0), 0);
+}
