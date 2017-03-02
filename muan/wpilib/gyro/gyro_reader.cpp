@@ -74,13 +74,19 @@ void GyroReader::RunCalibration() {
   }
 
   bool robot_disabled = true;
-  int highest_sample_count = 0;
+  if (ds_queue_ != nullptr) {
+    auto ds_message = ds_queue_->ReadLastMessage();
+    if (ds_message) {
+      robot_disabled = ds_message.value()->mode() == RobotMode::DISABLED;
+    }
+  }
 
+  int highest_sample_count = 0;
   while (calibration_state_ == GyroState::kCalibrating && robot_disabled) {
     double raw_velocity = AngleReading();
 
     // Reset calibration if robot is moved
-    if (std::abs(raw_velocity) < calibration_velocity_limit_) {
+    if (std::abs(raw_velocity) < kCalibrationVelocityLimit) {
       velocity_history.Update(raw_velocity);
     } else {
       velocity_history.reset();
