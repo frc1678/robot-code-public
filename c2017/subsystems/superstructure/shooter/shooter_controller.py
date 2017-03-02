@@ -19,8 +19,8 @@ def make_gains():
 
     # Parameters
     moment_inertia = 4.0 * (.03**2) / 2.0 + 0.93 * (3.5 * 0.0254)**2.0 / 2.0
-    gear_ratio = 1.0 / 2.5
-    efficiency = .8
+    gear_ratio = 1.0 / 4.0
+    efficiency = .91
 
     # motor characteristics
     free_speed = 18700. / 60.0 * 6.28

@@ -105,3 +105,24 @@ Here's how to get your code into the main robot repository:
 ### Other remotes
 
 You can add "remotes" to github that refer to other people's robot code repos. This allows you to, for example, take a look at someone else's code to look over it, you would be able to `git checkout wesley/branch-that-breaks-everything` to see it. To add a remote, just do `git remote add <name_of_person> https://github.com/<username>/robot-code`. Once you've done this, you can use `git fetch <name_of_person>` to get updated code from other people's repos!
+
+### Setting up a new computer
+
+Although we have a third_party directory for the majority of our dependencies, our code still requires some external ones. These are (for manual installation):
+  * `opencv2` (apt package: `libopencv-dev`; aur package `opencv2-git`)
+  * `clang` (apt/aor package:`clang`)
+  * `clang-format` (apt/aor package: `clang-format`)
+  * `python2` (apt package: `python`; aor package: `python2`)
+  * `python2-pip` (optional; apt package: `python-pip`; aor package `python2-pip`) Installing from both aor/apt/aur and pip *WILL* break python.
+  * Python Deps:
+    * `numpy` (apt package: `python-numpy`; aor package: `python2-numpy`; pip package: `numpy`)
+    * `scipy` (apt package: `python-scipy`; aor package: `python2-scipy`; pip package: `scipy`)
+    * `matplotlib` (apt package: `python-matplotlib`; aor package: `python2-matplotlib`; pip package `matplotlib`)
+    * `tk` (apt package: `python-tk`; aor package: `tk`; pip package: none, apt/aor/aur/source required for install)
+    * `gflags` (apt package: `python-gflags`; aor package: `python2-gflags`; pip package: `gflags`)
+    * `glog` (apt/aor/aur package: none (compile from source required); pip package: `glog`)
+  * WPILib toolchain (apt ppa: `ppa:wpilib/toolchain`, apt package: `frc-toolchain`, aur package: `frc-2017`)
+  * Bazel: (apt users: follow instructions at https://bazel.build/versions/master/docs/install.html#ubuntu; aur: `bazel`)
+
+If you're running Arch/Manjaro or Ubuntu/Debian (_should work with debian_), then simply clone this repository and run:
+`./scripts/frcsetup-arch` or `./scripts/frcsetup-ubuntu`

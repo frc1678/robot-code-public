@@ -6,26 +6,29 @@
 namespace c2017 {
 namespace citrus_robot {
 
-CitrusRobot::CitrusRobot() : throttle_{1}, wheel_{0}, gamepad_{2} {
-  fender_align_shoot_ = throttle_.GetButton(1);        // Joystick Trigger
-  score_hp_gear_ = throttle_.GetButton(2);             // Joystick Button
-  driver_score_ground_gear_ = throttle_.GetButton(3);  // Throttle 3
+CitrusRobot::CitrusRobot() :
+  throttle_{1, &c2017::QueueManager::GetInstance().throttle_status_queue()},
+  wheel_{0, &c2017::QueueManager::GetInstance().wheel_status_queue()},
+  gamepad_{2, &c2017::QueueManager::GetInstance().manipulator_status_queue()} {
+  fender_align_shoot_ = throttle_.MakeButton(1);        // Joystick Trigger
+  score_hp_gear_ = throttle_.MakeButton(2);             // Joystick Button
+  driver_score_ground_gear_ = throttle_.MakeButton(3);  // Throttle 3
 
-  ball_intake_toggle_ = gamepad_.GetButton(uint32_t(muan::teleop::XBox::RIGHT_BUMPER));      // Right Bumper
-  ball_intake_run_ = gamepad_.GetAxis(3);                                                    // Right Trigger
-  gear_intake_down_ = gamepad_.GetButton(uint32_t(muan::teleop::XBox::A_BUTTON));            // Button A
-  operator_score_ground_gear_ = gamepad_.GetButton(uint32_t(muan::teleop::XBox::B_BUTTON));  // Button B
-  ball_reverse_ = gamepad_.GetButton(uint32_t(muan::teleop::XBox::X_BUTTON));                // Button X
-  just_shoot_ = gamepad_.GetButton(uint32_t(muan::teleop::XBox::Y_BUTTON));                  // Button Y
-  stop_shooting_ = gamepad_.GetButton(uint32_t(muan::teleop::XBox::LEFT_BUMPER));            // Left bumper
-  hp_load_gears_ = gamepad_.GetPov(0, muan::teleop::Pov::kNorth);                            // D-Pad up
-  hp_load_balls_ = gamepad_.GetPov(0, muan::teleop::Pov::kSouth);                            // D-Pad down
-  hp_load_both_ = gamepad_.GetPov(0, muan::teleop::Pov::kEast);                              // D-Pad right
-  agitate_ = gamepad_.GetAxis(2);                                                            // Left Trigger
-  climb_ = gamepad_.GetButton(uint32_t(muan::teleop::XBox::BACK));                           // Back Button
-  just_spinup_ = gamepad_.GetButton(uint32_t(muan::teleop::XBox::START));                    // Start Button
-  quickturn_ = wheel_.GetButton(5);
-  toggle_distance_align_ = gamepad_.GetButton(uint32_t(muan::teleop::XBox::LEFT_CLICK_IN));
+  ball_intake_toggle_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::RIGHT_BUMPER));      // Right Bumper
+  ball_intake_run_ = gamepad_.MakeAxis(3);                                                    // Right Trigger
+  gear_intake_down_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::A_BUTTON));            // Button A
+  operator_score_ground_gear_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::B_BUTTON));  // Button B
+  ball_reverse_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::X_BUTTON));                // Button X
+  just_shoot_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::Y_BUTTON));                  // Button Y
+  stop_shooting_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_BUMPER));            // Left bumper
+  hp_load_gears_ = gamepad_.MakePov(0, muan::teleop::Pov::kNorth);                            // D-Pad up
+  hp_load_balls_ = gamepad_.MakePov(0, muan::teleop::Pov::kSouth);                            // D-Pad down
+  hp_load_both_ = gamepad_.MakePov(0, muan::teleop::Pov::kEast);                              // D-Pad right
+  agitate_ = gamepad_.MakeAxis(2);                                                            // Left Trigger
+  climb_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::BACK));                           // Back Button
+  just_spinup_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::START));                    // Start Button
+  quickturn_ = wheel_.MakeButton(5);
+  toggle_distance_align_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_CLICK_IN));
 }
 
 void CitrusRobot::Update() {

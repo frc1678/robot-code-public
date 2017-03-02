@@ -19,7 +19,7 @@ def get_args():
     parser.add_argument('--team', dest='team', help="The team number to deploy to. Setting this option will override --target as roborio-####-frc.local.", default=None)
     parser.add_argument('--port', dest='port', default='22')
     parser.add_argument('--deploy-path', dest='deploy_path', help="The path on the RoboRIO to deploy code to", default='/home/lvuser/robot_code')
-    parser.add_argument('--robot-command', dest='command', help="The robotCommand file to create", default='/home/lvuser/robotCommand')
+    parser.add_argument('--robot-command', dest='command', help="The robotCommand file to create", default='/home/lvuser/start_robot_code')
     parser.add_argument('--password', dest='password', help="The password for the user on the RoboRIO")
     args = parser.parse_args()
     if args.target is None:
@@ -78,7 +78,7 @@ def main():
     rsync = ['rsync', '-e', ' '.join(ssh_command), '-c', '-v', '-z', '-r', '-L', '.', ssh_deploy_path]
 
     # This will look like (cd /home/lvuser/robot_code && ./c2017/frc1678).
-    robot_command_contents = '''\\$(cd {} && ./{})'''.format(options.deploy_path, options.main_binary)
+    robot_command_contents = '''cd {};./muan/autostart/autostart {}'''.format(options.deploy_path, options.main_binary)
 
     # The ssh command that we're going to run to create robotCommand
     ssh = ssh_command + [
@@ -88,21 +88,35 @@ def main():
                robot_command_path = options.command)
     ]
 
+    # The command to set up running the autostart script on startup
+    # TODO(Wesley) Make this only run when needed. Also, condense everything
+    # into one ssh session.
+    ssh_autostart_command = ssh_command + [
+        ssh_target,
+        'echo "{} &&" > /etc/init.d/start_robot_code && \
+         chmod +x /etc/init.d/start_robot_code && \
+         update-rc.d start_robot_code defaults 100'.format(options.command)
+    ]
+
     # The ssh command that's used to set the SUID bit on the robot code
     ssh_suid_command = ssh_command + [
         ssh_target,
         "chmod +s {}".format(os.path.join(options.deploy_path, options.main_binary))
     ]
 
+    # The command to kill the currently running robot code. This will cause it
+    # to be restarted by the autostart script, *if* the autostart script is
+    # running. This means that the first time that this script is run on a
+    # newly-flashed roborio, the code will not get automatically started.
+    ssh_kill_code_command = ssh_command + [
+        ssh_target,
+        "kill $(pidof {})".format(options.main_binary)
+    ]
+
     # Try to rsync the files over and run an ssh command to create the robotCommand.
     try:
         print("Running rsync command: {}".format(' '.join(rsync)))
         sp.check_call(rsync)
-        print("Running ssh command: {}".format(' '.join(ssh)))
-        sp.check_call(ssh)
-        print("Running set SUID command: {}".format(' '.join(ssh_suid_command)))
-        sp.check_call(ssh_suid_command)
-        print("Deploying completed successfully.")
     except sp.CalledProcessError as e:
         # If it doesn't work, try installing rsync on the RoboRIO.
         if e.returncode == 127:
@@ -119,6 +133,15 @@ def main():
             return e.returncode
         else:
             raise e
+    print("Running ssh command: {}".format(' '.join(ssh)))
+    sp.check_call(ssh)
+    print("Running set SUID command: {}".format(' '.join(ssh_suid_command)))
+    sp.check_call(ssh_suid_command)
+    print("Running set autostart setup command: {}".format(' '.join(ssh_autostart_command)))
+    sp.check_call(ssh_autostart_command)
+    print("Running kill robot code command: {}".format(' '.join(ssh_kill_code_command)))
+    sp.check_call(ssh_kill_code_command)
+    print("Deploying completed successfully.")
 
 if __name__ == '__main__':
     exit(main())

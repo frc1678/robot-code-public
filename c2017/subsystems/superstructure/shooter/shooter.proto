@@ -21,6 +21,10 @@ message ShooterStatus {
   required double voltage = 3;
   required bool at_goal = 4;
   required bool currently_running = 5;
+  required double unprofiled_goal_velocity = 6;
+  required double profiled_goal_velocity = 7;
+  required double voltage_error = 8;
+  required double uncapped_u = 9;
 }
 
 enum ShotMode {

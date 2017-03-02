@@ -89,5 +89,5 @@ def muan_deploy(main, name, data = []):
   _muan_deploy(
     main = main,
     name = name,
-    data = data + [main],
+    data = data + [main] + ["//muan/autostart:autostart"],
   )

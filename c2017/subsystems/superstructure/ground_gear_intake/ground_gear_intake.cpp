@@ -78,9 +78,7 @@ void GroundGearIntake::SetGoal(GroundGearIntakeGoalProto goal) {
   }
 }
 
-State GroundGearIntake::current_state() const {
-  return current_state_;
-}
+State GroundGearIntake::current_state() const { return current_state_; }
 
 }  // namespace ground_gear_intake
 

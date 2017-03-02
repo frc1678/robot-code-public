@@ -1,5 +1,6 @@
 #include "c2017/subsystems/superstructure/shooter/shooter_controller.h"
 #include <cmath>
+#include <limits>
 
 namespace c2017 {
 namespace shooter {
@@ -9,15 +10,19 @@ ShooterController::ShooterController()
   auto ss_plant = muan::control::StateSpacePlant<1, 3, 1>(frc1678::shooter_controller::controller::A(),
                                                           frc1678::shooter_controller::controller::B(),
                                                           frc1678::shooter_controller::controller::C());
-  controller_ = muan::control::StateSpaceController<1, 3, 1>(frc1678::shooter_controller::controller::K());
-  controller_.u_min() = Eigen::Matrix<double, 1, 1>::Ones() * -12.0;
-  controller_.u_max() = Eigen::Matrix<double, 1, 1>::Ones() * 12.0;
+
+  controller_ = muan::control::StateSpaceController<1, 3, 1>(
+      frc1678::shooter_controller::controller::K(), frc1678::shooter_controller::controller::Kff(),
+      frc1678::shooter_controller::controller::A(),
+      Eigen::Matrix<double, 1, 1>::Ones() * -std::numeric_limits<double>::infinity(),
+      Eigen::Matrix<double, 1, 1>::Ones() * std::numeric_limits<double>::infinity());
+
   observer_ =
       muan::control::StateSpaceObserver<1, 3, 1>(ss_plant, frc1678::shooter_controller::controller::L());
 
   at_goal_ = false;
 
-  velocity_tolerance_ = 100;  // Radians per second
+  velocity_tolerance_ = 30;  // Radians per second
 }
 
 c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::ShooterInputProto input,
@@ -25,19 +30,26 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
   Eigen::Matrix<double, 3, 1> r_;
 
   auto y = (Eigen::Matrix<double, 1, 1>() << input->encoder_position()).finished();
-  r_ = (Eigen::Matrix<double, 3, 1>() << 0.0, goal_velocity_, 0.0).finished();
+  r_ = (Eigen::Matrix<double, 3, 1>() << 0.0, UpdateProfiledGoalVelocity(unprofiled_goal_velocity_), 0.0)
+           .finished();
 
-  y(0) = (input->encoder_position());
+  controller_.r() = r_;
 
-  auto u = controller_.Update(observer_.x(), r_)(0, 0);
+  auto u = controller_.Update(observer_.x())(0, 0);
 
-  if (!outputs_enabled || goal_velocity_ <= 0) {
+  if (!outputs_enabled || unprofiled_goal_velocity_ <= 0) {
     u = 0.0;
+    unprofiled_goal_velocity_ = 0.0;
+  } else {
+    status_->set_uncapped_u(u);
+    u = CapU(u, outputs_enabled);
   }
 
   observer_.Update((Eigen::Matrix<double, 1, 1>() << u).finished(), y);
 
-  auto absolute_error = (r_ - observer_.x()).cwiseAbs();
+  auto absolute_error =
+      ((Eigen::Matrix<double, 3, 1>() << 0.0, unprofiled_goal_velocity_, 0.0).finished() - observer_.x())
+          .cwiseAbs();
 
   at_goal_ = absolute_error(1, 0) < velocity_tolerance_;
 
@@ -53,16 +65,50 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
 
   status_->set_observed_velocity(observer_.x()(1, 0));
   status_->set_at_goal(at_goal_);
-  status_->set_currently_running(std::fabs(goal_velocity_) >= 1e-3);
+  status_->set_currently_running(std::fabs(unprofiled_goal_velocity_) >= 1e-3);
   status_->set_voltage(u);
+  status_->set_profiled_goal_velocity(profiled_goal_velocity_);
+  status_->set_unprofiled_goal_velocity(unprofiled_goal_velocity_);
+  status_->set_voltage_error(observer_.x(2));
   QueueManager::GetInstance().shooter_status_queue().WriteMessage(status_);
 
   return output;
 }
 
+double ShooterController::CapU(double u, bool outputs_enabled) {
+  double k2 = controller_.K(0, 1);
+  double x2 = observer_.x(1);
+  double k3 = controller_.K(0, 2);
+  double x3 = observer_.x(2);
+
+  double u_max = 12;
+  double u_min = -12;
+
+  if (!outputs_enabled) {
+    profiled_goal_velocity_ = 0;
+    return 0;
+  }
+
+  if (u > u_max) {
+    profiled_goal_velocity_ = (u_max + k2 * x2 + k3 * x3) / k2;
+    u = u_max;
+  } else if (u < u_min) {
+    profiled_goal_velocity_ = (u_min + k2 * x2 + k3 * x3) / k2;
+    u = u_min;
+  }
+
+  return u;
+}
+
 void ShooterController::SetGoal(c2017::shooter::ShooterGoalProto goal) {
-  goal_velocity_ = goal->goal_velocity();
+  unprofiled_goal_velocity_ = goal->goal_velocity();
   shot_mode_ = goal->goal_mode();
+}
+
+double ShooterController::UpdateProfiledGoalVelocity(double unprofiled_goal_velocity) {
+  profiled_goal_velocity_ =
+      std::min(profiled_goal_velocity_ + kShooterAcceleration, unprofiled_goal_velocity);
+  return profiled_goal_velocity_;
 }
 
 }  // namespace shooter

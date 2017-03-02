@@ -13,6 +13,7 @@ SuperStructure::SuperStructure() {}
 
 void SuperStructure::Update() {
   c2017::magazine::MagazineGoalProto magazine_goal;
+  magazine_goal->set_magazine_extended(true);  // Default true whenever enabled
 
   auto maybe_shooter_group_goal = QueueManager::GetInstance().shooter_group_goal_queue().ReadLastMessage();
   auto maybe_shooter_status = QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
@@ -50,7 +51,7 @@ void SuperStructure::Update() {
       magazine_goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
       magazine_goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
       magazine_goal->set_lower_goal(c2017::magazine::LowerGoalState::LOWER_IDLE);
-      superstructure_status_proto_->set_shooting(false);
+      is_shooting_ = false;
       shooter_goal_->set_goal_velocity(0.0);
     }
 
@@ -90,8 +91,9 @@ void SuperStructure::Update() {
                                ground_gear_intake_.current_state() == ground_gear_intake::IDLE ||
                                ground_gear_intake_.current_state() == ground_gear_intake::CARRYING;
 
-    ground_ball_intake_goal->set_intake_up(!(
-        allow_ground_intake && intake_group_goal->ground_ball_position() == intake_group::GROUND_BALL_DOWN));
+    ground_ball_intake_goal->set_intake_up(
+        !(allow_ground_intake &&
+          intake_group_goal->ground_ball_position() == intake_group::GROUND_BALL_DOWN));
 
     switch (intake_group_goal->ground_ball_rollers()) {
       case intake_group::GROUND_BALL_NONE:

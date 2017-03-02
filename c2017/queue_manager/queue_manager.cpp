@@ -148,7 +148,8 @@ c2017::lights::LightsOutputQueue& QueueManager::lights_output_queue() { return l
 
 //  Joystick Queues
 muan::teleop::JoystickStatusQueue& QueueManager::manipulator_status_queue() {
-  return manipulator_status_queue_;}
+  return manipulator_status_queue_;
+}
 
 muan::teleop::JoystickStatusQueue& QueueManager::wheel_status_queue() { return wheel_status_queue_; }
 
