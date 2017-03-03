@@ -2,6 +2,7 @@
 #define GENERIC_ROBOT_WPILIB_UPDATE_MAIN_H_
 
 #include "muan/teleop/joystick.h"
+#include "muan/wpilib/ds_sender.h"
 
 namespace generic_robot {
 
@@ -22,7 +23,7 @@ class Main {
   muan::teleop::Button* shifting_high_, *shifting_low_;
   muan::teleop::Button* quickturn_;
 
-  void SendDSMessage();
+  muan::wpilib::DriverStationSender ds_sender_;
 };
 
 }  // namespace wpilib_update
