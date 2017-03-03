@@ -124,7 +124,7 @@ void CitrusRobot::SendSuperstructureMessage() {
   if (fender_align_shoot_->was_clicked()) {
     // Avery - Throttle Button
     shooter_group_goal_->set_position(shooter_group::Position::FENDER);
-    shooter_group_goal_->set_wheel(shooter_group::Wheel::BOTH);
+    shooter_group_goal_->set_wheel(shooter_group::Wheel::SPINUP);
     using_vision_ = true;
   } else if (just_spinup_->is_pressed()) {
     // Kelly - Gamepad Button
@@ -153,7 +153,10 @@ void CitrusRobot::SendSuperstructureMessage() {
 void CitrusRobot::SendDrivetrainMessage() {
   frc971::control_loops::drivetrain::GoalProto drivetrain_goal;
 
-  use_distance_align_ = (use_distance_align_ != toggle_distance_align_->was_clicked());
+  if (toggle_distance_align_->was_clicked()) {
+    use_distance_align_ = !use_distance_align_;
+  }
+
   double throttle = -throttle_.wpilib_joystick()->GetRawAxis(1);
   double wheel = -wheel_.wpilib_joystick()->GetRawAxis(0);
   bool quickturn = quickturn_->is_pressed();
