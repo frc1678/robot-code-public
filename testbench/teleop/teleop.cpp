@@ -14,7 +14,8 @@ using frc971::control_loops::drivetrain::OutputProto;
 Teleop::Teleop()
     : properties_{1, 1, 1, 1, testbench::drivetrain::GetDrivetrainConfig().robot_radius},
       throttle_{1},
-      wheel_{0} {
+      wheel_{0},
+      ds_sender_{QueueManager::GetInstance()->driver_station_queue()} {
   shifting_low_ = throttle_.MakeButton(4);
   shifting_high_ = throttle_.MakeButton(5);
   quickturn_ = wheel_.MakeButton(5);
@@ -25,28 +26,9 @@ void Teleop::Update() {
   throttle_.Update();
   wheel_.Update();
 
-  SendDSMessage();
+  ds_sender_.Send();
+
   SendDrivetrainMessage();
-}
-
-void Teleop::SendDSMessage() {
-  muan::wpilib::DriverStationProto status;
-
-  if (DriverStation::GetInstance().IsDisabled()) {
-    status->set_mode(RobotMode::DISABLED);
-  } else if (DriverStation::GetInstance().IsAutonomous()) {
-    status->set_mode(RobotMode::AUTONOMOUS);
-  } else if (DriverStation::GetInstance().IsOperatorControl()) {
-    status->set_mode(RobotMode::TELEOP);
-  } else {
-    status->set_mode(RobotMode::ESTOP);
-  }
-
-  status->set_battery_voltage(DriverStation::GetInstance().GetBatteryVoltage());
-  status->set_brownout(DriverStation::GetInstance().IsBrownedOut());
-  status->set_has_ds_connection(DriverStation::GetInstance().IsDSAttached());
-
-  testbench::QueueManager::GetInstance()->driver_station_queue()->WriteMessage(status);
 }
 
 void Teleop::SendDrivetrainMessage() {

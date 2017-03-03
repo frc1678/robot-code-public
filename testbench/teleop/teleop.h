@@ -3,6 +3,7 @@
 
 #include "muan/actions/drivetrain_action.h"
 #include "muan/teleop/joystick.h"
+#include "muan/wpilib/ds_sender.h"
 
 namespace testbench {
 namespace teleop {
@@ -22,7 +23,8 @@ class Teleop {
   muan::teleop::Button* shifting_high_, *shifting_low_;
   muan::teleop::Button* quickturn_;
 
-  void SendDSMessage();
+  muan::wpilib::DriverStationSender ds_sender_;
+
   void SendDrivetrainMessage();
 };
 
