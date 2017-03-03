@@ -6,6 +6,7 @@
 #include "c2017/queue_manager/queue_manager.h"
 #include "c2017/wpilib/wpilib_interface.h"
 #include "c2017/subsystems/drivetrain/drivetrain_base.h"
+#include "c2017/vision/robot/vision.h"
 #include "third_party/aos/common/time.h"
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/aos/linux_code/init.h"
@@ -28,6 +29,7 @@ class SubsystemRunner {
   frc971::control_loops::drivetrain::DrivetrainLoop drivetrain_;
   c2017::superstructure::SuperStructure superstructure_;
   c2017::lights::Lights lights_;
+  c2017::vision::VisionAlignment vision_;
 };
 
 }  // namespace c2017

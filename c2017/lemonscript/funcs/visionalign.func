@@ -1,0 +1,41 @@
+VisionAlign(bool use_distance_align)
+
+include {
+  "c2017/queue_manager/queue_manager.h"
+}
+
+global {
+  bool should_attempt;
+}
+
+init {
+  // If there is no vision connection don't bother running.
+  // It will miss the shots, but won't block auto from drive afterwards.
+  auto status = c2017::QueueManager::GetInstance().vision_status_queue().ReadLastMessage();
+  if (status && status.value()->has_connection()) {
+    c2017::vision::VisionGoalProto goal;
+    goal->set_should_align(true);
+    goal->set_use_distance_align(use_distance_align);
+    c2017::QueueManager::GetInstance().vision_goal_queue().WriteMessage(goal);
+    should_attempt = true;
+  } else {
+    should_attempt = false;
+  }
+  return true;
+}
+
+periodic {
+  if (!should_attempt) {
+    return true;
+  }
+  auto status = c2017::QueueManager::GetInstance().vision_status_queue().ReadLastMessage();
+  if (status && status.value()->aligned()) {
+    c2017::vision::VisionGoalProto goal;
+    goal->set_should_align(false);
+    goal->set_use_distance_align(false);
+    c2017::QueueManager::GetInstance().vision_goal_queue().WriteMessage(goal);
+    return true;
+  } else {
+    return false;
+  }
+}

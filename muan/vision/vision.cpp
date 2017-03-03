@@ -7,13 +7,14 @@ double Vision::CalculateDistance(std::vector<cv::Point> points, int rows) {
   // Average together height of each point
   double angle = 0;
   for (auto& p : points) {
-    angle += p.y;
+    // Stupid inverted y axis
+    angle -= p.y;
   }
   angle /= points.size();
   // Scale angle from -fov/2 to fov/2
-  angle = (angle / rows - 0.5) * constants_.kFovY;
+  angle = (angle / rows + 0.5) * constants_.kFovY;
 
-  double distance = constants_.kHeightDifference / std::tan(angle + constants_.kCameraAngle);
+  double distance = constants_.kHeightDifference / std::tan(angle + constants_.kCameraAngleY);
   return distance;
 }
 
@@ -63,6 +64,7 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
 
   cv::cvtColor(raw, image, range_.colorspace);
   cv::inRange(image, range_.lower_bound, range_.upper_bound, image);
+  scorer_->Morph(image);
 
   std::vector<std::vector<cv::Point>> contours;
   std::vector<cv::Vec4i> hierarchy;
@@ -85,16 +87,16 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
     cv::RotatedRect bounding = cv::minAreaRect(hull[i]);
 
     double area = cv::contourArea(contours[i]);
-    double hull_area = cv::contourArea(hull[i]);
-    // Fullness is the ratio of the contour's area to that of its convex hull
-    double fullness = area / hull_area;
 
     // A baseline score to determine whether or not it's even a target
-    double base_score = hull_area / (image.rows * image.cols);
+    double base_score = area / (image.rows * image.cols);
 
-    // Check anything with area at least .2% of the image
-    if (base_score > 0.002) {
+    if (base_score > constants_.kMinTargetArea) {
       targets.push_back(i);
+
+      double hull_area = cv::contourArea(hull[i]);
+      // Fullness is the ratio of the contour's area to that of its convex hull
+      double fullness = area / hull_area;
 
       std::vector<cv::Point> skewbox;
 
@@ -115,9 +117,8 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
 
         retval.target_exists = true;
         retval.distance_to_target = distance_to_target;
-        // average together points
-        double angle_to_target = (skewbox[0] + skewbox[1] + skewbox[2] + skewbox[3]).x / 4;
-        angle_to_target = (angle_to_target / image.cols - 0.5) * constants_.kFovX;
+        double angle_to_target = bounding.center.x;
+        angle_to_target = (angle_to_target / image.cols - 0.5) * constants_.kFovX + constants_.kCameraAngleX;
         retval.angle_to_target = angle_to_target;
       }
     }

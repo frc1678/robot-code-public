@@ -3,6 +3,7 @@
 #include "c2017/webdash/server.h"
 #include "gflags/gflags.h"
 #include "subsystems/subsystem_runner.h"
+#include "vision/robot/reader.h"
 
 class WpilibRobot : public IterativeRobot {
  public:
@@ -18,7 +19,9 @@ class WpilibRobot : public IterativeRobot {
 
  private:
   c2017::SubsystemRunner subsystem_runner_;
+  c2017::vision::VisionReader vision_reader_;
   std::thread subsystem_thread{std::ref(subsystem_runner_)};
+  std::thread vision_thread{std::ref(vision_reader_)};
 
   c2017::webdash::WebDashRunner webdash_;
 

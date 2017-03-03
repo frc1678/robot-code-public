@@ -18,9 +18,11 @@ message VisionStatus {
   optional double distance_to_target = 4; // In meters
   required bool has_connection = 5;
   required bool aligned = 6;
+  required bool aligning = 7;
 }
 
 message VisionGoal {
   required uint64 timestamp = 1;
   required bool should_align = 2;
+  required bool use_distance_align = 3;
 }

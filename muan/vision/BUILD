@@ -6,6 +6,5 @@ cc_library(
         "-lopencv_imgproc",
         "-lopencv_core",
     ],
-    #deps = ['//third_party/opencv:opencv'],
     visibility = ["//visibility:public"],
 )
