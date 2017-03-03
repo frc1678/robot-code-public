@@ -16,6 +16,18 @@ message DriverStationStatus {
 
   optional bool brownout = 4;
   optional bool has_ds_connection = 5;
+
+  enum Alliance {
+    kRed = 0;
+    kBlue = 1;
+    kNone = 2;
+  }
+
+  optional double match_time = 6;
+  optional Alliance alliance = 7;
+  optional int64 driver_station_position = 8;
+  optional bool has_fms_connection = 9;
+  optional bool is_sys_active = 10;
 }
 
 message PdpStatus {
