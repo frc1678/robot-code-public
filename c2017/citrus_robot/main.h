@@ -2,6 +2,7 @@
 #define C2017_CITRUS_ROBOT_MAIN_H_
 
 #include "muan/teleop/joystick.h"
+#include "muan/wpilib/ds_sender.h"
 #include "c2017/lemonscript/lemonscript.h"
 
 namespace c2017 {
@@ -41,7 +42,8 @@ class CitrusRobot {
   c2017::shooter_group::ShooterGroupGoalProto shooter_group_goal_;
   c2017::intake_group::IntakeGroupGoalProto intake_group_goal_;
 
-  void SendDSMessage();
+  muan::wpilib::DriverStationSender ds_sender_;
+
   void SendSuperstructureMessage();
   void SendDrivetrainMessage();
 };
