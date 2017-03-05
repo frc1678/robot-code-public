@@ -14,8 +14,8 @@ void RunSender(const char* target_ip) {
     auto message = queue_reader.ReadLastMessage();
     if (message) {
       message.value()->SerializeToArray(buffer, 1024);
+      sender_socket.Send(buffer, 1024);
     }
-    sender_socket.Send(buffer, 1024);
   }
 }
 
