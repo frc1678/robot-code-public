@@ -53,8 +53,10 @@ void VisionAlignment::Update() {
     status->set_target_found(false);
   }
 
-  bool terminated = std::abs(status->angle_to_target()) < 0.02 &&
-                    std::abs(status->distance_to_target() - constants::kShotDistance) < 0.05;
+  bool terminated = std::abs(status->angle_to_target()) < 0.02;
+  if (use_distance_align_) {
+    terminated = terminated && std::abs(status->distance_to_target() - constants::kShotDistance) < 0.05;
+  }
 
   if (auto dt_status_message = dt_status_reader_.ReadLastMessage()) {
     terminated = terminated && std::abs(dt_status_message.value()->forward_velocity()) < 0.05;
