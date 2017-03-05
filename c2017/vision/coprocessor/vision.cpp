@@ -54,6 +54,9 @@ void RunVision(int camera_index) {
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   while (true) {
     cap >> raw;
+    // Don't detect the bottom 1/3rd of the image. The target isn't there,
+    // and there is often more noise and reflective robot parts.
+    cv::rectangle(raw, cv::Point(0, raw.rows), cv::Point(raw.cols, raw.rows*2/3), cv::Scalar(0, 0, 0), -1, 8, 0);
     muan::Vision::VisionStatus status = vision.Update(raw);
     c2017::vision::VisionInputProto position;
     position->set_target_found(status.target_exists);
