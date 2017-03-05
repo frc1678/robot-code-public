@@ -54,7 +54,8 @@ void VisionAlignment::Update() {
   }
 
   bool terminated = std::abs(status->angle_to_target()) < 0.02;
-  if (use_distance_align_) {
+  if (use_distance_align_ &&
+      std::abs(status->distance_to_target() - constants::kShotDistance) < constants::kMaxAlignDistance) {
     terminated = terminated && std::abs(status->distance_to_target() - constants::kShotDistance) < 0.05;
   }
 
@@ -67,7 +68,8 @@ void VisionAlignment::Update() {
       muan::actions::DrivetrainActionParams params;
       params.termination = muan::actions::DrivetrainTermination{0.05, 0.05, 0.05, 0.05};
       params.desired_angular_displacement = -status->angle_to_target();
-      if (use_distance_align_) {
+      if (use_distance_align_ &&
+          std::abs(status->distance_to_target() - constants::kShotDistance) < constants::kMaxAlignDistance) {
         params.desired_forward_distance = status->distance_to_target() - constants::kShotDistance;
       }
       action_.ExecuteDrive(params);
