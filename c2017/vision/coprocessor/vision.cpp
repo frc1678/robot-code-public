@@ -1,11 +1,11 @@
 #include "c2017/vision/coprocessor/vision.h"
+#include <fcntl.h>
+#include <google/protobuf/text_format.h>
+#include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <opencv2/opencv.hpp>
 #include <memory>
 #include <thread>
 #include <iostream>
-#include <fcntl.h>
-#include <google/protobuf/text_format.h>
-#include <google/protobuf/io/zero_copy_stream_impl.h>
 #include "muan/vision/vision.h"
 
 #define VIDEO_OUTPUT_SCREEN 0
@@ -56,7 +56,8 @@ void RunVision(int camera_index) {
     cap >> raw;
     // Don't detect the bottom 1/3rd of the image. The target isn't there,
     // and there is often more noise and reflective robot parts.
-    cv::rectangle(raw, cv::Point(0, raw.rows), cv::Point(raw.cols, raw.rows*2/3), cv::Scalar(0, 0, 0), -1, 8, 0);
+    cv::rectangle(raw, cv::Point(0, raw.rows), cv::Point(raw.cols, raw.rows*2/3),
+                  cv::Scalar(0, 0, 0), -1, 8, 0);
     muan::Vision::VisionStatus status = vision.Update(raw);
     c2017::vision::VisionInputProto position;
     position->set_target_found(status.target_exists);
