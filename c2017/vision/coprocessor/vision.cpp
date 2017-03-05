@@ -3,6 +3,9 @@
 #include <memory>
 #include <thread>
 #include <iostream>
+#include <fcntl.h>
+#include <google/protobuf/text_format.h>
+#include <google/protobuf/io/zero_copy_stream_impl.h>
 #include "muan/vision/vision.h"
 
 #define VIDEO_OUTPUT_SCREEN 0
@@ -19,13 +22,33 @@ double VisionScorer2017::GetScore(double /* distance_to_target */, double /* dis
 }
 
 void RunVision(int camera_index) {
+  // Read from file
+  VisionConstants robot_constants;
+  int file = open("c2017/vision/coprocessor/robot_constants.pb.text", O_RDONLY);
+  google::protobuf::io::FileInputStream fstream(file);
+  google::protobuf::TextFormat::Parse(&fstream, &robot_constants);
+
 #if VIDEO_OUTPUT_FILE
   cv::VideoWriter output{"output.avi", CV_FOURCC('M', 'J', 'P', 'G'), 30, cv::Size(640 * 2, 480)};
 #endif
   cv::VideoCapture cap;
   cap.open(camera_index);
-  muan::Vision::ColorRange range{cv::Scalar(0, 50, 0), cv::Scalar(50, 180, 50), CV_BGR2RGB};
-  muan::Vision::VisionConstants constants{1.14, 0.659, 0.134, 0.524, 1.66, 1., 0.0005};
+  muan::Vision::ColorRange range{cv::Scalar(robot_constants.r_low(),
+                                            robot_constants.g_low(),
+                                            robot_constants.b_low()),
+                                 cv::Scalar(robot_constants.r_high(),
+                                            robot_constants.g_high(),
+                                            robot_constants.b_high()),
+                                 CV_BGR2RGB};
+
+  muan::Vision::VisionConstants constants{1.14,  // FOV is not different per robot
+                                          0.659,
+                                          robot_constants.x_camera_angle(),
+                                          robot_constants.y_camera_angle(),
+                                          1.66,  // Field properties are
+                                          1.,    // not different per robot
+                                          0.0005};
+
   muan::Vision vision{range, std::make_shared<VisionScorer2017>(), constants};
   cv::Mat raw;
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));

@@ -7,15 +7,15 @@ package c2017.vision;
 message VisionInput {
   required uint64 timestamp = 1;
   required bool target_found = 2;
-  optional double angle_to_target = 3; // Number of radians the robot is left of the target
-  optional double distance_to_target = 4; // In meters
+  optional double angle_to_target = 3;  // Number of radians the robot is left of the target
+  optional double distance_to_target = 4;  // In meters
 }
 
 message VisionStatus {
   required uint64 timestamp = 1;
   required bool target_found = 2;
-  optional double angle_to_target = 3; // Number of radians the robot is left of the target
-  optional double distance_to_target = 4; // In meters
+  optional double angle_to_target = 3;  // Number of radians the robot is left of the target
+  optional double distance_to_target = 4;  // In meters
   required bool has_connection = 5;
   required bool aligned = 6;
   required bool aligning = 7;
@@ -25,4 +25,15 @@ message VisionGoal {
   required uint64 timestamp = 1;
   required bool should_align = 2;
   required bool use_distance_align = 3;
+}
+
+message VisionConstants {
+  required uint32 r_low = 1;  // On a scale from 0-255
+  required uint32 g_low = 2;
+  required uint32 b_low = 3;
+  required uint32 r_high = 4;
+  required uint32 g_high = 5;
+  required uint32 b_high = 6;
+  required double x_camera_angle = 7;  // Left of center, in radians
+  required double y_camera_angle = 8;  // Above horizontal, in radians
 }

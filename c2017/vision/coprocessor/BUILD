@@ -28,5 +28,6 @@ cc_library(
         ":sender",
         "//muan/vision:vision"
     ],
+    data = ["robot_constants.pb.text"],
     linkopts = ["-lopencv_video", "-lopencv_highgui"]
 )
