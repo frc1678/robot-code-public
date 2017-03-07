@@ -119,6 +119,7 @@ void CitrusRobot::SendSuperstructureMessage() {
   }
 
   shooter_group_goal_->set_should_climb(currently_climbing_);
+  intake_group_goal_->set_magazine_open(true);
 
   // Shooting buttons
   if (fender_align_shoot_->was_clicked()) {
