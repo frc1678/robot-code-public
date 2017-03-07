@@ -57,12 +57,6 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
 
   output->set_voltage(u);
 
-  if (shot_mode_ == ShotMode::FENDER) {
-    output->set_hood_solenoid(false);
-  } else {
-    output->set_hood_solenoid(true);
-  }
-
   status_->set_observed_velocity(observer_.x()(1, 0));
   status_->set_at_goal(at_goal_);
   status_->set_currently_running(std::fabs(unprofiled_goal_velocity_) >= 1e-3);
