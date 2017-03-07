@@ -177,7 +177,6 @@ TEST_F(SuperstructureTest, SpinupShootFender) {
 
   ASSERT_TRUE(superstructure_output);
   EXPECT_NEAR(superstructure_output.value()->main_roller_voltage(), 12, 1e-4);
-  EXPECT_FALSE(superstructure_output.value()->shooter_hood_up());
   EXPECT_NEAR(superstructure_output.value()->upper_conveyor_voltage(), 12, 1e-4);
   Reset();
 }
@@ -206,7 +205,6 @@ TEST_F(SuperstructureTest, SpinupShootHopper) {
 
   ASSERT_TRUE(superstructure_output);
   EXPECT_NEAR(superstructure_output.value()->main_roller_voltage(), 12, 1e-4);
-  EXPECT_TRUE(superstructure_output.value()->shooter_hood_up());
   EXPECT_NEAR(superstructure_output.value()->upper_conveyor_voltage(), 12, 1e-4);
   Reset();
 }
