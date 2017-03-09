@@ -6,10 +6,10 @@
 namespace c2017 {
 namespace citrus_robot {
 
-CitrusRobot::CitrusRobot() :
-  throttle_{1, &c2017::QueueManager::GetInstance().throttle_status_queue()},
-  wheel_{0, &c2017::QueueManager::GetInstance().wheel_status_queue()},
-  gamepad_{2, &c2017::QueueManager::GetInstance().manipulator_status_queue()} {
+CitrusRobot::CitrusRobot()
+    : throttle_{1, &c2017::QueueManager::GetInstance().throttle_status_queue()},
+      wheel_{0, &c2017::QueueManager::GetInstance().wheel_status_queue()},
+      gamepad_{2, &c2017::QueueManager::GetInstance().manipulator_status_queue()} {
   fender_align_shoot_ = throttle_.MakeButton(1);        // Joystick Trigger
   score_hp_gear_ = throttle_.MakeButton(2);             // Joystick Button
   driver_score_ground_gear_ = throttle_.MakeButton(3);  // Throttle 3
@@ -28,7 +28,7 @@ CitrusRobot::CitrusRobot() :
   climb_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::BACK));                           // Back Button
   just_spinup_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::START));                    // Start Button
   quickturn_ = wheel_.MakeButton(5);
-  toggle_distance_align_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_CLICK_IN));
+  toggle_distance_align_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_CLICK_IN));  // Left joystick
 }
 
 void CitrusRobot::Update() {

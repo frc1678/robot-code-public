@@ -1,0 +1,37 @@
+// RED
+DefaultRobot
+LiteralDrive: -0.3, 0.0, false, false, 2.0, 3.4, 3.0, 4.0
+LiteralDrive: -1.3, 0.67, false, true, 2.0, 3.4, 3.0, 4.0
+SpinupShooter
+LiteralDrive: -0.63, 0.28, false, false, 2.0, 3.4, 3.0, 4.0
+OpenMagazine
+Wait: 1.0
+VisionAlign: false
+TeleopDrive: 0.0, 0.0, false
+StartShoot
+Wait: 2.0
+CloseMagazine
+Wait: 0.7
+OpenMagazine
+Wait: 0.7
+CloseMagazine
+Wait: 0.7
+OpenMagazine
+Wait: 0.7
+CloseMagazine
+Wait: 0.7
+OpenMagazine
+Wait: 0.7
+CloseMagazine
+Wait: 0.7
+OpenMagazine
+Wait: 0.7
+CloseMagazine
+Wait: 0.7
+OpenMagazine
+Wait: 0.7
+CloseMagazine
+Wait: 0.7
+OpenMagazine
+Wait: 10
+//EndShoot
