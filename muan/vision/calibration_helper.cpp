@@ -4,6 +4,8 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
 #include <opencv2/opencv.hpp>
 #include <string>
 #include <thread>
@@ -12,8 +14,6 @@
 #include "c2017/vision/vision.pb.h"
 #include "gflags/gflags.h"
 #include "muan/vision/vision.h"
-#include <opencv2/core.hpp>
-#include <opencv2/highgui.hpp>
 
 DEFINE_string(
     mode, "capture",
