@@ -23,7 +23,7 @@ class WpilibRobot : public IterativeRobot {
   std::thread subsystem_thread{std::ref(subsystem_runner_)};
   std::thread vision_thread{std::ref(vision_reader_)};
 
-  c2017::webdash::WebDashRunner webdash_;
+//  c2017::webdash::WebDashRunner webdash_;
 
   c2017::citrus_robot::CitrusRobot main_;
 };

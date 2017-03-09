@@ -304,8 +304,7 @@ TEST_F(SuperstructureTest, Brownout) {
 }
 
 TEST_F(SuperstructureTest, ThinkInsideTheBox) {
-  // Make sure that if you tell both the ball intake and the gear intake to go down, only the gear intake will
-  // move.
+  // If you tell ball and gear intake to go down, only gear intake should move.
   intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_UP);
   intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_DROP);
   ds->set_mode(RobotMode::TELEOP);

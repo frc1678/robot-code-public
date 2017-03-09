@@ -4,11 +4,18 @@ option cc_enable_arenas = true;
 
 package c2017.climber;
 
+enum State {
+  NOTHING = 0;
+  APPROACHING = 1;
+  CLIMBING = 2;
+  SLOWING = 3;
+  AT_TOP = 4;
+}
+
 message ClimberStatus {
   required uint64 timestamp = 1;
-  required bool currently_climbing = 2;
-  required bool hit_top = 3;
-  required bool on_rope = 4;
+  required State climber_state = 2;
+  required double observed_velocity = 3;
 }
 
 message ClimberInput {

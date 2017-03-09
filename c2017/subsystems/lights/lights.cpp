@@ -5,6 +5,7 @@ namespace c2017 {
 namespace lights {
 void Lights::Update() {
   auto intake_group_goal_queue = QueueManager::GetInstance().intake_group_goal_queue().ReadLastMessage();
+  auto climber_status_queue = QueueManager::GetInstance().climber_status_queue().ReadLastMessage();
   auto drivetrain_status_queue = QueueManager::GetInstance().drivetrain_status_queue()->ReadLastMessage();
   auto gyro_status_queue = QueueManager::GetInstance().gyro_queue()->ReadLastMessage();
   auto vision_status = QueueManager::GetInstance().vision_status_queue().ReadLastMessage();
@@ -33,6 +34,16 @@ void Lights::Update() {
             }
           } else {
             light_color_ = FlashLights(LightColor::OFF, LightColor::TEAL, false);
+          }
+          // Climbing lights
+          if (climber_status_queue) {
+            if (climber_status_queue.value()->climber_state() == c2017::climber::State::CLIMBING) {
+              light_color_ = LightColor::PINK;
+            } else if (climber_status_queue.value()->climber_state() == c2017::climber::State::AT_TOP) {
+              light_color_ = LightColor::YELLOW;
+            } else if (climber_status_queue.value()->climber_state() == c2017::climber::State::AT_TOP) {
+              light_color_ = LightColor::GREEN;
+            }
           }
         } else {
           light_color_ = FlashLights(LightColor::OFF, LightColor::TEAL, false);

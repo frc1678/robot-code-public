@@ -19,15 +19,13 @@ class Climber {
   ClimberOutputProto Update(const ClimberInputProto& input, bool outputs_enabled);
   void Reset();
 
+  State current_state() const;
+
  private:
-  bool at_top_;
-  bool is_climbing_;
   double last_position_;
-  bool to_climb_;
   ClimberStatusQueue& status_queue_;
-  muan::utils::Monitor climber_position_watcher_;
-  muan::utils::Monitor climber_current_watcher_;
-  bool on_rope_;
+
+  State current_state_ = NOTHING;
 };
 }  // namespace climber
 

@@ -78,8 +78,7 @@ void SuperStructure::Update() {
         break;
     }
 
-    bool allow_ground_intake = intake_group_goal->score_hp_gear() ||
-                               ground_gear_intake_.current_state() == ground_gear_intake::IDLE ||
+    bool allow_ground_intake = ground_gear_intake_.current_state() == ground_gear_intake::IDLE ||
                                ground_gear_intake_.current_state() == ground_gear_intake::CARRYING;
 
     magazine_goal->set_magazine_extended(intake_group_goal->magazine_open());
@@ -129,7 +128,7 @@ void SuperStructure::Update() {
     if (intake_group_goal->score_hp_gear()) {
       magazine_goal->set_score_gear(true);
       ground_ball_intake_goal->set_intake_up(false);
-      ground_gear_intake_goal->set_goal(ground_gear_intake::RISE);
+      ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::RISE);
     } else {
       magazine_goal->set_score_gear(false);
     }
@@ -140,6 +139,7 @@ void SuperStructure::Update() {
 
   magazine_.SetGoal(magazine_goal);
   shooter_.SetGoal(shooter_goal_);
+  climber_.SetGoal(climber_goal_);
 
   SetWpilibOutput();
   QueueManager::GetInstance().superstructure_status_queue().WriteMessage(superstructure_status_proto_);
@@ -161,25 +161,22 @@ void SuperStructure::SetWpilibOutput() {
                        robot_state->mode() == RobotMode::ESTOP || robot_state->brownout());
   }
 
-  superstructure_status_proto_->set_enable_outputs(enable_outputs);
-
   if (ground_gear_input) {
     auto ground_gear_intake_output = ground_gear_intake_.Update(ground_gear_input.value(), enable_outputs);
     wpilib_output->set_ground_gear_down(ground_gear_intake_output->intake_down());
     wpilib_output->set_ground_gear_voltage(ground_gear_intake_output->roller_voltage());
   }
 
-  wpilib_output->set_climber_engaged(climber_goal_->climbing());
+  if (climber_input && shooter_input) {
+    auto climber_output = climber_.Update(climber_input.value(), enable_outputs);
+    auto shooter_output = shooter_.Update(shooter_input.value(), enable_outputs);
 
-  if (climber_goal_->climbing()) {
-    if (climber_input) {
-      auto climber_output = climber_.Update(climber_input.value(), enable_outputs);
+    wpilib_output->set_climber_engaged(climber_goal_->climbing());
+
+    if (climber_goal_->climbing()) {
       wpilib_output->set_shooter_voltage(climber_output->voltage());
-    }
-  } else {
-    if (shooter_input) {
-      auto shooter_output = shooter_.Update(shooter_input.value(), enable_outputs);
-      wpilib_output->set_shooter_voltage(shooter_output->voltage());
+    } else {
+     wpilib_output->set_shooter_voltage(shooter_output->voltage());
     }
   }
 

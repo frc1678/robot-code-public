@@ -65,10 +65,11 @@ void SuperStructureInterface::ReadSensors() {
   c2017::magazine::MagazineInputProto magazine_sensors;
   c2017::ground_gear_intake::GroundGearIntakeInputProto ground_gear_sensors;
 
-  constexpr double kRadiansPerClick = M_PI * 2 / 512.0;
+  constexpr double kShooterRadiansPerClick = M_PI * 2 / 512.0;
+  constexpr double kClimberRadiansPerClick = M_PI * 2 / 512.0 / 23.6;
 
-  shooter_sensors->set_encoder_position(shooter_encoder_.Get() * kRadiansPerClick);
-  climber_sensors->set_position(shooter_encoder_.Get() * kRadiansPerClick);
+  shooter_sensors->set_encoder_position(shooter_encoder_.Get() * kShooterRadiansPerClick);
+  climber_sensors->set_position(shooter_encoder_.Get() * kClimberRadiansPerClick);
 
   auto current_reader = QueueManager::GetInstance().pdp_status_queue().MakeReader().ReadLastMessage();
 
@@ -136,8 +137,7 @@ void SuperStructureInterface::WriteActuators() {
 
     pcm_->WriteSolenoid(ports::superstructure::kBallIntakeSolenoid, false);
     pcm_->WriteDoubleSolenoid(ports::superstructure::kHpGearIntakeSolenoidA,
-                              ports::superstructure::kHpGearIntakeSolenoidB,
-                              DoubleSolenoid::Value::kForward);
+                              ports::superstructure::kHpGearIntakeSolenoidB, DoubleSolenoid::Value::kForward);
     pcm_->WriteSolenoid(ports::superstructure::kGearShutterSolenoid, false);
     pcm_->WriteSolenoid(ports::superstructure::kGearShutterSolenoid, false);
     pcm_->WriteSolenoid(ports::superstructure::kGroundGearIntakeSolenoid, false);
