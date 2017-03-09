@@ -11,8 +11,8 @@ class WpilibRobot : public IterativeRobot {
 
   void RobotInit() override {
     // Webdash is causing timing issues, likely a Mongoose issue. TODO(Kyle and Wesley) Figure this out.
-    // std::thread webdash_thread{std::ref(webdash_)};
-    // webdash_thread.detach();
+     std::thread webdash_thread{std::ref(webdash_)};
+     webdash_thread.detach();
   }
 
   void RobotPeriodic() override { main_.Update(); }
@@ -23,7 +23,7 @@ class WpilibRobot : public IterativeRobot {
   std::thread subsystem_thread{std::ref(subsystem_runner_)};
   std::thread vision_thread{std::ref(vision_reader_)};
 
-//  c2017::webdash::WebDashRunner webdash_;
+  c2017::webdash::WebDashRunner webdash_;
 
   c2017::citrus_robot::CitrusRobot main_;
 };

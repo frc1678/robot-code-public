@@ -57,17 +57,20 @@ void Lemonscript::UpdateAutoRoutine() {
       case c2017::webdash::WebDash::NONE:
         filename = "none.auto";
         break;
-      case c2017::webdash::WebDash::ONE_GEAR:
-        filename = "one_gear.auto";
-        break;
       case c2017::webdash::WebDash::TWO_GEAR:
         filename = "two_gear.auto";
         break;
-      case c2017::webdash::WebDash::HELLA_KPA:
-        filename = "hella_kpa.auto";
+      case c2017::webdash::WebDash::BLUE_HELLA_KPA:
+        filename = "blue_hella_kpa.auto";
         break;
-      case c2017::webdash::WebDash::HELLA_KPA_PLUS_GEAR:
-        filename = "hella_kpa_plus_gear.auto";
+      case c2017::webdash::WebDash::BLUE_HELLA_KPA_PLUS_GEAR:
+        filename = "blue_hella_kpa_plus_gear.auto";
+        break;
+      case c2017::webdash::WebDash::RED_HELLA_KPA:
+        filename = "red_hella_kpa.auto";
+        break;
+      case c2017::webdash::WebDash::RED_HELLA_KPA_PLUS_GEAR:
+        filename = "red_hella_kpa_plus_gear.auto";
         break;
       default:
         filename = "none.auto";

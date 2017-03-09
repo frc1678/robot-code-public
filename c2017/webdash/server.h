@@ -3,21 +3,13 @@
 
 #include <stdlib.h>
 #include <signal.h>
-#include "third_party/mongoose_cpp/upstream/Server.h"
-#include "third_party/mongoose_cpp/upstream/WebController.h"
+#include <memory>
+#include "third_party/seasocks/src/main/c/seasocks/Server.h"
+#include "third_party/seasocks/src/main/c/seasocks/PrintfLogger.h"
 #include "c2017/queue_manager/queue_manager.h"
 
 namespace c2017 {
 namespace webdash {
-
-using Mongoose::RequestHandler;
-using Mongoose::StreamResponse;
-
-class WebDashController : public Mongoose::WebController {
- public:
-  void save(Mongoose::Request &request, StreamResponse &response);  // NOLINT
-  void setup();
-};
 
 class WebDashRunner {
  public:
@@ -25,10 +17,6 @@ class WebDashRunner {
   ~WebDashRunner() = default;
 
   void operator()();
-
- private:
-  c2017::webdash::WebDashController controller_;
-  Mongoose::Server server_{8080};
 };
 
 }  // namespace webdash
