@@ -51,6 +51,9 @@ class Vision {
   Vision(ColorRange range, std::shared_ptr<VisionScorer> scorer, VisionConstants k);
   VisionStatus Update(cv::Mat raw);
 
+  void set_constants(VisionConstants constants);
+  void set_range(ColorRange range);
+
  protected:
   double CalculateDistance(std::vector<cv::Point> points, int rows);
   double CalculateSkew(std::vector<cv::Point> contour, std::vector<cv::Point>* out);

@@ -16,4 +16,5 @@ cc_proto_library(
     srcs = ["vision.proto"],
     protoc = "//third_party/google/protobuf:protoc",
     default_runtime = "//third_party/google/protobuf",
+    visibility = ["//visibility:public"],
 )

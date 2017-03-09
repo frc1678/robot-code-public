@@ -27,13 +27,25 @@ message VisionGoal {
   required bool use_distance_align = 3;
 }
 
+message VisionThresholds {
+  // Colors on a 0-255 scale. Each element ABC corresponds to the matching component in the desired colorspace
+  // (i.e. in HSV, A -> H)
+  optional uint32 a_low = 1;
+  optional uint32 b_low = 2;
+  optional uint32 c_low = 3;
+  optional uint32 a_high = 4;
+  optional uint32 b_high = 5;
+  optional uint32 c_high = 6;
+
+  enum ColorSpace {
+    Rgb = 0;
+    Hsv = 1;
+  }
+
+  optional ColorSpace space = 7;
+}
+
 message VisionConstants {
-  required uint32 r_low = 1;  // On a scale from 0-255
-  required uint32 g_low = 2;
-  required uint32 b_low = 3;
-  required uint32 r_high = 4;
-  required uint32 g_high = 5;
-  required uint32 b_high = 6;
   required double x_camera_angle = 7;  // Left of center, in radians
   required double y_camera_angle = 8;  // Above horizontal, in radians
 }
