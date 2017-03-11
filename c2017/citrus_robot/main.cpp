@@ -24,6 +24,7 @@ CitrusRobot::CitrusRobot()
   hp_load_gears_ = gamepad_.MakePov(0, muan::teleop::Pov::kNorth);                            // D-Pad up
   hp_load_balls_ = gamepad_.MakePov(0, muan::teleop::Pov::kSouth);                            // D-Pad down
   hp_load_both_ = gamepad_.MakePov(0, muan::teleop::Pov::kEast);                              // D-Pad right
+  hp_load_none_ = gamepad_.MakePov(0, muan::teleop::Pov::kWest);                              // D-Pad right
   agitate_ = gamepad_.MakeAxis(2);                                                            // Left Trigger
   climb_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::BACK));                           // Back Button
   just_spinup_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::START));                    // Start Button
@@ -76,6 +77,7 @@ void CitrusRobot::SendDSMessage() {
 }
 
 void CitrusRobot::SendSuperstructureMessage() {
+  auto ground_gear_status = QueueManager::GetInstance().ground_gear_status_queue().ReadLastMessage();
   c2017::climber::ClimberGoalProto climber_goal;
 
   if (ball_intake_run_->is_pressed()) {
@@ -105,16 +107,16 @@ void CitrusRobot::SendSuperstructureMessage() {
                                                                  : intake_group::GROUND_BALL_UP);
 
   // Hp load buttons
-  if (hp_load_gears_->is_pressed()) {
+  if (hp_load_gears_->was_clicked()) {
     // Kelly - Gamepad D-Pad
     intake_group_goal_->set_hp_load_type(intake_group::HP_LOAD_GEAR);
-  } else if (hp_load_balls_->is_pressed()) {
+  } else if (hp_load_balls_->was_clicked()) {
     // Kelly - Gamepad D-Pad
     intake_group_goal_->set_hp_load_type(intake_group::HP_LOAD_BALLS);
-  } else if (hp_load_both_->is_pressed()) {
+  } else if (hp_load_both_->was_clicked()) {
     // Kelly - Gamepad D-Pad
     intake_group_goal_->set_hp_load_type(intake_group::HP_LOAD_BOTH);
-  } else {
+  } else if (hp_load_none_->was_clicked()) {
     intake_group_goal_->set_hp_load_type(intake_group::HP_LOAD_NONE);
   }
 
@@ -151,6 +153,13 @@ void CitrusRobot::SendSuperstructureMessage() {
     intake_group_goal_->set_ground_ball_rollers(intake_group::GROUND_BALL_NONE);
     intake_group_goal_->set_ground_ball_position(intake_group::GROUND_BALL_UP);
     using_vision_ = false;
+  }
+
+  if (ground_gear_status) {
+    if (ground_gear_status.value()->current_state() == c2017::ground_gear_intake::State::PICKING_UP) {
+    } else {
+
+    }
   }
 
   c2017::QueueManager::GetInstance().climber_goal_queue().WriteMessage(climber_goal);

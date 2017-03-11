@@ -1,9 +1,9 @@
 // BLUE
 DefaultRobot
-LiteralDrive: -0.3, 0.0, false, false, 2.0, 3.4, 3.0, 4.0
+LiteralDrive: -0.38, 0.0, false, false, 2.0, 3.4, 3.0, 4.0
 LiteralDrive: -1.3, -0.67, false, false, 2.0, 3.4, 3.0, 4.0
 SpinupShooter
-LiteralDrive: -0.63, -0.28, false, false, 2.0, 3.4, 3.0, 4.0
+LiteralDrive: -0.66, -0.12, false, false, 2.0, 3.4, 3.0, 4.0
 OpenMagazine
 Wait: 1.0
 VisionAlign: false
