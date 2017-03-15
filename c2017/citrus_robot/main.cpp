@@ -77,7 +77,6 @@ void CitrusRobot::SendDSMessage() {
 }
 
 void CitrusRobot::SendSuperstructureMessage() {
-  auto ground_gear_status = QueueManager::GetInstance().ground_gear_status_queue().ReadLastMessage();
   c2017::climber::ClimberGoalProto climber_goal;
 
   if (ball_intake_run_->is_pressed()) {
