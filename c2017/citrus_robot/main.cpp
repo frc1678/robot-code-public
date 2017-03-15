@@ -155,13 +155,6 @@ void CitrusRobot::SendSuperstructureMessage() {
     using_vision_ = false;
   }
 
-  if (ground_gear_status) {
-    if (ground_gear_status.value()->current_state() == c2017::ground_gear_intake::State::PICKING_UP) {
-    } else {
-
-    }
-  }
-
   c2017::QueueManager::GetInstance().climber_goal_queue().WriteMessage(climber_goal);
   c2017::QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal_);
   c2017::QueueManager::GetInstance().shooter_group_goal_queue().WriteMessage(shooter_group_goal_);

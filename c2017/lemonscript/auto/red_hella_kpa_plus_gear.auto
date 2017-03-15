@@ -9,4 +9,3 @@ LiteralDrive: -1.38, 1.92, false, false, 0.7, 1.0, 5.0, 5.0
 LiteralDrive: -0.2, 0.45, false, false, 0.7, 1.0, 5.0, 5.0
 StartShoot
 Wait: 15
-// TODO(Kelly) Shooting a little too far, change the RPM
