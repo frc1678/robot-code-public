@@ -30,7 +30,6 @@ void Capture(const std::string& filename, int camera_index = -1) {
     return;
   }
 
-  camera.set(CV_CAP_PROP_BUFFERSIZE, 0);
   camera.set(CV_CAP_PROP_BRIGHTNESS, 0);  // minimum
   camera.set(CV_CAP_PROP_CONTRAST, 1);    // maximun
   camera.set(CV_CAP_PROP_SATURATION, 1);  // maximun
