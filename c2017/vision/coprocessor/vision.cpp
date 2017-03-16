@@ -5,7 +5,6 @@
 #include <opencv2/opencv.hpp>
 #include <memory>
 #include <thread>
-#include <iostream>
 #include "muan/vision/vision.h"
 
 #define VIDEO_OUTPUT_SCREEN 1
@@ -50,7 +49,7 @@ void RunVision(int camera_index) {
       colorspace_code = CV_BGR2RGB;
       break;
     case VisionThresholds::Hsv:
-      colorspace_code = CV_HSV2RGB;
+      colorspace_code = CV_BGR2HSV;
       break;
     default:
       break;
