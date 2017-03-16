@@ -40,7 +40,7 @@ void Capture(const std::string& filename, int camera_index = -1) {
   system(command.c_str());
 
   int ex = CV_FOURCC('P', 'I', 'M', '1');
-  cv::Size video_size = cv::Size(camera.get(cv::CAP_PROP_FRAME_WIDTH), camera.get(cv::CAP_PROP_FRAME_HEIGHT));
+  cv::Size video_size = cv::Size(camera.get(CV_CAP_PROP_FRAME_WIDTH), camera.get(CV_CAP_PROP_FRAME_HEIGHT));
   cv::VideoWriter writer;
   if (!writer.open(filename.c_str(), ex, 30, video_size, true)) {
     std::cout << "Could not open file " << filename << " for writing" << std::endl;
@@ -107,7 +107,7 @@ void Tune(const std::string& video_filename, const std::string& output_filename)
                                    colorspace_code};
     video >> frame;
     if (frame.size[0] <= 0) {
-      video.set(cv::CAP_PROP_POS_AVI_RATIO, 0);
+      video.set(CV_CAP_PROP_POS_AVI_RATIO, 0);
       continue;
     }
 
