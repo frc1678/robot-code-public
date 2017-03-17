@@ -42,7 +42,7 @@ class CitrusRobot {
 
   c2017::shooter_group::ShooterGroupGoalProto shooter_group_goal_;
   c2017::intake_group::IntakeGroupGoalProto intake_group_goal_;
-
+  if ground_gear_intake
   void SendDSMessage();
   void SendSuperstructureMessage();
   void SendDrivetrainMessage();

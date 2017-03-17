@@ -66,18 +66,22 @@ void SuperStructure::Update() {
     switch (intake_group_goal->ground_gear_intake()) {
       case intake_group::GROUND_GEAR_NONE:
         ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::NONE);
+        rumble_on_ = 0;
         break;
       case intake_group::GROUND_GEAR_DROP:
         ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::DROP);
+        rumble_on_ = 1;
         break;
       case intake_group::GROUND_GEAR_RISE:
         ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::RISE);
+        rumle_on_ = 0;
         break;
       case intake_group::GROUND_GEAR_SCORE:
         ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::SCORE);
+        rumble_on_ = 0;
         break;
     }
-
+  superstructure_status_proto_->set_rumble_on(rumble_on_);
     bool allow_ground_intake = ground_gear_intake_.current_state() == ground_gear_intake::IDLE ||
                                ground_gear_intake_.current_state() == ground_gear_intake::CARRYING;
 
