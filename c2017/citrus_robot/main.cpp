@@ -36,10 +36,13 @@ void CitrusRobot::Update() {
     lemonscript_.Start();  // Weird to call Start in a loop, but it's a setter so it's fine
   } else if (DriverStation::GetInstance().IsOperatorControl()) {
     lemonscript_.Stop();  // Weirder to do this, but it works :/
+    
 
-    auto superstructure_status = c2017::QueueManager::GetInstance().vision_status_queue().ReadLastMessage();
-    gamepad_.wpilib_joystick()->SetRumble(kLeftRumble, superstructure_status.value()->rumble_on); 
-    gamepad_.wpilib_joystick()->SetRumble(kRighttRumble, superstructure_status.value()->rumble_on); 
+    auto superstructure_status = c2017::QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage();
+    gamepad_.wpilib_joystick()->SetRumble(Joystick::kLeftRumble, superstructure_status.value()->rumble_on()); 
+    gamepad_.wpilib_joystick()->SetRumble(Joystick::kRightRumble, superstructure_status.value()->rumble_on()); 
+
+
     // Update joysticks
     throttle_.Update();
     wheel_.Update();
@@ -47,7 +50,6 @@ void CitrusRobot::Update() {
     SendDrivetrainMessage();
     SendSuperstructureMessage();
   }
-  if 
 
   SendDSMessage();
 }

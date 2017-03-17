@@ -74,7 +74,7 @@ void SuperStructure::Update() {
         break;
       case intake_group::GROUND_GEAR_RISE:
         ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::RISE);
-        rumle_on_ = 0;
+        rumble_on_ = 0;
         break;
       case intake_group::GROUND_GEAR_SCORE:
         ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::SCORE);

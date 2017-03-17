@@ -31,7 +31,6 @@ GroundGearIntakeOutputProto GroundGearIntake::Update(GroundGearIntakeInputProto 
         intake_down = false;
         if (--pickup_timer_ < 0) {
           current_state_ = CARRYING;
-        if 
         }
         break;
       case CARRYING:
