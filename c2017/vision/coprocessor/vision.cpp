@@ -55,21 +55,16 @@ void RunVision(int camera_index) {
       break;
   }
 
-  muan::Vision::ColorRange range{cv::Scalar(thresholds.a_low(),
-                                            thresholds.b_low(),
-                                            thresholds.c_low()),
-                                 cv::Scalar(thresholds.a_high(),
-                                            thresholds.b_high(),
-                                            thresholds.c_high()),
+  muan::Vision::ColorRange range{cv::Scalar(thresholds.a_low(), thresholds.b_low(), thresholds.c_low()),
+                                 cv::Scalar(thresholds.a_high(), thresholds.b_high(), thresholds.c_high()),
                                  colorspace_code};
 
-  muan::Vision::VisionConstants constants{1.14,  // FOV is not different per robot
-                                          0.659,
-                                          robot_constants.x_camera_angle(),
-                                          robot_constants.y_camera_angle(),
-                                          1.66,  // Field properties are
-                                          1.,    // not different per robot
-                                          0.0005};
+  muan::Vision::VisionConstants constants{
+      1.14,  // FOV is not different per robot
+      0.659, robot_constants.x_camera_angle(), robot_constants.y_camera_angle(),
+      1.66,  // Field properties are
+      1.,    // not different per robot
+      0.0005};
 
   muan::Vision vision{range, std::make_shared<VisionScorer2017>(), constants};
   cv::Mat raw;
@@ -78,8 +73,8 @@ void RunVision(int camera_index) {
     cap >> raw;
     // Don't detect the bottom 1/3rd of the image. The target isn't there,
     // and there is often more noise and reflective robot parts.
-    cv::rectangle(raw, cv::Point(0, raw.rows), cv::Point(raw.cols, raw.rows*2/3),
-                  cv::Scalar(0, 0, 0), -1, 8, 0);
+    cv::rectangle(raw, cv::Point(0, raw.rows), cv::Point(raw.cols, raw.rows * 2 / 3), cv::Scalar(0, 0, 0), -1,
+                  8, 0);
     muan::Vision::VisionStatus status = vision.Update(raw);
     c2017::vision::VisionInputProto position;
     position->set_target_found(status.target_exists);

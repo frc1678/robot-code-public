@@ -138,12 +138,8 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
   return retval;
 }
 
-void Vision::set_constants(VisionConstants constants) {
-  constants_ = constants;
-}
+void Vision::set_constants(VisionConstants constants) { constants_ = constants; }
 
-void Vision::set_range(ColorRange range) {
-  range_ = range;
-}
+void Vision::set_range(ColorRange range) { range_ = range; }
 
 }  // namespace muan
