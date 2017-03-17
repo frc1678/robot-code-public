@@ -6,12 +6,14 @@ package c2017.shooter;
 
 message ShooterInput {
   required uint64 timestamp = 1;
-  required double encoder_position = 2;
+  required double shooter_encoder_position = 2;
+  required double accelarator_encoder_postition = 3;
 }
 
 message ShooterOutput {
   required uint64 timestamp = 1;
-  required double voltage = 2;
+  required double shooter_voltage = 2;
+  required double accelarator_voltage = 3;
 }
 
 message ShooterStatus {

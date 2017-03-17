@@ -25,6 +25,7 @@ cc_library(
     hdrs = ["shooter_controller.h"],
     deps = [
         ":shooter_constants",
+        ":accelarator_constants",
         ":shooter_queues",
         "//c2017/queue_manager",
         "//muan/control:state_space",
@@ -37,6 +38,7 @@ cc_test(
     srcs = ["shooter_controller_test.cpp"],
     deps = [
         ":shooter_constants",
+        ":accelarator_constants",
         ":shooter_controller",
         ":shooter_proto",
         ":shooter_queues",
@@ -50,6 +52,13 @@ cc_library(
     name = "shooter_constants",
     srcs = [":shooter_constants.cpp"],
     hdrs = [":shooter_constants.h"],
+    deps = ["//third_party/eigen"],
+)
+
+cc_library(
+    name = "accelarator_constants",
+    srcs = [":accelarator_constants.cpp"],
+    hdrs = [":accelarator_constants.h"],
     deps = ["//third_party/eigen"],
 )
 
@@ -68,5 +77,23 @@ py_binary(
     name = "shooter_python",
     srcs = ["shooter_controller.py"],
     main = "shooter_controller.py",
+    deps = ["//muan/control:python_controls"],
+)
+
+genrule(
+    name = "accelarator_genrule",
+    srcs = [],
+    outs = [
+        "accelarator_constants.h",
+        "accelarator_constants.cpp",
+    ],
+    cmd = "$(location :accelarator_python) $(location accelarator_constants.h) $(location accelarator_constants.cpp)",
+    tools = ["shooter_python"],
+)
+
+py_binary(
+    name = "accelarator_python",
+    srcs = ["accelarator_controller.py"],
+    main = "accelarator_controller.py",
     deps = ["//muan/control:python_controls"],
 )
