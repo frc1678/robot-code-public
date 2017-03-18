@@ -53,21 +53,21 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
   shooter_controller_.r() = shooter_r_;
   accelarator_controller_.r() = accelarator_r_;
 
-  auto u = shooter_controller_.Update(shooter_observer_.x())(0, 0);
+  auto shooter_u = shooter_controller_.Update(shooter_observer_.x())(0, 0);
 
   auto accelarator_u = accelarator_controller_.Update(accelarator_observer_.x())(0, 0);
 
   if (!outputs_enabled || unprofiled_goal_velocity_ <= 0) {
-    u = 0.0;
+    shooter_u = 0.0;
     accelarator_u = 0.0;
     unprofiled_goal_velocity_ = 0.0;
   } else {
-    status_->set_uncapped_u(u);
-    u = CapU(u, outputs_enabled);
+    status_->set_uncapped_u(shooter_u);
+    shooter_u = CapU(shooter_u, outputs_enabled);
     accelarator_u = CapU(accelarator_u, outputs_enabled);
   }
 
-  shooter_observer_.Update((Eigen::Matrix<double, 1, 1>() << u).finished(), y);
+  shooter_observer_.Update((Eigen::Matrix<double, 1, 1>() << shooter_u).finished(), y);
   accelarator_observer_.Update((Eigen::Matrix<double, 1, 1>() << accelarator_u).finished(), y);
 
   auto absolute_error = ((Eigen::Matrix<double, 3, 1>() << 0.0, unprofiled_goal_velocity_, 0.0).finished() -
@@ -78,13 +78,13 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
 
   c2017::shooter::ShooterOutputProto output;
 
-  output->set_shooter_voltage(u);
+  output->set_shooter_voltage(shooter_u);
   output->set_accelarator_voltage(accelarator_u);
   status_->set_observed_velocity(shooter_observer_.x()(1, 0));
   status_->set_accelarator_observed_velocity(accelarator_observer_.x()(1, 0));
   status_->set_at_goal(at_goal_);
   status_->set_currently_running(std::fabs(unprofiled_goal_velocity_) >= 1e-3);
-  status_->set_voltage(u);
+  status_->set_voltage(shooter_u);
   status_->set_profiled_goal_velocity(profiled_goal_velocity_);
   status_->set_unprofiled_goal_velocity(unprofiled_goal_velocity_);
   status_->set_voltage_error(shooter_observer_.x(2));
