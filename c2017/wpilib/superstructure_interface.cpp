@@ -75,7 +75,7 @@ void SuperStructureInterface::ReadSensors() {
 
   if (current_reader) {
     climber_sensors->set_current((*current_reader)->current5());
-    ground_gear_sensors->set_current((*current_reader)->current11());
+    ground_gear_sensors->set_current((*current_reader)->current12());
   }
 
   QueueManager::GetInstance().shooter_input_queue().WriteMessage(shooter_sensors);

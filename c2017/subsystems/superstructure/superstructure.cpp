@@ -66,19 +66,15 @@ void SuperStructure::Update() {
     switch (intake_group_goal->ground_gear_intake()) {
       case intake_group::GROUND_GEAR_NONE:
         ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::NONE);
-        rumble_on_ = 0;
         break;
       case intake_group::GROUND_GEAR_DROP:
         ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::DROP);
-        rumble_on_ = 1;
         break;
       case intake_group::GROUND_GEAR_RISE:
         ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::RISE);
-        rumble_on_ = 0;
         break;
       case intake_group::GROUND_GEAR_SCORE:
         ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::SCORE);
-        rumble_on_ = 0;
         break;
     }
   superstructure_status_proto_->set_rumble_on(rumble_on_);
@@ -156,6 +152,7 @@ void SuperStructure::SetWpilibOutput() {
   const auto shooter_input = QueueManager::GetInstance().shooter_input_queue().ReadLastMessage();
   const auto climber_input = QueueManager::GetInstance().climber_input_queue().ReadLastMessage();
   const auto climber_status = QueueManager::GetInstance().climber_status_queue().ReadLastMessage();
+  const auto ground_gear_status = QueueManager::GetInstance().ground_gear_status_queue().ReadLastMessage();
   const auto driver_station = QueueManager::GetInstance().driver_station_queue()->ReadLastMessage();
 
   bool enable_outputs = true;
@@ -163,6 +160,10 @@ void SuperStructure::SetWpilibOutput() {
     auto robot_state = driver_station.value();
     enable_outputs = !(robot_state->mode() == RobotMode::DISABLED ||
                        robot_state->mode() == RobotMode::ESTOP || robot_state->brownout());
+  }
+
+  if (ground_gear_status) {
+    rumble_on_ = ground_gear_status.value()->current_state() == ground_gear_intake::State::PICKING_UP;
   }
 
   if (ground_gear_input) {
