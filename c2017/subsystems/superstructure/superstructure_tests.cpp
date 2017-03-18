@@ -50,7 +50,7 @@ class SuperstructureTest : public ::testing::Test {
 TEST_F(SuperstructureTest, GroundGearIntaking) {
   climber_input_proto_->set_current(0);
   climber_input_proto_->set_position(0);
-  shooter_input_proto_->set_encoder_position(0);
+  shooter_input_proto_->set_shooter_encoder_position(0);
   ground_gear_input_proto_->set_current(0);
   magazine_input_proto_->set_has_hp_gear(false);
 
