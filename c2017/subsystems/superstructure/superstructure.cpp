@@ -23,7 +23,7 @@ void SuperStructure::Update() {
 
     if (shooter_group_goal->wheel() == c2017::shooter_group::Wheel::SPINUP ||
         shooter_group_goal->wheel() == c2017::shooter_group::Wheel::BOTH) {
-        shooter_goal_->set_goal_velocity(kFenderVelocity);
+      shooter_goal_->set_goal_velocity(kFenderVelocity);
     }
 
     if (shooter_group_goal->wheel() == c2017::shooter_group::Wheel::SHOOT ||
@@ -77,7 +77,6 @@ void SuperStructure::Update() {
         ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::SCORE);
         break;
     }
-  superstructure_status_proto_->set_rumble_on(rumble_on_);
     bool allow_ground_intake = ground_gear_intake_.current_state() == ground_gear_intake::IDLE ||
                                ground_gear_intake_.current_state() == ground_gear_intake::CARRYING;
 
@@ -163,7 +162,8 @@ void SuperStructure::SetWpilibOutput() {
   }
 
   if (ground_gear_status) {
-    rumble_on_ = ground_gear_status.value()->current_state() == ground_gear_intake::State::PICKING_UP;
+    superstructure_status_proto_->set_rumble_on(ground_gear_status.value()->current_state() ==
+                                                ground_gear_intake::State::PICKING_UP);
   }
 
   if (ground_gear_input) {
@@ -181,7 +181,7 @@ void SuperStructure::SetWpilibOutput() {
     if (climber_goal_->climbing()) {
       wpilib_output->set_shooter_voltage(climber_output->voltage());
     } else {
-     wpilib_output->set_shooter_voltage(shooter_output->voltage());
+      wpilib_output->set_shooter_voltage(shooter_output->voltage());
     }
   }
 
