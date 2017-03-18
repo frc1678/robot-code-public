@@ -87,7 +87,7 @@ genrule(
         "accelarator_constants.h",
         "accelarator_constants.cpp",
     ],
-    cmd = "$(location :accelarator_python) $(location accelarator_constants.h) $(location accelarator_constants.cpp)",
+    cmd = "$(location accelarator_python) $(location accelarator_constants.h) $(location accelarator_constants.cpp)",
     tools = ["shooter_python"],
 )
 
