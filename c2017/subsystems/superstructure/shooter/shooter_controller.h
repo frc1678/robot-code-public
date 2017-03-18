@@ -3,9 +3,9 @@
 
 #include <algorithm>
 #include "c2017/queue_manager/queue_manager.h"
+#include "c2017/subsystems/superstructure/shooter/accelarator_constants.h"
 #include "c2017/subsystems/superstructure/shooter/queue_types.h"
 #include "c2017/subsystems/superstructure/shooter/shooter_constants.h"
-#include "c2017/subsystems/superstructure/shooter/accelarator_constants.h"
 #include "muan/control/state_space_controller.h"
 #include "muan/control/state_space_observer.h"
 #include "muan/control/state_space_plant.h"

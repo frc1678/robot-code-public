@@ -39,17 +39,18 @@ ShooterController::ShooterController()
 
 c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::ShooterInputProto input,
                                                              bool outputs_enabled) {
-  Eigen::Matrix<double, 3, 1> r_;
+  Eigen::Matrix<double, 3, 1> shooter_r_;
   Eigen::Matrix<double, 2, 1> accelarator_r_;
 
   auto y = (Eigen::Matrix<double, 1, 1>() << input->shooter_encoder_position()).finished();
-  r_ = (Eigen::Matrix<double, 3, 1>() << 0.0, UpdateProfiledGoalVelocity(unprofiled_goal_velocity_), 0.0)
-           .finished();
+  shooter_r_ =
+      (Eigen::Matrix<double, 3, 1>() << 0.0, UpdateProfiledGoalVelocity(unprofiled_goal_velocity_), 0.0)
+          .finished();
 
   auto accelarator_y = (Eigen::Matrix<double, 1, 1>() << input->accelarator_encoder_postition()).finished();
   accelarator_r_ = (Eigen::Matrix<double, 2, 1>() << 0.0, 0.5 * unprofiled_goal_velocity_).finished();
 
-  shooter_controller_.r() = r_;
+  shooter_controller_.r() = shooter_r_;
   accelarator_controller_.r() = accelarator_r_;
 
   auto u = shooter_controller_.Update(shooter_observer_.x())(0, 0);
@@ -63,10 +64,11 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
   } else {
     status_->set_uncapped_u(u);
     u = CapU(u, outputs_enabled);
+    accelarator_u = CapU(accelarator_u, outputs_enabled);
   }
 
   shooter_observer_.Update((Eigen::Matrix<double, 1, 1>() << u).finished(), y);
-  accelarator_observer_.Update((Eigen::Matrix<double, 1, 1>() << accelarator_u). finished(), y);
+  accelarator_observer_.Update((Eigen::Matrix<double, 1, 1>() << accelarator_u).finished(), y);
 
   auto absolute_error = ((Eigen::Matrix<double, 3, 1>() << 0.0, unprofiled_goal_velocity_, 0.0).finished() -
                          shooter_observer_.x())
