@@ -27,8 +27,8 @@ class ShooterController {
   muan::control::StateSpaceController<1, 3, 1> shooter_controller_;
   muan::control::StateSpaceObserver<1, 3, 1> shooter_observer_;
 
-  muan::control::StateSpaceController<1, 2, 1> accelerator_controller_;
-  muan::control::StateSpaceObserver<1, 2, 1> accelerator_observer_;
+  muan::control::StateSpaceController<1, 2, 1> accelarator_controller_;
+  muan::control::StateSpaceObserver<1, 2, 1> accelarator_observer_;
 
   double CapU(double u, bool outputs_enabled);
 

@@ -21,16 +21,16 @@ ShooterController::ShooterController()
       muan::control::StateSpaceObserver<1, 3, 1>(shooter_plant, frc1678::shooter_controller::controller::L());
 
   accelarator_controller_ = muan::control::StateSpaceController<1, 2, 1>(
-      frc1678::accelerator_controller::controller::K(), frc1678::accelarator_controller::controller::Kff(),
+      frc1678::accelarator_controller::controller::K(), frc1678::accelarator_controller::controller::Kff(),
       frc1678::accelarator_controller::controller::A(),
       Eigen::Matrix<double, 1, 1>::Ones() * -std::numeric_limits<double>::infinity(),
       Eigen::Matrix<double, 1, 1>::Ones() * std::numeric_limits<double>::infinity());
 
-  auto accelerator_plant = muan::control::StateSpacePlant<1, 2, 1>(
-      frc1678::accelerator_controller::controller::A(), frc1678::accelerator_controller::controller::B(),
-      frc1678::accelerator_controller::controller::C());
+  auto accelarator_plant = muan::control::StateSpacePlant<1, 2, 1>(
+      frc1678::accelarator_controller::controller::A(), frc1678::accelarator_controller::controller::B(),
+      frc1678::accelarator_controller::controller::C());
   accelarator_observer_ = muan::control::StateSpaceObserver<1, 2, 1>(
-      accelerator_plant, frc1678::accelarator_controller::controller::L());
+      accelarator_plant, frc1678::accelarator_controller::controller::L());
 
   at_goal_ = false;
 
@@ -40,15 +40,17 @@ ShooterController::ShooterController()
 c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::ShooterInputProto input,
                                                              bool outputs_enabled) {
   Eigen::Matrix<double, 3, 1> r_;
+  Eigen::Matrix<double, 2, 1> accelarator_r_;
 
   auto y = (Eigen::Matrix<double, 1, 1>() << input->shooter_encoder_position()).finished();
   r_ = (Eigen::Matrix<double, 3, 1>() << 0.0, UpdateProfiledGoalVelocity(unprofiled_goal_velocity_), 0.0)
            .finished();
 
-  auto accelarator_y = (Eigen::Matrix<double, 1, 1>() << input->accelarator_encoder_position()).finished();
-  accelarator_r_ = (Eigen::Matrix<double, 3, 1>() << 0.0, 1/2 * unprofiled_goal_velocity, 0.0).finished();
+  auto accelarator_y = (Eigen::Matrix<double, 1, 1>() << input->accelarator_encoder_postition()).finished();
+  accelarator_r_ = (Eigen::Matrix<double, 2, 1>() << 0.0, 0.5 * unprofiled_goal_velocity_).finished();
 
   shooter_controller_.r() = r_;
+  accelarator_controller_.r() = accelarator_r_;
 
   auto u = shooter_controller_.Update(shooter_observer_.x())(0, 0);
 
@@ -56,6 +58,7 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
 
   if (!outputs_enabled || unprofiled_goal_velocity_ <= 0) {
     u = 0.0;
+    accelarator_u = 0.0;
     unprofiled_goal_velocity_ = 0.0;
   } else {
     status_->set_uncapped_u(u);
@@ -63,6 +66,7 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
   }
 
   shooter_observer_.Update((Eigen::Matrix<double, 1, 1>() << u).finished(), y);
+  accelarator_observer_.Update((Eigen::Matrix<double, 1, 1>() << accelarator_u). finished(), y);
 
   auto absolute_error = ((Eigen::Matrix<double, 3, 1>() << 0.0, unprofiled_goal_velocity_, 0.0).finished() -
                          shooter_observer_.x())
@@ -75,6 +79,7 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
   output->set_shooter_voltage(u);
   output->set_accelarator_voltage(accelarator_u);
   status_->set_observed_velocity(shooter_observer_.x()(1, 0));
+  status_->set_accelarator_observed_velocity(accelarator_observer_.x()(1, 0));
   status_->set_at_goal(at_goal_);
   status_->set_currently_running(std::fabs(unprofiled_goal_velocity_) >= 1e-3);
   status_->set_voltage(u);

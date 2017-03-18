@@ -19,7 +19,6 @@ def make_gains():
 
     # Parameters
     moment_inertia = 0.226796 * (1 * .0256)**2.0 / 2.0 + 0.226796 * (0.5 * 0.0256)**2.0
-    moment_inertia = 0.0001114
     gear_ratio = 1.0 / 4.0
     efficiency = .91
 
@@ -167,10 +166,10 @@ def goal(t):
 if __name__ == '__main__':
     if len(sys.argv) == 3:
         from muan.control.state_space_writer import StateSpaceWriter
-        writer = StateSpaceWriter(gains, 'shooter_controller')
+        writer = StateSpaceWriter(gains, 'accelarator_controller')
         writer.write(sys.argv[1], sys.argv[2])
     else:
         from muan.control.state_space_scenario import StateSpaceScenario
 
-        scenario = StateSpaceScenario(plant, x0, controller, observer, x0, 'shooter_controller')
+        scenario = StateSpaceScenario(plant, x0, controller, observer, x0, 'accelarator_controller')
         scenario.run(goal, 4)
