@@ -38,7 +38,6 @@ class SuperStructure {
   c2017::superstructure::SuperstructureStatusProto superstructure_status_proto_;
 
   bool is_shooting_ = false;
-  bool rumble_on_ = 0;
 
   void SetWpilibOutput();
 };
