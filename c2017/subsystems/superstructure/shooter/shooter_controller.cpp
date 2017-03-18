@@ -42,7 +42,7 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
   Eigen::Matrix<double, 3, 1> shooter_r_;
   Eigen::Matrix<double, 2, 1> accelarator_r_;
 
-  auto y = (Eigen::Matrix<double, 1, 1>() << input->shooter_encoder_position()).finished();
+  auto shooter_y = (Eigen::Matrix<double, 1, 1>() << input->shooter_encoder_position()).finished();
   shooter_r_ =
       (Eigen::Matrix<double, 3, 1>() << 0.0, UpdateProfiledGoalVelocity(unprofiled_goal_velocity_), 0.0)
           .finished();
@@ -67,8 +67,8 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
     accelarator_u = CapU(accelarator_u, outputs_enabled);
   }
 
-  shooter_observer_.Update((Eigen::Matrix<double, 1, 1>() << shooter_u).finished(), y);
-  accelarator_observer_.Update((Eigen::Matrix<double, 1, 1>() << accelarator_u).finished(), y);
+  shooter_observer_.Update((Eigen::Matrix<double, 1, 1>() << shooter_u).finished(), shooter_y);
+  accelarator_observer_.Update((Eigen::Matrix<double, 1, 1>() << accelarator_u).finished(), accelarator_y);
 
   auto absolute_error = ((Eigen::Matrix<double, 3, 1>() << 0.0, unprofiled_goal_velocity_, 0.0).finished() -
                          shooter_observer_.x())
