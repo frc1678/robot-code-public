@@ -102,8 +102,6 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
     double base_score = area / (image.rows * image.cols);
 
     if (base_score > constants_.kMinTargetArea) {
-      targets.push_back(i);
-
       double hull_area = cv::contourArea(hull[i]);
       // Fullness is the ratio of the contour's area to that of its convex hull
       double fullness = area / hull_area;
@@ -119,6 +117,10 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
       // Formula subject to tuning
       double target_score =
           scorer_->GetScore(distance_to_target, distance_from_previous, skew, width, height, fullness);
+
+      if (target_score > 0) {
+        targets.push_back(i);
+      }
 
       if (target_score > best_score) {
         best_target = i;

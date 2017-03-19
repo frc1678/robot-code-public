@@ -14,11 +14,10 @@
 namespace c2017 {
 namespace vision {
 
-double VisionScorer2017::GetScore(double /* distance_to_target */, double /* distance_from_previous */,
-                                  double skew, double width, double height, double fullness) {
-  double base_score = std::log(width * height) / (1 + std::pow(fullness - 1, 2));
-  double target_score = (base_score / (1 + skew));
-  return target_score;
+double VisionScorer2017::GetScore(double distance_to_target, double /* distance_from_previous */,
+                                  double /* skew */, double width, double height, double fullness) {
+  double area = width * height * fullness;
+  return area > 30000 ? 0 : 1 / distance_to_target;
 }
 
 void RunVision(int camera_index) {
