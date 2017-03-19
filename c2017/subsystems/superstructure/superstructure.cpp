@@ -6,7 +6,7 @@ namespace superstructure {
 
 // Constants for the shooter
 // The first value is revolutions per minute, which is then converted to radians per second
-constexpr double kFenderVelocity = 3000 * (M_PI * 2) / 60;
+constexpr double kFenderVelocity = 3100 * (M_PI * 2) / 60;
 
 SuperStructure::SuperStructure() {}
 
@@ -23,7 +23,7 @@ void SuperStructure::Update() {
 
     if (shooter_group_goal->wheel() == c2017::shooter_group::Wheel::SPINUP ||
         shooter_group_goal->wheel() == c2017::shooter_group::Wheel::BOTH) {
-        shooter_goal_->set_goal_velocity(kFenderVelocity);
+      shooter_goal_->set_goal_velocity(kFenderVelocity);
     }
 
     if (shooter_group_goal->wheel() == c2017::shooter_group::Wheel::SHOOT ||
@@ -77,7 +77,6 @@ void SuperStructure::Update() {
         ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::SCORE);
         break;
     }
-
     bool allow_ground_intake = ground_gear_intake_.current_state() == ground_gear_intake::IDLE ||
                                ground_gear_intake_.current_state() == ground_gear_intake::CARRYING;
 
@@ -152,6 +151,7 @@ void SuperStructure::SetWpilibOutput() {
   const auto shooter_input = QueueManager::GetInstance().shooter_input_queue().ReadLastMessage();
   const auto climber_input = QueueManager::GetInstance().climber_input_queue().ReadLastMessage();
   const auto climber_status = QueueManager::GetInstance().climber_status_queue().ReadLastMessage();
+  const auto ground_gear_status = QueueManager::GetInstance().ground_gear_status_queue().ReadLastMessage();
   const auto driver_station = QueueManager::GetInstance().driver_station_queue()->ReadLastMessage();
 
   bool enable_outputs = true;
@@ -159,6 +159,11 @@ void SuperStructure::SetWpilibOutput() {
     auto robot_state = driver_station.value();
     enable_outputs = !(robot_state->mode() == RobotMode::DISABLED ||
                        robot_state->mode() == RobotMode::ESTOP || robot_state->brownout());
+  }
+
+  if (ground_gear_status) {
+    superstructure_status_proto_->set_rumble_on(ground_gear_status.value()->current_state() ==
+                                                ground_gear_intake::State::PICKING_UP);
   }
 
   if (ground_gear_input) {

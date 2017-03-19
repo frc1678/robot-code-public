@@ -24,6 +24,7 @@ CitrusRobot::CitrusRobot()
   hp_load_gears_ = gamepad_.MakePov(0, muan::teleop::Pov::kNorth);                            // D-Pad up
   hp_load_balls_ = gamepad_.MakePov(0, muan::teleop::Pov::kSouth);                            // D-Pad down
   hp_load_both_ = gamepad_.MakePov(0, muan::teleop::Pov::kEast);                              // D-Pad right
+  hp_load_none_ = gamepad_.MakePov(0, muan::teleop::Pov::kWest);                              // D-Pad right
   agitate_ = gamepad_.MakeAxis(2);                                                            // Left Trigger
   climb_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::BACK));                           // Back Button
   just_spinup_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::START));                    // Start Button
@@ -36,6 +37,13 @@ void CitrusRobot::Update() {
     lemonscript_.Start();  // Weird to call Start in a loop, but it's a setter so it's fine
   } else if (DriverStation::GetInstance().IsOperatorControl()) {
     lemonscript_.Stop();  // Weirder to do this, but it works :/
+
+    auto superstructure_status =
+        c2017::QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage();
+    if (superstructure_status) {
+      gamepad_.wpilib_joystick()->SetRumble(Joystick::kRightRumble,
+                                            superstructure_status.value()->rumble_on() ? 1 : 0);
+    }
 
     // Update joysticks
     throttle_.Update();
@@ -98,16 +106,16 @@ void CitrusRobot::SendSuperstructureMessage() {
                                                                  : intake_group::GROUND_BALL_UP);
 
   // Hp load buttons
-  if (hp_load_gears_->is_pressed()) {
+  if (hp_load_gears_->was_clicked()) {
     // Kelly - Gamepad D-Pad
     intake_group_goal_->set_hp_load_type(intake_group::HP_LOAD_GEAR);
-  } else if (hp_load_balls_->is_pressed()) {
+  } else if (hp_load_balls_->was_clicked()) {
     // Kelly - Gamepad D-Pad
     intake_group_goal_->set_hp_load_type(intake_group::HP_LOAD_BALLS);
-  } else if (hp_load_both_->is_pressed()) {
+  } else if (hp_load_both_->was_clicked()) {
     // Kelly - Gamepad D-Pad
     intake_group_goal_->set_hp_load_type(intake_group::HP_LOAD_BOTH);
-  } else {
+  } else if (hp_load_none_->was_clicked()) {
     intake_group_goal_->set_hp_load_type(intake_group::HP_LOAD_NONE);
   }
 

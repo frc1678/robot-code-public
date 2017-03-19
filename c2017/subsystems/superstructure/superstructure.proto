@@ -9,4 +9,5 @@ message SuperstructureStatus {
   required bool shooting = 2;
   required bool climbing = 3;
   required bool enable_outputs = 4;
+  required bool rumble_on = 5;
 }

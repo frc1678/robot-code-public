@@ -25,7 +25,7 @@ void WebDashRunner::operator()() {
   auto logger = std::make_shared<seasocks::PrintfLogger>();
   seasocks::Server server{logger};
   server.addWebSocketHandler("/save", std::make_shared<AutoChangeHandler>());
-  server.serve("c2017/webdash/www/", 8080);
+  server.serve("c2017/webdash/www/", 5801);
 }
 
 }  // namespace webdash
