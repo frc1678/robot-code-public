@@ -8,7 +8,7 @@
 #
 # To run this on startup, add the following line or something similar to /etc/rc.init
 #
-#     /home/ubuntu/robot-code/c2017/vision/coprocessor/startup.sh 10.16.78.22 >& /home/ubuntu/log.text &
+#     /home/ubuntu/robot-code/c2017/vision/coprocessor/startup.sh 10.16.78.22 0 >& /home/ubuntu/log.text &
 #
 
 # This script runs before the camera is ready, so sleep until it is ready.
