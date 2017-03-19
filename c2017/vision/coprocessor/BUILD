@@ -37,6 +37,7 @@ cc_library(
     data = ["robot_constants.pb.text", "thresholds.pb.text"],
     linkopts = [
         "-lopencv_video",
+        #"-lopencv_videoio",
         "-lopencv_highgui",
     ],
     visibility = ["//visibility:public"],

@@ -14,9 +14,7 @@
 
 # This script runs before the camera is ready, so sleep until it is ready.
 sleep 30s
-cd /home/ubuntu
-./jetson-scripts/jetson_max_l4t.sh # Script to run fan
-cd robot-code
-v4l2ctrl -d /dev/video1 -l c2017/vision/coprocessor/camera_params
+cd /home/ubuntu/robot-code
+v4l2ctrl -d /dev/video0 -l c2017/vision/coprocessor/camera_params
 echo Robot ip: $1
-./bazel-bin/c2017/vision/coprocessor/main --robot_ip=$1
+./bazel-bin/c2017/vision/coprocessor/main --robot_ip=$1 --camera_index=0
