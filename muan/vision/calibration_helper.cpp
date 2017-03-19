@@ -23,6 +23,8 @@ DEFINE_string(params_file, "/tmp/thresholds.pb.text",
               "The filename to which params should be written, if in tuning mode.");
 DEFINE_int32(camera_index, 0, "The ID of the camera to use to capture video, in capture mode.");
 
+constexpr int kEscapeKey = 27;
+
 void Capture(const std::string& filename, int camera_index = -1) {
   cv::VideoCapture camera(camera_index);
   if (!camera.isOpened()) {
@@ -49,7 +51,7 @@ void Capture(const std::string& filename, int camera_index = -1) {
   cv::Mat frame;
   cv::namedWindow("Capture");
 
-  while (cv::waitKey(10) != 1048603) {
+  while (cv::waitKey(10) != kEscapeKey) {
     camera >> frame;
     cv::imshow("Capture", frame);
     writer.write(frame);
@@ -102,7 +104,7 @@ void Tune(const std::string& video_filename, const std::string& output_filename)
   cv::namedWindow("Input");
   cv::namedWindow("Output");
   cv::Mat frame;
-  while (cv::waitKey(10) != 1048603) {
+  while (cv::waitKey(10) != kEscapeKey) {
     video >> frame;
     if (frame.size[0] <= 0) {
       video.set(CV_CAP_PROP_POS_AVI_RATIO, 0);
