@@ -39,8 +39,10 @@ void CitrusRobot::Update() {
 
     auto superstructure_status =
         c2017::QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage();
-    gamepad_.wpilib_joystick()->SetRumble(Joystick::kRightRumble,
-                                          superstructure_status.value()->rumble_on() ? 1 : 0);
+    if (superstructure_status) {
+      gamepad_.wpilib_joystick()->SetRumble(Joystick::kRightRumble,
+                                            superstructure_status.value()->rumble_on() ? 1 : 0);
+    }
 
     // Update joysticks
     throttle_.Update();
