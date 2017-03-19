@@ -6,7 +6,7 @@
 
 #define VIDEO_OUTPUT 0
 
-class ExampleVisionScorer : public muan::VisionScorer {
+class ExampleVisionScorer : public muan::vision::VisionScorer {
  public:
   double GetScore(double distance_to_target, double distance_from_previous, double skew, double width,
                   double height, double fullness) {
@@ -29,7 +29,7 @@ int main() {
   cv::namedWindow("vision", cv::WINDOW_AUTOSIZE);
 #endif
 
-  muan::Vision::VisionConstants constants{1,        // kFovX
+  muan::vision::Vision::VisionConstants constants{1,        // kFovX
                                           1,        // kFovY
                                           0,        // kCameraAngleX
                                           0.3,      // kCameraAngleY
@@ -37,8 +37,14 @@ int main() {
                                           0.2,      // kFullness
                                           0.0005};  // kMinTargetArea
 
-  muan::Vision::ColorRange range{cv::Scalar(50, 0, 60), cv::Scalar(100, 255, 255), CV_BGR2HSV};
-  muan::Vision vision(range, std::make_shared<ExampleVisionScorer>(), constants);
+  muan::vision::VisionThresholds range;
+  range.set_a_low(50);
+  range.set_b_low(0);
+  range.set_c_low(60);
+  range.set_a_high(100);
+  range.set_b_high(255);
+  range.set_c_high(255);
+  muan::vision::Vision vision(range, std::make_shared<ExampleVisionScorer>(), constants);
 
   while (cap.isOpened()) {
     cv::Mat raw;
@@ -46,7 +52,7 @@ int main() {
     if (raw.empty()) {  // End of data
       break;
     }
-    muan::Vision::VisionStatus status = vision.Update(raw);
+    muan::vision::Vision::VisionStatus status = vision.Update(raw);
 
 #if VIDEO_OUTPUT
     cv::Mat splitscreen(image_canvas.rows, image_canvas.cols * 2, CV_8UC3);

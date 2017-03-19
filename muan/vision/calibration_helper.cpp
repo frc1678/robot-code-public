@@ -1,4 +1,5 @@
 #include <fcntl.h>
+#include <unistd.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/text_format.h>
 #include <opencv2/opencv.hpp>
@@ -8,8 +9,7 @@
 #include <string>
 #include <thread>
 #include <vector>
-#include "c2017/vision/coprocessor/vision.h"
-#include "c2017/vision/vision.pb.h"
+#include "muan/vision/config.pb.h"
 #include "gflags/gflags.h"
 #include "muan/vision/vision.h"
 
@@ -66,7 +66,7 @@ void Tune(const std::string& video_filename, const std::string& output_filename)
     return;
   }
 
-  c2017::vision::VisionThresholds thresholds;
+  muan::vision::VisionThresholds thresholds;
   {
     int file = open(output_filename.c_str(), O_RDONLY);
     google::protobuf::io::FileInputStream fstream(file);
@@ -74,15 +74,16 @@ void Tune(const std::string& video_filename, const std::string& output_filename)
     close(file);
   }
 
-  int colorspace_code = 0;
+  int colorspace_code = muan::vision::ConversionCode(muan::vision::VisionThresholds::Bgr, thresholds.space());
   switch (thresholds.space()) {
-    case c2017::vision::VisionThresholds::Rgb:
-      colorspace_code = CV_BGR2RGB;
+    case muan::vision::VisionThresholds::Rgb:
       std::cout << "Tuning in RGB" << std::endl;
       break;
-    case c2017::vision::VisionThresholds::Hsv:
-      colorspace_code = CV_BGR2HSV;
+    case muan::vision::VisionThresholds::Hsv:
       std::cout << "Tuning in HSV" << std::endl;
+      break;
+    case muan::vision::VisionThresholds::Bgr:
+      std::cout << "Tuning in BGR" << std::endl;
       break;
     default:
       break;
@@ -102,8 +103,6 @@ void Tune(const std::string& video_filename, const std::string& output_filename)
   cv::namedWindow("Output");
   cv::Mat frame;
   while (cv::waitKey(10) != 1048603) {
-    muan::Vision::ColorRange range{cv::Scalar(a_min, b_min, c_min), cv::Scalar(a_max, b_max, c_max),
-                                   colorspace_code};
     video >> frame;
     if (frame.size[0] <= 0) {
       video.set(CV_CAP_PROP_POS_AVI_RATIO, 0);
@@ -113,7 +112,7 @@ void Tune(const std::string& video_filename, const std::string& output_filename)
     // Threshold
     cv::imshow("Input", frame);
     cv::cvtColor(frame, frame, colorspace_code);
-    cv::inRange(frame, range.lower_bound, range.upper_bound, frame);
+    cv::inRange(frame, cv::Scalar(a_min, b_min, c_min), cv::Scalar(a_max, b_max, c_max), frame);
     cv::imshow("Output", frame);
   }
 
@@ -125,16 +124,6 @@ void Tune(const std::string& video_filename, const std::string& output_filename)
     thresholds.set_a_high(a_max);
     thresholds.set_b_high(b_max);
     thresholds.set_c_high(c_max);
-    switch (colorspace_code) {
-      case CV_HSV2RGB:
-        thresholds.set_space(c2017::vision::VisionThresholds::Hsv);
-        break;
-      case CV_BGR2RGB:
-        thresholds.set_space(c2017::vision::VisionThresholds::Rgb);
-        break;
-      default:
-        break;
-    }
 
     std::string str;
     google::protobuf::TextFormat::PrintToString(thresholds, &str);
