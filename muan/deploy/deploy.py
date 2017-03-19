@@ -93,7 +93,7 @@ def main():
     # into one ssh session.
     ssh_autostart_command = ssh_command + [
         ssh_target,
-        'echo "{} &&" > /etc/init.d/start_robot_code & \
+        'echo "{} &" > /etc/init.d/start_robot_code && \
          chmod +x /etc/init.d/start_robot_code && \
          update-rc.d start_robot_code defaults 100'.format(options.command)
     ]
