@@ -18,7 +18,7 @@ def make_gains():
     name = 'gains'
 
     # Parameters
-    moment_inertia = 4.0 * (.03**2) / 2.0 + 0.93 * (3.5 * 0.0254)**2.0 / 2.0
+    moment_inertia = 0.226796 * (1 * .0256)**2.0 / 2.0 + 0.226796 * (0.5 * 0.0256)**2.0
     gear_ratio = 1.0 / 4.0
     efficiency = .91
 
@@ -61,7 +61,7 @@ def make_gains():
     # Controller weighting
     Q_controller = np.asmatrix([
         [0., 0.],
-        [0., 5e-1]
+        [0., 5e-3]
     ])
 
     R_controller = np.asmatrix([
@@ -71,7 +71,7 @@ def make_gains():
     # Noise
     Q_noise = np.asmatrix([
         [1e-2, 0.],
-        [0., 1e1]
+        [0., 1e3]
     ])
 
     R_noise = np.asmatrix([
@@ -86,7 +86,9 @@ def make_gains():
     A_d, B_d, Q_d, R_d = c2d(A_c, B_c, dt, Q_noise, R_noise)
     K = clqr(A_c, B_c, Q_controller, R_controller)
     Kff = feedforwards(A_d, B_d, Q_ff)
-    L = dkalman(A_d, C, Q_d, R_d)
+    L = place(A_d.T, C.T, [0.05, 0.12]).T
+
+    print(L)
 
     gains = StateSpaceGains(name, dt, A_d, B_d, C, None, Q_d, R_noise, K, Kff, L)
     gains.A_c = A_c
@@ -95,79 +97,25 @@ def make_gains():
 
     return gains
 
-def make_augmented_gains():
-    unaugmented_gains = make_gains()
-
-    dt = unaugmented_gains.dt
-
-    A_c = np.asmatrix(np.zeros((3, 3)))
-    A_c[:2, :2] = unaugmented_gains.A_c
-    A_c[:2, 2:3] = unaugmented_gains.B_c
-
-    B_c = np.asmatrix(np.zeros((3, 1)))
-    B_c[:2, :] = unaugmented_gains.B_c
-
-    C = np.asmatrix(np.zeros((1, 3)))
-    C[:, :2] = unaugmented_gains.C
-
-    D = np.asmatrix(np.zeros((1, 1)))
-
-    K = np.zeros((1, 3))
-    K[:, :2] = unaugmented_gains.K
-    K[0, 2] = 1.
-
-    Q_noise = np.zeros((3, 3))
-    Q_noise[:2, :2] = unaugmented_gains.Q_c
-    Q_noise[2, 2] = 1
-
-    R_noise = np.asmatrix([
-        [0.1]
-    ])
-
-    # Kalman noise matrix
-    Q_kalman = np.asmatrix([
-        [1.0, 0.0, 0.0],
-        [0.0, 2e3, 0.0],
-        [0.0, 0.0, 3e2]
-    ])
-
-    Q_ff = np.asmatrix([
-        [0.0, 0.0, 0.0],
-        [0.0, 1.0, 0.0],
-        [0.0, 0.0, 0.0]
-    ])
-
-    A_d, B_d, Q_d, R_d = c2d(A_c, B_c, dt, Q_noise, R_noise)
-    _, _, Q_dkalman, R_dkalman = c2d(A_c, B_c, dt, Q_kalman, R_noise)
-    L = dkalman(A_d, C, Q_dkalman, R_dkalman)
-    Kff = feedforwards(A_d, B_d, Q_ff)
-
-    name = unaugmented_gains.name + '_integral'
-
-    gains = StateSpaceGains(name, dt, A_d, B_d, C, None, Q_d, R_noise, K, Kff, L)
-
-    return gains
-
-
 u_max = np.asmatrix([12.]).T
-x0 = np.asmatrix([0., 0., 0.]).T
+x0 = np.asmatrix([0., 0.]).T
 
-gains = make_augmented_gains()
+gains = make_gains()
 
 plant = StateSpacePlant(gains, x0)
 controller = StateSpaceController(gains, -u_max, u_max)
 observer = StateSpaceObserver(gains, x0)
 
 def goal(t):
-    return np.asmatrix([0., 300., 0.]).T
+    return np.asmatrix([0., 300.]).T
 
 if __name__ == '__main__':
     if len(sys.argv) == 3:
         from muan.control.state_space_writer import StateSpaceWriter
-        writer = StateSpaceWriter(gains, 'shooter_controller')
+        writer = StateSpaceWriter(gains, 'accelarator_controller')
         writer.write(sys.argv[1], sys.argv[2])
     else:
         from muan.control.state_space_scenario import StateSpaceScenario
 
-        scenario = StateSpaceScenario(plant, x0, controller, observer, x0, 'shooter_controller')
+        scenario = StateSpaceScenario(plant, x0, controller, observer, x0, 'accelarator_controller')
         scenario.run(goal, 4)
