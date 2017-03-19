@@ -99,7 +99,12 @@ void Lights::Update() {
     } else if (ds_status.value()->mode() == RobotMode::DISABLED) {
       auto_running_ = true;
     }
+  } else if (!calibrated_) {
+    light_color_ = LightColor::RED;
+  } else if (calibrated_) {
+    light_color_ = LightColor::BLUE;
   }
+    
 
   if (vision_status) {
     light_color_ = FlashLights(light_color_, light_color_, !vision_status.value()->has_connection());
@@ -120,11 +125,11 @@ LightColor Lights::VisionAlignment() {
   auto vision_status = QueueManager::GetInstance().vision_status_queue().ReadLastMessage();
   if (vision_status) {
     if (!vision_status.value()->target_found()) {
-      return LightColor::YELLOW;
-    } else if (!vision_status.value()->aligned()) {
+      return LightColor::RED;
+    } else if (vision_status.value()->aligned()) {
       return LightColor::GREEN;
     } else {
-      return LightColor::PINK;
+      return LightColor::YELLOW;
     }
   }
   return FlashLights(LightColor::OFF, LightColor::TEAL, false);

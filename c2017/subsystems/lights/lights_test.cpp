@@ -273,23 +273,12 @@ TEST(LightColors, NoDsQueue) {
   c2017::QueueManager::GetInstance().vision_status_queue().WriteMessage(vision_status);
 
   c2017::lights::Lights lights;
-  aos::time::EnableMockTime(aos::monotonic_clock::epoch());
   lights.Update();
   auto lights_reading = c2017::QueueManager::GetInstance().lights_output_queue().ReadLastMessage();
   if (lights_reading) {
-    EXPECT_FALSE(lights_reading.value()->red());
-    EXPECT_TRUE(lights_reading.value()->green());
-    EXPECT_TRUE(lights_reading.value()->blue());  // creates teal
-  } else {
-    FAIL();
-  }
-  aos::time::IncrementMockTime(std::chrono::milliseconds(1000));
-  lights.Update();
-  lights_reading = c2017::QueueManager::GetInstance().lights_output_queue().ReadLastMessage();
-  if (lights_reading) {
-    EXPECT_FALSE(lights_reading.value()->red());
+    EXPECT_TRUE(lights_reading.value()->red());
     EXPECT_FALSE(lights_reading.value()->green());
-    EXPECT_FALSE(lights_reading.value()->blue());  // is off
+    EXPECT_FALSE(lights_reading.value()->blue());  // is red
   } else {
     FAIL();
   }
