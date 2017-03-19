@@ -98,8 +98,9 @@ void SuperStructureInterface::WriteActuators() {
                                          ports::superstructure::kMaxVoltage) /
                        12.0);
 
-    accel_motor_.Set(-muan::utils::Cap(-(*outputs)->accelarator_voltage(), -ports::superstructure::kMaxVoltage,
-                                         ports::superstructure::kMaxVoltage) /
+    accel_motor_.Set(-muan::utils::Cap(-(*outputs)->accelarator_voltage(),
+                                       -ports::superstructure::kMaxVoltage,
+                                       ports::superstructure::kMaxVoltage) /
                        12.0);
 
     // Upper Conveyor motor
