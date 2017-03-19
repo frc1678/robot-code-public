@@ -15,9 +15,9 @@ namespace c2017 {
 namespace vision {
 
 double VisionScorer2017::GetScore(double distance_to_target, double /* distance_from_previous */,
-                                  double /* skew */, double width, double height, double fullness) {
-  double area = width * height * fullness;
-  return area > 30000 ? 0 : 1 / distance_to_target;
+                                  double /* skew */, double /* width */,
+                                  double /* height */, double /* fullness */) {
+  return 1 / distance_to_target;
 }
 
 void RunVision(int camera_index) {
@@ -46,9 +46,10 @@ void RunVision(int camera_index) {
   muan::vision::Vision::VisionConstants constants{
       1.14,  // FOV is not different per robot
       0.659, robot_constants.x_camera_angle(), robot_constants.y_camera_angle(),
-      1.66,  // Field properties are
-      1.,    // not different per robot
-      0.0005};
+      1.66,  // Field properties are not different per robot
+      1.,
+      0.0005,
+      0.04};
 
   muan::vision::Vision vision{thresholds, std::make_shared<VisionScorer2017>(), constants};
   cv::Mat raw;

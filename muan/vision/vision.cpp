@@ -101,7 +101,7 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
     // A baseline score to determine whether or not it's even a target
     double base_score = area / (image.rows * image.cols);
 
-    if (base_score > constants_.kMinTargetArea) {
+    if (base_score > constants_.kMinTargetArea && base_score < constants_.kMaxTargetArea) {
       double hull_area = cv::contourArea(hull[i]);
       // Fullness is the ratio of the contour's area to that of its convex hull
       double fullness = area / hull_area;
