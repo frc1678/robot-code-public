@@ -6,10 +6,13 @@ TEST(LightColors, NoVisionSignal) {
   c2017::QueueManager::GetInstance().Reset();
 
   c2017::vision::VisionStatusProto vision_status;
+  muan::wpilib::DriverStationProto driver_station_proto;
 
   vision_status->set_has_connection(false);
+  driver_station_proto->set_mode(RobotMode::TELEOP);
 
   c2017::QueueManager::GetInstance().vision_status_queue().WriteMessage(vision_status);
+  c2017::QueueManager::GetInstance().driver_station_queue()->WriteMessage(driver_station_proto);
 
   c2017::lights::Lights lights;
   aos::time::EnableMockTime(aos::monotonic_clock::epoch());
@@ -276,9 +279,9 @@ TEST(LightColors, NoDsQueue) {
   lights.Update();
   auto lights_reading = c2017::QueueManager::GetInstance().lights_output_queue().ReadLastMessage();
   if (lights_reading) {
-    EXPECT_TRUE(lights_reading.value()->red());
+    EXPECT_FALSE(lights_reading.value()->red());
     EXPECT_FALSE(lights_reading.value()->green());
-    EXPECT_FALSE(lights_reading.value()->blue());  // is red
+    EXPECT_TRUE(lights_reading.value()->blue());  // is blue
   } else {
     FAIL();
   }

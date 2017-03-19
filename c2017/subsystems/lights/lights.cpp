@@ -104,7 +104,7 @@ void Lights::Update() {
   } else if (calibrated_) {
     light_color_ = LightColor::BLUE;
   }
-    
+
 
   if (vision_status) {
     light_color_ = FlashLights(light_color_, light_color_, !vision_status.value()->has_connection());
