@@ -8,9 +8,9 @@ namespace ports {
 
 namespace superstructure {
 
-// TODO(Kelly) figure out the correct ports for everything
 // Motor ports
-constexpr uint32_t kShooterMotor = 2;
+constexpr uint32_t kShooterMotor = 7;
+constexpr uint32_t kAccelMotor = 2;
 
 constexpr uint32_t kUpperConveyorMotor = 5;
 constexpr uint32_t kSideConveyorMotor = 4;
@@ -21,6 +21,7 @@ constexpr uint32_t kGearIntakeMotor = 6;
 
 // Sensor ports
 constexpr uint32_t kShooterEncoderA = 20, kShooterEncoderB = 21;
+constexpr uint32_t kAccelEncoderA = 18, kAccelEncoderB = 19;
 
 // Solenoid ports
 constexpr uint32_t kBallIntakeSolenoid = 7;
@@ -42,11 +43,13 @@ constexpr double kMaxVoltage = 12;
 SuperStructureInterface::SuperStructureInterface(muan::wpilib::CanWrapper* can_wrapper)
     : output_queue_(QueueManager::GetInstance().superstructure_output_queue().MakeReader()),
       shooter_motor_{ports::superstructure::kShooterMotor},
+      accel_motor_{ports::superstructure::kAccelMotor},
       upper_conveyor_motor_{ports::superstructure::kUpperConveyorMotor},
       side_conveyor_motor_{ports::superstructure::kSideConveyorMotor},
       ball_intake_motor_{ports::superstructure::kBallIntakeMotor},
       gear_intake_motor_{ports::superstructure::kGearIntakeMotor},
       shooter_encoder_{ports::superstructure::kShooterEncoderA, ports::superstructure::kShooterEncoderB},
+      accel_encoder_{ports::superstructure::kAccelEncoderA, ports::superstructure::kAccelEncoderB},
       pcm_{can_wrapper->pcm()} {
   pcm_->CreateSolenoid(ports::superstructure::kBallIntakeSolenoid);
   pcm_->CreateDoubleSolenoid(ports::superstructure::kHpGearIntakeSolenoidA,
@@ -66,9 +69,11 @@ void SuperStructureInterface::ReadSensors() {
   c2017::ground_gear_intake::GroundGearIntakeInputProto ground_gear_sensors;
 
   constexpr double kShooterRadiansPerClick = M_PI * 2 / 512.0;
+  constexpr double kAccelRadiansPerClick = M_PI * 2 / 512.0;
   constexpr double kClimberRadiansPerClick = M_PI * 2 / 512.0 / 23.6;
 
   shooter_sensors->set_shooter_encoder_position(shooter_encoder_.Get() * kShooterRadiansPerClick);
+  shooter_sensors->set_accelarator_encoder_postition(accel_encoder_.Get() * kAccelRadiansPerClick);
   climber_sensors->set_position(shooter_encoder_.Get() * kClimberRadiansPerClick);
 
   auto current_reader = QueueManager::GetInstance().pdp_status_queue().MakeReader().ReadLastMessage();
@@ -90,6 +95,10 @@ void SuperStructureInterface::WriteActuators() {
   if (outputs) {
     // Shooter motors
     shooter_motor_.Set(-muan::utils::Cap(-(*outputs)->shooter_voltage(), -ports::superstructure::kMaxVoltage,
+                                         ports::superstructure::kMaxVoltage) /
+                       12.0);
+
+    accel_motor_.Set(-muan::utils::Cap(-(*outputs)->accelarator_voltage(), -ports::superstructure::kMaxVoltage,
                                          ports::superstructure::kMaxVoltage) /
                        12.0);
 
