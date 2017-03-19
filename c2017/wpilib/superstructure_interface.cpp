@@ -21,7 +21,7 @@ constexpr uint32_t kGearIntakeMotor = 6;
 
 // Sensor ports
 constexpr uint32_t kShooterEncoderA = 20, kShooterEncoderB = 21;
-constexpr uint32_t kAccelEncoderA = 18, kAccelEncoderB = 19;
+constexpr uint32_t kAccelEncoderA = 16, kAccelEncoderB = 17;
 
 // Solenoid ports
 constexpr uint32_t kBallIntakeSolenoid = 7;
@@ -73,7 +73,7 @@ void SuperStructureInterface::ReadSensors() {
   constexpr double kClimberRadiansPerClick = M_PI * 2 / 512.0 / 23.6;
 
   shooter_sensors->set_shooter_encoder_position(shooter_encoder_.Get() * kShooterRadiansPerClick);
-  shooter_sensors->set_accelarator_encoder_postition(accel_encoder_.Get() * kAccelRadiansPerClick);
+  shooter_sensors->set_accelarator_encoder_postition(-accel_encoder_.Get() * kAccelRadiansPerClick);
   climber_sensors->set_position(shooter_encoder_.Get() * kClimberRadiansPerClick);
 
   auto current_reader = QueueManager::GetInstance().pdp_status_queue().MakeReader().ReadLastMessage();
