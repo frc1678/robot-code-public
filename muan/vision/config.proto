@@ -1,0 +1,24 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+package muan.vision;
+
+message VisionThresholds {
+  // Colors on a 0-255 scale. Each element ABC corresponds to the matching component in the desired colorspace
+  // (i.e. in HSV, A -> H, B -> S, C -> V)
+  optional uint32 a_low = 1;
+  optional uint32 b_low = 2;
+  optional uint32 c_low = 3;
+  optional uint32 a_high = 4;
+  optional uint32 b_high = 5;
+  optional uint32 c_high = 6;
+
+  enum ColorSpace {
+    Rgb = 0;
+    Hsv = 1;
+    Bgr = 2;
+  }
+
+  optional ColorSpace space = 7;
+}

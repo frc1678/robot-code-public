@@ -20,6 +20,12 @@ cc_library(
     ]
 )
 
+filegroup(
+    name = "v4l_params_file",
+    srcs = ["camera_params"],
+    visibility = ["//visibility:public"],
+)
+
 cc_library(
     name = "vision",
     srcs = ["vision.cpp"],
@@ -28,6 +34,10 @@ cc_library(
         ":sender",
         "//muan/vision:vision"
     ],
-    data = ["robot_constants.pb.text"],
-    linkopts = ["-lopencv_video", "-lopencv_highgui"]
+    data = ["robot_constants.pb.text", "thresholds.pb.text"],
+    linkopts = [
+        "-lopencv_video",
+        "-lopencv_highgui",
+    ],
+    visibility = ["//visibility:public"],
 )

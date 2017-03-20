@@ -3,6 +3,15 @@
 
 namespace muan {
 
+namespace vision {
+
+int ConversionCode(VisionThresholds::ColorSpace from, VisionThresholds::ColorSpace to) {
+  constexpr int conversion_matrix[3][3] = {
+      {139, CV_RGB2HSV, CV_RGB2BGR}, {CV_HSV2RGB, 139, CV_HSV2BGR}, {CV_BGR2RGB, CV_BGR2HSV, 139}};
+
+  return conversion_matrix[from][to];
+}
+
 double Vision::CalculateDistance(std::vector<cv::Point> points, int rows) {
   // Average together height of each point
   double angle = 0;
@@ -45,7 +54,7 @@ double Vision::CalculateSkew(std::vector<cv::Point> contour, std::vector<cv::Poi
   return (std::atan2(top.y, top.x) + std::atan2(bottom.y, bottom.x)) / 2;
 }
 
-Vision::Vision(ColorRange range, std::shared_ptr<VisionScorer> scorer, VisionConstants k) {
+Vision::Vision(VisionThresholds range, std::shared_ptr<VisionScorer> scorer, VisionConstants k) {
   range_ = range;
   scorer_ = scorer;
   constants_ = k;
@@ -62,8 +71,9 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
   retval.distance_to_target = 0;
   retval.angle_to_target = 0;
 
-  cv::cvtColor(raw, image, range_.colorspace);
-  cv::inRange(image, range_.lower_bound, range_.upper_bound, image);
+  cv::cvtColor(raw, image, ConversionCode(VisionThresholds::Bgr, range_.space()));
+  cv::inRange(image, cv::Scalar(range_.a_low(), range_.b_low(), range_.c_low()),
+              cv::Scalar(range_.a_high(), range_.b_high(), range_.c_high()), image);
   scorer_->Morph(image);
 
   std::vector<std::vector<cv::Point>> contours;
@@ -137,5 +147,11 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
   retval.image_canvas = image_canvas;
   return retval;
 }
+
+void Vision::set_constants(VisionConstants constants) { constants_ = constants; }
+
+void Vision::set_range(VisionThresholds range) { range_ = range; }
+
+}  // namespace vision
 
 }  // namespace muan

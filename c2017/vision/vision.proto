@@ -28,12 +28,6 @@ message VisionGoal {
 }
 
 message VisionConstants {
-  required uint32 r_low = 1;  // On a scale from 0-255
-  required uint32 g_low = 2;
-  required uint32 b_low = 3;
-  required uint32 r_high = 4;
-  required uint32 g_high = 5;
-  required uint32 b_high = 6;
   required double x_camera_angle = 7;  // Left of center, in radians
   required double y_camera_angle = 8;  // Above horizontal, in radians
 }

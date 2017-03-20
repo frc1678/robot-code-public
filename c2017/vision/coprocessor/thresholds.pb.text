@@ -1,0 +1,7 @@
+a_low: 40
+b_low: 100
+c_low: 120
+a_high: 80
+b_high: 255
+c_high: 230
+space: Hsv

@@ -6,7 +6,14 @@
 #include <memory>
 #include <vector>
 
+#include "muan/vision/config.pb.h"
+
 namespace muan {
+
+namespace vision {
+
+// Return the OpenCV conversion code for converting from `from` to `to`.
+int ConversionCode(VisionThresholds::ColorSpace from, VisionThresholds::ColorSpace to);
 
 class VisionScorer {
  public:
@@ -39,17 +46,11 @@ class Vision {
     cv::Mat image_canvas;       // Display of what exactly the robot thinks it's seeing
   };
 
-  struct ColorRange {
-    // Lower end of color range
-    cv::Scalar lower_bound;
-    // Upper end of color range
-    cv::Scalar upper_bound;
-    // Colorspace used for in_range (CV_BGR2___)
-    int colorspace;
-  };
-
-  Vision(ColorRange range, std::shared_ptr<VisionScorer> scorer, VisionConstants k);
+  Vision(VisionThresholds range, std::shared_ptr<VisionScorer> scorer, VisionConstants k);
   VisionStatus Update(cv::Mat raw);
+
+  void set_constants(VisionConstants constants);
+  void set_range(VisionThresholds range);
 
  protected:
   double CalculateDistance(std::vector<cv::Point> points, int rows);
@@ -60,8 +61,10 @@ class Vision {
   VisionConstants constants_;
   // Last place the goal was
   cv::Point2f last_pos_;
-  ColorRange range_;
+  VisionThresholds range_;
 };
+
+}  // namespace vision
 
 }  // namespace muan
 

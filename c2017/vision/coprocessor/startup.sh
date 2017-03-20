@@ -13,8 +13,8 @@
 
 # This script runs before the camera is ready, so sleep until it is ready.
 sleep 30s
+cd /home/ubuntu/robot-code
 v4l2ctrl -d /dev/video$2 -l c2017/vision/coprocessor/camera_params
 echo Robot ip: $1
 echo Camera index: $2
-cd /home/ubuntu/robot-code
 ./bazel-bin/c2017/vision/coprocessor/main --robot_ip=$1 --camera_index=$2

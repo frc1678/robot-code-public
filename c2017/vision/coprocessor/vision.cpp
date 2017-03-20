@@ -8,7 +8,7 @@
 #include <iostream>
 #include "muan/vision/vision.h"
 
-#define VIDEO_OUTPUT_SCREEN 0
+#define VIDEO_OUTPUT_SCREEN 1
 #define VIDEO_OUTPUT_FILE 0
 
 namespace c2017 {
@@ -24,41 +24,43 @@ double VisionScorer2017::GetScore(double /* distance_to_target */, double /* dis
 void RunVision(int camera_index) {
   // Read from file
   VisionConstants robot_constants;
-  int file = open("c2017/vision/coprocessor/robot_constants.pb.text", O_RDONLY);
-  google::protobuf::io::FileInputStream fstream(file);
-  google::protobuf::TextFormat::Parse(&fstream, &robot_constants);
+  muan::vision::VisionThresholds thresholds;
+
+  {
+    int file = open("c2017/vision/coprocessor/robot_constants.pb.text", O_RDONLY);
+    google::protobuf::io::FileInputStream fstream(file);
+    google::protobuf::TextFormat::Parse(&fstream, &robot_constants);
+  }
+
+  {
+    int file = open("c2017/vision/coprocessor/thresholds.pb.text", O_RDONLY);
+    google::protobuf::io::FileInputStream fstream(file);
+    google::protobuf::TextFormat::Parse(&fstream, &thresholds);
+  }
 
 #if VIDEO_OUTPUT_FILE
-  cv::VideoWriter output{"output.avi", CV_FOURCC('M', 'J', 'P', 'G'), 30, cv::Size(640 * 2, 480)};
+  CvVideoWriter* writer = cvCreateVideoWriter("output.avi", -1, 30, cv::Size(640 * 2, 480), 1);
 #endif
   cv::VideoCapture cap;
   cap.open(camera_index);
-  muan::Vision::ColorRange range{cv::Scalar(robot_constants.r_low(),
-                                            robot_constants.g_low(),
-                                            robot_constants.b_low()),
-                                 cv::Scalar(robot_constants.r_high(),
-                                            robot_constants.g_high(),
-                                            robot_constants.b_high()),
-                                 CV_BGR2RGB};
 
-  muan::Vision::VisionConstants constants{1.14,  // FOV is not different per robot
-                                          0.659,
-                                          robot_constants.x_camera_angle(),
-                                          robot_constants.y_camera_angle(),
-                                          1.66,  // Field properties are
-                                          1.,    // not different per robot
-                                          0.0005};
+  muan::vision::Vision::VisionConstants constants{
+      1.14,  // FOV is not different per robot
+      0.659, robot_constants.x_camera_angle(), robot_constants.y_camera_angle(),
+      1.66,  // Field properties are
+      1.,    // not different per robot
+      0.0005};
 
-  muan::Vision vision{range, std::make_shared<VisionScorer2017>(), constants};
+  muan::vision::Vision vision{thresholds, std::make_shared<VisionScorer2017>(), constants};
   cv::Mat raw;
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   while (true) {
     cap >> raw;
     // Don't detect the bottom 1/3rd of the image. The target isn't there,
     // and there is often more noise and reflective robot parts.
-    cv::rectangle(raw, cv::Point(0, raw.rows), cv::Point(raw.cols, raw.rows*2/3),
-                  cv::Scalar(0, 0, 0), -1, 8, 0);
-    muan::Vision::VisionStatus status = vision.Update(raw);
+    cv::rectangle(raw, cv::Point(0, raw.rows), cv::Point(raw.cols, raw.rows * 2 / 3), cv::Scalar(0, 0, 0), -1,
+                  8, 0);
+    auto status = vision.Update(raw);
     c2017::vision::VisionInputProto position;
     position->set_target_found(status.target_exists);
     if (status.target_exists) {
@@ -72,13 +74,14 @@ void RunVision(int camera_index) {
         splitscreen(cv::Rect(0, 0, status.image_canvas.cols, status.image_canvas.rows)));
     raw.copyTo(splitscreen(
         cv::Rect(status.image_canvas.cols, 0, status.image_canvas.cols, status.image_canvas.rows)));
+    IplImage c_image = splitscreen;
 #endif
 #if VIDEO_OUTPUT_SCREEN
-    cv::imshow("vision", splitscreen);
+    cvShowImage("vision", &c_image);
     cv::waitKey(1);
 #endif
-#if VIDEO_OUTPUT
-    output.write(splitscreen);
+#if VIDEO_OUTPUT_FILE
+    cvWriteFrame(writer, &c_image);
 #endif
   }
 }
