@@ -39,7 +39,6 @@ class SuperStructure {
 
   bool is_shooting_ = false;
 
-  void UpdateShooter();
   void SetWpilibOutput();
 };
 

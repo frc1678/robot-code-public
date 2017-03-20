@@ -41,4 +41,6 @@ message IntakeGroupGoal {
   required bool score_hp_gear = 6;
 
   required bool agitate = 7;
+
+  required bool magazine_open = 8;
 }

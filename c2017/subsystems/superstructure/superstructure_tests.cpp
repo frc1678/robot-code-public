@@ -50,7 +50,7 @@ class SuperstructureTest : public ::testing::Test {
 TEST_F(SuperstructureTest, GroundGearIntaking) {
   climber_input_proto_->set_current(0);
   climber_input_proto_->set_position(0);
-  shooter_input_proto_->set_encoder_position(0);
+  shooter_input_proto_->set_shooter_encoder_position(0);
   ground_gear_input_proto_->set_current(0);
   magazine_input_proto_->set_has_hp_gear(false);
 
@@ -177,7 +177,6 @@ TEST_F(SuperstructureTest, SpinupShootFender) {
 
   ASSERT_TRUE(superstructure_output);
   EXPECT_NEAR(superstructure_output.value()->main_roller_voltage(), 12, 1e-4);
-  EXPECT_FALSE(superstructure_output.value()->shooter_hood_up());
   EXPECT_NEAR(superstructure_output.value()->upper_conveyor_voltage(), 12, 1e-4);
   Reset();
 }
@@ -206,7 +205,6 @@ TEST_F(SuperstructureTest, SpinupShootHopper) {
 
   ASSERT_TRUE(superstructure_output);
   EXPECT_NEAR(superstructure_output.value()->main_roller_voltage(), 12, 1e-4);
-  EXPECT_TRUE(superstructure_output.value()->shooter_hood_up());
   EXPECT_NEAR(superstructure_output.value()->upper_conveyor_voltage(), 12, 1e-4);
   Reset();
 }
@@ -306,8 +304,7 @@ TEST_F(SuperstructureTest, Brownout) {
 }
 
 TEST_F(SuperstructureTest, ThinkInsideTheBox) {
-  // Make sure that if you tell both the ball intake and the gear intake to go down, only the gear intake will
-  // move.
+  // If you tell ball and gear intake to go down, only gear intake should move.
   intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_UP);
   intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_DROP);
   ds->set_mode(RobotMode::TELEOP);

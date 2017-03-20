@@ -9,12 +9,31 @@
       <p>Auto mode:</p>
       <form action="save" id="auto">
         <input type="radio" name="auto" value="0" checked> None<br>
-        <input type="radio" name="auto" value="1"> One Gear<br>
-        <input type="radio" name="auto" value="2"> Two Gear<br>
-        <input type="radio" name="auto" value="3"> Hella KPA<br>
-        <input type="radio" name="auto" value="4"> Hella KPA + Gear<br>
-        <input type="submit" value="Update Auto">
+        <input type="radio" name="auto" value="1"> Two Gear<br>
+        <input type="radio" name="auto" value="2"> Blue Hella KPA<br>
+        <input type="radio" name="auto" value="3"> Blue Hella KPA plus gear<br>
+        <input type="radio" name="auto" value="4"> Red Hella KPA<br>
+        <input type="radio" name="auto" value="5"> Red Hella KPA plus gear<br>
+        <input type="button" value="Update Auto" onclick="sendAutoData()">
       </form>
+      <p>Don't Panic!</p>
     </center>
   </body>
+  <script>
+    var sock = new WebSocket("ws://" + document.location.host + "/save");
+
+    function getRadioCheckedValue(radio_name) {
+      var oRadio = document.forms[0].elements[radio_name];
+      for(var i = 0; i < oRadio.length; i++) {
+        if(oRadio[i].checked) {
+          return oRadio[i].value;
+        }
+      }
+      return '';
+    }
+
+    function sendAutoData() {
+      sock.send(getRadioCheckedValue("auto"));
+    }
+  </script>
 </html>

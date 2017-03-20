@@ -20,5 +20,6 @@ message WpilibOutput {
   // Shooter/Climber Group
   // shooter_voltage is also the climber_voltage, since they run together
   required double shooter_voltage = 11;
-  required double shooter_hood_up = 12; // If true, hopper shot, if false, fender
+  required double accelarator_voltage = 12;
+  required bool climber_engaged = 13; // If true, hopper shot, if false, fender
 }

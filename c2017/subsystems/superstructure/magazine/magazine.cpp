@@ -79,7 +79,7 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input, bool outputs_enab
     }
   } else {
     gear_intake_closed = true;
-    magazine_extended_ = true;
+    magazine_extended_ = false;
     gear_shutter_open = false;
     upper_voltage = 0;
     side_voltage = 0;

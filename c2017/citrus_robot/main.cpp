@@ -6,10 +6,10 @@
 namespace c2017 {
 namespace citrus_robot {
 
-CitrusRobot::CitrusRobot() :
-  throttle_{1, &c2017::QueueManager::GetInstance().throttle_status_queue()},
-  wheel_{0, &c2017::QueueManager::GetInstance().wheel_status_queue()},
-  gamepad_{2, &c2017::QueueManager::GetInstance().manipulator_status_queue()} {
+CitrusRobot::CitrusRobot()
+    : throttle_{1, &c2017::QueueManager::GetInstance().throttle_status_queue()},
+      wheel_{0, &c2017::QueueManager::GetInstance().wheel_status_queue()},
+      gamepad_{2, &c2017::QueueManager::GetInstance().manipulator_status_queue()} {
   fender_align_shoot_ = throttle_.MakeButton(1);        // Joystick Trigger
   score_hp_gear_ = throttle_.MakeButton(2);             // Joystick Button
   driver_score_ground_gear_ = throttle_.MakeButton(3);  // Throttle 3
@@ -24,11 +24,12 @@ CitrusRobot::CitrusRobot() :
   hp_load_gears_ = gamepad_.MakePov(0, muan::teleop::Pov::kNorth);                            // D-Pad up
   hp_load_balls_ = gamepad_.MakePov(0, muan::teleop::Pov::kSouth);                            // D-Pad down
   hp_load_both_ = gamepad_.MakePov(0, muan::teleop::Pov::kEast);                              // D-Pad right
+  hp_load_none_ = gamepad_.MakePov(0, muan::teleop::Pov::kWest);                              // D-Pad right
   agitate_ = gamepad_.MakeAxis(2);                                                            // Left Trigger
   climb_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::BACK));                           // Back Button
   just_spinup_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::START));                    // Start Button
   quickturn_ = wheel_.MakeButton(5);
-  toggle_distance_align_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_CLICK_IN));
+  toggle_distance_align_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_CLICK_IN));  // Left joystick
 }
 
 void CitrusRobot::Update() {
@@ -36,6 +37,13 @@ void CitrusRobot::Update() {
     lemonscript_.Start();  // Weird to call Start in a loop, but it's a setter so it's fine
   } else if (DriverStation::GetInstance().IsOperatorControl()) {
     lemonscript_.Stop();  // Weirder to do this, but it works :/
+
+    auto superstructure_status =
+        c2017::QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage();
+    if (superstructure_status) {
+      gamepad_.wpilib_joystick()->SetRumble(Joystick::kRightRumble,
+                                            superstructure_status.value()->rumble_on() ? 1 : 0);
+    }
 
     // Update joysticks
     throttle_.Update();
@@ -98,16 +106,16 @@ void CitrusRobot::SendSuperstructureMessage() {
                                                                  : intake_group::GROUND_BALL_UP);
 
   // Hp load buttons
-  if (hp_load_gears_->is_pressed()) {
+  if (hp_load_gears_->was_clicked()) {
     // Kelly - Gamepad D-Pad
     intake_group_goal_->set_hp_load_type(intake_group::HP_LOAD_GEAR);
-  } else if (hp_load_balls_->is_pressed()) {
+  } else if (hp_load_balls_->was_clicked()) {
     // Kelly - Gamepad D-Pad
     intake_group_goal_->set_hp_load_type(intake_group::HP_LOAD_BALLS);
-  } else if (hp_load_both_->is_pressed()) {
+  } else if (hp_load_both_->was_clicked()) {
     // Kelly - Gamepad D-Pad
     intake_group_goal_->set_hp_load_type(intake_group::HP_LOAD_BOTH);
-  } else {
+  } else if (hp_load_none_->was_clicked()) {
     intake_group_goal_->set_hp_load_type(intake_group::HP_LOAD_NONE);
   }
 
@@ -119,13 +127,18 @@ void CitrusRobot::SendSuperstructureMessage() {
   }
 
   shooter_group_goal_->set_should_climb(currently_climbing_);
+  intake_group_goal_->set_magazine_open(true);
 
   // Shooting buttons
   if (fender_align_shoot_->was_clicked()) {
     // Avery - Throttle Button
     shooter_group_goal_->set_position(shooter_group::Position::FENDER);
-    shooter_group_goal_->set_wheel(shooter_group::Wheel::SPINUP);
     using_vision_ = true;
+    if (vision_aligned_) {
+      shooter_group_goal_->set_wheel(shooter_group::Wheel::BOTH);
+    } else {
+      shooter_group_goal_->set_wheel(shooter_group::Wheel::SPINUP);
+    }
   } else if (just_spinup_->is_pressed()) {
     // Kelly - Gamepad Button
     shooter_group_goal_->set_position(shooter_group::Position::FENDER);
@@ -170,6 +183,12 @@ void CitrusRobot::SendDrivetrainMessage() {
   drivetrain_goal->mutable_teleop_command()->set_quick_turn(quickturn);
 
   auto vision_status = c2017::QueueManager::GetInstance().vision_status_queue().ReadLastMessage();
+  if (vision_status) {
+    vision_aligned_ = vision_status.value()->aligned();
+  } else {
+    vision_aligned_ = false;
+  }
+
   if (!using_vision_ || !vision_status || vision_status.value()->aligned()) {
     using_vision_ = false;
     c2017::QueueManager::GetInstance().drivetrain_goal_queue()->WriteMessage(drivetrain_goal);

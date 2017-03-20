@@ -17,7 +17,7 @@ class Magazine {
 
  private:
   bool has_hp_gear_ = false;
-  bool magazine_extended_ = true;
+  bool magazine_extended_ = false;
   double score_gear_ = false;
   c2017::magazine::HPIntakeGoalState hp_intake_goal_;
   c2017::magazine::UpperGoalState upper_goal_;

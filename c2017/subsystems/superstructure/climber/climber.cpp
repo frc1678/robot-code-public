@@ -4,61 +4,73 @@
 namespace c2017 {
 
 namespace climber {
-Climber::Climber()
-    : at_top_(false),
-      is_climbing_(false),
-      last_position_(0),
-      status_queue_(QueueManager::GetInstance().climber_status_queue()),
-      climber_position_watcher_(0.001, 0.25, std::numeric_limits<int>::max(), 0.005, false),
-      climber_current_watcher_(100, 0.1, std::numeric_limits<int>::max(), 0.005),
-      on_rope_(false) {}
 
-void Climber::SetGoal(const ClimberGoalProto& goal) { to_climb_ = goal->climbing(); }
+constexpr uint32_t kClimbingVoltage = 9;
+constexpr uint32_t kSlowingVoltage = 6;
+
+constexpr double kClimbingVelocity = 10;
+constexpr double kSlowingVelocity = 6;
+constexpr double kFinalVelocity = 0.5;
+
+Climber::Climber()
+    : last_position_(0),
+      status_queue_(QueueManager::GetInstance().climber_status_queue()) {}
+
+void Climber::SetGoal(const ClimberGoalProto& goal) {
+  if (goal->climbing() && current_state_ == NOTHING) {
+    current_state_ = APPROACHING;
+  } else if (!goal->climbing()) {
+    current_state_ = NOTHING;
+  }
+}
 
 ClimberOutputProto Climber::Update(const ClimberInputProto& input, bool outputs_enabled) {
-  double voltage_;
+  double voltage_ = 0.0;
+  double current_vel = (input->position() - last_position_) / 0.005;
 
   ClimberStatusProto status;
   ClimberOutputProto output;
   if (outputs_enabled) {
-    if (to_climb_) {
-      if (on_rope_) {
-        voltage_ = climber_position_watcher_.Update(12, (input->position() - last_position_));
-      } else {
-        voltage_ = climber_current_watcher_.Update(12, input->current());
-        on_rope_ = climber_current_watcher_.is_at_thresh();
-      }
-      is_climbing_ = true;
-      at_top_ = climber_position_watcher_.is_at_thresh();
-
-    } else {
-      is_climbing_ = false;
-      voltage_ = 0.0;
+    switch (current_state_) {
+      case NOTHING:
+        voltage_ = 0;
+        break;
+      case APPROACHING:
+        voltage_ = kClimbingVoltage;
+        if (current_vel > kClimbingVelocity) {
+          current_state_ = CLIMBING;
+        }
+        break;
+      case CLIMBING:
+        voltage_ = kClimbingVoltage;
+        if (current_vel < kSlowingVelocity) {
+          current_state_ = SLOWING;
+        }
+        break;
+      case SLOWING:
+        voltage_ = kSlowingVoltage;
+        if (current_vel < kFinalVelocity) {
+          current_state_ = AT_TOP;
+        }
+        break;
+      case AT_TOP:
+        voltage_ = 0;
+        break;
     }
-
-  } else {
-    voltage_ = 0.0;
-    climber_position_watcher_.Reset();
-    climber_current_watcher_.Reset();
   }
+
   last_position_ = input->position();
   output->set_voltage(voltage_);
-  status->set_currently_climbing(is_climbing_);
-  status->set_hit_top(at_top_);
-  status->set_on_rope(on_rope_);
+  status->set_observed_velocity(current_vel);
+  status->set_climber_state(current_state_);
 
   status_queue_.WriteMessage(status);
 
   return output;
 }
-void Climber::Reset() {
-  climber_position_watcher_.Reset();
-  climber_current_watcher_.Reset();
-  at_top_ = false;
-  is_climbing_ = false;
-  last_position_ = 0;
-  on_rope_ = false;
-}
+
+State Climber::current_state() const { return current_state_; }
+
 }  // namespace climber
 
 }  // namespace c2017
