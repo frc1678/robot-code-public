@@ -133,8 +133,12 @@ void CitrusRobot::SendSuperstructureMessage() {
   if (fender_align_shoot_->was_clicked()) {
     // Avery - Throttle Button
     shooter_group_goal_->set_position(shooter_group::Position::FENDER);
-    shooter_group_goal_->set_wheel(shooter_group::Wheel::SPINUP);
     using_vision_ = true;
+    if (vision_aligned_) {
+      shooter_group_goal_->set_wheel(shooter_group::Wheel::BOTH);
+    } else {
+      shooter_group_goal_->set_wheel(shooter_group::Wheel::SPINUP);
+    }
   } else if (just_spinup_->is_pressed()) {
     // Kelly - Gamepad Button
     shooter_group_goal_->set_position(shooter_group::Position::FENDER);
@@ -179,6 +183,12 @@ void CitrusRobot::SendDrivetrainMessage() {
   drivetrain_goal->mutable_teleop_command()->set_quick_turn(quickturn);
 
   auto vision_status = c2017::QueueManager::GetInstance().vision_status_queue().ReadLastMessage();
+  if (vision_status) {
+    vision_aligned_ = vision_status.value()->aligned();
+  } else {
+    vision_aligned_ = false;
+  }
+
   if (!using_vision_ || !vision_status || vision_status.value()->aligned()) {
     using_vision_ = false;
     c2017::QueueManager::GetInstance().drivetrain_goal_queue()->WriteMessage(drivetrain_goal);
