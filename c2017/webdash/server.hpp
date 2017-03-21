@@ -3,6 +3,10 @@
 
 #include "c2017/webdash/server.h"
 
+#include <memory>
+#include <utility>
+#include <string>
+
 namespace c2017 {
 namespace webdash {
 
@@ -34,7 +38,7 @@ template <class R>
 WebDashRunner::Reader<R>::Reader(R reader)
     : reader_{reader} {}
 
-}
-}
+}  // namespace webdash
+}  // namespace c2017
 
 #endif  // C2017_WEBDASH_SERVER_HPP_

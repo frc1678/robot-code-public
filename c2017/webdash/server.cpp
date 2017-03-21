@@ -8,7 +8,7 @@ WebDashQueueWrapper& WebDashQueueWrapper::GetInstance() {
   return instance;
 }
 
-WebDashQueue& WebDashQueueWrapper::webdash_queue() { return webdash_queue_; };
+WebDashQueue& WebDashQueueWrapper::webdash_queue() { return webdash_queue_; }
 
 // Dumb hack that will start to get really unwieldy as soon as we try to do
 // anything useful.
@@ -39,7 +39,8 @@ void WebDashRunner::DataRequestHandler::onDisconnect(seasocks::WebSocket *con) {
 void WebDashRunner::DataRequestHandler::onData(seasocks::WebSocket *con, const char * /*data*/) {
   std::vector<std::string> queue_entry_list;
   for (auto &queue_log : *queue_logs_) {
-    queue_entry_list.push_back("\"" + queue_log->name + "\": " + queue_log->reader->GetMessageAsJSON().value_or("{}"));
+    queue_entry_list.push_back(
+      "\"" + queue_log->name + "\": " + queue_log->reader->GetMessageAsJSON().value_or("{}"));
   }
 
   std::stringstream output_json;

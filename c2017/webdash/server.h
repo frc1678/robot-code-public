@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <memory>
+#include <vector>
+#include <string>
+#include <set>
 #include "third_party/seasocks/src/main/c/seasocks/Server.h"
 #include "third_party/seasocks/src/main/c/seasocks/PrintfLogger.h"
 #include "third_party/pbjson/pbjson.hpp"
@@ -51,6 +54,7 @@ class WebDashRunner {
   };
 
   void operator()();
+
  private:
   struct DataRequestHandler : seasocks::WebSocket::Handler {
    public:
@@ -60,13 +64,13 @@ class WebDashRunner {
     void onDisconnect(seasocks::WebSocket *con) override;
     void onData(seasocks::WebSocket *con, const char * /*data*/) override;
 
-    DataRequestHandler(std::vector<std::unique_ptr<webdash::WebDashRunner::QueueLog>> &queue_logs) : queue_logs_(&queue_logs) {}
+    explicit DataRequestHandler(std::vector<std::unique_ptr<webdash::WebDashRunner::QueueLog>> &queue_logs)
+      : queue_logs_(&queue_logs) {}
    private:
     std::vector<std::unique_ptr<webdash::WebDashRunner::QueueLog>> *queue_logs_;
   };
 
   std::vector<std::unique_ptr<QueueLog>> queue_logs_;
-
 };
 
 }  // namespace webdash
