@@ -17,6 +17,10 @@ namespace vision {
 double VisionScorer2017::GetScore(double distance_to_target, double /* distance_from_previous */,
                                   double /* skew */, double /* width */,
                                   double /* height */, double /* fullness */) {
+  // TODO This only detects the highest target. It already filters out
+  // things that aren't medium sized and bright green, so it works fine
+  // for now. It needs to be improved but it seems to be working better
+  // that what was here before.
   return 1 / distance_to_target;
 }
 
