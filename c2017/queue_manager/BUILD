@@ -10,6 +10,7 @@ cc_library(
         "//muan/teleop:joystick_queues",
         "//third_party/frc971/control_loops/drivetrain:drivetrain_lib",
         "//muan/logging:logger",
+        "//c2017/webdash:server",
         "//c2017/subsystems/superstructure/shooter:shooter_queues",
         "//c2017/subsystems/superstructure/magazine:magazine_queues",
         "//c2017/subsystems/superstructure/trigger:trigger_queues",

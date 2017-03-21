@@ -22,7 +22,10 @@ cc_library(
     deps = [
         "//third_party/seasocks:seasocks",
         "//third_party/pbjson:pbjson",
-        "//c2017/queue_manager:queue_manager"],
+        "//third_party/optional:optional",
+        "//third_party/aos/common:die",
+        "//c2017/webdash:webdash_queues",
+    ],
     linkopts = ["-lpthread"]
 )
 

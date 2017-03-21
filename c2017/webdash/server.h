@@ -6,11 +6,21 @@
 #include <memory>
 #include "third_party/seasocks/src/main/c/seasocks/Server.h"
 #include "third_party/seasocks/src/main/c/seasocks/PrintfLogger.h"
-#include "c2017/queue_manager/queue_manager.h"
 #include "third_party/pbjson/pbjson.hpp"
+#include "third_party/optional/optional.hpp"
+#include "third_party/aos/common/die.h"
+#include "c2017/webdash/queue_types.h"
 
 namespace c2017 {
 namespace webdash {
+
+class WebDashQueueWrapper {
+ public:
+  static WebDashQueueWrapper& GetInstance();
+  c2017::webdash::WebDashQueue& webdash_queue();
+ private:
+  c2017::webdash::WebDashQueue webdash_queue_;
+};
 
 class WebDashRunner {
  public:
