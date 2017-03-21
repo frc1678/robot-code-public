@@ -1,0 +1,53 @@
+<!DOCTYPE hmtl>
+
+<html>
+  <head>
+    <title>1678 WebDash</title>
+    <script src="CollapsibleLists.js"></script>
+  </head>
+  <body>
+  </body>
+  <script>
+    var datasock = new WebSocket("ws://" + document.location.host + "/data");
+
+    var has_made_list = false;
+
+    function MakeList(data) {
+      var text = "<ul class=\"collapsibleList\">";
+      for (var key in data) {
+        text += "<li>" + key + "<ul>";
+        for (var element in data[key]) {
+          text += "<li><div id=" + key + "_" + element + ">" + element + " = " + data[key][element] + "</div></li>";
+        }
+        text += "</ul></li>";
+      }
+      text += "</ul>"
+      document.body.innerHTML = text;
+      CollapsibleLists.apply();
+    }
+
+    function UpdateList(data) {
+      for (var key in data) {
+        for (var element in data[key]) {
+          document.getElementById(key + "_" + element).innerHTML = element + " = " + data[key][element];
+        }
+      }
+    }
+
+    datasock.onmessage = function(data) {
+      var json_data = JSON.parse(data.data);
+      if (!has_made_list) {
+        MakeList(json_data)
+        has_made_list = true;
+      } else {
+        UpdateList(json_data);
+      }
+    };
+
+    function ReadData() {
+      datasock.send("ping");
+    }
+
+    var intervalID = setInterval(ReadData, 100);
+  </script>
+</html>

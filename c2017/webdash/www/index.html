@@ -20,7 +20,8 @@
     </center>
   </body>
   <script>
-    var sock = new WebSocket("ws://" + document.location.host + "/save");
+    // Auto sender
+    var autosock = new WebSocket("ws://" + document.location.host + "/save");
 
     function getRadioCheckedValue(radio_name) {
       var oRadio = document.forms[0].elements[radio_name];
@@ -33,7 +34,7 @@
     }
 
     function sendAutoData() {
-      sock.send(getRadioCheckedValue("auto"));
+      autosock.send(getRadioCheckedValue("auto"));
     }
   </script>
 </html>

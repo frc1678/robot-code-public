@@ -205,6 +205,7 @@ toolchain {
     compiler_flag: "-U_FORTIFY_SOURCE"
     compiler_flag: "-D_FORTIFY_SOURCE=0"
     compiler_flag: "-fstack-protector"
+    compiler_flag: "-Wno-expansion-to-defined"
     linker_flag: "-Wl,-z,relro,-z,now"
 
     # Disable assertions
@@ -332,6 +333,7 @@ toolchain {
     compiler_flag: "-U_FORTIFY_SOURCE"
     compiler_flag: "-D_FORTIFY_SOURCE=0"
     compiler_flag: "-fstack-protector"
+    compiler_flag: "-Wno-expansion-to-defined"
     linker_flag: "-Wl,-z,relro,-z,now"
 
     # Disable assertions
@@ -457,6 +459,7 @@ toolchain {
     compiler_flag: "-U_FORTIFY_SOURCE"
     compiler_flag: "-D_FORTIFY_SOURCE=0"
     compiler_flag: "-fstack-protector"
+    compiler_flag: "-Wno-expansion-to-defined"
     linker_flag: "-Wl,-z,relro,-z,now"
 
     # Disable assertions
@@ -673,6 +676,7 @@ toolchain {
     compiler_flag: "-U_FORTIFY_SOURCE"
     compiler_flag: "-D_FORTIFY_SOURCE=0"
     compiler_flag: "-fstack-protector"
+    compiler_flag: "-Wno-expansion-to-defined"
     linker_flag: "-Wl,-z,relro,-z,now"
 
 
@@ -1134,6 +1138,7 @@ toolchain {
   compiler_flag: "-D_FORTIFY_SOURCE=0"
   compiler_flag: "-fstack-protector"
   compiler_flag: "-fPIE"
+    compiler_flag: "-Wno-expansion-to-defined"
   linker_flag: "-pie"
   linker_flag: "-Wl,-z,relro,-z,now"
 
