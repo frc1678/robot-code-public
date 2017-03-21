@@ -34,7 +34,6 @@ class ShooterController {
 
   bool at_goal_;
 
-  c2017::shooter::ShotMode shot_mode_;
   double profiled_goal_velocity_;
   double unprofiled_goal_velocity_;
   c2017::shooter::ShooterStatusProto status_;

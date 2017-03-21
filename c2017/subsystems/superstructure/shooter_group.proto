@@ -4,12 +4,6 @@ option cc_enable_arenas = true;
 
 package c2017.shooter_group;
 
-enum Position {
-  NONE = 0;
-  FENDER = 1;
-  HOPPER = 2;
-}
-
 enum Wheel {
   IDLE = 0;
   SPINUP = 1;
@@ -19,7 +13,6 @@ enum Wheel {
 
 message ShooterGroupGoal {
   required uint64 timestamp = 1;
-  required Position position = 2;
-  required Wheel wheel = 3;
-  required bool should_climb = 4;
+  required Wheel wheel = 2;
+  required bool should_climb = 3;
 }

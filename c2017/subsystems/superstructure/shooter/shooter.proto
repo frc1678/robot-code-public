@@ -29,13 +29,7 @@ message ShooterStatus {
   required double uncapped_u = 10;
 }
 
-enum ShotMode {
-  FENDER = 0;
-  HOPPER = 1;
-}
-
 message ShooterGoal {
   required uint64 timestamp = 1;
-  required ShotMode goal_mode = 2;
-  required double goal_velocity = 3; // Positive velocity = forwards
+  required double goal_velocity = 2; // Positive velocity = forwards
 }

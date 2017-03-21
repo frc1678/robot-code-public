@@ -6,7 +6,7 @@ namespace superstructure {
 
 // Constants for the shooter
 // The first value is revolutions per minute, which is then converted to radians per second
-constexpr double kFenderVelocity = 3100 * (M_PI * 2) / 60;
+constexpr double kShooterVelocity = 3100 * (M_PI * 2) / 60;
 
 SuperStructure::SuperStructure() {}
 
@@ -23,7 +23,7 @@ void SuperStructure::Update() {
 
     if (shooter_group_goal->wheel() == c2017::shooter_group::Wheel::SPINUP ||
         shooter_group_goal->wheel() == c2017::shooter_group::Wheel::BOTH) {
-      shooter_goal_->set_goal_velocity(kFenderVelocity);
+      shooter_goal_->set_goal_velocity(kShooterVelocity);
     }
 
     if (shooter_group_goal->wheel() == c2017::shooter_group::Wheel::SHOOT ||
