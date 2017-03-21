@@ -44,35 +44,66 @@ TEST_F(ClimberTest, DoNothing) {
   EXPECT_EQ(GetVoltage(), 0.0);
 }
 
+TEST_F(ClimberTest, SpinningUp) {
+  SetGoal(true);
+
+  for (double i = 0; i < 500; (i += 0.001)) {
+    Update(0, i, false, 1);
+  }
+
+  EXPECT_EQ(GetClimberState(), c2017::climber::SPIN_UP);
+  EXPECT_EQ(GetVoltage(), 12.0);
+}
+
 TEST_F(ClimberTest, Approaching) {
   SetGoal(true);
 
-  for (double i = 0; i < 500; (i = i + 0.01)) {
+  for (double i = 0; i < 500; (i += 0.001)) {
+    Update(0, i, false, 1);
+  }
+  EXPECT_EQ(GetClimberState(), c2017::climber::SPIN_UP);
+
+  for (double i = 0; i < 500; (i += 0.01)) {
     Update(0, i, false, 1);
   }
 
-
   EXPECT_EQ(GetClimberState(), c2017::climber::APPROACHING);
-  EXPECT_EQ(GetVoltage(), 9.0);
+  EXPECT_EQ(GetVoltage(), 12.0);
 }
 
 TEST_F(ClimberTest, AtTop) {
+  double carry_over = 0;
+  double offset = 0;
   SetGoal(true);
 
-  for (double i = 0; i < 500; (i = i + 0.01)) {
+  for (double i = carry_over; i < 500; (i += 0.001)) {
     Update(0, i, false, 1);
+    offset = i;
+  }
+  EXPECT_EQ(GetClimberState(), c2017::climber::SPIN_UP);
+
+  carry_over += offset;
+
+  for (double i = carry_over; i < (500 + carry_over); (i += 0.01)) {
+    Update(0, i, false, 1);
+    offset = i;
   }
   EXPECT_EQ(GetClimberState(), c2017::climber::APPROACHING);
 
-  for (int i = 0; i < 500; i += 2) {
+  carry_over += offset;
+
+  for (double i = carry_over; i < (500 + carry_over); (i += 0.002)) {
     Update(0, i, false, 1);
+    offset = i;
   }
   EXPECT_EQ(GetClimberState(), c2017::climber::CLIMBING);
 
-  for (int i = 5000; i > 0; i -= 200) {
+  carry_over += offset;
+
+  for (double i = carry_over; i < (500 + carry_over); (i += 0.0001)) {
     Update(0, i, false, 1);
   }
 
   EXPECT_EQ(GetClimberState(), c2017::climber::AT_TOP);
-  EXPECT_EQ(GetVoltage(), 0.0);
+  EXPECT_EQ(GetVoltage(), 2.0);
 }

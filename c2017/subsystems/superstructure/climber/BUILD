@@ -21,6 +21,7 @@ cc_library(
         "//c2017/queue_manager",
         "//muan/units",
         "//muan/utils:monitor",
+        "//muan/utils:history",
         "//muan/wpilib:wpilib_queues",
     ],
 )

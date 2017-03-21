@@ -6,9 +6,9 @@ package c2017.climber;
 
 enum State {
   NOTHING = 0;
-  APPROACHING = 1;
-  CLIMBING = 2;
-  SLOWING = 3;
+  SPIN_UP = 1;
+  APPROACHING = 2;
+  CLIMBING = 3;
   AT_TOP = 4;
 }
 

@@ -70,16 +70,16 @@ void SuperStructureInterface::ReadSensors() {
 
   constexpr double kShooterRadiansPerClick = M_PI * 2 / 512.0;
   constexpr double kAccelRadiansPerClick = M_PI * 2 / 512.0;
-  constexpr double kClimberRadiansPerClick = M_PI * 2 / 512.0 / 23.6;
+  constexpr double kClimberMetersPerClick = M_PI * 2 / 512.0 / 25.6 * 0.032;
 
   shooter_sensors->set_shooter_encoder_position(shooter_encoder_.Get() * kShooterRadiansPerClick);
   shooter_sensors->set_accelarator_encoder_postition(-accel_encoder_.Get() * kAccelRadiansPerClick);
-  climber_sensors->set_position(shooter_encoder_.Get() * kClimberRadiansPerClick);
+  climber_sensors->set_position(accel_encoder_.Get() * kClimberMetersPerClick);
 
   auto current_reader = QueueManager::GetInstance().pdp_status_queue().MakeReader().ReadLastMessage();
 
   if (current_reader) {
-    climber_sensors->set_current((*current_reader)->current5());
+    climber_sensors->set_current((*current_reader)->current14());
     ground_gear_sensors->set_current((*current_reader)->current11());
   }
 

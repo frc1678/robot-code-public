@@ -79,8 +79,6 @@ void Lights::Update() {
       if (climber_status_queue) {
         if (climber_status_queue.value()->climber_state() == c2017::climber::State::CLIMBING) {
           light_color_ = LightColor::PINK;
-        } else if (climber_status_queue.value()->climber_state() == c2017::climber::State::SLOWING) {
-          light_color_ = LightColor::YELLOW;
         } else if (climber_status_queue.value()->climber_state() == c2017::climber::State::AT_TOP) {
           light_color_ = LightColor::GREEN;
         }

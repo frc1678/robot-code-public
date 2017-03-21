@@ -5,20 +5,19 @@ namespace c2017 {
 
 namespace climber {
 
-constexpr uint32_t kClimbingVoltage = 9;
-constexpr uint32_t kSlowingVoltage = 6;
+constexpr double kClimbingVoltage = 12.0;
+constexpr double kTopVoltage = 2.0;
 
-constexpr double kClimbingVelocity = 10;
-constexpr double kSlowingVelocity = 6;
-constexpr double kFinalVelocity = 0.5;
+constexpr double kSpinUpVelocity = 0.42;
+constexpr double kStartClimbingVelocity = 0.35;
+constexpr double kFinalVelocity = 0.15;
 
 Climber::Climber()
-    : last_position_(0),
-      status_queue_(QueueManager::GetInstance().climber_status_queue()) {}
+    : position_history_(7), status_queue_(QueueManager::GetInstance().climber_status_queue()) {}
 
 void Climber::SetGoal(const ClimberGoalProto& goal) {
   if (goal->climbing() && current_state_ == NOTHING) {
-    current_state_ = APPROACHING;
+    current_state_ = SPIN_UP;
   } else if (!goal->climbing()) {
     current_state_ = NOTHING;
   }
@@ -26,7 +25,11 @@ void Climber::SetGoal(const ClimberGoalProto& goal) {
 
 ClimberOutputProto Climber::Update(const ClimberInputProto& input, bool outputs_enabled) {
   double voltage_ = 0.0;
-  double current_vel = (input->position() - last_position_) / 0.005;
+  position_history_.Update(input->position());
+  // Get the average rate of change over the range of recorded history by finding change divided by time
+  double current_vel =
+      (position_history_.GoBack(0) - position_history_.GoBack(position_history_.num_samples() - 1)) /
+      (0.005 * position_history_.num_samples());
 
   ClimberStatusProto status;
   ClimberOutputProto output;
@@ -35,31 +38,30 @@ ClimberOutputProto Climber::Update(const ClimberInputProto& input, bool outputs_
       case NOTHING:
         voltage_ = 0;
         break;
+      case SPIN_UP:
+        voltage_ = kClimbingVoltage;
+        if (current_vel > kSpinUpVelocity) {
+          current_state_ = APPROACHING;
+        }
+        break;
       case APPROACHING:
         voltage_ = kClimbingVoltage;
-        if (current_vel > kClimbingVelocity) {
+        if (current_vel < kStartClimbingVelocity) {
           current_state_ = CLIMBING;
         }
         break;
       case CLIMBING:
         voltage_ = kClimbingVoltage;
-        if (current_vel < kSlowingVelocity) {
-          current_state_ = SLOWING;
-        }
-        break;
-      case SLOWING:
-        voltage_ = kSlowingVoltage;
         if (current_vel < kFinalVelocity) {
           current_state_ = AT_TOP;
         }
         break;
       case AT_TOP:
-        voltage_ = 0;
+        voltage_ = kTopVoltage;
         break;
     }
   }
 
-  last_position_ = input->position();
   output->set_voltage(voltage_);
   status->set_observed_velocity(current_vel);
   status->set_climber_state(current_state_);

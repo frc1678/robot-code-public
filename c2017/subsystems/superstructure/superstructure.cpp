@@ -179,7 +179,7 @@ void SuperStructure::SetWpilibOutput() {
     wpilib_output->set_climber_engaged(climber_goal_->climbing());
 
     if (climber_goal_->climbing()) {
-      wpilib_output->set_accelarator_voltage(climber_output->voltage());
+      wpilib_output->set_accelarator_voltage(-climber_output->voltage());
       wpilib_output->set_shooter_voltage(0.0);;
     } else {
       wpilib_output->set_shooter_voltage(shooter_output->shooter_voltage());
