@@ -17,9 +17,6 @@ void QueueManager::StartLogging() {
   logger_.AddQueue("wpilib_output", &superstructure_output_queue_);
   logger_.AddQueue("superstructure_status", &superstructure_status_queue_);
 
-  logger_.AddQueue("trigger_input", &trigger_input_queue_);
-  logger_.AddQueue("trigger_status", &trigger_status_queue_);
-
   logger_.AddQueue("shooter_input", &shooter_input_queue_);
   logger_.AddQueue("shooter_status", &shooter_status_queue_);
 
@@ -58,9 +55,6 @@ void QueueManager::StartLogging() {
 
   webdash_.AddQueue("wpilib_output", &superstructure_output_queue_);
   webdash_.AddQueue("superstructure_status", &superstructure_status_queue_);
-
-  webdash_.AddQueue("trigger_input", &trigger_input_queue_);
-  webdash_.AddQueue("trigger_status", &trigger_status_queue_);
 
   webdash_.AddQueue("shooter_input", &shooter_input_queue_);
   webdash_.AddQueue("shooter_status", &shooter_status_queue_);
@@ -129,11 +123,6 @@ c2017::wpilib::WpilibOutputQueue& QueueManager::superstructure_output_queue() {
 c2017::superstructure::SuperstructureStatusQueue& QueueManager::superstructure_status_queue() {
   return superstructure_status_queue_;
 }
-
-// Trigger Queues
-c2017::trigger::TriggerInputQueue& QueueManager::trigger_input_queue() { return trigger_input_queue_; }
-
-c2017::trigger::TriggerStatusQueue& QueueManager::trigger_status_queue() { return trigger_status_queue_; }
 
 // Shooter
 c2017::shooter::ShooterInputQueue& QueueManager::shooter_input_queue() { return shooter_input_queue_; }
@@ -209,9 +198,6 @@ void QueueManager::Reset() {
   drivetrain_status_queue_.Reset();
 
   superstructure_output_queue_.Reset();
-
-  trigger_input_queue_.Reset();
-  trigger_status_queue_.Reset();
 
   shooter_input_queue_.Reset();
   shooter_status_queue_.Reset();

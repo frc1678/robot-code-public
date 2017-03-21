@@ -15,7 +15,6 @@
 
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
 #include "c2017/subsystems/superstructure/ground_ball_intake/queue_types.h"
-#include "c2017/subsystems/superstructure/trigger/queue_types.h"
 #include "c2017/subsystems/superstructure/shooter/queue_types.h"
 #include "c2017/subsystems/superstructure/magazine/queue_types.h"
 #include "c2017/subsystems/superstructure/ground_gear_intake/queue_types.h"
@@ -54,9 +53,6 @@ class QueueManager {
 
   c2017::wpilib::WpilibOutputQueue& superstructure_output_queue();
   c2017::superstructure::SuperstructureStatusQueue& superstructure_status_queue();
-
-  c2017::trigger::TriggerInputQueue& trigger_input_queue();
-  c2017::trigger::TriggerStatusQueue& trigger_status_queue();
 
   c2017::ground_ball_intake::GroundBallIntakeStatusQueue& ground_ball_intake_status_queue();
 
@@ -110,9 +106,6 @@ class QueueManager {
 
   c2017::shooter::ShooterInputQueue shooter_input_queue_;
   c2017::shooter::ShooterStatusQueue shooter_status_queue_;
-
-  c2017::trigger::TriggerInputQueue trigger_input_queue_;
-  c2017::trigger::TriggerStatusQueue trigger_status_queue_;
 
   c2017::magazine::MagazineInputQueue magazine_input_queue_;
   c2017::magazine::MagazineStatusQueue magazine_status_queue_;
