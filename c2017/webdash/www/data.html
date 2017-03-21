@@ -13,7 +13,7 @@
     var has_made_list = false;
 
     function MakeList(data) {
-      var text = "<ul class=\"collapsibleList\">";
+      var text = "Click on any item to show all fields:<br/><ul class=\"collapsibleList\">";
       for (var key in data) {
         text += "<li>" + key + "<ul>";
         for (var element in data[key]) {
