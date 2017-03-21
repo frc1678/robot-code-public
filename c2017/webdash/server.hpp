@@ -22,10 +22,8 @@ template <class R>
 std::experimental::optional<std::string> WebDashRunner::Reader<R>::GetMessageAsJSON() {
   auto message = reader_.ReadLastMessage();
   if (message) {
-    //TODO(Wesley) this bullshit
     std::string output;
     pbjson::pb2json(message.value().get(), output);
-
     return output;
   } else {
     return std::experimental::nullopt;
