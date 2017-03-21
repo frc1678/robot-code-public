@@ -64,10 +64,11 @@ class WebDashRunner {
     void onDisconnect(seasocks::WebSocket *con) override;
     void onData(seasocks::WebSocket *con, const char * /*data*/) override;
 
-    explicit DataRequestHandler(std::vector<std::unique_ptr<webdash::WebDashRunner::QueueLog>> &queue_logs)
+    explicit DataRequestHandler(
+        const std::vector<std::unique_ptr<webdash::WebDashRunner::QueueLog>> &queue_logs)
       : queue_logs_(&queue_logs) {}
    private:
-    std::vector<std::unique_ptr<webdash::WebDashRunner::QueueLog>> *queue_logs_;
+    const std::vector<std::unique_ptr<webdash::WebDashRunner::QueueLog>> *queue_logs_;
   };
 
   std::vector<std::unique_ptr<QueueLog>> queue_logs_;
