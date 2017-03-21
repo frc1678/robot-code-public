@@ -39,13 +39,13 @@ void WebDashRunner::DataRequestHandler::onDisconnect(seasocks::WebSocket *con) {
 void WebDashRunner::DataRequestHandler::onData(seasocks::WebSocket *con, const char * /*data*/) {
   std::vector<std::string> queue_entry_list;
   for (auto &queue_log : *queue_logs_) {
-    queue_entry_list.push_back("\"" + queue_log->name + "\": " + queue_log->reader->GetMessageAsJSON().value_or("{}")); // sorry
+    queue_entry_list.push_back("\"" + queue_log->name + "\": " + queue_log->reader->GetMessageAsJSON().value_or("{}"));
   }
 
   std::stringstream output_json;
   output_json << "{\n";
   for (size_t i = 0; i < queue_entry_list.size(); ++i) {
-    if(i != 0) {
+    if (i != 0) {
       output_json << ",";
     }
     output_json << queue_entry_list[i];
