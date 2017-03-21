@@ -205,7 +205,6 @@ toolchain {
     compiler_flag: "-U_FORTIFY_SOURCE"
     compiler_flag: "-D_FORTIFY_SOURCE=0"
     compiler_flag: "-fstack-protector"
-    compiler_flag: "-Wno-expansion-to-defined"
     linker_flag: "-Wl,-z,relro,-z,now"
 
     # Disable assertions
@@ -333,7 +332,6 @@ toolchain {
     compiler_flag: "-U_FORTIFY_SOURCE"
     compiler_flag: "-D_FORTIFY_SOURCE=0"
     compiler_flag: "-fstack-protector"
-    compiler_flag: "-Wno-expansion-to-defined"
     linker_flag: "-Wl,-z,relro,-z,now"
 
     # Disable assertions
@@ -648,6 +646,8 @@ toolchain {
   # Gold linker only? Can we enable this by default?
   # linker_flag: "-Wl,--warn-execstack"
   # linker_flag: "-Wl,--detect-odr-violations"
+
+  compiler_flag: "-Wno-expansion-to-defined"
 
   compilation_mode_flags {
     mode: DBG
@@ -1019,6 +1019,8 @@ toolchain {
 
   linker_flag: "-lstdc++"
   linker_flag: "-B/usr/bin/"
+
+  compiler_flag: "-Wno-expansion-to-defined"
 
   feature {
     name: "opt"
