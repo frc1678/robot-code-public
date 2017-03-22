@@ -172,7 +172,8 @@ void DefaultSubmessageToJson(const google::protobuf::Descriptor* descriptor, std
   serialize << "}";
 }
 
-void SubmessageToJson(const google::protobuf::Message& message, const google::protobuf::Reflection* reflection,
+void SubmessageToJson(const google::protobuf::Message& message,
+                      const google::protobuf::Reflection* reflection,
                       const google::protobuf::Descriptor* descriptor, std::ostream& serialize) {
   serialize << "{";
   for (int i = 0; i < descriptor->field_count(); i++) {
