@@ -9,7 +9,6 @@
 #include <set>
 #include "third_party/seasocks/src/main/c/seasocks/Server.h"
 #include "third_party/seasocks/src/main/c/seasocks/PrintfLogger.h"
-#include "third_party/pbjson/pbjson.hpp"
 #include "third_party/optional/optional.hpp"
 #include "third_party/aos/common/die.h"
 #include "c2017/webdash/queue_types.h"

@@ -647,8 +647,6 @@ toolchain {
   # linker_flag: "-Wl,--warn-execstack"
   # linker_flag: "-Wl,--detect-odr-violations"
 
-  compiler_flag: "-Wno-expansion-to-defined"
-
   compilation_mode_flags {
     mode: DBG
     # Enable debug symbols.
@@ -1019,8 +1017,6 @@ toolchain {
 
   linker_flag: "-lstdc++"
   linker_flag: "-B/usr/bin/"
-
-  compiler_flag: "-Wno-expansion-to-defined"
 
   feature {
     name: "opt"

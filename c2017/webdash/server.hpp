@@ -28,7 +28,6 @@ std::experimental::optional<std::string> WebDashRunner::Reader<R>::GetMessageAsJ
   auto message = reader_.ReadLastMessage();
   if (message) {
     std::stringstream output;
-    //pbjson::pb2json(message.value().get(), output);
     muan::util::ProtoToJson(*message.value().get(), output);
     return output.str();
   } else {
