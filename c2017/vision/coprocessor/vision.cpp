@@ -8,7 +8,7 @@
 #include <iostream>
 #include "muan/vision/vision.h"
 
-#define VIDEO_OUTPUT_SCREEN 1
+#define VIDEO_OUTPUT_SCREEN 0
 #define VIDEO_OUTPUT_FILE 0
 
 namespace c2017 {
