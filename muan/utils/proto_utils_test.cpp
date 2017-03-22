@@ -96,3 +96,18 @@ TEST(ProtoUtils, OneOf) {
     EXPECT_EQ(ss.str(), "0,test");
   }
 }
+
+TEST(ProtoUtils, ProtoToJson) {
+  TestProto p;
+  p.set_test_string("Citrus Circuits");
+  p.set_test_uint(1678);
+  p.mutable_sub_message()->set_id(100);
+  p.mutable_sub_message()->set_num(3.14159);
+  p.set_is_sane(false);
+
+  {
+    std::ostringstream ss;
+    muan::util::ProtoToJson(p, ss);
+    ASSERT_EQ(ss.str(), "{\"testString\":\"Citrus Circuits\",\"testUint\":1678,\"subMessage\":{\"id\":100,\"num\":3.14159},\"isSane\":0}");
+  }
+}

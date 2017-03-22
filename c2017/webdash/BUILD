@@ -22,6 +22,7 @@ cc_library(
     deps = [
         "//third_party/seasocks:seasocks",
         "//third_party/pbjson:pbjson",
+        "//muan/utils:proto_utils",
         "//third_party/optional:optional",
         "//third_party/aos/common:die",
         "//c2017/webdash:webdash_queues",
