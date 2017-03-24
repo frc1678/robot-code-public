@@ -6,7 +6,7 @@ namespace superstructure {
 
 // Constants for the shooter
 // The first value is revolutions per minute, which is then converted to radians per second
-constexpr double kFenderVelocity = 2850 * (M_PI * 2) / 60;
+constexpr double kFenderVelocity = 2950 * (M_PI * 2) / 60;
 
 SuperStructure::SuperStructure() {}
 
