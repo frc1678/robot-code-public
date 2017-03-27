@@ -105,32 +105,12 @@ void CitrusRobot::SendSuperstructureMessage() {
   intake_group_goal_->set_ground_ball_position(ball_intake_down_ ? intake_group::GROUND_BALL_DOWN
                                                                  : intake_group::GROUND_BALL_UP);
 
-<<<<<<< HEAD
-=======
-  // Hp load buttons
-  if (hp_load_gears_->was_clicked()) {
-    // Kelly - Gamepad D-Pad
-    intake_group_goal_->set_hp_load_type(intake_group::HP_LOAD_GEAR);
-  } else if (hp_load_both_->was_clicked()) {
-    // Kelly - Gamepad D-Pad
-    intake_group_goal_->set_hp_load_type(intake_group::HP_LOAD_BOTH);
-  } else if (hp_load_none_->was_clicked()) {
-    intake_group_goal_->set_hp_load_type(intake_group::HP_LOAD_NONE);
-  }
-
-  intake_group_goal_->set_score_hp_gear(score_hp_gear_->is_pressed());
-
->>>>>>> 7bbe1961015b4dce206503b0b98e7192c94f9fb3
-  if (climb_->was_clicked()) {
+ if (climb_->was_clicked()) {
     // Kelly - Gamepad Button
     currently_climbing_ = !currently_climbing_;
   }
 
   shooter_group_goal_->set_should_climb(currently_climbing_);
-<<<<<<< HEAD
-  // intake_group_goal_->set_magazine_open(true);
-=======
->>>>>>> 7bbe1961015b4dce206503b0b98e7192c94f9fb3
 
   // Shooting buttons
   if (align_shoot_->was_clicked()) {
