@@ -6,7 +6,7 @@ namespace superstructure {
 
 // Constants for the shooter
 // The first value is revolutions per minute, which is then converted to radians per second
-constexpr double kFenderVelocity = 3100 * (M_PI * 2) / 60;
+constexpr double kFenderVelocity = 2950 * (M_PI * 2) / 60;
 
 SuperStructure::SuperStructure() {}
 
@@ -92,6 +92,7 @@ void SuperStructure::Update() {
         break;
       case intake_group::GROUND_BALL_IN:
         ground_ball_intake_goal->set_run_intake(c2017::ground_ball_intake::INTAKE);
+        magazine_goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_BACKWARD);
         break;
       case intake_group::GROUND_BALL_OUT:
         ground_ball_intake_goal->set_run_intake(c2017::ground_ball_intake::OUTTAKE);

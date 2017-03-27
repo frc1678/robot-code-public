@@ -153,62 +153,6 @@ TEST_F(SuperstructureTest, ClimberTest) {
   Reset();
 }
 
-TEST_F(SuperstructureTest, SpinupShootFender) {
-  ds->set_mode(RobotMode::TELEOP);
-  shooter_status_proto_->set_at_goal(true);
-  shooter_status_proto_->set_currently_running(true);
-  intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_DOWN);
-  intake_group_goal_proto_->set_hp_load_type(intake_group::HP_LOAD_NONE);
-  intake_group_goal_proto_->set_ground_ball_rollers(intake_group::GROUND_BALL_IN);
-  intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_NONE);
-  shooter_group_goal_proto_->set_wheel(shooter_group::BOTH);
-  shooter_group_goal_proto_->set_position(shooter_group::FENDER);
-
-  WriteQueues();
-
-  superstructure.Update();
-
-  auto superstructure_status = QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage();
-
-  ASSERT_TRUE(superstructure_status);
-  EXPECT_TRUE(superstructure_status.value()->shooting());
-
-  auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
-
-  ASSERT_TRUE(superstructure_output);
-  EXPECT_NEAR(superstructure_output.value()->main_roller_voltage(), 12, 1e-4);
-  EXPECT_NEAR(superstructure_output.value()->upper_conveyor_voltage(), 12, 1e-4);
-  Reset();
-}
-
-TEST_F(SuperstructureTest, SpinupShootHopper) {
-  ds->set_mode(RobotMode::TELEOP);
-  shooter_status_proto_->set_at_goal(true);
-  shooter_status_proto_->set_currently_running(true);
-  intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_DOWN);
-  intake_group_goal_proto_->set_hp_load_type(intake_group::HP_LOAD_NONE);
-  intake_group_goal_proto_->set_ground_ball_rollers(intake_group::GROUND_BALL_IN);
-  intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_NONE);
-  shooter_group_goal_proto_->set_wheel(shooter_group::BOTH);
-  shooter_group_goal_proto_->set_position(shooter_group::HOPPER);
-
-  WriteQueues();
-
-  superstructure.Update();
-
-  auto superstructure_status = QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage();
-
-  ASSERT_TRUE(superstructure_status);
-  EXPECT_TRUE(superstructure_status.value()->shooting());
-
-  auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
-
-  ASSERT_TRUE(superstructure_output);
-  EXPECT_NEAR(superstructure_output.value()->main_roller_voltage(), 12, 1e-4);
-  EXPECT_NEAR(superstructure_output.value()->upper_conveyor_voltage(), 12, 1e-4);
-  Reset();
-}
-
 TEST_F(SuperstructureTest, HPGearScoring) {
   ds->set_mode(RobotMode::TELEOP);
   shooter_status_proto_->set_at_goal(true);
