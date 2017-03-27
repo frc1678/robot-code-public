@@ -16,44 +16,6 @@ void SuperStructure::Update() {
   auto maybe_shooter_group_goal = QueueManager::GetInstance().shooter_group_goal_queue().ReadLastMessage();
   auto maybe_shooter_status = QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
 
-  if (maybe_shooter_group_goal && maybe_shooter_status) {
-    // MUST call spinup before you call shoot
-    auto shooter_group_goal = maybe_shooter_group_goal.value();
-    auto shooter_status = maybe_shooter_status.value();
-
-    if (shooter_group_goal->wheel() == c2017::shooter_group::Wheel::SPINUP ||
-        shooter_group_goal->wheel() == c2017::shooter_group::Wheel::BOTH) {
-      shooter_goal_->set_goal_velocity(kFenderVelocity);
-    }
-
-    if (shooter_group_goal->wheel() == c2017::shooter_group::Wheel::SHOOT ||
-        shooter_group_goal->wheel() == c2017::shooter_group::Wheel::BOTH) {
-      if (shooter_status->at_goal() && shooter_status->currently_running()) {
-        magazine_goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_PULL_IN);
-        magazine_goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_FORWARD);
-        magazine_goal->set_lower_goal(c2017::magazine::LowerGoalState::LOWER_FORWARD);
-        is_shooting_ = true;
-      } else {  // Shooter not at speed
-        is_shooting_ = false;
-        magazine_goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
-      }
-    }
-
-    if (shooter_group_goal->wheel() == c2017::shooter_group::Wheel::IDLE) {
-      magazine_goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
-      magazine_goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
-      magazine_goal->set_lower_goal(c2017::magazine::LowerGoalState::LOWER_IDLE);
-      is_shooting_ = false;
-      shooter_goal_->set_goal_velocity(0.0);
-    }
-
-    superstructure_status_proto_->set_shooting(is_shooting_);
-
-    // Climbing!
-    superstructure_status_proto_->set_climbing(shooter_group_goal->should_climb());
-    climber_goal_->set_climbing(shooter_group_goal->should_climb());
-  }
-
   // Reading the group goal queues
   auto maybe_intake_group_goal = QueueManager::GetInstance().intake_group_goal_queue().ReadLastMessage();
 
@@ -131,6 +93,50 @@ void SuperStructure::Update() {
       ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::RISE);
     } else {
       magazine_goal->set_score_gear(false);
+    }
+  }
+
+  if (maybe_shooter_group_goal && maybe_shooter_status) {
+    // MUST call spinup before you call shoot
+    auto shooter_group_goal = maybe_shooter_group_goal.value();
+    auto shooter_status = maybe_shooter_status.value();
+
+    if (shooter_group_goal->wheel() == c2017::shooter_group::Wheel::SPINUP ||
+        shooter_group_goal->wheel() == c2017::shooter_group::Wheel::BOTH) {
+      shooter_goal_->set_goal_velocity(kFenderVelocity);
+    }
+
+    if (shooter_group_goal->wheel() == c2017::shooter_group::Wheel::SHOOT ||
+        shooter_group_goal->wheel() == c2017::shooter_group::Wheel::BOTH) {
+      if (shooter_status->at_goal() && shooter_status->currently_running()) {
+        magazine_goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_PULL_IN);
+        magazine_goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_FORWARD);
+        magazine_goal->set_lower_goal(c2017::magazine::LowerGoalState::LOWER_FORWARD);
+        is_shooting_ = true;
+      } else {  // Shooter not at speed
+        is_shooting_ = false;
+        magazine_goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
+      }
+    }
+
+    if (shooter_group_goal->wheel() == c2017::shooter_group::Wheel::IDLE) {
+      magazine_goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
+      magazine_goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
+      magazine_goal->set_lower_goal(c2017::magazine::LowerGoalState::LOWER_IDLE);
+      is_shooting_ = false;
+      shooter_goal_->set_goal_velocity(0.0);
+    }
+
+    superstructure_status_proto_->set_shooting(is_shooting_);
+
+    // Climbing!
+    if (shooter_group_goal->should_climb()) {
+      superstructure_status_proto_->set_climbing(true);
+      climber_goal_->set_climbing(true);
+      ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::SCORE);
+    } else {
+      superstructure_status_proto_->set_climbing(false);
+      climber_goal_->set_climbing(false);
     }
   }
 
