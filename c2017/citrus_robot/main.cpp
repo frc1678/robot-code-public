@@ -22,7 +22,8 @@ CitrusRobot::CitrusRobot()
   just_shoot_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::Y_BUTTON));                  // Button Y
   stop_shooting_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_BUMPER));            // Left bumper
   hp_load_gears_ = gamepad_.MakePov(0, muan::teleop::Pov::kNorth);                            // D-Pad up
-  hp_load_balls_ = gamepad_.MakePov(0, muan::teleop::Pov::kSouth);                            // D-Pad down
+  // hp_load_balls_ = gamepad_.MakePov(0, muan::teleop::Pov::kSouth);                         // D-Pad down
+  toggle_magazine_ = gamepad_.MakePov(0, muan::teleop::Pov::kSouth);
   hp_load_both_ = gamepad_.MakePov(0, muan::teleop::Pov::kEast);                              // D-Pad right
   hp_load_none_ = gamepad_.MakePov(0, muan::teleop::Pov::kWest);                              // D-Pad right
   agitate_ = gamepad_.MakeAxis(2);                                                            // Left Trigger
@@ -87,6 +88,10 @@ void CitrusRobot::SendSuperstructureMessage() {
     intake_group_goal_->set_ground_ball_rollers(intake_group::GROUND_BALL_NONE);
   }
 
+  // Toggle the magazine
+  magazine_out_ = magazine_out_ != toggle_magazine_->was_clicked();
+  intake_group_goal_->set_magazine_open(magazine_out_);
+
   intake_group_goal_->set_agitate(agitate_->is_pressed());
 
   if (gear_intake_down_->was_clicked()) {
@@ -109,7 +114,7 @@ void CitrusRobot::SendSuperstructureMessage() {
   if (hp_load_gears_->was_clicked()) {
     // Kelly - Gamepad D-Pad
     intake_group_goal_->set_hp_load_type(intake_group::HP_LOAD_GEAR);
-  } else if (hp_load_balls_->was_clicked()) {
+  } else if (/*hp_load_balls_->was_clicked()*/ false) {
     // Kelly - Gamepad D-Pad
     intake_group_goal_->set_hp_load_type(intake_group::HP_LOAD_BALLS);
   } else if (hp_load_both_->was_clicked()) {
@@ -127,7 +132,7 @@ void CitrusRobot::SendSuperstructureMessage() {
   }
 
   shooter_group_goal_->set_should_climb(currently_climbing_);
-  intake_group_goal_->set_magazine_open(true);
+  // intake_group_goal_->set_magazine_open(true);
 
   // Shooting buttons
   if (fender_align_shoot_->was_clicked()) {

@@ -1,0 +1,29 @@
+HoldPosition()
+
+include {
+  "c2017/queue_manager/queue_manager.h"
+}
+
+global {
+  frc971::control_loops::drivetrain::GoalProto goal_;
+}
+
+init {
+  double left_offset = 0, right_offset = 0;
+  auto maybe_status = c2017::QueueManager::GetInstance().drivetrain_status_queue()->MakeReader().ReadLastMessage();
+  if (maybe_status) {
+    auto status = maybe_status.value();
+    left_offset = status->estimated_left_position();
+    right_offset = status->estimated_right_position();
+  }
+
+  // Don't set trapezoidal motion constraints, because we don't actually want to use a profile.
+  goal_->mutable_distance_command()->set_left_goal(left_offset);
+  goal_->mutable_distance_command()->set_right_goal(right_offset);
+  return false;
+}
+
+periodic {
+  c2017::QueueManager::GetInstance().drivetrain_goal_queue()->WriteMessage(goal_);
+  return false;
+}

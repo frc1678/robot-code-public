@@ -3,35 +3,37 @@ DefaultRobot
 SpinupShooter
 LiteralDrive: -0.38, 0.0, false, false, 2.0, 3.4, 3.0, 4.0
 LiteralDrive: -1.3, -0.67, false, false, 2.0, 3.4, 3.0, 4.0
-LiteralDrive: -0.64, -0.12, false, false, 2.0, 3.4, 3.0, 4.0
+LiteralDrive: -0.65, -0.12, false, false, 2.0, 3.4, 3.0, 4.0
 OpenMagazine
 Wait: 0.5
 VisionAlign: false
-TeleopDrive: 0.0, 0.0, false
-StartShoot
-Wait: 2.0
-CloseMagazine
-Wait: 0.7
-OpenMagazine
-Wait: 0.7
-CloseMagazine
-Wait: 0.7
-OpenMagazine
-Wait: 0.7
-CloseMagazine
-Wait: 0.7
-OpenMagazine
-Wait: 0.7
-CloseMagazine
-Wait: 0.7
-OpenMagazine
-Wait: 0.7
-CloseMagazine
-Wait: 0.7
-OpenMagazine
-Wait: 0.7
-CloseMagazine
-Wait: 0.7
-OpenMagazine
-Wait: 10
-//EndShoot
+
+COMPLETE:
+  HoldPosition
+
+  SEQUENCE:
+    StartShoot
+    Wait: 2.0
+    CloseMagazine
+    Wait: 0.7
+    OpenMagazine
+    Wait: 0.7
+    CloseMagazine
+    Wait: 0.7
+    OpenMagazine
+    Wait: 0.7
+    CloseMagazine
+    Wait: 0.7
+    OpenMagazine
+    Wait: 0.7
+    CloseMagazine
+    Wait: 0.7
+    OpenMagazine
+    Wait: 0.7
+    CloseMagazine
+    Wait: 0.7
+    OpenMagazine
+    Wait: 0.7
+    CloseMagazine
+    Wait: 0.7
+    OpenMagazine
