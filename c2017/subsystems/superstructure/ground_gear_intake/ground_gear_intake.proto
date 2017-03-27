@@ -28,6 +28,8 @@ enum State {
   CARRYING = 3;
   // Scoring a gear
   SCORING = 4;
+  // Eject a gear without getting a foul
+  OUTTAKING = 5;
 }
 
 message GroundGearIntakeStatus {
@@ -36,7 +38,6 @@ message GroundGearIntakeStatus {
   required State current_state = 3;
   required bool running = 4;
 }
-
 
 enum Goal {
   // Let the state machine progress normally
@@ -47,6 +48,8 @@ enum Goal {
   RISE = 2;
   // Score the gear if it's in CARRY
   SCORE = 3;
+  // Eject a gear without getting a foul
+  OUTTAKE = 4;
 }
 
 message GroundGearIntakeGoal {
