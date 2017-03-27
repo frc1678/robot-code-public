@@ -6,7 +6,7 @@
 #include "gflags/gflags.h"
 
 DEFINE_string(robot_ip, "10.16.78.20", "The IP address of the roborio");
-DEFINE_int32(camera_index, 1, "The index of the camera used for vision. 0 opens /dev/video0, etc.");
+DEFINE_int32(camera_index, 0, "The index of the camera used for vision. 0 opens /dev/video0, etc.");
 
 int main(int n, char** args) {
   gflags::ParseCommandLineFlags(&n, &args, true);

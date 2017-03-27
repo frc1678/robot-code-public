@@ -15,54 +15,47 @@ namespace vision {
 // Return the OpenCV conversion code for converting from `from` to `to`.
 int ConversionCode(VisionThresholds::ColorSpace from, VisionThresholds::ColorSpace to);
 
-class VisionScorer {
- public:
-  virtual double GetScore(double distance_to_target,      // in meters
-                          double distance_from_previous,  // in pixels
-                          double skew,                    // of bounding box, in radians
-                          double width,                   // in pixels
-                          double height,                  // in pixels
-                          double fullness) = 0;           // area / bounding box area
+struct ContourProperties {
+  double x;         // -0.5 to 0.5. 0.5 is right of image.
+  double y;         //  -0.5 to 0.5. 0.5 is top of image.
+  double fullness;  // Area of target / area of bounding rect
+  double width;     // How much of the image's width it occupies, from 0 to 1
+  double height;    // How much of the image's height it occupies, from 0 to 1
+};
 
-  virtual void Morph(cv::Mat) {}  // Erode and dilate go in here. By default does nothing.
+struct VisionConstants {
+  double kFovX;              // Horizontal field of view, in radians
+  double kFovY;              // Vertical field of view, in radians
+  double kCameraAngleX;      // Angle of the camera to the left of the robot, radians
+  double kCameraAngleY;      // Angle of the camera above horizontal, in radians
+
+  double kMinTargetArea;  // Minumum area of a target compared with image area
+  double kMaxTargetArea;
 };
 
 class Vision {
  public:
-  struct VisionConstants {
-    double kFovX;              // Horizontal field of view, in radians
-    double kFovY;              // Vertical field of view, in radians
-    double kCameraAngleX;      // Angle of the camera to the left of the robot, radians
-    double kCameraAngleY;      // Angle of the camera above horizontal, in radians
-    double kHeightDifference;  // Height of goal above camera, in meters
-    double kFullness;          // area of target / area of bounding rect
+  Vision(VisionThresholds range, VisionConstants k);
 
-    double kMinTargetArea;  // Minumum area of a target compared with image area
-    double kMaxTargetArea;
-  };
+  // Get all potential targets within size limits
+  std::vector<ContourProperties> Update(cv::Mat raw, cv::Mat image_canvas);
 
-  struct VisionStatus {
-    bool target_exists;
-    double distance_to_target;  // Distance to target, in meters
-    double angle_to_target;     // Angle to target (too far to right is positive), in radians
-    cv::Mat image_canvas;       // Display of what exactly the robot thinks it's seeing
-  };
+  // x: -0.5 is left of image, 0.5 is right
+  // Returns angle of robot to the left of the target, in radians
+  double CalculateAngle(double x);
 
-  Vision(VisionThresholds range, std::shared_ptr<VisionScorer> scorer, VisionConstants k);
-  VisionStatus Update(cv::Mat raw);
+  // y: -0.5 is bottom of image, 0.5 is top
+  // height_difference: Height of goal above camera, in meters
+  // Returns distance in meters
+  double CalculateDistance(double y, double height_difference);
 
   void set_constants(VisionConstants constants);
   void set_range(VisionThresholds range);
 
  protected:
-  double CalculateDistance(std::vector<cv::Point> points, int rows);
-  double CalculateSkew(std::vector<cv::Point> contour, std::vector<cv::Point>* out);
-  // The formula to score the targets
-  std::shared_ptr<VisionScorer> scorer_;
   // Robot constants relavent to vision
   VisionConstants constants_;
   // Last place the goal was
-  cv::Point2f last_pos_;
   VisionThresholds range_;
 };
 

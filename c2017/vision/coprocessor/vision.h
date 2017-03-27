@@ -10,11 +10,7 @@
 namespace c2017 {
 namespace vision {
 
-class VisionScorer2017 : public muan::vision::VisionScorer {
- public:
-  double GetScore(double /* distance_to_target */, double /* distance_from_previous */, double skew,
-                  double width, double height, double fullness);
-};
+constexpr double kHeightDifferenceUpper = 1.66;
 
 void RunVision(int camera_index);
 

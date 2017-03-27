@@ -6,19 +6,6 @@
 
 #define VIDEO_OUTPUT 0
 
-class ExampleVisionScorer : public muan::vision::VisionScorer {
- public:
-  double GetScore(double distance_to_target, double distance_from_previous, double skew, double width,
-                  double height, double fullness) {
-    // Don't limit it too much if it's really far away
-    double distance_penalty = std::min(distance_from_previous, 30.0) * .08;
-    // No particular reason for this, it just works most of the time
-    double base_score = std::log(width * height) / (.1 + std::pow(fullness - .2, 2));
-    double target_score = (base_score / (1 + skew) - distance_penalty) / (1 + distance_to_target);
-    return target_score;
-  }
-};
-
 int main() {
   cv::VideoCapture cap;
   cap.open("muan/vision/example/captured.avi");
@@ -29,14 +16,12 @@ int main() {
   cv::namedWindow("vision", cv::WINDOW_AUTOSIZE);
 #endif
 
-  muan::vision::Vision::VisionConstants constants{1,       // kFovX
-                                                  1,       // kFovY
-                                                  0,       // kCameraAngleX
-                                                  0.3,     // kCameraAngleY
-                                                  1,       // kHeightDifference
-                                                  0.2,     // kFullness
-                                                  0.0005,  // kMinTargetArea
-                                                  0.09};   // kMaxTargetArea
+  muan::vision::VisionConstants constants{1,       // kFovX
+                                          1,       // kFovY
+                                          0,       // kCameraAngleX
+                                          0.3,     // kCameraAngleY
+                                          0.0005,  // kMinTargetArea
+                                          0.09};   // kMaxTargetArea
 
   muan::vision::VisionThresholds range;
   range.set_a_low(50);
@@ -45,7 +30,7 @@ int main() {
   range.set_a_high(100);
   range.set_b_high(255);
   range.set_c_high(255);
-  muan::vision::Vision vision(range, std::make_shared<ExampleVisionScorer>(), constants);
+  muan::vision::Vision vision(range, constants);
 
   while (cap.isOpened()) {
     cv::Mat raw;
@@ -53,7 +38,8 @@ int main() {
     if (raw.empty()) {  // End of data
       break;
     }
-    muan::vision::Vision::VisionStatus status = vision.Update(raw);
+    cv::Mat image_canvas = raw.clone();
+    auto targets = vision.Update(raw, image_canvas);
 
 #if VIDEO_OUTPUT
     cv::Mat splitscreen(image_canvas.rows, image_canvas.cols * 2, CV_8UC3);
@@ -61,7 +47,7 @@ int main() {
     raw.copyTo(splitscreen(cv::Rect(image_canvas.cols, 0, image_canvas.cols, image_canvas.rows)));
     output.write(splitscreen);
 #else
-    cv::imshow("vision", status.image_canvas);
+    cv::imshow("vision", image_canvas);
     cv::imshow("raw", raw);
     cv::waitKey(1);
 #endif

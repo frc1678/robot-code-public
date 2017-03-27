@@ -14,16 +14,6 @@
 namespace c2017 {
 namespace vision {
 
-double VisionScorer2017::GetScore(double distance_to_target, double /* distance_from_previous */,
-                                  double /* skew */, double /* width */,
-                                  double /* height */, double /* fullness */) {
-  // TODO(Lucas) This only detects the highest target. It already filters out
-  // things that aren't medium sized and bright green, so it works fine
-  // for now. It needs to be improved but it seems to be working better
-  // that what was here before.
-  return 1 / distance_to_target;
-}
-
 void RunVision(int camera_index) {
   // Read from file
   VisionConstants robot_constants;
@@ -47,37 +37,51 @@ void RunVision(int camera_index) {
   cv::VideoCapture cap;
   cap.open(camera_index);
 
-  muan::vision::Vision::VisionConstants constants{
+  muan::vision::VisionConstants constants{
       1.14,  // FOV is not different per robot
-      0.659, robot_constants.x_camera_angle(), robot_constants.y_camera_angle(),
-      1.66,  // Field properties are not different per robot
-      1.,
-      0.0005,
+      0.659,
+      robot_constants.x_camera_angle(),
+      robot_constants.y_camera_angle(),
+      0.0005,  // Target size is not different per robot
       0.04};
 
-  muan::vision::Vision vision{thresholds, std::make_shared<VisionScorer2017>(), constants};
+  muan::vision::Vision vision{thresholds, constants};
   cv::Mat raw;
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
   while (true) {
     cap >> raw;
     // Don't detect the bottom 1/3rd of the image. The target isn't there,
     // and there is often more noise and reflective robot parts.
-    cv::rectangle(raw, cv::Point(0, raw.rows), cv::Point(raw.cols, raw.rows * 2 / 3), cv::Scalar(0, 0, 0), -1,
-                  8, 0);
-    auto status = vision.Update(raw);
+    cv::rectangle(raw, cv::Point(0, raw.rows), cv::Point(raw.cols, raw.rows * 2 / 3),
+                  cv::Scalar(0, 0, 0), -1, 8, 0);
+    cv::Mat image_canvas = raw.clone();
+    auto targets = vision.Update(raw, image_canvas);
+
     c2017::vision::VisionInputProto position;
-    position->set_target_found(status.target_exists);
-    if (status.target_exists) {
-      position->set_distance_to_target(status.distance_to_target);
-      position->set_angle_to_target(status.angle_to_target);
+    if (targets.size() > 0) {
+      position->set_target_found(true);
+      auto best_target = targets[0];
+      for (auto target : targets) {
+        if (target.y > best_target.y) {
+          best_target = target;
+        }
+      }
+      position->set_angle_to_target(vision.CalculateAngle(best_target.x));
+      position->set_distance_to_target(vision.CalculateDistance(best_target.y,
+                                                                kHeightDifferenceUpper));
+    } else {
+      position->set_target_found(false);
     }
+
     vision_queue.WriteMessage(position);
+
 #if VIDEO_OUTPUT_FILE || VIDEO_OUTPUT_SCREEN
-    cv::Mat splitscreen(status.image_canvas.rows, status.image_canvas.cols * 2, CV_8UC3);
-    status.image_canvas.copyTo(
-        splitscreen(cv::Rect(0, 0, status.image_canvas.cols, status.image_canvas.rows)));
+    cv::Mat splitscreen(image_canvas.rows, image_canvas.cols * 2, CV_8UC3);
+    image_canvas.copyTo(
+        splitscreen(cv::Rect(0, 0, image_canvas.cols, image_canvas.rows)));
     raw.copyTo(splitscreen(
-        cv::Rect(status.image_canvas.cols, 0, status.image_canvas.cols, status.image_canvas.rows)));
+        cv::Rect(image_canvas.cols, 0, image_canvas.cols, image_canvas.rows)));
     IplImage c_image = splitscreen;
 #endif
 #if VIDEO_OUTPUT_SCREEN
