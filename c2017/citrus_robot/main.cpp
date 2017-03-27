@@ -10,7 +10,7 @@ CitrusRobot::CitrusRobot()
     : throttle_{1, &c2017::QueueManager::GetInstance().throttle_status_queue()},
       wheel_{0, &c2017::QueueManager::GetInstance().wheel_status_queue()},
       gamepad_{2, &c2017::QueueManager::GetInstance().manipulator_status_queue()} {
-  align_shoot_ = throttle_.MakeButton(1);        // Joystick Trigger
+  align_shoot_ = throttle_.MakeButton(1);               // Joystick Trigger
   driver_score_ground_gear_ = throttle_.MakeButton(3);  // Throttle 3
   quickturn_ = wheel_.MakeButton(5);                    // Wheel 5
 
@@ -105,7 +105,7 @@ void CitrusRobot::SendSuperstructureMessage() {
   intake_group_goal_->set_ground_ball_position(ball_intake_down_ ? intake_group::GROUND_BALL_DOWN
                                                                  : intake_group::GROUND_BALL_UP);
 
- if (climb_->was_clicked()) {
+  if (climb_->was_clicked()) {
     // Kelly - Gamepad Button
     currently_climbing_ = !currently_climbing_;
   }
