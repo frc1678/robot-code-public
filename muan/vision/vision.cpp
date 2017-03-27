@@ -12,11 +12,11 @@ int ConversionCode(VisionThresholds::ColorSpace from, VisionThresholds::ColorSpa
   return conversion_matrix[from][to];
 }
 
-double Vision::CalculateAngle(double x) {
+double Vision::CalculateAngle(double x) const {
   return x * constants_.kFovX + constants_.kCameraAngleX;
 }
 
-double Vision::CalculateDistance(double y, double height_difference) {
+double Vision::CalculateDistance(double y, double height_difference) const {
   double angle = y * constants_.kFovY + constants_.kCameraAngleY;
   return height_difference / std::tan(angle);
 }
@@ -26,7 +26,7 @@ Vision::Vision(VisionThresholds range, VisionConstants k) {
   constants_ = k;
 }
 
-std::vector<ContourProperties> Vision::Update(cv::Mat raw, cv::Mat image_canvas) {
+std::vector<ContourProperties> Vision::Update(cv::Mat raw, cv::Mat image_canvas) const {
   cv::Mat image;
 
   cv::cvtColor(raw, image, ConversionCode(VisionThresholds::Bgr, range_.space()));

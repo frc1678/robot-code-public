@@ -5,7 +5,7 @@
 #include <opencv2/opencv.hpp>
 #include <memory>
 #include <thread>
-#include <iostream>
+#include <vector>
 #include "muan/vision/vision.h"
 
 #define VIDEO_OUTPUT_SCREEN 0
@@ -13,6 +13,35 @@
 
 namespace c2017 {
 namespace vision {
+
+// The two parts of the vision targets are the ones with the closest angle
+// and distance values.
+VisionInputProto CalculatePosition(std::vector<muan::vision::ContourProperties> targets,
+                                   const muan::vision::Vision& vision) {
+  VisionInputProto retval;
+  retval->set_target_found(false);
+  double best_distance = 0.2;  // If calculating based on the two parts of the
+                               // target don't get within 20cm, it isn't the target.
+  for (auto target_high : targets) {
+    double angle_high = vision.CalculateAngle(target_high.x);
+    double distance_high = vision.CalculateDistance(target_high.y, kHeightUpper);
+    for (auto target_low : targets) {
+      double angle_low = vision.CalculateAngle(target_low.x);
+      double distance_low = vision.CalculateDistance(target_low.y, kHeightLower);
+      double difference_angle = angle_high - angle_low;
+      double difference_distance = distance_high - distance_low;
+      // At small angles sin(x)=x and cos(x)=1
+      double distance = std::sqrt(difference_angle * difference_angle +
+                                  difference_distance * difference_distance);
+      if (distance < best_distance) {
+        retval->set_target_found(true);
+        retval->set_angle_to_target((angle_low + angle_high) / 2);
+        retval->set_distance_to_target((distance_low + distance_high) / 2);
+      }
+    }
+  }
+  return retval;
+}
 
 void RunVision(int camera_index) {
   // Read from file
@@ -58,18 +87,9 @@ void RunVision(int camera_index) {
     cv::Mat image_canvas = raw.clone();
     auto targets = vision.Update(raw, image_canvas);
 
-    c2017::vision::VisionInputProto position;
-    if (targets.size() > 0) {
-      position->set_target_found(true);
-      auto best_target = targets[0];
-      for (auto target : targets) {
-        if (target.y > best_target.y) {
-          best_target = target;
-        }
-      }
-      position->set_angle_to_target(vision.CalculateAngle(best_target.x));
-      position->set_distance_to_target(vision.CalculateDistance(best_target.y,
-                                                                kHeightDifferenceUpper));
+    VisionInputProto position;
+    if (targets.size() > 1) {
+      position = CalculatePosition(targets, vision);
     } else {
       position->set_target_found(false);
     }

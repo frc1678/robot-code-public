@@ -38,16 +38,16 @@ class Vision {
   Vision(VisionThresholds range, VisionConstants k);
 
   // Get all potential targets within size limits
-  std::vector<ContourProperties> Update(cv::Mat raw, cv::Mat image_canvas);
+  std::vector<ContourProperties> Update(cv::Mat raw, cv::Mat image_canvas) const;
 
   // x: -0.5 is left of image, 0.5 is right
   // Returns angle of robot to the left of the target, in radians
-  double CalculateAngle(double x);
+  double CalculateAngle(double x) const;
 
   // y: -0.5 is bottom of image, 0.5 is top
   // height_difference: Height of goal above camera, in meters
   // Returns distance in meters
-  double CalculateDistance(double y, double height_difference);
+  double CalculateDistance(double y, double height_difference) const;
 
   void set_constants(VisionConstants constants);
   void set_range(VisionThresholds range);
