@@ -51,6 +51,23 @@ std::experimental::optional<T> MessageQueue<T, size>::NextMessage(uint64_t& next
 }
 
 template <typename T, uint64_t size>
+uint64_t MessageQueue<T, size>::coerce_valid_message_idx(uint64_t current_message_idx) const {
+  aos::MutexLocker locker_{&queue_lock_};
+
+  uint64_t next = current_message_idx;
+
+  if (next >= back_) {
+    next = back_;
+  }
+
+  if (next < front()) {
+    next = front();
+  }
+
+  return next;
+}
+
+template <typename T, uint64_t size>
 std::experimental::optional<T> MessageQueue<T, size>::ReadLastMessage() const {
   aos::MutexLocker locker_{&queue_lock_};
 
@@ -97,6 +114,16 @@ template <typename T, uint64_t size>
 std::experimental::optional<T> MessageQueue<T, size>::QueueReader::ReadLastMessage() {
   next_message_ = queue_.back_;
   return queue_.ReadLastMessage();
+}
+
+template <typename T, uint64_t size>
+uint64_t MessageQueue<T, size>::QueueReader::GetNextMessageIdx() const {
+  return queue_.coerce_valid_message_idx(next_message_);
+}
+
+template <typename T, uint64_t size>
+uint64_t MessageQueue<T, size>::QueueReader::GetNumMessagesSkipped() const {
+  return queue_.coerce_valid_message_idx(next_message_) - next_message_;
 }
 
 }  // namespace queues
