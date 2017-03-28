@@ -148,8 +148,11 @@ TEST_F(SuperstructureTest, ClimberTest) {
   superstructure.Update();
 
   auto superstructure_status = QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage();
+  auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
   ASSERT_TRUE(superstructure_status);
   EXPECT_TRUE(superstructure_status.value()->climbing());
+  ASSERT_TRUE(superstructure_output);
+  EXPECT_EQ(superstructure_output.value()->accelarator_voltage(), -12.0);
   Reset();
 }
 
