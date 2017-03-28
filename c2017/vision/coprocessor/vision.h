@@ -11,7 +11,9 @@
 namespace c2017 {
 namespace vision {
 
+// Distance of the upper target above the camera, in meters
 constexpr double kHeightUpper = 1.66;
+// Distance of the lower target above the camera, in meters
 constexpr double kHeightLower = 1.48;
 
 VisionInputProto CalculatePosition(std::vector<muan::vision::ContourProperties> targets,
