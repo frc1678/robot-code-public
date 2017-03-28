@@ -6,7 +6,7 @@ LiteralDrive: -1.3, -0.67, false, false, 2.0, 3.4, 3.0, 4.0
 LiteralDrive: -0.64, -0.12, false, false, 2.0, 3.4, 3.0, 4.0
 OpenMagazine
 Wait: 0.5
-VisionAlign: false
+VisionAlign: false, 0.0
 
 COMPLETE:
   HoldPosition

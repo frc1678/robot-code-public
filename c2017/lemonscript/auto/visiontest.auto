@@ -1,3 +1,2 @@
-LiteralDrive: -0.55, -0.18, false, false, 2.0, 3.4, 3.0, 4.0
-VisionAlign: false
+VisionAlign: false, 3.14
 Wait: 5.0
