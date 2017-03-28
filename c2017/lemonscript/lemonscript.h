@@ -30,8 +30,8 @@ class Lemonscript {
   void Kill();   // Stop the thread
  private:
   void UpdateAutoRoutine();
-  c2017::webdash::WebDashQueue::QueueReader webdash_reader_ =
-      c2017::webdash::WebDashQueueWrapper::GetInstance().webdash_queue().MakeReader();
+  c2017::webdash::AutoSelectionQueue::QueueReader auto_selection_reader_ =
+      c2017::webdash::WebDashQueueWrapper::GetInstance().auto_selection_queue().MakeReader();
   ::lemonscript::LemonScriptState *state_;
   ::lemonscript::LemonScriptCompiler *compiler_;
   std::vector<const ::lemonscript::AvailableCppCommandDeclaration *> decls_;

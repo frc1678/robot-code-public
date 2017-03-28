@@ -8,7 +8,9 @@ WebDashQueueWrapper& WebDashQueueWrapper::GetInstance() {
   return instance;
 }
 
-WebDashQueue& WebDashQueueWrapper::webdash_queue() { return webdash_queue_; }
+AutoSelectionQueue& WebDashQueueWrapper::auto_selection_queue() { return auto_selection_queue_; }
+
+LogNameQueue& WebDashQueueWrapper::log_name_queue() { return log_name_queue_; }
 
 // Dumb hack that will start to get really unwieldy as soon as we try to do
 // anything useful.
@@ -17,11 +19,11 @@ struct AutoChangeHandler : seasocks::WebSocket::Handler {
   void onConnect(seasocks::WebSocket * /*socket*/) override {}
 
   void onData(seasocks::WebSocket * /*socket*/, const char *data) override {
-    WebDashProto output_proto;
+    AutoSelectionProto output_proto;
     int auto_mode = std::atoi(data);
-    if (WebDash_Auto_IsValid(auto_mode)) {
-      output_proto->set_auto_mode(WebDash_Auto(auto_mode));
-      WebDashQueueWrapper::GetInstance().webdash_queue().WriteMessage(output_proto);
+    if (AutoSelection_Auto_IsValid(auto_mode)) {
+      output_proto->set_auto_mode(AutoSelection_Auto(auto_mode));
+      WebDashQueueWrapper::GetInstance().auto_selection_queue().WriteMessage(output_proto);
     }
   }
 

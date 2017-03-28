@@ -19,9 +19,9 @@ namespace webdash {
 class WebDashQueueWrapper {
  public:
   static WebDashQueueWrapper& GetInstance();
-  c2017::webdash::WebDashQueue& webdash_queue();
+  c2017::webdash::AutoSelectionQueue& auto_selection_queue();
  private:
-  c2017::webdash::WebDashQueue webdash_queue_;
+  c2017::webdash::AutoSelectionQueue auto_selection_queue_;
 };
 
 class WebDashRunner {

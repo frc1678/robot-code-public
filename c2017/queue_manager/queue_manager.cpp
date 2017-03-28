@@ -212,5 +212,4 @@ void QueueManager::Reset() {
 
   lights_output_queue_.Reset();
 }
-
 }  // namespace c2017

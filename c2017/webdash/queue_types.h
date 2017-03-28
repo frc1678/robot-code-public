@@ -9,9 +9,9 @@ namespace c2017 {
 
 namespace webdash {
 
-using WebDashProto = muan::proto::StackProto<::c2017::webdash::WebDash, 256>;
+using AutoSelectionProto = muan::proto::StackProto<::c2017::webdash::AutoSelection, 256>;
 
-using WebDashQueue = muan::queues::MessageQueue<WebDashProto, 200>;
+using AutoSelectionQueue = muan::queues::MessageQueue<AutoSelectionProto, 200>;
 
 }  // namespace webdash
 
