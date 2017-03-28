@@ -51,7 +51,6 @@ VisionInputProto CalculatePosition(std::vector<muan::vision::ContourProperties> 
       }
     }
   }
-  std::cout << retval->distance_to_target() << std::endl;
   cv::rectangle(debug_image, outline, cv::Scalar(0, 0, 255));
   return retval;
 }

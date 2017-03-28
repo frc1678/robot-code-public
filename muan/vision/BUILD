@@ -36,3 +36,13 @@ cc_proto_library(
     default_runtime = "//third_party/google/protobuf",
     visibility = ["//visibility:public"],
 )
+
+cc_test(
+    name = "vision_test",
+    srcs = ["vision_test.cpp"],
+    deps = [
+        ":vision",
+        "//third_party/google/googletest",
+    ],
+    linkopts = ["-lopencv_highgui"]
+)
