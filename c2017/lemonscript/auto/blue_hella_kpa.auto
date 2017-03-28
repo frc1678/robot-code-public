@@ -13,7 +13,7 @@ COMPLETE:
 
   SEQUENCE:
     StartShoot
-    Wait: 2.0
+    Wait: 2.75
     CloseMagazine
     Wait: 0.7
     OpenMagazine
