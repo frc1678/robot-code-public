@@ -11,7 +11,7 @@ void Lights::Update() {
   auto vision_status = QueueManager::GetInstance().vision_status_queue().ReadLastMessage();
   auto ds_status = QueueManager::GetInstance().driver_station_queue()->ReadLastMessage();
   auto ground_gear_status = QueueManager::GetInstance().ground_gear_status_queue().ReadLastMessage();
-  auto webdash_queue = QueueManager::GetInstance().webdash_queue().ReadLastMessage();
+  auto webdash_queue = c2017::webdash::WebDashQueueWrapper::GetInstance().webdash_queue().ReadLastMessage();
 
   if (!calibrated_ && gyro_status_queue) {
     light_color_ = LightColor::RED;

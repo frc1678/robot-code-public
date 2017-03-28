@@ -40,7 +40,8 @@ class ShooterController {
   double velocity_tolerance_;
   c2017::shooter::ShooterStatusQueue& shooter_status_queue_;
 
-  static constexpr double kShooterAcceleration = 3;
+  // Units are radians per second per tick
+  static constexpr double kShooterAcceleration = 0.75;
 };
 
 }  // namespace shooter

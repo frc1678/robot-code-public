@@ -36,7 +36,9 @@ class Vision {
     double kCameraAngleY;      // Angle of the camera above horizontal, in radians
     double kHeightDifference;  // Height of goal above camera, in meters
     double kFullness;          // area of target / area of bounding rect
-    double kMinTargetArea;     // Minumum area of a target compared with image area
+
+    double kMinTargetArea;  // Minumum area of a target compared with image area
+    double kMaxTargetArea;
   };
 
   struct VisionStatus {

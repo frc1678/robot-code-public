@@ -88,8 +88,6 @@ def make_gains():
     Kff = feedforwards(A_d, B_d, Q_ff)
     L = place(A_d.T, C.T, [0.05, 0.12]).T
 
-    print(L)
-
     gains = StateSpaceGains(name, dt, A_d, B_d, C, None, Q_d, R_noise, K, Kff, L)
     gains.A_c = A_c
     gains.B_c = B_c

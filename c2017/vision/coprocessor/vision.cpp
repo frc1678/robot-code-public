@@ -8,17 +8,20 @@
 #include <iostream>
 #include "muan/vision/vision.h"
 
-#define VIDEO_OUTPUT_SCREEN 1
+#define VIDEO_OUTPUT_SCREEN 0
 #define VIDEO_OUTPUT_FILE 0
 
 namespace c2017 {
 namespace vision {
 
-double VisionScorer2017::GetScore(double /* distance_to_target */, double /* distance_from_previous */,
-                                  double skew, double width, double height, double fullness) {
-  double base_score = std::log(width * height) / (1 + std::pow(fullness - 1, 2));
-  double target_score = (base_score / (1 + skew));
-  return target_score;
+double VisionScorer2017::GetScore(double distance_to_target, double /* distance_from_previous */,
+                                  double /* skew */, double /* width */,
+                                  double /* height */, double /* fullness */) {
+  // TODO(Lucas) This only detects the highest target. It already filters out
+  // things that aren't medium sized and bright green, so it works fine
+  // for now. It needs to be improved but it seems to be working better
+  // that what was here before.
+  return 1 / distance_to_target;
 }
 
 void RunVision(int camera_index) {
@@ -47,9 +50,10 @@ void RunVision(int camera_index) {
   muan::vision::Vision::VisionConstants constants{
       1.14,  // FOV is not different per robot
       0.659, robot_constants.x_camera_angle(), robot_constants.y_camera_angle(),
-      1.66,  // Field properties are
-      1.,    // not different per robot
-      0.0005};
+      1.66,  // Field properties are not different per robot
+      1.,
+      0.0005,
+      0.04};
 
   muan::vision::Vision vision{thresholds, std::make_shared<VisionScorer2017>(), constants};
   cv::Mat raw;

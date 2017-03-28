@@ -16,11 +16,14 @@
         <input type="radio" name="auto" value="5"> Red Hella KPA plus gear<br>
         <input type="button" value="Update Auto" onclick="sendAutoData()">
       </form>
+      <a href="/data.html">Live data view</a>
+      <br/>
       <p>Don't Panic!</p>
     </center>
   </body>
   <script>
-    var sock = new WebSocket("ws://" + document.location.host + "/save");
+    // Auto sender
+    var autosock = new WebSocket("ws://" + document.location.host + "/save");
 
     function getRadioCheckedValue(radio_name) {
       var oRadio = document.forms[0].elements[radio_name];
@@ -33,7 +36,7 @@
     }
 
     function sendAutoData() {
-      sock.send(getRadioCheckedValue("auto"));
+      autosock.send(getRadioCheckedValue("auto"));
     }
   </script>
 </html>

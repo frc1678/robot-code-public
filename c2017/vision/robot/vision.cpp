@@ -20,6 +20,7 @@ VisionAlignment::VisionAlignment()
 void VisionAlignment::Update() {
   auto ds = driverstation_reader_.ReadLastMessage();
   bool disabled = ds ? ((*ds)->mode() == RobotMode::DISABLED || (*ds)->mode() == RobotMode::ESTOP) : true;
+
   auto goal = QueueManager::GetInstance().vision_goal_queue().ReadLastMessage();
   if (goal) {
     should_align_ = goal.value()->should_align();
@@ -29,6 +30,10 @@ void VisionAlignment::Update() {
     use_distance_align_ = false;
   }
 
+  // Default to:
+  //   target_found: false
+  //   angle_to_target: 0
+  //   distance_to_target: constants::kShotDistance
   VisionStatusProto status;
   status->set_target_found(false);
   status->set_has_connection(false);
@@ -53,10 +58,24 @@ void VisionAlignment::Update() {
     status->set_target_found(false);
   }
 
+  // Vision gives the distance from the target, but the motion profile
+  // calculates distance as arc length
+  // target_distance = 2 * radius * sin(angle / 2)
+  // profile_distance = angle * radius
+  // therefore profile_distance = angle * target_distance * csc(angle / 2) / 2
+  double target_distance = status->distance_to_target() - constants::kShotDistance;
+  double profile_distance;
+  if (std::abs(status->angle_to_target()) < 0.01) {
+    profile_distance = target_distance;  // This is the limit as angle -> 0
+  } else {
+    profile_distance = status->angle_to_target() * target_distance / 2 /
+        std::sin(status->angle_to_target() / 2);
+  }
+
+  // Terminated when angular, and forward error and velocity are close to 0.
   bool terminated = std::abs(status->angle_to_target()) < 0.02;
-  if (use_distance_align_ &&
-      std::abs(status->distance_to_target() - constants::kShotDistance) < constants::kMaxAlignDistance) {
-    terminated = terminated && std::abs(status->distance_to_target() - constants::kShotDistance) < 0.05;
+  if (use_distance_align_ && std::abs(target_distance) < constants::kMaxAlignDistance) {
+    terminated = terminated && std::abs(target_distance) < 0.05;
   }
 
   if (auto dt_status_message = dt_status_reader_.ReadLastMessage()) {
@@ -65,12 +84,13 @@ void VisionAlignment::Update() {
 
   if (!disabled && should_align_) {
     if (!running_) {
+      // Create profile
       muan::actions::DrivetrainActionParams params;
       params.termination = muan::actions::DrivetrainTermination{0.05, 0.05, 0.05, 0.05};
       params.desired_angular_displacement = -status->angle_to_target();
       if (use_distance_align_ &&
-          std::abs(status->distance_to_target() - constants::kShotDistance) < constants::kMaxAlignDistance) {
-        params.desired_forward_distance = status->distance_to_target() - constants::kShotDistance;
+          std::abs(target_distance) < constants::kMaxAlignDistance) {
+        params.desired_forward_distance = profile_distance;
       }
       action_.ExecuteDrive(params);
       running_ = true;

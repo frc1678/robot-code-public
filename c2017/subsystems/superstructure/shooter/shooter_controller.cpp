@@ -34,7 +34,7 @@ ShooterController::ShooterController()
 
   at_goal_ = false;
 
-  velocity_tolerance_ = 30;  // Radians per second
+  velocity_tolerance_ = 12;  // Radians per second
 }
 
 c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::ShooterInputProto input,

@@ -4,7 +4,10 @@ package(default_visibility = ["//visibility:public"])
 cc_binary(
     name = "test_server",
     srcs = ["test_server.cpp"],
-    deps = [":server"]
+    deps = [
+        ":server",
+        "//c2017/subsystems/superstructure/shooter:shooter_queues",
+        ]
 )
 
 filegroup(
@@ -15,10 +18,14 @@ filegroup(
 cc_library(
     name = "server",
     srcs = ["server.cpp"],
-    hdrs = ["server.h"],
+    hdrs = ["server.h", "server.hpp"],
     deps = [
         "//third_party/seasocks:seasocks",
-        "//c2017/queue_manager:queue_manager"],
+        "//muan/utils:proto_utils",
+        "//third_party/optional:optional",
+        "//third_party/aos/common:die",
+        "//c2017/webdash:webdash_queues",
+    ],
     linkopts = ["-lpthread"]
 )
 

@@ -29,13 +29,14 @@ int main() {
   cv::namedWindow("vision", cv::WINDOW_AUTOSIZE);
 #endif
 
-  muan::vision::Vision::VisionConstants constants{1,        // kFovX
-                                          1,        // kFovY
-                                          0,        // kCameraAngleX
-                                          0.3,      // kCameraAngleY
-                                          1,        // kHeightDifference
-                                          0.2,      // kFullness
-                                          0.0005};  // kMinTargetArea
+  muan::vision::Vision::VisionConstants constants{1,       // kFovX
+                                                  1,       // kFovY
+                                                  0,       // kCameraAngleX
+                                                  0.3,     // kCameraAngleY
+                                                  1,       // kHeightDifference
+                                                  0.2,     // kFullness
+                                                  0.0005,  // kMinTargetArea
+                                                  0.09};   // kMaxTargetArea
 
   muan::vision::VisionThresholds range;
   range.set_a_low(50);

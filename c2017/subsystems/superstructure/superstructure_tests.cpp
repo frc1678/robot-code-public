@@ -153,10 +153,6 @@ TEST_F(SuperstructureTest, SpinupShoot) {
   ds->set_mode(RobotMode::TELEOP);
   shooter_status_proto_->set_at_goal(true);
   shooter_status_proto_->set_currently_running(true);
-  intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_DOWN);
-  intake_group_goal_proto_->set_hp_load_type(intake_group::HP_LOAD_NONE);
-  intake_group_goal_proto_->set_ground_ball_rollers(intake_group::GROUND_BALL_IN);
-  intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_NONE);
   shooter_group_goal_proto_->set_wheel(shooter_group::BOTH);
 
   WriteQueues();
