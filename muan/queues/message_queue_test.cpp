@@ -227,28 +227,28 @@ TEST(MessageQueue, Reset) {
   EXPECT_FALSE(reader.ReadLastMessage());
 }
 
-TEST(MessageQueue, MessageIdx) {
+TEST(MessageQueue, MessageIndex) {
   MessageQueue<uint32_t, 10> test_queue;
   auto reader = test_queue.MakeReader();
 
-  EXPECT_EQ(reader.GetNextMessageIdx(), 0);
+  EXPECT_EQ(reader.GetNextMessageIndex(), 0);
   EXPECT_EQ(reader.GetNumMessagesSkipped(), 0);
 
   test_queue.WriteMessage(0);
 
-  EXPECT_EQ(reader.GetNextMessageIdx(), 0);
+  EXPECT_EQ(reader.GetNextMessageIndex(), 0);
   EXPECT_EQ(reader.GetNumMessagesSkipped(), 0);
 
   reader.ReadMessage();
 
-  EXPECT_EQ(reader.GetNextMessageIdx(), 1);
+  EXPECT_EQ(reader.GetNextMessageIndex(), 1);
   EXPECT_EQ(reader.GetNumMessagesSkipped(), 0);
 
   for (size_t i = 0; i < 11; i++) {
     test_queue.WriteMessage(0);
   }
 
-  EXPECT_EQ(reader.GetNextMessageIdx(), 2);
+  EXPECT_EQ(reader.GetNextMessageIndex(), 2);
   EXPECT_EQ(reader.GetNumMessagesSkipped(), 1);
 }
 

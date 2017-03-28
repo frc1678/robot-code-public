@@ -79,7 +79,7 @@ class MessageQueue {
     // Gets the index of the next message in the queue. This number is for debugging purposes only and will
     // increment by 1 for every new message read, unless the reader skips messages, in which case it will
     // jump.
-    uint64_t GetNextMessageIdx() const;
+    uint64_t GetNextMessageIndex() const;
 
     // Gets the number of messages skipped by this reader since the last read. In normal operation, this will
     // be zero - it will only be a greater value when values have been written to the queue at a faster rate
@@ -108,7 +108,7 @@ class MessageQueue {
 
   // Gets the index of the next message that is currently in memory. When current_message is in memory, this
   // function will return current_message. Otherwise, it will return the oldest message currently kept.
-  uint64_t coerce_valid_message_idx(uint64_t current_message) const;
+  uint64_t coerce_valid_message_index(uint64_t current_message) const;
 
   // Gets the "front" (the oldest messages still kept) of the circular buffer,
   // either from the current value of _back or from a known value of back.

@@ -24,18 +24,18 @@ void Logger::AddQueue(const std::string& name, T* queue) {
 
 template <class R>
 std::experimental::optional<std::string> Logger::Reader<R>::GetMessageAsCSV(bool header) {
-  uint64_t queue_idx = reader_.GetNextMessageIdx();
+  uint64_t queue_index = reader_.GetNextMessageIndex();
   auto message = reader_.ReadMessage();
   if (message) {
     std::stringstream ss;
     if (header) {
       muan::util::ProtoToCsvHeader(*message.value().get(), ss);
-      ss << ",queue_idx\n";
+      ss << ",queue_index\n";
     }
 
     // TODO(Kyle) Refactor Reader's interface to have GetMessageAsCSV write directly to an ostream.
     muan::util::ProtoToCsv(*message.value().get(), ss);
-    ss << "," << queue_idx << std::endl;
+    ss << "," << queue_index << std::endl;
     return ss.str();
   } else {
     return std::experimental::nullopt;

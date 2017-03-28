@@ -25,7 +25,7 @@ class MockFileWriter : public muan::logging::FileWriter {
 TEST(Logger, LogsOneMessage) {
   std::unique_ptr<muan::logging::MockFileWriter> writer = std::make_unique<muan::logging::MockFileWriter>();
 
-  EXPECT_CALL(*writer, WriteLine("testqueue.csv", MatchesRegex("thing,queue_idx\n42,.*"))).Times(1);
+  EXPECT_CALL(*writer, WriteLine("testqueue.csv", MatchesRegex("thing,queue_index\n42,.*"))).Times(1);
 
   Logger logger(std::move(writer));
 
@@ -41,7 +41,7 @@ TEST(Logger, LogsOneMessage) {
 TEST(Logger, LogsManyMessages) {
   std::unique_ptr<muan::logging::MockFileWriter> writer = std::make_unique<muan::logging::MockFileWriter>();
 
-  EXPECT_CALL(*writer, WriteLine("testqueue.csv", MatchesRegex("thing,queue_idx\n42,.*"))).Times(1);
+  EXPECT_CALL(*writer, WriteLine("testqueue.csv", MatchesRegex("thing,queue_index\n42,.*"))).Times(1);
   EXPECT_CALL(*writer, WriteLine("testqueue.csv", MatchesRegex("42,.*"))).Times(41);
 
   Logger logger(std::move(writer));
@@ -60,8 +60,8 @@ TEST(Logger, LogsManyMessages) {
 TEST(Logger, LogsMultipleQueues) {
   std::unique_ptr<muan::logging::MockFileWriter> writer = std::make_unique<muan::logging::MockFileWriter>();
 
-  EXPECT_CALL(*writer, WriteLine("testqueue1.csv", MatchesRegex("thing,queue_idx\n42,.*"))).Times(1);
-  EXPECT_CALL(*writer, WriteLine("testqueue2.csv", MatchesRegex("thing,queue_idx\n42,.*"))).Times(1);
+  EXPECT_CALL(*writer, WriteLine("testqueue1.csv", MatchesRegex("thing,queue_index\n42,.*"))).Times(1);
+  EXPECT_CALL(*writer, WriteLine("testqueue2.csv", MatchesRegex("thing,queue_index\n42,.*"))).Times(1);
 
   Logger logger(std::move(writer));
 
@@ -83,7 +83,7 @@ TEST(Logger, LogsMultipleQueues) {
 TEST(Logger, LogsManyMessagesPerTick) {
   std::unique_ptr<muan::logging::MockFileWriter> writer = std::make_unique<muan::logging::MockFileWriter>();
 
-  EXPECT_CALL(*writer, WriteLine("testqueue.csv", MatchesRegex("thing,queue_idx\n42,.*"))).Times(1);
+  EXPECT_CALL(*writer, WriteLine("testqueue.csv", MatchesRegex("thing,queue_index\n42,.*"))).Times(1);
   EXPECT_CALL(*writer, WriteLine("testqueue.csv", MatchesRegex("42,.*"))).Times(9999);
 
   Logger logger(std::move(writer));
