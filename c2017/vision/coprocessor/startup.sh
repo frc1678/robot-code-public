@@ -11,8 +11,6 @@
 #     /home/ubuntu/robot-code/c2017/vision/coprocessor/startup.sh 10.16.78.22 >& /home/ubuntu/log.text &
 #
 
-# This script runs before the camera is ready, so sleep until it is ready.
-sleep 30s
 cd /home/ubuntu/robot-code
 
 VISION_CAM=$(./muan/vision/find_camera_by_name.py --name LifeCam)
