@@ -133,7 +133,7 @@ void SuperStructure::Update() {
     if (shooter_group_goal->should_climb()) {
       superstructure_status_proto_->set_climbing(true);
       climber_goal_->set_climbing(true);
-      ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::SCORE);
+      ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::OUTTAKE);
     } else {
       superstructure_status_proto_->set_climbing(false);
       climber_goal_->set_climbing(false);
