@@ -15,7 +15,8 @@ constexpr double kHeightUpper = 1.66;
 constexpr double kHeightLower = 1.48;
 
 VisionInputProto CalculatePosition(std::vector<muan::vision::ContourProperties> targets,
-                                   const muan::vision::Vision& vision);
+                                   const muan::vision::Vision& vision,
+                                   cv::Mat debug_image);
 void RunVision(int camera_index);
 
 }  // namespace vision

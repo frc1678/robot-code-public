@@ -62,8 +62,8 @@ std::vector<ContourProperties> Vision::Update(cv::Mat raw, cv::Mat image_canvas)
       // y-axis is inverted
       target.y = -((bounding.tl() + bounding.br()).y * 0.5 / image.rows - 0.5);
       target.fullness = fullness;
-      target.width = bounding.size().width;
-      target.height = bounding.size().height;
+      target.width = (double)bounding.size().width / image.cols;
+      target.height = (double)bounding.size().height / image.rows;
       targets.push_back(target);
 
       cv::drawContours(image_canvas, contours, i, cv::Scalar(0, 255, 0), -1);

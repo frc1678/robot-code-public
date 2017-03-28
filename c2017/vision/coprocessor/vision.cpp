@@ -17,15 +17,20 @@ namespace vision {
 // The two parts of the vision targets are the ones with the closest angle
 // and distance values.
 VisionInputProto CalculatePosition(std::vector<muan::vision::ContourProperties> targets,
-                                   const muan::vision::Vision& vision) {
+                                   const muan::vision::Vision& vision,
+                                   cv::Mat debug_image) {
   VisionInputProto retval;
   retval->set_target_found(false);
   double best_distance = 0.2;  // If calculating based on the two parts of the
                                // target don't get within 20cm, it isn't the target.
+  cv::Rect outline;
   for (auto target_high : targets) {
     double angle_high = vision.CalculateAngle(target_high.x);
     double distance_high = vision.CalculateDistance(target_high.y, kHeightUpper);
     for (auto target_low : targets) {
+      if (target_low.y == target_high.y && target_low.x == target_high.x) {
+        continue;
+      }
       double angle_low = vision.CalculateAngle(target_low.x);
       double distance_low = vision.CalculateDistance(target_low.y, kHeightLower);
       double difference_angle = angle_high - angle_low;
@@ -34,12 +39,20 @@ VisionInputProto CalculatePosition(std::vector<muan::vision::ContourProperties> 
       double distance = std::sqrt(difference_angle * difference_angle +
                                   difference_distance * difference_distance);
       if (distance < best_distance) {
+        // Calculate distance
         retval->set_target_found(true);
         retval->set_angle_to_target((angle_low + angle_high) / 2);
         retval->set_distance_to_target((distance_low + distance_high) / 2);
+        // Output
+        outline.x = (target_high.x - target_high.width / 2 + 0.5) * debug_image.cols;
+        outline.y = (-target_high.y + 0.5) * debug_image.rows;
+        outline.width = target_high.width * debug_image.cols;
+        outline.height = (target_high.y - target_low.y) * debug_image.cols;
       }
     }
   }
+  std::cout << retval->distance_to_target() << std::endl;
+  cv::rectangle(debug_image, outline, cv::Scalar(0, 0, 255));
   return retval;
 }
 
@@ -89,7 +102,7 @@ void RunVision(int camera_index) {
 
     VisionInputProto position;
     if (targets.size() > 1) {
-      position = CalculatePosition(targets, vision);
+      position = CalculatePosition(targets, vision, image_canvas);
     } else {
       position->set_target_found(false);
     }
