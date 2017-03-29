@@ -20,7 +20,6 @@ void QueueManager::StartLogging() {
   logger_.AddQueue("shooter_input", &shooter_input_queue_);
   logger_.AddQueue("shooter_status", &shooter_status_queue_);
 
-  logger_.AddQueue("magazine_input", &magazine_input_queue_);
   logger_.AddQueue("magazine_status", &magazine_status_queue_);
 
   logger_.AddQueue("ground_gear_input", &ground_gear_input_queue_);
@@ -59,7 +58,6 @@ void QueueManager::StartLogging() {
   webdash_.AddQueue("shooter_input", &shooter_input_queue_);
   webdash_.AddQueue("shooter_status", &shooter_status_queue_);
 
-  webdash_.AddQueue("magazine_input", &magazine_input_queue_);
   webdash_.AddQueue("magazine_status", &magazine_status_queue_);
 
   webdash_.AddQueue("ground_gear_input", &ground_gear_input_queue_);
@@ -128,9 +126,6 @@ c2017::superstructure::SuperstructureStatusQueue& QueueManager::superstructure_s
 c2017::shooter::ShooterInputQueue& QueueManager::shooter_input_queue() { return shooter_input_queue_; }
 
 c2017::shooter::ShooterStatusQueue& QueueManager::shooter_status_queue() { return shooter_status_queue_; }
-
-// Magazine
-c2017::magazine::MagazineInputQueue& QueueManager::magazine_input_queue() { return magazine_input_queue_; }
 
 c2017::magazine::MagazineStatusQueue& QueueManager::magazine_status_queue() { return magazine_status_queue_; }
 
@@ -202,7 +197,6 @@ void QueueManager::Reset() {
   shooter_input_queue_.Reset();
   shooter_status_queue_.Reset();
 
-  magazine_input_queue_.Reset();
   magazine_status_queue_.Reset();
 
   ground_gear_input_queue_.Reset();

@@ -65,7 +65,6 @@ void SuperStructureInterface::ReadSensors() {
   c2017::shooter::ShooterInputProto shooter_sensors;
   c2017::climber::ClimberInputProto climber_sensors;
 
-  c2017::magazine::MagazineInputProto magazine_sensors;
   c2017::ground_gear_intake::GroundGearIntakeInputProto ground_gear_sensors;
 
   constexpr double kShooterRadiansPerClick = M_PI * 2 / 512.0;
@@ -73,7 +72,7 @@ void SuperStructureInterface::ReadSensors() {
   constexpr double kClimberMetersPerClick = M_PI * 2 / 512.0 / 25.6 * 0.032;
 
   shooter_sensors->set_shooter_encoder_position(shooter_encoder_.Get() * kShooterRadiansPerClick);
-  shooter_sensors->set_accelarator_encoder_postition(-accel_encoder_.Get() * kAccelRadiansPerClick);
+  shooter_sensors->set_accelerator_encoder_position(-accel_encoder_.Get() * kAccelRadiansPerClick);
   climber_sensors->set_position(accel_encoder_.Get() * kClimberMetersPerClick);
 
   auto current_reader = QueueManager::GetInstance().pdp_status_queue().MakeReader().ReadLastMessage();
@@ -85,7 +84,6 @@ void SuperStructureInterface::ReadSensors() {
 
   QueueManager::GetInstance().shooter_input_queue().WriteMessage(shooter_sensors);
   QueueManager::GetInstance().climber_input_queue().WriteMessage(climber_sensors);
-  QueueManager::GetInstance().magazine_input_queue().WriteMessage(magazine_sensors);
   QueueManager::GetInstance().ground_gear_input_queue().WriteMessage(ground_gear_sensors);
 }
 
@@ -98,7 +96,7 @@ void SuperStructureInterface::WriteActuators() {
                                          ports::superstructure::kMaxVoltage) /
                        12.0);
 
-    accel_motor_.Set(-muan::utils::Cap(-(*outputs)->accelarator_voltage(),
+    accel_motor_.Set(-muan::utils::Cap(-(*outputs)->accelerator_voltage(),
                                        -ports::superstructure::kMaxVoltage,
                                        ports::superstructure::kMaxVoltage) /
                        12.0);

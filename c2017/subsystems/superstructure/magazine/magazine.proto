@@ -13,11 +13,6 @@ message MagazineStatus {
   required bool lower_conveyor_running = 6;
 }
 
-message MagazineInput {
-  required uint64 timestamp = 1;
-  required bool has_hp_gear = 2; // senses distance using proximity sensor to know if there is a gear
-}
-
 message MagazineOutput {
   required uint64 timestamp = 1;
   required bool gear_intake_closed = 2;

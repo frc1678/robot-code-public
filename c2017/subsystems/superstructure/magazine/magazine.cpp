@@ -4,8 +4,8 @@ namespace c2017 {
 
 namespace magazine {
 
-MagazineOutputProto Magazine::Update(MagazineInputProto input, bool outputs_enabled) {
-  has_hp_gear_ = input->has_hp_gear();
+MagazineOutputProto Magazine::Update(bool outputs_enabled) {
+  has_hp_gear_ = false;
   double upper_voltage = 0;
   double side_voltage = 0;
   double lower_voltage = 0;
@@ -25,7 +25,7 @@ MagazineOutputProto Magazine::Update(MagazineInputProto input, bool outputs_enab
         gear_intake_closed = false;
         break;
       case BOTH:
-        if (input->has_hp_gear()) {
+        if (has_hp_gear_) {
           gear_intake_closed = true;
         } else {
           gear_intake_closed = false;

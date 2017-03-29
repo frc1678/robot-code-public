@@ -12,7 +12,7 @@ namespace magazine {
 class Magazine {
  public:
   Magazine() = default;
-  MagazineOutputProto Update(MagazineInputProto input, bool outputs_enabled);
+  MagazineOutputProto Update(bool outputs_enabled);
   void SetGoal(MagazineGoalProto goal);
 
  private:
