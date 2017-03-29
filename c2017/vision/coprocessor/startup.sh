@@ -24,4 +24,4 @@ v4l2ctrl -d /dev/video$VISION_CAM -l c2017/vision/coprocessor/vision_camera_para
 v4l2ctrl -d /dev/video$STREAM_CAM -l c2017/vision/coprocessor/stream_camera_params
 
 mjpg_streamer -i "input_uvc.so -d /dev/video$STREAM_CAM" -o "output_http.so -p 5802" &
-./bazel-bin/muan/autostart/autostart ./bazel-bin/c2017/vision/coprocessor/main --robot_ip=$1 --camera_index=$VISION_CAM
+./bazel-bin/c2017/vision/coprocessor/main --robot_ip=$1 --camera_index=$VISION_CAM

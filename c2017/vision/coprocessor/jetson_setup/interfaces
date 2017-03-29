@@ -1,0 +1,7 @@
+# interfaces(5) file used by ifup(8) and ifdown(8)
+
+auto eth0
+iface eth0 inet static
+	address 10.TE.AM.15
+	gateway 10.TE.AM.1
+	netmask 255.0.0.0
