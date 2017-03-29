@@ -10,290 +10,384 @@ class SuperstructureTest : public ::testing::Test {
  public:
   SuperstructureTest() {}
 
+  void WriteQueues() {
+    QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal_proto_);
+    QueueManager::GetInstance().climber_goal_queue().WriteMessage(climber_goal_proto_);
+    QueueManager::GetInstance().shooter_group_goal_queue().WriteMessage(shooter_group_goal_proto_);
+    QueueManager::GetInstance().driver_station_queue()->WriteMessage(driver_station_proto_);
+    QueueManager::GetInstance().climber_input_queue().WriteMessage(climber_input_proto_);
+    QueueManager::GetInstance().shooter_input_queue().WriteMessage(shooter_input_proto_);
+    QueueManager::GetInstance().ground_gear_input_queue().WriteMessage(ground_gear_input_proto_);
+  }
+
+  void SetUp() override {
+    intake_group_goal_proto_.Reset();
+    climber_goal_proto_.Reset();
+    shooter_group_goal_proto_.Reset();
+    driver_station_proto_.Reset();
+    shooter_status_proto_.Reset();
+    climber_input_proto_.Reset();
+    shooter_input_proto_.Reset();
+    ground_gear_input_proto_.Reset();
+
+    QueueManager::GetInstance().Reset();
+  }
+
+ protected:
   intake_group::IntakeGroupGoalProto intake_group_goal_proto_;
   climber::ClimberGoalProto climber_goal_proto_;
   shooter_group::ShooterGroupGoalProto shooter_group_goal_proto_;
-  muan::wpilib::DriverStationProto ds;
+  muan::wpilib::DriverStationProto driver_station_proto_;
   superstructure::SuperStructure superstructure;
   shooter::ShooterStatusProto shooter_status_proto_;
 
   climber::ClimberInputProto climber_input_proto_;
   shooter::ShooterInputProto shooter_input_proto_;
   ground_gear_intake::GroundGearIntakeInputProto ground_gear_input_proto_;
-  magazine::MagazineInputProto magazine_input_proto_;
-
-  void WriteQueues() {
-    QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal_proto_);
-    QueueManager::GetInstance().climber_goal_queue().WriteMessage(climber_goal_proto_);
-    QueueManager::GetInstance().shooter_group_goal_queue().WriteMessage(shooter_group_goal_proto_);
-    QueueManager::GetInstance().driver_station_queue()->WriteMessage(ds);
-    QueueManager::GetInstance().shooter_status_queue().WriteMessage(shooter_status_proto_);
-    QueueManager::GetInstance().climber_input_queue().WriteMessage(climber_input_proto_);
-    QueueManager::GetInstance().shooter_input_queue().WriteMessage(shooter_input_proto_);
-    QueueManager::GetInstance().ground_gear_input_queue().WriteMessage(ground_gear_input_proto_);
-    QueueManager::GetInstance().magazine_input_queue().WriteMessage(magazine_input_proto_);
-  }
-
-  void Reset() {
-    intake_group_goal_proto_.Reset();
-    climber_goal_proto_.Reset();
-    shooter_group_goal_proto_.Reset();
-    ds.Reset();
-    shooter_status_proto_.Reset();
-    climber_input_proto_.Reset();
-    shooter_input_proto_.Reset();
-    ground_gear_input_proto_.Reset();
-    magazine_input_proto_.Reset();
-  }
-
-  void SetUp() override {
-    Reset();
-  }
 };
 
-TEST_F(SuperstructureTest, GroundGearIntaking) {
-  climber_input_proto_->set_current(0);
-  climber_input_proto_->set_position(0);
-  shooter_input_proto_->set_shooter_encoder_position(0);
-  ground_gear_input_proto_->set_current(0);
-  magazine_input_proto_->set_has_hp_gear(false);
+TEST_F(SuperstructureTest, SysInactive) {
+  driver_station_proto_->set_mode(RobotMode::DISABLED);
 
-  shooter_status_proto_->set_at_goal(true);
+  intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_DROP);
+  intake_group_goal_proto_->set_ground_ball_rollers(intake_group::GROUND_BALL_IN);
+  intake_group_goal_proto_->set_agitate(true);
+  intake_group_goal_proto_->set_magazine_open(true);
 
-  ds->set_mode(RobotMode::TELEOP);
-  intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_UP);
+  WriteQueues();
+  superstructure.Update();
+
+  auto superstructure_output =
+      QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+
+  EXPECT_EQ(superstructure_output->main_roller_voltage(), 0.0);
+  EXPECT_FALSE(superstructure_output->ball_intake_down());
+  EXPECT_EQ(superstructure_output->ground_gear_voltage(), 0.0);
+  EXPECT_FALSE(superstructure_output->ground_gear_down());
+  EXPECT_EQ(superstructure_output->upper_conveyor_voltage(), 0.0);
+  EXPECT_EQ(superstructure_output->side_conveyor_voltage(), 0.0);
+  EXPECT_FALSE(superstructure_output->gear_shutter_open());
+  EXPECT_FALSE(superstructure_output->hp_gear_open());
+  EXPECT_FALSE(superstructure_output->magazine_open());
+  EXPECT_EQ(superstructure_output->shooter_voltage(), 0.0);
+  EXPECT_EQ(superstructure_output->accelerator_voltage(), 0.0);
+  EXPECT_FALSE(superstructure_output->climber_engaged());
+
+  auto superstructure_status =
+      QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage().value();
+  EXPECT_FALSE(superstructure_status->enable_outputs());
+}
+
+TEST_F(SuperstructureTest, GearFunctionality) {
+  driver_station_proto_->set_mode(RobotMode::TELEOP);
+
   intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_DROP);
 
   WriteQueues();
-
   superstructure.Update();
 
-  auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
+  {
+    auto superstructure_output =
+        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+    auto ground_gear_status =
+        QueueManager::GetInstance().ground_gear_status_queue().ReadLastMessage().value();
 
-  ASSERT_TRUE(superstructure_output);
+    EXPECT_EQ(superstructure_output->ground_gear_voltage(),
+              c2017::ground_gear_intake::kIntakeVoltage);
+    EXPECT_TRUE(superstructure_output->ground_gear_down());
+    EXPECT_EQ(ground_gear_status->current_state(), c2017::ground_gear_intake::INTAKING);
+  }
 
-  EXPECT_NE(superstructure_output.value()->ground_gear_voltage(), 0);
-  EXPECT_TRUE(superstructure_output.value()->ground_gear_down());
-  EXPECT_FALSE(superstructure_output.value()->ball_intake_down());
-}
-
-TEST_F(SuperstructureTest, GroundGearScoring) {
-  ds->set_mode(RobotMode::TELEOP);
-  shooter_status_proto_->set_at_goal(true);
-
-  intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_UP);
-  intake_group_goal_proto_->set_hp_load_type(intake_group::HP_LOAD_NONE);
-  intake_group_goal_proto_->set_ground_ball_rollers(intake_group::GROUND_BALL_NONE);
-  intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_SCORE);
-
-  WriteQueues();
-
-  superstructure.Update();
-
-  auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
-
-  ASSERT_TRUE(superstructure_output);
-  EXPECT_NEAR(superstructure_output.value()->ground_gear_voltage(), -12, 1e-4);
-  EXPECT_FALSE(superstructure_output.value()->ground_gear_down());
-}
-
-TEST_F(SuperstructureTest, BallIntaking) {
-  ds->set_mode(RobotMode::TELEOP);
-  shooter_status_proto_->set_at_goal(true);
-
-  intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_DOWN);
-  intake_group_goal_proto_->set_hp_load_type(intake_group::HP_LOAD_NONE);
-  intake_group_goal_proto_->set_ground_ball_rollers(intake_group::GROUND_BALL_IN);
   intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_NONE);
 
-  WriteQueues();
+  // 134 should always count as a spike
+  ground_gear_input_proto_->set_current(134);
 
+  WriteQueues();
+  superstructure.Update();
   superstructure.Update();
 
-  auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
+  {
+    auto superstructure_output =
+        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+    auto ground_gear_status =
+        QueueManager::GetInstance().ground_gear_status_queue().ReadLastMessage().value();
 
-  ASSERT_TRUE(superstructure_output);
-  EXPECT_TRUE(superstructure_output.value()->ball_intake_down());
-  EXPECT_FALSE(superstructure_output.value()->ground_gear_down());
-  EXPECT_NEAR(superstructure_output.value()->main_roller_voltage(), 8, 1e-4);
+    EXPECT_EQ(superstructure_output->ground_gear_voltage(),
+              c2017::ground_gear_intake::kPickupVoltage);
+    EXPECT_FALSE(superstructure_output->ground_gear_down());
+    EXPECT_EQ(ground_gear_status->current_state(), c2017::ground_gear_intake::PICKING_UP);
+  }
+
+  for (size_t i = 0; i < c2017::ground_gear_intake::kPickupTicks + 1; i++) {
+    superstructure.Update();
+  }
+
+  {
+    auto superstructure_output =
+        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+    auto ground_gear_status =
+        QueueManager::GetInstance().ground_gear_status_queue().ReadLastMessage().value();
+
+    EXPECT_EQ(superstructure_output->ground_gear_voltage(),
+              c2017::ground_gear_intake::kCarryVoltage);
+    EXPECT_FALSE(superstructure_output->ground_gear_down());
+    EXPECT_EQ(ground_gear_status->current_state(), c2017::ground_gear_intake::CARRYING);
+  }
 }
 
-TEST_F(SuperstructureTest, BallReverse) {
-  shooter_status_proto_->set_at_goal(true);
+TEST_F(SuperstructureTest, BothIntakesStayInBox) {
+  driver_station_proto_->set_mode(RobotMode::TELEOP);
 
-  ds->set_mode(RobotMode::TELEOP);
-  intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_DOWN);
-  intake_group_goal_proto_->set_hp_load_type(intake_group::HP_LOAD_NONE);
-  intake_group_goal_proto_->set_ground_ball_rollers(intake_group::GROUND_BALL_OUT);
-  intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_NONE);
-
-  WriteQueues();
-  superstructure.Update();
-
-  auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
-
-  ASSERT_TRUE(superstructure_output);
-  EXPECT_NEAR(superstructure_output.value()->main_roller_voltage(), -8, 1e-4);
-}
-
-TEST_F(SuperstructureTest, ClimberTest) {
-  ds->set_mode(RobotMode::TELEOP);
-
-  shooter_group_goal_proto_->set_should_climb(true);
-
-  WriteQueues();
-  superstructure.Update();
-
-  auto superstructure_status = QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage();
-  ASSERT_TRUE(superstructure_status);
-  EXPECT_TRUE(superstructure_status.value()->climbing());
-}
-
-TEST_F(SuperstructureTest, SpinupShoot) {
-  ds->set_mode(RobotMode::TELEOP);
-  shooter_status_proto_->set_at_goal(true);
-  shooter_status_proto_->set_currently_running(true);
-  shooter_group_goal_proto_->set_wheel(shooter_group::BOTH);
-
-  WriteQueues();
-
-  superstructure.Update();
-
-  auto superstructure_status = QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage();
-
-  ASSERT_TRUE(superstructure_status);
-  EXPECT_TRUE(superstructure_status.value()->shooting());
-
-  auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
-
-  ASSERT_TRUE(superstructure_output);
-  EXPECT_NEAR(superstructure_output.value()->main_roller_voltage(), 12, 1e-4);
-  EXPECT_NEAR(superstructure_output.value()->upper_conveyor_voltage(), 12, 1e-4);
-}
-
-TEST_F(SuperstructureTest, HPGearScoring) {
-  ds->set_mode(RobotMode::TELEOP);
-  shooter_status_proto_->set_at_goal(true);
-
-  intake_group_goal_proto_->set_score_hp_gear(true);
-
-  WriteQueues();
-
-  superstructure.Update();
-
-  auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
-
-  ASSERT_TRUE(superstructure_output);
-  EXPECT_TRUE(superstructure_output.value()->gear_shutter_open());
-  EXPECT_TRUE(superstructure_output.value()->ball_intake_down());
-
-  // Update it again to make sure it stays open
-  superstructure.Update();
-
-  superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
-
-  ASSERT_TRUE(superstructure_output);
-  EXPECT_TRUE(superstructure_output.value()->gear_shutter_open());
-  EXPECT_TRUE(superstructure_output.value()->ball_intake_down());
-
-  // And then make sure it all closes when it should
-  intake_group_goal_proto_->set_score_hp_gear(false);
-  WriteQueues();
-  superstructure.Update();
-
-  superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
-
-  ASSERT_TRUE(superstructure_output);
-  EXPECT_FALSE(superstructure_output.value()->gear_shutter_open());
-  EXPECT_FALSE(superstructure_output.value()->ball_intake_down());
-}
-
-TEST_F(SuperstructureTest, Disabled) {
-  ds->set_mode(RobotMode::DISABLED);
-
-  // Just make a bunch of things spin, since we're testing disabled.
-  shooter_status_proto_->set_at_goal(true);
-  shooter_status_proto_->set_currently_running(true);
-  intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_DOWN);
-  intake_group_goal_proto_->set_hp_load_type(intake_group::HP_LOAD_NONE);
-  intake_group_goal_proto_->set_ground_ball_rollers(intake_group::GROUND_BALL_IN);
-  intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_NONE);
-  shooter_group_goal_proto_->set_wheel(shooter_group::BOTH);
-
-  WriteQueues();
-  superstructure.Update();
-
-  auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
-
-  ASSERT_TRUE(superstructure_output);
-  EXPECT_NEAR(superstructure_output.value()->main_roller_voltage(), 0, 1e-4);
-  EXPECT_NEAR(superstructure_output.value()->ground_gear_voltage(), 0, 1e-4);
-  EXPECT_NEAR(superstructure_output.value()->upper_conveyor_voltage(), 0, 1e-4);
-  EXPECT_NEAR(superstructure_output.value()->side_conveyor_voltage(), 0, 1e-4);
-  EXPECT_NEAR(superstructure_output.value()->shooter_voltage(), 0, 1e-4);
-}
-
-TEST_F(SuperstructureTest, Brownout) {
-  ds->set_mode(RobotMode::TELEOP);
-  ds->set_brownout(true);
-
-  // Just make a bunch of things spin, since we're testing brownout.
-  shooter_status_proto_->set_at_goal(true);
-  shooter_status_proto_->set_currently_running(true);
-  intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_DOWN);
-  intake_group_goal_proto_->set_hp_load_type(intake_group::HP_LOAD_NONE);
-  intake_group_goal_proto_->set_ground_ball_rollers(intake_group::GROUND_BALL_IN);
-  intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_NONE);
-  shooter_group_goal_proto_->set_wheel(shooter_group::BOTH);
-
-  WriteQueues();
-  superstructure.Update();
-
-  auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
-
-  ASSERT_TRUE(superstructure_output);
-  EXPECT_NEAR(superstructure_output.value()->main_roller_voltage(), 0, 1e-4);
-  EXPECT_NEAR(superstructure_output.value()->ground_gear_voltage(), 0, 1e-4);
-  EXPECT_NEAR(superstructure_output.value()->upper_conveyor_voltage(), 0, 1e-4);
-  EXPECT_NEAR(superstructure_output.value()->side_conveyor_voltage(), 0, 1e-4);
-  EXPECT_NEAR(superstructure_output.value()->shooter_voltage(), 0, 1e-4);
-}
-
-TEST_F(SuperstructureTest, StaysInBox) {
-  // If you tell ball and gear intake to go down, only gear intake should move.
-  intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_UP);
   intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_DROP);
-  ds->set_mode(RobotMode::TELEOP);
+  intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_DOWN);
 
   WriteQueues();
   superstructure.Update();
 
-  auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
+  {
+    auto superstructure_output =
+        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
 
-  ASSERT_TRUE(superstructure_output);
-
-  EXPECT_TRUE(superstructure_output.value()->ground_gear_down());
-  EXPECT_FALSE(superstructure_output.value()->ball_intake_down());
+    EXPECT_TRUE(superstructure_output->ground_gear_down());
+    EXPECT_FALSE(superstructure_output->ball_intake_down());
+  }
 }
 
 TEST_F(SuperstructureTest, GearScoreStaysInBox) {
-  // When you're trying to HP-gear score and the gear intake is down, it should put it back up so that
-  // it can put the ball intake down
+  driver_station_proto_->set_mode(RobotMode::TELEOP);
+
+  intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_SCORE);
+  intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_DOWN);
+
+  WriteQueues();
+  superstructure.Update();
+
+  {
+    auto superstructure_output =
+        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+
+    EXPECT_FALSE(superstructure_output->ground_gear_down());
+    EXPECT_FALSE(superstructure_output->ball_intake_down());
+  }
+}
+
+TEST_F(SuperstructureTest, ShootingStaysInBox) {
+  driver_station_proto_->set_mode(RobotMode::TELEOP);
+
+  shooter_group_goal_proto_->set_wheel(c2017::shooter_group::BOTH);
+
+  WriteQueues();
+
+  // Update twice to allow shooter status to propagate
+  superstructure.Update();
+  superstructure.Update();
+
+  {
+    auto superstructure_output =
+        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+
+    EXPECT_FALSE(superstructure_output->ground_gear_down());
+    EXPECT_TRUE(superstructure_output->ball_intake_down());
+  }
+
   intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_DROP);
-  ds->set_mode(RobotMode::TELEOP);
-  WriteQueues();
-  superstructure.Update();
-  intake_group_goal_proto_->set_score_hp_gear(true);
+
   WriteQueues();
   superstructure.Update();
 
-  auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
+  {
+    auto superstructure_output =
+        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
 
-  ASSERT_TRUE(superstructure_output);
+    EXPECT_TRUE(superstructure_output->ground_gear_down());
+    EXPECT_FALSE(superstructure_output->ball_intake_down());
+  }
+}
 
-  EXPECT_FALSE(superstructure_output.value()->ground_gear_down());
-  EXPECT_TRUE(superstructure_output.value()->ball_intake_down());
-  EXPECT_TRUE(superstructure_output.value()->gear_shutter_open());
+TEST_F(SuperstructureTest, Spinup) {
+  driver_station_proto_->set_mode(RobotMode::TELEOP);
+
+  shooter_group_goal_proto_->set_wheel(c2017::shooter_group::SPINUP);
+
+  WriteQueues();
+
+  // Update twice to allow shooter status to propagate
+  superstructure.Update();
+  superstructure.Update();
+
+  {
+    auto superstructure_output =
+        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+
+    EXPECT_GT(superstructure_output->shooter_voltage(), 0.0);
+    EXPECT_GT(superstructure_output->accelerator_voltage(), 0.0);
+  }
+}
+
+TEST_F(SuperstructureTest, SpinupShoot) {
+  driver_station_proto_->set_mode(RobotMode::TELEOP);
+
+  double current_position = 0.0;
+
+  shooter_input_proto_->set_shooter_encoder_position(current_position);
+  shooter_group_goal_proto_->set_wheel(c2017::shooter_group::BOTH);
+
+  WriteQueues();
+
+  // Update twice to allow shooter status to propagate
+  superstructure.Update();
+  superstructure.Update();
+
+  // Simulate the shooter moving at a constant fixed speed
+  for (size_t i = 0; i < 1000; i++) {
+    current_position += c2017::superstructure::kShooterVelocity * 0.005;
+    shooter_input_proto_->set_shooter_encoder_position(current_position);
+    shooter_input_proto_->set_accelerator_encoder_position(current_position * 0.5);
+    WriteQueues();
+    superstructure.Update();
+  }
+
+  {
+    auto shooter_status =
+        QueueManager::GetInstance().shooter_status_queue().ReadLastMessage().value();
+    auto superstructure_output =
+        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+
+    EXPECT_TRUE(shooter_status->at_goal());
+    EXPECT_TRUE(shooter_status->currently_running());
+    EXPECT_GT(superstructure_output->upper_conveyor_voltage(), 0.0);
+  }
+}
+
+TEST_F(SuperstructureTest, SpinupManualShoot) {
+  driver_station_proto_->set_mode(RobotMode::TELEOP);
+
+  shooter_group_goal_proto_->set_wheel(c2017::shooter_group::SPINUP);
+
+  WriteQueues();
+
+  // Update twice to allow shooter status to propagate
+  superstructure.Update();
+  superstructure.Update();
+
+  {
+    auto superstructure_output =
+        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+
+    EXPECT_GT(superstructure_output->shooter_voltage(), 0.0);
+    EXPECT_GT(superstructure_output->accelerator_voltage(), 0.0);
+  }
+
+  shooter_group_goal_proto_->set_wheel(c2017::shooter_group::SHOOT);
+
+  WriteQueues();
+  superstructure.Update();
+
+  {
+    auto superstructure_output =
+        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+
+    EXPECT_GT(superstructure_output->shooter_voltage(), 0.0);
+    EXPECT_GT(superstructure_output->accelerator_voltage(), 0.0);
+    EXPECT_GT(superstructure_output->upper_conveyor_voltage(), 0.0);
+  }
+}
+
+TEST_F(SuperstructureTest, Agitate) {
+  driver_station_proto_->set_mode(RobotMode::TELEOP);
+
+  intake_group_goal_proto_->set_agitate(true);
+
+  WriteQueues();
+  superstructure.Update();
+
+  {
+    auto superstructure_output =
+        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+
+    // Should be sending a nonzero side conveyor voltage
+    EXPECT_NE(superstructure_output->side_conveyor_voltage(), 0.0);
+  }
+}
+
+TEST_F(SuperstructureTest, Climb) {
+  driver_station_proto_->set_mode(RobotMode::TELEOP);
+
+  climber_goal_proto_->set_climbing(true);
+
+  WriteQueues();
+  superstructure.Update();
+
+  {
+    auto superstructure_output =
+        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+    auto superstructure_status =
+        QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage().value();
+
+    EXPECT_GT(superstructure_output->accelerator_voltage(), 0.0);
+    EXPECT_TRUE(superstructure_status->climbing());
+  }
+}
+
+TEST_F(SuperstructureTest, CancelClimb) {
+  driver_station_proto_->set_mode(RobotMode::TELEOP);
+
+  climber_goal_proto_->set_climbing(true);
+
+  WriteQueues();
+  superstructure.Update();
+
+  {
+    auto superstructure_output =
+        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+    auto superstructure_status =
+        QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage().value();
+
+    EXPECT_GT(superstructure_output->accelerator_voltage(), 0.0);
+    EXPECT_TRUE(superstructure_status->climbing());
+  }
+
+  climber_goal_proto_->set_climbing(false);
+
+  WriteQueues();
+  superstructure.Update();
+
+  {
+    auto superstructure_output =
+        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+    auto superstructure_status =
+        QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage().value();
+
+    EXPECT_EQ(superstructure_output->accelerator_voltage(), 0.0);
+    EXPECT_FALSE(superstructure_status->climbing());
+  }
+}
+
+TEST_F(SuperstructureTest, ShootToClimb) {
+  driver_station_proto_->set_mode(RobotMode::TELEOP);
+
+  shooter_group_goal_proto_->set_wheel(c2017::shooter_group::BOTH);
+
+  WriteQueues();
+
+  superstructure.Update();
+  superstructure.Update();
+
+  climber_goal_proto_->set_climbing(true);
+
+  WriteQueues();
+  superstructure.Update();
+
+  {
+    auto superstructure_output =
+        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+    auto superstructure_status =
+        QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage().value();
+
+    EXPECT_GT(superstructure_output->accelerator_voltage(), 0.0);
+    EXPECT_TRUE(superstructure_status->climbing());
+  }
 }
 
 }  // namespace c2017
