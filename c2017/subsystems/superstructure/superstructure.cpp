@@ -1,101 +1,100 @@
 #include "c2017/subsystems/superstructure/superstructure.h"
+#include <iostream>
 
 namespace c2017 {
 
 namespace superstructure {
 
-// Constants for the shooter
-// The first value is revolutions per minute, which is then converted to radians per second
-constexpr double kShooterVelocity = 2950 * (M_PI * 2) / 60;
-
 SuperStructure::SuperStructure() {}
 
 void SuperStructure::Update() {
   c2017::magazine::MagazineGoalProto magazine_goal;
-
-  auto maybe_shooter_group_goal = QueueManager::GetInstance().shooter_group_goal_queue().ReadLastMessage();
-  auto maybe_shooter_status = QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
-
-  if (maybe_shooter_group_goal && maybe_shooter_status) {
-    // MUST call spinup before you call shoot
-    auto shooter_group_goal = maybe_shooter_group_goal.value();
-    auto shooter_status = maybe_shooter_status.value();
-
-    if (shooter_group_goal->wheel() == c2017::shooter_group::Wheel::SPINUP ||
-        shooter_group_goal->wheel() == c2017::shooter_group::Wheel::BOTH) {
-      shooter_goal_->set_goal_velocity(kShooterVelocity);
-    }
-
-    if (shooter_group_goal->wheel() == c2017::shooter_group::Wheel::SHOOT ||
-        shooter_group_goal->wheel() == c2017::shooter_group::Wheel::BOTH) {
-      if (shooter_status->at_goal() && shooter_status->currently_running()) {
-        magazine_goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_PULL_IN);
-        magazine_goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_FORWARD);
-        magazine_goal->set_lower_goal(c2017::magazine::LowerGoalState::LOWER_FORWARD);
-        is_shooting_ = true;
-      } else {  // Shooter not at speed
-        is_shooting_ = false;
-        magazine_goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
-      }
-    }
-
-    if (shooter_group_goal->wheel() == c2017::shooter_group::Wheel::IDLE) {
-      magazine_goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
-      magazine_goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
-      magazine_goal->set_lower_goal(c2017::magazine::LowerGoalState::LOWER_IDLE);
-      is_shooting_ = false;
-      shooter_goal_->set_goal_velocity(0.0);
-    }
-
-    superstructure_status_proto_->set_shooting(is_shooting_);
-
-    // Climbing!
-    superstructure_status_proto_->set_climbing(shooter_group_goal->should_climb());
-    climber_goal_->set_climbing(shooter_group_goal->should_climb());
-  }
-
-  // Reading the group goal queues
-  auto maybe_intake_group_goal = QueueManager::GetInstance().intake_group_goal_queue().ReadLastMessage();
-
+  c2017::shooter::ShooterGoalProto shooter_goal;
+  c2017::climber::ClimberGoalProto climber_goal;
   c2017::ground_gear_intake::GroundGearIntakeGoalProto ground_gear_intake_goal;
   c2017::ground_ball_intake::GroundBallIntakeGoalProto ground_ball_intake_goal;
 
-  if (maybe_intake_group_goal) {
-    auto intake_group_goal = maybe_intake_group_goal.value();
-    using c2017::intake_group::GroundGearIntakeGoal;
-    switch (intake_group_goal->ground_gear_intake()) {
-      case intake_group::GROUND_GEAR_NONE:
-        ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::NONE);
+  c2017::superstructure::SuperstructureStatusProto superstructure_status;
+
+  const auto maybe_climber_goal = QueueManager::GetInstance().climber_goal_queue().ReadLastMessage();
+  const auto maybe_shooter_group_goal =
+      QueueManager::GetInstance().shooter_group_goal_queue().ReadLastMessage();
+  const auto maybe_shooter_status = QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+  const auto maybe_ground_gear_intake_status =
+      QueueManager::GetInstance().ground_gear_status_queue().ReadLastMessage();
+  const auto maybe_intake_group_goal =
+      QueueManager::GetInstance().intake_group_goal_queue().ReadLastMessage();
+
+  const auto maybe_shooter_input = QueueManager::GetInstance().shooter_input_queue().ReadLastMessage();
+  const auto maybe_ground_gear_input =
+      QueueManager::GetInstance().ground_gear_input_queue().ReadLastMessage();
+  const auto maybe_climber_input = QueueManager::GetInstance().climber_input_queue().ReadLastMessage();
+  const auto maybe_driver_station = QueueManager::GetInstance().driver_station_queue()->ReadLastMessage();
+
+  // Goal interpretation
+  if (maybe_shooter_group_goal && maybe_shooter_status) {
+    const auto shooter_group_goal = maybe_shooter_group_goal.value();
+    const auto shooter_status = maybe_shooter_status.value();
+
+    switch (shooter_group_goal->wheel()) {
+      case shooter_group::IDLE:
+        shooter_state_ = SuperstructureStatus::kShooterIdle;
         break;
-      case intake_group::GROUND_GEAR_DROP:
-        ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::DROP);
+      case shooter_group::SPINUP:
+        shooter_state_ = SuperstructureStatus::kShooterSpinup;
         break;
-      case intake_group::GROUND_GEAR_RISE:
-        ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::RISE);
+      case shooter_group::SHOOT:
+        shooter_state_ = SuperstructureStatus::kShooterShooting;
         break;
-      case intake_group::GROUND_GEAR_SCORE:
-        ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::SCORE);
+      case shooter_group::BOTH:
+        if (shooter_status->currently_running() && shooter_status->at_goal()) {
+          shooter_state_ = SuperstructureStatus::kShooterShooting;
+        } else {
+          shooter_state_ = SuperstructureStatus::kShooterSpinup;
+        }
         break;
     }
-    bool allow_ground_intake = ground_gear_intake_.current_state() == ground_gear_intake::IDLE ||
-                               ground_gear_intake_.current_state() == ground_gear_intake::CARRYING;
+  }
 
-    magazine_goal->set_magazine_extended(intake_group_goal->magazine_open());
+  bool is_climbing = false;
+  if (maybe_climber_goal) {
+    climber_goal = maybe_climber_goal.value();
+    if (climber_goal->climbing()) {
+      is_climbing = true;
+      shooter_state_ = SuperstructureStatus::kShooterIdle;
+      superstructure_status->set_climbing(true);
+    }
+  }
 
-    ground_ball_intake_goal->set_intake_up(
-        !(allow_ground_intake &&
-          intake_group_goal->ground_ball_position() == intake_group::GROUND_BALL_DOWN));
+  if (maybe_intake_group_goal) {
+    const auto intake_group_goal = maybe_intake_group_goal.value();
+    switch (intake_group_goal->ground_gear_intake()) {
+      case intake_group::GROUND_GEAR_NONE:
+        ground_gear_intake_goal->set_goal(ground_gear_intake::NONE);
+        break;
+      case intake_group::GROUND_GEAR_DROP:
+        ground_gear_intake_goal->set_goal(ground_gear_intake::DROP);
+        break;
+      case intake_group::GROUND_GEAR_RISE:
+        ground_gear_intake_goal->set_goal(ground_gear_intake::RISE);
+        break;
+      case intake_group::GROUND_GEAR_SCORE:
+        ground_gear_intake_goal->set_goal(ground_gear_intake::SCORE);
+        break;
+    }
+
+    ground_ball_intake_goal->set_intake_up(intake_group_goal->ground_ball_position() ==
+                                           intake_group::GROUND_BALL_UP);
 
     switch (intake_group_goal->ground_ball_rollers()) {
       case intake_group::GROUND_BALL_NONE:
-        ground_ball_intake_goal->set_run_intake(c2017::ground_ball_intake::IDLE);
+        ground_ball_intake_goal->set_run_intake(ground_ball_intake::IDLE);
         break;
       case intake_group::GROUND_BALL_IN:
-        ground_ball_intake_goal->set_run_intake(c2017::ground_ball_intake::INTAKE);
-        magazine_goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_BACKWARD);
+        ground_ball_intake_goal->set_run_intake(ground_ball_intake::INTAKE);
         break;
       case intake_group::GROUND_BALL_OUT:
-        ground_ball_intake_goal->set_run_intake(c2017::ground_ball_intake::OUTTAKE);
+        ground_ball_intake_goal->set_run_intake(ground_ball_intake::OUTTAKE);
         break;
     }
 
@@ -103,34 +102,34 @@ void SuperStructure::Update() {
       magazine_goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_AGITATE);
       magazine_goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
     }
+    magazine_goal->set_magazine_extended(intake_group_goal->magazine_open());
+  }
 
-    // HP logic
-    switch (intake_group_goal->hp_load_type()) {
-      case c2017::intake_group::HpLoadType::HP_LOAD_BALLS:
-        // hp load balls: hp goal = balls
-        magazine_goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::BALLS);
-        break;
-      case c2017::intake_group::HpLoadType::HP_LOAD_GEAR:
-        // hp load gear: hp goal = gear
-        magazine_goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::GEAR);
-        break;
-      case c2017::intake_group::HpLoadType::HP_LOAD_NONE:
-        // hp load none: hp goal = none
-        magazine_goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::NONE);
-        break;
-      case c2017::intake_group::HpLoadType::HP_LOAD_BOTH:
-        // hp load both: hp goal = both
-        magazine_goal->set_hp_intake_goal(c2017::magazine::HPIntakeGoalState::BOTH);
-        break;
-    }
+  if (shooter_state_ == SuperstructureStatus::kShooterShooting) {
+    magazine_goal->set_upper_goal(magazine::UPPER_FORWARD);
+    magazine_goal->set_lower_goal(magazine::LOWER_FORWARD);
+    magazine_goal->set_side_goal(magazine::SIDE_PULL_IN);
+  }
 
-    // This doesn't need to be in any specific it's just passed through to the magazine
-    if (intake_group_goal->score_hp_gear()) {
-      magazine_goal->set_score_gear(true);
-      ground_ball_intake_goal->set_intake_up(false);
-      ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::RISE);
-    } else {
-      magazine_goal->set_score_gear(false);
+  if (shooter_state_ != SuperstructureStatus::kShooterIdle) {
+    ground_ball_intake_goal->set_intake_up(false);
+    ground_ball_intake_goal->set_run_intake(ground_ball_intake::INTAKE);
+  }
+
+  shooter_goal->set_goal_velocity(shooter_state_ == SuperstructureStatus::kShooterIdle ? 0.0
+                                                                                       : kShooterVelocity);
+
+  if (ground_gear_intake_goal->goal() == ground_gear_intake::DROP ||
+      ground_gear_intake_goal->goal() == ground_gear_intake::SCORE) {
+    ground_ball_intake_goal->set_intake_up(true);
+  }
+
+  if (maybe_ground_gear_intake_status) {
+    const auto ground_gear_intake_status = maybe_ground_gear_intake_status.value();
+    if (ground_gear_intake_status->current_state() == ground_gear_intake::INTAKING ||
+        ground_gear_intake_status->current_state() == ground_gear_intake::PICKING_UP ||
+        ground_gear_intake_status->current_state() == ground_gear_intake::SCORING) {
+      ground_ball_intake_goal->set_intake_up(true);
     }
   }
 
@@ -138,75 +137,52 @@ void SuperStructure::Update() {
   ground_ball_intake_.set_goal(ground_ball_intake_goal);
 
   magazine_.SetGoal(magazine_goal);
-  shooter_.SetGoal(shooter_goal_);
-  climber_.SetGoal(climber_goal_);
+  shooter_.SetGoal(shooter_goal);
+  climber_.SetGoal(climber_goal);
 
-  SetWpilibOutput();
-  QueueManager::GetInstance().superstructure_status_queue().WriteMessage(superstructure_status_proto_);
-}
+  QueueManager::GetInstance().superstructure_status_queue().WriteMessage(superstructure_status);
 
-void SuperStructure::SetWpilibOutput() {
-  wpilib::WpilibOutputProto wpilib_output;
-  const auto ground_gear_input = QueueManager::GetInstance().ground_gear_input_queue().ReadLastMessage();
-  const auto magazine_input = QueueManager::GetInstance().magazine_input_queue().ReadLastMessage();
-  const auto shooter_input = QueueManager::GetInstance().shooter_input_queue().ReadLastMessage();
-  const auto climber_input = QueueManager::GetInstance().climber_input_queue().ReadLastMessage();
-  const auto climber_status = QueueManager::GetInstance().climber_status_queue().ReadLastMessage();
-  const auto ground_gear_status = QueueManager::GetInstance().ground_gear_status_queue().ReadLastMessage();
-  const auto driver_station = QueueManager::GetInstance().driver_station_queue()->ReadLastMessage();
+  bool outputs_enabled = false;
 
-  bool enable_outputs = true;
-  if (driver_station) {
-    auto robot_state = driver_station.value();
-    enable_outputs = !(robot_state->mode() == RobotMode::DISABLED ||
-                       robot_state->mode() == RobotMode::ESTOP || robot_state->brownout());
+  if (maybe_driver_station) {
+    const auto driver_station = maybe_driver_station.value();
+    outputs_enabled = !(driver_station->mode() == RobotMode::DISABLED ||
+                       driver_station->mode() == RobotMode::ESTOP || driver_station->brownout());
   }
 
-  if (ground_gear_status) {
-    superstructure_status_proto_->set_rumble_on(ground_gear_status.value()->current_state() ==
-                                                ground_gear_intake::State::PICKING_UP);
+  // Update the mechanisms
+  shooter::ShooterOutputProto shooter_output;
+  if (maybe_shooter_input) {
+    shooter_output = shooter_.Update(maybe_shooter_input.value(), outputs_enabled);
   }
 
-  if (ground_gear_input) {
-    auto ground_gear_intake_output = ground_gear_intake_.Update(ground_gear_input.value(), enable_outputs);
-    wpilib_output->set_ground_gear_down(ground_gear_intake_output->intake_down());
-    wpilib_output->set_ground_gear_voltage(ground_gear_intake_output->roller_voltage());
+  ground_gear_intake::GroundGearIntakeOutputProto ground_gear_output;
+  if (maybe_ground_gear_input) {
+    ground_gear_output = ground_gear_intake_.Update(maybe_ground_gear_input.value(), outputs_enabled);
   }
 
-  if (climber_input && shooter_input) {
-    auto climber_output = climber_.Update(climber_input.value(), enable_outputs);
-    auto shooter_output = shooter_.Update(shooter_input.value(), enable_outputs);
+  auto ground_ball_output = ground_ball_intake_.Update(outputs_enabled);
+  auto magazine_output = magazine_.Update(outputs_enabled);
 
-    wpilib_output->set_climber_engaged(climber_goal_->climbing());
-
-    if (climber_goal_->climbing()) {
-      wpilib_output->set_accelarator_voltage(-climber_output->voltage());
-      wpilib_output->set_shooter_voltage(0.0);;
-    } else {
-      wpilib_output->set_shooter_voltage(shooter_output->shooter_voltage());
-      wpilib_output->set_accelarator_voltage(shooter_output->accelarator_voltage());
-    }
+  climber::ClimberOutputProto climber_output;
+  if (maybe_climber_input) {
+    climber_output = climber_.Update(maybe_climber_input.value(), outputs_enabled);
   }
 
-  if (magazine_input) {
-    auto magazine_output = magazine_.Update(magazine_input.value(), enable_outputs);
-    auto ground_ball_intake_output = ground_ball_intake_.Update(enable_outputs);
-    wpilib_output->set_gear_shutter_open(magazine_output->gear_shutter_open());
-    wpilib_output->set_upper_conveyor_voltage(magazine_output->upper_voltage());
-    wpilib_output->set_side_conveyor_voltage(magazine_output->side_voltage());
-    wpilib_output->set_hp_gear_open(!magazine_output->gear_intake_closed());
-    wpilib_output->set_magazine_open(magazine_output->magazine_extended());
-    wpilib_output->set_ball_intake_down(!ground_ball_intake_output->intake_up());
-    if (is_shooting_) {
-      // If shooting, we want to have the magazine run the lower conveyor
-      wpilib_output->set_main_roller_voltage(magazine_output->lower_voltage());
-    } else {
-      // If not shooting, the ball intake should control the lower conveyor
-      wpilib_output->set_main_roller_voltage(ground_ball_intake_output->roller_voltage());
-    }
-  }
+  wpilib::WpilibOutputProto output;
+  output->set_main_roller_voltage(magazine_output->lower_voltage());
+  output->set_ball_intake_down(!ground_ball_output->intake_up());
+  output->set_ground_gear_voltage(ground_gear_output->roller_voltage());
+  output->set_ground_gear_down(ground_gear_output->intake_down());
+  output->set_upper_conveyor_voltage(magazine_output->upper_voltage());
+  output->set_side_conveyor_voltage(magazine_output->side_voltage());
+  output->set_magazine_open(magazine_output->magazine_extended());
+  output->set_shooter_voltage(shooter_output->shooter_voltage());
+  output->set_accelerator_voltage(is_climbing ? climber_output->voltage()
+                                              : shooter_output->accelerator_voltage());
+  output->set_climber_engaged(is_climbing);
 
-  QueueManager::GetInstance().superstructure_output_queue().WriteMessage(wpilib_output);
+  QueueManager::GetInstance().superstructure_output_queue().WriteMessage(output);
 }
 
 }  // namespace superstructure
