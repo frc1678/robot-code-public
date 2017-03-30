@@ -41,6 +41,9 @@ GroundGearIntakeOutputProto GroundGearIntake::Update(GroundGearIntakeInputProto 
         voltage = kScoreVoltage;
         intake_down = false;
         break;
+      case OUTTAKING:
+        voltage = kOuttakeVoltage;
+        intake_down = false;
     }
   }
 
@@ -74,6 +77,9 @@ void GroundGearIntake::SetGoal(GroundGearIntakeGoalProto goal) {
       if (current_state_ == SCORING) {
         current_state_ = IDLE;
       }
+      break;
+    case OUTTAKE:
+      current_state_ = OUTTAKING;
       break;
   }
 }

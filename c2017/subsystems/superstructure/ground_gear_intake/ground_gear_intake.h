@@ -22,6 +22,7 @@ class GroundGearIntake {
   static constexpr double kPickupVoltage = 2.5;
   static constexpr double kCarryVoltage = 1.5;
   static constexpr double kScoreVoltage = -12.0;
+  static constexpr double kOuttakeVoltage = -2.0;
   static constexpr int kPickupTicks = 300;
   static constexpr double kCurrentThreshold = 60.0;
 

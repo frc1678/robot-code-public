@@ -145,8 +145,12 @@ TEST_F(SuperstructureTest, ClimberTest) {
   superstructure.Update();
 
   auto superstructure_status = QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage();
+  auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
   ASSERT_TRUE(superstructure_status);
   EXPECT_TRUE(superstructure_status.value()->climbing());
+  ASSERT_TRUE(superstructure_output);
+  EXPECT_EQ(superstructure_output.value()->accelarator_voltage(), -12.0);
+  Reset();
 }
 
 TEST_F(SuperstructureTest, SpinupShoot) {
@@ -294,6 +298,24 @@ TEST_F(SuperstructureTest, GearScoreStaysInBox) {
   EXPECT_FALSE(superstructure_output.value()->ground_gear_down());
   EXPECT_TRUE(superstructure_output.value()->ball_intake_down());
   EXPECT_TRUE(superstructure_output.value()->gear_shutter_open());
+  Reset();
+}
+
+TEST_F(SuperstructureTest, EjectsGearOnClimb) {
+  ds->set_mode(RobotMode::TELEOP);
+
+  shooter_group_goal_proto_->set_should_climb(true);
+
+  WriteQueues();
+  superstructure.Update();
+
+  auto superstructure_status = QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage();
+  auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
+  ASSERT_TRUE(superstructure_status);
+  EXPECT_TRUE(superstructure_status.value()->climbing());
+  ASSERT_TRUE(superstructure_output);
+  EXPECT_EQ(superstructure_output.value()->ground_gear_voltage(), -2.0);
+  Reset();
 }
 
 }  // namespace c2017

@@ -22,7 +22,9 @@ cc_library(
 
 filegroup(
     name = "v4l_params_file",
-    srcs = ["camera_params"],
+    srcs = [
+        "vision_camera_params",
+        "stream_camera_params"],
     visibility = ["//visibility:public"],
 )
 
