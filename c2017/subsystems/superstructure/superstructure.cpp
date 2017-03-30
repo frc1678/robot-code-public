@@ -170,7 +170,13 @@ void SuperStructure::Update() {
   }
 
   wpilib::WpilibOutputProto output;
-  output->set_main_roller_voltage(magazine_output->lower_voltage());
+
+  if (magazine_output->lower_voltage() != 0.0) {
+    output->set_main_roller_voltage(magazine_output->lower_voltage());
+  } else {
+    output->set_main_roller_voltage(ground_ball_output->roller_voltage());
+  }
+
   output->set_ball_intake_down(!ground_ball_output->intake_up());
   output->set_ground_gear_voltage(ground_gear_output->roller_voltage());
   output->set_ground_gear_down(ground_gear_output->intake_down());

@@ -309,6 +309,36 @@ TEST_F(SuperstructureTest, Agitate) {
   }
 }
 
+TEST_F(SuperstructureTest, BallIntakeWithConveyor) {
+  driver_station_proto_->set_mode(RobotMode::TELEOP);
+
+  intake_group_goal_proto_->set_ground_ball_rollers(intake_group::GROUND_BALL_OUT);
+
+  WriteQueues();
+  superstructure.Update();
+
+  {
+    auto superstructure_output =
+        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+
+    // Should be sending a reverse main roller voltage to spit out
+    EXPECT_LT(superstructure_output->main_roller_voltage(), 0.0);
+  }
+
+  shooter_group_goal_proto_->set_wheel(c2017::shooter_group::SHOOT);
+
+  WriteQueues();
+  superstructure.Update();
+
+  {
+    auto superstructure_output =
+        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+
+    // Should be forwards, as shooting takes precedence over outtake
+    EXPECT_GT(superstructure_output->main_roller_voltage(), 0.0);
+  }
+}
+
 TEST_F(SuperstructureTest, Climb) {
   driver_station_proto_->set_mode(RobotMode::TELEOP);
 
