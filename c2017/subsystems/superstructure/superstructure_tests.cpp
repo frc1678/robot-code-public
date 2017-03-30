@@ -66,8 +66,6 @@ TEST_F(SuperstructureTest, SysInactive) {
   EXPECT_FALSE(superstructure_output->ground_gear_down());
   EXPECT_EQ(superstructure_output->upper_conveyor_voltage(), 0.0);
   EXPECT_EQ(superstructure_output->side_conveyor_voltage(), 0.0);
-  EXPECT_FALSE(superstructure_output->gear_shutter_open());
-  EXPECT_FALSE(superstructure_output->hp_gear_open());
   EXPECT_FALSE(superstructure_output->magazine_open());
   EXPECT_EQ(superstructure_output->shooter_voltage(), 0.0);
   EXPECT_EQ(superstructure_output->accelerator_voltage(), 0.0);

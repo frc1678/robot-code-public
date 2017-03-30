@@ -14,12 +14,10 @@ message WpilibOutput {
   required double upper_conveyor_voltage = 6;
   required double side_conveyor_voltage = 7;
 
-  required bool gear_shutter_open = 8;
-  required bool hp_gear_open = 9;
-  required bool magazine_open = 10;
+  required bool magazine_open = 8;
   // Shooter/Climber Group
   // shooter_voltage is also the climber_voltage, since they run together
-  required double shooter_voltage = 11;
-  required double accelerator_voltage = 12;
-  required bool climber_engaged = 13; // If true, hopper shot, if false, fender
+  required double shooter_voltage = 9;
+  required double accelerator_voltage = 10;
+  required bool climber_engaged = 11; // If true, hopper shot, if false, fender
 }

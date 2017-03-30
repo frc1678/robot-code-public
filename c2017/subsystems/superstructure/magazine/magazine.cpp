@@ -5,34 +5,11 @@ namespace c2017 {
 namespace magazine {
 
 MagazineOutputProto Magazine::Update(bool outputs_enabled) {
-  has_hp_gear_ = false;
   double upper_voltage = 0;
   double side_voltage = 0;
   double lower_voltage = 0;
-  bool gear_intake_closed = true;
-
-  bool gear_shutter_open = score_gear_;
 
   if (outputs_enabled) {
-    switch (hp_intake_goal_) {
-      case NONE:
-        gear_intake_closed = true;
-        break;
-      case BALLS:
-        gear_intake_closed = true;
-        break;
-      case GEAR:
-        gear_intake_closed = false;
-        break;
-      case BOTH:
-        if (has_hp_gear_) {
-          gear_intake_closed = true;
-        } else {
-          gear_intake_closed = false;
-        }
-        break;
-    }
-
     switch (side_goal_) {
       case SIDE_IDLE:
         side_voltage = 0;
@@ -78,32 +55,25 @@ MagazineOutputProto Magazine::Update(bool outputs_enabled) {
         break;
     }
   } else {
-    gear_intake_closed = true;
     magazine_extended_ = false;
-    gear_shutter_open = false;
     upper_voltage = 0;
     side_voltage = 0;
   }
 
   c2017::magazine::MagazineOutputProto output;
 
-  output_->set_gear_intake_closed(gear_intake_closed);
   output_->set_magazine_extended(magazine_extended_);
-  output_->set_gear_shutter_open(gear_shutter_open);
   output_->set_upper_voltage(upper_voltage);
   output_->set_side_voltage(side_voltage);
   output_->set_lower_voltage(lower_voltage);
-  magazine_status_->set_has_hp_gear(has_hp_gear_);
   QueueManager::GetInstance().magazine_status_queue().WriteMessage(magazine_status_);
 
   return output_;
 }
 
 void Magazine::SetGoal(MagazineGoalProto goal) {
-  hp_intake_goal_ = goal->hp_intake_goal();
   upper_goal_ = goal->upper_goal();
   magazine_extended_ = goal->magazine_extended();
-  score_gear_ = goal->score_gear();
   side_goal_ = goal->side_goal();
   lower_goal_ = goal->lower_goal();
 }
