@@ -116,7 +116,7 @@ void SuperStructure::Update() {
   }
 
   if (is_climbing) {
-      ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::OUTTAKE);
+    ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::OUTTAKE);
   }
 
   shooter_goal->set_goal_velocity(shooter_state_ == SuperstructureStatus::kShooterIdle ? 0.0
@@ -150,7 +150,8 @@ void SuperStructure::Update() {
   if (maybe_driver_station) {
     const auto driver_station = maybe_driver_station.value();
     outputs_enabled = !(driver_station->mode() == RobotMode::DISABLED ||
-                       driver_station->mode() == RobotMode::ESTOP || driver_station->brownout());
+                        driver_station->mode() == RobotMode::ESTOP ||
+                        driver_station->brownout());
   }
 
   // Update the mechanisms
@@ -174,6 +175,8 @@ void SuperStructure::Update() {
 
   wpilib::WpilibOutputProto output;
 
+  // Have the magazine output for the roller take precedence over the intake, as shooting is more important
+  // than outtaking. This will be unnecessary when they're run off of separate motors.
   if (magazine_output->lower_voltage() != 0.0) {
     output->set_main_roller_voltage(magazine_output->lower_voltage());
   } else {
