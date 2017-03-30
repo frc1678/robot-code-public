@@ -1,6 +1,5 @@
 #include "c2017/subsystems/superstructure/superstructure.h"
 
-#include <iostream>
 #include "c2017/queue_manager/queue_manager.h"
 #include "gtest/gtest.h"
 
