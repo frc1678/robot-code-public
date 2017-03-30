@@ -14,7 +14,6 @@ FileWriter::FileWriter(const std::string &base_path) { base_path_ = base_path; }
 
 void FileWriter::WriteLine(const std::string &filename, const std::string &line) {
   if (open_files_.find(filename) == open_files_.end()) {
-    boost::filesystem::create_directories(filename);
     open_files_[filename].open(base_path_ + filename, std::ios::app);
   }
   open_files_[filename] << line << "\n";
