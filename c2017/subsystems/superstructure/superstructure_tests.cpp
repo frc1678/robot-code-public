@@ -45,6 +45,10 @@ class SuperstructureTest : public ::testing::Test {
     ground_gear_input_proto_.Reset();
     magazine_input_proto_.Reset();
   }
+
+  void SetUp() override {
+    Reset();
+  }
 };
 
 TEST_F(SuperstructureTest, GroundGearIntaking) {
@@ -71,8 +75,6 @@ TEST_F(SuperstructureTest, GroundGearIntaking) {
   EXPECT_NE(superstructure_output.value()->ground_gear_voltage(), 0);
   EXPECT_TRUE(superstructure_output.value()->ground_gear_down());
   EXPECT_FALSE(superstructure_output.value()->ball_intake_down());
-
-  Reset();
 }
 
 TEST_F(SuperstructureTest, GroundGearScoring) {
@@ -93,8 +95,6 @@ TEST_F(SuperstructureTest, GroundGearScoring) {
   ASSERT_TRUE(superstructure_output);
   EXPECT_NEAR(superstructure_output.value()->ground_gear_voltage(), -12, 1e-4);
   EXPECT_FALSE(superstructure_output.value()->ground_gear_down());
-
-  Reset();
 }
 
 TEST_F(SuperstructureTest, BallIntaking) {
@@ -116,8 +116,6 @@ TEST_F(SuperstructureTest, BallIntaking) {
   EXPECT_TRUE(superstructure_output.value()->ball_intake_down());
   EXPECT_FALSE(superstructure_output.value()->ground_gear_down());
   EXPECT_NEAR(superstructure_output.value()->main_roller_voltage(), 8, 1e-4);
-
-  Reset();
 }
 
 TEST_F(SuperstructureTest, BallReverse) {
@@ -136,7 +134,6 @@ TEST_F(SuperstructureTest, BallReverse) {
 
   ASSERT_TRUE(superstructure_output);
   EXPECT_NEAR(superstructure_output.value()->main_roller_voltage(), -8, 1e-4);
-  Reset();
 }
 
 TEST_F(SuperstructureTest, ClimberTest) {
@@ -154,6 +151,28 @@ TEST_F(SuperstructureTest, ClimberTest) {
   ASSERT_TRUE(superstructure_output);
   EXPECT_EQ(superstructure_output.value()->accelarator_voltage(), -12.0);
   Reset();
+}
+
+TEST_F(SuperstructureTest, SpinupShoot) {
+  ds->set_mode(RobotMode::TELEOP);
+  shooter_status_proto_->set_at_goal(true);
+  shooter_status_proto_->set_currently_running(true);
+  shooter_group_goal_proto_->set_wheel(shooter_group::BOTH);
+
+  WriteQueues();
+
+  superstructure.Update();
+
+  auto superstructure_status = QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage();
+
+  ASSERT_TRUE(superstructure_status);
+  EXPECT_TRUE(superstructure_status.value()->shooting());
+
+  auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
+
+  ASSERT_TRUE(superstructure_output);
+  EXPECT_NEAR(superstructure_output.value()->main_roller_voltage(), 12, 1e-4);
+  EXPECT_NEAR(superstructure_output.value()->upper_conveyor_voltage(), 12, 1e-4);
 }
 
 TEST_F(SuperstructureTest, HPGearScoring) {
@@ -191,8 +210,6 @@ TEST_F(SuperstructureTest, HPGearScoring) {
   ASSERT_TRUE(superstructure_output);
   EXPECT_FALSE(superstructure_output.value()->gear_shutter_open());
   EXPECT_FALSE(superstructure_output.value()->ball_intake_down());
-
-  Reset();
 }
 
 TEST_F(SuperstructureTest, Disabled) {
@@ -206,7 +223,6 @@ TEST_F(SuperstructureTest, Disabled) {
   intake_group_goal_proto_->set_ground_ball_rollers(intake_group::GROUND_BALL_IN);
   intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_NONE);
   shooter_group_goal_proto_->set_wheel(shooter_group::BOTH);
-  shooter_group_goal_proto_->set_position(shooter_group::HOPPER);
 
   WriteQueues();
   superstructure.Update();
@@ -219,7 +235,6 @@ TEST_F(SuperstructureTest, Disabled) {
   EXPECT_NEAR(superstructure_output.value()->upper_conveyor_voltage(), 0, 1e-4);
   EXPECT_NEAR(superstructure_output.value()->side_conveyor_voltage(), 0, 1e-4);
   EXPECT_NEAR(superstructure_output.value()->shooter_voltage(), 0, 1e-4);
-  Reset();
 }
 
 TEST_F(SuperstructureTest, Brownout) {
@@ -234,7 +249,6 @@ TEST_F(SuperstructureTest, Brownout) {
   intake_group_goal_proto_->set_ground_ball_rollers(intake_group::GROUND_BALL_IN);
   intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_NONE);
   shooter_group_goal_proto_->set_wheel(shooter_group::BOTH);
-  shooter_group_goal_proto_->set_position(shooter_group::HOPPER);
 
   WriteQueues();
   superstructure.Update();
@@ -247,10 +261,9 @@ TEST_F(SuperstructureTest, Brownout) {
   EXPECT_NEAR(superstructure_output.value()->upper_conveyor_voltage(), 0, 1e-4);
   EXPECT_NEAR(superstructure_output.value()->side_conveyor_voltage(), 0, 1e-4);
   EXPECT_NEAR(superstructure_output.value()->shooter_voltage(), 0, 1e-4);
-  Reset();
 }
 
-TEST_F(SuperstructureTest, ThinkInsideTheBox) {
+TEST_F(SuperstructureTest, StaysInBox) {
   // If you tell ball and gear intake to go down, only gear intake should move.
   intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_UP);
   intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_DROP);
@@ -265,10 +278,10 @@ TEST_F(SuperstructureTest, ThinkInsideTheBox) {
 
   EXPECT_TRUE(superstructure_output.value()->ground_gear_down());
   EXPECT_FALSE(superstructure_output.value()->ball_intake_down());
+}
 
-  Reset();
-
-  // Also, when you're trying to HP-gear score and the gear intake is down, it should put it back up so that
+TEST_F(SuperstructureTest, GearScoreStaysInBox) {
+  // When you're trying to HP-gear score and the gear intake is down, it should put it back up so that
   // it can put the ball intake down
   intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_DROP);
   ds->set_mode(RobotMode::TELEOP);
@@ -278,7 +291,7 @@ TEST_F(SuperstructureTest, ThinkInsideTheBox) {
   WriteQueues();
   superstructure.Update();
 
-  superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
+  auto superstructure_output = QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage();
 
   ASSERT_TRUE(superstructure_output);
 

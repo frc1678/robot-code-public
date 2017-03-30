@@ -115,7 +115,6 @@ void CitrusRobot::SendSuperstructureMessage() {
   // Shooting buttons
   if (align_shoot_->was_clicked()) {
     // Avery - Throttle Button
-    shooter_group_goal_->set_position(shooter_group::Position::FENDER);
     using_vision_ = true;
     if (vision_aligned_) {
       shooter_group_goal_->set_wheel(shooter_group::Wheel::BOTH);
@@ -124,13 +123,11 @@ void CitrusRobot::SendSuperstructureMessage() {
     }
   } else if (just_spinup_->is_pressed()) {
     // Kelly - Gamepad Button
-    shooter_group_goal_->set_position(shooter_group::Position::FENDER);
     shooter_group_goal_->set_wheel(shooter_group::Wheel::SPINUP);
     using_vision_ = false;
   } else if (just_shoot_->is_pressed()) {
     // Kelly - Gamepad Button
     intake_group_goal_->set_ground_ball_position(intake_group::GROUND_BALL_DOWN);
-    shooter_group_goal_->set_position(shooter_group::Position::FENDER);
     shooter_group_goal_->set_wheel(shooter_group::Wheel::SHOOT);
     using_vision_ = false;
   } else if (stop_shooting_->was_clicked()) {

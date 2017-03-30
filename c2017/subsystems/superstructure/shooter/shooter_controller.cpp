@@ -120,7 +120,6 @@ double ShooterController::CapU(double u, bool outputs_enabled) {
 
 void ShooterController::SetGoal(c2017::shooter::ShooterGoalProto goal) {
   unprofiled_goal_velocity_ = goal->goal_velocity();
-  shot_mode_ = goal->goal_mode();
 }
 
 double ShooterController::UpdateProfiledGoalVelocity(double unprofiled_goal_velocity) {
