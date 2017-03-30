@@ -13,6 +13,7 @@ constexpr double kIntakeVoltage = 12.0;
 constexpr double kPickupVoltage = 2.5;
 constexpr double kCarryVoltage = 1.5;
 constexpr double kScoreVoltage = -12.0;
+  static constexpr double kOuttakeVoltage = -2.0;
 constexpr int kPickupTicks = 300;
 constexpr double kCurrentThreshold = 60.0;
 

@@ -63,6 +63,7 @@ void SuperStructure::Update() {
       is_climbing = true;
       shooter_state_ = SuperstructureStatus::kShooterIdle;
       superstructure_status->set_climbing(true);
+      ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::OUTTAKE);
     }
   }
 
