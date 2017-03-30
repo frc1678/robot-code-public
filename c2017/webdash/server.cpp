@@ -1,4 +1,5 @@
 #include "c2017/webdash/server.h"
+#include "muan/logging/filewriter.h"
 
 namespace c2017 {
 namespace webdash {
@@ -9,8 +10,6 @@ WebDashQueueWrapper& WebDashQueueWrapper::GetInstance() {
 }
 
 AutoSelectionQueue& WebDashQueueWrapper::auto_selection_queue() { return auto_selection_queue_; }
-
-LogNameQueue& WebDashQueueWrapper::log_name_queue() { return log_name_queue_; }
 
 // Dumb hack that will start to get really unwieldy as soon as we try to do
 // anything useful.
@@ -28,6 +27,15 @@ struct AutoChangeHandler : seasocks::WebSocket::Handler {
   }
 
   void onDisconnect(seasocks::WebSocket * /*socket*/) override {}
+};
+
+struct LogNameHandler : seasocks::WebSocket::Handler {
+  void onConnect(seasocks::WebSocket* /* socket */) override {}
+  void onDisconnect(seasocks::WebSocket* /* socket */) override {}
+
+  void onData(seasocks::WebSocket* /* socket */, const char* data) override {
+    muan::logging::FileWriter::CreateReadableName(data);
+  }
 };
 
 void WebDashRunner::DataRequestHandler::onConnect(seasocks::WebSocket *con) {
@@ -61,7 +69,8 @@ void WebDashRunner::DataRequestHandler::onData(seasocks::WebSocket *con, const c
 void WebDashRunner::operator()() {
   auto logger = std::make_shared<seasocks::PrintfLogger>();
   seasocks::Server server{logger};
-  server.addWebSocketHandler("/save", std::make_shared<AutoChangeHandler>());
+  server.addWebSocketHandler("/auto", std::make_shared<AutoChangeHandler>());
+  server.addWebSocketHandler("/logname", std::make_shared<LogNameHandler>());
   server.addWebSocketHandler("/data", std::make_shared<DataRequestHandler>(queue_logs_));
   server.serve("c2017/webdash/www/", 5801);
 }
