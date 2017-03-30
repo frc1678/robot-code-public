@@ -63,7 +63,6 @@ void SuperStructure::Update() {
       is_climbing = true;
       shooter_state_ = SuperstructureStatus::kShooterIdle;
       superstructure_status->set_climbing(true);
-      ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::OUTTAKE);
     }
   }
 
@@ -115,6 +114,10 @@ void SuperStructure::Update() {
   if (shooter_state_ != SuperstructureStatus::kShooterIdle) {
     ground_ball_intake_goal->set_intake_up(false);
     ground_ball_intake_goal->set_run_intake(ground_ball_intake::INTAKE);
+  }
+
+  if (is_climbing) {
+      ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::OUTTAKE);
   }
 
   shooter_goal->set_goal_velocity(shooter_state_ == SuperstructureStatus::kShooterIdle ? 0.0

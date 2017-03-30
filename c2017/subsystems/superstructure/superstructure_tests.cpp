@@ -355,6 +355,8 @@ TEST_F(SuperstructureTest, Climb) {
 
     EXPECT_GT(superstructure_output->accelerator_voltage(), 0.0);
     EXPECT_TRUE(superstructure_status->climbing());
+
+    EXPECT_EQ(superstructure_output->ground_gear_voltage(), c2017::ground_gear_intake::kOuttakeVoltage);
   }
 }
 
