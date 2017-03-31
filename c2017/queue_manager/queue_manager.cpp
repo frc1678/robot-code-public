@@ -28,7 +28,6 @@ void QueueManager::StartLogging() {
   logger_.AddQueue("ground_ball_intake_status", &ground_ball_intake_status_queue_);
 
   logger_.AddQueue("climber_input", &climber_input_queue_);
-  logger_.AddQueue("climber_goal", &climber_goal_queue_);
   logger_.AddQueue("climber_status", &climber_status_queue_);
 
   logger_.AddQueue("vision_input_queue", &vision_input_queue_);
@@ -66,7 +65,6 @@ void QueueManager::StartLogging() {
   webdash_.AddQueue("ground_ball_intake_status", &ground_ball_intake_status_queue_);
 
   webdash_.AddQueue("climber_input", &climber_input_queue_);
-  webdash_.AddQueue("climber_goal", &climber_goal_queue_);
   webdash_.AddQueue("climber_status", &climber_status_queue_);
 
   webdash_.AddQueue("vision_input_queue", &vision_input_queue_);
@@ -148,8 +146,6 @@ c2017::ground_ball_intake::GroundBallIntakeStatusQueue& QueueManager::ground_bal
 }
 
 // Climber
-c2017::climber::ClimberGoalQueue& QueueManager::climber_goal_queue() { return climber_goal_queue_; }
-
 c2017::climber::ClimberInputQueue& QueueManager::climber_input_queue() { return climber_input_queue_; }
 
 c2017::climber::ClimberStatusQueue& QueueManager::climber_status_queue() { return climber_status_queue_; }
@@ -208,7 +204,6 @@ void QueueManager::Reset() {
   vision_status_queue_.Reset();
   vision_goal_queue_.Reset();
 
-  climber_goal_queue_.Reset();
   climber_input_queue_.Reset();
   climber_status_queue_.Reset();
 

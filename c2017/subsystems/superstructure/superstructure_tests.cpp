@@ -11,7 +11,6 @@ class SuperstructureTest : public ::testing::Test {
 
   void WriteQueues() {
     QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal_proto_);
-    QueueManager::GetInstance().climber_goal_queue().WriteMessage(climber_goal_proto_);
     QueueManager::GetInstance().shooter_group_goal_queue().WriteMessage(shooter_group_goal_proto_);
     QueueManager::GetInstance().driver_station_queue()->WriteMessage(driver_station_proto_);
     QueueManager::GetInstance().climber_input_queue().WriteMessage(climber_input_proto_);
@@ -21,7 +20,6 @@ class SuperstructureTest : public ::testing::Test {
 
   void SetUp() override {
     intake_group_goal_proto_.Reset();
-    climber_goal_proto_.Reset();
     shooter_group_goal_proto_.Reset();
     driver_station_proto_.Reset();
     shooter_status_proto_.Reset();
@@ -34,7 +32,6 @@ class SuperstructureTest : public ::testing::Test {
 
  protected:
   intake_group::IntakeGroupGoalProto intake_group_goal_proto_;
-  climber::ClimberGoalProto climber_goal_proto_;
   shooter_group::ShooterGroupGoalProto shooter_group_goal_proto_;
   muan::wpilib::DriverStationProto driver_station_proto_;
   superstructure::SuperStructure superstructure;
@@ -68,7 +65,6 @@ TEST_F(SuperstructureTest, SysInactive) {
   EXPECT_FALSE(superstructure_output->magazine_open());
   EXPECT_EQ(superstructure_output->shooter_voltage(), 0.0);
   EXPECT_EQ(superstructure_output->accelerator_voltage(), 0.0);
-  EXPECT_FALSE(superstructure_output->climber_engaged());
 
   auto superstructure_status =
       QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage().value();
@@ -342,9 +338,10 @@ TEST_F(SuperstructureTest, BallIntakeWithConveyor) {
 TEST_F(SuperstructureTest, Climb) {
   driver_station_proto_->set_mode(RobotMode::TELEOP);
 
-  climber_goal_proto_->set_climbing(true);
+  shooter_group_goal_proto_->set_should_climb(true);
 
   WriteQueues();
+  superstructure.Update();
   superstructure.Update();
 
   {
@@ -363,9 +360,10 @@ TEST_F(SuperstructureTest, Climb) {
 TEST_F(SuperstructureTest, CancelClimb) {
   driver_station_proto_->set_mode(RobotMode::TELEOP);
 
-  climber_goal_proto_->set_climbing(true);
+  shooter_group_goal_proto_->set_should_climb(true);
 
   WriteQueues();
+  superstructure.Update();
   superstructure.Update();
 
   {
@@ -378,7 +376,7 @@ TEST_F(SuperstructureTest, CancelClimb) {
     EXPECT_TRUE(superstructure_status->climbing());
   }
 
-  climber_goal_proto_->set_climbing(false);
+  shooter_group_goal_proto_->set_should_climb(false);
 
   WriteQueues();
   superstructure.Update();
@@ -404,7 +402,7 @@ TEST_F(SuperstructureTest, ShootToClimb) {
   superstructure.Update();
   superstructure.Update();
 
-  climber_goal_proto_->set_climbing(true);
+  shooter_group_goal_proto_->set_should_climb(true);
 
   WriteQueues();
   superstructure.Update();

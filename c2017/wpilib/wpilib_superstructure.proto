@@ -19,5 +19,4 @@ message WpilibOutput {
   // shooter_voltage is also the climber_voltage, since they run together
   required double shooter_voltage = 9;
   required double accelerator_voltage = 10;
-  required bool climber_engaged = 11; // If true, hopper shot, if false, fender
 }

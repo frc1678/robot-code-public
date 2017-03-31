@@ -73,8 +73,6 @@ void CitrusRobot::SendDSMessage() {
 }
 
 void CitrusRobot::SendSuperstructureMessage() {
-  c2017::climber::ClimberGoalProto climber_goal;
-
   if (ball_intake_run_->is_pressed()) {
     intake_group_goal_->set_ground_ball_rollers(intake_group::GROUND_BALL_IN);
   } else if (ball_reverse_->is_pressed()) {
@@ -138,7 +136,6 @@ void CitrusRobot::SendSuperstructureMessage() {
     using_vision_ = false;
   }
 
-  c2017::QueueManager::GetInstance().climber_goal_queue().WriteMessage(climber_goal);
   c2017::QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal_);
   c2017::QueueManager::GetInstance().shooter_group_goal_queue().WriteMessage(shooter_group_goal_);
 }

@@ -67,7 +67,6 @@ class QueueManager {
 
   c2017::ground_ball_intake::GroundBallIntakeStatusQueue& ball_intake_status_queue();
 
-  c2017::climber::ClimberGoalQueue& climber_goal_queue();
   c2017::climber::ClimberInputQueue& climber_input_queue();
   c2017::climber::ClimberStatusQueue& climber_status_queue();
 

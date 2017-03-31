@@ -15,7 +15,6 @@ void SuperStructure::Update() {
 
   c2017::superstructure::SuperstructureStatusProto superstructure_status;
 
-  const auto maybe_climber_goal = QueueManager::GetInstance().climber_goal_queue().ReadLastMessage();
   const auto maybe_shooter_group_goal =
       QueueManager::GetInstance().shooter_group_goal_queue().ReadLastMessage();
   const auto maybe_shooter_status = QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
@@ -30,10 +29,18 @@ void SuperStructure::Update() {
   const auto maybe_climber_input = QueueManager::GetInstance().climber_input_queue().ReadLastMessage();
   const auto maybe_driver_station = QueueManager::GetInstance().driver_station_queue()->ReadLastMessage();
 
+  bool is_climbing = false;
+
   // Goal interpretation
   if (maybe_shooter_group_goal && maybe_shooter_status) {
     const auto shooter_group_goal = maybe_shooter_group_goal.value();
     const auto shooter_status = maybe_shooter_status.value();
+
+    if (shooter_group_goal->should_climb()) {
+      is_climbing = true;
+      shooter_state_ = SuperstructureStatus::kShooterIdle;
+      superstructure_status->set_climbing(true);
+    }
 
     switch (shooter_group_goal->wheel()) {
       case shooter_group::IDLE:
@@ -55,15 +62,7 @@ void SuperStructure::Update() {
     }
   }
 
-  bool is_climbing = false;
-  if (maybe_climber_goal) {
-    climber_goal = maybe_climber_goal.value();
-    if (climber_goal->climbing()) {
-      is_climbing = true;
-      shooter_state_ = SuperstructureStatus::kShooterIdle;
-      superstructure_status->set_climbing(true);
-    }
-  }
+  climber_goal->set_climbing(is_climbing);
 
   if (maybe_intake_group_goal) {
     const auto intake_group_goal = maybe_intake_group_goal.value();
@@ -189,7 +188,6 @@ void SuperStructure::Update() {
   output->set_shooter_voltage(shooter_output->shooter_voltage());
   output->set_accelerator_voltage(is_climbing ? climber_output->voltage()
                                               : shooter_output->accelerator_voltage());
-  output->set_climber_engaged(is_climbing);
 
   QueueManager::GetInstance().superstructure_output_queue().WriteMessage(output);
 }

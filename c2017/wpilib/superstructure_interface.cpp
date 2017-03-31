@@ -27,8 +27,8 @@ constexpr uint32_t kAccelEncoderA = 16, kAccelEncoderB = 17;
 constexpr uint32_t kBallIntakeSolenoid = 7;
 constexpr uint32_t kGroundGearIntakeSolenoid = 4;
 constexpr uint32_t kMagazineSolenoid = 6;
-constexpr uint32_t kClimberSolenoidA = 0;
-constexpr uint32_t kClimberSolenoidB = 1;
+constexpr uint32_t kFrontMagazineSolenoidA = 0;
+constexpr uint32_t kFrontMagazineSolenoidB = 1;
 
 // Other
 constexpr double kMaxVoltage = 12;
@@ -50,8 +50,8 @@ SuperStructureInterface::SuperStructureInterface(muan::wpilib::CanWrapper* can_w
       pcm_{can_wrapper->pcm()} {
   pcm_->CreateSolenoid(ports::superstructure::kBallIntakeSolenoid);
   pcm_->CreateSolenoid(ports::superstructure::kGroundGearIntakeSolenoid);
-  pcm_->CreateDoubleSolenoid(ports::superstructure::kClimberSolenoidA,
-                             ports::superstructure::kClimberSolenoidB);
+  pcm_->CreateDoubleSolenoid(ports::superstructure::kFrontMagazineSolenoidA,
+                             ports::superstructure::kFrontMagazineSolenoidB);
   pcm_->CreateSolenoid(ports::superstructure::kMagazineSolenoid);
 }
 
@@ -93,7 +93,7 @@ void SuperStructureInterface::WriteActuators() {
     accel_motor_.Set(-muan::utils::Cap(-(*outputs)->accelerator_voltage(),
                                        -ports::superstructure::kMaxVoltage,
                                        ports::superstructure::kMaxVoltage) /
-                       12.0);
+                     12.0);
 
     // Upper Conveyor motor
     upper_conveyor_motor_.Set(-muan::utils::Cap((*outputs)->upper_conveyor_voltage(),
@@ -121,9 +121,9 @@ void SuperStructureInterface::WriteActuators() {
     // Solenoids
     pcm_->WriteSolenoid(ports::superstructure::kBallIntakeSolenoid, (*outputs)->ball_intake_down());
     pcm_->WriteSolenoid(ports::superstructure::kGroundGearIntakeSolenoid, (*outputs)->ground_gear_down());
-    pcm_->WriteDoubleSolenoid(
-        ports::superstructure::kClimberSolenoidA, ports::superstructure::kClimberSolenoidB,
-        !(*outputs)->climber_engaged() ? DoubleSolenoid::Value::kReverse : DoubleSolenoid::Value::kForward);
+    pcm_->WriteDoubleSolenoid(ports::superstructure::kFrontMagazineSolenoidA,
+                              ports::superstructure::kFrontMagazineSolenoidB,
+                              DoubleSolenoid::Value::kReverse);
     pcm_->WriteSolenoid(ports::superstructure::kMagazineSolenoid, (*outputs)->magazine_open());
 
   } else {
@@ -135,8 +135,9 @@ void SuperStructureInterface::WriteActuators() {
 
     pcm_->WriteSolenoid(ports::superstructure::kBallIntakeSolenoid, false);
     pcm_->WriteSolenoid(ports::superstructure::kGroundGearIntakeSolenoid, false);
-    pcm_->WriteDoubleSolenoid(ports::superstructure::kClimberSolenoidA,
-                              ports::superstructure::kClimberSolenoidB, DoubleSolenoid::Value::kForward);
+    pcm_->WriteDoubleSolenoid(ports::superstructure::kFrontMagazineSolenoidA,
+                              ports::superstructure::kFrontMagazineSolenoidB,
+                              DoubleSolenoid::Value::kReverse);
     pcm_->WriteSolenoid(ports::superstructure::kMagazineSolenoid, false);
   }
 }
