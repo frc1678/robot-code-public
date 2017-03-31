@@ -172,7 +172,7 @@ TEST_F(SuperstructureTest, GearScoreStaysInBox) {
 TEST_F(SuperstructureTest, ShootingStaysInBox) {
   driver_station_proto_->set_mode(RobotMode::TELEOP);
 
-  shooter_group_goal_proto_->set_wheel(c2017::shooter_group::BOTH);
+  shooter_group_goal_proto_->set_wheel(c2017::shooter_group::SHOOT);
 
   WriteQueues();
 
@@ -219,6 +219,7 @@ TEST_F(SuperstructureTest, Spinup) {
 
     EXPECT_GT(superstructure_output->shooter_voltage(), 0.0);
     EXPECT_GT(superstructure_output->accelerator_voltage(), 0.0);
+    EXPECT_EQ(superstructure_output->upper_conveyor_voltage(), 0.0);
   }
 }
 

@@ -108,11 +108,7 @@ void SuperStructure::Update() {
     magazine_goal->set_upper_goal(magazine::UPPER_FORWARD);
     magazine_goal->set_lower_goal(magazine::LOWER_FORWARD);
     magazine_goal->set_side_goal(magazine::SIDE_PULL_IN);
-  }
-
-  if (shooter_state_ != SuperstructureStatus::kShooterIdle) {
     ground_ball_intake_goal->set_intake_up(false);
-    ground_ball_intake_goal->set_run_intake(ground_ball_intake::INTAKE);
   }
 
   if (is_climbing) {
@@ -143,6 +139,7 @@ void SuperStructure::Update() {
   shooter_.SetGoal(shooter_goal);
   climber_.SetGoal(climber_goal);
 
+  superstructure_status->set_state(shooter_state_);
   QueueManager::GetInstance().superstructure_status_queue().WriteMessage(superstructure_status);
 
   bool outputs_enabled = false;
