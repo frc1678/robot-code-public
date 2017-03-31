@@ -26,9 +26,6 @@ constexpr uint32_t kAccelEncoderA = 16, kAccelEncoderB = 17;
 // Solenoid ports
 constexpr uint32_t kBallIntakeSolenoid = 7;
 constexpr uint32_t kGroundGearIntakeSolenoid = 4;
-constexpr uint32_t kGearShutterSolenoid = 5;
-constexpr uint32_t kHpGearIntakeSolenoidA = 2;
-constexpr uint32_t kHpGearIntakeSolenoidB = 3;
 constexpr uint32_t kMagazineSolenoid = 6;
 constexpr uint32_t kClimberSolenoidA = 0;
 constexpr uint32_t kClimberSolenoidB = 1;
@@ -52,9 +49,6 @@ SuperStructureInterface::SuperStructureInterface(muan::wpilib::CanWrapper* can_w
       accel_encoder_{ports::superstructure::kAccelEncoderA, ports::superstructure::kAccelEncoderB},
       pcm_{can_wrapper->pcm()} {
   pcm_->CreateSolenoid(ports::superstructure::kBallIntakeSolenoid);
-  pcm_->CreateDoubleSolenoid(ports::superstructure::kHpGearIntakeSolenoidA,
-                             ports::superstructure::kHpGearIntakeSolenoidB);
-  pcm_->CreateSolenoid(ports::superstructure::kGearShutterSolenoid);
   pcm_->CreateSolenoid(ports::superstructure::kGroundGearIntakeSolenoid);
   pcm_->CreateDoubleSolenoid(ports::superstructure::kClimberSolenoidA,
                              ports::superstructure::kClimberSolenoidB);
@@ -65,7 +59,6 @@ void SuperStructureInterface::ReadSensors() {
   c2017::shooter::ShooterInputProto shooter_sensors;
   c2017::climber::ClimberInputProto climber_sensors;
 
-  c2017::magazine::MagazineInputProto magazine_sensors;
   c2017::ground_gear_intake::GroundGearIntakeInputProto ground_gear_sensors;
 
   constexpr double kShooterRadiansPerClick = M_PI * 2 / 512.0;
@@ -73,7 +66,7 @@ void SuperStructureInterface::ReadSensors() {
   constexpr double kClimberMetersPerClick = M_PI * 2 / 512.0 / 25.6 * 0.032;
 
   shooter_sensors->set_shooter_encoder_position(shooter_encoder_.Get() * kShooterRadiansPerClick);
-  shooter_sensors->set_accelarator_encoder_postition(-accel_encoder_.Get() * kAccelRadiansPerClick);
+  shooter_sensors->set_accelerator_encoder_position(-accel_encoder_.Get() * kAccelRadiansPerClick);
   climber_sensors->set_position(accel_encoder_.Get() * kClimberMetersPerClick);
 
   auto current_reader = QueueManager::GetInstance().pdp_status_queue().MakeReader().ReadLastMessage();
@@ -85,7 +78,6 @@ void SuperStructureInterface::ReadSensors() {
 
   QueueManager::GetInstance().shooter_input_queue().WriteMessage(shooter_sensors);
   QueueManager::GetInstance().climber_input_queue().WriteMessage(climber_sensors);
-  QueueManager::GetInstance().magazine_input_queue().WriteMessage(magazine_sensors);
   QueueManager::GetInstance().ground_gear_input_queue().WriteMessage(ground_gear_sensors);
 }
 
@@ -98,7 +90,7 @@ void SuperStructureInterface::WriteActuators() {
                                          ports::superstructure::kMaxVoltage) /
                        12.0);
 
-    accel_motor_.Set(-muan::utils::Cap(-(*outputs)->accelarator_voltage(),
+    accel_motor_.Set(-muan::utils::Cap(-(*outputs)->accelerator_voltage(),
                                        -ports::superstructure::kMaxVoltage,
                                        ports::superstructure::kMaxVoltage) /
                        12.0);
@@ -128,10 +120,6 @@ void SuperStructureInterface::WriteActuators() {
 
     // Solenoids
     pcm_->WriteSolenoid(ports::superstructure::kBallIntakeSolenoid, (*outputs)->ball_intake_down());
-    pcm_->WriteDoubleSolenoid(
-        ports::superstructure::kHpGearIntakeSolenoidA, ports::superstructure::kHpGearIntakeSolenoidB,
-        (*outputs)->hp_gear_open() ? DoubleSolenoid::Value::kReverse : DoubleSolenoid::Value::kForward);
-    pcm_->WriteSolenoid(ports::superstructure::kGearShutterSolenoid, (*outputs)->gear_shutter_open());
     pcm_->WriteSolenoid(ports::superstructure::kGroundGearIntakeSolenoid, (*outputs)->ground_gear_down());
     pcm_->WriteDoubleSolenoid(
         ports::superstructure::kClimberSolenoidA, ports::superstructure::kClimberSolenoidB,
@@ -146,10 +134,6 @@ void SuperStructureInterface::WriteActuators() {
     gear_intake_motor_.Set(0);
 
     pcm_->WriteSolenoid(ports::superstructure::kBallIntakeSolenoid, false);
-    pcm_->WriteDoubleSolenoid(ports::superstructure::kHpGearIntakeSolenoidA,
-                              ports::superstructure::kHpGearIntakeSolenoidB, DoubleSolenoid::Value::kForward);
-    pcm_->WriteSolenoid(ports::superstructure::kGearShutterSolenoid, false);
-    pcm_->WriteSolenoid(ports::superstructure::kGearShutterSolenoid, false);
     pcm_->WriteSolenoid(ports::superstructure::kGroundGearIntakeSolenoid, false);
     pcm_->WriteDoubleSolenoid(ports::superstructure::kClimberSolenoidA,
                               ports::superstructure::kClimberSolenoidB, DoubleSolenoid::Value::kForward);

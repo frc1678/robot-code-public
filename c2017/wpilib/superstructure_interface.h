@@ -21,8 +21,6 @@ class SuperStructureInterface {
   c2017::shooter::ShooterInputQueue shooter_input_queue_;
   c2017::climber::ClimberInputQueue climber_input_queue_;
 
-  c2017::magazine::MagazineInputQueue magazine_input_queue_;
-
   c2017::wpilib::WpilibOutputQueue::QueueReader output_queue_;
 
   VictorSP shooter_motor_;

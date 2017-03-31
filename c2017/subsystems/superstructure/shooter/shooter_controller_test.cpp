@@ -47,14 +47,14 @@ TEST(ShooterControllerTest, PositiveVelocity) {
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->shooter_voltage()).finished());
 
     EXPECT_NEAR(output->shooter_voltage(), 0., 12.);
-    EXPECT_NEAR(output->accelarator_voltage(), 0., 12.);
+    EXPECT_NEAR(output->accelerator_voltage(), 0., 12.);
   }
 
   auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
 
   if (status) {
     EXPECT_NEAR(status.value()->observed_velocity(), 300, 10);
-    EXPECT_NEAR(status.value()->accelarator_observed_velocity(), 150, 20);
+    EXPECT_NEAR(status.value()->accelerator_observed_velocity(), 150, 20);
   } else {
     FAIL();
   }
@@ -90,14 +90,14 @@ TEST(ShooterControllerTest, CantTakeNegativeVoltage) {
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->shooter_voltage()).finished());
 
     EXPECT_NEAR(output->shooter_voltage(), 0., 12.);
-    EXPECT_NEAR(output->accelarator_voltage(), 0., 12.);
+    EXPECT_NEAR(output->accelerator_voltage(), 0., 12.);
   }
 
   EXPECT_EQ(output->shooter_voltage(), 0);
-  EXPECT_EQ(output->accelarator_voltage(), 0);
+  EXPECT_EQ(output->accelerator_voltage(), 0);
   if (status) {
     EXPECT_NEAR(status.value()->observed_velocity(), 0, 1e-5);
-    EXPECT_NEAR(status.value()->accelarator_observed_velocity(), 0, 1e-5);
+    EXPECT_NEAR(status.value()->accelerator_observed_velocity(), 0, 1e-5);
   } else {
     FAIL();
   }
@@ -133,12 +133,12 @@ TEST(ShooterControllerTest, CanStop) {
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->shooter_voltage()).finished());
 
     EXPECT_NEAR(output->shooter_voltage(), 0., 12.);
-    EXPECT_NEAR(output->accelarator_voltage(), 0., 12.);
+    EXPECT_NEAR(output->accelerator_voltage(), 0., 12.);
   }
 
   if (status) {
     EXPECT_NEAR(status.value()->observed_velocity(), 0, 1e-5);
-    EXPECT_NEAR(status.value()->accelarator_observed_velocity(), 0, 1e-5);
+    EXPECT_NEAR(status.value()->accelerator_observed_velocity(), 0, 1e-5);
   } else {
     FAIL();
   }
@@ -171,7 +171,7 @@ TEST(ShooterControllerTest, SaturationTest) {
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->shooter_voltage()).finished());
 
     EXPECT_NEAR(output->shooter_voltage(), 0., 12.);
-    EXPECT_NEAR(output->accelarator_voltage(), 0., 12.);
+    EXPECT_NEAR(output->accelerator_voltage(), 0., 12.);
   }
 
   plant.x(1) = 100;  // Disturbance
@@ -195,7 +195,7 @@ TEST(ShooterControllerTest, SaturationTest) {
 
   if (status) {
     EXPECT_NEAR(status.value()->observed_velocity(), 300, 10);
-    EXPECT_NEAR(status.value()->accelarator_observed_velocity(), 150, 15);
+    EXPECT_NEAR(status.value()->accelerator_observed_velocity(), 150, 15);
   } else {
     FAIL();
   }

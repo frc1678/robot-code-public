@@ -7,32 +7,17 @@ package c2017.magazine;
 message MagazineStatus {
   required uint64 timestamp = 1;
   required bool current_spiked = 2;
-  required bool has_hp_gear = 3;
   required bool side_conveyor_running = 4;
   required bool upper_conveyor_running = 5;
   required bool lower_conveyor_running = 6;
 }
 
-message MagazineInput {
-  required uint64 timestamp = 1;
-  required bool has_hp_gear = 2; // senses distance using proximity sensor to know if there is a gear
-}
-
 message MagazineOutput {
   required uint64 timestamp = 1;
-  required bool gear_intake_closed = 2;
   required bool magazine_extended = 3;
-  required bool gear_shutter_open = 4;
-  required double upper_voltage = 5;
-  required double side_voltage = 6;
-  required double lower_voltage = 7;
-}
-
-enum HPIntakeGoalState {
-  NONE = 0;
-  BALLS = 1;
-  GEAR = 2;
-  BOTH = 3;
+  required double upper_voltage = 4;
+  required double side_voltage = 5;
+  required double lower_voltage = 6;
 }
 
 enum UpperGoalState {
@@ -55,10 +40,8 @@ enum LowerGoalState {
 
 message MagazineGoal {
   required uint64 timestamp = 1;
-  required HPIntakeGoalState hp_intake_goal = 2;
-  required UpperGoalState upper_goal = 3;
-  required bool score_gear = 4;
-  required bool magazine_extended = 5;
-  required SideGoalState side_goal = 6;
-  required LowerGoalState lower_goal = 7;
+  required UpperGoalState upper_goal = 2;
+  required bool magazine_extended = 3;
+  required SideGoalState side_goal = 4;
+  required LowerGoalState lower_goal = 5;
 }

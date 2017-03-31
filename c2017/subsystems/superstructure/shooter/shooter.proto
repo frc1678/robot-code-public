@@ -7,19 +7,19 @@ package c2017.shooter;
 message ShooterInput {
   required uint64 timestamp = 1;
   required double shooter_encoder_position = 2;
-  required double accelarator_encoder_postition = 3;
+  required double accelerator_encoder_position = 3;
 }
 
 message ShooterOutput {
   required uint64 timestamp = 1;
   required double shooter_voltage = 2;
-  required double accelarator_voltage = 3;
+  required double accelerator_voltage = 3;
 }
 
 message ShooterStatus {
   required uint64 timestamp = 1;
   required double observed_velocity = 2; // Positive velocity = forwards [shooter velocity]
-  required double accelarator_observed_velocity = 3;
+  required double accelerator_observed_velocity = 3;
   required double voltage = 4;
   required bool at_goal = 5;
   required bool currently_running = 6;

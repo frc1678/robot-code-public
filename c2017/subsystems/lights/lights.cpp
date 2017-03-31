@@ -56,25 +56,11 @@ void Lights::Update() {
   if (ds_status) {
     if (ds_status.value()->mode() == RobotMode::TELEOP) {
       if (intake_group_goal_queue) {
-        switch (intake_group_goal_queue.value()->hp_load_type()) {
-          case c2017::intake_group::HpLoadType::HP_LOAD_NONE:
-            light_color_ = VisionAlignment();
-            break;
-          case c2017::intake_group::HpLoadType::HP_LOAD_BALLS:
-            light_color_ = LightColor::YELLOW;
-            break;
-          case c2017::intake_group::HpLoadType::HP_LOAD_GEAR:
-            light_color_ = LightColor::PINK;
-            break;
-          case c2017::intake_group::HpLoadType::HP_LOAD_BOTH:
-            light_color_ = FlashLights(LightColor::YELLOW, LightColor::PINK, false);
-            break;
-          default:
-            light_color_ = FlashLights(LightColor::OFF, LightColor::TEAL, false);
-        }
+        light_color_ = VisionAlignment();
       } else {
         light_color_ = FlashLights(LightColor::OFF, LightColor::TEAL, false);
       }
+
       // Climbing lights
       if (climber_status_queue) {
         if (climber_status_queue.value()->climber_state() == c2017::climber::State::CLIMBING) {

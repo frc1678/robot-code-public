@@ -59,7 +59,6 @@ class QueueManager {
   c2017::shooter::ShooterInputQueue& shooter_input_queue();
   c2017::shooter::ShooterStatusQueue& shooter_status_queue();
 
-  c2017::magazine::MagazineInputQueue& magazine_input_queue();
   c2017::magazine::MagazineStatusQueue& magazine_status_queue();
 
   c2017::ground_gear_intake::GroundGearIntakeInputQueue& ground_gear_input_queue();
@@ -107,7 +106,6 @@ class QueueManager {
   c2017::shooter::ShooterInputQueue shooter_input_queue_;
   c2017::shooter::ShooterStatusQueue shooter_status_queue_;
 
-  c2017::magazine::MagazineInputQueue magazine_input_queue_;
   c2017::magazine::MagazineStatusQueue magazine_status_queue_;
 
   c2017::ground_gear_intake::GroundGearIntakeInputQueue ground_gear_input_queue_;
