@@ -34,11 +34,6 @@ AxisButton::AxisButton(Joystick* joystick, uint32_t button, double trigger_thres
 
 void AxisButton::Update() {
   Button::Update(muan::utils::signum(joystick_->wpilib_joystick()->GetRawAxis(id_)) == muan::utils::signum(trigger_threshold_) && std::abs(joystick_->wpilib_joystick()->GetRawAxis(id_)) >= trigger_threshold_);
-  if (trigger_threshold_ < 0) {
-    Button::Update(joystick_->wpilib_joystick()->GetRawAxis(id_) <= trigger_threshold_);
-  } else {
-    Button::Update(joystick_->wpilib_joystick()->GetRawAxis(id_) >= trigger_threshold_);
-  }
 }
 
 }  // namespace teleop
