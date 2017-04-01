@@ -176,7 +176,8 @@ def c2d(A, B, dt, Q = None, R = None):
 
         Q_d = numpy.asmatrix(I[n:n+n, n:n+n].T * I[:n, n:n+n])
         R_d = numpy.asmatrix(R / dt)
-        return (A_d, B_d, Q_d, R_d)
+        # Make Q and R symmetric
+        return (A_d, B_d, 0.5 * (Q_d + Q_d.T), 0.5 * (R_d + R_d.T))
     else:
         return (A_d, B_d)
 

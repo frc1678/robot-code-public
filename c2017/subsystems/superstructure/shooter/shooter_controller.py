@@ -31,7 +31,7 @@ def make_gains():
     torque_constant = stall_torque / stall_current
     velocity_constant = (12. -free_current * resistance) / free_speed
 
-    num_motors = 4.0
+    num_motors = 2.0
     sensor_ratio = 1.0
 
     # back emf torque

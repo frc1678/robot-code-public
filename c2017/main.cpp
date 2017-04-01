@@ -1,26 +1,22 @@
 #include "c2017/citrus_robot/main.h"
 #include <WPILib.h>
-#include "c2017/webdash/server.h"
 #include "gflags/gflags.h"
 #include "subsystems/subsystem_runner.h"
+#include "vision/robot/reader.h"
 
 class WpilibRobot : public IterativeRobot {
  public:
   WpilibRobot() { c2017::QueueManager::GetInstance().StartLogging(); }
 
-  void RobotInit() override {
-    // Webdash is causing timing issues, likely a Mongoose issue. TODO(Kyle and Wesley) Figure this out.
-    // std::thread webdash_thread{std::ref(webdash_)};
-    // webdash_thread.detach();
-  }
+  void RobotInit() override {}
 
   void RobotPeriodic() override { main_.Update(); }
 
  private:
   c2017::SubsystemRunner subsystem_runner_;
+  c2017::vision::VisionReader vision_reader_;
   std::thread subsystem_thread{std::ref(subsystem_runner_)};
-
-  c2017::webdash::WebDashRunner webdash_;
+  std::thread vision_thread{std::ref(vision_reader_)};
 
   c2017::citrus_robot::CitrusRobot main_;
 };

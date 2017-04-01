@@ -32,9 +32,8 @@ public:
     virtual ~CppCommand();
     
     bool Update();
-    
-private:
-    void allocateAutoFunction(std::vector<void *> args);
+    bool fastForward();
+
     
 };
 

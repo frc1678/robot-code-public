@@ -1,0 +1,20 @@
+PrintAll: 5, 1.2, true
+PrintAll: theInt: 5, 1.2, true
+PrintAll: 5, theFloat: 1.2, true
+PrintAll: theInt: 5, theFloat: 1.2, true
+PrintAll: 5, 1.2, theBool: true
+PrintAll: theInt: 5, 1.2, theBool: true
+PrintAll: 5, theFloat: 1.2, theBool: true
+PrintAll: theInt: 5, theFloat: 1.2, theBool: true
+
+PrintAll: otherLabel1: 9, otherLabel2: 9.2, otherLabel3: true
+
+
+PrintAll: -5, -1.2, false
+PrintAll: theInt: -5, -1.2, false
+PrintAll: -5, theFloat: -1.2, false
+PrintAll: theInt: -5, theFloat: -1.2, false
+PrintAll: -5, -1.2, theBool: false
+PrintAll: theInt: -5, -1.2, theBool: false
+PrintAll: -5, theFloat: -1.2, theBool: false
+PrintAll: theInt: -5, theFloat: -1.2, theBool: false

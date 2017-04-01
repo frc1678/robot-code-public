@@ -1,5 +1,3 @@
-# Based on https://github.com/korfuri/bazel-travis
-
 # Setting the language to java allows us to use the jdk option to easily
 # install Java 8, which is required by bazel.
 language: java
@@ -25,9 +23,6 @@ addons:
       - zip
       - zlib1g-dev
 
-# Eventually, Bazel will have binary packages and we'll be able to
-# just download a prebuilt distribution of Bazel. For now, build it
-# from source every time.
 install:
   # WPILib packages
   - sudo add-apt-repository ppa:wpilib/toolchain -y
@@ -36,9 +31,9 @@ install:
   - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.9
   # Bazel
   - rm -rf $HOME/.cache/bazel/_bazel_travis/install
-  - wget 'https://github.com/bazelbuild/bazel/releases/download/0.4.1/bazel-0.4.1-installer-linux-x86_64.sh'
-  - chmod +x bazel-0.4.1-installer-linux-x86_64.sh
-  - ./bazel-0.4.1-installer-linux-x86_64.sh --user
+  - echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
+  - curl https://bazel.build/bazel-release.pub.gpg | sudo apt-key add -
+  - sudo apt-get update && sudo apt-get install bazel
   - sudo ln -s /usr/bin/clang-3.6 /usr/bin/clang
   # Numpy and Scipy don't work from the deb packages for some reason
   - pip install -U numpy

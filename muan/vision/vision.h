@@ -6,7 +6,14 @@
 #include <memory>
 #include <vector>
 
+#include "muan/vision/config.pb.h"
+
 namespace muan {
+
+namespace vision {
+
+// Return the OpenCV conversion code for converting from `from` to `to`.
+int ConversionCode(VisionThresholds::ColorSpace from, VisionThresholds::ColorSpace to);
 
 class VisionScorer {
  public:
@@ -16,6 +23,8 @@ class VisionScorer {
                           double width,                   // in pixels
                           double height,                  // in pixels
                           double fullness) = 0;           // area / bounding box area
+
+  virtual void Morph(cv::Mat) {}  // Erode and dilate go in here. By default does nothing.
 };
 
 class Vision {
@@ -23,9 +32,13 @@ class Vision {
   struct VisionConstants {
     double kFovX;              // Horizontal field of view, in radians
     double kFovY;              // Vertical field of view, in radians
-    double kCameraAngle;       // Angle of the camera above horizontal, in radians
+    double kCameraAngleX;      // Angle of the camera to the left of the robot, radians
+    double kCameraAngleY;      // Angle of the camera above horizontal, in radians
     double kHeightDifference;  // Height of goal above camera, in meters
     double kFullness;          // area of target / area of bounding rect
+
+    double kMinTargetArea;  // Minumum area of a target compared with image area
+    double kMaxTargetArea;
   };
 
   struct VisionStatus {
@@ -35,17 +48,11 @@ class Vision {
     cv::Mat image_canvas;       // Display of what exactly the robot thinks it's seeing
   };
 
-  struct ColorRange {
-    // Lower end of color range
-    cv::Scalar lower_bound;
-    // Upper end of color range
-    cv::Scalar upper_bound;
-    // Colorspace used for in_range (CV_BGR2___)
-    int colorspace;
-  };
-
-  Vision(ColorRange range, std::shared_ptr<VisionScorer> scorer, VisionConstants k);
+  Vision(VisionThresholds range, std::shared_ptr<VisionScorer> scorer, VisionConstants k);
   VisionStatus Update(cv::Mat raw);
+
+  void set_constants(VisionConstants constants);
+  void set_range(VisionThresholds range);
 
  protected:
   double CalculateDistance(std::vector<cv::Point> points, int rows);
@@ -56,8 +63,10 @@ class Vision {
   VisionConstants constants_;
   // Last place the goal was
   cv::Point2f last_pos_;
-  ColorRange range_;
+  VisionThresholds range_;
 };
+
+}  // namespace vision
 
 }  // namespace muan
 

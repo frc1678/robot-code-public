@@ -11,18 +11,18 @@
 #include "muan/wpilib/queue_types.h"
 #include "muan/teleop/queue_types.h"
 
+#include "c2017/webdash/server.h"
+
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
 #include "c2017/subsystems/superstructure/ground_ball_intake/queue_types.h"
-#include "c2017/subsystems/superstructure/trigger/queue_types.h"
 #include "c2017/subsystems/superstructure/shooter/queue_types.h"
 #include "c2017/subsystems/superstructure/magazine/queue_types.h"
 #include "c2017/subsystems/superstructure/ground_gear_intake/queue_types.h"
 #include "c2017/subsystems/superstructure/climber/queue_types.h"
 #include "c2017/subsystems/superstructure/queue_types.h"
-#include "c2017/wpilib/queue_types.h"
-#include "c2017/webdash/queue_types.h"
-#include "c2017/subsystems/lights/queue_types.h"
 #include "c2017/vision/queue_types.h"
+#include "c2017/wpilib/queue_types.h"
+#include "c2017/subsystems/lights/queue_types.h"
 
 using muan::queues::MessageQueue;
 
@@ -54,15 +54,11 @@ class QueueManager {
   c2017::wpilib::WpilibOutputQueue& superstructure_output_queue();
   c2017::superstructure::SuperstructureStatusQueue& superstructure_status_queue();
 
-  c2017::trigger::TriggerInputQueue& trigger_input_queue();
-  c2017::trigger::TriggerStatusQueue& trigger_status_queue();
-
   c2017::ground_ball_intake::GroundBallIntakeStatusQueue& ground_ball_intake_status_queue();
 
   c2017::shooter::ShooterInputQueue& shooter_input_queue();
   c2017::shooter::ShooterStatusQueue& shooter_status_queue();
 
-  c2017::magazine::MagazineInputQueue& magazine_input_queue();
   c2017::magazine::MagazineStatusQueue& magazine_status_queue();
 
   c2017::ground_gear_intake::GroundGearIntakeInputQueue& ground_gear_input_queue();
@@ -75,14 +71,14 @@ class QueueManager {
   c2017::climber::ClimberInputQueue& climber_input_queue();
   c2017::climber::ClimberStatusQueue& climber_status_queue();
 
+  c2017::vision::VisionInputQueue& vision_input_queue();
+  c2017::vision::VisionStatusQueue& vision_status_queue();
+  c2017::vision::VisionGoalQueue& vision_goal_queue();
+
   c2017::intake_group::IntakeGroupGoalQueue& intake_group_goal_queue();
   c2017::shooter_group::ShooterGroupGoalQueue& shooter_group_goal_queue();
 
-  c2017::webdash::WebDashQueue& webdash_queue();
-
   c2017::lights::LightsOutputQueue& lights_output_queue();
-
-  c2017::vision::VisionStatusQueue& vision_status_queue();
 
   muan::teleop::JoystickStatusQueue& manipulator_status_queue();
   muan::teleop::JoystickStatusQueue& wheel_status_queue();
@@ -110,10 +106,6 @@ class QueueManager {
   c2017::shooter::ShooterInputQueue shooter_input_queue_;
   c2017::shooter::ShooterStatusQueue shooter_status_queue_;
 
-  c2017::trigger::TriggerInputQueue trigger_input_queue_;
-  c2017::trigger::TriggerStatusQueue trigger_status_queue_;
-
-  c2017::magazine::MagazineInputQueue magazine_input_queue_;
   c2017::magazine::MagazineStatusQueue magazine_status_queue_;
 
   c2017::ground_gear_intake::GroundGearIntakeInputQueue ground_gear_input_queue_;
@@ -126,14 +118,14 @@ class QueueManager {
   c2017::climber::ClimberInputQueue climber_input_queue_;
   c2017::climber::ClimberStatusQueue climber_status_queue_;
 
+  c2017::vision::VisionInputQueue vision_input_queue_;
+  c2017::vision::VisionStatusQueue vision_status_queue_;
+  c2017::vision::VisionGoalQueue vision_goal_queue_;
+
   c2017::intake_group::IntakeGroupGoalQueue intake_group_goal_queue_;
   c2017::shooter_group::ShooterGroupGoalQueue shooter_group_goal_queue_;
 
-  c2017::webdash::WebDashQueue webdash_queue_;
-
   c2017::lights::LightsOutputQueue lights_output_queue_;
-
-  c2017::vision::VisionStatusQueue vision_status_queue_;
 
   muan::teleop::JoystickStatusQueue manipulator_status_queue_;
   muan::teleop::JoystickStatusQueue wheel_status_queue_;
@@ -143,6 +135,8 @@ class QueueManager {
   muan::logging::Logger logger_;
   std::thread logger_thread_{std::ref(logger_)};
 #endif  // FRC1678_NO_QUEUE_LOGGING
+
+  c2017::webdash::WebDashRunner webdash_;
 };
 
 }  // namespace c2017

@@ -1,0 +1,43 @@
+IMPORT units.auto
+
+// Test all the units!
+PrintFloat: 3 * s
+PrintFloat: 3 * min
+PrintFloat: 3 * ms
+PrintFloat: 3 * us
+
+PrintFloat: 3 * hz
+
+PrintFloat: 3 * m
+PrintFloat: 3 * cm
+PrintFloat: 3 * in
+PrintFloat: 3 * ft
+
+PrintFloat: 3 * mps
+PrintFloat: 3 * fps
+
+PrintFloat: 3 * mps2
+PrintFloat: 3 * fps2
+
+PrintFloat: 3 * kg
+PrintFloat: 3 * g
+PrintFloat: 3 * mg
+
+PrintFloat: 3 * rad
+PrintFloat: 3 * deg
+PrintFloat: 3 * rev
+
+PrintFloat: 3 * rps
+PrintFloat: 3 * dps
+
+PrintFloat: 3 * A
+
+PrintFloat: 3 * V
+PrintFloat: 3 * pwm
+
+// Test units with variables
+DEF distToDrive = 2.3 * m
+PrintFloat: distToDrive
+PrintFloat: distToDrive / ft
+PrintFloat: distToDrive / ft * ft
+

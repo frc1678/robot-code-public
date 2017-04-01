@@ -25,6 +25,7 @@ public:
     virtual ~RunCommand();
     
     bool Update();
-    
+    bool fastForward();
+
 };
 #endif /* RunCommand_hpp */

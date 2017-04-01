@@ -10,7 +10,8 @@ SubsystemRunner::SubsystemRunner()
                   QueueManager::GetInstance().drivetrain_status_queue(),
                   QueueManager::GetInstance().driver_station_queue(),
                   QueueManager::GetInstance().gyro_queue()},
-      superstructure_{} {}
+      superstructure_{},
+      vision_{} {}
 
 void SubsystemRunner::operator()() {
   aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(5));
@@ -29,6 +30,8 @@ void SubsystemRunner::operator()() {
     superstructure_.Update();
 
     lights_.Update();
+
+    vision_.Update();
 
     wpilib_.WriteActuators();
 

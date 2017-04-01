@@ -4,13 +4,6 @@ option cc_enable_arenas = true;
 
 package c2017.intake_group;
 
-enum HpLoadType {
-  HP_LOAD_NONE = 0;
-  HP_LOAD_GEAR = 1;
-  HP_LOAD_BALLS = 2;
-  HP_LOAD_BOTH = 3;
-}
-
 enum GroundGearIntakeGoal {
   GROUND_GEAR_NONE = 0;
   GROUND_GEAR_DROP = 1;
@@ -32,13 +25,12 @@ enum GroundBallIntakeRollers {
 
 message IntakeGroupGoal {
   required uint64 timestamp = 1;
-  required HpLoadType hp_load_type = 2;
 
-  required GroundGearIntakeGoal ground_gear_intake = 3;
-  required GroundBallIntakePosition ground_ball_position = 4;
-  required GroundBallIntakeRollers ground_ball_rollers = 5;
+  required GroundGearIntakeGoal ground_gear_intake = 2;
+  required GroundBallIntakePosition ground_ball_position = 3;
+  required GroundBallIntakeRollers ground_ball_rollers = 4;
 
-  required bool score_hp_gear = 6;
+  required bool agitate = 5;
 
-  required bool agitate = 7;
+  required bool magazine_open = 6;
 }

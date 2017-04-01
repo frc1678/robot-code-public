@@ -24,6 +24,7 @@
         BOOLEAN_FALSE = 'F',
         DIGIT = 'd',
         ALPHA = 'a',
+        UNDERSCORE = '_',
         FORWARD_SLASH = '/',
         ASTERISK = '*',
         EQUALS = '=',

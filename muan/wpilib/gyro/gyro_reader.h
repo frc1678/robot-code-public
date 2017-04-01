@@ -7,6 +7,7 @@
 #include "muan/queues/message_queue.h"
 #include "muan/units/units.h"
 #include "muan/wpilib/gyro/queue_types.h"
+#include "muan/wpilib/queue_types.h"
 #include "third_party/aos/common/time.h"
 
 namespace muan {
@@ -21,7 +22,7 @@ class GyroReader {
  public:
   // If invert is set to true, clockwise on the robot is positive. Useful for
   // when mechanical decides that the RoboRIO should be upside down for some reason.
-  explicit GyroReader(GyroQueue* queue, int calib_time, bool invert = false);
+  explicit GyroReader(GyroQueue* queue, DriverStationQueue* ds_queue, int calib_time, bool invert = false);
 
   // Run forever. This should be passed as an argument to the constructor of
   // std::thread.
@@ -45,6 +46,8 @@ class GyroReader {
 
   GyroQueue* gyro_queue_;
 
+  muan::wpilib::DriverStationQueue* ds_queue_;
+
   // How long should we calibrate for?
   const std::chrono::seconds calib_time_;
 
@@ -60,6 +63,10 @@ class GyroReader {
   std::atomic<bool> should_reset_{false};
 
   std::atomic<GyroState> calibration_state_{GyroState::kUninitialized};
+
+  // Based on logs, this gives plenty of room for bad luck, as actual values
+  // were less than 0.015, but being pushed will exceed this value.
+  constexpr static double kCalibrationVelocityLimit = 0.05;
 };
 
 }  // namespace gyro

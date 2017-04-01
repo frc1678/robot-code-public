@@ -24,7 +24,7 @@ lemonscript::RunCommand::RunCommand(int l, LemonScriptState *s, const std::strin
     runCompiler = new lemonscript::LemonScriptCompiler(runFileName, s);
     runScope = s->getScope();
     s->popScope();
-    
+    _hasExternalCode = runCompiler->RootSequence()->HasExternalCode();
 }
 
 lemonscript::RunCommand::~RunCommand() {
@@ -41,4 +41,8 @@ bool lemonscript::RunCommand::Update() {
     savedState->restoreScope(currentScope);
     
     return retVal;
+}
+
+bool lemonscript::RunCommand::fastForward() {
+    return !HasExternalCode();
 }

@@ -88,7 +88,9 @@ using namespace lemonscript;
     NSBundle *bundle = [NSBundle bundleForClass:[self class]];
     NSArray *paths = [bundle pathsForResourcesOfType:@"auto" inDirectory:nil];
     for(NSString *path in paths) {
-        [self test_run:path];
+        if([[path lastPathComponent] hasPrefix:@"test_"]) {
+            [self test_run:path];
+        }
     }
 }
 

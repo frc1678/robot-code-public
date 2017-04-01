@@ -1,0 +1,35 @@
+DEF pi = 3.14159265358
+
+DEF s = 1.0
+DEF min = 60 * s
+DEF ms = 0.001 * s
+DEF us = 0.000001 * s
+
+DEF hz = 1 / s
+
+DEF m = 1.0
+DEF cm = 0.01 * m
+DEF in = 0.0254 * m
+DEF ft = 0.3048 * m
+
+DEF mps = 1 * m / s
+DEF fps = 1 * ft / s
+
+DEF mps2 = 1 * m / s / s
+DEF fps2 = 1 * ft / s / s
+
+DEF kg = 1.0
+DEF g = 0.001 * kg
+DEF mg = 0.000001 * kg
+
+DEF rad = 1.0
+DEF deg = pi * rad / 180
+DEF rev = 2 * pi * rad
+
+DEF rps = 1 * rad / s
+DEF dps = 1 * deg / s
+
+DEF A = 1.0
+
+DEF V = kg * m * m / (A * s * s * s)
+DEF pwm = 12 * V

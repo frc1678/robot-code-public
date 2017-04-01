@@ -21,17 +21,17 @@ class SuperStructureInterface {
   c2017::shooter::ShooterInputQueue shooter_input_queue_;
   c2017::climber::ClimberInputQueue climber_input_queue_;
 
-  c2017::magazine::MagazineInputQueue magazine_input_queue_;
-
   c2017::wpilib::WpilibOutputQueue::QueueReader output_queue_;
 
   VictorSP shooter_motor_;
+  VictorSP accel_motor_;
   VictorSP upper_conveyor_motor_;
   VictorSP side_conveyor_motor_;
   VictorSP ball_intake_motor_;
   VictorSP gear_intake_motor_;
 
   Encoder shooter_encoder_;
+  Encoder accel_encoder_;
 
   muan::wpilib::PcmWrapper* pcm_;
 };

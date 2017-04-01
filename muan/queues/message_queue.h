@@ -3,8 +3,8 @@
 
 #include <array>
 #include <cstdint>
-#include "muan/utils/math_utils.h"
 #include "muan/proto/stack_proto.h"
+#include "muan/utils/math_utils.h"
 #include "third_party/aos/common/mutex.h"
 #include "third_party/optional/optional.hpp"
 
@@ -76,6 +76,16 @@ class MessageQueue {
 
     virtual ~QueueReader() = default;
 
+    // Gets the index of the next message in the queue. This number is for debugging purposes only and will
+    // increment by 1 for every new message read, unless the reader skips messages, in which case it will
+    // jump.
+    uint64_t GetNextMessageIndex() const;
+
+    // Gets the number of messages skipped by this reader since the last read. In normal operation, this will
+    // be zero - it will only be a greater value when values have been written to the queue at a faster rate
+    // than the reader is reading.
+    uint64_t GetNumMessagesSkipped() const;
+
    private:
     // Creates a QueueReader from a MessageQueue.
     explicit QueueReader(const MessageQueue& queue);
@@ -95,6 +105,10 @@ class MessageQueue {
   // position passed in. The parameter's value will be changed to the position
   // of the next valid message.
   std::experimental::optional<T> NextMessage(uint64_t& next) const;  // NOLINT
+
+  // Gets the index of the next message that is currently in memory. When current_message is in memory, this
+  // function will return current_message. Otherwise, it will return the oldest message currently kept.
+  uint64_t coerce_valid_message_index(uint64_t current_message) const;
 
   // Gets the "front" (the oldest messages still kept) of the circular buffer,
   // either from the current value of _back or from a known value of back.

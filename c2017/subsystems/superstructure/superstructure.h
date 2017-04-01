@@ -19,6 +19,10 @@
 namespace c2017 {
 namespace superstructure {
 
+// Constants for the shooter
+// The first value is revolutions per minute, which is then converted to radians per second
+constexpr double kShooterVelocity = 2950 * (M_PI * 2) / 60;
+
 class SuperStructure {
  public:
   SuperStructure();
@@ -32,15 +36,7 @@ class SuperStructure {
   c2017::magazine::Magazine magazine_;
   c2017::climber::Climber climber_;
 
-  c2017::shooter::ShooterGoalProto shooter_goal_;
-  c2017::climber::ClimberGoalProto climber_goal_;
-
-  c2017::superstructure::SuperstructureStatusProto superstructure_status_proto_;
-
-  bool is_shooting_ = false;
-
-  void UpdateShooter();
-  void SetWpilibOutput();
+  SuperstructureStatus::ShooterState shooter_state_ = SuperstructureStatus::kShooterIdle;
 };
 
 }  // namespace superstructure

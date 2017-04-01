@@ -4,6 +4,7 @@
 #include <memory.h>
 #include "muan/wpilib/queue_types.h"
 #include "muan/units/units.h"
+#include "muan/utils/history.h"
 #include "c2017/subsystems/superstructure/climber/queue_types.h"
 #include "muan/utils/monitor.h"
 #include "c2017/queue_manager/queue_manager.h"
@@ -19,15 +20,15 @@ class Climber {
   ClimberOutputProto Update(const ClimberInputProto& input, bool outputs_enabled);
   void Reset();
 
+  State current_state() const;
+
  private:
-  bool at_top_;
-  bool is_climbing_;
-  double last_position_;
-  bool to_climb_;
+  muan::utils::History<double> position_history_;
+
   ClimberStatusQueue& status_queue_;
-  muan::utils::Monitor climber_position_watcher_;
-  muan::utils::Monitor climber_current_watcher_;
-  bool on_rope_;
+
+  double position_offset_ = 0.0;
+  State current_state_ = NOTHING;
 };
 }  // namespace climber
 

@@ -6,91 +6,104 @@ class ClimberTest : public ::testing::Test {
  public:
   ClimberTest() {}
 
-  void Update(double voltage, bool on_rope) {
-    if (on_rope) {
-      current_position_ += (current_position_ - initial_rope_position) > 1 ? 0 : 0.00042 * voltage;
-      current_ = current_position_ > 2 ? 120 : 20;
-    } else {
-      current_position_ += 0.00042 * voltage;
-      current_ = current_position_ > 2 ? 120 : 10;
-      initial_rope_position = current_position_;
+  void Update(double current, double position, bool robot_disabled, int num_ticks) {
+    for (int i = 0; i < num_ticks; i++) {
+      input->set_current(current);
+      input->set_position(position);
+      output = climber.Update(input, !robot_disabled);
+      current_velocity = (position - last_position) / 0.005;
+      last_position = position;
     }
   }
-  double GetPosition() { return current_position_; }
 
-  double GetCurrent() { return current_; }
+  double GetVoltage() { return output->voltage(); }
 
-  void Reset() {
-    current_position_ = 0;
-    current_ = 0;
-    initial_rope_position = 0;
+  double GetVelocity() { return current_velocity; }
+
+  void SetGoal(bool should_climb) {
+    goal->set_climbing(should_climb);
+    climber.SetGoal(goal);
   }
+
+  c2017::climber::State GetClimberState() { return climber.current_state(); }
 
  private:
-  double initial_rope_position = 0;
-  double current_position_ = 0;
-  double current_ = 0;
+  c2017::climber::Climber climber;
+  c2017::climber::ClimberInputProto input;
+  c2017::climber::ClimberGoalProto goal;
+  c2017::climber::ClimberOutputProto output;
+  double last_position = 0;
+  double current_velocity = 0;
 };
 
-TEST_F(ClimberTest, ClimbsToTheTop) {
-  c2017::climber::ClimberGoalProto goal;
-  c2017::climber::ClimberInputProto input;
-  c2017::climber::ClimberOutputProto output;
+TEST_F(ClimberTest, DoNothing) {
+  SetGoal(false);
+  Update(0, 0, false, 1);
 
-  goal->set_climbing(true);
-
-  c2017::climber::Climber test_climber;
-
-  test_climber.SetGoal(goal);
-
-  auto test_status = c2017::QueueManager::GetInstance().climber_status_queue().ReadLastMessage();
-
-  for (double t = 0; t < 5; t += 0.005) {
-    input->set_position(GetPosition());
-    input->set_current(GetCurrent());
-    output = test_climber.Update(input, true);
-    test_status = c2017::QueueManager::GetInstance().climber_status_queue().ReadLastMessage();
-    if (test_status) {
-      Update(output->voltage(), test_status.value()->on_rope());
-    }
-  }
-  if (test_status) {
-    EXPECT_TRUE(test_status.value()->currently_climbing());
-    EXPECT_TRUE(test_status.value()->hit_top());
-  }
-  EXPECT_NEAR(output->voltage(), 0, 1e-5);
+  EXPECT_EQ(GetClimberState(), c2017::climber::NOTHING);
+  EXPECT_EQ(GetVoltage(), 0.0);
 }
 
-TEST_F(ClimberTest, Disabled) {
-  c2017::climber::ClimberGoalProto goal;
-  c2017::climber::ClimberInputProto input;
-  c2017::climber::ClimberOutputProto output;
+TEST_F(ClimberTest, SpinningUp) {
+  SetGoal(true);
 
-  goal->set_climbing(true);
-  input->set_position(GetPosition());  // position helps find the rate of the encoder.
-
-  c2017::climber::Climber test_climber;
-
-  test_climber.SetGoal(goal);
-
-  auto test_status = c2017::QueueManager::GetInstance().climber_status_queue().ReadLastMessage();
-
-  for (double t = 0; t < 2; t += 0.005) {
-    input->set_position(GetPosition());
-    input->set_current(GetCurrent());
-    output = test_climber.Update(input, false);
-    test_status = c2017::QueueManager::GetInstance().climber_status_queue().ReadLastMessage();
-    if (test_status) {
-      Update(output->voltage(), test_status.value()->on_rope());
-    }
-    if (GetPosition() < 1) {
-      EXPECT_NEAR(output->voltage(), 0, 1e-5);
-    }
+  for (double i = 0; i < 500; (i += 0.001)) {
+    Update(0, i, false, 1);
   }
 
-  if (test_status) {
-    EXPECT_FALSE(test_status.value()->currently_climbing());
-    EXPECT_FALSE(test_status.value()->hit_top());
+  EXPECT_EQ(GetClimberState(), c2017::climber::SPIN_UP);
+  EXPECT_EQ(GetVoltage(), 12.0);
+}
+
+TEST_F(ClimberTest, Approaching) {
+  SetGoal(true);
+
+  for (double i = 0; i < 500; (i += 0.001)) {
+    Update(0, i, false, 1);
   }
-  EXPECT_NEAR(output->voltage(), 0, 1e-5);
+  EXPECT_EQ(GetClimberState(), c2017::climber::SPIN_UP);
+
+  for (double i = 0; i < 500; (i += 0.01)) {
+    Update(0, i, false, 1);
+  }
+
+  EXPECT_EQ(GetClimberState(), c2017::climber::APPROACHING);
+  EXPECT_EQ(GetVoltage(), 12.0);
+}
+
+TEST_F(ClimberTest, AtTop) {
+  double carry_over = 0;
+  double offset = 0;
+  SetGoal(true);
+
+  for (double i = carry_over; i < 500; (i += 0.001)) {
+    Update(0, i, false, 1);
+    offset = i;
+  }
+  EXPECT_EQ(GetClimberState(), c2017::climber::SPIN_UP);
+
+  carry_over += offset;
+
+  for (double i = carry_over; i < (500 + carry_over); (i += 0.01)) {
+    Update(0, i, false, 1);
+    offset = i;
+  }
+  EXPECT_EQ(GetClimberState(), c2017::climber::APPROACHING);
+
+  carry_over += offset;
+
+  for (double i = carry_over; i < (500 + carry_over); (i += 0.002)) {
+    Update(0, i, false, 1);
+    offset = i;
+  }
+  EXPECT_EQ(GetClimberState(), c2017::climber::CLIMBING);
+
+  carry_over += offset;
+
+  for (double i = carry_over; i < (500 + carry_over); (i += 0.0001)) {
+    Update(0, i, false, 1);
+  }
+
+  EXPECT_EQ(GetClimberState(), c2017::climber::AT_TOP);
+  EXPECT_EQ(GetVoltage(), 2.0);
 }

@@ -154,6 +154,120 @@ void ProtoToCsvHeader(const google::protobuf::Message& message, std::ostream& se
   }
 }
 
+// JSON
+
+void DefaultFieldToJson(const google::protobuf::FieldDescriptor* descriptor, std::ostream& serialize);
+void FieldToJson(const google::protobuf::Message& message, const google::protobuf::Reflection* reflection,
+                const google::protobuf::FieldDescriptor* descriptor, std::ostream& serialize);
+
+void DefaultSubmessageToJson(const google::protobuf::Descriptor* descriptor, std::ostream& serialize) {
+  serialize << "{";
+  for (int i = 0; i < descriptor->field_count(); i++) {
+    DefaultFieldToJson(descriptor->field(i), serialize);
+
+    if (i != descriptor->field_count() - 1) {
+      serialize << ',';
+    }
+  }
+  serialize << "}";
+}
+
+void SubmessageToJson(const google::protobuf::Message& message,
+                      const google::protobuf::Reflection* reflection,
+                      const google::protobuf::Descriptor* descriptor, std::ostream& serialize) {
+  serialize << "{";
+  for (int i = 0; i < descriptor->field_count(); i++) {
+    if (descriptor->field(i)->is_repeated()) {
+      aos::Die("Logging protos with repeated messages is not supported!");
+    } else if (reflection->HasField(message, descriptor->field(i))) {
+      FieldToJson(message, reflection, descriptor->field(i), serialize);
+    } else {
+      // The value is an unset optional, so we want a default value
+      DefaultFieldToJson(descriptor->field(i), serialize);
+    }
+
+    if (i != descriptor->field_count() - 1) {
+      serialize << ',';
+    }
+  }
+  serialize << "}";
+}
+
+void DefaultFieldToJson(const google::protobuf::FieldDescriptor* descriptor, std::ostream& serialize) {
+  if (descriptor->is_repeated()) {
+    aos::Die("Logging protos with repeated messages is not supported!");
+  } else {
+    serialize << "\"" << descriptor->json_name() << "\":";
+    switch (descriptor->cpp_type()) {
+      case google::protobuf::FieldDescriptor::CPPTYPE_STRING:
+        serialize << "\"\"";
+        break;
+      case google::protobuf::FieldDescriptor::CPPTYPE_ENUM:
+      case google::protobuf::FieldDescriptor::CPPTYPE_FLOAT:
+      case google::protobuf::FieldDescriptor::CPPTYPE_DOUBLE:
+      case google::protobuf::FieldDescriptor::CPPTYPE_INT32:
+      case google::protobuf::FieldDescriptor::CPPTYPE_INT64:
+      case google::protobuf::FieldDescriptor::CPPTYPE_BOOL:
+      case google::protobuf::FieldDescriptor::CPPTYPE_UINT32:
+      case google::protobuf::FieldDescriptor::CPPTYPE_UINT64:
+        serialize << "0";
+        break;
+      case google::protobuf::FieldDescriptor::CPPTYPE_MESSAGE:
+        DefaultSubmessageToJson(descriptor->message_type(), serialize);
+        break;
+    }
+  }
+}
+
+void FieldToJson(const google::protobuf::Message& message, const google::protobuf::Reflection* reflection,
+                const google::protobuf::FieldDescriptor* descriptor, std::ostream& serialize) {
+  if (descriptor->is_repeated()) {
+    aos::Die("Logging protos with repeated messages is not supported!");
+  } else {
+    serialize << "\"" << descriptor->json_name() << "\":";
+    switch (descriptor->cpp_type()) {
+      case google::protobuf::FieldDescriptor::CPPTYPE_ENUM:
+        serialize << reflection->GetEnumValue(message, descriptor);
+        break;
+      case google::protobuf::FieldDescriptor::CPPTYPE_STRING:
+        serialize << "\"" << reflection->GetString(message, descriptor) << "\"";
+        break;
+      case google::protobuf::FieldDescriptor::CPPTYPE_FLOAT:
+        serialize << reflection->GetFloat(message, descriptor);
+        break;
+      case google::protobuf::FieldDescriptor::CPPTYPE_DOUBLE:
+        serialize << reflection->GetDouble(message, descriptor);
+        break;
+      case google::protobuf::FieldDescriptor::CPPTYPE_INT32:
+        serialize << reflection->GetInt32(message, descriptor);
+        break;
+      case google::protobuf::FieldDescriptor::CPPTYPE_INT64:
+        serialize << reflection->GetInt64(message, descriptor);
+        break;
+      case google::protobuf::FieldDescriptor::CPPTYPE_BOOL:
+        serialize << reflection->GetBool(message, descriptor);
+        break;
+      case google::protobuf::FieldDescriptor::CPPTYPE_UINT32:
+        serialize << reflection->GetUInt32(message, descriptor);
+        break;
+      case google::protobuf::FieldDescriptor::CPPTYPE_UINT64:
+        serialize << reflection->GetUInt64(message, descriptor);
+        break;
+      case google::protobuf::FieldDescriptor::CPPTYPE_MESSAGE:
+        const google::protobuf::Message& sub = reflection->GetMessage(message, descriptor);
+        SubmessageToJson(sub, sub.GetReflection(), descriptor->message_type(), serialize);
+        break;
+    }
+  }
+}
+
+void ProtoToJson(const google::protobuf::Message& message, std::ostream& serialize) {
+  auto reflection = message.GetReflection();
+  auto descriptor = message.GetDescriptor();
+
+  SubmessageToJson(message, reflection, descriptor, serialize);
+}
+
 }  // namespace util
 
 }  // namespace muan

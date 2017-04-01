@@ -82,6 +82,13 @@ TEST_F(GroundGearIntakeTest, FullSequence) {
   EXPECT_LT(GetVoltage(), 0.0);
 }
 
+TEST_F(GroundGearIntakeTest, OuttakeTest) {
+  SetGoal(c2017::ground_gear_intake::OUTTAKE);
+  Update(0, false, 1);
+  EXPECT_EQ(GetIntakeState(), c2017::ground_gear_intake::OUTTAKING);
+  EXPECT_NEAR(GetVoltage(), -2.0, 1e-4);
+}
+
 TEST_F(GroundGearIntakeTest, RiseFromIntaking) {
   SetGoal(c2017::ground_gear_intake::DROP);
   Update(0, false, 1);

@@ -7,7 +7,6 @@ cc_binary(
         "-lopencv_highgui",
     ],
     deps = [
-        #'//third_party/opencv:opencv',
         "//muan/vision",
     ],
 )

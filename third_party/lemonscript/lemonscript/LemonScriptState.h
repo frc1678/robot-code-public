@@ -24,6 +24,8 @@ class lemonscript::LemonScriptState {
     LemonScriptSymbolTableStack symbolStack;
     std::map<std::string, std::vector<const AvailableCppCommandDeclaration *> > availableCppCommands;
     std::string searchPath = "";
+    std::vector<std::string> imports;
+    std::vector<std::string> evaluatedImports;
     
 public:
     ~LemonScriptState();
@@ -56,8 +58,15 @@ public:
     const AvailableCppCommandDeclaration *lookupCommandDeclaration(const std::string &name, const std::vector<DataType> &parameterTypes) const;
     std::vector<const AvailableCppCommandDeclaration *> lookupCommandDeclarationsForName(const std::string &name) const;
     
+    // Search path settings and IMPORT tweaks
     void setSearchPath(const std::string &searchPath);
     std::string getSearchPath() const;
+    
+    void setIMPORTs(const std::vector<std::string> &imports);
+    std::vector<std::string> getIMPORTs() const;
+    
+    void addEvaluatedIMPORT(const std::string &name);
+    bool alreadyEvaluatedIMPORT(const std::string &name) const;
 };
 
 #endif /* LemonScriptState_hpp */

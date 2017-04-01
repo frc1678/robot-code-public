@@ -53,6 +53,8 @@ class History {
     return hist_arr_[read_pos % hist_arr_.size()];
   }
 
+  void reset() { current_pos_ = 0; }
+
   Iterator begin() { return Iterator(earliest(), this); }
 
   Iterator end() { return Iterator(current_pos_, this); }

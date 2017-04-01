@@ -30,6 +30,7 @@ lemonscript::OptionalCommand::OptionalCommand(int l, lemonscript::LemonScriptSta
 #warning TODO: Fix line numbers!
     
     command = lemonscript::commandFromToken(token, type, s, lineNum);
+    _hasExternalCode = command->HasExternalCode();
 }
 
 lemonscript::OptionalCommand::~OptionalCommand() {
@@ -42,4 +43,12 @@ bool lemonscript::OptionalCommand::Update() {
     }
     
     return true;
+}
+
+bool lemonscript::OptionalCommand::fastForward() {
+    if(HasExternalCode()) {
+        return false;
+    }
+    
+    return command->fastForward();
 }

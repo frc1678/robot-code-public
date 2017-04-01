@@ -27,7 +27,8 @@ public:
     virtual ~CompleteCommand();
     
     bool Update();
-    
+    bool fastForward();
+
 };
 
 #endif /* CompleteCommand_hpp */

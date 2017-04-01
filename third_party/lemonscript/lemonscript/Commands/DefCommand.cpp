@@ -16,6 +16,7 @@
 
 lemonscript::DefCommand::DefCommand(int l, LemonScriptState *s, const std::string &commandString) : Command(l, s) {
     state = s;
+    _hasExternalCode = false;
     
     size_t equalsPos = commandString.find("=");
     if(equalsPos == std::string::npos) {
@@ -48,4 +49,8 @@ lemonscript::DefCommand::~DefCommand() {
 bool lemonscript::DefCommand::Update() {
     rhsExpression->getValue(variableAddress);
     return true;
+}
+
+bool lemonscript::DefCommand::fastForward() {
+    return Update();
 }

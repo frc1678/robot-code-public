@@ -24,6 +24,7 @@ public:
     virtual ~OptionalCommand();
     
     bool Update();
+    bool fastForward();
 };
 
 #endif /* OptionalCommand_hpp */

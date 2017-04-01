@@ -3,17 +3,27 @@
 
 namespace muan {
 
+namespace vision {
+
+int ConversionCode(VisionThresholds::ColorSpace from, VisionThresholds::ColorSpace to) {
+  constexpr int conversion_matrix[3][3] = {
+      {139, CV_RGB2HSV, CV_RGB2BGR}, {CV_HSV2RGB, 139, CV_HSV2BGR}, {CV_BGR2RGB, CV_BGR2HSV, 139}};
+
+  return conversion_matrix[from][to];
+}
+
 double Vision::CalculateDistance(std::vector<cv::Point> points, int rows) {
   // Average together height of each point
   double angle = 0;
   for (auto& p : points) {
-    angle += p.y;
+    // Stupid inverted y axis
+    angle -= p.y;
   }
   angle /= points.size();
   // Scale angle from -fov/2 to fov/2
-  angle = (angle / rows - 0.5) * constants_.kFovY;
+  angle = (angle / rows + 0.5) * constants_.kFovY;
 
-  double distance = constants_.kHeightDifference / std::tan(angle + constants_.kCameraAngle);
+  double distance = constants_.kHeightDifference / std::tan(angle + constants_.kCameraAngleY);
   return distance;
 }
 
@@ -44,7 +54,7 @@ double Vision::CalculateSkew(std::vector<cv::Point> contour, std::vector<cv::Poi
   return (std::atan2(top.y, top.x) + std::atan2(bottom.y, bottom.x)) / 2;
 }
 
-Vision::Vision(ColorRange range, std::shared_ptr<VisionScorer> scorer, VisionConstants k) {
+Vision::Vision(VisionThresholds range, std::shared_ptr<VisionScorer> scorer, VisionConstants k) {
   range_ = range;
   scorer_ = scorer;
   constants_ = k;
@@ -61,8 +71,10 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
   retval.distance_to_target = 0;
   retval.angle_to_target = 0;
 
-  cv::cvtColor(raw, image, range_.colorspace);
-  cv::inRange(image, range_.lower_bound, range_.upper_bound, image);
+  cv::cvtColor(raw, image, ConversionCode(VisionThresholds::Bgr, range_.space()));
+  cv::inRange(image, cv::Scalar(range_.a_low(), range_.b_low(), range_.c_low()),
+              cv::Scalar(range_.a_high(), range_.b_high(), range_.c_high()), image);
+  scorer_->Morph(image);
 
   std::vector<std::vector<cv::Point>> contours;
   std::vector<cv::Vec4i> hierarchy;
@@ -85,16 +97,14 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
     cv::RotatedRect bounding = cv::minAreaRect(hull[i]);
 
     double area = cv::contourArea(contours[i]);
-    double hull_area = cv::contourArea(hull[i]);
-    // Fullness is the ratio of the contour's area to that of its convex hull
-    double fullness = area / hull_area;
 
     // A baseline score to determine whether or not it's even a target
-    double base_score = hull_area / (image.rows * image.cols);
+    double base_score = area / (image.rows * image.cols);
 
-    // Check anything with area at least .2% of the image
-    if (base_score > 0.002) {
-      targets.push_back(i);
+    if (base_score > constants_.kMinTargetArea && base_score < constants_.kMaxTargetArea) {
+      double hull_area = cv::contourArea(hull[i]);
+      // Fullness is the ratio of the contour's area to that of its convex hull
+      double fullness = area / hull_area;
 
       std::vector<cv::Point> skewbox;
 
@@ -108,6 +118,10 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
       double target_score =
           scorer_->GetScore(distance_to_target, distance_from_previous, skew, width, height, fullness);
 
+      if (target_score > 0) {
+        targets.push_back(i);
+      }
+
       if (target_score > best_score) {
         best_target = i;
         best_score = target_score;
@@ -115,9 +129,8 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
 
         retval.target_exists = true;
         retval.distance_to_target = distance_to_target;
-        // average together points
-        double angle_to_target = (skewbox[0] + skewbox[1] + skewbox[2] + skewbox[3]).x / 4;
-        angle_to_target = (angle_to_target / image.cols - 0.5) * constants_.kFovX;
+        double angle_to_target = bounding.center.x;
+        angle_to_target = (angle_to_target / image.cols - 0.5) * constants_.kFovX + constants_.kCameraAngleX;
         retval.angle_to_target = angle_to_target;
       }
     }
@@ -136,5 +149,11 @@ Vision::VisionStatus Vision::Update(cv::Mat raw) {
   retval.image_canvas = image_canvas;
   return retval;
 }
+
+void Vision::set_constants(VisionConstants constants) { constants_ = constants; }
+
+void Vision::set_range(VisionThresholds range) { range_ = range; }
+
+}  // namespace vision
 
 }  // namespace muan

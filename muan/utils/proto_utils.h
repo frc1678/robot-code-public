@@ -29,6 +29,8 @@ void ProtoToCsv(const google::protobuf::Message& message, std::ostream& serializ
 // test_string,test_uint,sub_message.id,sub_message.num,is_sane
 void ProtoToCsvHeader(const google::protobuf::Message& message, std::ostream& serialize);
 
+void ProtoToJson(const google::protobuf::Message& message, std::ostream& serialize);
+
 }  // namespace util
 
 }  // namespace muan

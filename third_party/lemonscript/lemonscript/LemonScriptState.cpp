@@ -8,6 +8,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <algorithm>
 
 #include "LemonScriptState.h"
 
@@ -112,5 +113,21 @@ void lemonscript::LemonScriptState::setSearchPath(const std::string &searchPath)
 
 std::string lemonscript::LemonScriptState::getSearchPath() const {
     return searchPath;
+}
+
+void lemonscript::LemonScriptState::setIMPORTs(const std::vector<std::string> &imports) {
+    this->imports = imports;
+}
+
+std::vector<std::string> lemonscript::LemonScriptState::getIMPORTs() const {
+    return imports;
+}
+
+void lemonscript::LemonScriptState::addEvaluatedIMPORT(const std::string &name) {
+    evaluatedImports.push_back(name);
+}
+
+bool lemonscript::LemonScriptState::alreadyEvaluatedIMPORT(const std::string &name) const {
+    return std::find(evaluatedImports.begin(), evaluatedImports.end(), name) != evaluatedImports.end();
 }
 

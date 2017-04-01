@@ -1,0 +1,24 @@
+TeleopDrive(float throttle_goal, float wheel_goal, bool quickturn)
+
+include {
+  "c2017/queue_manager/queue_manager.h"
+  "c2017/subsystems/drivetrain/drivetrain_base.h"
+  "muan/actions/drivetrain_action.h"
+}
+
+global {
+  frc971::control_loops::drivetrain::GoalProto drivetrain_goal;
+}
+
+init {
+  drivetrain_goal->mutable_teleop_command()->set_throttle(throttle_goal);
+  drivetrain_goal->mutable_teleop_command()->set_steering(wheel_goal);
+  drivetrain_goal->mutable_teleop_command()->set_quick_turn(quickturn);
+
+  c2017::QueueManager::GetInstance().drivetrain_goal_queue()->WriteMessage(drivetrain_goal);
+  return true;
+}
+
+periodic {
+  return true;
+}

@@ -6,10 +6,13 @@ TEST(LightColors, NoVisionSignal) {
   c2017::QueueManager::GetInstance().Reset();
 
   c2017::vision::VisionStatusProto vision_status;
+  muan::wpilib::DriverStationProto driver_station_proto;
 
   vision_status->set_has_connection(false);
+  driver_station_proto->set_mode(RobotMode::TELEOP);
 
   c2017::QueueManager::GetInstance().vision_status_queue().WriteMessage(vision_status);
+  c2017::QueueManager::GetInstance().driver_station_queue()->WriteMessage(driver_station_proto);
 
   c2017::lights::Lights lights;
   aos::time::EnableMockTime(aos::monotonic_clock::epoch());
@@ -56,108 +59,6 @@ TEST(LightColors, NotCalibrated) {
   }
 }
 
-TEST(LightColors, HpLoadBalls) {
-  c2017::QueueManager::GetInstance().Reset();
-
-  c2017::vision::VisionStatusProto vision_status;
-  muan::wpilib::gyro::GyroMessageProto gyro_proto;
-  c2017::intake_group::IntakeGroupGoalProto intake_group_goal_proto;
-  muan::wpilib::DriverStationProto driver_station_proto;
-
-  vision_status->set_has_connection(true);
-  gyro_proto->set_calibration_time_left(0);
-  intake_group_goal_proto->set_hp_load_type(c2017::intake_group::HpLoadType::HP_LOAD_BALLS);
-  driver_station_proto->set_mode(RobotMode::TELEOP);
-
-  c2017::QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal_proto);
-  c2017::QueueManager::GetInstance().gyro_queue()->WriteMessage(gyro_proto);
-  c2017::QueueManager::GetInstance().vision_status_queue().WriteMessage(vision_status);
-  c2017::QueueManager::GetInstance().driver_station_queue()->WriteMessage(driver_station_proto);
-
-  c2017::lights::Lights lights;
-  lights.Update();
-  auto lights_reading = c2017::QueueManager::GetInstance().lights_output_queue().ReadLastMessage();
-  if (lights_reading) {
-    EXPECT_TRUE(lights_reading.value()->red());
-    EXPECT_TRUE(lights_reading.value()->green());
-    EXPECT_FALSE(lights_reading.value()->blue());  // creates yellow
-  } else {
-    FAIL();
-  }
-}
-
-TEST(LightColors, HpLoadGear) {
-  c2017::QueueManager::GetInstance().Reset();
-
-  c2017::vision::VisionStatusProto vision_status;
-  muan::wpilib::gyro::GyroMessageProto gyro_proto;
-  c2017::intake_group::IntakeGroupGoalProto intake_group_goal_proto;
-  muan::wpilib::DriverStationProto driver_station_proto;
-
-  vision_status->set_has_connection(true);
-  gyro_proto->set_calibration_time_left(0);
-  intake_group_goal_proto->set_hp_load_type(c2017::intake_group::HpLoadType::HP_LOAD_GEAR);
-  driver_station_proto->set_mode(RobotMode::TELEOP);
-
-  c2017::QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal_proto);
-  c2017::QueueManager::GetInstance().gyro_queue()->WriteMessage(gyro_proto);
-  c2017::QueueManager::GetInstance().vision_status_queue().WriteMessage(vision_status);
-  c2017::QueueManager::GetInstance().driver_station_queue()->WriteMessage(driver_station_proto);
-
-  c2017::lights::Lights lights;
-  lights.Update();
-  auto lights_reading = c2017::QueueManager::GetInstance().lights_output_queue().ReadLastMessage();
-  if (lights_reading) {
-    EXPECT_TRUE(lights_reading.value()->red());
-    EXPECT_FALSE(lights_reading.value()->green());
-    EXPECT_TRUE(lights_reading.value()->blue());  // creates pink
-  } else {
-    FAIL();
-  }
-}
-
-TEST(LightColors, HpLoadBoth) {
-  c2017::QueueManager::GetInstance().Reset();
-
-  c2017::vision::VisionStatusProto vision_status;
-  muan::wpilib::gyro::GyroMessageProto gyro_proto;
-  c2017::intake_group::IntakeGroupGoalProto intake_group_goal_proto;
-  muan::wpilib::DriverStationProto driver_station_proto;
-
-  vision_status->set_has_connection(true);
-  gyro_proto->set_calibration_time_left(0);
-  intake_group_goal_proto->set_hp_load_type(c2017::intake_group::HpLoadType::HP_LOAD_BOTH);
-  driver_station_proto->set_mode(RobotMode::TELEOP);
-
-  c2017::QueueManager::GetInstance().vision_status_queue().WriteMessage(vision_status);
-  c2017::QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal_proto);
-  c2017::QueueManager::GetInstance().gyro_queue()->WriteMessage(gyro_proto);
-  c2017::QueueManager::GetInstance().driver_station_queue()->WriteMessage(driver_station_proto);
-
-  c2017::lights::Lights lights;
-  aos::time::EnableMockTime(aos::monotonic_clock::epoch());
-  lights.Update();
-  auto lights_reading = c2017::QueueManager::GetInstance().lights_output_queue().ReadLastMessage();
-  if (lights_reading) {
-    EXPECT_TRUE(lights_reading.value()->red());
-    EXPECT_FALSE(lights_reading.value()->green());
-    EXPECT_TRUE(lights_reading.value()->blue());  // creates pink
-  } else {
-    FAIL();
-  }
-
-  aos::time::IncrementMockTime(std::chrono::milliseconds(1000));
-  lights.Update();
-  lights_reading = c2017::QueueManager::GetInstance().lights_output_queue().ReadLastMessage();
-  if (lights_reading) {
-    EXPECT_TRUE(lights_reading.value()->red());
-    EXPECT_TRUE(lights_reading.value()->green());
-    EXPECT_FALSE(lights_reading.value()->blue());  // creates yellow
-  } else {
-    FAIL();
-  }
-}
-
 TEST(LightColors, VisionNotAlligned) {
   c2017::QueueManager::GetInstance().Reset();
 
@@ -172,7 +73,6 @@ TEST(LightColors, VisionNotAlligned) {
 
   gyro_proto->set_calibration_time_left(0);
 
-  intake_group_goal_proto->set_hp_load_type(c2017::intake_group::HpLoadType::HP_LOAD_NONE);
   driver_station_proto->set_mode(RobotMode::TELEOP);
 
   c2017::QueueManager::GetInstance().vision_status_queue().WriteMessage(vision_status);
@@ -206,7 +106,6 @@ TEST(LightColors, VisionTargetNotFound) {
 
   gyro_proto->set_calibration_time_left(0);
 
-  intake_group_goal_proto->set_hp_load_type(c2017::intake_group::HpLoadType::HP_LOAD_NONE);
   driver_station_proto->set_mode(RobotMode::TELEOP);
 
   c2017::QueueManager::GetInstance().vision_status_queue().WriteMessage(vision_status);
@@ -240,7 +139,6 @@ TEST(LightColors, VisionAligned) {
 
   gyro_proto->set_calibration_time_left(0);
 
-  intake_group_goal_proto->set_hp_load_type(c2017::intake_group::HpLoadType::HP_LOAD_NONE);
   driver_station_proto->set_mode(RobotMode::TELEOP);
 
   c2017::QueueManager::GetInstance().vision_status_queue().WriteMessage(vision_status);
@@ -273,23 +171,12 @@ TEST(LightColors, NoDsQueue) {
   c2017::QueueManager::GetInstance().vision_status_queue().WriteMessage(vision_status);
 
   c2017::lights::Lights lights;
-  aos::time::EnableMockTime(aos::monotonic_clock::epoch());
   lights.Update();
   auto lights_reading = c2017::QueueManager::GetInstance().lights_output_queue().ReadLastMessage();
   if (lights_reading) {
     EXPECT_FALSE(lights_reading.value()->red());
-    EXPECT_TRUE(lights_reading.value()->green());
-    EXPECT_TRUE(lights_reading.value()->blue());  // creates teal
-  } else {
-    FAIL();
-  }
-  aos::time::IncrementMockTime(std::chrono::milliseconds(1000));
-  lights.Update();
-  lights_reading = c2017::QueueManager::GetInstance().lights_output_queue().ReadLastMessage();
-  if (lights_reading) {
-    EXPECT_FALSE(lights_reading.value()->red());
     EXPECT_FALSE(lights_reading.value()->green());
-    EXPECT_FALSE(lights_reading.value()->blue());  // is off
+    EXPECT_TRUE(lights_reading.value()->blue());  // is blue
   } else {
     FAIL();
   }

@@ -5,8 +5,17 @@ package c2017.superstructure;
 option cc_enable_arenas = true;
 
 message SuperstructureStatus {
-  required bool gear_intake_down = 1;
-  required bool shooting = 2;
-  required bool climbing = 3;
-  required bool enable_outputs = 4;
+  required bool shooting = 1;
+  required bool climbing = 2;
+  required bool enable_outputs = 3;
+  required bool rumble_on = 4;
+
+  enum ShooterState {
+    kShooterIdle = 0;
+    kShooterSpinup = 1;
+    kShooterAtSpeed = 2;
+    kShooterShooting = 3;
+  }
+
+  required ShooterState state = 5;
 }

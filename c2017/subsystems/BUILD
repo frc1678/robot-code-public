@@ -6,6 +6,7 @@ cc_library(
     deps = [
         "//c2017/subsystems/drivetrain:drivetrain_base",
         "//c2017/subsystems/superstructure:superstructure_subsystem",
+        "//c2017/vision/robot:vision_alignment",
         "//c2017/wpilib:wpilib_interface",
         "//c2017/subsystems/lights:lights",
         "//third_party/aos/common:time",

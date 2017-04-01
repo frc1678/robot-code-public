@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include "c2017/queue_manager/queue_manager.h"
+#include "c2017/subsystems/superstructure/shooter/accelerator_constants.h"
 #include "c2017/subsystems/superstructure/shooter/queue_types.h"
 #include "c2017/subsystems/superstructure/shooter/shooter_constants.h"
 #include "muan/control/state_space_controller.h"
@@ -23,21 +24,24 @@ class ShooterController {
   double UpdateProfiledGoalVelocity(double unprofiled_goal_velocity);
 
  private:
-  muan::control::StateSpaceController<1, 3, 1> controller_;
-  muan::control::StateSpaceObserver<1, 3, 1> observer_;
+  muan::control::StateSpaceController<1, 3, 1> shooter_controller_;
+  muan::control::StateSpaceObserver<1, 3, 1> shooter_observer_;
+
+  muan::control::StateSpaceController<1, 2, 1> accelerator_controller_;
+  muan::control::StateSpaceObserver<1, 2, 1> accelerator_observer_;
 
   double CapU(double u, bool outputs_enabled);
 
   bool at_goal_;
 
-  c2017::shooter::ShotMode shot_mode_;
   double profiled_goal_velocity_;
   double unprofiled_goal_velocity_;
   c2017::shooter::ShooterStatusProto status_;
   double velocity_tolerance_;
   c2017::shooter::ShooterStatusQueue& shooter_status_queue_;
 
-  static constexpr double kShooterAcceleration = 3;
+  // Units are radians per second per tick
+  static constexpr double kShooterAcceleration = 0.75;
 };
 
 }  // namespace shooter

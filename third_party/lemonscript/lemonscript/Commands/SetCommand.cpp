@@ -15,6 +15,7 @@
 
 lemonscript::SetCommand::SetCommand(int l, LemonScriptState *s, const std::string &commandString) : Command(l, s) {
     state = s;
+    _hasExternalCode = false;
     
     size_t equalsPos = commandString.find("=");
     if(equalsPos == std::string::npos) {
@@ -57,4 +58,8 @@ lemonscript::SetCommand::~SetCommand() {
 bool lemonscript::SetCommand::Update() {
     rhsExpression->getValue(variableAddress);
     return true;
+}
+
+bool lemonscript::SetCommand::fastForward() {
+    return Update();
 }

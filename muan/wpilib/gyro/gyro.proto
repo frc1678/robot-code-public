@@ -18,6 +18,7 @@ message GyroMessage {
 
   optional double current_angle = 3;
   optional double current_angular_velocity = 4;
+  optional double raw_angular_velocity = 5;
 
-  optional double calibration_time_left = 5;
+  optional double calibration_time_left = 6;
 }

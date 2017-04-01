@@ -12,14 +12,11 @@ namespace magazine {
 class Magazine {
  public:
   Magazine() = default;
-  MagazineOutputProto Update(MagazineInputProto input, bool outputs_enabled);
+  MagazineOutputProto Update(bool outputs_enabled);
   void SetGoal(MagazineGoalProto goal);
 
  private:
-  bool has_hp_gear_;
-  bool magazine_extended_;
-  double score_gear_;
-  c2017::magazine::HPIntakeGoalState hp_intake_goal_;
+  bool magazine_extended_ = false;
   c2017::magazine::UpperGoalState upper_goal_;
   c2017::magazine::LowerGoalState lower_goal_;
   c2017::magazine::SideGoalState side_goal_;

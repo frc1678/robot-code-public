@@ -26,6 +26,8 @@ using namespace lemonscript_expressions;
 inline bool IsSpace (char c) { return c == ' '; }
 
 lemonscript::CppCommand::CppCommand(int l, LemonScriptState *state, const std::string &commandStringInput) : Command(l, state) {
+    _hasExternalCode = true;
+    
     std::string commandString = ParsingUtils::removeCommentFromLine(commandStringInput);
     
     string functionName;
@@ -188,10 +190,6 @@ lemonscript::CppCommand::~CppCommand() {
 }
 
 
-void lemonscript::CppCommand::allocateAutoFunction(vector<void *> args) {
-    autoFunc = declaration->generatorFunction();
-    autoFunc->Init(args);
-}
     
 bool lemonscript::CppCommand::Update() {
     void *data = savedState->userData;
@@ -211,11 +209,20 @@ bool lemonscript::CppCommand::Update() {
         arguments.push_back(argumentEvaluation + i);
     }
     
+    bool retVal;
     if(autoFunc == NULL) {
-        allocateAutoFunction(arguments);
+        autoFunc = declaration->generatorFunction();
+        autoFunc->Init(arguments);
+        retVal = false;
+    } else {
+        retVal = autoFunc->Periodic(arguments);
     }
     
-    bool retVal = autoFunc->Periodic(arguments);
     delete [] argumentEvaluation;
+    
     return retVal;
+}
+
+bool lemonscript::CppCommand::fastForward() {
+    return false;
 }

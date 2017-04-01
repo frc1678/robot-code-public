@@ -7,10 +7,11 @@ package c2017.webdash;
 message WebDash {
   enum Auto {
     NONE = 0;
-    ONE_GEAR = 1;
-    TWO_GEAR = 2;
-    HELLA_KPA = 3;
-    HELLA_KPA_PLUS_GEAR = 4;
+    TWO_GEAR = 1;
+    BLUE_HELLA_KPA = 2;
+    BLUE_HELLA_KPA_PLUS_GEAR = 3;
+    RED_HELLA_KPA = 4;
+    RED_HELLA_KPA_PLUS_GEAR = 5;
   }
   required uint64 timestamp = 1;
   required Auto auto_mode = 2;

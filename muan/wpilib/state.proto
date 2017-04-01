@@ -55,4 +55,6 @@ message PdpStatus {
   optional double total_current = 20;
   optional double total_energy = 21;
   optional double total_power = 22;
+
+  required uint64 num_failures = 23;
 }
