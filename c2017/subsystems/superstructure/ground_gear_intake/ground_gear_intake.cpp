@@ -89,6 +89,22 @@ void GroundGearIntake::SetGoal(GroundGearIntakeGoalProto goal) {
     case OUTTAKE:
       current_state_ = OUTTAKING;
       break;
+    case START_DROPPING_BALLS:
+      if (current_state_ == PICKING_UP || current_state_ == CARRYING) {
+        current_state_ = DROP_BALL_WITH_GEAR;
+      }
+      if (current_state_ == INTAKING || current_state_ == IDLE) {
+        current_state_ = DROP_BALL_WITHOUT_GEAR;
+      }
+      break;
+    case STOP_DROPPING_BALLS:
+      if (current_state_ = DROP_BALLS_WITHOUT_GEAR) {
+        current_state_ = IDLE;
+      }
+      if (current_state_ = DROP_BALLS_WITH_GEAR) {
+        current_state_ = CARRYING;
+      }
+      break;
   }
 }
 

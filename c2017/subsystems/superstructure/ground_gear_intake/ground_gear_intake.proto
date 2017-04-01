@@ -54,6 +54,10 @@ enum Goal {
   SCORE = 3;
   // Eject a gear without getting a foul
   OUTTAKE = 4;
+  // Start dropping balls
+  START_DROPPING_BALLS
+  // Stop dropping balls
+  STOP_DROPPING_BALLS
 }
 
 message GroundGearIntakeGoal {
