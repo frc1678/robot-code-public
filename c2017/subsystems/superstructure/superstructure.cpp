@@ -53,7 +53,8 @@ void SuperStructure::Update() {
         shooter_state_ = SuperstructureStatus::kShooterShooting;
         break;
       case shooter_group::BOTH:
-        if (shooter_status->currently_running() && shooter_status->at_goal()) {
+        if (shooter_status->currently_running() &&
+            shooter_status->state() == c2017::shooter::AT_GOAL) {
           shooter_state_ = SuperstructureStatus::kShooterShooting;
         } else {
           shooter_state_ = SuperstructureStatus::kShooterSpinup;

@@ -32,12 +32,15 @@ class ShooterController {
 
   double CapU(double u, bool outputs_enabled);
 
+  State state_ = IDLE;
+
   double profiled_goal_velocity_;
   double unprofiled_goal_velocity_;
   c2017::shooter::ShooterStatusProto status_;
-  double velocity_tolerance_;
   c2017::shooter::ShooterStatusQueue& shooter_status_queue_;
 
+  static constexpr double kSpinupVelocityTolerance = 5;
+  static constexpr double kSteadyStateVelocityTolerance = 12;
   // Units are radians per second per tick
   static constexpr double kShooterAcceleration = 0.75;
 };

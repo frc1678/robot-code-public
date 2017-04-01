@@ -32,7 +32,6 @@ ShooterController::ShooterController()
   accelerator_observer_ = muan::control::StateSpaceObserver<1, 2, 1>(
       accelerator_plant, frc1678::accelerator_controller::controller::L());
 
-  velocity_tolerance_ = 12;  // Radians per second
 }
 
 c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::ShooterInputProto input,
@@ -72,7 +71,28 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
                          shooter_observer_.x())
                             .cwiseAbs();
 
-  bool at_goal = absolute_error(1, 0) < velocity_tolerance_;
+
+  if (unprofiled_goal_velocity_ == 0.0) {
+    state_ = IDLE;
+  }
+
+  switch (state_) {
+    case IDLE:
+      if (unprofiled_goal_velocity_ != 0.0) {
+        state_ = SPINUP;
+      }
+      break;
+    case SPINUP:
+      if (absolute_error(1, 0) < kSpinupVelocityTolerance) {
+        state_ = AT_GOAL;
+      }
+      break;
+    case AT_GOAL:
+      if (absolute_error(1, 0) < kSteadyStateVelocityTolerance) {
+        state_ = SPINUP;
+      }
+      break;
+  }
 
   c2017::shooter::ShooterOutputProto output;
 
@@ -80,7 +100,7 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
   output->set_accelerator_voltage(accelerator_u);
   status_->set_observed_velocity(shooter_observer_.x()(1, 0));
   status_->set_accelerator_observed_velocity(accelerator_observer_.x()(1, 0));
-  status_->set_at_goal(at_goal);
+  status_->set_state(state_);
   status_->set_currently_running(std::fabs(unprofiled_goal_velocity_) >= 1e-3);
   status_->set_voltage(shooter_u);
   status_->set_profiled_goal_velocity(profiled_goal_velocity_);
