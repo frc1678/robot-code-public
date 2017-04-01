@@ -33,7 +33,7 @@ AxisButton::AxisButton(Joystick* joystick, uint32_t button, double trigger_thres
 }
 
 void AxisButton::Update() {
-  Button::Update(std::abs(joystick_->wpilib_joystick()->GetRawAxis(id_)) >= trigger_threshold_);
+  Button::Update(joystick_->wpilib_joystick()->GetRawAxis(id_)) >= trigger_threshold_;
 }
 
 }  // namespace teleop
