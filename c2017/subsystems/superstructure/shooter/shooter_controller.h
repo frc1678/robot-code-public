@@ -32,8 +32,6 @@ class ShooterController {
 
   double CapU(double u, bool outputs_enabled);
 
-  bool at_goal_;
-
   double profiled_goal_velocity_;
   double unprofiled_goal_velocity_;
   c2017::shooter::ShooterStatusProto status_;
