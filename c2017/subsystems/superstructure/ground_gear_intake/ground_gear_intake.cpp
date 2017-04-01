@@ -85,6 +85,7 @@ void GroundGearIntake::SetGoal(GroundGearIntakeGoalProto goal) {
       if (current_state_ == SCORING) {
         current_state_ = IDLE;
       }
+<<<<<<< Updated upstream
       break;
     case OUTTAKE:
       current_state_ = OUTTAKING;
@@ -105,6 +106,9 @@ void GroundGearIntake::SetGoal(GroundGearIntakeGoalProto goal) {
         current_state_ = CARRYING;
       }
       break;
+=======
+      break; 
+>>>>>>> Stashed changes
   }
 }
 
