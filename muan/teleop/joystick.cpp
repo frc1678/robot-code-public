@@ -22,7 +22,7 @@ muan::teleop::Button* Joystick::MakePov(uint32_t button, Pov position) {
 }
 
 muan::teleop::Button* Joystick::MakeAxis(uint32_t button, bool inverted) {
-  buttons_.emplace_back(new muan::teleop::AxisButton(this, button, .7));
+  buttons_.emplace_back(new muan::teleop::AxisButton(this, button, inverted ? -.7 :  .7));
   return buttons_[buttons_.size() - 1].get();
 }
 
