@@ -14,7 +14,7 @@
 cd /home/ubuntu/robot-code
 
 VISION_CAM=$(./muan/vision/find_camera_by_name.py --name LifeCam)
-STREAM_CAM=$(./muan/vision/find_camera_by_name.py --name C920)
+STREAM_CAM=$(./muan/vision/find_camera_by_name.py --name WideCam)
 
 echo Robot ip: $1
 echo Vision camera index: $VISION_CAM
