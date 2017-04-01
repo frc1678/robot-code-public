@@ -15,6 +15,11 @@
 namespace c2017 {
 namespace shooter {
 
+constexpr double kSpinupVelocityTolerance = 5;
+constexpr double kSteadyStateVelocityTolerance = 12;
+// Units are radians per second per tick
+constexpr double kShooterAcceleration = 0.75;
+
 class ShooterController {
  public:
   ShooterController();
@@ -38,11 +43,6 @@ class ShooterController {
   double unprofiled_goal_velocity_;
   c2017::shooter::ShooterStatusProto status_;
   c2017::shooter::ShooterStatusQueue& shooter_status_queue_;
-
-  static constexpr double kSpinupVelocityTolerance = 5;
-  static constexpr double kSteadyStateVelocityTolerance = 12;
-  // Units are radians per second per tick
-  static constexpr double kShooterAcceleration = 0.75;
 };
 
 }  // namespace shooter
