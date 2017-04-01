@@ -33,7 +33,7 @@ AxisButton::AxisButton(Joystick* joystick, uint32_t button, double trigger_thres
 }
 
 void AxisButton::Update() {
-  if trigger_threshold_ < 0 {
+  if (trigger_threshold_ < 0) {
     Button::Update(joystick_->wpilib_joystick()->GetRawAxis(id_) <= trigger_threshold_);
   } else {
     Button::Update(joystick_->wpilib_joystick()->GetRawAxis(id_) >= trigger_threshold_);

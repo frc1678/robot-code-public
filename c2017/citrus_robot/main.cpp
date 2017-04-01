@@ -26,7 +26,7 @@ CitrusRobot::CitrusRobot()
   just_spinup_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::START));                    // Start Button
   toggle_distance_align_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_CLICK_IN));  // Left joystick
   //toggle_magazine_ = gamepad_.MakePov(0, muan::teleop::Pov::kEast);                           // POV Right
-  toggle_magazine_ = gamepad_.MakeAxis(1, true);                           // POV Right
+  toggle_magazine_ = gamepad_.MakeAxis(1, false);                           // POV Right
 }
 
 void CitrusRobot::Update() {
@@ -86,10 +86,10 @@ void CitrusRobot::SendSuperstructureMessage() {
 
   // Toggle the magazine
   //magazine_out_ = magazine_out_ != toggle_magazine_->was_clicked();
-  magazine_out_ = magazine_out_ != toggle_magazine_->is_pressed();
   intake_group_goal_->set_magazine_open(magazine_out_);
 
-  intake_group_goal_->set_agitate(agitate_->is_pressed());
+  //intake_group_goal_->set_agitate(agitate_->is_pressed());
+  intake_group_goal_->set_agitate(toggle_magazine_->is_pressed());
 
   if (gear_intake_down_->was_clicked()) {
     intake_group_goal_->set_ground_gear_intake(intake_group::GROUND_GEAR_DROP);
