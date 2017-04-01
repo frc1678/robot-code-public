@@ -28,19 +28,12 @@ enum State {
   CARRYING = 3;
   // Scoring a gear
   SCORING = 4;
-<<<<<<< Updated upstream
   // Eject a gear without getting a foul
   OUTTAKING = 5;
   // Put intake down if fuel is behind it when the intake has a gear
   DROP_BALL_WITH_GEAR = 6;
   //Put the intake down if fuel is behind it when the intake doesn't have a gear
   DROP_BALL_WITHOUT_GEAR = 7;
-=======
-  // Put intake down if fuel is behind it when the intake has a gear
-  DROP_BALL_WITH_GEAR = 5;
-  //Put the intake down if fuel is behind it when the intake doesn't have a gear
-  DROP_BALL_WITHOUT_GEAR = 6;
->>>>>>> Stashed changes
 }
 
 message GroundGearIntakeStatus {
@@ -62,9 +55,9 @@ enum Goal {
   // Eject a gear without getting a foul
   OUTTAKE = 4;
   // Start dropping balls
-  START_DROPPING_BALLS
+  START_DROPPING_BALLS = 5;
   // Stop dropping balls
-  STOP_DROPPING_BALLS
+  STOP_DROPPING_BALLS = 6;
 }
 
 message GroundGearIntakeGoal {

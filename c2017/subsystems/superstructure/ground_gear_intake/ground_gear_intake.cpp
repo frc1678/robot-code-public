@@ -28,11 +28,11 @@ GroundGearIntakeOutputProto GroundGearIntake::Update(GroundGearIntakeInputProto 
         break;
       case DROP_BALL_WITH_GEAR:
         voltage = kCarryVoltage;
-        intake_down = true
+        intake_down = true;
         break;
-      case DROP_BALL_WITHOUT_GEAR;
-        voltage = 0
-        intake_down = true
+      case DROP_BALL_WITHOUT_GEAR:
+        voltage = 0;
+        intake_down = true;
         break;
       case PICKING_UP:
         voltage = kPickupVoltage;
@@ -85,7 +85,6 @@ void GroundGearIntake::SetGoal(GroundGearIntakeGoalProto goal) {
       if (current_state_ == SCORING) {
         current_state_ = IDLE;
       }
-<<<<<<< Updated upstream
       break;
     case OUTTAKE:
       current_state_ = OUTTAKING;
@@ -99,16 +98,13 @@ void GroundGearIntake::SetGoal(GroundGearIntakeGoalProto goal) {
       }
       break;
     case STOP_DROPPING_BALLS:
-      if (current_state_ = DROP_BALLS_WITHOUT_GEAR) {
+      if (current_state_== DROP_BALL_WITHOUT_GEAR) {
         current_state_ = IDLE;
       }
-      if (current_state_ = DROP_BALLS_WITH_GEAR) {
+      if (current_state_ == DROP_BALL_WITH_GEAR) {
         current_state_ = CARRYING;
       }
       break;
-=======
-      break; 
->>>>>>> Stashed changes
   }
 }
 
