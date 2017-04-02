@@ -88,7 +88,7 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
       }
       break;
     case AT_GOAL:
-      if (absolute_error(1, 0) < kSteadyStateVelocityTolerance) {
+      if (absolute_error(1, 0) > kSteadyStateVelocityTolerance) {
         state_ = SPINUP;
       }
       break;

@@ -248,7 +248,7 @@ TEST_F(SuperstructureTest, SpinupShoot) {
     auto superstructure_output =
         QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
 
-    EXPECT_TRUE(shooter_status->at_goal());
+    EXPECT_EQ(shooter_status->state(), c2017::shooter::AT_GOAL);
     EXPECT_TRUE(shooter_status->currently_running());
     EXPECT_GT(superstructure_output->upper_conveyor_voltage(), 0.0);
   }
