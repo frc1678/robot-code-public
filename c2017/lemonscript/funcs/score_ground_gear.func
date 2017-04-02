@@ -1,4 +1,4 @@
-ScoreGroundGear()
+ScoreGroundGear(bool on)
 
 include {
   "c2017/queue_manager/queue_manager.h"
@@ -11,7 +11,11 @@ global {
 
 init {
   c2017::intake_group::IntakeGroupGoalProto intake_group_goal;
-  intake_group_goal->set_ground_gear_intake(c2017::intake_group::GROUND_GEAR_SCORE);
+  if (on) {
+    intake_group_goal->set_ground_gear_intake(c2017::intake_group::GROUND_GEAR_SCORE);
+  } else {
+    intake_group_goal->set_ground_gear_intake(c2017::intake_group::GROUND_GEAR_NONE);
+  }
   c2017::QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal);
   return true;
 }
