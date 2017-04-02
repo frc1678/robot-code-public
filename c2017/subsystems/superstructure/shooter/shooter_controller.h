@@ -24,6 +24,7 @@ class ShooterController {
   double UpdateProfiledGoalVelocity(double unprofiled_goal_velocity);
 
  private:
+  muan::control::StateSpacePlant<1, 3, 1> plant_;  
   muan::control::StateSpaceController<1, 3, 1> shooter_controller_;
   muan::control::StateSpaceObserver<1, 3, 1> shooter_observer_;
 
@@ -46,10 +47,11 @@ class ShooterController {
   // Units are radians per second per tick
   static constexpr double kShooterAcceleration = 0.75;
   static constexpr double kMinimalWorkingVelocity = 10;
-  static constexpr double kEncoderFaultTicksAllowed = 300;
-  static constexpr double kShooterOpenLoopU = 8; //TODO(Livy) Find a real value for this
-  static constexpr double kAcceleratorOpenLoopU = 8; 
 };
+  
+constexpr double kEncoderFaultTicksAllowed = 300;
+constexpr double kShooterOpenLoopU = 8; //TODO(Livy) Find a real value for this
+constexpr double kAcceleratorOpenLoopU = 8; 
 
 }  // 
 }  // namespace c2017

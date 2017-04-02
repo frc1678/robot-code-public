@@ -31,6 +31,9 @@ ShooterController::ShooterController()
       frc1678::accelerator_controller::controller::C());
   accelerator_observer_ = muan::control::StateSpaceObserver<1, 2, 1>(
       accelerator_plant, frc1678::accelerator_controller::controller::L());
+  plant_ = muan::control::StateSpacePlant<1, 3, 1>(frc1678::shooter_controller::controller::A(),
+                                                   frc1678::shooter_controller::controller::B(),
+                                                   frc1678::shooter_controller::controller::C());
 
   at_goal_ = false;
 
@@ -68,13 +71,12 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
     } else {
       status_->set_uncapped_u(kShooterOpenLoopU);
       shooter_u = CapU(kShooterOpenLoopU, outputs_enabled);
-      accelerator_u = CapU(kAcceleratorOpenLoopU, outputs_enabled); 
+      accelerator_u = CapU(kAcceleratorOpenLoopU, outputs_enabled);
     }
-    if (shooter_observer_.x()(1, 0) > kMinimalWorkingVelocity &&
-        old_pos_ == input->shooter_encoder_position()) {
+    if (plant_.x()(1, 0) > kMinimalWorkingVelocity && old_pos_ == input->shooter_encoder_position()) {
       num_encoder_fault_ticks_++;
       if (num_encoder_fault_ticks_ > kEncoderFaultTicksAllowed) {
-        encoder_fault_detected_ = true; 
+        encoder_fault_detected_ = true;
       }
     }
   }
@@ -82,6 +84,7 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
 
   shooter_observer_.Update((Eigen::Matrix<double, 1, 1>() << shooter_u).finished(), shooter_y);
   accelerator_observer_.Update((Eigen::Matrix<double, 1, 1>() << accelerator_u).finished(), accelerator_y);
+  plant_.Update((Eigen::Matrix<double, 1, 1>() << shooter_u).finished());
 
   auto absolute_error = ((Eigen::Matrix<double, 3, 1>() << 0.0, unprofiled_goal_velocity_, 0.0).finished() -
                          shooter_observer_.x()).cwiseAbs();
