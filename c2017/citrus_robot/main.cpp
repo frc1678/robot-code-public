@@ -25,9 +25,10 @@ CitrusRobot::CitrusRobot()
   ball_intake_run_ = gamepad_.MakeAxis(3, .7);                                                // Right Trigger
   climb_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::BACK));                           // Back Button
   just_spinup_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::START));                    // Start Button
-  toggle_distance_align_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_CLICK_IN));  // Left joystick in
-  toggle_magazine_ = gamepad_.MakePov(0, muan::teleop::Pov::kEast);                           // POV Right
-  drop_balls_ = gamepad_.MakeAxis(1, .7);						      // Left Joystick South
+  toggle_distance_align_ =
+      gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_CLICK_IN));  // Left joystick in
+  toggle_magazine_ = gamepad_.MakePov(0, muan::teleop::Pov::kEast);      // POV Right
+  drop_balls_ = gamepad_.MakeAxis(1, .7);                                // Left Joystick South
 }
 
 void CitrusRobot::Update() {
@@ -79,15 +80,15 @@ void CitrusRobot::SendSuperstructureMessage() {
   } else {
     intake_group_goal_->set_ground_gear_intake(intake_group::GROUND_GEAR_NONE);
   }
- 
+
   if (drop_balls_->is_pressed()) {
     intake_group_goal_->set_ground_gear_intake(intake_group::GROUND_GEAR_START_DROPPING_BALLS);
   }
- 
+
   if (drop_balls_->was_released()) {
     intake_group_goal_->set_ground_gear_intake(intake_group::GROUND_GEAR_STOP_DROPPING_BALLS);
   }
- 
+
   // Toggle the ball intake
   ball_intake_down_ = (ball_intake_down_ != ball_intake_toggle_->was_clicked());
 
@@ -97,7 +98,7 @@ void CitrusRobot::SendSuperstructureMessage() {
   if (climb_->was_clicked()) {
     // Kelly - Gamepad Button
     currently_climbing_ = !currently_climbing_;
-}
+  }
 
   shooter_group_goal_->set_should_climb(currently_climbing_);
 
