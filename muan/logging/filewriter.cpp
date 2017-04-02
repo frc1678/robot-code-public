@@ -50,8 +50,12 @@ void FileWriter::DetermineBasePath() {
 }
 
 void FileWriter::CreateReadableName(std::string name) {
+  auto readable_path = base_path_.parent_path() / name;
+  if (boost::filesystem::exists(readable_path)) {
+    boost::filesystem::remove(readable_path);
+  }
   if (boost::filesystem::portable_posix_name(name)) {
-    boost::filesystem::create_symlink(base_path_, base_path_.parent_path() / name);
+    boost::filesystem::create_symlink(base_path_, readable_path);
   }
 }
 
