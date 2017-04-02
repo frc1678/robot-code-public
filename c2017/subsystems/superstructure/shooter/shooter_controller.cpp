@@ -89,7 +89,7 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
   auto absolute_error = ((Eigen::Matrix<double, 3, 1>() << 0.0, unprofiled_goal_velocity_, 0.0).finished() -
                          shooter_observer_.x()).cwiseAbs();
 
-  at_goal_ = absolute_error(1, 0) < velocity_tolerance_;
+  at_goal_ = absolute_error(1, 0) < velocity_tolerance_ || encoder_fault_detected_;
 
   c2017::shooter::ShooterOutputProto output;
 
