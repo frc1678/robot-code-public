@@ -31,7 +31,6 @@ ShooterController::ShooterController()
       frc1678::accelerator_controller::controller::C());
   accelerator_observer_ = muan::control::StateSpaceObserver<1, 2, 1>(
       accelerator_plant, frc1678::accelerator_controller::controller::L());
-
 }
 
 c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::ShooterInputProto input,
