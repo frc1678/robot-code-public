@@ -20,8 +20,8 @@ CitrusRobot::CitrusRobot()
   just_shoot_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::Y_BUTTON));                  // Button Y
   stop_shooting_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_BUMPER));            // Left bumper
   ball_intake_toggle_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::RIGHT_BUMPER));      // Right Bumper
-  agitate_ = gamepad_.MakeAxis(2);                                                            // Left Trigger
-  ball_intake_run_ = gamepad_.MakeAxis(3);                                                    // Right Trigger
+  agitate_ = gamepad_.MakeAxis(2, .7);                                                        // Left Trigger
+  ball_intake_run_ = gamepad_.MakeAxis(3, .7);                                                // Right Trigger
   climb_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::BACK));                           // Back Button
   just_spinup_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::START));                    // Start Button
   toggle_distance_align_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_CLICK_IN));  // Left joystick
