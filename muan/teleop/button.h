@@ -56,6 +56,8 @@ class AxisButton : public Button {
   void Update();
 
  private:
+  // Negative values will cause the button to be triggered when the axis drops below the threshold, positive
+  // values when it is above.
   double trigger_threshold_;
 };
 
