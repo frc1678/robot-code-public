@@ -69,7 +69,7 @@ void CitrusRobot::SendSuperstructureMessage() {
   intake_group_goal_->set_front_magazine_open(magazine_out_);
 
   intake_group_goal_->set_agitate(agitate_->is_pressed());
- 
+
   if (gear_intake_down_->was_clicked()) {
     intake_group_goal_->set_ground_gear_intake(intake_group::GROUND_GEAR_DROP);
   } else if (gear_intake_down_->was_released()) {
