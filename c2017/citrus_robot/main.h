@@ -34,7 +34,7 @@ class CitrusRobot {
   // Gamepad D-Pad
   muan::teleop::Button *toggle_magazine_, *toggle_distance_align_;
   // Gamepad Triggers
-  muan::teleop::Button *agitate_, *ball_intake_run_;
+  muan::teleop::Button *agitate_, *ball_intake_run_, *drop_balls_;
 
   bool ball_intake_down_ = false;
   bool currently_climbing_ = false;

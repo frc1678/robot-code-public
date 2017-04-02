@@ -9,6 +9,8 @@ enum GroundGearIntakeGoal {
   GROUND_GEAR_DROP = 1;
   GROUND_GEAR_RISE = 2;
   GROUND_GEAR_SCORE = 3;
+  GROUND_GEAR_START_DROPPING_BALLS = 4;
+  GROUND_GEAR_STOP_DROPPING_BALLS = 5;
 }
 
 // Will be overridden by gear intake position to stay in the correct volume.
