@@ -30,7 +30,6 @@ class GroundGearIntakeTest : public ::testing::Test {
 TEST_F(GroundGearIntakeTest, Idling) {
   SetGoal(c2017::ground_gear_intake::NONE);
   Update(0, false, 1);
-
   EXPECT_EQ(GetIntakeState(), c2017::ground_gear_intake::IDLE);
   EXPECT_EQ(GetVoltage(), 0.0);
 }
@@ -49,11 +48,12 @@ TEST_F(GroundGearIntakeTest, Intaking) {
   EXPECT_EQ(GetVoltage(), 12.0);
 }
 
-TEST_F(GroundGearIntakeTest, Dropping_Ball_With_Gear) {   
+TEST_F(GroundGearIntakeTest, Dropping_Ball_With_Gear) {
+  SetGoal(c2017::ground_gear_intake::DROP);
+  Update(70, false, 100);
   SetGoal(c2017::ground_gear_intake::START_DROPPING_BALLS);
-  
+
   EXPECT_EQ(GetIntakeState(), c2017::ground_gear_intake::DROP_BALL_WITH_GEAR);
-  EXPECT_EQ(intake_down(), true);
   EXPECT_EQ(GetVoltage(), 2.5);
 }
 
@@ -61,7 +61,6 @@ TEST_F(GroundGearIntakeTest, Dropping_Ball_Without_Gear) {
   SetGoal(c2017::ground_gear_intake::START_DROPPING_BALLS);
 
   EXPECT_EQ(GetIntakeState(), c2017::ground_gear_intake::DROP_BALL_WITHOUT_GEAR);
-  EXPECT_EQ(intake_down(), true);
   EXPECT_EQ(GetVoltage(), 0);
 }
 
