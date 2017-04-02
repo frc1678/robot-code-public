@@ -200,3 +200,26 @@ TEST(ShooterControllerTest, SaturationTest) {
     FAIL();
   }
 }
+
+TEST(ShooterControllerTest, EncoderNeverPluggedIn) {
+  c2017::shooter::ShooterInputProto input;
+  c2017::shooter::ShooterOutputProto output;
+  c2017::shooter::ShooterGoalProto goal;
+
+  c2017::shooter::ShooterController shooter_;
+
+  auto plant = muan::control::StateSpacePlant<1, 3, 1>(frc1678::shooter_controller::controller::A(),
+                                                       frc1678::shooter_controller::controller::B(),
+                                                       frc1678::shooter_controller::controller::C());
+
+  plant.x(0) = 0.0;
+  plant.x(1) = 0.0;
+  plant.x(2) = 0.0;
+
+  auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+
+  ASSERT_TRUE(status);
+
+  EXPECT_NEAR(status.value()->observed_velocity(), 0, 1e-5);
+  EXPECT_NEAR(status.value()->accelerator_observed_velocity(), 0, 1e-5);
+}

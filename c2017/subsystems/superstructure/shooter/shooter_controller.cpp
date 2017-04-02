@@ -43,9 +43,8 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
   Eigen::Matrix<double, 2, 1> accelerator_r_;
 
   auto shooter_y = (Eigen::Matrix<double, 1, 1>() << input->shooter_encoder_position()).finished();
-  shooter_r_ =
-      (Eigen::Matrix<double, 3, 1>() << 0.0, UpdateProfiledGoalVelocity(unprofiled_goal_velocity_), 0.0)
-          .finished();
+  shooter_r_ = (Eigen::Matrix<double, 3, 1>() << 0.0, UpdateProfiledGoalVelocity(unprofiled_goal_velocity_),
+                0.0).finished();
 
   auto accelerator_y = (Eigen::Matrix<double, 1, 1>() << input->accelerator_encoder_position()).finished();
   accelerator_r_ = (Eigen::Matrix<double, 2, 1>() << 0.0, 0.5 * unprofiled_goal_velocity_).finished();
@@ -62,17 +61,30 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
     accelerator_u = 0.0;
     unprofiled_goal_velocity_ = 0.0;
   } else {
-    status_->set_uncapped_u(shooter_u);
-    shooter_u = CapU(shooter_u, outputs_enabled);
-    accelerator_u = CapU(accelerator_u, outputs_enabled);
+    if (!encoder_fault_detected_) {
+      status_->set_uncapped_u(shooter_u);
+      shooter_u = CapU(shooter_u, outputs_enabled);
+      accelerator_u = CapU(accelerator_u, outputs_enabled);
+    } else {
+      status_->set_uncapped_u(kShooterOpenLoopU);
+      shooter_u = CapU(kShooterOpenLoopU, outputs_enabled);
+      accelerator_u = CapU(kAcceleratorOpenLoopU, outputs_enabled); 
+    }
+    if (shooter_observer_.x()(1, 0) > kMinimalWorkingVelocity &&
+        old_pos_ == input->shooter_encoder_position()) {
+      num_encoder_fault_ticks_++;
+      if (num_encoder_fault_ticks_ > kEncoderFaultTicksAllowed) {
+        encoder_fault_detected_ = true; 
+      }
+    }
   }
+  old_pos_ = input->shooter_encoder_position();
 
   shooter_observer_.Update((Eigen::Matrix<double, 1, 1>() << shooter_u).finished(), shooter_y);
   accelerator_observer_.Update((Eigen::Matrix<double, 1, 1>() << accelerator_u).finished(), accelerator_y);
 
   auto absolute_error = ((Eigen::Matrix<double, 3, 1>() << 0.0, unprofiled_goal_velocity_, 0.0).finished() -
-                         shooter_observer_.x())
-                            .cwiseAbs();
+                         shooter_observer_.x()).cwiseAbs();
 
   at_goal_ = absolute_error(1, 0) < velocity_tolerance_;
 
@@ -88,6 +100,7 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
   status_->set_profiled_goal_velocity(profiled_goal_velocity_);
   status_->set_unprofiled_goal_velocity(unprofiled_goal_velocity_);
   status_->set_voltage_error(shooter_observer_.x(2));
+  status_->set_encoder_fault_detected(encoder_fault_detected_);
   QueueManager::GetInstance().shooter_status_queue().WriteMessage(status_);
 
   return output;

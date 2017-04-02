@@ -27,6 +27,7 @@ message ShooterStatus {
   required double profiled_goal_velocity = 8;
   required double voltage_error = 9;
   required double uncapped_u = 10;
+  required bool encoder_fault_detected = 11;
 }
 
 message ShooterGoal {

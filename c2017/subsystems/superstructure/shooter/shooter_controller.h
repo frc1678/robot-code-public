@@ -39,12 +39,19 @@ class ShooterController {
   c2017::shooter::ShooterStatusProto status_;
   double velocity_tolerance_;
   c2017::shooter::ShooterStatusQueue& shooter_status_queue_;
+  double old_pos_;
+  bool encoder_fault_detected_ = false;
+  int num_encoder_fault_ticks_ = 0;
 
   // Units are radians per second per tick
   static constexpr double kShooterAcceleration = 0.75;
+  static constexpr double kMinimalWorkingVelocity = 10;
+  static constexpr double kEncoderFaultTicksAllowed = 300;
+  static constexpr double kShooterOpenLoopU = 8; //TODO(Livy) Find a real value for this
+  static constexpr double kAcceleratorOpenLoopU = 8; 
 };
 
-}  // namespace shooter
+}  // 
 }  // namespace c2017
 
 #endif  // C2017_SUBSYSTEMS_SUPERSTRUCTURE_SHOOTER_SHOOTER_CONTROLLER_H_
