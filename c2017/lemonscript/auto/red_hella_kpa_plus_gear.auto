@@ -1,12 +1,12 @@
 GroundGearIntaking: true
 GroundGearIntaking: false
 SpinupShooter
-DriveStraight: -1.0, true
-LiteralDrive: -1.9, 1.046, false, true, 1.7, 3.0, 3.0, 4.0
+DriveStraight: -0.9, true
+LiteralDrive: -2.03, 0.8, false, true, 1.7, 3.0, 3.0, 4.0
 ScoreGroundGear: true
-Wait: 0.2
+Wait: 0.4
+LiteralDrive: 0.54, 1.2, true, false, 2.0, 2.0, 4.0, 4.0
 ScoreGroundGear: false
-LiteralDrive: 0.5, 1.0, true, false, 2.0, 2.0, 4.0, 4.0
 LiteralDrive: 0.3, 0.0, true, false, 2.0, 2.0, 3.0, 3.0
 LiteralDrive: 1.1, -1.9, true, false, 1.0, 1.0, 3.0, 3.0
 OpenMagazine
