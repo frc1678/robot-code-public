@@ -50,13 +50,6 @@ void DrivetrainAction::SendMessage() {
                            max_forward_velocity_ / (2.0 * max_forward_acceleration_);
     distance_goal_left += signum(current_params_.desired_forward_distance) * max_forward_velocity_ *
                           max_forward_velocity_ / (2.0 * max_forward_acceleration_);
-
-    distance_goal_right += signum(current_params_.desired_angular_displacement) *
-                           properties_.wheelbase_radius * max_angular_velocity_ * max_angular_velocity_ /
-                           (2.0 * max_angular_acceleration_);
-    distance_goal_left += -signum(current_params_.desired_angular_displacement) *
-                          properties_.wheelbase_radius * max_angular_velocity_ * max_angular_velocity_ /
-                          (2.0 * max_angular_acceleration_);
   }
 
   goal->mutable_distance_command()->set_left_goal(distance_goal_left);
