@@ -25,14 +25,14 @@ void FileWriter::WriteLine(const std::string &filename, const std::string &line)
 }
 
 void FileWriter::DetermineBasePath() {
-  std::vector<std::string> paths = {"/media/sda1/", "/home/lvuser/"};
+  std::vector<boost::filesystem::path> paths = {"/media/sda1", "/home/lvuser"};
 
   // TODO(Wesley) Check for space
   for (auto const path : paths) {
     if (boost::filesystem::is_directory(path)) {
       try {
         std::string log_dir = FLAGS_log_dir.empty() ? std::to_string(std::time(0)) : FLAGS_log_dir;
-        auto final_path = path + "logs/" + log_dir + "/";
+        auto final_path = path / "logs" / log_dir;
         boost::filesystem::create_directories(final_path);
         base_path_ = final_path;
         return;
