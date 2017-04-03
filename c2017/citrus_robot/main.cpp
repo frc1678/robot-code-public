@@ -9,7 +9,8 @@ namespace citrus_robot {
 CitrusRobot::CitrusRobot()
     : throttle_{1, &c2017::QueueManager::GetInstance().throttle_status_queue()},
       wheel_{0, &c2017::QueueManager::GetInstance().wheel_status_queue()},
-      gamepad_{2, &c2017::QueueManager::GetInstance().manipulator_status_queue()} {
+      gamepad_{2, &c2017::QueueManager::GetInstance().manipulator_status_queue()},
+      ds_sender_{c2017::QueueManager::GetInstance().driver_station_queue()} {
   align_shoot_ = throttle_.MakeButton(1);               // Joystick Trigger
   driver_score_ground_gear_ = throttle_.MakeButton(3);  // Throttle 3
   quickturn_ = wheel_.MakeButton(5);                    // Wheel 5
@@ -49,27 +50,7 @@ void CitrusRobot::Update() {
     SendSuperstructureMessage();
   }
 
-  SendDSMessage();
-}
-
-void CitrusRobot::SendDSMessage() {
-  muan::wpilib::DriverStationProto status;
-
-  if (DriverStation::GetInstance().IsDisabled()) {
-    status->set_mode(RobotMode::DISABLED);
-  } else if (DriverStation::GetInstance().IsAutonomous()) {
-    status->set_mode(RobotMode::AUTONOMOUS);
-  } else if (DriverStation::GetInstance().IsOperatorControl()) {
-    status->set_mode(RobotMode::TELEOP);
-  } else {
-    status->set_mode(RobotMode::ESTOP);
-  }
-
-  status->set_battery_voltage(DriverStation::GetInstance().GetBatteryVoltage());
-  status->set_brownout(DriverStation::GetInstance().IsBrownedOut());
-  status->set_has_ds_connection(DriverStation::GetInstance().IsDSAttached());
-
-  c2017::QueueManager::GetInstance().driver_station_queue()->WriteMessage(status);
+  ds_sender_.Send();
 }
 
 void CitrusRobot::SendSuperstructureMessage() {

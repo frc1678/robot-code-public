@@ -247,6 +247,7 @@ class DrivetrainTest : public ::testing::Test {
     {
       ::muan::wpilib::DriverStationProto ds_state;
       ds_state->set_mode(enabled ? RobotMode::TELEOP : RobotMode::DISABLED);
+      ds_state->set_is_sys_active(enabled);
       ds_state->set_brownout(false);
       ds_state->set_battery_voltage(12.0);
       ds_state->set_has_ds_connection(true);

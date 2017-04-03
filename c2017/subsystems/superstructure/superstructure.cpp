@@ -145,9 +145,7 @@ void SuperStructure::Update() {
 
   if (maybe_driver_station) {
     const auto driver_station = maybe_driver_station.value();
-    outputs_enabled = !(driver_station->mode() == RobotMode::DISABLED ||
-                        driver_station->mode() == RobotMode::ESTOP ||
-                        driver_station->brownout());
+    outputs_enabled = driver_station->is_sys_active();
   }
 
   // Update the mechanisms
