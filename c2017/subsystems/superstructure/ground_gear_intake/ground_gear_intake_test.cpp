@@ -48,18 +48,19 @@ TEST_F(GroundGearIntakeTest, Intaking) {
   EXPECT_EQ(GetVoltage(), 12.0);
 }
 
-TEST_F(GroundGearIntakeTest, Dropping_Ball_With_Gear) {
+TEST_F(GroundGearIntakeTest, DroppingBallsWithGear) {
   SetGoal(c2017::ground_gear_intake::DROP);
   Update(70, false, 100);
   SetGoal(c2017::ground_gear_intake::START_DROPPING_BALLS);
+  Update(70, false, 100);
 
   EXPECT_EQ(GetIntakeState(), c2017::ground_gear_intake::DROP_BALL_WITH_GEAR);
   EXPECT_EQ(GetVoltage(), 2.5);
 }
 
-TEST_F(GroundGearIntakeTest, Dropping_Ball_Without_Gear) {
+TEST_F(GroundGearIntakeTest, DroppingBallsWithoutGear) {
   SetGoal(c2017::ground_gear_intake::START_DROPPING_BALLS);
-
+  Update(0 ,false, 100);
   EXPECT_EQ(GetIntakeState(), c2017::ground_gear_intake::DROP_BALL_WITHOUT_GEAR);
   EXPECT_EQ(GetVoltage(), 0);
 }

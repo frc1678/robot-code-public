@@ -27,7 +27,7 @@ GroundGearIntakeOutputProto GroundGearIntake::Update(GroundGearIntakeInputProto 
         }
         break;
       case DROP_BALL_WITH_GEAR:
-        voltage = kCarryVoltage;
+        voltage = 2.5;
         intake_down = true;
         break;
       case DROP_BALL_WITHOUT_GEAR:
