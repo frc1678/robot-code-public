@@ -1,16 +1,16 @@
 GroundGearIntaking: true
 GroundGearIntaking: false
 SpinupShooter
-DriveStraight: -0.9, true
-LiteralDrive: -2.03, 0.8, false, true, 1.7, 3.0, 3.0, 4.0, false
+DriveStraight: -0.87, true
+LiteralDrive: -2.04, 0.8, false, true, 1.7, 3.0, 3.0, 4.0, false
 ScoreGroundGear: true
-Wait: 0.4
-LiteralDrive: 0.54, 1.2, true, false, 2.0, 2.0, 4.0, 4.0, false
+Wait: 0.2
+LiteralDrive: 0.56, 1.15, true, false, 2.0, 2.0, 4.0, 4.0, false
 ScoreGroundGear: false
-LiteralDrive: 0.3, 0.0, true, false, 2.0, 2.0, 3.0, 3.0, false
-LiteralDrive: 1.1, -1.9, true, false, 1.0, 1.0, 3.0, 3.0, false
+LiteralDrive: 0.2, 0.0, true, false, 2.0, 2.0, 3.0, 3.0, false
+LiteralDrive: 1.3, 0.4, true, false, 1.0, 1.0, 2.0, 3.0, true
 OpenMagazine
-LiteralDrive: 1.3, -0.7, false, false, 5.0, 7.0, 1.0, 1.0, false
+LiteralDrive: 1.07, 0.1, false, false, 5.0, 7.0, 1.0, 1.0, true
 VisionAlign: false
 StartShoot
 
