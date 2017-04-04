@@ -130,7 +130,7 @@ void CitrusRobot::SendSuperstructureMessage() {
 
   c2017::QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal_);
   c2017::QueueManager::GetInstance().shooter_group_goal_queue().WriteMessage(shooter_group_goal_);
-  }
+}
 
 void CitrusRobot::SendDrivetrainMessage() {
   frc971::control_loops::drivetrain::GoalProto drivetrain_goal;
