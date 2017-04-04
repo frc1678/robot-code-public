@@ -1,4 +1,4 @@
-LiteralDrive(float distance, float angle, bool follow_through, bool closed_loop_termination, float max_forward_velocity, float max_forward_acceleration, float max_angular_velocity, float max_angular_acceleration)
+LiteralDrive(float distance, float angle, bool follow_through, bool closed_loop_termination, float max_forward_velocity, float max_forward_acceleration, float max_angular_velocity, float max_angular_acceleration, bool is_turn_absolute)
 
 include {
   "c2017/queue_manager/queue_manager.h"
@@ -22,6 +22,7 @@ init {
   params.closed_loop_termination = closed_loop_termination;
   params.follow_through = follow_through;
   params.literal_constraints = true;
+  params.angle_is_absolute = is_turn_absolute;
 
   action = std::make_unique<muan::actions::DrivetrainAction>(
       properties, c2017::QueueManager::GetInstance().drivetrain_goal_queue(),

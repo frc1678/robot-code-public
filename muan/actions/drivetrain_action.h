@@ -44,6 +44,9 @@ struct DrivetrainActionParams {
   // constraints specified in the properties.
   bool literal_constraints{false};
 
+  // Whether or not to turn to an absolute angle or a relative value
+  bool angle_is_absolute{false};
+
   // The termination condition. Ignored if closed_loop_termination is false.
   DrivetrainTermination termination{0.02, 0.02, 0.04, 0.02};
 };

@@ -110,6 +110,12 @@ void DrivetrainAction::ExecuteDrive(DrivetrainActionParams params) {
     right_offset = status->estimated_right_position();
   }
 
+  if (params.angle_is_absolute) {
+    double avg_offset = (left_offset + right_offset) / 2;
+    left_offset = avg_offset;
+    right_offset = avg_offset;
+  }
+
   // Calculate the distance that each side of the drivetrain must travel
   double right_distance =
       params.desired_forward_distance + params.desired_angular_displacement * properties_.wheelbase_radius;
