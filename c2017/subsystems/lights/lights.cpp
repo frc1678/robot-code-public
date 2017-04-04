@@ -30,11 +30,17 @@ void Lights::Update() {
         case c2017::webdash::AutoSelection::BLUE_HELLA_KPA_PLUS_GEAR:
           light_color_ = FlashLights(LightColor::BLUE, LightColor::TEAL, false);
           break;
+        case c2017::webdash::AutoSelection::BLUE_CENTER_PLUS_KPA:
+          light_color_ = FlashLights(LightColor::BLUE, LightColor::GREEN, false);
+          break;
         case c2017::webdash::AutoSelection::RED_HELLA_KPA:
           light_color_ = FlashLights(LightColor::RED, LightColor::PINK, false);
           break;
         case c2017::webdash::AutoSelection::RED_HELLA_KPA_PLUS_GEAR:
           light_color_ = FlashLights(LightColor::RED, LightColor::TEAL, false);
+          break;
+        case c2017::webdash::AutoSelection::RED_CENTER_PLUS_KPA:
+          light_color_ = FlashLights(LightColor::RED, LightColor::GREEN, false);
           break;
         case c2017::webdash::AutoSelection::TWO_GEAR:
           light_color_ = LightColor::WHITE;
