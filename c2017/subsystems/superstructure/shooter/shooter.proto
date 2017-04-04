@@ -16,12 +16,18 @@ message ShooterOutput {
   required double accelerator_voltage = 3;
 }
 
+enum State {
+  IDLE = 0;
+  SPINUP = 1;
+  AT_GOAL = 2;
+}
+
 message ShooterStatus {
   required uint64 timestamp = 1;
   required double observed_velocity = 2; // Positive velocity = forwards [shooter velocity]
   required double accelerator_observed_velocity = 3;
   required double voltage = 4;
-  required bool at_goal = 5;
+  required State state = 5;
   required bool currently_running = 6;
   required double unprofiled_goal_velocity = 7;
   required double profiled_goal_velocity = 8;

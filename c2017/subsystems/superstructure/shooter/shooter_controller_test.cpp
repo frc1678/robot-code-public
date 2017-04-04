@@ -60,6 +60,47 @@ TEST(ShooterControllerTest, PositiveVelocity) {
   }
 }
 
+TEST(ShooterControllerTest, StateMachine) {
+  c2017::shooter::ShooterInputProto input;
+  c2017::shooter::ShooterOutputProto output;
+  c2017::shooter::ShooterGoalProto goal;
+
+  c2017::shooter::ShooterController shooter_;
+
+  auto plant = muan::control::StateSpacePlant<1, 3, 1>(frc1678::shooter_controller::controller::A(),
+                                                       frc1678::shooter_controller::controller::B(),
+                                                       frc1678::shooter_controller::controller::C());
+
+  plant.x(0) = 0.0;
+  plant.x(1) = 0.0;
+  plant.x(2) = 0.0;
+
+  goal->set_goal_velocity(0.0);
+  shooter_.SetGoal(goal);
+  output = shooter_.Update(input, true);
+
+  auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+  EXPECT_EQ(status.value()->state(), c2017::shooter::IDLE);
+
+  goal->set_goal_velocity(300.0);
+  shooter_.SetGoal(goal);
+  output = shooter_.Update(input, true);
+
+  status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+  EXPECT_EQ(status.value()->state(), c2017::shooter::SPINUP);
+
+  for (int i = 0; i <= 1e4; i++) {
+    input->set_shooter_encoder_position(plant.x(0));
+    goal->set_goal_velocity(300.0);
+    shooter_.SetGoal(goal);
+    output = shooter_.Update(input, true);
+    plant.Update((Eigen::Matrix<double, 1, 1>() << output->shooter_voltage()).finished());
+  }
+
+  status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+  EXPECT_EQ(status.value()->state(), c2017::shooter::AT_GOAL);
+}
+
 TEST(ShooterControllerTest, CantTakeNegativeVoltage) {
   c2017::shooter::ShooterInputProto input;
   c2017::shooter::ShooterOutputProto output;

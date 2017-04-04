@@ -53,7 +53,8 @@ void SuperStructure::Update() {
         shooter_state_ = SuperstructureStatus::kShooterShooting;
         break;
       case shooter_group::BOTH:
-        if (shooter_status->currently_running() && shooter_status->at_goal()) {
+        if (shooter_status->currently_running() &&
+            shooter_status->state() == c2017::shooter::AT_GOAL) {
           shooter_state_ = SuperstructureStatus::kShooterShooting;
         } else {
           shooter_state_ = SuperstructureStatus::kShooterSpinup;
@@ -145,9 +146,7 @@ void SuperStructure::Update() {
 
   if (maybe_driver_station) {
     const auto driver_station = maybe_driver_station.value();
-    outputs_enabled = !(driver_station->mode() == RobotMode::DISABLED ||
-                        driver_station->mode() == RobotMode::ESTOP ||
-                        driver_station->brownout());
+    outputs_enabled = driver_station->is_sys_active();
   }
 
   // Update the mechanisms

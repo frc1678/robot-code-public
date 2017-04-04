@@ -21,8 +21,8 @@ muan::teleop::Button* Joystick::MakePov(uint32_t button, Pov position) {
   return buttons_[buttons_.size() - 1].get();
 }
 
-muan::teleop::Button* Joystick::MakeAxis(uint32_t button) {
-  buttons_.emplace_back(new muan::teleop::AxisButton(this, button, .7));
+muan::teleop::Button* Joystick::MakeAxis(uint32_t button, double threshold) {
+  buttons_.emplace_back(new muan::teleop::AxisButton(this, button, threshold));
   return buttons_[buttons_.size() - 1].get();
 }
 

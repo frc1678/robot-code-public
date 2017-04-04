@@ -23,8 +23,9 @@ cc_library(
 filegroup(
     name = "v4l_params_file",
     srcs = [
-        "vision_camera_params",
-        "stream_camera_params"],
+        "constants/vision_camera_params",
+        "constants/stream_camera_params"
+    ],
     visibility = ["//visibility:public"],
 )
 
@@ -36,7 +37,10 @@ cc_library(
         ":sender",
         "//muan/vision:vision"
     ],
-    data = ["robot_constants.pb.text", "thresholds.pb.text"],
+    data = [
+        "constants/robot_constants.pb.text",
+        "constants/thresholds.pb.text"
+    ],
     linkopts = [
         "-lopencv_video",
         "-lopencv_highgui",

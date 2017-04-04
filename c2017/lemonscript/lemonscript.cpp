@@ -50,26 +50,26 @@ void Lemonscript::operator()() {
 }
 
 void Lemonscript::UpdateAutoRoutine() {
-  auto message = webdash_reader_.ReadMessage();
+  auto message = auto_selection_reader_.ReadMessage();
   std::string filename = "none.auto";
   if (message) {
     switch (message.value()->auto_mode()) {
-      case c2017::webdash::WebDash::NONE:
+      case c2017::webdash::AutoSelection::NONE:
         filename = "none.auto";
         break;
-      case c2017::webdash::WebDash::TWO_GEAR:
+      case c2017::webdash::AutoSelection::TWO_GEAR:
         filename = "two_gear.auto";
         break;
-      case c2017::webdash::WebDash::BLUE_HELLA_KPA:
+      case c2017::webdash::AutoSelection::BLUE_HELLA_KPA:
         filename = "blue_hella_kpa.auto";
         break;
-      case c2017::webdash::WebDash::BLUE_HELLA_KPA_PLUS_GEAR:
+      case c2017::webdash::AutoSelection::BLUE_HELLA_KPA_PLUS_GEAR:
         filename = "blue_hella_kpa_plus_gear.auto";
         break;
-      case c2017::webdash::WebDash::RED_HELLA_KPA:
+      case c2017::webdash::AutoSelection::RED_HELLA_KPA:
         filename = "red_hella_kpa.auto";
         break;
-      case c2017::webdash::WebDash::RED_HELLA_KPA_PLUS_GEAR:
+      case c2017::webdash::AutoSelection::RED_HELLA_KPA_PLUS_GEAR:
         filename = "red_hella_kpa_plus_gear.auto";
         break;
       default:

@@ -34,9 +34,17 @@ class FileWriter {
   // FileWriter may go to different files.
   virtual void WriteLine(const std::string &filename, const std::string &line);
 
+  // Creates a human-readable name for the current log directory. For example,
+  // if the current log directory is /media/sda1/logs/12345678, and the desired
+  // name is CVR_Quals_20, a symlink /media/sda1/logs/CVR_Quals_20 would be
+  // created pointing to the current log directory. If the name is not a valid
+  // POSIX filename, nothing happens. Overrwites existing file/directory with the
+  // same name.
+  static void CreateReadableName(std::string name);
+
  private:
-  std::string GetBasePath();
-  std::string base_path_ = "";
+  static void DetermineBasePath();
+  static boost::filesystem::path base_path_;
   std::map<std::string, std::ofstream> open_files_;
 };
 

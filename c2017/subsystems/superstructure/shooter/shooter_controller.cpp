@@ -89,7 +89,27 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
   auto absolute_error = ((Eigen::Matrix<double, 3, 1>() << 0.0, unprofiled_goal_velocity_, 0.0).finished() -
                          shooter_observer_.x()).cwiseAbs();
 
-  at_goal_ = absolute_error(1, 0) < velocity_tolerance_ || encoder_fault_detected_;
+  if (unprofiled_goal_velocity_ == 0.0) {
+    state_ = IDLE;
+  }
+
+  switch (state_) {
+    case IDLE:
+      if (unprofiled_goal_velocity_ != 0.0) {
+        state_ = SPINUP;
+      }
+      break;
+    case SPINUP:
+      if (absolute_error(1, 0) < kSpinupVelocityTolerance || encoder_fault_detected_) {
+        state_ = AT_GOAL;
+      }
+      break;
+    case AT_GOAL:
+      if (absolute_error(1, 0) > kSteadyStateVelocityTolerance) {
+        state_ = SPINUP;
+      }
+      break;
+  }
 
   c2017::shooter::ShooterOutputProto output;
 
@@ -97,7 +117,7 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
   output->set_accelerator_voltage(accelerator_u);
   status_->set_observed_velocity(shooter_observer_.x()(1, 0));
   status_->set_accelerator_observed_velocity(accelerator_observer_.x()(1, 0));
-  status_->set_at_goal(at_goal_);
+  status_->set_state(state_);
   status_->set_currently_running(std::fabs(unprofiled_goal_velocity_) >= 1e-3);
   status_->set_voltage(shooter_u);
   status_->set_profiled_goal_velocity(profiled_goal_velocity_);

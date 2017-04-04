@@ -14,14 +14,14 @@
 cd /home/ubuntu/robot-code
 
 VISION_CAM=$(./muan/vision/find_camera_by_name.py --name LifeCam)
-STREAM_CAM=$(./muan/vision/find_camera_by_name.py --name WideCam)
+STREAM_CAM=$(./muan/vision/find_camera_by_name.py --name USB_Camera)
 
 echo Robot ip: $1
 echo Vision camera index: $VISION_CAM
 echo Stream camera index: $STREAM_CAM
 
-v4l2ctrl -d /dev/video$VISION_CAM -l c2017/vision/coprocessor/vision_camera_params
-v4l2ctrl -d /dev/video$STREAM_CAM -l c2017/vision/coprocessor/stream_camera_params
+v4l2ctrl -d /dev/video$VISION_CAM -l c2017/vision/coprocessor/constants/vision_camera_params
+v4l2ctrl -d /dev/video$STREAM_CAM -l c2017/vision/coprocessor/constants/stream_camera_params
 
 mjpg_streamer -i "input_uvc.so -d /dev/video$STREAM_CAM" -o "output_http.so -p 5802" &
 ./bazel-bin/c2017/vision/coprocessor/main --robot_ip=$1 --camera_index=$VISION_CAM

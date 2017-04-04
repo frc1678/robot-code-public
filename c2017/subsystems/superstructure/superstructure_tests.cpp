@@ -43,7 +43,7 @@ class SuperstructureTest : public ::testing::Test {
 };
 
 TEST_F(SuperstructureTest, SysInactive) {
-  driver_station_proto_->set_mode(RobotMode::DISABLED);
+  driver_station_proto_->set_is_sys_active(false);
 
   intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_DROP);
   intake_group_goal_proto_->set_ground_ball_rollers(intake_group::GROUND_BALL_IN);
@@ -72,7 +72,7 @@ TEST_F(SuperstructureTest, SysInactive) {
 }
 
 TEST_F(SuperstructureTest, GearFunctionality) {
-  driver_station_proto_->set_mode(RobotMode::TELEOP);
+  driver_station_proto_->set_is_sys_active(true);
 
   intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_DROP);
 
@@ -130,7 +130,7 @@ TEST_F(SuperstructureTest, GearFunctionality) {
 }
 
 TEST_F(SuperstructureTest, BothIntakesStayInBox) {
-  driver_station_proto_->set_mode(RobotMode::TELEOP);
+  driver_station_proto_->set_is_sys_active(true);
 
   intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_DROP);
   intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_DOWN);
@@ -148,7 +148,7 @@ TEST_F(SuperstructureTest, BothIntakesStayInBox) {
 }
 
 TEST_F(SuperstructureTest, GearScoreStaysInBox) {
-  driver_station_proto_->set_mode(RobotMode::TELEOP);
+  driver_station_proto_->set_is_sys_active(true);
 
   intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_SCORE);
   intake_group_goal_proto_->set_ground_ball_position(intake_group::GROUND_BALL_DOWN);
@@ -166,7 +166,7 @@ TEST_F(SuperstructureTest, GearScoreStaysInBox) {
 }
 
 TEST_F(SuperstructureTest, ShootingStaysInBox) {
-  driver_station_proto_->set_mode(RobotMode::TELEOP);
+  driver_station_proto_->set_is_sys_active(true);
 
   shooter_group_goal_proto_->set_wheel(c2017::shooter_group::SHOOT);
 
@@ -199,7 +199,7 @@ TEST_F(SuperstructureTest, ShootingStaysInBox) {
 }
 
 TEST_F(SuperstructureTest, Spinup) {
-  driver_station_proto_->set_mode(RobotMode::TELEOP);
+  driver_station_proto_->set_is_sys_active(true);
 
   shooter_group_goal_proto_->set_wheel(c2017::shooter_group::SPINUP);
 
@@ -220,7 +220,7 @@ TEST_F(SuperstructureTest, Spinup) {
 }
 
 TEST_F(SuperstructureTest, SpinupShoot) {
-  driver_station_proto_->set_mode(RobotMode::TELEOP);
+  driver_station_proto_->set_is_sys_active(true);
 
   double current_position = 0.0;
 
@@ -248,14 +248,14 @@ TEST_F(SuperstructureTest, SpinupShoot) {
     auto superstructure_output =
         QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
 
-    EXPECT_TRUE(shooter_status->at_goal());
+    EXPECT_EQ(shooter_status->state(), c2017::shooter::AT_GOAL);
     EXPECT_TRUE(shooter_status->currently_running());
     EXPECT_GT(superstructure_output->upper_conveyor_voltage(), 0.0);
   }
 }
 
 TEST_F(SuperstructureTest, SpinupManualShoot) {
-  driver_station_proto_->set_mode(RobotMode::TELEOP);
+  driver_station_proto_->set_is_sys_active(true);
 
   shooter_group_goal_proto_->set_wheel(c2017::shooter_group::SPINUP);
 
@@ -289,7 +289,7 @@ TEST_F(SuperstructureTest, SpinupManualShoot) {
 }
 
 TEST_F(SuperstructureTest, Agitate) {
-  driver_station_proto_->set_mode(RobotMode::TELEOP);
+  driver_station_proto_->set_is_sys_active(true);
 
   intake_group_goal_proto_->set_agitate(true);
 
@@ -306,7 +306,7 @@ TEST_F(SuperstructureTest, Agitate) {
 }
 
 TEST_F(SuperstructureTest, BallIntakeWithConveyor) {
-  driver_station_proto_->set_mode(RobotMode::TELEOP);
+  driver_station_proto_->set_is_sys_active(true);
 
   intake_group_goal_proto_->set_ground_ball_rollers(intake_group::GROUND_BALL_OUT);
 
@@ -336,7 +336,7 @@ TEST_F(SuperstructureTest, BallIntakeWithConveyor) {
 }
 
 TEST_F(SuperstructureTest, Climb) {
-  driver_station_proto_->set_mode(RobotMode::TELEOP);
+  driver_station_proto_->set_is_sys_active(true);
 
   shooter_group_goal_proto_->set_should_climb(true);
 
@@ -358,7 +358,7 @@ TEST_F(SuperstructureTest, Climb) {
 }
 
 TEST_F(SuperstructureTest, CancelClimb) {
-  driver_station_proto_->set_mode(RobotMode::TELEOP);
+  driver_station_proto_->set_is_sys_active(true);
 
   shooter_group_goal_proto_->set_should_climb(true);
 
@@ -393,7 +393,7 @@ TEST_F(SuperstructureTest, CancelClimb) {
 }
 
 TEST_F(SuperstructureTest, ShootToClimb) {
-  driver_station_proto_->set_mode(RobotMode::TELEOP);
+  driver_station_proto_->set_is_sys_active(true);
 
   shooter_group_goal_proto_->set_wheel(c2017::shooter_group::BOTH);
 

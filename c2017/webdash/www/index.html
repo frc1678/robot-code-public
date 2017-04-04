@@ -7,7 +7,7 @@
   <body>
     <center>
       <p>Auto mode:</p>
-      <form action="save" id="auto">
+      <form id="auto">
         <input type="radio" name="auto" value="0" checked> None<br>
         <input type="radio" name="auto" value="1"> Two Gear<br>
         <input type="radio" name="auto" value="2"> Blue Hella KPA<br>
@@ -16,6 +16,10 @@
         <input type="radio" name="auto" value="5"> Red Hella KPA plus gear<br>
         <input type="button" value="Update Auto" onclick="sendAutoData()">
       </form>
+      <form>
+        <input type="text" id="logname">
+        <input type="button" value="Set a name for this run" onclick="sendLogName()">
+      </form>
       <a href="/data.html">Live data view</a>
       <br/>
       <p>Don't Panic!</p>
@@ -23,7 +27,8 @@
   </body>
   <script>
     // Auto sender
-    var autosock = new WebSocket("ws://" + document.location.host + "/save");
+    var autosock = new WebSocket("ws://" + document.location.host + "/auto");
+    var logsock = new WebSocket("ws://" + document.location.host + "/logname");
 
     function getRadioCheckedValue(radio_name) {
       var oRadio = document.forms[0].elements[radio_name];
@@ -37,6 +42,10 @@
 
     function sendAutoData() {
       autosock.send(getRadioCheckedValue("auto"));
+    }
+
+    function sendLogName() {
+      logsock.send(document.getElementById("logname").value);
     }
   </script>
 </html>

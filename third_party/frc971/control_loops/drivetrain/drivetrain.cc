@@ -68,8 +68,7 @@ void DrivetrainLoop::Update() {
 
   auto driver_station = driver_station_queue_.ReadLastMessage();
   if (driver_station) {
-    enable_outputs = (*driver_station)->mode() == RobotMode::TELEOP ||
-                     (*driver_station)->mode() == RobotMode::AUTONOMOUS;
+    enable_outputs = (*driver_station)->is_sys_active();
   }
 
   if (enable_outputs) {

@@ -15,6 +15,11 @@
 namespace c2017 {
 namespace shooter {
 
+constexpr double kSpinupVelocityTolerance = 5;
+constexpr double kSteadyStateVelocityTolerance = 12;
+// Units are radians per second per tick
+constexpr double kShooterAcceleration = 0.75;
+
 class ShooterController {
  public:
   ShooterController();
@@ -33,12 +38,11 @@ class ShooterController {
 
   double CapU(double u, bool outputs_enabled);
 
-  bool at_goal_;
+  State state_ = IDLE;
 
   double profiled_goal_velocity_;
   double unprofiled_goal_velocity_;
   c2017::shooter::ShooterStatusProto status_;
-  double velocity_tolerance_;
   c2017::shooter::ShooterStatusQueue& shooter_status_queue_;
   double old_pos_;
   bool encoder_fault_detected_ = false;

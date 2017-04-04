@@ -30,4 +30,6 @@ message VisionGoal {
 message VisionConstants {
   required double x_camera_angle = 7;  // Left of center, in radians
   required double y_camera_angle = 8;  // Above horizontal, in radians
+  required double x_fov = 9;
+  required double y_fov = 10;
 }

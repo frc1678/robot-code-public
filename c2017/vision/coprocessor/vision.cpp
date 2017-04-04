@@ -61,13 +61,13 @@ void RunVision(int camera_index) {
   muan::vision::VisionThresholds thresholds;
 
   {
-    int file = open("c2017/vision/coprocessor/robot_constants.pb.text", O_RDONLY);
+    int file = open("c2017/vision/coprocessor/constants/robot_constants.pb.text", O_RDONLY);
     google::protobuf::io::FileInputStream fstream(file);
     google::protobuf::TextFormat::Parse(&fstream, &robot_constants);
   }
 
   {
-    int file = open("c2017/vision/coprocessor/thresholds.pb.text", O_RDONLY);
+    int file = open("c2017/vision/coprocessor/constants/thresholds.pb.text", O_RDONLY);
     google::protobuf::io::FileInputStream fstream(file);
     google::protobuf::TextFormat::Parse(&fstream, &thresholds);
   }
@@ -79,8 +79,8 @@ void RunVision(int camera_index) {
   cap.open(camera_index);
 
   muan::vision::VisionConstants constants{
-      1.14,  // FOV is not different per robot
-      0.659,
+      robot_constants.x_fov(),
+      robot_constants.y_fov(),
       robot_constants.x_camera_angle(),
       robot_constants.y_camera_angle(),
       0.0005,  // Target size is not different per robot

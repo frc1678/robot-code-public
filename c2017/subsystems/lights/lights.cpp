@@ -11,31 +11,32 @@ void Lights::Update() {
   auto vision_status = QueueManager::GetInstance().vision_status_queue().ReadLastMessage();
   auto ds_status = QueueManager::GetInstance().driver_station_queue()->ReadLastMessage();
   auto ground_gear_status = QueueManager::GetInstance().ground_gear_status_queue().ReadLastMessage();
-  auto webdash_queue = c2017::webdash::WebDashQueueWrapper::GetInstance().webdash_queue().ReadLastMessage();
+  auto auto_selection_queue =
+      c2017::webdash::WebDashQueueWrapper::GetInstance().auto_selection_queue().ReadLastMessage();
 
   if (!calibrated_ && gyro_status_queue) {
     light_color_ = LightColor::RED;
   } else if (calibrated_ && !auto_running_) {
     light_color_ = LightColor::BLUE;
   } else if (calibrated_ && auto_running_) {
-    if (webdash_queue) {
-      switch (webdash_queue.value()->auto_mode()) {
-        case c2017::webdash::WebDash::NONE:
+    if (auto_selection_queue) {
+      switch (auto_selection_queue.value()->auto_mode()) {
+        case c2017::webdash::AutoSelection::NONE:
           light_color_ = LightColor::PINK;
           break;
-        case c2017::webdash::WebDash::BLUE_HELLA_KPA:
+        case c2017::webdash::AutoSelection::BLUE_HELLA_KPA:
           light_color_ = FlashLights(LightColor::BLUE, LightColor::PINK, false);
           break;
-        case c2017::webdash::WebDash::BLUE_HELLA_KPA_PLUS_GEAR:
+        case c2017::webdash::AutoSelection::BLUE_HELLA_KPA_PLUS_GEAR:
           light_color_ = FlashLights(LightColor::BLUE, LightColor::TEAL, false);
           break;
-        case c2017::webdash::WebDash::RED_HELLA_KPA:
+        case c2017::webdash::AutoSelection::RED_HELLA_KPA:
           light_color_ = FlashLights(LightColor::RED, LightColor::PINK, false);
           break;
-        case c2017::webdash::WebDash::RED_HELLA_KPA_PLUS_GEAR:
+        case c2017::webdash::AutoSelection::RED_HELLA_KPA_PLUS_GEAR:
           light_color_ = FlashLights(LightColor::RED, LightColor::TEAL, false);
           break;
-        case c2017::webdash::WebDash::TWO_GEAR:
+        case c2017::webdash::AutoSelection::TWO_GEAR:
           light_color_ = LightColor::WHITE;
           break;
         default:

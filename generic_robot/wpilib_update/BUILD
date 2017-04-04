@@ -6,5 +6,6 @@ cc_library(
     deps = [
         "//generic_robot/queue_manager",
         "//muan/teleop:joystick",
+        "//muan/wpilib:ds_sender",
     ],
 )

@@ -72,3 +72,13 @@ cc_proto_library(
     default_runtime = "//third_party/google/protobuf",
     protoc = "//third_party/google/protobuf:protoc",
 )
+
+cc_library(
+    name = "ds_sender",
+    srcs = ["ds_sender.cpp"],
+    hdrs = ["ds_sender.h"],
+    deps = [
+        ":wpilib_queues",
+        "//third_party/wpilibsuite:wpilib",
+    ],
+)

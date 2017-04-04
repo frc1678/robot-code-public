@@ -7,7 +7,7 @@ cc_binary(
     deps = [
         ":server",
         "//c2017/subsystems/superstructure/shooter:shooter_queues",
-        ]
+    ]
 )
 
 filegroup(
@@ -21,6 +21,7 @@ cc_library(
     hdrs = ["server.h", "server.hpp"],
     deps = [
         "//third_party/seasocks:seasocks",
+        "//muan/logging:filewriter",
         "//muan/utils:proto_utils",
         "//third_party/optional:optional",
         "//third_party/aos/common:die",
