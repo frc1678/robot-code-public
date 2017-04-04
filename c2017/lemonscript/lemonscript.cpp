@@ -66,11 +66,17 @@ void Lemonscript::UpdateAutoRoutine() {
       case c2017::webdash::AutoSelection::BLUE_HELLA_KPA_PLUS_GEAR:
         filename = "blue_hella_kpa_plus_gear.auto";
         break;
+      case c2017::webdash::AutoSelection::BLUE_CENTER_PLUS_KPA:
+        filename = "blue_center_peg_plus_kpa.auto";
+        break;
       case c2017::webdash::AutoSelection::RED_HELLA_KPA:
         filename = "red_hella_kpa.auto";
         break;
       case c2017::webdash::AutoSelection::RED_HELLA_KPA_PLUS_GEAR:
         filename = "red_hella_kpa_plus_gear.auto";
+        break;
+      case c2017::webdash::AutoSelection::RED_CENTER_PLUS_KPA:
+        filename = "red_center_peg_plus_kpa.auto";
         break;
       default:
         filename = "none.auto";

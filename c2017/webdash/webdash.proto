@@ -10,8 +10,10 @@ message AutoSelection {
     TWO_GEAR = 1;
     BLUE_HELLA_KPA = 2;
     BLUE_HELLA_KPA_PLUS_GEAR = 3;
-    RED_HELLA_KPA = 4;
-    RED_HELLA_KPA_PLUS_GEAR = 5;
+    BLUE_CENTER_PLUS_KPA = 4;
+    RED_HELLA_KPA = 5;
+    RED_HELLA_KPA_PLUS_GEAR = 6;
+    RED_CENTER_PLUS_KPA = 7;
   }
   required uint64 timestamp = 1;
   required Auto auto_mode = 2;
