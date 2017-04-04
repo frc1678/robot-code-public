@@ -60,7 +60,7 @@ TEST_F(GroundGearIntakeTest, DroppingBallsWithGear) {
 
 TEST_F(GroundGearIntakeTest, DroppingBallsWithoutGear) {
   SetGoal(c2017::ground_gear_intake::START_DROPPING_BALLS);
-  Update(0 ,false, 100);
+  Update(0 , false, 100);
   EXPECT_EQ(GetIntakeState(), c2017::ground_gear_intake::DROP_BALL_WITHOUT_GEAR);
   EXPECT_EQ(GetVoltage(), 0);
 }

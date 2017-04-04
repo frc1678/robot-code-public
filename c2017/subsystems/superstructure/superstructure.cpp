@@ -81,12 +81,12 @@ void SuperStructure::Update() {
         ground_gear_intake_goal->set_goal(ground_gear_intake::SCORE);
         break;
       case intake_group::GROUND_GEAR_START_DROPPING_BALLS:
-	ground_gear_intake_goal->set_goal(ground_gear_intake::START_DROPPING_BALLS);
-	break;
+        ground_gear_intake_goal->set_goal(ground_gear_intake::START_DROPPING_BALLS);
+        break;
       case intake_group::GROUND_GEAR_STOP_DROPPING_BALLS:
-	ground_gear_intake_goal->set_goal(ground_gear_intake::STOP_DROPPING_BALLS);
-	break;
-    }
+        ground_gear_intake_goal->set_goal(ground_gear_intake::STOP_DROPPING_BALLS);
+        break;
+  }
 
     ground_ball_intake_goal->set_intake_up(intake_group_goal->ground_ball_position() ==
                                            intake_group::GROUND_BALL_UP);
