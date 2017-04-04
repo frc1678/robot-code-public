@@ -101,8 +101,8 @@ void SuperStructure::Update() {
       magazine_goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_AGITATE);
       magazine_goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
     }
-    magazine_goal->set_side_magazine_extended(intake_group_goal->magazine_open());
-    magazine_goal->set_front_magazine_extended(intake_group_goal->magazine_open());
+    magazine_goal->set_side_magazine_extended(intake_group_goal->side_magazine_open());
+    magazine_goal->set_front_magazine_extended(intake_group_goal->front_magazine_open());
   }
 
   if (shooter_state_ == SuperstructureStatus::kShooterShooting) {

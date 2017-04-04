@@ -32,5 +32,6 @@ message IntakeGroupGoal {
 
   required bool agitate = 5;
 
-  required bool magazine_open = 6;
+  required bool side_magazine_open = 6;
+  required bool front_magazine_open = 7;
 }

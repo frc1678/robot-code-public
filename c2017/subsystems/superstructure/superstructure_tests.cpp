@@ -48,7 +48,8 @@ TEST_F(SuperstructureTest, SysInactive) {
   intake_group_goal_proto_->set_ground_gear_intake(intake_group::GROUND_GEAR_DROP);
   intake_group_goal_proto_->set_ground_ball_rollers(intake_group::GROUND_BALL_IN);
   intake_group_goal_proto_->set_agitate(true);
-  intake_group_goal_proto_->set_magazine_open(true);
+  intake_group_goal_proto_->set_side_magazine_open(true);
+  intake_group_goal_proto_->set_front_magazine_open(true);
 
   WriteQueues();
   superstructure.Update();
@@ -62,7 +63,8 @@ TEST_F(SuperstructureTest, SysInactive) {
   EXPECT_FALSE(superstructure_output->ground_gear_down());
   EXPECT_EQ(superstructure_output->upper_conveyor_voltage(), 0.0);
   EXPECT_EQ(superstructure_output->side_conveyor_voltage(), 0.0);
-  EXPECT_FALSE(superstructure_output->magazine_open());
+  EXPECT_FALSE(superstructure_output->front_magazine_open());
+  EXPECT_FALSE(superstructure_output->side_magazine_open());
   EXPECT_EQ(superstructure_output->shooter_voltage(), 0.0);
   EXPECT_EQ(superstructure_output->accelerator_voltage(), 0.0);
 

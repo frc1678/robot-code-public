@@ -64,7 +64,8 @@ void CitrusRobot::SendSuperstructureMessage() {
 
   // Toggle the magazine
   magazine_out_ = magazine_out_ != toggle_magazine_->was_clicked();
-  intake_group_goal_->set_magazine_open(magazine_out_);
+  intake_group_goal_->set_side_magazine_open(magazine_out_);
+  intake_group_goal_->set_front_magazine_open(magazine_out_);
 
   intake_group_goal_->set_agitate(agitate_->is_pressed());
 
