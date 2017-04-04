@@ -34,10 +34,6 @@ ShooterController::ShooterController()
   plant_ = muan::control::StateSpacePlant<1, 3, 1>(frc1678::shooter_controller::controller::A(),
                                                    frc1678::shooter_controller::controller::B(),
                                                    frc1678::shooter_controller::controller::C());
-
-  at_goal_ = false;
-
-  velocity_tolerance_ = 12;  // Radians per second
 }
 
 c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::ShooterInputProto input,
@@ -105,7 +101,7 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
       }
       break;
     case AT_GOAL:
-      if (absolute_error(1, 0) > kSteadyStateVelocityTolerance) {
+      if (absolute_error(1, 0) > kSteadyStateVelocityTolerance && !encoder_fault_detected_) {
         state_ = SPINUP;
       }
       break;

@@ -260,9 +260,9 @@ TEST(ShooterControllerTest, EncoderNeverPluggedIn) {
   auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
   ASSERT_TRUE(status);
   EXPECT_FALSE(status.value()->encoder_fault_detected());
-  EXPECT_FALSE(status.value()->at_goal());
+  EXPECT_EQ(status.value()->state(), c2017::shooter::State::SPINUP);
 
-  for (int i = 0; i <= 500; i++) {
+  for (int i = 0; i <= 10; i++) {
     // Encoder fault should be detected
     input->set_shooter_encoder_position(0);
 
@@ -274,7 +274,7 @@ TEST(ShooterControllerTest, EncoderNeverPluggedIn) {
   ASSERT_TRUE(status);
   EXPECT_TRUE(status.value()->encoder_fault_detected());
   EXPECT_NEAR(output->shooter_voltage(), c2017::shooter::kShooterOpenLoopU, 1e-3);
-  EXPECT_TRUE(status.value()->at_goal());
+  EXPECT_EQ(status.value()->state(), c2017::shooter::State::AT_GOAL);
 }
 
 TEST(ShooterControllerTest, EncoderComesUnplugged) {
@@ -295,7 +295,7 @@ TEST(ShooterControllerTest, EncoderComesUnplugged) {
   auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
   ASSERT_TRUE(status);
   EXPECT_FALSE(status.value()->encoder_fault_detected());
-  EXPECT_FALSE(status.value()->at_goal());
+  EXPECT_EQ(status.value()->state(), c2017::shooter::State::SPINUP);
 
   for (int i = 0; i <= c2017::shooter::kEncoderFaultTicksAllowed - 1; i++) {
     // Encoder unplugged almost until allowed ticks
@@ -307,6 +307,7 @@ TEST(ShooterControllerTest, EncoderComesUnplugged) {
   status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
   ASSERT_TRUE(status);
   EXPECT_FALSE(status.value()->encoder_fault_detected());
+  EXPECT_EQ(status.value()->state(), c2017::shooter::State::SPINUP);
 
   for (int i = 0; i <= 500; i++) {
     // Encoder fault should be detected
@@ -320,5 +321,5 @@ TEST(ShooterControllerTest, EncoderComesUnplugged) {
   ASSERT_TRUE(status);
   EXPECT_TRUE(status.value()->encoder_fault_detected());
   EXPECT_NEAR(output->shooter_voltage(), c2017::shooter::kShooterOpenLoopU, 1e-3);
-  EXPECT_TRUE(status.value()->at_goal());
+  EXPECT_EQ(status.value()->state(), c2017::shooter::State::AT_GOAL);
 }
