@@ -54,8 +54,8 @@ class ShooterController {
 };
 
 constexpr double kEncoderFaultTicksAllowed = 300;
-constexpr double kShooterOpenLoopU = 8;  // TODO(Livy) Find a real value for this
-constexpr double kAcceleratorOpenLoopU = 8;
+constexpr double kShooterOpenLoopU = 10;
+constexpr double kAcceleratorOpenLoopU = 4.4;
 
 }  // namespace shooter
 }  // namespace c2017
