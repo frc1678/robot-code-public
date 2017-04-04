@@ -14,9 +14,10 @@ message WpilibOutput {
   required double upper_conveyor_voltage = 6;
   required double side_conveyor_voltage = 7;
 
-  required bool magazine_open = 8;
+  required bool front_magazine_open = 8;
   // Shooter/Climber Group
   // shooter_voltage is also the climber_voltage, since they run together
   required double shooter_voltage = 9;
   required double accelerator_voltage = 10;
+  required bool side_magazine_open = 11;
 }

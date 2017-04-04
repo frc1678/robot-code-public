@@ -14,10 +14,11 @@ message MagazineStatus {
 
 message MagazineOutput {
   required uint64 timestamp = 1;
-  required bool magazine_extended = 3;
+  required bool side_magazine_extended = 3;
   required double upper_voltage = 4;
   required double side_voltage = 5;
   required double lower_voltage = 6;
+  required bool front_magazine_extended = 7;
 }
 
 enum UpperGoalState {
@@ -41,7 +42,8 @@ enum LowerGoalState {
 message MagazineGoal {
   required uint64 timestamp = 1;
   required UpperGoalState upper_goal = 2;
-  required bool magazine_extended = 3;
+  required bool side_magazine_extended = 3;
   required SideGoalState side_goal = 4;
   required LowerGoalState lower_goal = 5;
+  required bool front_magazine_extended = 6;
 }

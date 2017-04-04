@@ -7,13 +7,15 @@ TEST(MagazineTest, CanExtendMagazine) {
   c2017::magazine::Magazine magazine;
 
   goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
-  goal->set_magazine_extended(true);
+  goal->set_side_magazine_extended(true);
+  goal->set_front_magazine_extended(true);
   goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
 
   magazine.SetGoal(goal);
   c2017::magazine::MagazineOutputProto output = magazine.Update(true);
 
-  EXPECT_TRUE(output->magazine_extended());
+  EXPECT_TRUE(output->side_magazine_extended());
+  EXPECT_TRUE(output->front_magazine_extended());
 }
 
 TEST(MagazineTest, CanAgitateMagazine) {
@@ -21,7 +23,8 @@ TEST(MagazineTest, CanAgitateMagazine) {
   c2017::magazine::Magazine magazine;
 
   goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
-  goal->set_magazine_extended(false);
+  goal->set_side_magazine_extended(false);
+  goal->set_front_magazine_extended(false);
   goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_AGITATE);
 
   magazine.SetGoal(goal);
@@ -35,7 +38,8 @@ TEST(MagazineTest, UpperCanMove) {
   c2017::magazine::Magazine magazine;
 
   goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_FORWARD);
-  goal->set_magazine_extended(false);
+  goal->set_side_magazine_extended(false);
+  goal->set_front_magazine_extended(false);
   goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
 
   magazine.SetGoal(goal);
@@ -49,7 +53,8 @@ TEST(MagazineTest, SendsNoVoltageWhenDisabled) {
   c2017::magazine::Magazine magazine;
 
   goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_FORWARD);
-  goal->set_magazine_extended(false);
+  goal->set_side_magazine_extended(false);
+  goal->set_front_magazine_extended(false);
   goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_IDLE);
 
   magazine.SetGoal(goal);

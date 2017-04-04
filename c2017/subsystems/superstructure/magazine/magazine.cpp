@@ -55,14 +55,16 @@ MagazineOutputProto Magazine::Update(bool outputs_enabled) {
         break;
     }
   } else {
-    magazine_extended_ = false;
+    side_magazine_extended_ = false;
+    front_magazine_extended_ = false;
     upper_voltage = 0;
     side_voltage = 0;
   }
 
   c2017::magazine::MagazineOutputProto output;
 
-  output_->set_magazine_extended(magazine_extended_);
+  output_->set_side_magazine_extended(side_magazine_extended_);
+  output_->set_front_magazine_extended(front_magazine_extended_);
   output_->set_upper_voltage(upper_voltage);
   output_->set_side_voltage(side_voltage);
   output_->set_lower_voltage(lower_voltage);
@@ -73,7 +75,8 @@ MagazineOutputProto Magazine::Update(bool outputs_enabled) {
 
 void Magazine::SetGoal(MagazineGoalProto goal) {
   upper_goal_ = goal->upper_goal();
-  magazine_extended_ = goal->magazine_extended();
+  side_magazine_extended_ = goal->side_magazine_extended();
+  front_magazine_extended_ = goal->front_magazine_extended();
   side_goal_ = goal->side_goal();
   lower_goal_ = goal->lower_goal();
 }

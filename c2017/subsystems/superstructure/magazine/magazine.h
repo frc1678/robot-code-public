@@ -16,7 +16,8 @@ class Magazine {
   void SetGoal(MagazineGoalProto goal);
 
  private:
-  bool magazine_extended_ = false;
+  bool front_magazine_extended_ = false;
+  bool side_magazine_extended_ = false;
   c2017::magazine::UpperGoalState upper_goal_;
   c2017::magazine::LowerGoalState lower_goal_;
   c2017::magazine::SideGoalState side_goal_;

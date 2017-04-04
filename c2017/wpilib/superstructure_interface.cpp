@@ -123,8 +123,10 @@ void SuperStructureInterface::WriteActuators() {
     pcm_->WriteSolenoid(ports::superstructure::kGroundGearIntakeSolenoid, (*outputs)->ground_gear_down());
     pcm_->WriteDoubleSolenoid(ports::superstructure::kFrontMagazineSolenoidA,
                               ports::superstructure::kFrontMagazineSolenoidB,
-                              DoubleSolenoid::Value::kReverse);
-    pcm_->WriteSolenoid(ports::superstructure::kMagazineSolenoid, (*outputs)->magazine_open());
+                              (*outputs)->front_magazine_open() ?
+                              DoubleSolenoid::Value::kReverse :
+                              DoubleSolenoid::Value::kForward);
+    pcm_->WriteSolenoid(ports::superstructure::kMagazineSolenoid, (*outputs)->side_magazine_open());
 
   } else {
     shooter_motor_.Set(0);
