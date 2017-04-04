@@ -98,7 +98,7 @@ void GroundGearIntake::SetGoal(GroundGearIntakeGoalProto goal) {
       }
       break;
     case STOP_DROPPING_BALLS:
-      if (current_state_== DROP_BALL_WITHOUT_GEAR) {
+      if (current_state_ == DROP_BALL_WITHOUT_GEAR) {
         current_state_ = IDLE;
       }
       if (current_state_ == DROP_BALL_WITH_GEAR) {
