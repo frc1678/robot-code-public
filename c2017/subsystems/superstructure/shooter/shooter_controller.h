@@ -29,6 +29,7 @@ class ShooterController {
   double UpdateProfiledGoalVelocity(double unprofiled_goal_velocity);
 
  private:
+  muan::control::StateSpacePlant<1, 3, 1> plant_;
   muan::control::StateSpaceController<1, 3, 1> shooter_controller_;
   muan::control::StateSpaceObserver<1, 3, 1> shooter_observer_;
 
@@ -43,7 +44,18 @@ class ShooterController {
   double unprofiled_goal_velocity_;
   c2017::shooter::ShooterStatusProto status_;
   c2017::shooter::ShooterStatusQueue& shooter_status_queue_;
+  double old_pos_;
+  bool encoder_fault_detected_ = false;
+  int num_encoder_fault_ticks_ = 0;
+
+  // Units are radians per second per tick
+  static constexpr double kShooterAcceleration = 0.75;
+  static constexpr double kMinimalWorkingVelocity = 10;
 };
+
+constexpr double kEncoderFaultTicksAllowed = 300;
+constexpr double kShooterOpenLoopU = 10;
+constexpr double kAcceleratorOpenLoopU = 4.4;
 
 }  // namespace shooter
 }  // namespace c2017

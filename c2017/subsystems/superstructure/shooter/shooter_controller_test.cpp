@@ -241,3 +241,85 @@ TEST(ShooterControllerTest, SaturationTest) {
     FAIL();
   }
 }
+
+TEST(ShooterControllerTest, EncoderNeverPluggedIn) {
+  c2017::shooter::ShooterInputProto input;
+  c2017::shooter::ShooterOutputProto output;
+  c2017::shooter::ShooterGoalProto goal;
+
+  c2017::shooter::ShooterController shooter_;
+  goal->set_goal_velocity(300);
+
+  for (int i = 0; i <= c2017::shooter::kEncoderFaultTicksAllowed - 1; i++) {
+    // Encoder unplugged, but it shouldn't be detected
+    input->set_shooter_encoder_position(0);
+
+    output = shooter_.Update(input, true);
+  }
+
+  auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+  ASSERT_TRUE(status);
+  EXPECT_FALSE(status.value()->encoder_fault_detected());
+  EXPECT_EQ(status.value()->state(), c2017::shooter::State::SPINUP);
+
+  for (int i = 0; i <= 10; i++) {
+    // Encoder fault should be detected
+    input->set_shooter_encoder_position(0);
+
+    output = shooter_.Update(input, true);
+  }
+
+  status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+
+  ASSERT_TRUE(status);
+  EXPECT_TRUE(status.value()->encoder_fault_detected());
+  EXPECT_NEAR(output->shooter_voltage(), c2017::shooter::kShooterOpenLoopU, 1e-3);
+  EXPECT_EQ(status.value()->state(), c2017::shooter::State::AT_GOAL);
+}
+
+TEST(ShooterControllerTest, EncoderComesUnplugged) {
+  c2017::shooter::ShooterInputProto input;
+  c2017::shooter::ShooterOutputProto output;
+  c2017::shooter::ShooterGoalProto goal;
+
+  c2017::shooter::ShooterController shooter_;
+  goal->set_goal_velocity(300);
+
+  for (int i = 0; i <= 300; i++) {
+    // Running normally
+    input->set_shooter_encoder_position(i);
+
+    output = shooter_.Update(input, true);
+  }
+
+  auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+  ASSERT_TRUE(status);
+  EXPECT_FALSE(status.value()->encoder_fault_detected());
+  EXPECT_EQ(status.value()->state(), c2017::shooter::State::SPINUP);
+
+  for (int i = 0; i <= c2017::shooter::kEncoderFaultTicksAllowed - 1; i++) {
+    // Encoder unplugged almost until allowed ticks
+    input->set_shooter_encoder_position(0);
+
+    output = shooter_.Update(input, true);
+  }
+
+  status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+  ASSERT_TRUE(status);
+  EXPECT_FALSE(status.value()->encoder_fault_detected());
+  EXPECT_EQ(status.value()->state(), c2017::shooter::State::SPINUP);
+
+  for (int i = 0; i <= 500; i++) {
+    // Encoder fault should be detected
+    input->set_shooter_encoder_position(0);
+
+    output = shooter_.Update(input, true);
+  }
+
+  status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+
+  ASSERT_TRUE(status);
+  EXPECT_TRUE(status.value()->encoder_fault_detected());
+  EXPECT_NEAR(output->shooter_voltage(), c2017::shooter::kShooterOpenLoopU, 1e-3);
+  EXPECT_EQ(status.value()->state(), c2017::shooter::State::AT_GOAL);
+}
