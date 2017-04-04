@@ -11,7 +11,7 @@ LiteralDrive: 0.2, 0.0, true, false, 2.0, 2.0, 3.0, 3.0, false
 LiteralDrive: 1.3, -0.4, true, false, 1.0, 1.0, 2.0, 3.0, true
 SetMagazine: true, true
 LiteralDrive: 1.07, -0.1, false, false, 5.0, 7.0, 1.0, 1.0, true
-VisionAlign: false
+VisionAlign: false, 0.0
 StartShoot
 
 Wait: 2.75
