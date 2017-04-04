@@ -1,4 +1,4 @@
-AgitateMagazine()
+FluctuateFuel(float seconds)
 
 include {
   "c2017/queue_manager/queue_manager.h"
@@ -14,8 +14,10 @@ init {
 }
 
 periodic {
+  int ticks_per_agitation = ((int)std::ceil(seconds * 200));
+
   c2017::intake_group::IntakeGroupGoalProto intake_group_goal;
-  intake_group_goal->set_magazine_open((int)std::ceil(ticks_passed/200)%2==1);
+  intake_group_goal->set_magazine_open((int)std::ceil(ticks_passed/ticks_per_agitation)%2==1);
   c2017::QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal);
   ticks_passed++;
   return false;
