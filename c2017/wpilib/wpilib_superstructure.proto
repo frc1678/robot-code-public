@@ -7,17 +7,18 @@ option cc_enable_arenas = true;
 message WpilibOutput {
   required uint64 timestamp = 1;
   // Intake Group
-  required double main_roller_voltage = 2;
+  required double ball_intake_voltage = 2;
   required bool ball_intake_down = 3;
   required double ground_gear_voltage = 4;
   required bool ground_gear_down = 5;
   required double upper_conveyor_voltage = 6;
   required double side_conveyor_voltage = 7;
+  required double lower_conveyor_voltage = 8;
 
-  required bool front_magazine_open = 8;
+  required bool front_magazine_open = 9;
   // Shooter/Climber Group
   // shooter_voltage is also the climber_voltage, since they run together
-  required double shooter_voltage = 9;
-  required double accelerator_voltage = 10;
-  required bool side_magazine_open = 11;
+  required double shooter_voltage = 10;
+  required double accelerator_voltage = 11;
+  required bool side_magazine_open = 12;
 }

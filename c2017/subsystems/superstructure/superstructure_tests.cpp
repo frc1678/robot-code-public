@@ -57,7 +57,8 @@ TEST_F(SuperstructureTest, SysInactive) {
   auto superstructure_output =
       QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
 
-  EXPECT_EQ(superstructure_output->main_roller_voltage(), 0.0);
+  EXPECT_EQ(superstructure_output->lower_conveyor_voltage(), 0.0);
+  EXPECT_EQ(superstructure_output->ball_intake_voltage(), 0.0);
   EXPECT_FALSE(superstructure_output->ball_intake_down());
   EXPECT_EQ(superstructure_output->ground_gear_voltage(), 0.0);
   EXPECT_FALSE(superstructure_output->ground_gear_down());
@@ -320,7 +321,7 @@ TEST_F(SuperstructureTest, BallIntakeWithConveyor) {
         QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
 
     // Should be sending a reverse main roller voltage to spit out
-    EXPECT_LT(superstructure_output->main_roller_voltage(), 0.0);
+    EXPECT_LT(superstructure_output->ball_intake_voltage(), 0.0);
   }
 
   shooter_group_goal_proto_->set_wheel(c2017::shooter_group::SHOOT);
@@ -333,7 +334,7 @@ TEST_F(SuperstructureTest, BallIntakeWithConveyor) {
         QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
 
     // Should be forwards, as shooting takes precedence over outtake
-    EXPECT_GT(superstructure_output->main_roller_voltage(), 0.0);
+    EXPECT_GT(superstructure_output->lower_conveyor_voltage(), 0.0);
   }
 }
 

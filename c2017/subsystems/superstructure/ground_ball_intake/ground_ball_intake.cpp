@@ -15,10 +15,10 @@ GroundBallIntakeOutputProto GroundBallIntake::Update(bool outputs_enabled) {
   if (outputs_enabled) {
     switch (run_intake_) {
       case RollerGoal::INTAKE:
-        roller_voltage = 8;
+        roller_voltage = 10;
         break;
       case RollerGoal::OUTTAKE:
-        roller_voltage = -8;
+        roller_voltage = -10;
         break;
       case RollerGoal::IDLE:
         roller_voltage = 0;

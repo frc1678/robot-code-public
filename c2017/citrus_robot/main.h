@@ -47,6 +47,7 @@ class CitrusRobot {
 
   c2017::shooter_group::ShooterGroupGoalProto shooter_group_goal_;
   c2017::intake_group::IntakeGroupGoalProto intake_group_goal_;
+  c2017::magazine::MagazineGoalProto magazine_goal_;
 
   muan::wpilib::DriverStationSender ds_sender_;
 

@@ -14,8 +14,9 @@ constexpr uint32_t kAccelMotor = 2;
 
 constexpr uint32_t kUpperConveyorMotor = 5;
 constexpr uint32_t kSideConveyorMotor = 4;
+constexpr uint32_t kLowerConveyorMotor = 3;
 
-constexpr uint32_t kBallIntakeMotor = 3;
+constexpr uint32_t kBallIntakeMotor = 8;
 
 constexpr uint32_t kGearIntakeMotor = 6;
 
@@ -43,6 +44,7 @@ SuperStructureInterface::SuperStructureInterface(muan::wpilib::CanWrapper* can_w
       accel_motor_{ports::superstructure::kAccelMotor},
       upper_conveyor_motor_{ports::superstructure::kUpperConveyorMotor},
       side_conveyor_motor_{ports::superstructure::kSideConveyorMotor},
+      lower_conveyor_motor_{ports::superstructure::kLowerConveyorMotor},
       ball_intake_motor_{ports::superstructure::kBallIntakeMotor},
       gear_intake_motor_{ports::superstructure::kGearIntakeMotor},
       shooter_encoder_{ports::superstructure::kShooterEncoderA, ports::superstructure::kShooterEncoderB},
@@ -106,8 +108,14 @@ void SuperStructureInterface::WriteActuators() {
                                                ports::superstructure::kMaxVoltage) /
                              12.0);
 
+    // Lower Conveyor motor
+    lower_conveyor_motor_.Set(-muan::utils::Cap((*outputs)->lower_conveyor_voltage(),
+                                               -ports::superstructure::kMaxVoltage,
+                                               ports::superstructure::kMaxVoltage) /
+                             12.0);
+
     // Main ball intake motors
-    ball_intake_motor_.Set(-muan::utils::Cap((*outputs)->main_roller_voltage(),
+    ball_intake_motor_.Set(-muan::utils::Cap((*outputs)->ball_intake_voltage(),
                                              -ports::superstructure::kMaxVoltage,
                                              ports::superstructure::kMaxVoltage) /
                            12.0);
@@ -132,6 +140,7 @@ void SuperStructureInterface::WriteActuators() {
     shooter_motor_.Set(0);
     upper_conveyor_motor_.Set(0);
     side_conveyor_motor_.Set(0);
+    lower_conveyor_motor_.Set(0);
     ball_intake_motor_.Set(0);
     gear_intake_motor_.Set(0);
 

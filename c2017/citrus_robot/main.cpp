@@ -60,6 +60,7 @@ void CitrusRobot::SendSuperstructureMessage() {
     intake_group_goal_->set_ground_ball_rollers(intake_group::GROUND_BALL_IN);
   } else if (ball_reverse_->is_pressed()) {
     intake_group_goal_->set_ground_ball_rollers(intake_group::GROUND_BALL_OUT);
+    magazine_goal_->set_lower_goal(magazine::LOWER_BACKWARD);
   } else {
     intake_group_goal_->set_ground_ball_rollers(intake_group::GROUND_BALL_NONE);
   }

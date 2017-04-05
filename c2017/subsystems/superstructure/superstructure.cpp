@@ -177,13 +177,8 @@ void SuperStructure::Update() {
 
   wpilib::WpilibOutputProto output;
 
-  // Have the magazine output for the roller take precedence over the intake, as shooting is more important
-  // than outtaking. This will be unnecessary when they're run off of separate motors.
-  if (magazine_output->lower_voltage() != 0.0) {
-    output->set_main_roller_voltage(magazine_output->lower_voltage());
-  } else {
-    output->set_main_roller_voltage(ground_ball_output->roller_voltage());
-  }
+  output->set_lower_conveyor_voltage(magazine_output->lower_voltage());
+  output->set_ball_intake_voltage(ground_ball_output->roller_voltage());
 
   output->set_ball_intake_down(!ground_ball_output->intake_up());
   output->set_ground_gear_voltage(ground_gear_output->roller_voltage());
@@ -200,5 +195,4 @@ void SuperStructure::Update() {
 }
 
 }  // namespace superstructure
-
 }  // namespace c2017

@@ -27,6 +27,7 @@ class SuperStructureInterface {
   VictorSP accel_motor_;
   VictorSP upper_conveyor_motor_;
   VictorSP side_conveyor_motor_;
+  VictorSP lower_conveyor_motor_;
   VictorSP ball_intake_motor_;
   VictorSP gear_intake_motor_;
 
