@@ -12,5 +12,5 @@ LiteralDrive: 1.4, 0, false, true, 3.0, 5.0, 1.0, 1.0, false
 
 ScoreGroundGear: false
 
-VisionAlign: true
+VisionAlign: true, 0.0
 StartShoot
