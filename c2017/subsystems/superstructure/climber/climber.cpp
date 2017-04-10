@@ -5,8 +5,8 @@ namespace c2017 {
 
 namespace climber {
 
-constexpr double kClimbingVoltage = 12.0;
-constexpr double kTopVoltage = 2.0;
+constexpr double kClimbingVoltage = -12.0;
+constexpr double kTopVoltage = -2.0;
 
 constexpr double kSpinUpVelocity = 0.42;
 constexpr double kStartClimbingVelocity = 0.35;
