@@ -34,7 +34,8 @@ void FileWriter::DetermineBasePath() {
         std::string log_dir = FLAGS_log_dir.empty() ? std::to_string(std::time(0)) : FLAGS_log_dir;
         int path_number = 0;
         boost::filesystem::path final_path;
-        while (boost::filesystem::is_directory(final_path = path / "logs" / (log_dir + "." + std::to_string(path_number)))) {
+        while (boost::filesystem::is_directory(
+               final_path = path / "logs" / (log_dir + "." + std::to_string(path_number)))) {
           path_number++;
         }
         boost::filesystem::create_directories(final_path);
