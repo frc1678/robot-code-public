@@ -119,7 +119,7 @@ void CitrusRobot::SendSuperstructureMessage() {
   } else if (just_shoot_->is_pressed()) {
     // Kelly - Gamepad Button
     intake_group_goal_->set_ground_ball_position(intake_group::GROUND_BALL_DOWN);
-    shooter_group_goal_->set_wheel(shooter_group::Wheel::SHOOT);
+    shooter_group_goal_->set_wheel(shooter_group::Wheel::BOTH);
     using_vision_ = false;
   } else if (stop_shooting_->was_clicked()) {
     // Kelly - Gamepad Button
