@@ -353,7 +353,7 @@ TEST_F(SuperstructureTest, Climb) {
     auto superstructure_status =
         QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage().value();
 
-    EXPECT_GT(superstructure_output->accelerator_voltage(), 0.0);
+    EXPECT_LT(superstructure_output->accelerator_voltage(), 0.0);
     EXPECT_TRUE(superstructure_status->climbing());
 
     EXPECT_EQ(superstructure_output->ground_gear_voltage(), c2017::ground_gear_intake::kOuttakeVoltage);
@@ -375,7 +375,7 @@ TEST_F(SuperstructureTest, CancelClimb) {
     auto superstructure_status =
         QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage().value();
 
-    EXPECT_GT(superstructure_output->accelerator_voltage(), 0.0);
+    EXPECT_LT(superstructure_output->accelerator_voltage(), 0.0);
     EXPECT_TRUE(superstructure_status->climbing());
   }
 
@@ -416,7 +416,7 @@ TEST_F(SuperstructureTest, ShootToClimb) {
     auto superstructure_status =
         QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage().value();
 
-    EXPECT_GT(superstructure_output->accelerator_voltage(), 0.0);
+    EXPECT_LT(superstructure_output->accelerator_voltage(), 0.0);
     EXPECT_TRUE(superstructure_status->climbing());
   }
 }

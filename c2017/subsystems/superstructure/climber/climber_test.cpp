@@ -52,7 +52,7 @@ TEST_F(ClimberTest, SpinningUp) {
   }
 
   EXPECT_EQ(GetClimberState(), c2017::climber::SPIN_UP);
-  EXPECT_EQ(GetVoltage(), 12.0);
+  EXPECT_EQ(GetVoltage(), -12.0);
 }
 
 TEST_F(ClimberTest, Approaching) {
@@ -68,7 +68,7 @@ TEST_F(ClimberTest, Approaching) {
   }
 
   EXPECT_EQ(GetClimberState(), c2017::climber::APPROACHING);
-  EXPECT_EQ(GetVoltage(), 12.0);
+  EXPECT_EQ(GetVoltage(), -12.0);
 }
 
 TEST_F(ClimberTest, AtTop) {
@@ -105,5 +105,5 @@ TEST_F(ClimberTest, AtTop) {
   }
 
   EXPECT_EQ(GetClimberState(), c2017::climber::AT_TOP);
-  EXPECT_EQ(GetVoltage(), 2.0);
+  EXPECT_EQ(GetVoltage(), -2.0);
 }
