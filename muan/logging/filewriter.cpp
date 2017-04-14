@@ -31,15 +31,17 @@ void FileWriter::DetermineBasePath() {
   for (auto const path : paths) {
     if (boost::filesystem::is_directory(path)) {
       try {
-        std::string log_dir = FLAGS_log_dir.empty() ? std::to_string(std::time(0)) : FLAGS_log_dir;
         int path_number = 0;
         boost::filesystem::path final_path;
         while (boost::filesystem::is_directory(
-               final_path = path / "logs" / (log_dir + "." + std::to_string(path_number)))) {
+               final_path = path / "logs" / std::to_string(path_number))) {
           path_number++;
         }
         boost::filesystem::create_directories(final_path);
         base_path_ = final_path;
+        if (!FLAGS_log_dir.empty()) {
+          CreateReadableName(FLAGS_log_dir);
+        }
         return;
       } catch (const boost::filesystem::filesystem_error &e) {
         std::cerr << "Error opening path for logging:\n" << e.code().message() << "\n";
