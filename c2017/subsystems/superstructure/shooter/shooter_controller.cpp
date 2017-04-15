@@ -38,6 +38,7 @@ ShooterController::ShooterController()
 
 c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::ShooterInputProto input,
                                                              bool outputs_enabled) {
+  outputs_enabled_ = outputs_enabled;
   Eigen::Matrix<double, 3, 1> shooter_r_;
   Eigen::Matrix<double, 2, 1> accelerator_r_;
 
@@ -55,19 +56,22 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
 
   auto accelerator_u = accelerator_controller_.Update(accelerator_observer_.x())(0, 0);
 
-  if (!outputs_enabled || unprofiled_goal_velocity_ <= 0) {
+  if (!outputs_enabled_ || unprofiled_goal_velocity_ <= 0) {
     shooter_u = 0.0;
     accelerator_u = 0.0;
-    unprofiled_goal_velocity_ = 0.0;
+    unprofiled_goal_velocity_ -= kShooterAcceleration;
+    if (unprofiled_goal_velocity_ < 0.0) {
+      unprofiled_goal_velocity_ = 0.0;
+    }
   } else {
     if (!encoder_fault_detected_) {
       status_->set_uncapped_u(shooter_u);
-      shooter_u = CapU(shooter_u, outputs_enabled);
-      accelerator_u = CapU(accelerator_u, outputs_enabled);
+      shooter_u = CapU(shooter_u);
+      accelerator_u = CapU(accelerator_u);
     } else {
       status_->set_uncapped_u(kShooterOpenLoopU);
-      shooter_u = CapU(kShooterOpenLoopU, outputs_enabled);
-      accelerator_u = CapU(kAcceleratorOpenLoopU, outputs_enabled);
+      shooter_u = CapU(kShooterOpenLoopU);
+      accelerator_u = CapU(kAcceleratorOpenLoopU);
     }
     if (plant_.x()(1, 0) > kMinimalWorkingVelocity && old_pos_ == input->shooter_encoder_position()) {
       num_encoder_fault_ticks_++;
@@ -125,7 +129,7 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
   return output;
 }
 
-double ShooterController::CapU(double u, bool outputs_enabled) {
+double ShooterController::CapU(double u) {
   double k2 = shooter_controller_.K(0, 1);
   double x2 = shooter_observer_.x(1);
   double k3 = shooter_controller_.K(0, 2);
@@ -134,7 +138,7 @@ double ShooterController::CapU(double u, bool outputs_enabled) {
   double u_max = 12;
   double u_min = -12;
 
-  if (!outputs_enabled) {
+  if (!outputs_enabled_) {
     profiled_goal_velocity_ = 0;
     return 0;
   }
@@ -151,7 +155,9 @@ double ShooterController::CapU(double u, bool outputs_enabled) {
 }
 
 void ShooterController::SetGoal(c2017::shooter::ShooterGoalProto goal) {
-  unprofiled_goal_velocity_ = goal->goal_velocity();
+  if (outputs_enabled_) {
+    unprofiled_goal_velocity_ = goal->goal_velocity();
+  }
 }
 
 double ShooterController::UpdateProfiledGoalVelocity(double unprofiled_goal_velocity) {

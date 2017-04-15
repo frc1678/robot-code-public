@@ -30,6 +30,7 @@ cc_library(
         "//c2017/queue_manager",
         "//muan/control:state_space",
         "//muan/wpilib:wpilib_queues",
+        "//third_party/google/googletest:googletest"
     ],
 )
 

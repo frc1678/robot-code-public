@@ -6,6 +6,7 @@
 #include "c2017/subsystems/superstructure/shooter/accelerator_constants.h"
 #include "c2017/subsystems/superstructure/shooter/queue_types.h"
 #include "c2017/subsystems/superstructure/shooter/shooter_constants.h"
+#include "gtest/gtest_prod.h"
 #include "muan/control/state_space_controller.h"
 #include "muan/control/state_space_observer.h"
 #include "muan/control/state_space_plant.h"
@@ -29,6 +30,7 @@ class ShooterController {
   double UpdateProfiledGoalVelocity(double unprofiled_goal_velocity);
 
  private:
+  FRIEND_TEST(ShooterControllerTest, Brownout);
   muan::control::StateSpacePlant<1, 3, 1> plant_;
   muan::control::StateSpaceController<1, 3, 1> shooter_controller_;
   muan::control::StateSpaceObserver<1, 3, 1> shooter_observer_;
@@ -36,7 +38,7 @@ class ShooterController {
   muan::control::StateSpaceController<1, 2, 1> accelerator_controller_;
   muan::control::StateSpaceObserver<1, 2, 1> accelerator_observer_;
 
-  double CapU(double u, bool outputs_enabled);
+  double CapU(double u);
 
   State state_ = IDLE;
 
@@ -47,6 +49,8 @@ class ShooterController {
   double old_pos_;
   bool encoder_fault_detected_ = false;
   int num_encoder_fault_ticks_ = 0;
+
+  bool outputs_enabled_ = false;
 
   // Units are radians per second per tick
   static constexpr double kShooterAcceleration = 0.75;
