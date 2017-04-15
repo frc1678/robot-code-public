@@ -27,7 +27,7 @@ class ShooterController {
 
   c2017::shooter::ShooterOutputProto Update(c2017::shooter::ShooterInputProto input, bool outputs_enabled);
   void SetGoal(c2017::shooter::ShooterGoalProto goal);
-  double UpdateProfiledGoalVelocity(double unprofiled_goal_velocity);
+  double UpdateProfiledGoalVelocity(double unprofiled_goal_velocity, bool outputs_enabled);
 
  private:
   FRIEND_TEST(ShooterControllerTest, Brownout);
@@ -38,7 +38,7 @@ class ShooterController {
   muan::control::StateSpaceController<1, 2, 1> accelerator_controller_;
   muan::control::StateSpaceObserver<1, 2, 1> accelerator_observer_;
 
-  double CapU(double u);
+  double CapU(double u, bool outputs_enabled);
 
   State state_ = IDLE;
 

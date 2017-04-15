@@ -355,7 +355,7 @@ TEST(ShooterControllerTest, Brownout) {
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->shooter_voltage()).finished());
   }
 
-  EXPECT_EQ(shooter_.profiled_goal_velocity_, shooter_.unprofiled_goal_velocity_);
+  EXPECT_EQ(shooter_.profiled_goal_velocity_, shooter_.profiled_goal_velocity_);
 
   for (int i = 0; i <= 50; i++) {
     input->set_shooter_encoder_position(plant.x(0));
@@ -369,8 +369,8 @@ TEST(ShooterControllerTest, Brownout) {
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->shooter_voltage()).finished());
   }
 
-  EXPECT_GT(shooter_.profiled_goal_velocity_, shooter_.unprofiled_goal_velocity_);
-  EXPECT_NE(shooter_.unprofiled_goal_velocity_, 0);
+  EXPECT_GT(shooter_.unprofiled_goal_velocity_, shooter_.profiled_goal_velocity_);
+  EXPECT_NE(shooter_.profiled_goal_velocity_, 0);
 
   for (int i = 0; i <= 450; i++) {
     input->set_shooter_encoder_position(plant.x(0));
@@ -384,7 +384,7 @@ TEST(ShooterControllerTest, Brownout) {
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->shooter_voltage()).finished());
   }
   auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
-  EXPECT_EQ(shooter_.unprofiled_goal_velocity_, 0);
+  EXPECT_EQ(shooter_.profiled_goal_velocity_, 0);
 }
 
 }  // namespace shooter
