@@ -385,8 +385,7 @@ TEST(ShooterControllerTest, Brownout) {
   }
   auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
   EXPECT_EQ(shooter_.unprofiled_goal_velocity_, 0);
-
 }
 
-}
-}
+}  // namespace shooter
+}  // namespace c2017
