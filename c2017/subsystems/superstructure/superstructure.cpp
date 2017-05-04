@@ -186,8 +186,8 @@ void SuperStructure::Update() {
   output->set_ground_gear_down(ground_gear_output->intake_down());
   output->set_upper_conveyor_voltage(magazine_output->upper_voltage());
   output->set_side_conveyor_voltage(magazine_output->side_voltage());
-  output->set_front_magazine_open(magazine_output->side_magazine_extended());
-  output->set_side_magazine_open(magazine_output->front_magazine_extended());
+  output->set_front_magazine_open(magazine_output->front_magazine_extended());
+  output->set_side_magazine_open(magazine_output->side_magazine_extended());
   output->set_shooter_voltage(shooter_output->shooter_voltage());
   output->set_accelerator_voltage(is_climbing ? climber_output->voltage()
                                               : shooter_output->accelerator_voltage());

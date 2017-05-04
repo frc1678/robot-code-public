@@ -15,4 +15,4 @@ VisionAlign: false, 0.0
 StartShoot
 
 Wait: 2.75
-FluctuateFuel: 0.7
+FluctuateFuel: 0.7, 10

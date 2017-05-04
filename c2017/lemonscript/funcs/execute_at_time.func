@@ -1,0 +1,23 @@
+ExecuteAtTime(float time_of_execution)
+
+include {
+  "c2017/queue_manager/queue_manager.h"
+}
+
+init {
+  return true;
+}
+
+periodic {
+  auto maybe_driver_station = c2017::QueueManager::GetInstance().driver_station_queue()->ReadLastMessage();
+  if (maybe_driver_station) {
+    auto driver_station = maybe_driver_station.value();
+    double match_time = driver_station->match_time();
+    double time_passed = (15 - match_time);
+    double time_of_execution_double = ((double)time_of_execution);
+    return time_passed > time_of_execution_double;
+  } else {
+    return true;
+  }
+  return false;
+}

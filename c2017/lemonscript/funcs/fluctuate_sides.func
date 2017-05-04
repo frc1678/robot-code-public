@@ -1,0 +1,30 @@
+FluctuateSides(float seconds_per_agitation, float run_time)
+
+include {
+  "c2017/queue_manager/queue_manager.h"
+  "c2017/subsystems/superstructure/superstructure.h"
+}
+
+global {
+  int ticks_passed = 0;
+}
+
+init {
+  return true;
+}
+
+periodic {
+  int ticks_per_agitation = ((int)std::ceil(seconds_per_agitation * 200));
+  int run_time_ticks = ((int)std::ceil(run_time * 200));
+
+  c2017::intake_group::IntakeGroupGoalProto intake_group_goal;
+  intake_group_goal->set_side_magazine_open((int)std::ceil(((ticks_passed)/ticks_per_agitation) % 2) == 1);
+  c2017::QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal);
+
+  if (ticks_passed > run_time_ticks) {
+      return true;
+  } else {
+      ticks_passed++;
+      return false;
+  }
+}
