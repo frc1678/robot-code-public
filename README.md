@@ -24,7 +24,7 @@ bazel build //o2016 --cpu=roborio
 You should also test anything that you change:
 
 ```
-bazel test //c2017/submarine_subsystem/...
+bazel test //c2018/submarine_subsystem/...
 ```
 
 Before you push your code, you can run our automated test script. This is what Travis CI runs, so if you don't like failed travis builds you should always run it before pushing:
@@ -58,18 +58,18 @@ Highlights include:
 
 Here's how to get your code into the main robot repository:
 
-###If you've just joined the team:
+### If you've just joined the team:
 1. Make an account on [GitHub](https://github.com/).
 2. Ask the robot programming lead to add your account to the frc1678 robot programming team.
 
-###If it's the first time you've contributed to this repo:
+### If it's the first time you've contributed to this repo:
 1. Fork this repo
   1. Log onto github and navigate to the repo [robot-code](https://github.com/frc1678/robot-code).
   2. Click the "Fork" button in the upper right corner of the screen.
 2. Clone your forked repo.
   * `git clone https://github.com/<your_name>/robot-code.git`, where <your_name> is your github username.
 
-###Any time you want to make a change:
+### Any time you want to make a change:
 1. Create and checkout a new branch.
   * `git checkout -b <your_branch_name>`, where <your_branch_name> is a descriptive name for your branch. For example `fix-shooter-wheel`, `two-ball-auto`, or `climbing`. Use dashes in the branch name, not underscores.
 2. Make whatever code changes you want/need/ to make. Be sure to write tests for your changes!
@@ -93,10 +93,9 @@ Here's how to get your code into the main robot repository:
       2. 2 experienced students and one other person have approved
   * If there are any concerns about your pull request, fix them. Depending on how severe the concerns are, the pull request may be merged without it, but everyone will be happier if you fix your code. To update your PR, just push to the branch on your forked repo.
   * Don't dismiss someone's review when you make changes - instead, ask them to re-review it.
-8. Rebase your changes onto master
-  * If there are no conflicts, just push the rebase and merge button.
-  * If there are conflicts rebasing, but no conflicts merging, merge into master
-  * If there are conflicts either way, fix them locally on your branch, push them, wait for Travis to pass, and rebase on master.
+8. Merge your changes into master
+  * If there are no conflicts, push the "Squash and merge" button, write a good commit message, and merge the changes.
+  * If there are conflicts, fix them locally on your branch, push them, wait for Travis to pass, and then squash and merge.
 9. ???
 10. Profit
 
