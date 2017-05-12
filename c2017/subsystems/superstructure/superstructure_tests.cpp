@@ -334,7 +334,7 @@ TEST_F(SuperstructureTest, BallIntakeWithConveyor) {
         QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
 
     // Should be forwards, as shooting takes precedence over outtake
-    EXPECT_GT(superstructure_output->lower_conveyor_voltage(), 0.0);
+    EXPECT_LT(superstructure_output->lower_conveyor_voltage(), 0.0);
   }
 }
 

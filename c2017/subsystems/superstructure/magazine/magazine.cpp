@@ -4,6 +4,8 @@ namespace c2017 {
 
 namespace magazine {
 
+Magazine::Magazine() : lower_ramping_{0.1}, side_ramping_{0.1} {}
+
 MagazineOutputProto Magazine::Update(bool outputs_enabled) {
   double upper_voltage = 0;
   double side_voltage = 0;
@@ -66,8 +68,8 @@ MagazineOutputProto Magazine::Update(bool outputs_enabled) {
   output_->set_side_magazine_extended(side_magazine_extended_);
   output_->set_front_magazine_extended(front_magazine_extended_);
   output_->set_upper_voltage(upper_voltage);
-  output_->set_side_voltage(side_voltage);
-  output_->set_lower_voltage(lower_voltage);
+  output_->set_side_voltage(side_ramping_.Update(side_voltage));
+  output_->set_lower_voltage(lower_ramping_.Update(lower_voltage));
   QueueManager::GetInstance().magazine_status_queue().WriteMessage(magazine_status_);
 
   return output_;

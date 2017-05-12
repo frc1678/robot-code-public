@@ -8,6 +8,7 @@ cc_library(
     deps = [
         ":magazine_queues",
         "//c2017/queue_manager",
+        "//muan/control:ramping",
         "//muan/wpilib:wpilib_queues",
     ],
 )

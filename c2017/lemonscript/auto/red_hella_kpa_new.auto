@@ -1,0 +1,25 @@
+// RED
+GroundGearIntaking: true
+GroundGearIntaking: false
+DefaultRobot
+SpinupShooter
+
+LiteralDrive: -0.1, 0.0, true, false, 2.0, 3.4, 3.0, 4.0, false
+LiteralDrive: -0.55, 0.6, true, false, 2.0, 3.4, 3.0, 4.0, false
+LiteralDrive: -1.39, 0.85, false, false, 2.0, 3.4, 3.0, 4.0, true
+
+SetMagazine: true, true
+
+LiteralDrive: 0.0, -0.2, false, false, 1.0, 1.0, 3.0, 5.0, false
+LiteralDrive: 0.0, 0.1, false, false, 1.0, 1.0, 3.0, 5.0, false
+
+Wait: 0.5
+VisionAlign: false, 0.0
+
+COMPLETE:
+  HoldPosition
+
+  SEQUENCE:
+    StartShoot
+    Wait: 2.75
+    FluctuateFuel: 1.4

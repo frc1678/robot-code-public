@@ -17,7 +17,7 @@ namespace c2017 {
 namespace shooter {
 
 constexpr double kSpinupVelocityTolerance = 5;
-constexpr double kSteadyStateVelocityTolerance = 12;
+constexpr double kSteadyStateVelocityTolerance = 20;
 // Units are radians per second per tick
 constexpr double kShooterAcceleration = 0.75;
 

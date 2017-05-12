@@ -9,11 +9,17 @@ message AutoSelection {
     NONE = 0;
     TWO_GEAR = 1;
     BLUE_HELLA_KPA = 2;
-    BLUE_HELLA_KPA_PLUS_GEAR = 3;
-    BLUE_CENTER_PLUS_KPA = 4;
-    RED_HELLA_KPA = 5;
-    RED_HELLA_KPA_PLUS_GEAR = 6;
-    RED_CENTER_PLUS_KPA = 7;
+    BLUE_HELLA_KPA_NEW = 3;
+    BLUE_HELLA_KPA_PLUS_GEAR = 4;
+    BLUE_CENTER_PLUS_KPA = 5;
+    BLUE_CENTER_PLUS_KPA_DRIVE = 6;
+    BLUE_FAR_PEG_PLUS_KPA_DRIVE = 7;
+    RED_HELLA_KPA = 8;
+    RED_HELLA_KPA_NEW = 9;
+    RED_HELLA_KPA_PLUS_GEAR = 10;
+    RED_CENTER_PLUS_KPA = 11;
+    RED_CENTER_PLUS_KPA_DRIVE = 12;
+    RED_FAR_PEG_PLUS_KPA_DRIVE = 13;
   }
   required uint64 timestamp = 1;
   required Auto auto_mode = 2;

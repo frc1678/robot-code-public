@@ -133,3 +133,18 @@ cc_test(
         "//third_party/google/googletest",
     ],
 )
+
+cc_library(
+    name = "ramping",
+    srcs = ["ramping.cpp"],
+    hdrs = ["ramping.h"],
+)
+
+cc_test(
+    name = "ramping_test",
+    srcs = ["ramping_test.cpp"],
+    deps = [
+        ":ramping",
+        "//third_party/google/googletest",
+    ],
+)

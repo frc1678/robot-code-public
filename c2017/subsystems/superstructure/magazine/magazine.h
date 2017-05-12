@@ -3,6 +3,7 @@
 
 #include "c2017/subsystems/superstructure/magazine/queue_types.h"
 #include "c2017/queue_manager/queue_manager.h"
+#include "muan/control/ramping.h"
 #include "muan/wpilib/queue_types.h"
 
 namespace c2017 {
@@ -11,7 +12,7 @@ namespace magazine {
 
 class Magazine {
  public:
-  Magazine() = default;
+  Magazine();
   MagazineOutputProto Update(bool outputs_enabled);
   void SetGoal(MagazineGoalProto goal);
 
@@ -24,6 +25,8 @@ class Magazine {
 
   MagazineStatusProto magazine_status_;
   MagazineOutputProto output_;
+
+  muan::control::Ramping lower_ramping_, side_ramping_;
 };
 
 }  // namespace magazine

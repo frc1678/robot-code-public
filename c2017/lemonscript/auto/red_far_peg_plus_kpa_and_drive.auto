@@ -1,0 +1,28 @@
+// RED FAR
+GroundGearIntaking: true
+GroundGearIntaking: false
+SpinupShooter
+
+LiteralDrive: -2.25, 0.0, false, false, 1.7, 3.0, 3.0, 4.0, false
+LiteralDrive: 0.0, -0.99, false, true, 1.7, 3.0, 3.0, 4.0, false
+LiteralDrive: -0.75, 0.0, false, false, 1.0, 2.0, 1.0, 1.0, false
+
+ScoreGroundGear: true
+Wait: 0.75
+
+LiteralDrive: 0.2, 0.0, true, false, 3.0, 5.0, 1.0, 1.0, false
+ScoreGroundGear: false
+
+LiteralDrive: 2.7, 2.54, false, true, 1.7, 1.7, 3.0, 3.0, false
+LiteralDrive: 3.3, 0, false, false, 3.0, 5.0, 1.0, 1.0, false
+LiteralDrive: 0.0, -0.4, false, false, 1.7, 3.0, 3.0, 4.0, false
+SetMagazine: true, true
+
+VisionAlign: false, 0.0
+StartShoot
+Wait: 2.00
+EndShoot
+
+LiteralDrive: 0.0, -1.2, false, false, 3.0, 5.0, 3.0, 5.0, false
+LiteralDrive: -4.0, 0.0, false, false, 3.0, 5.0, 3.0, 5.0, false
+LiteralDrive: -8.0, 0.85, false, false, 3.0, 5.0, 3.0, 5.0, false

@@ -21,7 +21,7 @@ namespace superstructure {
 
 // Constants for the shooter
 // The first value is revolutions per minute, which is then converted to radians per second
-constexpr double kShooterVelocity = 2950 * (M_PI * 2) / 60;
+constexpr double kShooterVelocity = 2975 * (M_PI * 2) / 60;
 
 class SuperStructure {
  public:
