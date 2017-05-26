@@ -36,6 +36,7 @@ void Logger::Update() {
       writer_->WriteLine(log.filename, std::string(&message.value()[0]));
     }
   }
+  writer_->FlushAllFiles();
 }
 
 void Logger::Start() { running_ = true; }

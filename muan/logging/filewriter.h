@@ -34,6 +34,8 @@ class FileWriter {
   // FileWriter may go to different files.
   virtual void WriteLine(const std::string &filename, const std::string &line);
 
+  void FlushAllFiles();
+
   // Creates a human-readable name for the current log directory. For example,
   // if the current log directory is /media/sda1/logs/12345678, and the desired
   // name is CVR_Quals_20, a symlink /media/sda1/logs/CVR_Quals_20 would be

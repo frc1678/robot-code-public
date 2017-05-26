@@ -21,7 +21,12 @@ void FileWriter::WriteLine(const std::string &filename, const std::string &line)
     open_files_[filename].open((base_path_ / filename).string(), std::ios::app);
   }
   open_files_[filename] << line << "\n";
-  open_files_[filename].flush();
+}
+
+void FileWriter::FlushAllFiles() {
+  for (auto &file : open_files_) {
+    file.second.flush();
+  }
 }
 
 void FileWriter::DetermineBasePath() {
