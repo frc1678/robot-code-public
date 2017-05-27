@@ -1,16 +1,16 @@
-#ifndef GENERIC_ROBOT_WPILIB_UPDATE_MAIN_H_
-#define GENERIC_ROBOT_WPILIB_UPDATE_MAIN_H_
+#ifndef GENERIC_ROBOT_CITRUS_ROBOT_MAIN_H_
+#define GENERIC_ROBOT_CITRUS_ROBOT_MAIN_H_
 
 #include "muan/teleop/joystick.h"
 #include "muan/wpilib/ds_sender.h"
 
 namespace generic_robot {
 
-namespace wpilib_update {
+namespace citrus_robot {
 
-class Main {
+class CitrusRobot {
  public:
-  Main();
+  CitrusRobot();
 
   // Call this to update at ~50hz (DS update rate)
   void Update();
@@ -26,8 +26,8 @@ class Main {
   muan::wpilib::DriverStationSender ds_sender_;
 };
 
-}  // namespace wpilib_update
+}  // namespace citrus_robot
 
 }  // namespace generic_robot
 
-#endif  // GENERIC_ROBOT_WPILIB_UPDATE_MAIN_H_
+#endif  // GENERIC_ROBOT_CITRUS_ROBOT_MAIN_H_
