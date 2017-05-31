@@ -1,10 +1,13 @@
 #ifndef GENERIC_ROBOT_QUEUE_MANAGER_QUEUE_MANAGER_H_
 #define GENERIC_ROBOT_QUEUE_MANAGER_QUEUE_MANAGER_H_
 
+#include "muan/logging/logger.h"
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
-
+#include "muan/teleop/queue_types.h"
 #include "muan/wpilib/queue_types.h"
+
+#include "third_party/frc971/control_loops/drivetrain/queue_types.h"
 
 using muan::queues::MessageQueue;
 
@@ -18,18 +21,35 @@ class QueueManager {
  public:
   static QueueManager& GetInstance();
 
+  void StartLogging();
+
   // Note: This needs to be the same as the actual message queue in the
   // PdpWrapper class. If you change that, you will need to change this.
   // It is like this to avoid making QueueManager rely on WPILib.
   MessageQueue<muan::proto::StackProto<PdpStatus, 512>>& pdp_status_queue();
   muan::wpilib::DriverStationQueue& driver_station_queue();
 
+  void Reset();
+
  private:
   QueueManager() = default;
   ~QueueManager() = default;
 
+  frc971::control_loops::drivetrain::GoalQueue drivetrain_goal_queue_;
+  frc971::control_loops::drivetrain::InputQueue drivetrain_input_queue_;
+  frc971::control_loops::drivetrain::OutputQueue drivetrain_output_queue_;
+  frc971::control_loops::drivetrain::StatusQueue drivetrain_status_queue_;
+
+  muan::teleop::JoystickStatusQueue manipulator_status_queue_;
+  muan::teleop::JoystickStatusQueue wheel_status_queue_;
+  muan::teleop::JoystickStatusQueue throttle_status_queue_;
+
   MessageQueue<muan::proto::StackProto<PdpStatus, 512>> pdp_status_queue_;
   muan::wpilib::DriverStationQueue driver_station_queue_;
+#ifndef FRC1678_NO_QUEUE_LOGGING
+  muan::logging::Logger logger_;
+  std::thread logger_thread_{std::ref(logger_)};
+#endif  // FRC1678_NO_QUEUE_LOGGING
 };
 
 }  // namespace generic_robot

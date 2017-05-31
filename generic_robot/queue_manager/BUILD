@@ -4,9 +4,12 @@ cc_library(
     hdrs = ["queue_manager.h"],
     visibility = ["//visibility:public"],
     deps = [
+        "//muan/logging:logger",
         "//muan/proto:stack_proto",
+        "//muan/teleop:joystick_queues",
         "//muan/queues",
         "//muan/wpilib:wpilib_queues",
+        "//third_party/frc971/control_loops/drivetrain:drivetrain_lib",
     ],
 )
 
