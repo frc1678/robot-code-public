@@ -104,7 +104,7 @@ class MessageQueue {
   // Gets the next message (or nullopt if all messages have been read) from the
   // position passed in. The parameter's value will be changed to the position
   // of the next valid message.
-  std::experimental::optional<T> NextMessage(uint64_t& next) const;  // NOLINT
+  std::experimental::optional<T> NextMessage(uint64_t* next) const;
 
   // Gets the index of the next message that is currently in memory. When current_message is in memory, this
   // function will return current_message. Otherwise, it will return the oldest message currently kept.

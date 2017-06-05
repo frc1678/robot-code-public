@@ -31,22 +31,22 @@ void MessageQueue<T, size>::Reset() {
 }
 
 template <typename T, uint64_t size>
-std::experimental::optional<T> MessageQueue<T, size>::NextMessage(uint64_t& next) const {  // NOLINT
+std::experimental::optional<T> MessageQueue<T, size>::NextMessage(uint64_t* next) const {
   aos::MutexLocker locker_{&queue_lock_};
 
   // Make sure the reader's index is within the bounds of still-valid messages,
   // and if it is at the end of the queue return nullopt.
-  if (next >= back_) {
-    next = back_;
+  if (*next >= back_) {
+    *next = back_;
     return std::experimental::nullopt;
   }
 
-  if (next < front()) {
-    next = front();
+  if (*next < front()) {
+    *next = front();
   }
 
-  auto current = next;
-  next++;
+  auto current = *next;
+  (*next)++;
   return messages_[current % size];
 }
 
@@ -107,7 +107,7 @@ MessageQueue<T, size>::QueueReader::QueueReader(const MessageQueue<T, size>& que
 
 template <typename T, uint64_t size>
 std::experimental::optional<T> MessageQueue<T, size>::QueueReader::ReadMessage() {
-  return queue_.NextMessage(next_message_);
+  return queue_.NextMessage(&next_message_);
 }
 
 template <typename T, uint64_t size>
