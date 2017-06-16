@@ -1,0 +1,60 @@
+<!DOCTYPE hmtl>
+
+<html>
+  <head>
+    <title>1678 WebDash</title>
+  </head>
+  <body>
+    <center>
+      <p>Auto mode:</p>
+      <form id="auto">
+      </form>
+      <form>
+        <input type="text" id="logname">
+        <input type="button" value="Set a name for this run" onclick="sendLogName()">
+      </form>
+      <a href="/data.html">Live data view</a>
+      <br/>
+      <p>Don't Panic!</p>
+    </center>
+  </body>
+  <script>
+    // Auto sender
+    var autosock = new WebSocket("ws://" + document.location.host + "/auto");
+    var logsock = new WebSocket("ws://" + document.location.host + "/logname");
+    var autolistsock = new WebSocket("ws://" + document.location.host + "/autolist");
+
+    function getRadioCheckedValue(radio_name) {
+      var oRadio = document.forms[0].elements[radio_name];
+      for(var i = 0; i < oRadio.length; i++) {
+        if(oRadio[i].checked) {
+          return oRadio[i].value;
+        }
+      }
+      return '';
+    }
+
+    function sendAutoData() {
+      autosock.send(getRadioCheckedValue("auto"));
+    }
+
+    function sendLogName() {
+      logsock.send(document.getElementById("logname").value);
+    }
+
+    // Creates html from json interpreted vector of autos to display on webdash
+    autolistsock.onmessage = function(data) {
+      var autolist = JSON.parse(data.data);
+      var auto_length = autolist.length;
+      var html_string = "";
+      for (var i=0; i < auto_length; i++) {
+        html_string += "<input type=\"radio\" name=\"auto\" value=\"" + autolist[i] + "\">" + autolist[i] + "<br>\n"; 
+      }
+      html_string += "<input type=\"button\" value=\"Update Auto\" onclick=\"sendAutoData()\">"
+			document.getElementById("auto").innerHTML = html_string;
+    };
+   autolistsock.onopen = function() {
+     autolistsock.send("ping");
+   }
+  </script>
+</html>
