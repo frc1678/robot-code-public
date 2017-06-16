@@ -6,6 +6,7 @@
 #include "muan/queues/message_queue.h"
 #include "muan/teleop/queue_types.h"
 #include "muan/wpilib/queue_types.h"
+#include "muan/wpilib/gyro/queue_types.h"
 
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
 
@@ -29,6 +30,13 @@ class QueueManager {
   MessageQueue<muan::proto::StackProto<PdpStatus, 512>>& pdp_status_queue();
   muan::wpilib::DriverStationQueue& driver_station_queue();
 
+  muan::wpilib::gyro::GyroQueue* gyro_queue();
+
+  frc971::control_loops::drivetrain::GoalQueue* drivetrain_goal_queue();
+  frc971::control_loops::drivetrain::InputQueue* drivetrain_input_queue();
+  frc971::control_loops::drivetrain::OutputQueue* drivetrain_output_queue();
+  frc971::control_loops::drivetrain::StatusQueue* drivetrain_status_queue();
+
   void Reset();
 
  private:
@@ -46,6 +54,8 @@ class QueueManager {
 
   MessageQueue<muan::proto::StackProto<PdpStatus, 512>> pdp_status_queue_;
   muan::wpilib::DriverStationQueue driver_station_queue_;
+
+  muan::wpilib::gyro::GyroQueue gyro_queue_;
 #ifndef FRC1678_NO_QUEUE_LOGGING
   muan::logging::Logger logger_;
   std::thread logger_thread_{std::ref(logger_)};

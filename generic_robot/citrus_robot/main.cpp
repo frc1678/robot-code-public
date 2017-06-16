@@ -11,7 +11,7 @@ CitrusRobot::CitrusRobot()
     : throttle_{1}, wheel_{0}, gamepad_{2}, ds_sender_{&QueueManager::GetInstance().driver_station_queue()} {
   shifting_low_ = throttle_.MakeButton(4);
   shifting_high_ = throttle_.MakeButton(5);
-  quickturn_ = throttle_.MakeButton(5);
+  quickturn_ = wheel_.MakeButton(5);
 }
 
 void CitrusRobot::Update() {
@@ -21,8 +21,23 @@ void CitrusRobot::Update() {
     throttle_.Update();
     wheel_.Update();
     gamepad_.Update();
+    SendDrivetrainMessage();
   }
   ds_sender_.Send();
+}
+
+void CitrusRobot::SendDrivetrainMessage() {
+  frc971::control_loops::drivetrain::GoalProto drivetrain_goal;
+
+  double throttle = -throttle_.wpilib_joystick()->GetRawAxis(1);
+  double wheel = -wheel_.wpilib_joystick()->GetRawAxis(0);
+  bool quickturn = quickturn_->is_pressed();
+
+  drivetrain_goal->mutable_teleop_command()->set_steering(wheel);
+  drivetrain_goal->mutable_teleop_command()->set_throttle(throttle);
+  drivetrain_goal->mutable_teleop_command()->set_quick_turn(quickturn);
+
+  generic_robot::QueueManager::GetInstance().drivetrain_goal_queue()->WriteMessage(drivetrain_goal);
 }
 
 }  // namespace citrus_robot

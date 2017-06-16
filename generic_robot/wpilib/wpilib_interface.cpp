@@ -1,9 +1,6 @@
 #include "generic_robot/wpilib/wpilib_interface.h"
-#include "muan/units/units.h"
-#include "generic_robot/queue_manager/queue_manager.h"
 
 namespace generic_robot {
-
 namespace wpilib {
 
 namespace ports {}  // namespace ports
@@ -15,9 +12,13 @@ WpilibInterface::WpilibInterface() : can_{&QueueManager::GetInstance().pdp_statu
   can_thread.detach();
 }
 
-void WpilibInterface::WriteActuators() {}
+void WpilibInterface::WriteActuators() {
+  drivetrain_interface_.WriteActuators();
+}
 
-void WpilibInterface::ReadSensors() {}
+void WpilibInterface::ReadSensors() {
+  drivetrain_interface_.ReadSensors();
+}
 
 }  // namespace wpilib
 
