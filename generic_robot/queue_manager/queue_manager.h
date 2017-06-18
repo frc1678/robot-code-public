@@ -5,8 +5,9 @@
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
 #include "muan/teleop/queue_types.h"
-#include "muan/wpilib/queue_types.h"
+#include "muan/webdash/server.h"
 #include "muan/wpilib/gyro/queue_types.h"
+#include "muan/wpilib/queue_types.h"
 
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
 
@@ -60,6 +61,8 @@ class QueueManager {
   muan::logging::Logger logger_;
   std::thread logger_thread_{std::ref(logger_)};
 #endif  // FRC1678_NO_QUEUE_LOGGING
+
+  muan::webdash::WebDashRunner webdash_;
 };
 
 }  // namespace generic_robot

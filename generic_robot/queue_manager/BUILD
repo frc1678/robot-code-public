@@ -8,6 +8,7 @@ cc_library(
         "//muan/proto:stack_proto",
         "//muan/teleop:joystick_queues",
         "//muan/queues",
+        "//muan/webdash:server",
         "//muan/wpilib:wpilib_queues",
         "//third_party/frc971/control_loops/drivetrain:drivetrain_lib",
     ],

@@ -17,6 +17,23 @@ void QueueManager::StartLogging() {
   logger_.AddQueue("manipulator_status", &manipulator_status_queue_);
   logger_.AddQueue("wheel_status", &wheel_status_queue_);
   logger_.AddQueue("throttle_status", &throttle_status_queue_);
+
+  // Webdash
+  webdash_.AddQueue("pdp_status", &pdp_status_queue_);
+  webdash_.AddQueue("driver_station", &driver_station_queue_);
+  webdash_.AddQueue("gyro", &gyro_queue_);
+
+  webdash_.AddQueue("drivetrain_input", &drivetrain_input_queue_);
+  webdash_.AddQueue("drivetrain_goal", &drivetrain_goal_queue_);
+  webdash_.AddQueue("drivetrain_status", &drivetrain_status_queue_);
+  webdash_.AddQueue("drivetrain_output", &drivetrain_output_queue_);
+
+  webdash_.AddQueue("manipulator_status", &manipulator_status_queue_);
+  webdash_.AddQueue("wheel_status", &wheel_status_queue_);
+  webdash_.AddQueue("throttle_status", &throttle_status_queue_);
+
+  std::thread webdash_thread{std::ref(webdash_)};
+  webdash_thread.detach();
 #endif  // FRC1678_NO_QUEUE_LOGGING
 }
 
