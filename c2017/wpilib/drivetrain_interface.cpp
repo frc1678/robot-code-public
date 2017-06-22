@@ -21,8 +21,8 @@ constexpr double kMaxVoltage = 12;
 }  // namespace ports
 
 DrivetrainInterface::DrivetrainInterface()
-    : input_queue_(QueueManager::GetInstance().drivetrain_input_queue()),
-      output_queue_(QueueManager::GetInstance().drivetrain_output_queue()->MakeReader()),
+    : input_queue_(QueueManager::GetInstance()->drivetrain_input_queue()),
+      output_queue_(QueueManager::GetInstance()->drivetrain_output_queue()->MakeReader()),
       motor_left_{ports::drivetrain::kMotorLeft},
       motor_right_{ports::drivetrain::kMotorRight},
       encoder_left_{ports::drivetrain::kEncoderLeftA, ports::drivetrain::kEncoderLeftB},

@@ -14,13 +14,13 @@ global {
 init {
   // If there is no vision connection don't bother running.
   // It will miss the shots, but won't block auto from drive afterwards.
-  auto status = c2017::QueueManager::GetInstance().vision_status_queue().ReadLastMessage();
+  auto status = c2017::QueueManager::GetInstance()->vision_status_queue()->ReadLastMessage();
   target_found = status && status.value()->target_found();
   if (target_found) {
     c2017::vision::VisionGoalProto goal;
     goal->set_should_align(true);
     goal->set_use_distance_align(use_distance_align);
-    c2017::QueueManager::GetInstance().vision_goal_queue().WriteMessage(goal);
+    c2017::QueueManager::GetInstance()->vision_goal_queue()->WriteMessage(goal);
   } else {
     muan::actions::DrivetrainProperties properties{7.0, 5.0, 3.0, 2.0,
                                                    c2017::drivetrain::GetDrivetrainConfig().robot_radius};
@@ -28,8 +28,8 @@ init {
     params.termination = muan::actions::DrivetrainTermination{0.05, 0.05, 0.05, 0.05};
     params.desired_angular_displacement = default_turn;
     action = std::make_unique<muan::actions::DrivetrainAction>(
-        properties, c2017::QueueManager::GetInstance().drivetrain_goal_queue(),
-        c2017::QueueManager::GetInstance().drivetrain_status_queue());
+        properties, c2017::QueueManager::GetInstance()->drivetrain_goal_queue(),
+        c2017::QueueManager::GetInstance()->drivetrain_status_queue());
     action->ExecuteDrive(params);
   }
   return true;
@@ -39,12 +39,12 @@ periodic {
   if (!target_found) {
     return !action->Update();
   } else {
-    auto status = c2017::QueueManager::GetInstance().vision_status_queue().ReadLastMessage();
+    auto status = c2017::QueueManager::GetInstance()->vision_status_queue()->ReadLastMessage();
     if (status && status.value()->aligned()) {
       c2017::vision::VisionGoalProto goal;
       goal->set_should_align(false);
       goal->set_use_distance_align(false);
-      c2017::QueueManager::GetInstance().vision_goal_queue().WriteMessage(goal);
+      c2017::QueueManager::GetInstance()->vision_goal_queue()->WriteMessage(goal);
       return true;
     } else {
       return false;

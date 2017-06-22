@@ -15,7 +15,7 @@ class VisionReader {
 
  private:
   bool running_;
-  VisionInputQueue& vision_input_queue_;
+  VisionInputQueue* vision_input_queue_;
 };
 
 }  // namespace vision

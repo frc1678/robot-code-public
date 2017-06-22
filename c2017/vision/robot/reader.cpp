@@ -8,7 +8,7 @@
 namespace c2017 {
 namespace vision {
 
-VisionReader::VisionReader() : vision_input_queue_{QueueManager::GetInstance().vision_input_queue()} {
+VisionReader::VisionReader() : vision_input_queue_{QueueManager::GetInstance()->vision_input_queue()} {
   running_ = false;
 }
 
@@ -25,7 +25,7 @@ void VisionReader::operator()() {
     VisionInputProto position;
     position->ParseFromArray(buffer, 1024);
 
-    vision_input_queue_.WriteMessage(position);
+    vision_input_queue_->WriteMessage(position);
 
     phased_loop.SleepUntilNext();
   }

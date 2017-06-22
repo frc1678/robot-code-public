@@ -53,7 +53,7 @@ TEST(ShooterControllerTest, PositiveVelocity) {
     EXPECT_NEAR(output->accelerator_voltage(), 0., 12.);
   }
 
-  auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+  auto status = c2017::QueueManager::GetInstance()->shooter_status_queue()->ReadLastMessage();
 
   if (status) {
     EXPECT_NEAR(status.value()->observed_velocity(), 300, 10);
@@ -83,14 +83,14 @@ TEST(ShooterControllerTest, StateMachine) {
   shooter_.SetGoal(goal);
   output = shooter_.Update(input, true);
 
-  auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+  auto status = c2017::QueueManager::GetInstance()->shooter_status_queue()->ReadLastMessage();
   EXPECT_EQ(status.value()->state(), c2017::shooter::IDLE);
 
   goal->set_goal_velocity(300.0);
   shooter_.SetGoal(goal);
   output = shooter_.Update(input, true);
 
-  status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+  status = c2017::QueueManager::GetInstance()->shooter_status_queue()->ReadLastMessage();
   EXPECT_EQ(status.value()->state(), c2017::shooter::SPINUP);
 
   for (int i = 0; i <= 1e4; i++) {
@@ -101,7 +101,7 @@ TEST(ShooterControllerTest, StateMachine) {
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->shooter_voltage()).finished());
   }
 
-  status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+  status = c2017::QueueManager::GetInstance()->shooter_status_queue()->ReadLastMessage();
   EXPECT_EQ(status.value()->state(), c2017::shooter::AT_GOAL);
 }
 
@@ -110,7 +110,7 @@ TEST(ShooterControllerTest, CantTakeNegativeVoltage) {
   c2017::shooter::ShooterOutputProto output;
   c2017::shooter::ShooterGoalProto goal;
 
-  auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+  auto status = c2017::QueueManager::GetInstance()->shooter_status_queue()->ReadLastMessage();
 
   c2017::shooter::ShooterController shooter_;
 
@@ -130,7 +130,7 @@ TEST(ShooterControllerTest, CantTakeNegativeVoltage) {
     shooter_.SetGoal(goal);
 
     output = shooter_.Update(input, true);
-    status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+    status = c2017::QueueManager::GetInstance()->shooter_status_queue()->ReadLastMessage();
 
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->shooter_voltage()).finished());
 
@@ -163,7 +163,7 @@ TEST(ShooterControllerTest, CanStop) {
   plant.x(1) = 0.0;
   plant.x(2) = 0.0;
 
-  auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+  auto status = c2017::QueueManager::GetInstance()->shooter_status_queue()->ReadLastMessage();
 
   for (int i = 0; i <= 1e3; i++) {
     input->set_shooter_encoder_position(plant.x(0));
@@ -173,7 +173,7 @@ TEST(ShooterControllerTest, CanStop) {
     shooter_.SetGoal(goal);
 
     output = shooter_.Update(input, true);
-    status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+    status = c2017::QueueManager::GetInstance()->shooter_status_queue()->ReadLastMessage();
 
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->shooter_voltage()).finished());
 
@@ -224,7 +224,7 @@ TEST(ShooterControllerTest, SaturationTest) {
   bool saturation_works;
 
   for (int i = 0; i <= 500; i++) {
-    auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+    auto status = c2017::QueueManager::GetInstance()->shooter_status_queue()->ReadLastMessage();
 
     saturation_works = saturation_works || status.value()->profiled_goal_velocity() < 300;
 
@@ -236,7 +236,7 @@ TEST(ShooterControllerTest, SaturationTest) {
 
   EXPECT_TRUE(saturation_works);
 
-  auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+  auto status = c2017::QueueManager::GetInstance()->shooter_status_queue()->ReadLastMessage();
 
   if (status) {
     EXPECT_NEAR(status.value()->observed_velocity(), 300, 10);
@@ -261,7 +261,7 @@ TEST(ShooterControllerTest, EncoderNeverPluggedIn) {
     output = shooter_.Update(input, true);
   }
 
-  auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+  auto status = c2017::QueueManager::GetInstance()->shooter_status_queue()->ReadLastMessage();
   ASSERT_TRUE(status);
   EXPECT_FALSE(status.value()->encoder_fault_detected());
   EXPECT_EQ(status.value()->state(), c2017::shooter::State::SPINUP);
@@ -273,7 +273,7 @@ TEST(ShooterControllerTest, EncoderNeverPluggedIn) {
     output = shooter_.Update(input, true);
   }
 
-  status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+  status = c2017::QueueManager::GetInstance()->shooter_status_queue()->ReadLastMessage();
 
   ASSERT_TRUE(status);
   EXPECT_TRUE(status.value()->encoder_fault_detected());
@@ -296,7 +296,7 @@ TEST(ShooterControllerTest, EncoderComesUnplugged) {
     output = shooter_.Update(input, true);
   }
 
-  auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+  auto status = c2017::QueueManager::GetInstance()->shooter_status_queue()->ReadLastMessage();
   ASSERT_TRUE(status);
   EXPECT_FALSE(status.value()->encoder_fault_detected());
   EXPECT_EQ(status.value()->state(), c2017::shooter::State::SPINUP);
@@ -308,7 +308,7 @@ TEST(ShooterControllerTest, EncoderComesUnplugged) {
     output = shooter_.Update(input, true);
   }
 
-  status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+  status = c2017::QueueManager::GetInstance()->shooter_status_queue()->ReadLastMessage();
   ASSERT_TRUE(status);
   EXPECT_FALSE(status.value()->encoder_fault_detected());
   EXPECT_EQ(status.value()->state(), c2017::shooter::State::SPINUP);
@@ -320,7 +320,7 @@ TEST(ShooterControllerTest, EncoderComesUnplugged) {
     output = shooter_.Update(input, true);
   }
 
-  status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+  status = c2017::QueueManager::GetInstance()->shooter_status_queue()->ReadLastMessage();
 
   ASSERT_TRUE(status);
   EXPECT_TRUE(status.value()->encoder_fault_detected());
@@ -383,7 +383,7 @@ TEST(ShooterControllerTest, Brownout) {
 
     plant.Update((Eigen::Matrix<double, 1, 1>() << output->shooter_voltage()).finished());
   }
-  auto status = c2017::QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+  auto status = c2017::QueueManager::GetInstance()->shooter_status_queue()->ReadLastMessage();
   EXPECT_EQ(shooter_.profiled_goal_velocity_, 0);
 }
 

@@ -10,12 +10,12 @@ class SuperstructureTest : public ::testing::Test {
   SuperstructureTest() {}
 
   void WriteQueues() {
-    QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal_proto_);
-    QueueManager::GetInstance().shooter_group_goal_queue().WriteMessage(shooter_group_goal_proto_);
-    QueueManager::GetInstance().driver_station_queue()->WriteMessage(driver_station_proto_);
-    QueueManager::GetInstance().climber_input_queue().WriteMessage(climber_input_proto_);
-    QueueManager::GetInstance().shooter_input_queue().WriteMessage(shooter_input_proto_);
-    QueueManager::GetInstance().ground_gear_input_queue().WriteMessage(ground_gear_input_proto_);
+    QueueManager::GetInstance()->intake_group_goal_queue()->WriteMessage(intake_group_goal_proto_);
+    QueueManager::GetInstance()->shooter_group_goal_queue()->WriteMessage(shooter_group_goal_proto_);
+    QueueManager::GetInstance()->driver_station_queue()->WriteMessage(driver_station_proto_);
+    QueueManager::GetInstance()->climber_input_queue()->WriteMessage(climber_input_proto_);
+    QueueManager::GetInstance()->shooter_input_queue()->WriteMessage(shooter_input_proto_);
+    QueueManager::GetInstance()->ground_gear_input_queue()->WriteMessage(ground_gear_input_proto_);
   }
 
   void SetUp() override {
@@ -27,7 +27,7 @@ class SuperstructureTest : public ::testing::Test {
     shooter_input_proto_.Reset();
     ground_gear_input_proto_.Reset();
 
-    QueueManager::GetInstance().Reset();
+    QueueManager::GetInstance()->Reset();
   }
 
  protected:
@@ -55,7 +55,7 @@ TEST_F(SuperstructureTest, SysInactive) {
   superstructure.Update();
 
   auto superstructure_output =
-      QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+      QueueManager::GetInstance()->superstructure_output_queue()->ReadLastMessage().value();
 
   EXPECT_EQ(superstructure_output->lower_conveyor_voltage(), 0.0);
   EXPECT_EQ(superstructure_output->ball_intake_voltage(), 0.0);
@@ -70,7 +70,7 @@ TEST_F(SuperstructureTest, SysInactive) {
   EXPECT_EQ(superstructure_output->accelerator_voltage(), 0.0);
 
   auto superstructure_status =
-      QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage().value();
+      QueueManager::GetInstance()->superstructure_status_queue()->ReadLastMessage().value();
   EXPECT_FALSE(superstructure_status->enable_outputs());
 }
 
@@ -84,9 +84,9 @@ TEST_F(SuperstructureTest, GearFunctionality) {
 
   {
     auto superstructure_output =
-        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->superstructure_output_queue()->ReadLastMessage().value();
     auto ground_gear_status =
-        QueueManager::GetInstance().ground_gear_status_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->ground_gear_status_queue()->ReadLastMessage().value();
 
     EXPECT_EQ(superstructure_output->ground_gear_voltage(),
               c2017::ground_gear_intake::kIntakeVoltage);
@@ -105,9 +105,9 @@ TEST_F(SuperstructureTest, GearFunctionality) {
 
   {
     auto superstructure_output =
-        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->superstructure_output_queue()->ReadLastMessage().value();
     auto ground_gear_status =
-        QueueManager::GetInstance().ground_gear_status_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->ground_gear_status_queue()->ReadLastMessage().value();
 
     EXPECT_EQ(superstructure_output->ground_gear_voltage(),
               c2017::ground_gear_intake::kPickupVoltage);
@@ -121,9 +121,9 @@ TEST_F(SuperstructureTest, GearFunctionality) {
 
   {
     auto superstructure_output =
-        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->superstructure_output_queue()->ReadLastMessage().value();
     auto ground_gear_status =
-        QueueManager::GetInstance().ground_gear_status_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->ground_gear_status_queue()->ReadLastMessage().value();
 
     EXPECT_EQ(superstructure_output->ground_gear_voltage(),
               c2017::ground_gear_intake::kCarryVoltage);
@@ -143,7 +143,7 @@ TEST_F(SuperstructureTest, BothIntakesStayInBox) {
 
   {
     auto superstructure_output =
-        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->superstructure_output_queue()->ReadLastMessage().value();
 
     EXPECT_TRUE(superstructure_output->ground_gear_down());
     EXPECT_FALSE(superstructure_output->ball_intake_down());
@@ -161,7 +161,7 @@ TEST_F(SuperstructureTest, GearScoreStaysInBox) {
 
   {
     auto superstructure_output =
-        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->superstructure_output_queue()->ReadLastMessage().value();
 
     EXPECT_FALSE(superstructure_output->ground_gear_down());
     EXPECT_FALSE(superstructure_output->ball_intake_down());
@@ -181,7 +181,7 @@ TEST_F(SuperstructureTest, ShootingStaysInBox) {
 
   {
     auto superstructure_output =
-        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->superstructure_output_queue()->ReadLastMessage().value();
 
     EXPECT_FALSE(superstructure_output->ground_gear_down());
     EXPECT_TRUE(superstructure_output->ball_intake_down());
@@ -194,7 +194,7 @@ TEST_F(SuperstructureTest, ShootingStaysInBox) {
 
   {
     auto superstructure_output =
-        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->superstructure_output_queue()->ReadLastMessage().value();
 
     EXPECT_TRUE(superstructure_output->ground_gear_down());
     EXPECT_FALSE(superstructure_output->ball_intake_down());
@@ -214,7 +214,7 @@ TEST_F(SuperstructureTest, Spinup) {
 
   {
     auto superstructure_output =
-        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->superstructure_output_queue()->ReadLastMessage().value();
 
     EXPECT_GT(superstructure_output->shooter_voltage(), 0.0);
     EXPECT_GT(superstructure_output->accelerator_voltage(), 0.0);
@@ -247,9 +247,9 @@ TEST_F(SuperstructureTest, SpinupShoot) {
 
   {
     auto shooter_status =
-        QueueManager::GetInstance().shooter_status_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->shooter_status_queue()->ReadLastMessage().value();
     auto superstructure_output =
-        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->superstructure_output_queue()->ReadLastMessage().value();
 
     EXPECT_EQ(shooter_status->state(), c2017::shooter::AT_GOAL);
     EXPECT_TRUE(shooter_status->currently_running());
@@ -270,7 +270,7 @@ TEST_F(SuperstructureTest, SpinupManualShoot) {
 
   {
     auto superstructure_output =
-        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->superstructure_output_queue()->ReadLastMessage().value();
 
     EXPECT_GT(superstructure_output->shooter_voltage(), 0.0);
     EXPECT_GT(superstructure_output->accelerator_voltage(), 0.0);
@@ -283,7 +283,7 @@ TEST_F(SuperstructureTest, SpinupManualShoot) {
 
   {
     auto superstructure_output =
-        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->superstructure_output_queue()->ReadLastMessage().value();
 
     EXPECT_GT(superstructure_output->shooter_voltage(), 0.0);
     EXPECT_GT(superstructure_output->accelerator_voltage(), 0.0);
@@ -301,7 +301,7 @@ TEST_F(SuperstructureTest, Agitate) {
 
   {
     auto superstructure_output =
-        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->superstructure_output_queue()->ReadLastMessage().value();
 
     // Should be sending a nonzero side conveyor voltage
     EXPECT_NE(superstructure_output->side_conveyor_voltage(), 0.0);
@@ -318,7 +318,7 @@ TEST_F(SuperstructureTest, BallIntakeWithConveyor) {
 
   {
     auto superstructure_output =
-        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->superstructure_output_queue()->ReadLastMessage().value();
 
     // Should be sending a reverse main roller voltage to spit out
     EXPECT_LT(superstructure_output->ball_intake_voltage(), 0.0);
@@ -331,7 +331,7 @@ TEST_F(SuperstructureTest, BallIntakeWithConveyor) {
 
   {
     auto superstructure_output =
-        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->superstructure_output_queue()->ReadLastMessage().value();
 
     // Should be forwards, as shooting takes precedence over outtake
     EXPECT_LT(superstructure_output->lower_conveyor_voltage(), 0.0);
@@ -349,9 +349,9 @@ TEST_F(SuperstructureTest, Climb) {
 
   {
     auto superstructure_output =
-        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->superstructure_output_queue()->ReadLastMessage().value();
     auto superstructure_status =
-        QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->superstructure_status_queue()->ReadLastMessage().value();
 
     EXPECT_LT(superstructure_output->accelerator_voltage(), 0.0);
     EXPECT_TRUE(superstructure_status->climbing());
@@ -371,9 +371,9 @@ TEST_F(SuperstructureTest, CancelClimb) {
 
   {
     auto superstructure_output =
-        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->superstructure_output_queue()->ReadLastMessage().value();
     auto superstructure_status =
-        QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->superstructure_status_queue()->ReadLastMessage().value();
 
     EXPECT_LT(superstructure_output->accelerator_voltage(), 0.0);
     EXPECT_TRUE(superstructure_status->climbing());
@@ -386,9 +386,9 @@ TEST_F(SuperstructureTest, CancelClimb) {
 
   {
     auto superstructure_output =
-        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->superstructure_output_queue()->ReadLastMessage().value();
     auto superstructure_status =
-        QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->superstructure_status_queue()->ReadLastMessage().value();
 
     EXPECT_EQ(superstructure_output->accelerator_voltage(), 0.0);
     EXPECT_FALSE(superstructure_status->climbing());
@@ -412,9 +412,9 @@ TEST_F(SuperstructureTest, ShootToClimb) {
 
   {
     auto superstructure_output =
-        QueueManager::GetInstance().superstructure_output_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->superstructure_output_queue()->ReadLastMessage().value();
     auto superstructure_status =
-        QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage().value();
+        QueueManager::GetInstance()->superstructure_status_queue()->ReadLastMessage().value();
 
     EXPECT_LT(superstructure_output->accelerator_voltage(), 0.0);
     EXPECT_TRUE(superstructure_status->climbing());

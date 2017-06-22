@@ -4,13 +4,13 @@ namespace c2017 {
 
 namespace lights {
 void Lights::Update() {
-  auto intake_group_goal_queue = QueueManager::GetInstance().intake_group_goal_queue().ReadLastMessage();
-  auto climber_status_queue = QueueManager::GetInstance().climber_status_queue().ReadLastMessage();
-  auto drivetrain_status_queue = QueueManager::GetInstance().drivetrain_status_queue()->ReadLastMessage();
-  auto gyro_status_queue = QueueManager::GetInstance().gyro_queue()->ReadLastMessage();
-  auto vision_status = QueueManager::GetInstance().vision_status_queue().ReadLastMessage();
-  auto ds_status = QueueManager::GetInstance().driver_station_queue()->ReadLastMessage();
-  auto ground_gear_status = QueueManager::GetInstance().ground_gear_status_queue().ReadLastMessage();
+  auto intake_group_goal_queue = QueueManager::GetInstance()->intake_group_goal_queue()->ReadLastMessage();
+  auto climber_status_queue = QueueManager::GetInstance()->climber_status_queue()->ReadLastMessage();
+  auto drivetrain_status_queue = QueueManager::GetInstance()->drivetrain_status_queue()->ReadLastMessage();
+  auto gyro_status_queue = QueueManager::GetInstance()->gyro_queue()->ReadLastMessage();
+  auto vision_status = QueueManager::GetInstance()->vision_status_queue()->ReadLastMessage();
+  auto ds_status = QueueManager::GetInstance()->driver_station_queue()->ReadLastMessage();
+  auto ground_gear_status = QueueManager::GetInstance()->ground_gear_status_queue()->ReadLastMessage();
   auto auto_selection_queue =
       c2017::webdash::WebDashQueueWrapper::GetInstance().auto_selection_queue().ReadLastMessage();
 
@@ -127,11 +127,11 @@ void Lights::Update() {
   output->set_green(is_green());
   output->set_blue(is_blue());
 
-  QueueManager::GetInstance().lights_output_queue().WriteMessage(output);
+  QueueManager::GetInstance()->lights_output_queue()->WriteMessage(output);
 }
 
 LightColor Lights::VisionAlignment() {
-  auto vision_status = QueueManager::GetInstance().vision_status_queue().ReadLastMessage();
+  auto vision_status = QueueManager::GetInstance()->vision_status_queue()->ReadLastMessage();
   if (vision_status) {
     if (!vision_status.value()->target_found()) {
       return LightColor::RED;

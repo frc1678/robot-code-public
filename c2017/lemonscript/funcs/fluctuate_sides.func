@@ -19,7 +19,7 @@ periodic {
 
   c2017::intake_group::IntakeGroupGoalProto intake_group_goal;
   intake_group_goal->set_side_magazine_open((int)std::ceil(((ticks_passed)/ticks_per_agitation) % 2) == 1);
-  c2017::QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal);
+  c2017::QueueManager::GetInstance()->intake_group_goal_queue()->WriteMessage(intake_group_goal);
 
   if (ticks_passed > run_time_ticks) {
       return true;

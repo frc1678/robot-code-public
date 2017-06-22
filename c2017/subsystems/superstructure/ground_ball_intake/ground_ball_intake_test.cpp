@@ -15,7 +15,7 @@ TEST(TestGroundBallIntake, RollerIntakeGoingDown) {
   GroundBallIntake intake;
   intake.set_goal(goal);
   output = intake.Update(true);
-  auto status = c2017::QueueManager::GetInstance().ground_ball_intake_status_queue().ReadLastMessage();
+  auto status = c2017::QueueManager::GetInstance()->ground_ball_intake_status_queue()->ReadLastMessage();
   EXPECT_NEAR(output->roller_voltage(), 10, 1e-5);
   EXPECT_FALSE(output->intake_up());
   if (status) {
@@ -35,7 +35,7 @@ TEST(TestGroundBallIntake, RollerIntakeGoingUp) {
   GroundBallIntake intake;
   intake.set_goal(goal);
   output = intake.Update(true);
-  auto status = c2017::QueueManager::GetInstance().ground_ball_intake_status_queue().ReadLastMessage();
+  auto status = c2017::QueueManager::GetInstance()->ground_ball_intake_status_queue()->ReadLastMessage();
   EXPECT_NEAR(output->roller_voltage(), 10, 1e-5);
   EXPECT_TRUE(output->intake_up());
   if (status) {
@@ -55,7 +55,7 @@ TEST(TestGroundBallIntake, RollerOuttakeGoingDown) {
   GroundBallIntake intake;
   intake.set_goal(goal);
   output = intake.Update(true);
-  auto status = c2017::QueueManager::GetInstance().ground_ball_intake_status_queue().ReadLastMessage();
+  auto status = c2017::QueueManager::GetInstance()->ground_ball_intake_status_queue()->ReadLastMessage();
   EXPECT_NEAR(output->roller_voltage(), -10, 1e-5);
   EXPECT_FALSE(output->intake_up());
   if (status) {
@@ -75,7 +75,7 @@ TEST(TestGroundBallIntake, RollerOuttakeGoingUp) {
   GroundBallIntake intake;
   intake.set_goal(goal);
   output = intake.Update(true);
-  auto status = c2017::QueueManager::GetInstance().ground_ball_intake_status_queue().ReadLastMessage();
+  auto status = c2017::QueueManager::GetInstance()->ground_ball_intake_status_queue()->ReadLastMessage();
   EXPECT_NEAR(output->roller_voltage(), -10, 1e-5);
   EXPECT_TRUE(output->intake_up());
   if (status) {
@@ -95,7 +95,7 @@ TEST(TestGroundBallIntake, RollerIdleGoingDown) {
   GroundBallIntake intake;
   intake.set_goal(goal);
   output = intake.Update(true);
-  auto status = c2017::QueueManager::GetInstance().ground_ball_intake_status_queue().ReadLastMessage();
+  auto status = c2017::QueueManager::GetInstance()->ground_ball_intake_status_queue()->ReadLastMessage();
   EXPECT_NEAR(output->roller_voltage(), 0, 1e-5);
   EXPECT_FALSE(output->intake_up());
   if (status) {
@@ -115,7 +115,7 @@ TEST(TestGroundBallIntake, RollerIdleGoingUp) {
   GroundBallIntake intake;
   intake.set_goal(goal);
   output = intake.Update(true);
-  auto status = c2017::QueueManager::GetInstance().ground_ball_intake_status_queue().ReadLastMessage();
+  auto status = c2017::QueueManager::GetInstance()->ground_ball_intake_status_queue()->ReadLastMessage();
   EXPECT_NEAR(output->roller_voltage(), 0, 1e-5);
   EXPECT_TRUE(output->intake_up());
   if (status) {
@@ -135,7 +135,7 @@ TEST(TestGroundBallIntake, Disabled) {
   GroundBallIntake intake;
   intake.set_goal(goal);
   output = intake.Update(false);
-  auto status = c2017::QueueManager::GetInstance().ground_ball_intake_status_queue().ReadLastMessage();
+  auto status = c2017::QueueManager::GetInstance()->ground_ball_intake_status_queue()->ReadLastMessage();
   EXPECT_NEAR(output->roller_voltage(), 0, 1e-5);
   EXPECT_TRUE(output->intake_up());
   if (status) {

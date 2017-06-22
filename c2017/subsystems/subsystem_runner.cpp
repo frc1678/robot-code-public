@@ -4,12 +4,12 @@ namespace c2017 {
 
 SubsystemRunner::SubsystemRunner()
     : drivetrain_{::c2017::drivetrain::GetDrivetrainConfig(),
-                  QueueManager::GetInstance().drivetrain_goal_queue(),
-                  QueueManager::GetInstance().drivetrain_input_queue(),
-                  QueueManager::GetInstance().drivetrain_output_queue(),
-                  QueueManager::GetInstance().drivetrain_status_queue(),
-                  QueueManager::GetInstance().driver_station_queue(),
-                  QueueManager::GetInstance().gyro_queue()},
+                  QueueManager::GetInstance()->drivetrain_goal_queue(),
+                  QueueManager::GetInstance()->drivetrain_input_queue(),
+                  QueueManager::GetInstance()->drivetrain_output_queue(),
+                  QueueManager::GetInstance()->drivetrain_status_queue(),
+                  QueueManager::GetInstance()->driver_station_queue(),
+                  QueueManager::GetInstance()->gyro_queue()},
       superstructure_{},
       vision_{} {}
 

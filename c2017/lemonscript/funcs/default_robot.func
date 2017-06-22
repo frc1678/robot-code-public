@@ -14,8 +14,8 @@ init {
   c2017::intake_group::IntakeGroupGoalProto intake_group_goal;
   c2017::shooter_group::ShooterGroupGoalProto shooter_group_goal;
   intake_group_goal->set_ground_ball_position(c2017::intake_group::GROUND_BALL_UP);
-  c2017::QueueManager::GetInstance().shooter_group_goal_queue().WriteMessage(shooter_group_goal);
-  c2017::QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal);
+  c2017::QueueManager::GetInstance()->shooter_group_goal_queue()->WriteMessage(shooter_group_goal);
+  c2017::QueueManager::GetInstance()->intake_group_goal_queue()->WriteMessage(intake_group_goal);
   return true;
 }
 

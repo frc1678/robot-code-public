@@ -16,7 +16,7 @@ init {
   } else {
     intake_group_goal->set_ground_gear_intake(c2017::intake_group::GROUND_GEAR_NONE);
   }
-  c2017::QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal);
+  c2017::QueueManager::GetInstance()->intake_group_goal_queue()->WriteMessage(intake_group_goal);
   return true;
 }
 

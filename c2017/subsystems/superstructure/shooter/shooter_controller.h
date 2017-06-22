@@ -45,7 +45,7 @@ class ShooterController {
   double profiled_goal_velocity_;
   double unprofiled_goal_velocity_;
   c2017::shooter::ShooterStatusProto status_;
-  c2017::shooter::ShooterStatusQueue& shooter_status_queue_;
+  c2017::shooter::ShooterStatusQueue* shooter_status_queue_;
   double old_pos_;
   bool encoder_fault_detected_ = false;
   int num_encoder_fault_ticks_ = 0;

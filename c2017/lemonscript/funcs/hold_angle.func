@@ -10,7 +10,7 @@ global {
 
 init {
   double left_offset = 0, right_offset = 0;
-  auto maybe_status = c2017::QueueManager::GetInstance().drivetrain_status_queue()->MakeReader().ReadLastMessage();
+  auto maybe_status = c2017::QueueManager::GetInstance()->drivetrain_status_queue()->MakeReader().ReadLastMessage();
   if (maybe_status) {
     auto status = maybe_status.value();
     left_offset = status->estimated_left_position();
@@ -24,6 +24,6 @@ init {
 }
 
 periodic {
-  c2017::QueueManager::GetInstance().drivetrain_goal_queue()->WriteMessage(goal_);
+  c2017::QueueManager::GetInstance()->drivetrain_goal_queue()->WriteMessage(goal_);
   return false;
 }

@@ -13,7 +13,7 @@ constexpr double kStartClimbingVelocity = 0.35;
 constexpr double kFinalVelocity = 0.15;
 
 Climber::Climber()
-    : position_history_(7), status_queue_(QueueManager::GetInstance().climber_status_queue()) {}
+    : position_history_(7), status_queue_(QueueManager::GetInstance()->climber_status_queue()) {}
 
 void Climber::SetGoal(const ClimberGoalProto& goal) {
   if (goal->climbing() && current_state_ == NOTHING) {
@@ -66,7 +66,7 @@ ClimberOutputProto Climber::Update(const ClimberInputProto& input, bool outputs_
   status->set_observed_velocity(current_vel);
   status->set_climber_state(current_state_);
 
-  status_queue_.WriteMessage(status);
+  status_queue_->WriteMessage(status);
 
   return output;
 }

@@ -8,20 +8,20 @@ VisionAlignment::VisionAlignment()
       use_distance_align_{false},
       running_{false},
       properties_{7.0, 5.0, 3.0, 2.0, c2017::drivetrain::GetDrivetrainConfig().robot_radius},
-      vision_input_reader_{QueueManager::GetInstance().vision_input_queue().MakeReader()},
-      driverstation_reader_{QueueManager::GetInstance().driver_station_queue()->MakeReader()},
-      dt_goal_queue_{c2017::QueueManager::GetInstance().drivetrain_goal_queue()},
-      dt_status_reader_{c2017::QueueManager::GetInstance().drivetrain_status_queue()->MakeReader()},
+      vision_input_reader_{QueueManager::GetInstance()->vision_input_queue()->MakeReader()},
+      driverstation_reader_{QueueManager::GetInstance()->driver_station_queue()->MakeReader()},
+      dt_goal_queue_{c2017::QueueManager::GetInstance()->drivetrain_goal_queue()},
+      dt_status_reader_{c2017::QueueManager::GetInstance()->drivetrain_status_queue()->MakeReader()},
       action_{muan::actions::DrivetrainAction(properties_,
-                                              c2017::QueueManager::GetInstance().drivetrain_goal_queue(),
-                                              c2017::QueueManager::GetInstance().drivetrain_status_queue())} {
-}
+                                              c2017::QueueManager::GetInstance()->drivetrain_goal_queue(),
+                                              c2017::QueueManager::GetInstance()->drivetrain_status_queue())}
+{}
 
 void VisionAlignment::Update() {
   auto ds = driverstation_reader_.ReadLastMessage();
   bool disabled = ds ? ((*ds)->mode() == RobotMode::DISABLED || (*ds)->mode() == RobotMode::ESTOP) : true;
 
-  auto goal = QueueManager::GetInstance().vision_goal_queue().ReadLastMessage();
+  auto goal = QueueManager::GetInstance()->vision_goal_queue()->ReadLastMessage();
   if (goal) {
     should_align_ = goal.value()->should_align();
     use_distance_align_ = goal.value()->use_distance_align();
@@ -105,7 +105,7 @@ void VisionAlignment::Update() {
   }
   status->set_aligned(terminated);
   status->set_aligning(running_);
-  QueueManager::GetInstance().vision_status_queue().WriteMessage(status);
+  QueueManager::GetInstance()->vision_status_queue()->WriteMessage(status);
 }
 
 }  // namespace vision

@@ -25,8 +25,8 @@ init {
   params.angle_is_absolute = is_turn_absolute;
 
   action = std::make_unique<muan::actions::DrivetrainAction>(
-      properties, c2017::QueueManager::GetInstance().drivetrain_goal_queue(),
-      c2017::QueueManager::GetInstance().drivetrain_status_queue());
+      properties, c2017::QueueManager::GetInstance()->drivetrain_goal_queue(),
+      c2017::QueueManager::GetInstance()->drivetrain_status_queue());
   action->ExecuteDrive(params);
   return false;
 }

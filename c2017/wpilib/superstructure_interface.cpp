@@ -40,7 +40,7 @@ constexpr double kMaxVoltage = 12;
 }  // namespace ports
 
 SuperStructureInterface::SuperStructureInterface(muan::wpilib::CanWrapper* can_wrapper)
-    : output_queue_(QueueManager::GetInstance().superstructure_output_queue().MakeReader()),
+    : output_queue_(QueueManager::GetInstance()->superstructure_output_queue()->MakeReader()),
       shooter_motor_{ports::superstructure::kShooterMotor},
       accel_motor_{ports::superstructure::kAccelMotor},
       upper_conveyor_motor_{ports::superstructure::kUpperConveyorMotor},
@@ -72,21 +72,21 @@ void SuperStructureInterface::ReadSensors() {
   shooter_sensors->set_accelerator_encoder_position(-accel_encoder_.Get() * kAccelRadiansPerClick);
   climber_sensors->set_position(accel_encoder_.Get() * kClimberMetersPerClick);
 
-  auto current_reader = QueueManager::GetInstance().pdp_status_queue().MakeReader().ReadLastMessage();
+  auto current_reader = QueueManager::GetInstance()->pdp_status_queue()->MakeReader().ReadLastMessage();
 
   if (current_reader) {
     climber_sensors->set_current((*current_reader)->current14());
     ground_gear_sensors->set_current((*current_reader)->current11());
   }
 
-  QueueManager::GetInstance().shooter_input_queue().WriteMessage(shooter_sensors);
-  QueueManager::GetInstance().climber_input_queue().WriteMessage(climber_sensors);
-  QueueManager::GetInstance().ground_gear_input_queue().WriteMessage(ground_gear_sensors);
+  QueueManager::GetInstance()->shooter_input_queue()->WriteMessage(shooter_sensors);
+  QueueManager::GetInstance()->climber_input_queue()->WriteMessage(climber_sensors);
+  QueueManager::GetInstance()->ground_gear_input_queue()->WriteMessage(ground_gear_sensors);
 }
 
 void SuperStructureInterface::WriteActuators() {
   auto outputs = output_queue_.ReadLastMessage();
-  auto current_reader = QueueManager::GetInstance().pdp_status_queue().MakeReader().ReadLastMessage();
+  auto current_reader = QueueManager::GetInstance()->pdp_status_queue()->MakeReader().ReadLastMessage();
   if (outputs) {
     // Shooter motors
     shooter_motor_.Set(-muan::utils::Cap(-(*outputs)->shooter_voltage(), -ports::superstructure::kMaxVoltage,

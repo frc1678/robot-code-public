@@ -13,7 +13,7 @@ init {
   c2017::intake_group::IntakeGroupGoalProto intake_group_goal;
   intake_group_goal->set_side_magazine_open(side);
   intake_group_goal->set_front_magazine_open(front);
-  c2017::QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal);
+  c2017::QueueManager::GetInstance()->intake_group_goal_queue()->WriteMessage(intake_group_goal);
   return true;
 }
 

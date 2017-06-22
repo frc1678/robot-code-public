@@ -16,18 +16,18 @@ void SuperStructure::Update() {
   c2017::superstructure::SuperstructureStatusProto superstructure_status;
 
   const auto maybe_shooter_group_goal =
-      QueueManager::GetInstance().shooter_group_goal_queue().ReadLastMessage();
-  const auto maybe_shooter_status = QueueManager::GetInstance().shooter_status_queue().ReadLastMessage();
+      QueueManager::GetInstance()->shooter_group_goal_queue()->ReadLastMessage();
+  const auto maybe_shooter_status = QueueManager::GetInstance()->shooter_status_queue()->ReadLastMessage();
   const auto maybe_ground_gear_intake_status =
-      QueueManager::GetInstance().ground_gear_status_queue().ReadLastMessage();
+      QueueManager::GetInstance()->ground_gear_status_queue()->ReadLastMessage();
   const auto maybe_intake_group_goal =
-      QueueManager::GetInstance().intake_group_goal_queue().ReadLastMessage();
+      QueueManager::GetInstance()->intake_group_goal_queue()->ReadLastMessage();
 
-  const auto maybe_shooter_input = QueueManager::GetInstance().shooter_input_queue().ReadLastMessage();
+  const auto maybe_shooter_input = QueueManager::GetInstance()->shooter_input_queue()->ReadLastMessage();
   const auto maybe_ground_gear_input =
-      QueueManager::GetInstance().ground_gear_input_queue().ReadLastMessage();
-  const auto maybe_climber_input = QueueManager::GetInstance().climber_input_queue().ReadLastMessage();
-  const auto maybe_driver_station = QueueManager::GetInstance().driver_station_queue()->ReadLastMessage();
+      QueueManager::GetInstance()->ground_gear_input_queue()->ReadLastMessage();
+  const auto maybe_climber_input = QueueManager::GetInstance()->climber_input_queue()->ReadLastMessage();
+  const auto maybe_driver_station = QueueManager::GetInstance()->driver_station_queue()->ReadLastMessage();
 
   bool is_climbing = false;
 
@@ -148,7 +148,7 @@ void SuperStructure::Update() {
   climber_.SetGoal(climber_goal);
 
   superstructure_status->set_state(shooter_state_);
-  QueueManager::GetInstance().superstructure_status_queue().WriteMessage(superstructure_status);
+  QueueManager::GetInstance()->superstructure_status_queue()->WriteMessage(superstructure_status);
 
   bool outputs_enabled = false;
 
@@ -192,7 +192,7 @@ void SuperStructure::Update() {
   output->set_accelerator_voltage(is_climbing ? climber_output->voltage()
                                               : shooter_output->accelerator_voltage());
 
-  QueueManager::GetInstance().superstructure_output_queue().WriteMessage(output);
+  QueueManager::GetInstance()->superstructure_output_queue()->WriteMessage(output);
 }
 
 }  // namespace superstructure

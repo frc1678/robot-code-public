@@ -6,7 +6,7 @@
 
 class WpilibRobot : public IterativeRobot {
  public:
-  WpilibRobot() { c2017::QueueManager::GetInstance().StartLogging(); }
+  WpilibRobot() { c2017::QueueManager::GetInstance()->StartLogging(); }
 
   void RobotInit() override {}
 

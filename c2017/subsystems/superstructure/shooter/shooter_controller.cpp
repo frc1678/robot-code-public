@@ -6,7 +6,7 @@ namespace c2017 {
 namespace shooter {
 
 ShooterController::ShooterController()
-    : shooter_status_queue_{QueueManager::GetInstance().shooter_status_queue()} {
+    : shooter_status_queue_{QueueManager::GetInstance()->shooter_status_queue()} {
   auto shooter_plant = muan::control::StateSpacePlant<1, 3, 1>(frc1678::shooter_controller::controller::A(),
                                                                frc1678::shooter_controller::controller::B(),
                                                                frc1678::shooter_controller::controller::C());
@@ -120,7 +120,7 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
   status_->set_unprofiled_goal_velocity(unprofiled_goal_velocity_);
   status_->set_voltage_error(shooter_observer_.x(2));
   status_->set_encoder_fault_detected(encoder_fault_detected_);
-  QueueManager::GetInstance().shooter_status_queue().WriteMessage(status_);
+  QueueManager::GetInstance()->shooter_status_queue()->WriteMessage(status_);
 
   return output;
 }

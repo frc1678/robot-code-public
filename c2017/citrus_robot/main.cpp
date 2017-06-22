@@ -7,10 +7,10 @@ namespace c2017 {
 namespace citrus_robot {
 
 CitrusRobot::CitrusRobot()
-    : throttle_{1, &c2017::QueueManager::GetInstance().throttle_status_queue()},
-      wheel_{0, &c2017::QueueManager::GetInstance().wheel_status_queue()},
-      gamepad_{2, &c2017::QueueManager::GetInstance().manipulator_status_queue()},
-      ds_sender_{c2017::QueueManager::GetInstance().driver_station_queue()} {
+    : throttle_{1, c2017::QueueManager::GetInstance()->throttle_status_queue()},
+      wheel_{0, c2017::QueueManager::GetInstance()->wheel_status_queue()},
+      gamepad_{2, c2017::QueueManager::GetInstance()->manipulator_status_queue()},
+      ds_sender_{c2017::QueueManager::GetInstance()->driver_station_queue()} {
   align_shoot_ = throttle_.MakeButton(1);               // Joystick Trigger
   driver_score_ground_gear_ = throttle_.MakeButton(3);  // Throttle 3
   quickturn_ = wheel_.MakeButton(5);                    // Wheel 5
@@ -38,7 +38,7 @@ void CitrusRobot::Update() {
     lemonscript_.Stop();  // Weirder to do this, but it works :/
 
     auto superstructure_status =
-        c2017::QueueManager::GetInstance().superstructure_status_queue().ReadLastMessage();
+        c2017::QueueManager::GetInstance()->superstructure_status_queue()->ReadLastMessage();
     if (superstructure_status) {
       gamepad_.wpilib_joystick()->SetRumble(Joystick::kRightRumble,
                                             superstructure_status.value()->rumble_on() ? 1 : 0);
@@ -129,8 +129,8 @@ void CitrusRobot::SendSuperstructureMessage() {
     using_vision_ = false;
   }
 
-  c2017::QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal_);
-  c2017::QueueManager::GetInstance().shooter_group_goal_queue().WriteMessage(shooter_group_goal_);
+  c2017::QueueManager::GetInstance()->intake_group_goal_queue()->WriteMessage(intake_group_goal_);
+  c2017::QueueManager::GetInstance()->shooter_group_goal_queue()->WriteMessage(shooter_group_goal_);
 }
 
 void CitrusRobot::SendDrivetrainMessage() {
@@ -152,7 +152,7 @@ void CitrusRobot::SendDrivetrainMessage() {
   drivetrain_goal->mutable_teleop_command()->set_throttle(throttle);
   drivetrain_goal->mutable_teleop_command()->set_quick_turn(quickturn);
 
-  auto vision_status = c2017::QueueManager::GetInstance().vision_status_queue().ReadLastMessage();
+  auto vision_status = c2017::QueueManager::GetInstance()->vision_status_queue()->ReadLastMessage();
   if (vision_status) {
     vision_aligned_ = vision_status.value()->aligned();
   } else {
@@ -161,9 +161,9 @@ void CitrusRobot::SendDrivetrainMessage() {
 
   if (!using_vision_ || !vision_status || vision_status.value()->aligned()) {
     using_vision_ = false;
-    c2017::QueueManager::GetInstance().drivetrain_goal_queue()->WriteMessage(drivetrain_goal);
+    c2017::QueueManager::GetInstance()->drivetrain_goal_queue()->WriteMessage(drivetrain_goal);
   }
-  c2017::QueueManager::GetInstance().vision_goal_queue().WriteMessage(vision_goal);
+  c2017::QueueManager::GetInstance()->vision_goal_queue()->WriteMessage(vision_goal);
 }
 
 }  // namespace citrus_robot

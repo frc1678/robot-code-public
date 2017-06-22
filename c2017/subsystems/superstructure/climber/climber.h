@@ -25,7 +25,7 @@ class Climber {
  private:
   muan::utils::History<double> position_history_;
 
-  ClimberStatusQueue& status_queue_;
+  ClimberStatusQueue* status_queue_;
 
   double position_offset_ = 0.0;
   State current_state_ = NOTHING;

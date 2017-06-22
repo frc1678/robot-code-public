@@ -9,7 +9,7 @@ init {
 }
 
 periodic {
-  auto maybe_driver_station = c2017::QueueManager::GetInstance().driver_station_queue()->ReadLastMessage();
+  auto maybe_driver_station = c2017::QueueManager::GetInstance()->driver_station_queue()->ReadLastMessage();
   if (maybe_driver_station) {
     auto driver_station = maybe_driver_station.value();
     double match_time = driver_station->match_time();

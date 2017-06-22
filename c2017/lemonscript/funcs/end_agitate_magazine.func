@@ -12,7 +12,7 @@ global {
 init {
   c2017::intake_group::IntakeGroupGoalProto intake_group_goal;
   intake_group_goal->set_agitate(false);
-  c2017::QueueManager::GetInstance().intake_group_goal_queue().WriteMessage(intake_group_goal);
+  c2017::QueueManager::GetInstance()->intake_group_goal_queue()->WriteMessage(intake_group_goal);
   return true;
 }
 

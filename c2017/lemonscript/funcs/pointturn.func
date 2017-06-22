@@ -17,8 +17,8 @@ init {
   params.termination = muan::actions::DrivetrainTermination{0.05, 0.05, 0.05, 0.05};
   params.desired_angular_displacement = angle;
   action = std::make_unique<muan::actions::DrivetrainAction>(
-      properties, c2017::QueueManager::GetInstance().drivetrain_goal_queue(),
-      c2017::QueueManager::GetInstance().drivetrain_status_queue());
+      properties, c2017::QueueManager::GetInstance()->drivetrain_goal_queue(),
+      c2017::QueueManager::GetInstance()->drivetrain_status_queue());
   action->ExecuteDrive(params);
   return false;
 }

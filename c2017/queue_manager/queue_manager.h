@@ -34,14 +34,14 @@ namespace c2017 {
 // as a global, which is much less sketchy.
 class QueueManager {
  public:
-  static QueueManager& GetInstance();
+  static QueueManager* GetInstance();
 
   void StartLogging();
 
   // Note: This needs to be the same as the actual message queue in the
   // PdpWrapper class. If you change that, you will need to change this.
   // It is like this to avoid making QueueManager rely on WPILib.
-  MessageQueue<muan::proto::StackProto<PdpStatus, 512>>& pdp_status_queue();
+  MessageQueue<muan::proto::StackProto<PdpStatus, 512>>* pdp_status_queue();
   muan::wpilib::DriverStationQueue* driver_station_queue();
 
   muan::wpilib::gyro::GyroQueue* gyro_queue();
@@ -51,37 +51,37 @@ class QueueManager {
   frc971::control_loops::drivetrain::OutputQueue* drivetrain_output_queue();
   frc971::control_loops::drivetrain::StatusQueue* drivetrain_status_queue();
 
-  c2017::wpilib::WpilibOutputQueue& superstructure_output_queue();
-  c2017::superstructure::SuperstructureStatusQueue& superstructure_status_queue();
+  c2017::wpilib::WpilibOutputQueue* superstructure_output_queue();
+  c2017::superstructure::SuperstructureStatusQueue* superstructure_status_queue();
 
-  c2017::ground_ball_intake::GroundBallIntakeStatusQueue& ground_ball_intake_status_queue();
+  c2017::ground_ball_intake::GroundBallIntakeStatusQueue* ground_ball_intake_status_queue();
 
-  c2017::shooter::ShooterInputQueue& shooter_input_queue();
-  c2017::shooter::ShooterStatusQueue& shooter_status_queue();
+  c2017::shooter::ShooterInputQueue* shooter_input_queue();
+  c2017::shooter::ShooterStatusQueue* shooter_status_queue();
 
-  c2017::magazine::MagazineStatusQueue& magazine_status_queue();
+  c2017::magazine::MagazineStatusQueue* magazine_status_queue();
 
-  c2017::ground_gear_intake::GroundGearIntakeInputQueue& ground_gear_input_queue();
-  c2017::ground_gear_intake::GroundGearIntakeStatusQueue& ground_gear_status_queue();
-  c2017::ground_gear_intake::GroundGearIntakeOutputQueue& ground_gear_output_queue();
+  c2017::ground_gear_intake::GroundGearIntakeInputQueue* ground_gear_input_queue();
+  c2017::ground_gear_intake::GroundGearIntakeStatusQueue* ground_gear_status_queue();
+  c2017::ground_gear_intake::GroundGearIntakeOutputQueue* ground_gear_output_queue();
 
-  c2017::ground_ball_intake::GroundBallIntakeStatusQueue& ball_intake_status_queue();
+  c2017::ground_ball_intake::GroundBallIntakeStatusQueue* ball_intake_status_queue();
 
-  c2017::climber::ClimberInputQueue& climber_input_queue();
-  c2017::climber::ClimberStatusQueue& climber_status_queue();
+  c2017::climber::ClimberInputQueue* climber_input_queue();
+  c2017::climber::ClimberStatusQueue* climber_status_queue();
 
-  c2017::vision::VisionInputQueue& vision_input_queue();
-  c2017::vision::VisionStatusQueue& vision_status_queue();
-  c2017::vision::VisionGoalQueue& vision_goal_queue();
+  c2017::vision::VisionInputQueue* vision_input_queue();
+  c2017::vision::VisionStatusQueue* vision_status_queue();
+  c2017::vision::VisionGoalQueue* vision_goal_queue();
 
-  c2017::intake_group::IntakeGroupGoalQueue& intake_group_goal_queue();
-  c2017::shooter_group::ShooterGroupGoalQueue& shooter_group_goal_queue();
+  c2017::intake_group::IntakeGroupGoalQueue* intake_group_goal_queue();
+  c2017::shooter_group::ShooterGroupGoalQueue* shooter_group_goal_queue();
 
-  c2017::lights::LightsOutputQueue& lights_output_queue();
+  c2017::lights::LightsOutputQueue* lights_output_queue();
 
-  muan::teleop::JoystickStatusQueue& manipulator_status_queue();
-  muan::teleop::JoystickStatusQueue& wheel_status_queue();
-  muan::teleop::JoystickStatusQueue& throttle_status_queue();
+  muan::teleop::JoystickStatusQueue* manipulator_status_queue();
+  muan::teleop::JoystickStatusQueue* wheel_status_queue();
+  muan::teleop::JoystickStatusQueue* throttle_status_queue();
 
   void Reset();
 
