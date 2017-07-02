@@ -1,9 +1,12 @@
-#ifndef C2017_CITRUS_ROBOT_MAIN_H_
-#define C2017_CITRUS_ROBOT_MAIN_H_
+#ifndef C2017_CITRUS_ROBOT_CITRUS_ROBOT_H_
+#define C2017_CITRUS_ROBOT_CITRUS_ROBOT_H_
 
+#include <atomic>
+
+#include "c2017/lemonscript/lemonscript.h"
 #include "muan/teleop/joystick.h"
 #include "muan/wpilib/ds_sender.h"
-#include "c2017/lemonscript/lemonscript.h"
+#include "third_party/aos/common/util/phased_loop.h"
 
 namespace c2017 {
 
@@ -13,10 +16,15 @@ class CitrusRobot {
  public:
   CitrusRobot();
 
-  // Call this to update at ~50hz (DS update rate)
-  void Update();
+  void operator()();
+  void Stop();
 
  private:
+  std::atomic<bool> running_;
+
+  // Runs at ~200hz
+  void Update();
+
   muan::teleop::Joystick throttle_, wheel_;
   muan::teleop::Joystick gamepad_;
 
@@ -50,6 +58,7 @@ class CitrusRobot {
   c2017::magazine::MagazineGoalProto magazine_goal_;
 
   muan::wpilib::DriverStationSender ds_sender_;
+  muan::wpilib::DriverStationQueue::QueueReader ds_reader_;
 
   void SendSuperstructureMessage();
   void SendDrivetrainMessage();
@@ -59,4 +68,4 @@ class CitrusRobot {
 
 }  // namespace c2017
 
-#endif  // C2017_CITRUS_ROBOT_MAIN_H_
+#endif  // C2017_CITRUS_ROBOT_CITRUS_ROBOT_H_

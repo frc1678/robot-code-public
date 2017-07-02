@@ -40,6 +40,7 @@ void QueueManager::StartLogging() {
   logger_.AddQueue("manipulator_status", &manipulator_status_queue_);
   logger_.AddQueue("wheel_status", &wheel_status_queue_);
   logger_.AddQueue("throttle_status", &throttle_status_queue_);
+  logger_.AddQueue("xbox_rumble", &xbox_rumble_queue_);
 
   // Webdash
   webdash_.AddQueue("pdp_status", &pdp_status_queue_);
@@ -77,6 +78,7 @@ void QueueManager::StartLogging() {
   webdash_.AddQueue("manipulator_status", &manipulator_status_queue_);
   webdash_.AddQueue("wheel_status", &wheel_status_queue_);
   webdash_.AddQueue("throttle_status", &throttle_status_queue_);
+  webdash_.AddQueue("xbox_rumble", &xbox_rumble_queue_);
 
   std::thread webdash_thread{std::ref(webdash_)};
   webdash_thread.detach();
@@ -179,6 +181,8 @@ muan::teleop::JoystickStatusQueue* QueueManager::wheel_status_queue() { return &
 
 muan::teleop::JoystickStatusQueue* QueueManager::throttle_status_queue() { return &throttle_status_queue_; }
 
+muan::teleop::XBoxRumbleQueue* QueueManager::xbox_rumble_queue() { return &xbox_rumble_queue_; }
+
 void QueueManager::Reset() {
   pdp_status_queue_.Reset();
   driver_station_queue_.Reset();
@@ -213,5 +217,10 @@ void QueueManager::Reset() {
   shooter_group_goal_queue_.Reset();
 
   lights_output_queue_.Reset();
+
+  manipulator_status_queue_.Reset();
+  wheel_status_queue_.Reset();
+  throttle_status_queue_.Reset();
+  xbox_rumble_queue_.Reset();
 }
 }  // namespace c2017

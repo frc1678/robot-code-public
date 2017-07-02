@@ -6,7 +6,8 @@ cc_binary(
     deps = [
         "//c2017/subsystems:subsystem_runner",
         "//c2017/vision/robot:reader",
-        "//c2017/citrus_robot:main",
+        "//c2017/citrus_robot:citrus_robot",
+        "//muan/teleop:joystick",
         "//third_party/wpilibsuite:wpilib",
         "//c2017/webdash:server",
         "//third_party/gflags:gflags"

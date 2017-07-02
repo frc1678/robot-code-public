@@ -5,9 +5,16 @@ namespace muan {
 
 namespace teleop {
 
-Joystick::Joystick(int32_t port) : queue_{nullptr}, wpilib_joystick_{port} {}
+// No queue, no rumble
+Joystick::Joystick(int32_t port) : status_queue_{nullptr}, rumble_queue_{nullptr}, wpilib_joystick_{port} {}
 
-Joystick::Joystick(int32_t port, JoystickStatusQueue* queue) : queue_{queue}, wpilib_joystick_{port} {}
+// Queue, no rumble
+Joystick::Joystick(int32_t port, JoystickStatusQueue* queue)
+    : status_queue_{queue}, rumble_queue_{nullptr}, wpilib_joystick_{port} {}
+
+// Queue and rumble
+Joystick::Joystick(int32_t port, JoystickStatusQueue* queue, XBoxRumbleQueue* rumble_queue)
+    : status_queue_{queue}, rumble_queue_{rumble_queue}, wpilib_joystick_{port} {}
 
 ::Joystick* Joystick::wpilib_joystick() { return &wpilib_joystick_; }
 
@@ -30,8 +37,14 @@ void Joystick::Update() {
   for (auto& button : buttons_) {
     button->Update();
   }
-  if (queue_) {
+  if (status_queue_) {
     LogButtons();
+  }
+  if (rumble_queue_) {
+    auto xbox_rumble = rumble_queue_->ReadLastMessage();
+    if (xbox_rumble) {
+      wpilib_joystick_.SetRumble(frc::Joystick::kRightRumble, xbox_rumble.value()->rumble());
+    }
   }
 }
 
@@ -56,7 +69,7 @@ void Joystick::LogButtons() {
   joystick_status->set_axis4(wpilib_joystick_.GetRawAxis(4));
   joystick_status->set_axis5(wpilib_joystick_.GetRawAxis(5));
 
-  queue_->WriteMessage(joystick_status);
+  status_queue_->WriteMessage(joystick_status);
 }
 
 }  // namespace teleop

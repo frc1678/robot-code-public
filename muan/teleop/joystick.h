@@ -29,6 +29,7 @@ class Joystick {
  public:
   explicit Joystick(int32_t port);
   Joystick(int32_t port, JoystickStatusQueue* queue);
+  Joystick(int32_t port, JoystickStatusQueue* queue, XBoxRumbleQueue* rumble_queue);
 
   void Update();
 
@@ -41,7 +42,8 @@ class Joystick {
  private:
   void LogButtons();
 
-  JoystickStatusQueue* queue_;
+  JoystickStatusQueue* status_queue_;
+  XBoxRumbleQueue* rumble_queue_;
 
   std::vector<std::unique_ptr<Button>> buttons_;
   ::Joystick wpilib_joystick_;

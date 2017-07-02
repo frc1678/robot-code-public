@@ -1,4 +1,4 @@
-#include "c2017/citrus_robot/main.h"
+#include "c2017/citrus_robot/citrus_robot.h"
 #include "WPILib.h"
 #include "c2017/queue_manager/queue_manager.h"
 #include "muan/wpilib/queue_types.h"
@@ -10,7 +10,9 @@ CitrusRobot::CitrusRobot()
     : throttle_{1, c2017::QueueManager::GetInstance()->throttle_status_queue()},
       wheel_{0, c2017::QueueManager::GetInstance()->wheel_status_queue()},
       gamepad_{2, c2017::QueueManager::GetInstance()->manipulator_status_queue()},
-      ds_sender_{c2017::QueueManager::GetInstance()->driver_station_queue()} {
+      ds_sender_{c2017::QueueManager::GetInstance()->driver_station_queue()},
+      ds_reader_{c2017::QueueManager::GetInstance()->driver_station_queue()->MakeReader()} {
+
   align_shoot_ = throttle_.MakeButton(1);               // Joystick Trigger
   driver_score_ground_gear_ = throttle_.MakeButton(3);  // Throttle 3
   quickturn_ = wheel_.MakeButton(5);                    // Wheel 5
@@ -31,25 +33,47 @@ CitrusRobot::CitrusRobot()
   drop_balls_ = gamepad_.MakeAxis(1, .7);                                // Left Joystick South
 }
 
-void CitrusRobot::Update() {
-  if (DriverStation::GetInstance().IsAutonomous() && DriverStation::GetInstance().IsEnabled()) {
-    lemonscript_.Start();  // Weird to call Start in a loop, but it's a setter so it's fine
-  } else if (DriverStation::GetInstance().IsOperatorControl()) {
-    lemonscript_.Stop();  // Weirder to do this, but it works :/
+void CitrusRobot::operator()() {
+  aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(20));
 
-    auto superstructure_status =
-        c2017::QueueManager::GetInstance()->superstructure_status_queue()->ReadLastMessage();
-    if (superstructure_status) {
-      gamepad_.wpilib_joystick()->SetRumble(Joystick::kRightRumble,
-                                            superstructure_status.value()->rumble_on() ? 1 : 0);
-    }
+  aos::SetCurrentThreadRealtimePriority(10);
+  aos::SetCurrentThreadName("CitrusRobot");
 
-    // Update joysticks
+  running_ = true;
+  while (running_) {
     throttle_.Update();
     wheel_.Update();
     gamepad_.Update();
-    SendDrivetrainMessage();
-    SendSuperstructureMessage();
+
+    // Update joysticks
+    // TODO(livyt) put this back in main.cpp and read from queues here.
+    Update();
+    phased_loop.SleepUntilNext();
+  }
+}
+
+void CitrusRobot::Stop() { running_ = false; }
+
+void CitrusRobot::Update() {
+  auto maybe_ds_status = ds_reader_.ReadLastMessage();
+  if (maybe_ds_status) {
+    auto ds_status = maybe_ds_status.value();
+    if (ds_status->mode() == RobotMode::AUTONOMOUS) {
+      lemonscript_.Start();  // Weird to call Start in a loop, but it's a setter so it's fine
+    } else if (ds_status->mode() == RobotMode::TELEOP) {
+      lemonscript_.Stop();  // Weirder to do this, but it works :/
+
+      auto superstructure_status =
+          c2017::QueueManager::GetInstance()->superstructure_status_queue()->ReadLastMessage();
+      if (superstructure_status) {
+        muan::teleop::XBoxRumbleProto xbox_rumble;
+        xbox_rumble->set_rumble(superstructure_status.value()->rumble_on() ? 1 : 0);
+        c2017::QueueManager::GetInstance()->xbox_rumble_queue()->WriteMessage(xbox_rumble);
+      }
+
+      SendDrivetrainMessage();
+      SendSuperstructureMessage();
+    }
   }
 
   ds_sender_.Send();

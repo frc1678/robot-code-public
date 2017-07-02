@@ -1,7 +1,7 @@
 cc_library(
-    name = "main",
-    srcs = ["main.cpp"],
-    hdrs = ["main.h"],
+    name = "citrus_robot",
+    srcs = ["citrus_robot.cpp"],
+    hdrs = ["citrus_robot.h"],
     visibility = ["//visibility:public"],
     deps = [
         # Joystick needs to be first because of janky WPILib build. I don't know
@@ -12,6 +12,7 @@ cc_library(
         "//c2017/lemonscript",
         "//c2017/queue_manager",
         "//c2017/subsystems/drivetrain:drivetrain_base",
+        "//third_party/aos/common/util:phased_loop",
         "//third_party/lemonscript",
     ],
 )

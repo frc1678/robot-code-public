@@ -82,6 +82,7 @@ class QueueManager {
   muan::teleop::JoystickStatusQueue* manipulator_status_queue();
   muan::teleop::JoystickStatusQueue* wheel_status_queue();
   muan::teleop::JoystickStatusQueue* throttle_status_queue();
+  muan::teleop::XBoxRumbleQueue* xbox_rumble_queue();
 
   void Reset();
 
@@ -129,6 +130,7 @@ class QueueManager {
   muan::teleop::JoystickStatusQueue manipulator_status_queue_;
   muan::teleop::JoystickStatusQueue wheel_status_queue_;
   muan::teleop::JoystickStatusQueue throttle_status_queue_;
+  muan::teleop::XBoxRumbleQueue xbox_rumble_queue_;
 
 #ifndef FRC1678_NO_QUEUE_LOGGING
   muan::logging::Logger logger_;

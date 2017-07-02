@@ -27,3 +27,8 @@ message JoystickStatus {
   required double axis5 = 21;
   required double axis6 = 22;
 }
+
+message XBoxRumble {
+  required uint64 timestamp = 1;
+  required bool rumble = 2;
+}

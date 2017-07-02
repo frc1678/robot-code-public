@@ -1,6 +1,7 @@
-#include "c2017/citrus_robot/main.h"
 #include <WPILib.h>
+#include "c2017/citrus_robot/citrus_robot.h"
 #include "gflags/gflags.h"
+#include "muan/teleop/joystick.h"
 #include "subsystems/subsystem_runner.h"
 #include "vision/robot/reader.h"
 
@@ -10,15 +11,16 @@ class WpilibRobot : public IterativeRobot {
 
   void RobotInit() override {}
 
-  void RobotPeriodic() override { main_.Update(); }
+  void RobotPeriodic() override {}
 
  private:
   c2017::SubsystemRunner subsystem_runner_;
   c2017::vision::VisionReader vision_reader_;
+  c2017::citrus_robot::CitrusRobot main_;
+
   std::thread subsystem_thread{std::ref(subsystem_runner_)};
   std::thread vision_thread{std::ref(vision_reader_)};
-
-  c2017::citrus_robot::CitrusRobot main_;
+  std::thread citrus_robot_thread{std::ref(main_)};
 };
 
 int main(int argc, char **argv) {
