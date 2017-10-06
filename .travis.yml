@@ -37,10 +37,10 @@ install:
   - sudo apt-get update && sudo apt-get install bazel
   - sudo ln -s /usr/bin/clang-3.6 /usr/bin/clang
   # Numpy and Scipy don't work from the deb packages for some reason
-  - sudo pip install -U numpy
-  - sudo pip install -U scipy
-  - sudo pip install -U glog
-  - sudo pip install -U matplotlib
+  - pip install --user numpy
+  - pip install --user scipy
+  - pip install --user glog
+  - pip install --user matplotlib
 
 # TODO(Wesley) Add to pre-push git hook?
 script:
