@@ -54,6 +54,8 @@ Highlights include:
  - Use four spaces for indenting
  - Use double quotes (") instead of single quotes (')
 
+We use SI units and [radians](http://math.rice.edu/~pcmi/sphere/drg_txt.html).
+
 ## Contributing
 
 Here's how to get your code into the main robot repository:
