@@ -126,4 +126,4 @@ Although we have a third_party directory for the majority of our dependencies, o
   * Bazel: (apt users: follow instructions at https://bazel.build/versions/master/docs/install.html#ubuntu; aur: `bazel`)
 
 If you're running Arch/Manjaro or Ubuntu/Debian (_should work with debian_), then simply clone this repository and run:
-`./scripts/frcsetup-arch` or `./scripts/frcsetup-ubuntu`
+`./scripts/setup/frcsetup-arch` or `./scripts/setup/frcsetup-ubuntu`
