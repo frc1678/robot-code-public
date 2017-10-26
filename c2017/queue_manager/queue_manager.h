@@ -11,7 +11,8 @@
 #include "muan/wpilib/queue_types.h"
 #include "muan/teleop/queue_types.h"
 
-#include "c2017/webdash/server.h"
+#include "muan/webdash/queue_types.h"
+#include "muan/webdash/server.h"
 
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
 #include "c2017/subsystems/superstructure/ground_ball_intake/queue_types.h"
@@ -136,8 +137,10 @@ class QueueManager {
   muan::logging::Logger logger_;
   std::thread logger_thread_{std::ref(logger_)};
 #endif  // FRC1678_NO_QUEUE_LOGGING
+  
+  muan::webdash::WebDashRunner webdash_;
 
-  c2017::webdash::WebDashRunner webdash_;
+  const std::vector<std::string> auto_list_;
 };
 
 }  // namespace c2017
