@@ -5,8 +5,8 @@
 #include "muan/units/units.h"
 #include "c2017/subsystems/lights/queue_types.h"
 #include "c2017/queue_manager/queue_manager.h"
-#include "c2017/webdash/queue_types.h"
-#include "c2017/webdash/webdash.pb.h"
+#include "muan/webdash/queue_types.h"
+#include "muan/webdash/webdash.pb.h"
 
 namespace c2017 {
 
