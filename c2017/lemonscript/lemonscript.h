@@ -11,6 +11,8 @@
 #include "third_party/aos/common/time.h"
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/aos/linux_code/init.h"
+#include "muan/webdash/queue_types.h"
+#include "muan/webdash/webdash.pb.h"
 #include "gflags/gflags.h"
 
 namespace c2017 {
@@ -30,8 +32,8 @@ class Lemonscript {
   void Kill();   // Stop the thread
  private:
   void UpdateAutoRoutine();
-  c2017::webdash::AutoSelectionQueue::QueueReader auto_selection_reader_ =
-      c2017::webdash::WebDashQueueWrapper::GetInstance().auto_selection_queue().MakeReader();
+  muan::webdash::AutoSelectionQueue::QueueReader auto_selection_reader_ =
+      muan::webdash::WebDashQueueWrapper::GetInstance().auto_selection_queue().MakeReader();
   ::lemonscript::LemonScriptState *state_;
   ::lemonscript::LemonScriptCompiler *compiler_;
   std::vector<const ::lemonscript::AvailableCppCommandDeclaration *> decls_;

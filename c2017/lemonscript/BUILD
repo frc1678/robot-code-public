@@ -61,4 +61,5 @@ cc_binary(
     name = "test",
     srcs = ["test.cpp"],
     deps = [":lemonscript"],
+    data = ["//c2017/lemonscript/auto:auto_modes"],
 )
