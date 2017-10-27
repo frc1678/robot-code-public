@@ -22,49 +22,35 @@ void Lights::Update() {
     if (auto_selection_queue) {
       if (auto_selection_queue.value()->auto_mode() == "NONE") {
         light_color_ = LightColor::PINK;
-      }
-      else if (auto_selection_queue.value()->auto_mode() == "BLUE_HELLA_KPA") {
+      } else if (auto_selection_queue.value()->auto_mode() == "BLUE_HELLA_KPA") {
         light_color_ = FlashLights(LightColor::BLUE, LightColor::PINK, false);
-      }
-      else if (auto_selection_queue.value()->auto_mode() == "BLUE_HELLA_KPA_NEW") {
+      } else if (auto_selection_queue.value()->auto_mode() == "BLUE_HELLA_KPA_NEW") {
         light_color_ = FlashLights(LightColor::TEAL, LightColor::WHITE, false);
-      }
-      else if (auto_selection_queue.value()->auto_mode() == "BLUE_HELLA_KPA_PLUS_GEAR") {
+      } else if (auto_selection_queue.value()->auto_mode() == "BLUE_HELLA_KPA_PLUS_GEAR") {
         light_color_ = FlashLights(LightColor::BLUE, LightColor::TEAL, false);
-      }
-      else if (auto_selection_queue.value()->auto_mode() == "BLUE_CENTER_PLUS_KPA") {
+      } else if (auto_selection_queue.value()->auto_mode() == "BLUE_CENTER_PLUS_KPA") {
         light_color_ = FlashLights(LightColor::BLUE, LightColor::GREEN, false);
-      }
-      else if (auto_selection_queue.value()->auto_mode() == "BLUE_CENTER_PLUS_KPA_DRIVE") {
+      } else if (auto_selection_queue.value()->auto_mode() == "BLUE_CENTER_PLUS_KPA_DRIVE") {
         light_color_ = FlashLights(LightColor::BLUE, LightColor::YELLOW, false);
-      }
-      else if (auto_selection_queue.value()->auto_mode() == "BLUE_FAR_PEG_PLUS_KPA_DRIVE") {
+      } else if (auto_selection_queue.value()->auto_mode() == "BLUE_FAR_PEG_PLUS_KPA_DRIVE") {
         light_color_ = FlashLights(LightColor::BLUE, LightColor::WHITE, false);
-      }
-      else if (auto_selection_queue.value()->auto_mode() == "RED_HELLA_KPA") {
+      } else if (auto_selection_queue.value()->auto_mode() == "RED_HELLA_KPA") {
         light_color_ = FlashLights(LightColor::RED, LightColor::PINK, false);
-      }
-      else if (auto_selection_queue.value()->auto_mode() == "RED_HELLA_KPA_NEW") {
+      } else if (auto_selection_queue.value()->auto_mode() == "RED_HELLA_KPA_NEW") {
         light_color_ = FlashLights(LightColor::PINK, LightColor::WHITE, false);
-      }
-      else if (auto_selection_queue.value()->auto_mode() == "RED_HELLA_KPA_PLUS_GEAR") {
+      } else if (auto_selection_queue.value()->auto_mode() == "RED_HELLA_KPA_PLUS_GEAR") {
         light_color_ = FlashLights(LightColor::RED, LightColor::TEAL, false);
-      }
-      else if (auto_selection_queue.value()->auto_mode() == "RED_CENTER_PLUS_KPA") {
+      } else if (auto_selection_queue.value()->auto_mode() == "RED_CENTER_PLUS_KPA") {
         light_color_ = FlashLights(LightColor::RED, LightColor::GREEN, false);
-      }
-      else if (auto_selection_queue.value()->auto_mode() == "RED_CENTER_PLUS_KPA_DRIVE") {
+      } else if (auto_selection_queue.value()->auto_mode() == "RED_CENTER_PLUS_KPA_DRIVE") {
         light_color_ = FlashLights(LightColor::RED, LightColor::YELLOW, false);
-      }
-      else if (auto_selection_queue.value()->auto_mode() == "RED_FAR_PEG_PLUS_KPA_DRIVE") {
+      } else if (auto_selection_queue.value()->auto_mode() == "RED_FAR_PEG_PLUS_KPA_DRIVE") {
         light_color_ = FlashLights(LightColor::RED, LightColor::WHITE, false);
-      }
-      else if (auto_selection_queue.value()->auto_mode() == "TWO_GEAR") {
+      } else if (auto_selection_queue.value()->auto_mode() == "TWO_GEAR") {
         light_color_ = LightColor::WHITE;
-      }
-      else {
+      } else {
         light_color_ = FlashLights(LightColor::OFF, LightColor::PINK, false);
-    }
+      }
     } else {
       light_color_ = FlashLights(LightColor::OFF, LightColor::PINK, false);
     }

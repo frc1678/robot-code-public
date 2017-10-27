@@ -3,6 +3,8 @@
 
 #include <thread>
 #include <functional>
+#include <vector>
+#include <string>
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
 #include "muan/logging/logger.h"
@@ -137,7 +139,7 @@ class QueueManager {
   muan::logging::Logger logger_;
   std::thread logger_thread_{std::ref(logger_)};
 #endif  // FRC1678_NO_QUEUE_LOGGING
-  
+
   muan::webdash::WebDashRunner webdash_;
 
   const std::vector<std::string> auto_list_;

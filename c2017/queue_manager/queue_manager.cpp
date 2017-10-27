@@ -1,3 +1,5 @@
+#include <vector>
+#include <string>
 #include "c2017/queue_manager/queue_manager.h"
 
 namespace c2017 {
@@ -81,7 +83,7 @@ void QueueManager::StartLogging() {
   webdash_.AddQueue("xbox_rumble", &xbox_rumble_queue_);
 
   const std::vector<std::string> auto_list_ = {"NONE", "BLUE_HELLA_KPA", "BLUE_HELLA_KPA_NEW", "BLUE_HELLA_KPA_PLUS_GEAR", "BLUE_CENTER_PLUS_KPA", "BLUE_CENTER_PLUS_KPA_DRIVE", "BLUE_FAR_PEG_PLUS_KPA_DRIVE", "RED_HELLA_KPA", "RED_HELLA_KPA_NEW", "RED_HELLA_KPA_PLUS_GEAR", "RED_CENTER_PLUS_KPA", "RED_CENTER_PLUS_KPA_DRIVE", "RED_FAR_PEG_PLUS_KPA_DRIVE", "TWO_GEAR"};
-  
+
   webdash_.AddAutos(&auto_list_);
 
   std::thread webdash_thread{std::ref(webdash_)};

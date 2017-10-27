@@ -55,50 +55,35 @@ void Lemonscript::UpdateAutoRoutine() {
   if (message) {
     if (message.value()->auto_mode() == "NONE") {
       filename = "none.auto";
-    }
-    else if (message.value()->auto_mode() == "TWO_GEAR") {
+    } else if (message.value()->auto_mode() == "TWO_GEAR") {
       filename = "two_gear.auto";
-    }
-    else if (message.value()->auto_mode() == "BLUE_HELLA_KPA") {
+    } else if (message.value()->auto_mode() == "BLUE_HELLA_KPA") {
       filename = "blue_hella_kpa.auto";
-    }
-    else if (message.value()->auto_mode() == "BLUE_HELLA_KPA_NEW") {
+    } else if (message.value()->auto_mode() == "BLUE_HELLA_KPA_NEW") {
       filename = "blue_hella_kpa_new.auto";
-    }
-    else if (message.value()->auto_mode() == "BLUE_HELLA_KPA_PLUS_GEAR") {
+    } else if (message.value()->auto_mode() == "BLUE_HELLA_KPA_PLUS_GEAR") {
       filename = "blue_hella_kpa_plus_gear.auto";
-    }
-    else if (message.value()->auto_mode() == "BLUE_CENTER_PLUS_KPA") {
+    } else if (message.value()->auto_mode() == "BLUE_CENTER_PLUS_KPA") {
       filename = "blue_center_peg_plus_kpa.auto";
-    }
-    else if (message.value()->auto_mode() == "BLUE_CENTER_PLUS_KPA_DRIVE") {
+    } else if (message.value()->auto_mode() == "BLUE_CENTER_PLUS_KPA_DRIVE") {
       filename = "blue_center_peg_plus_kpa_and_drive.auto";
-    }
-    else if (message.value()->auto_mode() == "BLUE_FAR_PEG_PLUS_KPA_DRIVE") {
+    } else if (message.value()->auto_mode() == "BLUE_FAR_PEG_PLUS_KPA_DRIVE") {
       filename = "blue_far_peg_plus_kpa_and_drive.auto";
-    }
-    else if (message.value()->auto_mode() == "RED_HELLA_KPA") {
+    } else if (message.value()->auto_mode() == "RED_HELLA_KPA") {
       filename = "red_hella_kpa.auto";
-    }
-    else if (message.value()->auto_mode() ==  "RED_HELLA_KPA_NEW") {
+    } else if (message.value()->auto_mode() ==  "RED_HELLA_KPA_NEW") {
       filename = "red_hella_kpa_new.auto";
-    }
-    else if (message.value()->auto_mode() == "RED_HELLA_KPA_PLUS_GEAR") {
+    } else if (message.value()->auto_mode() == "RED_HELLA_KPA_PLUS_GEAR") {
       filename = "red_hella_kpa_plus_gear.auto";
-    }
-    else if (message.value()->auto_mode() == "RED_CENTER_PLUS_KPA") {
+    } else if (message.value()->auto_mode() == "RED_CENTER_PLUS_KPA") {
       filename = "red_center_peg_plus_kpa.auto";
-    }
-    else if (message.value()->auto_mode() == "RED_CENTER_PLUS_KPA_DRIVE") {
+    } else if (message.value()->auto_mode() == "RED_CENTER_PLUS_KPA_DRIVE") {
       filename = "red_center_peg_plus_kpa_and_drive.auto";
-    }
-    else if (message.value()->auto_mode() == "RED_FAR_PEG_PLUS_KPA_DRIVE") {
+    } else if (message.value()->auto_mode() == "RED_FAR_PEG_PLUS_KPA_DRIVE") {
       filename = "red_far_peg_plus_kpa_and_drive.auto";
-    }
-    else if (message.value()->auto_mode() == "TWO_GEAR") {
+    } else if (message.value()->auto_mode() == "TWO_GEAR") {
       filename = "two_gear.auto";
-    }
-    else {
+    } else {
       filename = "none.auto";
     }
   std::cout << filename << std::endl;
