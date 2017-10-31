@@ -78,7 +78,7 @@ def main():
     rsync = ['rsync', '-e', ' '.join(ssh_command), '-c', '-v', '-z', '-r', '-L', '.', ssh_deploy_path]
 
     # This will look like (cd /home/lvuser/robot_code && ./c2017/frc1678).
-    robot_command_contents = '''cd {};./muan/autostart/autostart {}'''.format(options.deploy_path, options.main_binary)
+    robot_command_contents = '''cd {};./muan/autostart/autostart /tmp/autostart.pid {}'''.format(options.deploy_path, options.main_binary)
 
     # The ssh command that we're going to run to create robotCommand
     ssh = ssh_command + [

@@ -1,5 +1,5 @@
 #!/bin/sh -e
 
-/home/ubuntu/robot-code/bazel-bin/muan/autostart/autostart /home/ubuntu/robot-code/c2017/vision/coprocessor/startup.sh 10.TE.AM.2 &> /home/ubuntu/log.text &
+/home/ubuntu/robot-code/bazel-bin/muan/autostart/autostart /tmp/autostart.pid /home/ubuntu/robot-code/c2017/vision/coprocessor/startup.sh 10.TE.AM.2 &> /home/ubuntu/log.text &
 
 exit 0
