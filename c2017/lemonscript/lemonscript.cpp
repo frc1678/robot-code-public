@@ -86,9 +86,9 @@ void Lemonscript::UpdateAutoRoutine() {
     } else {
       filename = "none.auto";
     }
-  std::cout << filename << std::endl;
-  delete compiler_;
-  compiler_ = new ::lemonscript::LemonScriptCompiler("c2017/lemonscript/auto/" + filename, state_);
+    std::cout << filename << std::endl;
+    delete compiler_;
+    compiler_ = new ::lemonscript::LemonScriptCompiler("c2017/lemonscript/auto/" + filename, state_);
   }
 }
 
