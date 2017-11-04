@@ -9,6 +9,7 @@ import argparse
 all_targets = [
     ["muan", "//muan/...", True, True],
     ["c2017", "//c2017/...", True, True],
+    ["o2017", "//o2017/...", True, True],
     ["testbench", "//testbench/...", False, True],
     ["generic_robot", "//generic_robot/...", True, True],
     ["drivetrain", "//third_party/frc971/control_loops/drivetrain:drivetrain_lib_test", False, True],

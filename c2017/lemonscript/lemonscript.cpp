@@ -62,6 +62,7 @@ void Lemonscript::UpdateAutoRoutine() {
         break;
       case c2017::webdash::AutoSelection::BLUE_HELLA_KPA:
         filename = "blue_hella_kpa.auto";
+        std::cout << "SELECTED BLUE HELLA KPA LEMONSCRIPT CPP" << std::endl;
         break;
       case c2017::webdash::AutoSelection::BLUE_HELLA_KPA_NEW:
         filename = "blue_hella_kpa_new.auto";
