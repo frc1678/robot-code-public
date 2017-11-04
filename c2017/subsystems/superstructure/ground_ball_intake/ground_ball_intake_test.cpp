@@ -26,6 +26,26 @@ TEST(TestGroundBallIntake, RollerIntakeGoingDown) {
   }
 }
 
+TEST(TestGroundBallIntake, RollerIntakeSlow) {
+  GroundBallIntakeOutputProto output;
+  GroundBallIntakeGoalProto goal;
+  RollerGoal roller_goal = RollerGoal::INTAKE_SLOW;
+  goal->set_intake_up(false);
+  goal->set_run_intake(roller_goal);
+  GroundBallIntake intake;
+  intake.set_goal(goal);
+  output = intake.Update(true);
+  auto status = c2017::QueueManager::GetInstance()->ground_ball_intake_status_queue()->ReadLastMessage();
+  EXPECT_NEAR(output->roller_voltage(), 6, 1e-5);
+  EXPECT_FALSE(output->intake_up());
+  if (status) {
+    EXPECT_FALSE(status.value()->is_intake_up());
+    EXPECT_EQ(status.value()->running(), RollerGoal::INTAKE_SLOW);
+  } else {
+    FAIL();
+  }
+}
+
 TEST(TestGroundBallIntake, RollerIntakeGoingUp) {
   GroundBallIntakeOutputProto output;
   GroundBallIntakeGoalProto goal;

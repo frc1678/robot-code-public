@@ -51,7 +51,7 @@ GroundGearIntakeOutputProto GroundGearIntake::Update(GroundGearIntakeInputProto 
         break;
       case OUTTAKING:
         voltage = kOuttakeVoltage;
-        intake_down = false;
+        intake_down = true;
     }
   }
 

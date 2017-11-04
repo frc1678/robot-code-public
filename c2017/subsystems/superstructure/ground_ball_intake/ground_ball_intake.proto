@@ -20,6 +20,7 @@ enum RollerGoal {
   IDLE = 0;
   INTAKE = 1;
   OUTTAKE = 2;
+  INTAKE_SLOW = 3;
 }
 
 message GroundBallIntakeGoal {
