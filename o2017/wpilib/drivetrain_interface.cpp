@@ -8,8 +8,8 @@ namespace ports {
 
 namespace drivetrain {
 
-constexpr uint32_t kMotorLeft = 1;
-constexpr uint32_t kMotorRight = 0;
+constexpr uint32_t kMotorLeft = 0;
+constexpr uint32_t kMotorRight = 1;
 
 constexpr uint32_t kEncoderLeftA = 14, kEncoderLeftB = 15;
 constexpr uint32_t kEncoderRightA = 12, kEncoderRightB = 13;
@@ -41,10 +41,10 @@ void DrivetrainInterface::ReadSensors() {
 void DrivetrainInterface::WriteActuators() {
   auto outputs = output_queue_.ReadLastMessage();
   if (outputs) {
-    motor_left_.Set(-muan::utils::Cap((*outputs)->left_voltage(), -ports::drivetrain::kMaxVoltage,
+    motor_left_.Set(muan::utils::Cap((*outputs)->left_voltage(), -ports::drivetrain::kMaxVoltage,
                                       ports::drivetrain::kMaxVoltage) / 12.0);
 
-    motor_right_.Set(muan::utils::Cap((*outputs)->right_voltage(), -ports::drivetrain::kMaxVoltage,
+    motor_right_.Set(-muan::utils::Cap((*outputs)->right_voltage(), -ports::drivetrain::kMaxVoltage,
                                       ports::drivetrain::kMaxVoltage) / 12.0);
   } else {
     motor_left_.Set(0);
