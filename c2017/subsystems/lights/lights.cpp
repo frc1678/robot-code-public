@@ -4,6 +4,7 @@ namespace c2017 {
 
 namespace lights {
 void Lights::Update() {
+  auto_list = c2017::QueueManager::GetInstance()->auto_list_;
   auto intake_group_goal_queue = QueueManager::GetInstance()->intake_group_goal_queue()->ReadLastMessage();
   auto climber_status_queue = QueueManager::GetInstance()->climber_status_queue()->ReadLastMessage();
   auto drivetrain_status_queue = QueueManager::GetInstance()->drivetrain_status_queue()->ReadLastMessage();
@@ -20,33 +21,33 @@ void Lights::Update() {
     light_color_ = LightColor::BLUE;
   } else if (calibrated_ && auto_running_) {
     if (auto_selection_queue) {
-      if (auto_selection_queue.value()->auto_mode() == "NONE") {
+      if (auto_selection_queue.value()->auto_mode() == auto_list[0]) {
         light_color_ = LightColor::PINK;
-      } else if (auto_selection_queue.value()->auto_mode() == "BLUE_HELLA_KPA") {
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[1]) {
         light_color_ = FlashLights(LightColor::BLUE, LightColor::PINK, false);
-      } else if (auto_selection_queue.value()->auto_mode() == "BLUE_HELLA_KPA_NEW") {
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[2]) {
         light_color_ = FlashLights(LightColor::TEAL, LightColor::WHITE, false);
-      } else if (auto_selection_queue.value()->auto_mode() == "BLUE_HELLA_KPA_PLUS_GEAR") {
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[3]) {
         light_color_ = FlashLights(LightColor::BLUE, LightColor::TEAL, false);
-      } else if (auto_selection_queue.value()->auto_mode() == "BLUE_CENTER_PLUS_KPA") {
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[4]) {
         light_color_ = FlashLights(LightColor::BLUE, LightColor::GREEN, false);
-      } else if (auto_selection_queue.value()->auto_mode() == "BLUE_CENTER_PLUS_KPA_DRIVE") {
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[5]) {
         light_color_ = FlashLights(LightColor::BLUE, LightColor::YELLOW, false);
-      } else if (auto_selection_queue.value()->auto_mode() == "BLUE_FAR_PEG_PLUS_KPA_DRIVE") {
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[6]) {
         light_color_ = FlashLights(LightColor::BLUE, LightColor::WHITE, false);
-      } else if (auto_selection_queue.value()->auto_mode() == "RED_HELLA_KPA") {
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[7]) {
         light_color_ = FlashLights(LightColor::RED, LightColor::PINK, false);
-      } else if (auto_selection_queue.value()->auto_mode() == "RED_HELLA_KPA_NEW") {
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[8]) {
         light_color_ = FlashLights(LightColor::PINK, LightColor::WHITE, false);
-      } else if (auto_selection_queue.value()->auto_mode() == "RED_HELLA_KPA_PLUS_GEAR") {
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[9]) {
         light_color_ = FlashLights(LightColor::RED, LightColor::TEAL, false);
-      } else if (auto_selection_queue.value()->auto_mode() == "RED_CENTER_PLUS_KPA") {
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[10]) {
         light_color_ = FlashLights(LightColor::RED, LightColor::GREEN, false);
-      } else if (auto_selection_queue.value()->auto_mode() == "RED_CENTER_PLUS_KPA_DRIVE") {
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[11]) {
         light_color_ = FlashLights(LightColor::RED, LightColor::YELLOW, false);
-      } else if (auto_selection_queue.value()->auto_mode() == "RED_FAR_PEG_PLUS_KPA_DRIVE") {
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[12]) {
         light_color_ = FlashLights(LightColor::RED, LightColor::WHITE, false);
-      } else if (auto_selection_queue.value()->auto_mode() == "TWO_GEAR") {
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[13]) {
         light_color_ = LightColor::WHITE;
       } else {
         light_color_ = FlashLights(LightColor::OFF, LightColor::PINK, false);

@@ -1,6 +1,8 @@
 #ifndef C2017_SUBSYSTEMS_LIGHTS_LIGHTS_H_
 #define C2017_SUBSYSTEMS_LIGHTS_LIGHTS_H_
 
+#include <string.h>
+#include <vector>
 #include "muan/wpilib/queue_types.h"
 #include "muan/units/units.h"
 #include "c2017/subsystems/lights/queue_types.h"
@@ -26,6 +28,7 @@ enum class LightColor {
 class Lights {
  public:
   void Update();
+  std::vector<std::string> auto_list;
 
  private:
   LightColor light_color_;
