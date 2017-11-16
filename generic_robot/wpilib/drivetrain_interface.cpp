@@ -1,12 +1,9 @@
 #include "generic_robot/wpilib/drivetrain_interface.h"
 
 namespace generic_robot {
-
 namespace wpilib {
 
-namespace ports {
-
-namespace drivetrain {
+namespace constants {
 
 constexpr uint32_t kMotorLeft = 1;
 constexpr uint32_t kMotorRight = 0;
@@ -14,19 +11,22 @@ constexpr uint32_t kMotorRight = 0;
 constexpr uint32_t kEncoderLeftA = 14, kEncoderLeftB = 15;
 constexpr uint32_t kEncoderRightA = 12, kEncoderRightB = 13;
 
+constexpr uint32_t kShifterA = 2, kShifterB = 3;
+
 constexpr double kMaxVoltage = 12;
 
-}  // namespace drivetrain
+}  // namespace constants
 
-}  // namespace ports
-
-DrivetrainInterface::DrivetrainInterface()
-    : input_queue_(QueueManager::GetInstance().drivetrain_input_queue()),
-      output_queue_(QueueManager::GetInstance().drivetrain_output_queue()->MakeReader()),
-      motor_left_{ports::drivetrain::kMotorLeft},
-      motor_right_{ports::drivetrain::kMotorRight},
-      encoder_left_{ports::drivetrain::kEncoderLeftA, ports::drivetrain::kEncoderLeftB},
-      encoder_right_{ports::drivetrain::kEncoderRightA, ports::drivetrain::kEncoderRightB} {}
+DrivetrainInterface::DrivetrainInterface(muan::wpilib::CanWrapper* can_wrapper)
+    : input_queue_(QueueManager::GetInstance()->drivetrain_input_queue()),
+      output_queue_(QueueManager::GetInstance()->drivetrain_output_queue()->MakeReader()),
+      motor_left_{constants::kMotorLeft},
+      motor_right_{constants::kMotorRight},
+      encoder_left_{constants::kEncoderLeftA, constants::kEncoderLeftB},
+      encoder_right_{constants::kEncoderRightA, constants::kEncoderRightB},
+      pcm_{can_wrapper->pcm()} {
+  pcm_->CreateDoubleSolenoid(constants::kShifterA, constants::kShifterB);
+}
 
 void DrivetrainInterface::ReadSensors() {
   frc971::control_loops::drivetrain::InputProto sensors;
@@ -41,11 +41,16 @@ void DrivetrainInterface::ReadSensors() {
 void DrivetrainInterface::WriteActuators() {
   auto outputs = output_queue_.ReadLastMessage();
   if (outputs) {
-    motor_left_.Set(-muan::utils::Cap((*outputs)->left_voltage(), -ports::drivetrain::kMaxVoltage,
-                                      ports::drivetrain::kMaxVoltage) / 12.0);
+    motor_left_.Set(-muan::utils::Cap((*outputs)->left_voltage(), -constants::kMaxVoltage,
+                                      constants::kMaxVoltage) / 12.0);
 
-    motor_right_.Set(muan::utils::Cap((*outputs)->right_voltage(), -ports::drivetrain::kMaxVoltage,
-                                      ports::drivetrain::kMaxVoltage) / 12.0);
+    motor_right_.Set(muan::utils::Cap((*outputs)->right_voltage(), -constants::kMaxVoltage,
+                                      constants::kMaxVoltage) / 12.0);
+
+    pcm_->WriteDoubleSolenoid(
+        constants::kShifterA, constants::kShifterB,
+        (*outputs)->high_gear() ? DoubleSolenoid::Value::kForward : DoubleSolenoid::Value::kReverse);
+
   } else {
     motor_left_.Set(0);
     motor_right_.Set(0);
