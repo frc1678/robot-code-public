@@ -86,7 +86,9 @@ class QueueManager {
   muan::teleop::JoystickStatusQueue* wheel_status_queue();
   muan::teleop::JoystickStatusQueue* throttle_status_queue();
   muan::teleop::XBoxRumbleQueue* xbox_rumble_queue();
-
+  
+  const std::vector<std::string> auto_list_;
+  
   void Reset();
 
  private:
@@ -141,8 +143,6 @@ class QueueManager {
 #endif  // FRC1678_NO_QUEUE_LOGGING
 
   muan::webdash::WebDashRunner webdash_;
-
-  const std::vector<std::string> auto_list_;
 };
 
 }  // namespace c2017

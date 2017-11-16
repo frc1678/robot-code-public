@@ -5,6 +5,7 @@
 #include <atomic>
 #include <vector>
 #include "c2017/lemonscript/ls_gen.h"
+#include "c2017/queue_manager/queue_manager.h"
 #include "third_party/lemonscript/lemonscript/lemonscript.h"
 #include "third_party/lemonscript/lemonscript/AvailableCppCommandDeclaration.h"
 #include "third_party/lemonscript/lemonscript/LemonScriptCompiler.h"
@@ -25,11 +26,14 @@ class Lemonscript {
   Lemonscript();
   ~Lemonscript();
 
+  std::vector<std::string> auto_list;
+
   void operator()();
 
   void Start();  // Start running lemonscript
   void Stop();   // Pause running lemonscript
   void Kill();   // Stop the thread
+  
  private:
   void UpdateAutoRoutine();
   muan::webdash::AutoSelectionQueue::QueueReader auto_selection_reader_ =
