@@ -23,6 +23,7 @@ enum GroundBallIntakeRollers {
   GROUND_BALL_NONE = 0;
   GROUND_BALL_IN = 1;
   GROUND_BALL_OUT = 2;
+  GROUND_BALL_IN_SLOW = 3;
 }
 
 message IntakeGroupGoal {

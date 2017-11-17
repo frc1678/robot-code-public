@@ -4,14 +4,15 @@
 #include "WPILib.h"
 #include "generic_robot/queue_manager/queue_manager.h"
 #include "muan/utils/math_utils.h"
-#include "muan/wpilib/gyro/gyro_reader.h"
+#include "muan/wpilib/pcm_wrapper.h"
+#include "muan/wpilib/can_wrapper.h"
 
 namespace generic_robot {
 namespace wpilib {
 
 class DrivetrainInterface {
  public:
-  DrivetrainInterface();
+  explicit DrivetrainInterface(muan::wpilib::CanWrapper* can_wrapper);
 
   void WriteActuators();
   void ReadSensors();
@@ -24,6 +25,8 @@ class DrivetrainInterface {
   VictorSP motor_right_;
 
   Encoder encoder_left_, encoder_right_;
+
+  muan::wpilib::PcmWrapper* pcm_;
 };
 
 }  // namespace wpilib

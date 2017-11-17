@@ -18,6 +18,7 @@ sudo apt-get -yq install git
 # Misc.
 sudo apt-get -yq install curl 
 sudo apt-get -yq install htop
+sudo apt-get -yq install ssh-askpass
 
 # Clang
 sudo apt-get -yq install clang clang-format

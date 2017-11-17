@@ -98,6 +98,9 @@ void SuperStructure::Update() {
       case intake_group::GROUND_BALL_IN:
         ground_ball_intake_goal->set_run_intake(ground_ball_intake::INTAKE);
         break;
+      case intake_group::GROUND_BALL_IN_SLOW:
+        ground_ball_intake_goal->set_run_intake(ground_ball_intake::INTAKE_SLOW);
+        break;
       case intake_group::GROUND_BALL_OUT:
         ground_ball_intake_goal->set_run_intake(ground_ball_intake::OUTTAKE);
         magazine_goal->set_lower_goal(magazine::LOWER_BACKWARD);

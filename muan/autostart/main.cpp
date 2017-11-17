@@ -10,10 +10,10 @@ pid_t code_pid = 0;
 void handle_signal(int signum) {
   std::cout << "Signal (" << signum << ") received." << std::endl;
   if (code_pid > 0) {
-    std::cout << "Killing robot code (PID " << code_pid << ")." << std::endl;
+    std::cout << "Killing code (PID " << code_pid << ")." << std::endl;
     kill(code_pid, SIGTERM);
   } else {
-    std::cout << "Robot code not started, exiting" << std::endl;
+    std::cout << "Code not started, exiting" << std::endl;
   }
   exit(signum);
 }
@@ -23,7 +23,7 @@ int main(int /*argc*/, char **argv) {
   signal(SIGINT, handle_signal);
   signal(SIGTERM, handle_signal);
 
-  std::string pidfile_name = "/tmp/autostart.pid";
+  std::string pidfile_name = argv[1];
   struct stat pidfile_stat_buf;
   if (stat(pidfile_name.c_str(), &pidfile_stat_buf) != -1) {
     std::ifstream pidfile{pidfile_name};
@@ -45,7 +45,7 @@ int main(int /*argc*/, char **argv) {
         perror("fork");
         break;
       case 0:
-        execv(argv[1], (argv+1));
+        execv(argv[2], (argv+2));
         perror("exec");
         break;
       default:

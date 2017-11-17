@@ -39,13 +39,13 @@ TEST_F(GroundGearIntakeTest, Intaking) {
   Update(0, false, 1);
 
   EXPECT_EQ(GetIntakeState(), c2017::ground_gear_intake::INTAKING);
-  EXPECT_EQ(GetVoltage(), 12.0);
+  EXPECT_EQ(GetVoltage(), c2017::ground_gear_intake::kIntakeVoltage);
 
   SetGoal(c2017::ground_gear_intake::NONE);
   Update(0, false, 10);
 
   EXPECT_EQ(GetIntakeState(), c2017::ground_gear_intake::INTAKING);
-  EXPECT_EQ(GetVoltage(), 12.0);
+  EXPECT_EQ(GetVoltage(), c2017::ground_gear_intake::kIntakeVoltage);
 }
 
 TEST_F(GroundGearIntakeTest, DroppingBallsWithGear) {
@@ -55,7 +55,7 @@ TEST_F(GroundGearIntakeTest, DroppingBallsWithGear) {
   Update(70, false, 100);
 
   EXPECT_EQ(GetIntakeState(), c2017::ground_gear_intake::DROP_BALL_WITH_GEAR);
-  EXPECT_EQ(GetVoltage(), 2.5);
+  EXPECT_EQ(GetVoltage(), c2017::ground_gear_intake::kPickupVoltage);
 }
 
 TEST_F(GroundGearIntakeTest, DroppingBallsWithoutGear) {
@@ -77,15 +77,13 @@ TEST_F(GroundGearIntakeTest, FullSequence) {
   Update(70.0, false, 1);
 
   EXPECT_EQ(GetIntakeState(), c2017::ground_gear_intake::PICKING_UP);
-  EXPECT_LT(GetVoltage(), 6.0);
-  EXPECT_GT(GetVoltage(), 0.0);
+  EXPECT_EQ(GetVoltage(), c2017::ground_gear_intake::kPickupVoltage);
 
   Update(15.0, false, 500);
 
   EXPECT_EQ(GetIntakeState(), c2017::ground_gear_intake::CARRYING);
   // 775pros will stall out at stall at voltages >= 2.5 if left indefinitely.
-  EXPECT_LT(GetVoltage(), 2.5);
-  EXPECT_GT(GetVoltage(), 0.0);
+  EXPECT_EQ(GetVoltage(), c2017::ground_gear_intake::kCarryVoltage);
 
   Update(15.0, false, 100);
 
@@ -102,7 +100,7 @@ TEST_F(GroundGearIntakeTest, OuttakeTest) {
   SetGoal(c2017::ground_gear_intake::OUTTAKE);
   Update(0, false, 1);
   EXPECT_EQ(GetIntakeState(), c2017::ground_gear_intake::OUTTAKING);
-  EXPECT_NEAR(GetVoltage(), -2.0, 1e-4);
+  EXPECT_EQ(GetVoltage(), c2017::ground_gear_intake::kOuttakeVoltage);
 }
 
 TEST_F(GroundGearIntakeTest, RiseFromIntaking) {

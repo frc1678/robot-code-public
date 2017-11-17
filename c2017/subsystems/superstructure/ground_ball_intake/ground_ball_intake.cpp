@@ -17,6 +17,9 @@ GroundBallIntakeOutputProto GroundBallIntake::Update(bool outputs_enabled) {
       case RollerGoal::INTAKE:
         roller_voltage = 10;
         break;
+      case RollerGoal::INTAKE_SLOW:
+        roller_voltage = 6;
+        break;
       case RollerGoal::OUTTAKE:
         roller_voltage = -10;
         break;

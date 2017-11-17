@@ -37,12 +37,12 @@ class CitrusRobot {
   // Throttle button
   muan::teleop::Button *align_shoot_, *driver_score_ground_gear_;
   // Gamepad buttons
-  muan::teleop::Button *ball_intake_toggle_, *gear_intake_down_, *operator_score_ground_gear_, *ball_reverse_,
+  muan::teleop::Button *gear_intake_down_, *operator_score_ground_gear_, *ball_reverse_,
       *just_shoot_, *climb_, *just_spinup_, *stop_shooting_;
   // Gamepad D-Pad
   muan::teleop::Button *toggle_magazine_, *toggle_distance_align_;
   // Gamepad Triggers
-  muan::teleop::Button *agitate_, *ball_intake_run_, *drop_balls_;
+  muan::teleop::Button *agitate_, *ball_intake_fast_, *ball_intake_slow_, *drop_balls_;
 
   bool ball_intake_down_ = false;
   bool currently_climbing_ = false;

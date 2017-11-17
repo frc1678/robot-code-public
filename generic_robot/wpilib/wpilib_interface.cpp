@@ -3,23 +3,28 @@
 namespace generic_robot {
 namespace wpilib {
 
-namespace ports {}  // namespace ports
+DEFINE_int32(gyro_time, 10, "How long to calibrate the gyro for.");
 
-constexpr double kMaxVoltage = 4;  // 4 volt bringup voltage
-
-WpilibInterface::WpilibInterface() : can_{&QueueManager::GetInstance().pdp_status_queue()} {
+WpilibInterface::WpilibInterface()
+    : can_{QueueManager::GetInstance()->pdp_status_queue()},
+      gyro_{QueueManager::GetInstance()->gyro_queue(),
+            QueueManager::GetInstance()->driver_station_queue(),
+            FLAGS_gyro_time, true},
+      drivetrain_{&can_},
+      superstructure_{&can_} {
   std::thread can_thread(std::ref(can_));
   can_thread.detach();
 }
 
 void WpilibInterface::WriteActuators() {
-  drivetrain_interface_.WriteActuators();
+  drivetrain_.WriteActuators();
+  superstructure_.WriteActuators();
 }
 
 void WpilibInterface::ReadSensors() {
-  drivetrain_interface_.ReadSensors();
+  drivetrain_.ReadSensors();
+  superstructure_.ReadSensors();
 }
 
 }  // namespace wpilib
-
 }  // namespace generic_robot

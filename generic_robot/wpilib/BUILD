@@ -3,10 +3,12 @@ cc_library(
     srcs = [
         "wpilib_interface.cpp",
         "drivetrain_interface.cpp",
+        "superstructure_interface.cpp",
     ],
     hdrs = [
         "wpilib_interface.h",
         "drivetrain_interface.h",
+        "superstructure_interface.h",
     ],
     visibility = ["//visibility:public"],
     deps = [

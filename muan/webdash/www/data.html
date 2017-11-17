@@ -4,6 +4,8 @@
   <head>
     <title>1678 WebDash</title>
     <script src="CollapsibleLists.js"></script>
+    <script src="dygraph.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="dygraph.css">
   </head>
   <body>
   </body>
@@ -15,9 +17,9 @@
     function MakeList(data) {
       var text = "Click on any item to show all fields:<br/><ul class=\"collapsibleList\">";
       for (var key in data) {
-        text += "<li>" + key + "<ul>";
+        text += "<li>" + key + "<ul class=\"collapsibleList\">";
         for (var element in data[key]) {
-          text += "<li><div id=" + key + "_" + element + ">" + element + " = " + data[key][element] + "</div></li>";
+          text += "<li><div id=" + key + "_" + element + ">" + element + " = " + data[key][element] + "</div><ul><li><div id=\"" + key + "_" + element + "_graph\" style=\"width:500px; height:400px;\"</li></ul></li>";
         }
         text += "</ul></li>";
       }
@@ -26,10 +28,39 @@
       CollapsibleLists.apply();
     }
 
+    var graph_data_list = {};
+
     function UpdateList(data) {
       for (var key in data) {
         for (var element in data[key]) {
           document.getElementById(key + "_" + element).innerHTML = element + " = " + data[key][element];
+          
+          // Updating graph info
+          if (key + "_" + element + "_graph" in graph_data_list) { // Graph info exists
+            graph_data_list[key + "_" + element + "_graph"].push([data[key]['timestamp'], data[key][element]]);
+            if (graph_data_list[key + "_" + element + "_graph"].length > 100) {
+              // If list is oversized the graph starts scrolling
+              graph_data_list[key + "_" + element + "_graph"].shift();
+            }
+          } else { // Graph info does not exist
+            graph_data_list[key + "_" + element + "_graph"] = [];
+          }
+
+          // Updating graphs once they are opened
+          if (document.getElementById(key + "_" + element + "_graph").parentNode.parentNode.parentNode.className == "collapsibleListOpen") {
+            if (key + "_" + element + "_dygraph" in graph_data_list) { // Dygraph has been created so it just needs to be opened
+              graph_data_list[key + "_" + element + "_dygraph"].updateOptions( { 'file': graph_data_list[key + "_" + element + "_graph"] });
+            } else { // Creating new graph
+              graph_data_list[key + "_" + element + "_dygraph"] = new Dygraph(document.getElementById(key + "_" + element + "_graph"), graph_data_list[key + "_" + element + "_graph"],
+                                                                             {
+                                                                                drawPoints: true,
+                                                                                showRoller: true,
+                                                                                labels: ['Timestamp', 'Value']
+                                                                             });
+            }
+          } else { // Collapsible list is closed
+            delete graph_data_list[key + "_" + element + "_dygraph"];
+          }
         }
       }
     }
