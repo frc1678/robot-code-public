@@ -16,7 +16,7 @@ cd $SETUPDIR
 sudo apt-get -yq install git
 
 # Misc.
-sudo apt-get -yq install curl 
+sudo apt-get -yq install curl
 sudo apt-get -yq install htop
 sudo apt-get -yq install ssh-askpass
 
@@ -42,10 +42,11 @@ sudo python setup.py install
 
 # FRC Toolchain (as of 2017)
 sudo apt-add-repository -y ppa:wpilib/toolchain
-sudo apt update 
+sudo apt update
 sudo apt install -yq frc-toolchain
 
 # Bazel
+sudo apt-get install openjdk-8-jdk
 echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
 curl https://bazel.build/bazel-release.pub.gpg | sudo apt-key add -
 sudo apt-get update && sudo apt-get install bazel
