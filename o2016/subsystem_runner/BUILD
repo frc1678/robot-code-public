@@ -6,6 +6,7 @@ cc_library(
     deps = [
         "//o2016/subsystems/superstructure/secondaries",
         "//o2016/wpilib:wpilib_interface",
+        "//muan/utils:threading_utils",
         "//third_party/aos/common:time",
         "//third_party/aos/common/util:phased_loop",
         "//third_party/aos/linux_code:init",

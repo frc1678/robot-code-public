@@ -1,4 +1,5 @@
 #include "generic_robot/subsystems/subsystem_runner.h"
+#include "muan/utils/threading_utils.h"
 
 namespace generic_robot {
 
@@ -16,7 +17,7 @@ void SubsystemRunner::operator()() {
 
   // TODO(Kyle or Wesley) Come up with some actual value for this...
   aos::SetCurrentThreadRealtimePriority(50);
-  aos::SetCurrentThreadName("SubsystemRunner");
+  muan::utils::SetCurrentThreadName("SubsystemRunner");
 
   running_ = true;
 

@@ -1,6 +1,7 @@
 #include <utility>
 #include <memory>
 #include <string>
+#include <map>
 #include "muan/logging/logger.hpp"
 #include "muan/logging/filewriter.h"
 #include "gmock/gmock.h"
@@ -20,6 +21,8 @@ class MockFileWriter : public muan::logging::FileWriter {
  public:
   MockFileWriter() : muan::logging::FileWriter("/") {}
   MOCK_METHOD2(WriteLine, void(const std::string &filename, const std::string &line));
+  std::ostream& GetTextFile(const std::string& filename) { return mock_files[filename]; }
+  std::map<std::string, std::stringstream> mock_files;
 };
 
 TEST(Logger, LogsOneMessage) {
@@ -113,16 +116,17 @@ TEST(Logger, DiesOnDuplicateQueues) {
 }
 
 TEST(Logger, TextLogger) {
-  aos::time::EnableMockTime(aos::monotonic_clock::epoch());
   std::unique_ptr<muan::logging::MockFileWriter> writer = std::make_unique<muan::logging::MockFileWriter>();
-
-  EXPECT_CALL(*writer, WriteLine("name.log", "1000,test")).Times(1);
-
   Logger logger(std::move(writer));
-  auto textlog = logger.MakeTextLogger("name");
+
+  muan::utils::SetMocktimeEpoch();
+  muan::utils::SetCurrentThreadName("name");
   aos::time::IncrementMockTime(std::chrono::seconds(1));
-  textlog("test");
+  LOG_S("test");
+
   logger.Update();
+  EXPECT_EQ(static_cast<MockFileWriter*>(logger.writer_.get())->mock_files["name.log"].str(),
+            "1000:muan/logging/logger_test.cpp:125: test\n");
 }
 
 }  // namespace logging

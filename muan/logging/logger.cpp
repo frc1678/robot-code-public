@@ -3,9 +3,13 @@
 namespace muan {
 namespace logging {
 
-Logger::Logger() { writer_ = std::make_unique<FileWriter>(); }
+Logger::Logger()
+    : writer_{std::make_unique<FileWriter>()},
+      textlog_reader_{text_logger.MakeReader()} {}
 
-Logger::Logger(std::unique_ptr<FileWriter>&& writer) : writer_(std::move(writer)) {}
+Logger::Logger(std::unique_ptr<FileWriter>&& writer)
+    : writer_{std::move(writer)},
+      textlog_reader_{text_logger.MakeReader()} {}
 
 void Logger::operator()() {
   aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(20));
@@ -30,11 +34,9 @@ void Logger::Update() {
       }
     }
   }
-  for (const auto& log : text_logs_) {
-    std::experimental::optional<std::array<char, 1024>> message;
-    while ((message = log.queue->ReadMessage())) {
-      writer_->WriteLine(log.filename, std::string(&message.value()[0]));
-    }
+  std::experimental::optional<TextLogger::LogCall> message;
+  while ((message = textlog_reader_.ReadMessage())) {
+    message->message(writer_->GetTextFile(*message->thread_name + ".log"));
   }
   writer_->FlushAllFiles();
 }
@@ -43,14 +45,7 @@ void Logger::Start() { running_ = true; }
 
 void Logger::Stop() { running_ = false; }
 
-TextLogger Logger::MakeTextLogger(const std::string& name) {  // TODO(Wesley) logs with same name?
-  auto queue_ptr = std::make_shared<TextLogger::TextQueue>();
-  auto queue_reader = std::make_shared<TextLogger::TextQueue::QueueReader>(queue_ptr->MakeReader());
-  TextLog log_obj = {queue_reader, name, name + ".log"};
-  text_logs_.push_back(log_obj);
-  TextLogger logger(queue_ptr);
-  return logger;
-}
+TextLogger Logger::text_logger;
 
 }  // namespace logging
 }  // namespace muan

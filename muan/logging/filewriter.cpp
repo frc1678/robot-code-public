@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 namespace muan {
 namespace logging {
@@ -17,10 +18,25 @@ FileWriter::FileWriter() {
 }
 
 void FileWriter::WriteLine(const std::string &filename, const std::string &line) {
+  GetTextFile(filename) << line << "\n";
+}
+
+void FileWriter::WriteBytes(const std::string &filename, const std::string &bytes) {
+  GetBinaryFile(filename) << bytes;
+}
+
+std::ostream& FileWriter::GetTextFile(const std::string &filename) {
   if (open_files_.find(filename) == open_files_.end()) {
     open_files_[filename].open((base_path_ / filename).string(), std::ios::app);
   }
-  open_files_[filename] << line << "\n";
+  return open_files_[filename];
+}
+
+std::ostream& FileWriter::GetBinaryFile(const std::string &filename) {
+  if (open_files_.find(filename) == open_files_.end()) {
+    open_files_[filename].open((base_path_ / filename).string(), std::ios::app | std::ios::binary);
+  }
+  return open_files_[filename];
 }
 
 void FileWriter::FlushAllFiles() {

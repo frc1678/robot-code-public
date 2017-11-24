@@ -1,4 +1,5 @@
 #include "muan/wpilib/can_wrapper.h"
+#include "muan/utils/threading_utils.h"
 #include "third_party/aos/common/time.h"
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/aos/linux_code/init.h"
@@ -14,7 +15,7 @@ void CanWrapper::operator()() {
 
   // TODO(Kyle) Come up with some actual value for this...
   aos::SetCurrentThreadRealtimePriority(10);
-  aos::SetCurrentThreadName("CanWrapper");
+  muan::utils::SetCurrentThreadName("CanWrapper");
 
   running_ = true;
 

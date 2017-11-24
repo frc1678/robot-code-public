@@ -1,5 +1,6 @@
 #include "muan/wpilib/gyro/gyro_reader.h"
 #include "muan/utils/history.h"
+#include "muan/utils/threading_utils.h"
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/aos/linux_code/init.h"
 
@@ -20,7 +21,7 @@ GyroReader::GyroReader(GyroQueue* queue, DriverStationQueue* ds_queue, int calib
 
 void GyroReader::operator()() {
   aos::SetCurrentThreadRealtimePriority(30);
-  aos::SetCurrentThreadName("Gyro");
+  muan::utils::SetCurrentThreadName("Gyro");
 
   if (gyro_queue_ == nullptr) {
     aos::Die(

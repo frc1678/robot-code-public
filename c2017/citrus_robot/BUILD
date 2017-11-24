@@ -9,6 +9,7 @@ cc_library(
         # TODO(Kyle) Figure this out and fix it.
         "//muan/teleop:joystick",
         "//muan/wpilib:ds_sender",
+        "//muan/utils:threading_utils",
         "//c2017/lemonscript",
         "//c2017/queue_manager",
         "//c2017/subsystems/drivetrain:drivetrain_base",

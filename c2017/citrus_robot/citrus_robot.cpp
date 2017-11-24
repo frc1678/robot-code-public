@@ -2,6 +2,7 @@
 #include "WPILib.h"
 #include "c2017/queue_manager/queue_manager.h"
 #include "muan/wpilib/queue_types.h"
+#include "muan/utils/threading_utils.h"
 
 namespace c2017 {
 namespace citrus_robot {
@@ -37,7 +38,7 @@ void CitrusRobot::operator()() {
   aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(20));
 
   aos::SetCurrentThreadRealtimePriority(10);
-  aos::SetCurrentThreadName("CitrusRobot");
+  muan::utils::SetCurrentThreadName("CitrusRobot");
 
   running_ = true;
   while (running_) {

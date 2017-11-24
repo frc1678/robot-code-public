@@ -11,6 +11,7 @@ cc_library(
         "textlogger",
         "//muan/queues:queues",
         "//muan/utils:proto_utils",
+        "//muan/utils:threading_utils",
         "//third_party/aos/linux_code:init",
         "//third_party/aos/common/util:phased_loop",
         "//third_party/aos/common:time",
@@ -19,6 +20,26 @@ cc_library(
         "//third_party/google/googletest:googletest"
     ],
     linkstatic = 1
+)
+
+cc_library(
+    name = "filewriter",
+    srcs = ["filewriter.cpp"],
+    hdrs = ["filewriter.h"],
+    deps = [
+        "//third_party/boost:filesystem",
+        "//third_party/gflags:gflags"
+    ],
+)
+
+cc_library(
+    name = "textlogger",
+    srcs = ["textlogger.hpp", "textlogger.cpp"],
+    hdrs = ["textlogger.h"],
+    deps = [
+        "//muan/queues",
+        "//muan/utils:threading_utils",
+    ],
 )
 
 cc_test(
@@ -39,26 +60,6 @@ cc_proto_library(
     srcs = ["logger_test.proto"],
     default_runtime = "//third_party/google/protobuf",
     protoc = "//third_party/google/protobuf:protoc",
-)
-
-cc_library(
-    name = "filewriter",
-    srcs = ["filewriter.cpp"],
-    hdrs = ["filewriter.h"],
-    deps = [
-        "//third_party/boost:filesystem",
-        "//third_party/gflags:gflags"
-    ],
-)
-
-cc_library(
-    name = "textlogger",
-    srcs = ["textlogger.cpp"],
-    hdrs = ["textlogger.h"],
-    deps = [
-        "//muan/queues",
-        "//third_party/aos/common:time",
-    ],
 )
 
 cc_test(

@@ -44,12 +44,8 @@ cc_library(
 
 cc_library(
     name = "proto_utils",
-    srcs = [
-        "proto_utils.cpp",
-    ],
-    hdrs = [
-        "proto_utils.h",
-    ],
+    srcs = ["proto_utils.cpp"],
+    hdrs = ["proto_utils.h"],
     deps = [
         "//third_party/aos/common:die",
         "//third_party/google/protobuf",
@@ -61,6 +57,19 @@ cc_library(
     srcs = ["monitor.cpp"],
     hdrs = ["monitor.h"],
     deps = [":history"]
+)
+
+cc_library(
+    name = "threading_utils",
+    srcs = [
+        "threading_utils.hpp",
+        "threading_utils.cpp"
+    ],
+    hdrs = ["threading_utils.h"],
+    deps = [
+        "//third_party/aos/common:time",
+        "//third_party/aos/linux_code:init",
+    ],
 )
 
 cc_proto_library(
@@ -102,7 +111,18 @@ cc_test(
 cc_test(
     name = "monitor_test",
     srcs = ["monitor_test.cpp"],
-    deps = [":monitor", "//third_party/google/googletest:googletest"],
+    deps = [
+        ":monitor",
+        "//third_party/google/googletest:googletest"
+    ],
     linkopts = ["-lm"]
 )
 
+cc_test(
+    name = "threading_utils_test",
+    srcs = ["threading_utils_test.cpp"],
+    deps = [
+        ":threading_utils",
+        "//third_party/google/googletest:googletest"
+    ],
+)

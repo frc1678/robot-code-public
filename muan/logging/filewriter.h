@@ -3,7 +3,6 @@
 
 #include <ctime>
 #include <fstream>
-#include <iostream>
 #include <string>
 #include <map>
 #include "boost/filesystem.hpp"
@@ -33,6 +32,9 @@ class FileWriter {
   // However, calls with the same filename to different instances of
   // FileWriter may go to different files.
   virtual void WriteLine(const std::string &filename, const std::string &line);
+  virtual void WriteBytes(const std::string &filename, const std::string &bytes);
+  virtual std::ostream& GetTextFile(const std::string &filename);
+  virtual std::ostream& GetBinaryFile(const std::string &filename);
 
   void FlushAllFiles();
 

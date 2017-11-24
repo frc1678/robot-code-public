@@ -24,6 +24,7 @@ cc_library(
         "//muan/queues",
         "//muan/units",
         "//muan/utils:history",
+        "//muan/utils:threading_utils",
         "//muan/wpilib:wpilib_queues",
         "//third_party/aos/common/util:phased_loop",
         "//third_party/aos/linux_code:init",

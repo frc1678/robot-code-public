@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include "c2017/subsystems/lights/lights.h"
 #include "c2017/queue_manager/queue_manager.h"
+#include "muan/utils/threading_utils.h"
 
 TEST(LightColors, NoVisionSignal) {
   c2017::QueueManager::GetInstance()->Reset();
@@ -15,7 +16,7 @@ TEST(LightColors, NoVisionSignal) {
   c2017::QueueManager::GetInstance()->driver_station_queue()->WriteMessage(driver_station_proto);
 
   c2017::lights::Lights lights;
-  aos::time::EnableMockTime(aos::monotonic_clock::epoch());
+  muan::utils::SetMocktimeEpoch();
   lights.Update();
   auto lights_reading = c2017::QueueManager::GetInstance()->lights_output_queue()->ReadLastMessage();
   if (lights_reading) {

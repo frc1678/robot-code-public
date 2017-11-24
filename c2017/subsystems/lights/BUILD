@@ -37,6 +37,7 @@ cc_test(
     deps = [
         ":lights",
         ":lights_queues",
+        "//muan/utils:threading_utils",
         "//third_party/google/googletest",
     ],
 )

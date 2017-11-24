@@ -6,6 +6,7 @@ cc_library(
     deps = [
         "//testbench/subsystems/drivetrain:drivetrain_base",
         "//testbench/wpilib:wpilib_interface",
+        "//muan/utils:threading_utils",
         "//third_party/aos/common:time",
         "//third_party/aos/common/util:phased_loop",
         "//third_party/aos/linux_code:init",

@@ -1,4 +1,5 @@
 #include "c2017/subsystems/subsystem_runner.h"
+#include "muan/utils/threading_utils.h"
 
 namespace c2017 {
 
@@ -18,7 +19,7 @@ void SubsystemRunner::operator()() {
 
   // TODO(Kyle or Wesley) Come up with some actual value for this...
   aos::SetCurrentThreadRealtimePriority(50);
-  aos::SetCurrentThreadName("SubsystemRunner");
+  muan::utils::SetCurrentThreadName("SubsystemRunner");
 
   running_ = true;
 

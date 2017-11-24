@@ -22,6 +22,16 @@ void Logger::AddQueue(const std::string& name, T* queue) {
   queue_logs_.push_back(std::make_unique<QueueLog>(std::move(queue_log)));
 }
 
+template<typename... Ts>
+void Logger::LogStream(const char* filename, int line, Ts... args) {
+  text_logger.LogStream(filename, line, args...);
+}
+
+template<typename... Ts>
+void Logger::LogPrintf(const char* filename, int line, Ts... args) {
+  text_logger.LogPrintf(filename, line, args...);
+}
+
 template <class R>
 std::experimental::optional<std::string> Logger::Reader<R>::GetMessageAsCSV(bool header) {
   uint64_t queue_index = reader_.GetNextMessageIndex();

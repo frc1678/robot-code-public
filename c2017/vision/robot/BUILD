@@ -4,6 +4,7 @@ cc_library(
     hdrs = ["reader.h"],
     deps = [
         "//third_party/aos/vision/events:udp",
+        "//muan/utils:threading_utils",
         "//c2017/queue_manager",
         "//c2017/vision:vision_queues",
         "//third_party/aos/linux_code:init",

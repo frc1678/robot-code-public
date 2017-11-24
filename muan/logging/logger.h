@@ -13,6 +13,7 @@
 #include "muan/queues/message_queue.h"
 #include "muan/units/units.h"
 #include "muan/utils/proto_utils.h"
+#include "muan/utils/threading_utils.h"
 #include "muan/logging/textlogger.h"
 #include "third_party/aos/common/time.h"
 #include "third_party/aos/common/util/phased_loop.h"
@@ -79,8 +80,17 @@ class Logger {
   // This stops the logger from running. It can be resumed calling Start().
   void Stop();
 
-  // Returns a TextLogger that can be used to log strings to a file.
-  TextLogger MakeTextLogger(const std::string& name);
+  // Log without format strings, such as
+  // LogStream(__FILE__, __LINE__, "x=", x, " y=", y);
+  template<typename... Ts>
+  static void LogStream(const char* filename, int line, Ts... args);
+  #define LOG_S(msg0, ...) muan::logging::Logger::LogStream(__FILE__, __LINE__, msg0, ##__VA_ARGS__)
+
+  // Log with format strings, such as
+  // LogPrintf(__FILE__, __LINE__, "x=%d y=%f", x, y);
+  template<typename... Ts>
+  static void LogPrintf(const char* filename, int line, Ts... args);
+  #define LOG_P(fmt, ...) muan::logging::Logger::LogPrintf(__FILE__, __LINE__, fmt, ##__VA_ARGS__)
 
  private:
   std::unique_ptr<FileWriter> writer_;
@@ -110,14 +120,10 @@ class Logger {
     bool write_header;  // Do we still need to write the header?
   };
 
-  struct TextLog {
-    std::shared_ptr<TextLogger::TextQueue::QueueReader> queue;
-    std::string name;
-    std::string filename;
-  };
-
   std::vector<std::unique_ptr<QueueLog>> queue_logs_;
-  std::vector<TextLog> text_logs_;
+  TextLogger::LogQueue::QueueReader textlog_reader_;
+
+  static TextLogger text_logger;
 };  // class Logger
 
 }  // namespace logging

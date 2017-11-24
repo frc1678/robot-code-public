@@ -4,6 +4,7 @@ cc_library(
     hdrs = ["subsystem_runner.h"],
     visibility = ["//visibility:public"],
     deps = [
+        "//muan/utils:threading_utils",
         "//c2017/subsystems/drivetrain:drivetrain_base",
         "//c2017/subsystems/superstructure:superstructure_subsystem",
         "//c2017/vision/robot:vision_alignment",

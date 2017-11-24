@@ -48,6 +48,7 @@ cc_library(
         "//c2017/queue_manager",
         "//c2017/subsystems/drivetrain:drivetrain_base",
         "//c2017/subsystems/superstructure:superstructure_subsystem",
+        "//muan/utils:threading_utils",
         "//muan/actions:drivetrain_action",
         "//third_party/aos/common:time",
         "//third_party/aos/common/util:phased_loop",

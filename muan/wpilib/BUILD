@@ -9,6 +9,7 @@ cc_library(
     deps = [
         ":pcm_wrapper",
         ":pdp_wrapper",
+        "//muan/utils:threading_utils",
         "//third_party/aos/common:time",
         "//third_party/aos/common/util:phased_loop",
         "//third_party/aos/linux_code:init",

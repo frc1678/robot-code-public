@@ -1,6 +1,7 @@
 #include "c2017/lemonscript/lemonscript.h"
 
 #include <string>
+#include "muan/utils/threading_utils.h"
 
 namespace c2017 {
 namespace lemonscript {
@@ -35,7 +36,7 @@ void Lemonscript::operator()() {
   aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(5));
 
   aos::SetCurrentThreadRealtimePriority(10);
-  aos::SetCurrentThreadName("Lemonscript");
+  muan::utils::SetCurrentThreadName("Lemonscript");
 
   running_ = false;
   started_ = true;

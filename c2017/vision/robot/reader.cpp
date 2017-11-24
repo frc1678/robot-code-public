@@ -1,5 +1,6 @@
 #include "c2017/vision/robot/reader.h"
 #include "c2017/queue_manager/queue_manager.h"
+#include "muan/utils/threading_utils.h"
 #include "third_party/aos/vision/events/udp.h"
 #include "third_party/aos/common/time.h"
 #include "third_party/aos/common/util/phased_loop.h"
@@ -14,7 +15,7 @@ VisionReader::VisionReader() : vision_input_queue_{QueueManager::GetInstance()->
 
 void VisionReader::operator()() {
   aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(20));
-  aos::SetCurrentThreadName("VisionReader");
+  muan::utils::SetCurrentThreadName("VisionReader");
 
   aos::vision::RXUdpSocket read_socket(1678);
   char buffer[1024];

@@ -1,6 +1,7 @@
 #include "testbench/subsystems/subsystem_runner.h"
 #include "testbench/queue_manager/queue_manager.h"
 #include "testbench/subsystems/drivetrain/drivetrain_base.h"
+#include "muan/utils/threading_utils.h"
 
 namespace testbench {
 
@@ -18,7 +19,7 @@ void SubsystemRunner::operator()() {
 
   // TODO(Kyle or Wesley) Come up with some actual value for this...
   aos::SetCurrentThreadRealtimePriority(10);
-  aos::SetCurrentThreadName("SubsystemRunner");
+  muan::utils::SetCurrentThreadName("SubsystemRunner");
 
   running_ = true;
 

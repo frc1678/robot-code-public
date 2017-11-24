@@ -3,13 +3,17 @@
 #endif
 #include "muan/logging/textlogger.h"
 #include <inttypes.h>
+
 namespace muan {
 namespace logging {
 
-void TextLogger::operator()(const char *text) {
-  auto time = aos::time::Time::Now().ToMSec();
-  snprintf(&buffer_[0], 1024, "%" PRId64 ",%s", time, text);  // NOLINT
-  log_queue_->WriteMessage(buffer_);
+TextLogger::LogQueue::QueueReader TextLogger::MakeReader() {
+  return log_calls_.MakeReader();
 }
+
+void TextLogger::Stamp(std::ostream& out, uint64_t time, const char* filename, int line) {
+  out << time << ":" << filename << ":" << line << ": ";
 }
-}
+
+}  // namespace logging
+}  // namespace muan
