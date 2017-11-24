@@ -49,13 +49,47 @@ sudo apt install -yq frc-toolchain
 sudo apt-get install openjdk-8-jdk
 echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
 curl https://bazel.build/bazel-release.pub.gpg | sudo apt-key add -
-sudo apt-get update && sudo apt-get install bazel
+sudo apt-get update
+sudo apt-get install -yq bazel
 
 # OpenCV
-sudo apt-get install libopencv-dev
+sudo apt-get install -yq libopencv-dev
 
 # Back to where the script was executed
 cd $STR
 
 # Cleanup
 rm -rf $SETUPDIR
+
+# Exit if they don't want ZSH and NVIM (and some extras)
+((!$#)) && echo No arguments supplied! && exit 1
+
+# Otherwise
+echo Installing customization options
+
+# ZSH
+sudo apt-get install zsh
+
+# Oh my ZSH!
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+
+# Powerlevel9k
+git clone https://github.com/bhilburn/powerlevel9k.git ~/.oh-my-zsh/custom/themes/powerlevel9k
+
+# Neovim
+sudo add-apt-repository ppa:neovim-ppa/stable
+sudo apt-get update
+sudo apt-get install neovim
+
+# Sketchy python fix cause for my dotfiles cause why not
+sudo ln -sf $(which python2.7) /usr/local/bin/python2
+sudo ln -sf $(which python3) /usr/local/bin/python3
+
+# Neovim python
+sudo python2 -m pip install neovim
+sudo python3 -m pip install neovim
+
+# Why not
+echo Some nice dotfiles are at:
+echo https://github.com/KyleStach1678/dotfiles.git
+echo https://github.com/jishnusen/dotfiles.git
