@@ -5,6 +5,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "//o2017/subsystems/drivetrain:drivetrain_base",
+        "//o2017/subsystems/superstructure:superstructure_subsystem",
         "//o2017/wpilib:wpilib_interface",
         "//third_party/aos/common:time",
         "//third_party/aos/common/util:phased_loop",

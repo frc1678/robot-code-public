@@ -37,9 +37,9 @@ void QueueManager::StartLogging() {
 #endif  // FRC1678_NO_QUEUE_LOGGING
 }
 
-QueueManager& QueueManager::GetInstance() {
+QueueManager* QueueManager::GetInstance() {
   static QueueManager instance;
-  return instance;
+  return &instance;
 }
 
 MessageQueue<muan::proto::StackProto<PdpStatus, 512>>& QueueManager::pdp_status_queue() {
@@ -66,6 +66,22 @@ frc971::control_loops::drivetrain::OutputQueue* QueueManager::drivetrain_output_
   return &drivetrain_output_queue_;
 }
 
+o2017::superstructure::InputQueue* QueueManager::superstructure_input_queue() {
+  return &superstructure_input_queue_;
+}
+
+o2017::superstructure::OutputQueue* QueueManager::superstructure_output_queue() {
+  return &superstructure_output_queue_;
+}
+
+o2017::superstructure::StatusQueue* QueueManager::superstructure_status_queue() {
+  return &superstructure_status_queue_;
+}
+
+o2017::superstructure::GoalQueue* QueueManager::superstructure_goal_queue() {
+  return &superstructure_goal_queue_;
+}
+
 void QueueManager::Reset() {
   pdp_status_queue_.Reset();
   driver_station_queue_.Reset();
@@ -77,4 +93,5 @@ void QueueManager::Reset() {
   drivetrain_output_queue_.Reset();
   drivetrain_status_queue_.Reset();
 }
+
 }  // namespace o2017

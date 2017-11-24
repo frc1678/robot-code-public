@@ -1,0 +1,37 @@
+syntax = "proto2";
+
+package o2017.superstructure;
+
+option cc_enable_arenas = true;
+
+enum ClimberState {
+  NOTHING = 0;
+  SPIN_UP = 1;
+  APPROACHING = 2;
+  CLIMBING = 3;
+  REACHED_TOP = 4;
+}
+
+message SuperstructureOutput {
+  required uint64 timestamp = 1;
+  required bool hp_gear_extend = 2;
+  required double climber_voltage = 3;
+}
+
+message SuperstructureGoal {
+  required uint64 timestamp = 1;
+  required bool hp_gear = 2;
+  required bool should_climb = 3;
+}
+
+message SuperstructureInput {
+  required uint64 timestamp = 1;
+  required double climber_current = 2;
+  required double climber_position = 3;
+}
+
+message SuperstructureStatus {
+  required uint64 timestamp = 1;
+  required ClimberState climber_state = 2;
+  required double climber_observed_velocity = 3;
+}

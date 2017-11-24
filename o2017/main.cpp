@@ -7,6 +7,10 @@ class WpilibRobot : public IterativeRobot {
  public:
   WpilibRobot() {}
 
+  void AutonomousInit() override {
+    main_.RunAutonomous();
+  }
+
   void RobotInit() override {}
 
   void RobotPeriodic() override { main_.Update(); }

@@ -16,7 +16,7 @@ namespace drivetrain {
 const DrivetrainConfig &GetDrivetrainConfig() {
   static DrivetrainConfig kDrivetrainConfig{
       ::frc971::control_loops::drivetrain::ShifterType::SIMPLE_SHIFTER,
-      ::frc971::control_loops::drivetrain::LoopType::CLOSED_LOOP,
+      ::frc971::control_loops::drivetrain::LoopType::OPEN_LOOP,
 
       ::o2017::subsystems::drivetrain::MakeDrivetrainLoop,
       ::o2017::subsystems::drivetrain::MakeVelocityDrivetrainLoop,
@@ -27,8 +27,8 @@ const DrivetrainConfig &GetDrivetrainConfig() {
       subsystems::drivetrain::kWheelRadius,
       subsystems::drivetrain::kV,
 
-      subsystems::drivetrain::kGearRatio,
-      subsystems::drivetrain::kGearRatio,
+      subsystems::drivetrain::kHighGearRatio,
+      subsystems::drivetrain::kLowGearRatio,
       true,
       0.0};
 

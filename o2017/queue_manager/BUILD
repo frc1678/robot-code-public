@@ -11,6 +11,7 @@ cc_library(
         "//muan/webdash:server",
         "//muan/wpilib:wpilib_queues",
         "//third_party/frc971/control_loops/drivetrain:drivetrain_lib",
+        "//o2017/subsystems/superstructure:superstructure_queues",
     ],
 )
 

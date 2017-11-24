@@ -10,6 +10,7 @@
 #include "muan/wpilib/queue_types.h"
 
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
+#include "o2017/subsystems/superstructure/queue_types.h"
 
 using muan::queues::MessageQueue;
 
@@ -21,7 +22,7 @@ namespace o2017 {
 // as a global, which is much less sketchy.
 class QueueManager {
  public:
-  static QueueManager& GetInstance();
+  static QueueManager* GetInstance();
 
   void StartLogging();
 
@@ -38,6 +39,11 @@ class QueueManager {
   frc971::control_loops::drivetrain::OutputQueue* drivetrain_output_queue();
   frc971::control_loops::drivetrain::StatusQueue* drivetrain_status_queue();
 
+  o2017::superstructure::InputQueue* superstructure_input_queue();
+  o2017::superstructure::OutputQueue* superstructure_output_queue();
+  o2017::superstructure::StatusQueue* superstructure_status_queue();
+  o2017::superstructure::GoalQueue* superstructure_goal_queue();
+
   void Reset();
 
  private:
@@ -48,6 +54,11 @@ class QueueManager {
   frc971::control_loops::drivetrain::InputQueue drivetrain_input_queue_;
   frc971::control_loops::drivetrain::OutputQueue drivetrain_output_queue_;
   frc971::control_loops::drivetrain::StatusQueue drivetrain_status_queue_;
+
+  o2017::superstructure::InputQueue superstructure_input_queue_;
+  o2017::superstructure::OutputQueue superstructure_output_queue_;
+  o2017::superstructure::StatusQueue superstructure_status_queue_;
+  o2017::superstructure::GoalQueue superstructure_goal_queue_;
 
   muan::teleop::JoystickStatusQueue manipulator_status_queue_;
   muan::teleop::JoystickStatusQueue wheel_status_queue_;

@@ -6,6 +6,7 @@
 #include "muan/units/units.h"
 #include "o2017/queue_manager/queue_manager.h"
 #include "o2017/wpilib/drivetrain_interface.h"
+#include "o2017/wpilib/superstructure_interface.h"
 
 namespace o2017 {
 namespace wpilib {
@@ -19,7 +20,9 @@ class WpilibInterface {
 
  private:
   muan::wpilib::CanWrapper can_;
+  muan::wpilib::gyro::GyroReader gyro_;
   DrivetrainInterface drivetrain_interface_;
+  SuperstructureInterface superstructure_interface_;
 };
 
 }  // namespace wpilib
