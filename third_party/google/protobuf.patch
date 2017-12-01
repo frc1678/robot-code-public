@@ -1,7 +1,7 @@
-diff --git a/BUILD b/BUILD
-index 0941d8c..9fc64d4 100644
---- a/BUILD
-+++ b/BUILD
+diff --git a/third_party/google/protobuf/BUILD b/third_party/google/protobuf/BUILD
+index 0941d8c..d73f25a 100644
+--- a/third_party/google/protobuf/BUILD
++++ b/third_party/google/protobuf/BUILD
 @@ -581,7 +581,7 @@ cc_binary(
      linkstatic = 1,
      deps = select({
@@ -20,7 +20,7 @@ index 0941d8c..9fc64d4 100644
      }),
  )
  
-@@ -656,7 +656,7 @@ py_proto_library(
+@@ -656,7 +656,6 @@ py_proto_library(
      protoc = ":protoc",
      py_libs = [
          ":python_srcs",
@@ -28,16 +28,25 @@ index 0941d8c..9fc64d4 100644
      ],
      srcs_version = "PY2AND3",
      visibility = ["//visibility:public"],
---- /tmp/pythonBUILD	2016-08-24 23:24:11.443339014 -0700
-+++ util/python/BUILD	2016-08-24 23:24:36.512874325 -0700
+diff --git a/third_party/google/protobuf/protobuf.bzl b/third_party/google/protobuf/protobuf.bzl
+index 23380ba..c08cd35 100644
+--- a/third_party/google/protobuf/protobuf.bzl
++++ b/third_party/google/protobuf/protobuf.bzl
+@@ -255,6 +255,7 @@ def cc_proto_library(
+       hdrs=gen_hdrs,
+       deps=cc_libs + deps,
+       includes=includes,
++      copts=["-Wno-unused-parameter"],
+       **kargs)
+ 
+ def internal_gen_well_known_protos_java(srcs):
+diff --git a/third_party/google/protobuf/util/python/BUILD b/third_party/google/protobuf/util/python/BUILD
+index 3ac0385..7450dd2 100644
+--- a/third_party/google/protobuf/util/python/BUILD
++++ b/third_party/google/protobuf/util/python/BUILD
 @@ -1,3 +1,5 @@
 +licenses(['permissive'])
 +
  # This is a placeholder for python headers. Projects needing to use
  # fast cpp protos in protobuf's python interface should build with
  # --define=use_fast_cpp_protos=true, and in addition, provide
---- a/protobuf.bzl
-+++ b/protobuf.bzl
-@@ -194,7 +194,7 @@ includes=includes,
-+       copts=["-Wno-unused-parameter"],
-       **kargs)
