@@ -4,8 +4,6 @@
 #include <sched.h>
 #endif
 
-#include "third_party/aos/common/type_traits.h"
-
 // It doesn't use pthread_once, because Brian looked at the pthreads
 // implementation for vxworks and noticed that it is completely and entirely
 // broken for doing just about anything (including its pthread_once). It has the
@@ -18,7 +16,6 @@ namespace aos {
 template<typename T>
 Once<T>::Once(Function function)
     : function_(function) {
-  static_assert(shm_ok<Once<T>>::value, "Once should work in shared memory");
 }
 
 template<typename T>

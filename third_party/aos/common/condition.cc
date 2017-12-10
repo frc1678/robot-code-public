@@ -3,13 +3,9 @@
 #include <inttypes.h>
 #include <assert.h>
 
-#include "third_party/aos/common/type_traits.h"
 #include "third_party/aos/common/mutex.h"
 
 namespace aos {
-
-static_assert(shm_ok<Condition>::value,
-              "Condition should work in shared memory");
 
 Condition::Condition(Mutex *m) : impl_(), m_(m) {}
 

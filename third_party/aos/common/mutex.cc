@@ -5,7 +5,6 @@
 #include <string.h>
 
 #include "third_party/aos/common/die.h"
-#include "third_party/aos/common/type_traits.h"
 
 namespace aos {
 

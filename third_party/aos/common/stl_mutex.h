@@ -4,7 +4,6 @@
 #include <mutex>
 
 #include "third_party/aos/linux_code/ipc_lib/aos_sync.h"
-#include "third_party/aos/common/type_traits.h"
 #include "third_party/aos/common/macros.h"
 
 #include "third_party/aos/common/die.h"

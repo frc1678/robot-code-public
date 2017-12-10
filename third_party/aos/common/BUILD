@@ -16,13 +16,6 @@ cc_library(
 )
 
 cc_library(
-  name = 'type_traits',
-  hdrs = [
-    'type_traits.h',
-  ],
-)
-
-cc_library(
   name = 'time',
   srcs = [
     'time.cc',
@@ -64,17 +57,6 @@ cc_library(
   ],
 )
 
-cc_test(
-  name = 'type_traits_test',
-  srcs = [
-    'type_traits_test.cpp',
-  ],
-  deps = [
-    '//third_party/aos/testing:googletest',
-    ':type_traits',
-  ],
-)
-
 cc_library(
   name = 'gtest_prod',
   hdrs = [
@@ -92,7 +74,6 @@ cc_library(
   ],
   deps = [
     ':gtest_prod',
-    ':type_traits',
   ],
 )
 
@@ -230,7 +211,6 @@ cc_library(
     '//third_party/aos/linux_code/ipc_lib:aos_sync',
     ':die',
     ':check',
-    ':type_traits',
     '//linux_libraries:libpthread',
   ],
 )

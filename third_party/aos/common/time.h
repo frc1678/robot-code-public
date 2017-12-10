@@ -11,7 +11,6 @@
 #include <thread>
 #include <ostream>
 
-#include "third_party/aos/common/type_traits.h"
 #include "third_party/aos/common/macros.h"
 
 namespace aos {
