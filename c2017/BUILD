@@ -9,12 +9,12 @@ cc_binary(
         "//c2017/citrus_robot:citrus_robot",
         "//muan/teleop:joystick",
         "//third_party/wpilibsuite:wpilib",
-        "//c2017/webdash:server",
+        "//muan/webdash:server",
         "//third_party/gflags:gflags"
     ],
     data = [
         "//c2017/lemonscript/auto:auto_modes",
-        "//c2017/webdash:webdash_html"
+        "//muan/webdash:webdash_html"
     ]
 )
 
