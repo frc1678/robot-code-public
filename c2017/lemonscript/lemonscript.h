@@ -1,7 +1,7 @@
 #ifndef C2017_LEMONSCRIPT_LEMONSCRIPT_H_
 #define C2017_LEMONSCRIPT_LEMONSCRIPT_H_
 
-#include <string.h>
+#include <string>
 #include <atomic>
 #include <vector>
 #include "c2017/lemonscript/ls_gen.h"
@@ -33,7 +33,7 @@ class Lemonscript {
   void Start();  // Start running lemonscript
   void Stop();   // Pause running lemonscript
   void Kill();   // Stop the thread
-  
+
  private:
   void UpdateAutoRoutine();
   muan::webdash::AutoSelectionQueue::QueueReader auto_selection_reader_ =

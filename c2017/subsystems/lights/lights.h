@@ -1,7 +1,7 @@
 #ifndef C2017_SUBSYSTEMS_LIGHTS_LIGHTS_H_
 #define C2017_SUBSYSTEMS_LIGHTS_LIGHTS_H_
 
-#include <string.h>
+#include <string>
 #include <vector>
 #include "muan/wpilib/queue_types.h"
 #include "muan/units/units.h"
