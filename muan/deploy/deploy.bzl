@@ -19,7 +19,7 @@ def _muan_deploy_impl(ctx):
         collect_data = True,
         collect_default = True,
       ),
-      files = set([ctx.outputs.executable])
+      files = depset([ctx.outputs.executable])
   )
 
 _muan_deploy = rule(

@@ -22,4 +22,4 @@ COMPLETE:
   SEQUENCE:
     StartShoot
     Wait: 2.75
-    FluctuateFuel: 1.4
+    FluctuateFuel: 1.4, 15.0

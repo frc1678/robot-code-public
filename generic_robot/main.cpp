@@ -5,17 +5,19 @@
 
 class WpilibRobot : public IterativeRobot {
  public:
-  WpilibRobot() {}
+  WpilibRobot() { generic_robot::QueueManager::GetInstance()->StartLogging(); }
 
   void RobotInit() override {}
 
-  void RobotPeriodic() override { main_.Update(); }
+  void RobotPeriodic() override {}
 
  private:
   generic_robot::SubsystemRunner subsystem_runner_;
-  std::thread subsystem_thread{std::ref(subsystem_runner_)};
-
   generic_robot::citrus_robot::CitrusRobot main_;
+
+  // Other threads such as reading from network may also be necessary
+  std::thread subsystem_thread{std::ref(subsystem_runner_)};
+  std::thread citrus_robot_thread{std::ref(main_)};
 };
 
 int main(int argc, char **argv) {

@@ -1,0 +1,66 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+package o2017.ground_gear_intake;
+
+message GroundGearIntakeInput {
+  required uint64 timestamp = 1;
+  required double roller_current = 2;
+  required double pivot_encoder = 3;
+}
+
+message GroundGearIntakeOutput {
+  required uint64 timestamp = 1;
+  // Positive is pulling in gear
+  required double roller_voltage = 2;
+  // Use encoder
+  required bool intake_down = 3;
+  required double intake_voltage = 4;
+}
+
+enum State {
+  // Not actually running or holding a gear
+  IDLE = 0;
+  // Actively intaking a gear
+  INTAKING = 1;
+  // Picking up a gear (while the intake is moving)
+  PICKING_UP = 2;
+  // Carrying a gear
+  CARRYING = 3;
+  // Scoring a gear
+  SCORING = 4;
+  // Eject a gear without getting a foul
+  EJECTING = 5;
+  // Put intake down if fuel is behind it
+  DROPPED_INTAKE = 6;
+}
+
+message GroundGearIntakeStatus {
+  required uint64 timestamp = 1;
+  required bool current_spiked = 2;
+  required State current_state = 3;
+  required bool running = 4;
+  required double intake_position = 5;
+  required double intake_speed = 6;
+}
+
+enum Goal {
+  // Let the state machine progress normally
+  NONE = 0;
+  // Force-drop the intake into INTAKING
+  DROP = 1;
+  // Pick the intake up into IDLE, but only if it's still down
+  RISE = 2;
+  // Score the gear if it's in CARRY
+  SCORE = 3;
+  // Eject a gear without getting a foul
+  EJECT = 4;
+  // Start dropping balls
+  DROP_INTAKE = 5;
+}
+
+message GroundGearIntakeGoal {
+  required uint64 timestamp = 1;
+  required Goal goal = 2;
+}

@@ -59,6 +59,7 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
   if (!outputs_enabled || unprofiled_goal_velocity_ <= 0) {
     shooter_u = 0.0;
     accelerator_u = 0.0;
+    unprofiled_goal_velocity_ = 0.0;
   } else {
     if (!encoder_fault_detected_) {
       status_->set_uncapped_u(shooter_u);
@@ -82,8 +83,7 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
   accelerator_observer_.Update((Eigen::Matrix<double, 1, 1>() << accelerator_u).finished(), accelerator_y);
   plant_.Update((Eigen::Matrix<double, 1, 1>() << shooter_u).finished());
 
-  auto absolute_error = ((Eigen::Matrix<double, 3, 1>() << 0.0, unprofiled_goal_velocity_, 0.0).finished() -
-                         shooter_observer_.x()).cwiseAbs();
+  double absolute_error = std::abs(unprofiled_goal_velocity_ - shooter_observer_.x(1));
 
   if (unprofiled_goal_velocity_ == 0.0) {
     state_ = IDLE;
@@ -96,12 +96,12 @@ c2017::shooter::ShooterOutputProto ShooterController::Update(c2017::shooter::Sho
       }
       break;
     case SPINUP:
-      if (absolute_error(1, 0) < kSpinupVelocityTolerance || encoder_fault_detected_) {
+      if (absolute_error < kSpinupVelocityTolerance || encoder_fault_detected_) {
         state_ = AT_GOAL;
       }
       break;
     case AT_GOAL:
-      if (absolute_error(1, 0) > kSteadyStateVelocityTolerance && !encoder_fault_detected_) {
+      if (absolute_error > kSteadyStateVelocityTolerance && !encoder_fault_detected_) {
         state_ = SPINUP;
       }
       break;
