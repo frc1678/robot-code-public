@@ -10,7 +10,8 @@ cc_library(
         "//muan/teleop:joystick_queues",
         "//third_party/frc971/control_loops/drivetrain:drivetrain_lib",
         "//muan/logging:logger",
-        "//c2017/webdash:server",
+        "//muan/webdash:server",
+        "//muan/webdash:webdash_queues",
         "//c2017/subsystems/superstructure/shooter:shooter_queues",
         "//c2017/subsystems/superstructure/magazine:magazine_queues",
         "//c2017/subsystems/superstructure/ground_gear_intake:ground_gear_intake_queues",
@@ -20,7 +21,6 @@ cc_library(
         "//c2017/subsystems/superstructure:shooter_group_queues",
         "//c2017/vision:vision_queues",
         "//c2017/wpilib:wpilib_queues",
-        "//c2017/webdash:webdash_queues",
         "//c2017/subsystems/lights:lights_queues",
     ],
     visibility = ["//visibility:public"]

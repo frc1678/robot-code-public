@@ -4,6 +4,7 @@ namespace c2017 {
 
 namespace lights {
 void Lights::Update() {
+  auto_list = c2017::QueueManager::GetInstance()->auto_list_;
   auto intake_group_goal_queue = QueueManager::GetInstance()->intake_group_goal_queue()->ReadLastMessage();
   auto climber_status_queue = QueueManager::GetInstance()->climber_status_queue()->ReadLastMessage();
   auto drivetrain_status_queue = QueueManager::GetInstance()->drivetrain_status_queue()->ReadLastMessage();
@@ -12,7 +13,7 @@ void Lights::Update() {
   auto ds_status = QueueManager::GetInstance()->driver_station_queue()->ReadLastMessage();
   auto ground_gear_status = QueueManager::GetInstance()->ground_gear_status_queue()->ReadLastMessage();
   auto auto_selection_queue =
-      c2017::webdash::WebDashQueueWrapper::GetInstance().auto_selection_queue().ReadLastMessage();
+      muan::webdash::WebDashQueueWrapper::GetInstance().auto_selection_queue().ReadLastMessage();
 
   if (!calibrated_ && gyro_status_queue) {
     light_color_ = LightColor::RED;
@@ -20,52 +21,36 @@ void Lights::Update() {
     light_color_ = LightColor::BLUE;
   } else if (calibrated_ && auto_running_) {
     if (auto_selection_queue) {
-      switch (auto_selection_queue.value()->auto_mode()) {
-        case c2017::webdash::AutoSelection::NONE:
-          light_color_ = LightColor::PINK;
-          break;
-        case c2017::webdash::AutoSelection::BLUE_HELLA_KPA:
-          light_color_ = FlashLights(LightColor::BLUE, LightColor::PINK, false);
-          break;
-        case c2017::webdash::AutoSelection::BLUE_HELLA_KPA_NEW:
-          light_color_ = FlashLights(LightColor::TEAL, LightColor::WHITE, false);
-          break;
-        case c2017::webdash::AutoSelection::BLUE_HELLA_KPA_PLUS_GEAR:
-          light_color_ = FlashLights(LightColor::BLUE, LightColor::TEAL, false);
-          break;
-        case c2017::webdash::AutoSelection::BLUE_CENTER_PLUS_KPA:
-          light_color_ = FlashLights(LightColor::BLUE, LightColor::GREEN, false);
-          break;
-        case c2017::webdash::AutoSelection::BLUE_CENTER_PLUS_KPA_DRIVE:
-          light_color_ = FlashLights(LightColor::BLUE, LightColor::YELLOW, false);
-          break;
-        case c2017::webdash::AutoSelection::BLUE_FAR_PEG_PLUS_KPA_DRIVE:
-          light_color_ = FlashLights(LightColor::BLUE, LightColor::WHITE, false);
-          break;
-        case c2017::webdash::AutoSelection::RED_HELLA_KPA:
-          light_color_ = FlashLights(LightColor::RED, LightColor::PINK, false);
-          break;
-        case c2017::webdash::AutoSelection::RED_HELLA_KPA_NEW:
-          light_color_ = FlashLights(LightColor::PINK, LightColor::WHITE, false);
-          break;
-        case c2017::webdash::AutoSelection::RED_HELLA_KPA_PLUS_GEAR:
-          light_color_ = FlashLights(LightColor::RED, LightColor::TEAL, false);
-          break;
-        case c2017::webdash::AutoSelection::RED_CENTER_PLUS_KPA:
-          light_color_ = FlashLights(LightColor::RED, LightColor::GREEN, false);
-          break;
-        case c2017::webdash::AutoSelection::RED_CENTER_PLUS_KPA_DRIVE:
-          light_color_ = FlashLights(LightColor::RED, LightColor::YELLOW, false);
-          break;
-        case c2017::webdash::AutoSelection::RED_FAR_PEG_PLUS_KPA_DRIVE:
-          light_color_ = FlashLights(LightColor::RED, LightColor::WHITE, false);
-          break;
-        case c2017::webdash::AutoSelection::TWO_GEAR:
-          light_color_ = LightColor::WHITE;
-          break;
-        default:
-          light_color_ = FlashLights(LightColor::OFF, LightColor::PINK, false);
-          break;
+      if (auto_selection_queue.value()->auto_mode() == auto_list[0]) {
+        light_color_ = LightColor::PINK;
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[1]) {
+        light_color_ = FlashLights(LightColor::BLUE, LightColor::PINK, false);
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[2]) {
+        light_color_ = FlashLights(LightColor::TEAL, LightColor::WHITE, false);
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[3]) {
+        light_color_ = FlashLights(LightColor::BLUE, LightColor::TEAL, false);
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[4]) {
+        light_color_ = FlashLights(LightColor::BLUE, LightColor::GREEN, false);
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[5]) {
+        light_color_ = FlashLights(LightColor::BLUE, LightColor::YELLOW, false);
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[6]) {
+        light_color_ = FlashLights(LightColor::BLUE, LightColor::WHITE, false);
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[7]) {
+        light_color_ = FlashLights(LightColor::RED, LightColor::PINK, false);
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[8]) {
+        light_color_ = FlashLights(LightColor::PINK, LightColor::WHITE, false);
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[9]) {
+        light_color_ = FlashLights(LightColor::RED, LightColor::TEAL, false);
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[10]) {
+        light_color_ = FlashLights(LightColor::RED, LightColor::GREEN, false);
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[11]) {
+        light_color_ = FlashLights(LightColor::RED, LightColor::YELLOW, false);
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[12]) {
+        light_color_ = FlashLights(LightColor::RED, LightColor::WHITE, false);
+      } else if (auto_selection_queue.value()->auto_mode() == auto_list[13]) {
+        light_color_ = LightColor::WHITE;
+      } else {
+        light_color_ = FlashLights(LightColor::OFF, LightColor::PINK, false);
       }
     } else {
       light_color_ = FlashLights(LightColor::OFF, LightColor::PINK, false);

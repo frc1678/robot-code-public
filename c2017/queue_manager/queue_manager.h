@@ -3,6 +3,8 @@
 
 #include <thread>
 #include <functional>
+#include <vector>
+#include <string>
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
 #include "muan/logging/logger.h"
@@ -11,7 +13,8 @@
 #include "muan/wpilib/queue_types.h"
 #include "muan/teleop/queue_types.h"
 
-#include "c2017/webdash/server.h"
+#include "muan/webdash/queue_types.h"
+#include "muan/webdash/server.h"
 
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
 #include "c2017/subsystems/superstructure/ground_ball_intake/queue_types.h"
@@ -84,6 +87,8 @@ class QueueManager {
   muan::teleop::JoystickStatusQueue* throttle_status_queue();
   muan::teleop::XBoxRumbleQueue* xbox_rumble_queue();
 
+  const std::vector<std::string> auto_list_;
+
   void Reset();
 
  private:
@@ -137,7 +142,7 @@ class QueueManager {
   std::thread logger_thread_{std::ref(logger_)};
 #endif  // FRC1678_NO_QUEUE_LOGGING
 
-  c2017::webdash::WebDashRunner webdash_;
+  muan::webdash::WebDashRunner webdash_;
 };
 
 }  // namespace c2017

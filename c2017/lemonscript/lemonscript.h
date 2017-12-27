@@ -1,16 +1,19 @@
 #ifndef C2017_LEMONSCRIPT_LEMONSCRIPT_H_
 #define C2017_LEMONSCRIPT_LEMONSCRIPT_H_
 
-#include <string.h>
+#include <string>
 #include <atomic>
 #include <vector>
 #include "c2017/lemonscript/ls_gen.h"
+#include "c2017/queue_manager/queue_manager.h"
 #include "third_party/lemonscript/lemonscript/lemonscript.h"
 #include "third_party/lemonscript/lemonscript/AvailableCppCommandDeclaration.h"
 #include "third_party/lemonscript/lemonscript/LemonScriptCompiler.h"
 #include "third_party/aos/common/time.h"
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/aos/linux_code/init.h"
+#include "muan/webdash/queue_types.h"
+#include "muan/webdash/webdash.pb.h"
 #include "gflags/gflags.h"
 
 namespace c2017 {
@@ -23,15 +26,18 @@ class Lemonscript {
   Lemonscript();
   ~Lemonscript();
 
+  std::vector<std::string> auto_list;
+
   void operator()();
 
   void Start();  // Start running lemonscript
   void Stop();   // Pause running lemonscript
   void Kill();   // Stop the thread
+
  private:
   void UpdateAutoRoutine();
-  c2017::webdash::AutoSelectionQueue::QueueReader auto_selection_reader_ =
-      c2017::webdash::WebDashQueueWrapper::GetInstance().auto_selection_queue().MakeReader();
+  muan::webdash::AutoSelectionQueue::QueueReader auto_selection_reader_ =
+      muan::webdash::WebDashQueueWrapper::GetInstance().auto_selection_queue().MakeReader();
   ::lemonscript::LemonScriptState *state_;
   ::lemonscript::LemonScriptCompiler *compiler_;
   std::vector<const ::lemonscript::AvailableCppCommandDeclaration *> decls_;

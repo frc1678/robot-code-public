@@ -1,12 +1,14 @@
 #ifndef C2017_SUBSYSTEMS_LIGHTS_LIGHTS_H_
 #define C2017_SUBSYSTEMS_LIGHTS_LIGHTS_H_
 
+#include <string>
+#include <vector>
 #include "muan/wpilib/queue_types.h"
 #include "muan/units/units.h"
 #include "c2017/subsystems/lights/queue_types.h"
 #include "c2017/queue_manager/queue_manager.h"
-#include "c2017/webdash/queue_types.h"
-#include "c2017/webdash/webdash.pb.h"
+#include "muan/webdash/queue_types.h"
+#include "muan/webdash/webdash.pb.h"
 
 namespace c2017 {
 
@@ -26,6 +28,7 @@ enum class LightColor {
 class Lights {
  public:
   void Update();
+  std::vector<std::string> auto_list;
 
  private:
   LightColor light_color_;
