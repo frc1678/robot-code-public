@@ -1,5 +1,3 @@
-licenses(['permissive'])
-
 # This is a placeholder for python headers. Projects needing to use
 # fast cpp protos in protobuf's python interface should build with
 # --define=use_fast_cpp_protos=true, and in addition, provide

@@ -3,7 +3,7 @@
 package(default_visibility = ['//visibility:public'])
 licenses(['notice'])
 
-load('lemonscript', 'cc_lemonscript_library')
+load(':lemonscript.bzl', 'cc_lemonscript_library')
 
 py_binary(
   name = 'lemonscript_transpiler',

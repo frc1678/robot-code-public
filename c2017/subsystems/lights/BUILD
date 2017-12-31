@@ -1,4 +1,4 @@
-load("/third_party/google/protobuf/protobuf", "cc_proto_library")
+load("//third_party/google/protobuf:protobuf.bzl", "cc_proto_library")
 
 cc_library(
     name = "lights_queues",

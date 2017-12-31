@@ -175,6 +175,7 @@ def cc_proto_library(
         internal_bootstrap_hack=False,
         use_grpc_plugin=False,
         default_runtime="//:protobuf",
+        copts=["-Wno-unused-parameter", "-Wno-switch-enum"],
         **kargs):
   """Bazel rule to create a C++ protobuf library from proto source files
 
@@ -255,7 +256,7 @@ def cc_proto_library(
       hdrs=gen_hdrs,
       deps=cc_libs + deps,
       includes=includes,
-      copts=["-Wno-unused-parameter"],
+      copts=copts,
       **kargs)
 
 def internal_gen_well_known_protos_java(srcs):

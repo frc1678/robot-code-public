@@ -254,6 +254,8 @@ TEST(ShooterControllerTest, EncoderNeverPluggedIn) {
   c2017::shooter::ShooterController shooter_;
   goal->set_goal_velocity(300);
 
+  shooter_.SetGoal(goal);
+
   for (int i = 0; i <= c2017::shooter::kEncoderFaultTicksAllowed - 1; i++) {
     // Encoder unplugged, but it shouldn't be detected
     input->set_shooter_encoder_position(0);
@@ -266,7 +268,7 @@ TEST(ShooterControllerTest, EncoderNeverPluggedIn) {
   EXPECT_FALSE(status.value()->encoder_fault_detected());
   EXPECT_EQ(status.value()->state(), c2017::shooter::State::SPINUP);
 
-  for (int i = 0; i <= 10; i++) {
+  for (int i = 0; i <= 100; i++) {
     // Encoder fault should be detected
     input->set_shooter_encoder_position(0);
 
@@ -289,6 +291,8 @@ TEST(ShooterControllerTest, EncoderComesUnplugged) {
   c2017::shooter::ShooterController shooter_;
   goal->set_goal_velocity(300);
 
+  shooter_.SetGoal(goal);
+
   for (int i = 0; i <= 300; i++) {
     // Running normally
     input->set_shooter_encoder_position(i);
@@ -303,7 +307,7 @@ TEST(ShooterControllerTest, EncoderComesUnplugged) {
 
   for (int i = 0; i <= c2017::shooter::kEncoderFaultTicksAllowed - 1; i++) {
     // Encoder unplugged almost until allowed ticks
-    input->set_shooter_encoder_position(0);
+    input->set_shooter_encoder_position(300);
 
     output = shooter_.Update(input, true);
   }

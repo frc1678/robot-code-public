@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("/tools/cpp/toolchain_macros", "generate_cc_toolchains", "generate_cc_toolchain_suite")
+load("//tools/cpp:toolchain_macros.bzl", "generate_cc_toolchains", "generate_cc_toolchain_suite")
 
 cc_library(
     name = "malloc",

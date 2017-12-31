@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("/tools/select", "cpu_select")
+load("//tools:select.bzl", "cpu_select")
 
 cc_library(
     name = "libpthread",
