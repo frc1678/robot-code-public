@@ -1,0 +1,13 @@
+p, div {
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  width: 100%;
+}
+
+.box {
+  position: relative;
+  top: 10px;
+  width: 30px;
+  height: 30px;
+}

@@ -5,6 +5,7 @@
 #include <functional>
 #include <vector>
 #include <string>
+#include <fstream>
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
 #include "muan/logging/logger.h"
@@ -88,6 +89,8 @@ class QueueManager {
   muan::teleop::XBoxRumbleQueue* xbox_rumble_queue();
 
   const std::vector<std::string> auto_list_;
+  std::string display_object;
+  std::ifstream display_stream;
 
   void Reset();
 

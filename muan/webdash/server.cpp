@@ -15,9 +15,6 @@ WebDashQueueWrapper& WebDashQueueWrapper::GetInstance() {
 
 AutoSelectionQueue& WebDashQueueWrapper::auto_selection_queue() { return auto_selection_queue_; }
 
-// Dumb hack that will start to get really unwieldy as soon as we try to do
-// anything useful.
-// TODO(Wesley) Switch to json or ProtoBuf.js
 struct AutoChangeHandler : seasocks::WebSocket::Handler {
   void onConnect(seasocks::WebSocket* /*socket*/) override {}
 
@@ -72,6 +69,16 @@ void WebDashRunner::AutoListRequestHandler::onData(seasocks::WebSocket* con, con
   con->send(json_auto_list.c_str());
 }
 
+void WebDashRunner::DisplayRequestHandler::onData(seasocks::WebSocket* con, const char* /*data*/) {
+  std::string json_display = "";
+  json_display = *display_object_;
+  con->send(json_display.c_str());
+}
+
+void WebDashRunner::DisplayObjectMaker(const std::string display_object) {
+  display_object_ = display_object;
+}
+
 void WebDashRunner::operator()() {
   auto logger = std::make_shared<seasocks::PrintfLogger>();
   seasocks::Server server{logger};
@@ -79,6 +86,7 @@ void WebDashRunner::operator()() {
   server.addWebSocketHandler("/autolist", std::make_shared<AutoListRequestHandler>(auto_list_));
   server.addWebSocketHandler("/logname", std::make_shared<LogNameHandler>());
   server.addWebSocketHandler("/data", std::make_shared<DataRequestHandler>(queue_logs_));
+  server.addWebSocketHandler("/display", std::make_shared<DisplayRequestHandler>(&display_object_));
   server.serve("muan/webdash/www/", 5801);
 }
 

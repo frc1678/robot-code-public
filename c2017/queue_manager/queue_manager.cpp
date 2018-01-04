@@ -1,5 +1,6 @@
 #include <vector>
 #include <string>
+#include <fstream>
 #include "c2017/queue_manager/queue_manager.h"
 
 namespace c2017 {
@@ -100,6 +101,54 @@ void QueueManager::StartLogging() {
   };
 
   webdash_.AddAutos(&auto_list_);
+
+  std::string display_object =
+"{"
+"  \"widgets\": ["
+"    {"
+"      \"name\": \"Manipulator Button 1\","
+"      \"type\": \"boolean\","
+"      \"source\": [\"manipulator_status\", \"button1\"],"
+"      \"coordinates\": [1, 1],"
+"      \"colors\": {"
+"        \"if_true\": \"#00ff00\","
+"        \"if_false\": \"#ff0000\""
+"      }"
+"    },"
+"    {"
+"      \"name\": \"Shooter Speed\","
+"      \"type\": \"number\","
+"      \"source\": [\"shooter_status\", \"observedVelocity\"],"
+"      \"coordinates\": [0, 0],"
+"      \"min\": 0,"
+"      \"max\": 350,"
+"      \"goal\": [\"shooter_status\", \"observedVelocity\"],"
+"      \"colors\": {"
+"        \"min\": \"#000000\","
+"        \"max\": \"#000000\","
+"        \"goal\": \"#000000\""
+"      }"
+"    },"
+"    {"
+"      \"name\": \"Robot State\","
+"      \"type\": \"enum\","
+"      \"source\": [\"driver_station\", \"mode\"],"
+"      \"coordinates\": [1, 0],"
+"      \"names\": [0, 1, 2, 3],"
+"      \"colors\": {"
+"        \"0\": \"#FF0000\","
+"        \"1\": \"#0000FF\","
+"        \"2\": \"#00FF00\","
+"        \"3\": \"#FFFFFF\""
+"      }"
+"    }"
+"  ],"
+"  \"settings\": {"
+"    \"size\": [3, 3]"
+"  }"
+"}";
+
+  webdash_.DisplayObjectMaker(display_object);
 
   std::thread webdash_thread{std::ref(webdash_)};
   webdash_thread.detach();

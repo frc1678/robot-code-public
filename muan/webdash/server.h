@@ -37,6 +37,8 @@ class WebDashRunner {
 
   const std::vector<std::string> *auto_list_;
 
+  void DisplayObjectMaker(const std::string display_object);
+
   class GenericReader {
    public:
     virtual std::experimental::optional<std::string> GetMessageAsJSON() = 0;
@@ -88,6 +90,19 @@ class WebDashRunner {
     const std::vector<std::string> *auto_list_;
   };
 
+  struct DisplayRequestHandler : seasocks::WebSocket::Handler {
+   public:
+    void onConnect(seasocks::WebSocket * /*con*/) override{};
+    void onDisconnect(seasocks::WebSocket * /*con*/) override{};
+    void onData(seasocks::WebSocket *con, const char * /*data*/) override;
+
+    explicit DisplayRequestHandler(const std::string *display_object) : display_object_(display_object) {}
+
+   private:
+    const std::string *display_object_;
+  };
+
+  std::string display_object_;
   std::vector<std::unique_ptr<QueueLog>> queue_logs_;
 };
 

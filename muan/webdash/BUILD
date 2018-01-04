@@ -7,7 +7,9 @@ cc_binary(
     deps = [
         ":server",
         "//muan/teleop:joystick_queues",
+        "//c2017/subsystems/superstructure/shooter:shooter_queues",
     ],
+    data = [":webdash_html"],
 )
 
 filegroup(

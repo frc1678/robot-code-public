@@ -4,6 +4,7 @@
 #include "muan/teleop/joystick.h"
 #include "subsystems/subsystem_runner.h"
 #include "vision/robot/reader.h"
+#include "muan/webdash/server.h"
 
 class WpilibRobot : public IterativeRobot {
  public:
@@ -16,10 +17,12 @@ class WpilibRobot : public IterativeRobot {
  private:
   c2017::SubsystemRunner subsystem_runner_;
   c2017::vision::VisionReader vision_reader_;
-  c2017::citrus_robot::CitrusRobot main_;
 
   std::thread subsystem_thread{std::ref(subsystem_runner_)};
   std::thread vision_thread{std::ref(vision_reader_)};
+  muan::webdash::WebDashRunner webdash_runner_;
+
+  c2017::citrus_robot::CitrusRobot main_;
   std::thread citrus_robot_thread{std::ref(main_)};
 };
 
