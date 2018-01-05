@@ -12,9 +12,9 @@ using MagazineGoalProto = muan::proto::StackProto<::c2017::magazine::MagazineGoa
 using MagazineOutputProto = muan::proto::StackProto<::c2017::magazine::MagazineOutput, 256>;
 using MagazineStatusProto = muan::proto::StackProto<::c2017::magazine::MagazineStatus, 256>;
 
-using MagazineGoalQueue = muan::queues::MessageQueue<MagazineGoalProto, 200>;
-using MagazineOutputQueue = muan::queues::MessageQueue<MagazineOutputProto, 200>;
-using MagazineStatusQueue = muan::queues::MessageQueue<MagazineStatusProto, 200>;
+using MagazineGoalQueue = muan::queues::MessageQueue<MagazineGoalProto>;
+using MagazineOutputQueue = muan::queues::MessageQueue<MagazineOutputProto>;
+using MagazineStatusQueue = muan::queues::MessageQueue<MagazineStatusProto>;
 
 }  // namespace magazine
 }  // namespace c2017

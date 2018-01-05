@@ -16,10 +16,10 @@ using InputProto = muan::proto::StackProto<DrivetrainInput, 1024>;
 using OutputProto = muan::proto::StackProto<DrivetrainOutput, 1024>;
 using StatusProto = muan::proto::StackProto<DrivetrainStatus, 1024>;
 
-using GoalQueue = muan::queues::MessageQueue<GoalProto, 200>;
-using InputQueue = muan::queues::MessageQueue<InputProto, 200>;
-using OutputQueue = muan::queues::MessageQueue<OutputProto, 200>;
-using StatusQueue = muan::queues::MessageQueue<StatusProto, 200>;
+using GoalQueue = muan::queues::MessageQueue<GoalProto>;
+using InputQueue = muan::queues::MessageQueue<InputProto>;
+using OutputQueue = muan::queues::MessageQueue<OutputProto>;
+using StatusQueue = muan::queues::MessageQueue<StatusProto>;
 
 }  // namespace frc971
 

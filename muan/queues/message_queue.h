@@ -3,6 +3,7 @@
 
 #include <array>
 #include <cstdint>
+#include <memory>
 #include "muan/proto/stack_proto.h"
 #include "muan/utils/math_utils.h"
 #include "third_party/aos/common/mutex.h"
@@ -11,6 +12,11 @@
 namespace muan {
 
 namespace queues {
+
+class GenericQueue {
+ public:
+  virtual void Reset() = 0;
+};
 
 /*
  * A thread-safe FILO buffer to be used as a message-passing system for transfer
@@ -33,10 +39,10 @@ namespace queues {
  * and never decreases. This allows the queue to understand the ordering of
  * positions much more easily.
  */
-template <typename T, uint64_t size = 100>
-class MessageQueue {
+template <typename T>
+class MessageQueue : public GenericQueue {
  public:
-  MessageQueue() = default;
+  explicit MessageQueue(uint32_t size = 200);
   virtual ~MessageQueue() = default;
 
   // Enables moving, disables copying.
@@ -52,18 +58,31 @@ class MessageQueue {
   // Gets the most recent message from the queue.
   std::experimental::optional<T> ReadLastMessage() const;
 
+  // Populates out (if not `nullptr`) and returns `true` if a message exists.
+  bool ReadLastMessage(T* out) const;
+
   // Reset the queue to the empty state
-  void Reset();
+  void Reset() override;
 
   class QueueReader {
    public:
+    using MessageType = T;
+
     // Reads a single message from the queue or nullopt if there are no new
     // messages.
     std::experimental::optional<T> ReadMessage();
 
+    // Populates `*out` and returns true/false
+    bool ReadMessage(T* out);
+
     // Reads the last message from the queue or nullopt if there are no new
     // messages. Also marks all previous messages as read.
     std::experimental::optional<T> ReadLastMessage();
+
+    // Populates `*out` and returns true/false
+    bool ReadLastMessage(T* out);
+
+    // Same as above, but populating `*out` and returning true if message exists.
 
     // Allows move construction but not move assignment - it doesn't really make
     // sense to assign a queue to another queue.
@@ -104,7 +123,7 @@ class MessageQueue {
   // Gets the next message (or nullopt if all messages have been read) from the
   // position passed in. The parameter's value will be changed to the position
   // of the next valid message.
-  std::experimental::optional<T> NextMessage(uint64_t* next) const;
+  bool NextMessage(T* out, uint64_t* next) const;
 
   // Gets the index of the next message that is currently in memory. When current_message is in memory, this
   // function will return current_message. Otherwise, it will return the oldest message currently kept.
@@ -120,7 +139,8 @@ class MessageQueue {
 
   // A buffer and an index to implement a circular buffer. back_ is not in mod n
   // - that is, it keeps incrementing and never jumps back around to 0.
-  std::array<T, size> messages_;
+  std::unique_ptr<T[]> messages_;
+  uint64_t size_;
   uint64_t back_{0};
 
   // A lock for the entire queue. This mutex is used to protect access to back_

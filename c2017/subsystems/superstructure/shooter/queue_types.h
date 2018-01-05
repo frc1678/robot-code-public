@@ -14,8 +14,8 @@ using ShooterInputProto = muan::proto::StackProto<::c2017::shooter::ShooterInput
 using ShooterStatusProto = muan::proto::StackProto<::c2017::shooter::ShooterStatus, 256>;
 using ShooterOutputProto = muan::proto::StackProto<::c2017::shooter::ShooterOutput, 256>;
 
-using ShooterInputQueue = muan::queues::MessageQueue<ShooterInputProto, 200>;
-using ShooterStatusQueue = muan::queues::MessageQueue<ShooterStatusProto, 200>;
+using ShooterInputQueue = muan::queues::MessageQueue<ShooterInputProto>;
+using ShooterStatusQueue = muan::queues::MessageQueue<ShooterStatusProto>;
 
 }  // namespace shooter
 

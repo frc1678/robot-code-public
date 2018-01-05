@@ -31,7 +31,7 @@ namespace logging {
  *
  * Logger logger;
  *
- * MessageQueue<protobuf_class, 100> mq;
+ * MessageQueue<protobuf_class> mq(100);
  * logger.AddQueue("some_queue", mq.MakeReader());
  *
  * auto textlog = logger.GetTextLogger("log_name");

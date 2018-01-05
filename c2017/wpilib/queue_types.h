@@ -11,7 +11,7 @@ namespace wpilib {
 
 using WpilibOutputProto = muan::proto::StackProto<WpilibOutput, 1024>;
 
-using WpilibOutputQueue = muan::queues::MessageQueue<WpilibOutputProto, 1024>;
+using WpilibOutputQueue = muan::queues::MessageQueue<WpilibOutputProto>;
 
 }  // namespace wpilib
 

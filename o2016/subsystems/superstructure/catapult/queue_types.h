@@ -14,10 +14,10 @@ using CatapultStatusProto = muan::proto::StackProto<CatapultStatus, 1024>;
 using CatapultInputProto = muan::proto::StackProto<CatapultInput, 1024>;
 using CatapultGoalProto = muan::proto::StackProto<CatapultGoal, 1024>;
 
-using CatapultOutputQueue = muan::queues::MessageQueue<CatapultOutputProto, 100>;
-using CatapultStatusQueue = muan::queues::MessageQueue<CatapultStatusProto, 100>;
-using CatapultInputQueue = muan::queues::MessageQueue<CatapultInputProto, 100>;
-using CatapultGoalQueue = muan::queues::MessageQueue<CatapultGoalProto, 100>;
+using CatapultOutputQueue = muan::queues::MessageQueue<CatapultOutputProto>;
+using CatapultStatusQueue = muan::queues::MessageQueue<CatapultStatusProto>;
+using CatapultInputQueue = muan::queues::MessageQueue<CatapultInputProto>;
+using CatapultGoalQueue = muan::queues::MessageQueue<CatapultGoalProto>;
 
 }  // namespace catapult
 

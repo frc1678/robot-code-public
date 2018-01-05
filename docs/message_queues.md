@@ -5,7 +5,7 @@ We pass around a lot of data through message queues. This page gives a simple ex
 You can create a message queue object, for example:
 
 ```C++
-muan::queues::MessageQueue<std::string, 100> example_queue;
+muan::queues::MessageQueue<std::string> example_queue(100);
 ```
 
 That would be a queue of strings that can hold 100 strings at a time. You can write more than 100 messages to the queue, but once you go over 100 old messages will start to be deleted to make room for newer messages. In practice, messages getting deleted rarely matters.

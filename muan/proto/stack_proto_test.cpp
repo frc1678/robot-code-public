@@ -59,7 +59,7 @@ TEST(StackProto, ResetsOnAssign) {
 
 TEST(StackProto, Queueable) {
   // Make sure it works in a queue.
-  muan::queues::MessageQueue<muan::proto::StackProto<TestProto, 256>, 100> test_queue;
+  muan::queues::MessageQueue<muan::proto::StackProto<TestProto, 256>> test_queue;
   auto reader = test_queue.MakeReader();
 
   {

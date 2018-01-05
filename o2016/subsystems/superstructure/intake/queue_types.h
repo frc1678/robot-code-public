@@ -13,10 +13,10 @@ using IntakeInputProto = muan::proto::StackProto<IntakeInput, 1024>;
 using IntakeStatusProto = muan::proto::StackProto<IntakeStatus, 1024>;
 using IntakeGoalProto = muan::proto::StackProto<IntakeGoal, 1024>;
 
-using IntakeOutputQueue = muan::queues::MessageQueue<IntakeOutputProto, 100>;
-using IntakeInputQueue = muan::queues::MessageQueue<IntakeInputProto, 100>;
-using IntakeStatusQueue = muan::queues::MessageQueue<IntakeStatusProto, 100>;
-using IntakeGoalQueue = muan::queues::MessageQueue<IntakeGoalProto, 100>;
+using IntakeOutputQueue = muan::queues::MessageQueue<IntakeOutputProto>;
+using IntakeInputQueue = muan::queues::MessageQueue<IntakeInputProto>;
+using IntakeStatusQueue = muan::queues::MessageQueue<IntakeStatusProto>;
+using IntakeGoalQueue = muan::queues::MessageQueue<IntakeGoalProto>;
 
 }  // namespace intake
 }  // namespace o2016

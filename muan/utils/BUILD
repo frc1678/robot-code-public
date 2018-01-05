@@ -126,3 +126,25 @@ cc_test(
         "//third_party/google/googletest:googletest"
     ],
 )
+
+cc_library(
+    name = "hash",
+    srcs = ["hash.cpp"],
+    hdrs = ["hash.h"],
+)
+
+cc_library(
+    name = "string_utils",
+    srcs = ["string_utils.cpp"],
+    hdrs = ["string_utils.h"],
+    linkstatic = 1,
+)
+
+cc_test(
+    name = "string_utils_test",
+    srcs = ["string_utils_test.cpp"],
+    deps = [
+        ":string_utils",
+        "//third_party/google/googletest:googletest",
+    ],
+)

@@ -40,6 +40,8 @@ void ProtoFailOnBlockFree(void*, size_t);
 template <typename T, std::size_t size>
 class StackProto {
  public:
+  using ProtoType = T;
+
   StackProto() : arena_(GetOptions()) { proto_message_ = google::protobuf::Arena::CreateMessage<T>(&arena_); }
   virtual ~StackProto() = default;
 

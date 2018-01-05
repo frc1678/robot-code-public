@@ -8,9 +8,22 @@ cc_library(
     linkstatic = 1,
     deps = [
         "//muan/utils:math_utils",
+        "//muan/utils:hash",
         "//muan/proto:stack_proto",
         "//third_party/aos/common:mutex",
         "//third_party/optional",
+    ],
+)
+
+cc_library(
+    name = "queue_manager",
+    srcs = ["queue_manager.cpp"],
+    hdrs = ["queue_manager.h"],
+    deps = [
+        ":queues",
+        "//muan/utils:string_utils",
+        "//muan/logging:logger",
+        "//muan/webdash:server",
     ],
 )
 
@@ -26,6 +39,7 @@ cc_test(
     srcs = ["message_queue_test.cpp"],
     deps = [
         ":queues",
+        ":queue_manager",
         ":queue_test_proto",
         "//muan/proto:stack_proto",
         "//third_party/google/googletest",

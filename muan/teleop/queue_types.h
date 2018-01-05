@@ -10,11 +10,11 @@ namespace teleop {
 
 using JoystickStatusProto = muan::proto::StackProto<JoystickStatus, 512>;
 
-using JoystickStatusQueue = muan::queues::MessageQueue<JoystickStatusProto, 512>;
+using JoystickStatusQueue = muan::queues::MessageQueue<JoystickStatusProto>;
 
 using XBoxRumbleProto = muan::proto::StackProto<XBoxRumble, 512>;
 
-using XBoxRumbleQueue = muan::queues::MessageQueue<XBoxRumbleProto, 512>;
+using XBoxRumbleQueue = muan::queues::MessageQueue<XBoxRumbleProto>;
 }  // namespace teleop
 }  // namespace muan
 

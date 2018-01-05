@@ -17,7 +17,7 @@ class PdpWrapper {
 
   using PdpMessage = muan::proto::StackProto<PdpStatus, 512>;
 
-  using Queue = muan::queues::MessageQueue<PdpMessage, 100>;
+  using Queue = muan::queues::MessageQueue<PdpMessage>;
   void SetQueue(Queue* pdp_queue);
 
  private:

@@ -22,7 +22,7 @@ class WebDashQueueWrapper {
   muan::webdash::AutoSelectionQueue &auto_selection_queue();
 
  private:
-  muan::webdash::AutoSelectionQueue auto_selection_queue_;
+  muan::webdash::AutoSelectionQueue auto_selection_queue_{100};
 };
 
 class WebDashRunner {

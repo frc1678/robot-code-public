@@ -32,7 +32,7 @@ TEST(Logger, LogsOneMessage) {
 
   Logger logger(std::move(writer));
 
-  MessageQueue<muan::proto::StackProto<logging_test::Test1, 256>, 100> mq;
+  MessageQueue<muan::proto::StackProto<logging_test::Test1, 256>> mq(100);
   muan::proto::StackProto<logging_test::Test1, 256> msg;
   msg->set_thing(42);
   mq.WriteMessage(msg);
@@ -49,7 +49,7 @@ TEST(Logger, LogsManyMessages) {
 
   Logger logger(std::move(writer));
 
-  MessageQueue<muan::proto::StackProto<logging_test::Test1, 256>, 100> mq;
+  MessageQueue<muan::proto::StackProto<logging_test::Test1, 256>> mq(100);
   for (int i = 1; i <= 42; i++) {
     muan::proto::StackProto<logging_test::Test1, 256> msg;
     msg->set_thing(42);
@@ -68,13 +68,13 @@ TEST(Logger, LogsMultipleQueues) {
 
   Logger logger(std::move(writer));
 
-  MessageQueue<muan::proto::StackProto<logging_test::Test1, 256>, 100> mq1;
+  MessageQueue<muan::proto::StackProto<logging_test::Test1, 256>> mq1(100);
   muan::proto::StackProto<logging_test::Test1, 256> msg1;
   msg1->set_thing(42);
   mq1.WriteMessage(msg1);
   logger.AddQueue("testqueue1", &mq1);
 
-  MessageQueue<muan::proto::StackProto<logging_test::Test1, 256>, 100> mq2;
+  MessageQueue<muan::proto::StackProto<logging_test::Test1, 256>> mq2(100);
   muan::proto::StackProto<logging_test::Test1, 256> msg2;
   msg2->set_thing(42);
   mq2.WriteMessage(msg2);
@@ -91,7 +91,7 @@ TEST(Logger, LogsManyMessagesPerTick) {
 
   Logger logger(std::move(writer));
 
-  MessageQueue<muan::proto::StackProto<logging_test::Test1, 256>, 20000> mq;
+  MessageQueue<muan::proto::StackProto<logging_test::Test1, 256>> mq(20000);
   logger.AddQueue("testqueue", &mq);
 
   for (int n = 1; n <= 10; n++) {
@@ -108,10 +108,10 @@ TEST(Logger, DiesOnDuplicateQueues) {
   std::unique_ptr<muan::logging::MockFileWriter> writer = std::make_unique<muan::logging::MockFileWriter>();
   Logger logger(std::move(writer));
 
-  MessageQueue<muan::proto::StackProto<logging_test::Test1, 256>, 10> mq1;
+  MessageQueue<muan::proto::StackProto<logging_test::Test1, 256>> mq1(10);
   logger.AddQueue("testqueue", &mq1);
 
-  MessageQueue<muan::proto::StackProto<logging_test::Test1, 256>, 25> mq2;
+  MessageQueue<muan::proto::StackProto<logging_test::Test1, 256>> mq2(25);
   ASSERT_DEATH(logger.AddQueue("testqueue", &mq2), "with same name \"testqueue\"");
 }
 

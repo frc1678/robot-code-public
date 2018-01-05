@@ -13,10 +13,10 @@ using TurretInputProto = muan::proto::StackProto<::o2016::turret::TurretInput, 1
 using TurretStatusProto = muan::proto::StackProto<::o2016::turret::TurretStatus, 100>;
 using TurretOutputProto = muan::proto::StackProto<::o2016::turret::TurretOutput, 100>;
 
-using TurretInputQueue = muan::queues::MessageQueue<TurretInputProto, 200>;
-using TurretGoalQueue = muan::queues::MessageQueue<TurretGoalProto, 200>;
-using TurretOutputQueue = muan::queues::MessageQueue<TurretOutputProto, 200>;
-using TurretStatusQueue = muan::queues::MessageQueue<TurretStatusProto, 200>;
+using TurretInputQueue = muan::queues::MessageQueue<TurretInputProto>;
+using TurretGoalQueue = muan::queues::MessageQueue<TurretGoalProto>;
+using TurretOutputQueue = muan::queues::MessageQueue<TurretOutputProto>;
+using TurretStatusQueue = muan::queues::MessageQueue<TurretStatusProto>;
 
 }  // namespace turret
 }  // namespace o2016

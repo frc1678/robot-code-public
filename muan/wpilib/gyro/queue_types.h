@@ -12,7 +12,7 @@ namespace wpilib {
 namespace gyro {
 
 using GyroMessageProto = muan::proto::StackProto<GyroMessage, 256>;
-using GyroQueue = muan::queues::MessageQueue<GyroMessageProto, 200>;
+using GyroQueue = muan::queues::MessageQueue<GyroMessageProto>;
 
 }  // namespace gyro
 

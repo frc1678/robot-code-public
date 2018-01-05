@@ -6,7 +6,7 @@
 class BuildTestRobot : public RobotBase {
  public:
   void StartCompetition() override {
-    muan::wpilib::PdpWrapper::Queue pdp_queue;
+    muan::wpilib::PdpWrapper::Queue pdp_queue(200);
     auto pdp_reader = pdp_queue.MakeReader();
     muan::wpilib::CanWrapper can{&pdp_queue};
     std::thread can_thread{std::ref(can)};

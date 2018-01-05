@@ -13,7 +13,7 @@ namespace intake_group {
 
 using IntakeGroupGoalProto = muan::proto::StackProto<IntakeGroupGoal, 256>;
 
-using IntakeGroupGoalQueue = muan::queues::MessageQueue<IntakeGroupGoalProto, 200>;
+using IntakeGroupGoalQueue = muan::queues::MessageQueue<IntakeGroupGoalProto>;
 
 }  // namespace intake_group
 
@@ -21,14 +21,14 @@ namespace shooter_group {
 
 using ShooterGroupGoalProto = muan::proto::StackProto<::c2017::shooter_group::ShooterGroupGoal, 256>;
 
-using ShooterGroupGoalQueue = muan::queues::MessageQueue<ShooterGroupGoalProto, 200>;
+using ShooterGroupGoalQueue = muan::queues::MessageQueue<ShooterGroupGoalProto>;
 
 }  // namespace shooter_group
 
 namespace superstructure {
 using SuperstructureStatusProto = muan::proto::StackProto<SuperstructureStatus, 256>;
 
-using SuperstructureStatusQueue = muan::queues::MessageQueue<SuperstructureStatusProto, 200>;
+using SuperstructureStatusQueue = muan::queues::MessageQueue<SuperstructureStatusProto>;
 }  // namespace superstructure
 
 }  // namespace c2017

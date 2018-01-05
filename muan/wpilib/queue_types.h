@@ -11,7 +11,7 @@ namespace wpilib {
 
 using DriverStationProto = muan::proto::StackProto<DriverStationStatus, 256>;
 
-using DriverStationQueue = muan::queues::MessageQueue<DriverStationProto, 200>;
+using DriverStationQueue = muan::queues::MessageQueue<DriverStationProto>;
 
 }  // namespace wpilib
 

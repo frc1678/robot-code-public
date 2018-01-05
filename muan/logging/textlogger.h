@@ -26,14 +26,14 @@ class TextLogger {
     const std::string* thread_name;
   };
 
-  using LogQueue = muan::queues::MessageQueue<LogCall, 500>;
+  using LogQueue = muan::queues::MessageQueue<LogCall>;
 
   LogQueue::QueueReader MakeReader();
 
  private:
   // Write a stamp that traces where and when the log is from
   void Stamp(std::ostream& out, uint64_t time, const char* filename, int line);
-  LogQueue log_calls_;
+  LogQueue log_calls_{500};
 };
 
 // Helper function to write a parameter pack to an ostream

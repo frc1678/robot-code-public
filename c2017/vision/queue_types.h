@@ -12,9 +12,9 @@ using VisionInputProto = muan::proto::StackProto<VisionInput, 256>;
 using VisionStatusProto = muan::proto::StackProto<VisionStatus, 256>;
 using VisionGoalProto = muan::proto::StackProto<VisionGoal, 256>;
 
-using VisionInputQueue = muan::queues::MessageQueue<VisionInputProto, 100>;
-using VisionStatusQueue = muan::queues::MessageQueue<VisionStatusProto, 100>;
-using VisionGoalQueue = muan::queues::MessageQueue<VisionGoalProto, 100>;
+using VisionInputQueue = muan::queues::MessageQueue<VisionInputProto>;
+using VisionStatusQueue = muan::queues::MessageQueue<VisionStatusProto>;
+using VisionGoalQueue = muan::queues::MessageQueue<VisionGoalProto>;
 
 }  // namespace vision
 }  // namespace c2017

@@ -10,7 +10,7 @@ namespace lights {
 
 using LightsOutputProto = muan::proto::StackProto<LightsOutput, 1024>;
 
-using LightsOutputQueue = muan::queues::MessageQueue<LightsOutputProto, 100>;
+using LightsOutputQueue = muan::queues::MessageQueue<LightsOutputProto>;
 
 }  // namespace lights
 }  // namespace c2017

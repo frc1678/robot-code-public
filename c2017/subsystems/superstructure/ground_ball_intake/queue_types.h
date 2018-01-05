@@ -13,7 +13,7 @@ using GroundBallIntakeOutputProto = muan::proto::StackProto<GroundBallIntakeOutp
 using GroundBallIntakeStatusProto = muan::proto::StackProto<GroundBallIntakeStatus, 256>;
 using GroundBallIntakeGoalProto = muan::proto::StackProto<GroundBallIntakeGoal, 256>;
 
-using GroundBallIntakeStatusQueue = muan::queues::MessageQueue<GroundBallIntakeStatusProto, 100>;
+using GroundBallIntakeStatusQueue = muan::queues::MessageQueue<GroundBallIntakeStatusProto>;
 
 }  // namespace ground_ball_intake
 

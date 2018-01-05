@@ -6,8 +6,8 @@ using namespace muan::actions;  // NOLINT
 
 class DrivetrainActionTest : public ::testing::Test {
  protected:
-  frc971::control_loops::drivetrain::GoalQueue goal_queue;
-  frc971::control_loops::drivetrain::StatusQueue status_queue;
+  frc971::control_loops::drivetrain::GoalQueue goal_queue{100};
+  frc971::control_loops::drivetrain::StatusQueue status_queue{100};
 
   void WriteStatus(double left, double right, double left_profile = 0.0, double right_profile = 0.0) {
     frc971::control_loops::drivetrain::StatusProto status;
