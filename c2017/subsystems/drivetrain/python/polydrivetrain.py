@@ -128,10 +128,11 @@ class VelocityDrivetrainModel(control_loop.ControlLoop):
     # FF * X = U (steady state)
     self.FF = self.B.I * (numpy.eye(2) - self.A)
 
-    self.PlaceControllerPoles([0.83, 0.83])
+    self.PlaceControllerPoles([0.67, 0.67])
     self.PlaceObserverPoles([0.02, 0.02])
 
-    self.gear = self._drivetrain.gear
+    self.G_high = self._drivetrain.G_high
+    self.G_low = self._drivetrain.G_low
     self.resistance = self._drivetrain.resistance
     self.r = self._drivetrain.r
     self.Kv = self._drivetrain.Kv
@@ -202,8 +203,12 @@ class VelocityDrivetrain(object):
     return gear is VelocityDrivetrain.HIGH or gear is VelocityDrivetrain.LOW
 
   def MotorRPM(self, shifter_position, velocity):
-    return (velocity / self.CurrentDrivetrain().gear /
-          self.CurrentDrivetrain().r)
+    if shifter_position > 0.5:
+      return (velocity / self.CurrentDrivetrain().G_high /
+              self.CurrentDrivetrain().r)
+    else:
+      return (velocity / self.CurrentDrivetrain().G_low /
+              self.CurrentDrivetrain().r)
 
   def CurrentDrivetrain(self):
     if self.left_shifter_position > 0.5:
@@ -231,12 +236,17 @@ class VelocityDrivetrain(object):
     return gear, shifter_position
 
   def ComputeGear(self, wheel_velocity, should_print=False, current_gear=False, gear_name=None):
-    omega = (wheel_velocity / self.CurrentDrivetrain().gear /
+    high_omega = (wheel_velocity / self.CurrentDrivetrain().G_high /
                   self.CurrentDrivetrain().r)
+    low_omega = (wheel_velocity / self.CurrentDrivetrain().G_low /
+                 self.CurrentDrivetrain().r)
     #print gear_name, "Motor Energy Difference.", 0.5 * 0.000140032647 * (low_omega * low_omega - high_omega * high_omega), "joules"
-    torque = ((12.0 - omega / self.CurrentDrivetrain().Kv) *
+    high_torque = ((12.0 - high_omega / self.CurrentDrivetrain().Kv) *
+                   self.CurrentDrivetrain().Kt / self.CurrentDrivetrain().resistance)
+    low_torque = ((12.0 - low_omega / self.CurrentDrivetrain().Kv) *
                   self.CurrentDrivetrain().Kt / self.CurrentDrivetrain().resistance)
-    power = low_torque * omega
+    high_power = high_torque * high_omega
+    low_power = low_torque * low_omega
     #if should_print:
     #  print gear_name, "High omega", high_omega, "Low omega", low_omega
     #  print gear_name, "High torque", high_torque, "Low torque", low_torque

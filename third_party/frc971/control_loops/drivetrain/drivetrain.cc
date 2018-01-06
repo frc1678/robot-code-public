@@ -31,7 +31,8 @@ DrivetrainLoop::DrivetrainLoop(
       dt_config_(dt_config),
       kf_(dt_config_.make_kf_drivetrain_loop()),
       dt_openloop_(dt_config_, &kf_),
-      dt_closedloop_(dt_config_, &kf_, &integrated_kf_heading_),
+      cartesian_position_(Eigen::Matrix<double, 2, 1>::Zero()),
+      dt_closedloop_(dt_config_, &kf_, &integrated_kf_heading_, &cartesian_position_),
       left_gear_(dt_config_.default_high_gear ? Gear::kHighGear
                                               : Gear::kLowGear),
       right_gear_(dt_config_.default_high_gear ? Gear::kHighGear
@@ -156,7 +157,7 @@ void DrivetrainLoop::RunIteration(
   bool control_loop_driving = false;
   if (goal) {
     // TODO(Kyle) Check this condition
-    control_loop_driving = (*goal)->has_distance_command();
+    control_loop_driving = (*goal)->has_distance_command() || (*goal)->has_path_command();
 
     dt_closedloop_.SetGoal(*goal);
     dt_openloop_.SetGoal(*goal);
@@ -171,6 +172,13 @@ void DrivetrainLoop::RunIteration(
     dt_openloop_.SetOutput(output);
     // TODO(austin): Set profile to current spot.
     dt_closedloop_.Update(false);
+  }
+
+  {
+    Eigen::Matrix<double, 2, 1> linear =
+        dt_closedloop_.LeftRightToLinear(kf_.X_hat());
+    cartesian_position_(0) += linear(1) * ::std::cos(integrated_kf_heading_) * 0.005;
+    cartesian_position_(1) += linear(1) * ::std::sin(integrated_kf_heading_) * 0.005;
   }
 
   // The output should now contain the shift request.
@@ -202,6 +210,9 @@ void DrivetrainLoop::RunIteration(
     (*status)->set_right_voltage_error(kf_.X_hat(5, 0));
     (*status)->set_estimated_angular_velocity_error(kf_.X_hat(6, 0));
     (*status)->set_estimated_heading(integrated_kf_heading_);
+
+    (*status)->set_estimated_x_position(cartesian_position_(0));
+    (*status)->set_estimated_y_position(cartesian_position_(1));
 
     dt_openloop_.PopulateStatus(status);
     dt_closedloop_.PopulateStatus(status);

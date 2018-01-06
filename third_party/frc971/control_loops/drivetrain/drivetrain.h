@@ -58,6 +58,8 @@ class DrivetrainLoop {
 
   const DrivetrainConfig dt_config_;
 
+  Eigen::Matrix<double, 2, 1> cartesian_position_;
+
   StateFeedbackLoop<7, 2, 3> kf_;
   PolyDrivetrain dt_openloop_;
   DrivetrainMotorsSS dt_closedloop_;

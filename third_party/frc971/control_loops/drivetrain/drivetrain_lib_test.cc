@@ -392,7 +392,7 @@ TEST_F(DrivetrainTest, LinearToAngularAndBack) {
   StateFeedbackLoop<7, 2, 3> kf(
       GetDrivetrainConfig().make_kf_drivetrain_loop());
   double kf_heading = 0;
-  DrivetrainMotorsSS drivetrain_ss(GetDrivetrainConfig(), &kf, &kf_heading);
+  DrivetrainMotorsSS drivetrain_ss(GetDrivetrainConfig(), &kf, &kf_heading, nullptr);
 
   const double width = GetDrivetrainConfig().robot_radius * 2.0;
 
@@ -567,6 +567,64 @@ TEST_F(DrivetrainTest, OpenLoopThenClosed) {
     EXPECT_LT((*output)->right_voltage(), 6);
   }
   VerifyNearGoal();
+}
+
+
+TEST_F(DrivetrainTest, CartesianEstimation) {
+  ::frc971::control_loops::drivetrain::GoalProto goal;
+  goal->mutable_distance_command()->set_left_goal(2.0);
+  goal->mutable_distance_command()->set_right_goal(2.0);
+
+  goal_queue_.WriteMessage(goal);
+
+  RunForTime(::std::chrono::seconds(6));
+
+  double r = ::third_party::frc971::control_loops::drivetrain::y2016::kRobotRadius;
+  goal->mutable_distance_command()->set_left_goal(2.0 - r * M_PI / 2.0);
+  goal->mutable_distance_command()->set_right_goal(2.0 + r * M_PI / 2.0);
+
+  goal_queue_.WriteMessage(goal);
+
+  RunForTime(::std::chrono::seconds(6));
+  VerifyNearGoal();
+
+  goal->mutable_distance_command()->set_left_goal(2.0 - r * M_PI / 2.0 + 1.0);
+  goal->mutable_distance_command()->set_right_goal(2.0 + r * M_PI / 2.0 + 1.0);
+
+  goal_queue_.WriteMessage(goal);
+
+  RunForTime(::std::chrono::seconds(5));
+
+  {
+    auto maybe_status = status_queue_.ReadLastMessage();
+    ASSERT_TRUE(maybe_status);
+    ::frc971::control_loops::drivetrain::StatusProto status = *maybe_status;
+    EXPECT_NEAR(status->estimated_x_position(), 2.0, 1e-3);
+    EXPECT_NEAR(status->estimated_y_position(), 1.0, 1e-3);
+  }
+}
+
+TEST_F(DrivetrainTest, PathDrive) {
+  ::frc971::control_loops::drivetrain::GoalProto goal;
+  goal->mutable_path_command()->set_x_goal(1.0);
+  goal->mutable_path_command()->set_y_goal(1.0);
+  goal->mutable_path_command()->set_theta_goal(0.0);
+
+  goal->mutable_linear_constraints()->set_max_velocity(1.0);
+  goal->mutable_linear_constraints()->set_max_acceleration(1.0);
+  goal->mutable_angular_constraints()->set_max_velocity(1.0);
+  goal->mutable_angular_constraints()->set_max_acceleration(1.0);
+
+  goal_queue_.WriteMessage(goal);
+  RunForTime(::std::chrono::seconds(5));
+  {
+    auto maybe_status = status_queue_.ReadLastMessage();
+    ASSERT_TRUE(maybe_status);
+    ::frc971::control_loops::drivetrain::StatusProto status = *maybe_status;
+    EXPECT_NEAR(status->estimated_x_position(), 1.0, 1e-1);
+    EXPECT_NEAR(status->estimated_y_position(), 1.0, 1e-1);
+    EXPECT_NEAR(status->estimated_heading(), 0.0, 1e-2);
+  }
 }
 
 ::aos::controls::HVPolytope<2, 4, 4> MakeBox(double x1_min, double x1_max,

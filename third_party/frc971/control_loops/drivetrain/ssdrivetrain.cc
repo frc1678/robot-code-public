@@ -119,7 +119,8 @@ void DrivetrainMotorsSS::PolyCapU(Eigen::Matrix<double, 2, 1> *U) {
 
 DrivetrainMotorsSS::DrivetrainMotorsSS(const DrivetrainConfig &dt_config,
                                        StateFeedbackLoop<7, 2, 3> *kf,
-                                       double *integrated_kf_heading)
+                                       double *integrated_kf_heading,
+                                       Eigen::Matrix<double, 2, 1>* cartesian_position)
     : dt_config_(dt_config),
       kf_(kf),
       U_poly_((Eigen::Matrix<double, 4, 2>() << /*[[*/ 1, 0 /*]*/,
@@ -134,7 +135,8 @@ DrivetrainMotorsSS::DrivetrainMotorsSS(const DrivetrainConfig &dt_config,
                /*[*/ -12, 12, 12, -12 /*]*/).finished()),
       linear_profile_(kLoopFrequency),
       angular_profile_(kLoopFrequency),
-      integrated_kf_heading_(integrated_kf_heading) {
+      integrated_kf_heading_(integrated_kf_heading),
+      cartesian_position_(cartesian_position) {
   ::aos::controls::HPolytope<0>::Init();
   T_ << 1, 1, 1, -1;
   T_inverse_ = T_.inverse();
@@ -144,30 +146,50 @@ DrivetrainMotorsSS::DrivetrainMotorsSS(const DrivetrainConfig &dt_config,
 void DrivetrainMotorsSS::SetGoal(
     const ::frc971::control_loops::drivetrain::GoalProto &goal) {
   // This is only valid if we're actually using a distance goal
-  if (!goal->has_distance_command()) {
-    return;
-  }
-  auto distance_goal = goal->distance_command();
-  unprofiled_goal_ << distance_goal.left_goal(),
-      distance_goal.left_velocity_goal(), distance_goal.right_goal(),
-      distance_goal.right_velocity_goal(), 0.0, 0.0, 0.0;
+  if (goal->has_distance_command()) {
+    auto distance_goal = goal->distance_command();
+    unprofiled_goal_ << distance_goal.left_goal(),
+        distance_goal.left_velocity_goal(), distance_goal.right_goal(),
+        distance_goal.right_velocity_goal(), 0.0, 0.0, 0.0;
 
-  use_profile_ =
-      !kf_->Kff().isZero(0) &&
-      (goal->has_linear_constraints() && goal->has_angular_constraints() &&
-       goal->linear_constraints().max_velocity() != 0.0 &&
-       goal->linear_constraints().max_acceleration() != 0.0 &&
-       goal->angular_constraints().max_velocity() != 0.0 &&
-       goal->angular_constraints().max_acceleration() != 0.0);
-  if (use_profile_) {
-    linear_profile_.set_maximum_velocity(
-        goal->linear_constraints().max_velocity());
-    linear_profile_.set_maximum_acceleration(
-        goal->linear_constraints().max_acceleration());
-    angular_profile_.set_maximum_velocity(
-        goal->angular_constraints().max_velocity());
-    angular_profile_.set_maximum_acceleration(
-        goal->angular_constraints().max_acceleration());
+    use_profile_ =
+        !kf_->Kff().isZero(0) &&
+        (goal->has_linear_constraints() && goal->has_angular_constraints() &&
+         goal->linear_constraints().max_velocity() != 0.0 &&
+         goal->linear_constraints().max_acceleration() != 0.0 &&
+         goal->angular_constraints().max_velocity() != 0.0 &&
+         goal->angular_constraints().max_acceleration() != 0.0);
+    if (use_profile_) {
+      linear_profile_.set_maximum_velocity(
+          goal->linear_constraints().max_velocity());
+      linear_profile_.set_maximum_acceleration(
+          goal->linear_constraints().max_acceleration());
+      angular_profile_.set_maximum_velocity(
+          goal->angular_constraints().max_velocity());
+      angular_profile_.set_maximum_acceleration(
+          goal->angular_constraints().max_acceleration());
+    }
+  } else if (goal->has_path_command()) {
+    use_path_ = true;
+    auto path_goal = goal->path_command();
+    trajectory_.set_maximum_velocity(goal->linear_constraints().max_velocity());
+    trajectory_.set_maximum_acceleration(goal->linear_constraints().max_acceleration());
+    trajectory_.set_maximum_angular_velocity(goal->angular_constraints().max_velocity());
+    trajectory_.set_maximum_angular_acceleration(goal->angular_constraints().max_acceleration());
+
+    CHECK_GT(goal->linear_constraints().max_velocity(), 0.0);
+    CHECK_GT(goal->linear_constraints().max_acceleration(), 0.0);
+    CHECK_GT(goal->angular_constraints().max_velocity(), 0.0);
+    CHECK_GT(goal->angular_constraints().max_acceleration(), 0.0);
+
+    paths::Pose initial_pose(*cartesian_position_, *integrated_kf_heading_);
+    paths::Pose final_pose((Eigen::Vector3d() << path_goal.x_goal(), path_goal.y_goal(), path_goal.theta_goal()).finished());
+    if (last_goal_pose_.Get() != final_pose.Get()) {
+      paths::HermitePath path(initial_pose, final_pose);
+      trajectory_.SetPath(path);
+
+      last_goal_pose_ = final_pose;
+    }
   }
 }
 
@@ -222,6 +244,10 @@ void DrivetrainMotorsSS::Update(bool enable_control_loop) {
                                            unprofiled_linear(1, 0));
       next_angular = angular_profile_.Update(unprofiled_angular(0, 0),
                                              unprofiled_angular(1, 0));
+    } else if (use_path_) {
+      paths::Trajectory::Sample sample = trajectory_.Update();
+      next_linear = sample.drivetrain_state.block<2, 1>(0, 0);
+      next_angular = sample.drivetrain_state.block<2, 1>(2, 0);
     } else {
       next_angular = unprofiled_angular;
       next_linear = unprofiled_linear;
@@ -243,7 +269,7 @@ void DrivetrainMotorsSS::Update(bool enable_control_loop) {
     kf_->mutable_next_R(0, 0) -= wheel_compensation_offset;
     kf_->mutable_next_R(2, 0) += wheel_compensation_offset;
 
-    if (!use_profile_) {
+    if (!(use_profile_ || use_path_)) {
       kf_->mutable_R() = kf_->next_R();
     } else {
       kf_->mutable_R(0, 0) -= scaled_angle_delta;

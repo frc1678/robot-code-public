@@ -46,6 +46,7 @@ cc_library(
     '//third_party/aos/common:math',
     '//third_party/frc971/control_loops:coerce_goal',
     '//third_party/frc971/control_loops:state_feedback_loop',
+    '//third_party/frc971/control_loops/paths:trajectory',
   ],
 )
 

@@ -27,8 +27,8 @@ const DrivetrainConfig &GetDrivetrainConfig() {
       subsystems::drivetrain::kWheelRadius,
       subsystems::drivetrain::kV,
 
-      subsystems::drivetrain::kGearRatio,
-      subsystems::drivetrain::kGearRatio,
+      subsystems::drivetrain::kHighGearRatio,
+      subsystems::drivetrain::kLowGearRatio,
       true,
       0.0};
 

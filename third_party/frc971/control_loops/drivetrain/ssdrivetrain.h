@@ -9,6 +9,7 @@
 #include "third_party/frc971/control_loops/drivetrain/drivetrain_config.h"
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
 #include "third_party/frc971/control_loops/state_feedback_loop.h"
+#include "third_party/frc971/control_loops/paths/trajectory.h"
 
 namespace frc971 {
 namespace control_loops {
@@ -16,9 +17,8 @@ namespace drivetrain {
 
 class DrivetrainMotorsSS {
  public:
-  DrivetrainMotorsSS(const DrivetrainConfig &dt_config,
-                     StateFeedbackLoop<7, 2, 3> *kf,
-                     double *integrated_kf_heading);
+  DrivetrainMotorsSS(const DrivetrainConfig &dt_config, StateFeedbackLoop<7, 2, 3> *kf,
+                     double *integrated_kf_heading, Eigen::Matrix<double, 2, 1> *cartesian_position);
 
   void SetGoal(const ::frc971::control_loops::drivetrain::GoalProto &goal);
 
@@ -31,23 +31,18 @@ class DrivetrainMotorsSS {
 
   bool output_was_capped() const { return output_was_capped_; }
 
-  void SetOutput(
-      ::frc971::control_loops::drivetrain::OutputProto *output) const;
-  void PopulateStatus(
-      ::frc971::control_loops::drivetrain::StatusProto *status) const;
+  void SetOutput(::frc971::control_loops::drivetrain::OutputProto *output) const;
+  void PopulateStatus(::frc971::control_loops::drivetrain::StatusProto *status) const;
 
   // Converts the robot state to a linear distance position, velocity.
-  Eigen::Matrix<double, 2, 1> LeftRightToLinear(
-      const Eigen::Matrix<double, 7, 1> &left_right) const;
+  Eigen::Matrix<double, 2, 1> LeftRightToLinear(const Eigen::Matrix<double, 7, 1> &left_right) const;
   // Converts the robot state to an anglular distance, velocity.
-  Eigen::Matrix<double, 2, 1> LeftRightToAngular(
-      const Eigen::Matrix<double, 7, 1> &left_right) const;
+  Eigen::Matrix<double, 2, 1> LeftRightToAngular(const Eigen::Matrix<double, 7, 1> &left_right) const;
 
   // Converts the linear and angular position, velocity to the top 4 states of
   // the robot state.
-  Eigen::Matrix<double, 4, 1> AngularLinearToLeftRight(
-      const Eigen::Matrix<double, 2, 1> &linear,
-      const Eigen::Matrix<double, 2, 1> &angular) const;
+  Eigen::Matrix<double, 4, 1> AngularLinearToLeftRight(const Eigen::Matrix<double, 2, 1> &linear,
+                                                       const Eigen::Matrix<double, 2, 1> &angular) const;
 
  private:
   void PolyCapU(Eigen::Matrix<double, 2, 1> *U);
@@ -72,8 +67,14 @@ class DrivetrainMotorsSS {
   bool output_was_capped_ = false;
 
   bool use_profile_ = false;
+  bool use_path_ = false;
+
+  paths::Trajectory trajectory_;
 
   double *integrated_kf_heading_;
+  Eigen::Matrix<double, 2, 1> *cartesian_position_;
+
+  paths::Pose last_goal_pose_;
 };
 
 }  // namespace drivetrain

@@ -41,16 +41,23 @@ message DrivetrainGoal {
     required double right_velocity_goal = 4;
   }
 
+  message PathCommand {
+    required double x_goal = 1;
+    required double y_goal = 2;
+    required double theta_goal = 3;
+  }
+
   required Gear gear = 2;
 
   oneof command {
     TeleopCommand teleop_command = 3;
     VelocityCommand velocity_command = 4;
     DistanceCommand distance_command = 5;
+    PathCommand path_command = 6;
   }
 
-  optional MotionProfileConstraints linear_constraints = 6;
-  optional MotionProfileConstraints angular_constraints = 7;
+  optional MotionProfileConstraints linear_constraints = 7;
+  optional MotionProfileConstraints angular_constraints = 8;
 }
 
 message DrivetrainInput {
@@ -107,6 +114,9 @@ message DrivetrainStatus {
   // The KF estimated heading.
   required double estimated_heading = 18;
 
+  required double estimated_x_position = 19;
+  required double estimated_y_position = 20;
+
   // True if the output voltage was capped last cycle.
-  required bool output_was_capped = 19;
+  required bool output_was_capped = 21;
 }

@@ -60,7 +60,18 @@ void CitrusRobot::Update() {
   if (maybe_ds_status) {
     auto ds_status = maybe_ds_status.value();
     if (ds_status->mode() == RobotMode::AUTONOMOUS) {
-      lemonscript_.Start();  // Weird to call Start in a loop, but it's a setter so it's fine
+      // lemonscript_.Start();  // Weird to call Start in a loop, but it's a setter so it's fine
+      ::frc971::control_loops::drivetrain::GoalProto dt_goal;
+      dt_goal->mutable_path_command()->set_x_goal(1.5);
+      dt_goal->mutable_path_command()->set_y_goal(-0.0);
+      dt_goal->mutable_path_command()->set_theta_goal(2.0);
+
+      dt_goal->mutable_linear_constraints()->set_max_velocity(3.0);
+      dt_goal->mutable_linear_constraints()->set_max_acceleration(3.0);
+      dt_goal->mutable_angular_constraints()->set_max_velocity(3.0);
+      dt_goal->mutable_angular_constraints()->set_max_acceleration(3.0);
+
+      QueueManager::GetInstance()->drivetrain_goal_queue()->WriteMessage(dt_goal);
     } else if (ds_status->mode() == RobotMode::TELEOP) {
       lemonscript_.Stop();  // Weirder to do this, but it works :/
 
