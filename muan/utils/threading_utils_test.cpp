@@ -37,10 +37,12 @@ TEST(DeferCall, Defers) {
 
 TEST(DeferCall, Copyable) {
   muan::utils::DeferCall<int, 128> f1;
-  muan::utils::DeferCall<int, 128> f2([](){ return 42; });
+
+  muan::utils::DeferCall<int, 128> f2(TestF, 3);
+
   f1 = f2;
-  EXPECT_EQ(f1(), 42);
-  EXPECT_EQ(f2(), 42);
+  EXPECT_EQ(f1(), 9);
+  EXPECT_EQ(f2(), 9);
 }
 
 TEST(DeferCall, Curry) {

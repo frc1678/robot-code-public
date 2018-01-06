@@ -111,23 +111,9 @@ toolchain {
   # to be fixed, maybe with auto-detection?
   cxx_builtin_include_directory: "/usr/arm-frc-linux-gnueabi/usr/include"
 
-  cxx_builtin_include_directory: "/usr/arm-frc-linux-gnueabi/include/c++/4.9.1"
-  cxx_builtin_include_directory: "/usr/lib/gcc/arm-frc-linux-gnueabi/4.9.1/include"
-  cxx_builtin_include_directory: "/usr/lib/gcc/arm-frc-linux-gnueabi/4.9.1/include-fixed"
-  cxx_builtin_include_directory: "/usr/lib/x86_64-linux-gnu/gcc/arm-frc-linux-gnueabi/4.9.1/include"
-  cxx_builtin_include_directory: "/usr/lib/x86_64-linux-gnu/gcc/arm-frc-linux-gnueabi/4.9.1/include-fixed"
-
-  cxx_builtin_include_directory: "/usr/arm-frc-linux-gnueabi/include/c++/4.9.3"
-  cxx_builtin_include_directory: "/usr/lib/gcc/arm-frc-linux-gnueabi/4.9.3/include"
-  cxx_builtin_include_directory: "/usr/lib/gcc/arm-frc-linux-gnueabi/4.9.3/include-fixed"
-  cxx_builtin_include_directory: "/usr/lib/x86_64-linux-gnu/gcc/arm-frc-linux-gnueabi/4.9.3/include"
-  cxx_builtin_include_directory: "/usr/lib/x86_64-linux-gnu/gcc/arm-frc-linux-gnueabi/4.9.3/include-fixed"
-
-  cxx_builtin_include_directory: "/usr/arm-frc-linux-gnueabi/include/c++/4.9.4"
-  cxx_builtin_include_directory: "/usr/lib/gcc/arm-frc-linux-gnueabi/4.9.4/include"
-  cxx_builtin_include_directory: "/usr/lib/gcc/arm-frc-linux-gnueabi/4.9.4/include-fixed"
-  cxx_builtin_include_directory: "/usr/lib/x86_64-linux-gnu/gcc/arm-frc-linux-gnueabi/4.9.4/include"
-  cxx_builtin_include_directory: "/usr/lib/x86_64-linux-gnu/gcc/arm-frc-linux-gnueabi/4.9.4/include-fixed"
+  cxx_builtin_include_directory: "/usr/arm-frc-linux-gnueabi/include/c++"
+  cxx_builtin_include_directory: "/usr/lib/gcc/arm-frc-linux-gnueabi"
+  cxx_builtin_include_directory: "/usr/lib/x86_64-linux-gnu/gcc/arm-frc-linux-gnueabi"
 
   tool_path { name: "gcov" path: "/usr/bin/gcov" }
 
@@ -252,10 +238,10 @@ toolchain {
   # absolute locations and has no remote execution, yet. However, this will need
   # to be fixed, maybe with auto-detection?
   cxx_builtin_include_directory: "/usr/local/arm-frc-linux-gnueabi/usr/include"
-  cxx_builtin_include_directory: "/usr/local/arm-frc-linux-gnueabi/include/c++/4.9.3"
-  cxx_builtin_include_directory: "/usr/local/lib/gcc/arm-frc-linux-gnueabi/4.9.3/include"
+  cxx_builtin_include_directory: "/usr/local/arm-frc-linux-gnueabi/include/c++"
+  cxx_builtin_include_directory: "/usr/local/lib/gcc/arm-frc-linux-gnueabi"
   cxx_builtin_include_directory: "/usr/local/arm-frc-linux-gnueabi/usr/include"
-  cxx_builtin_include_directory: "/usr/local/lib/gcc/arm-frc-linux-gnueabi/4.9.3/include-fixed"
+  cxx_builtin_include_directory: "/usr/local/lib/gcc/arm-frc-linux-gnueabi"
   tool_path { name: "gcov" path: "/usr/local/bin/arm-frc-linux-gnueabi-gcov" }
 
   # C(++) compiles invoke the compiler (as that is the one knowing where
