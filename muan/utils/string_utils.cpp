@@ -4,7 +4,7 @@ namespace muan {
 
 namespace utils {
 
-// Convert CamelCase to snake_case
+// Convert CamelCase to snake_case, returning string length
 std::size_t CamelToSnake(const char* bytes_in, std::size_t num_bytes_in, char* bytes_out,
                          std::size_t num_bytes_out) {
   std::size_t writer_idx = 0;
@@ -25,6 +25,7 @@ std::size_t CamelToSnake(const char* bytes_in, std::size_t num_bytes_in, char* b
     }
     writer_idx++;
   }
+  bytes_out[writer_idx] = '\0';
   return writer_idx;
 }
 
