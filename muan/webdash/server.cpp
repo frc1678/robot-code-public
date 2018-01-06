@@ -6,7 +6,13 @@
 namespace muan {
 namespace webdash {
 
-void WebDashRunner::AddAutos(const std::vector<std::string>* auto_list) { auto_list_ = auto_list; }
+void WebDashRunner::AddAutos(const std::vector<std::string> more_autos) {
+  auto_list_.insert(auto_list_.end(), more_autos.begin(), more_autos.end());
+}
+
+void WebDashRunner::AddVideoStream(std::string video_stream) {
+  video_stream_list_.push_back(video_stream);
+}
 
 WebDashQueueWrapper& WebDashQueueWrapper::GetInstance() {
   static WebDashQueueWrapper instance;
@@ -57,7 +63,7 @@ void WebDashRunner::DataRequestHandler::onData(seasocks::WebSocket* con, const c
 void WebDashRunner::AutoListRequestHandler::onData(seasocks::WebSocket* con, const char* /*data*/) {
   std::string json_auto_list = "[\"";
   bool first_auto = true;
-  for (auto auto_name : *auto_list_) {
+  for (auto auto_name : auto_list_) {
     if (!first_auto) {
       json_auto_list += ", \"";
     } else {
@@ -67,6 +73,31 @@ void WebDashRunner::AutoListRequestHandler::onData(seasocks::WebSocket* con, con
   }
   json_auto_list += "]";
   con->send(json_auto_list.c_str());
+}
+
+void WebDashRunner::VideoListRequestHandler::onData(seasocks::WebSocket* con, const char* /*data*/) {
+  std::string json_video_list = "[\"";
+  bool first_video = true;
+  for (auto video_name : video_list_) {
+    if (!first_video) {
+      json_video_list += ", \"";
+    } else {
+      first_video = false;
+    }
+    json_video_list += video_name + "\"";
+  }
+  json_video_list += "]";
+  con->send(json_video_list.c_str());
+}
+
+void WebDashRunner::WebDashModeRequestHandler::onData(seasocks::WebSocket* con, const char* /*data*/) {
+  if (mode_ == ROBORIO) {
+    con->send("Roborio");
+  } else if (mode_ == JETSON) {
+    con->send("Jetson");
+  } else {
+    con->send("Undefined");
+  }
 }
 
 void WebDashRunner::DisplayRequestHandler::onData(seasocks::WebSocket* con, const char* /*data*/) {
@@ -84,8 +115,10 @@ void WebDashRunner::operator()() {
   seasocks::Server server{logger};
   server.addWebSocketHandler("/auto", std::make_shared<AutoChangeHandler>());
   server.addWebSocketHandler("/autolist", std::make_shared<AutoListRequestHandler>(auto_list_));
+  server.addWebSocketHandler("/videolist", std::make_shared<VideoListRequestHandler>(video_stream_list_));
   server.addWebSocketHandler("/logname", std::make_shared<LogNameHandler>());
   server.addWebSocketHandler("/data", std::make_shared<DataRequestHandler>(queue_logs_));
+  server.addWebSocketHandler("/webdashmode", std::make_shared<WebDashModeRequestHandler>(kMode));
   server.addWebSocketHandler("/display", std::make_shared<DisplayRequestHandler>(&display_object_));
   server.serve("muan/webdash/www/", 5801);
 }

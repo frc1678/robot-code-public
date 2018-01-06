@@ -12,10 +12,12 @@
   <script>
     var datasock = new WebSocket("ws://" + document.location.host + "/data");
 
+    var videolistsock = new WebSocket("ws://" + document.location.host + "/videolist");
+
     var has_made_list = false;
 
     function MakeList(data) {
-      var text = "Click on any item to show all fields:<br/><ul class=\"collapsibleList\">";
+      var text = "Click on any item to show all fields:<br/><ul id=\"lists\" class=\"collapsibleList\">";
       for (var key in data) {
         text += "<li>" + key + "<ul class=\"collapsibleList\">";
         for (var element in data[key]) {
@@ -29,6 +31,7 @@
     }
 
     var graph_data_list = {};
+    var video_streams = [];
 
     function UpdateList(data) {
       for (var key in data) {
@@ -74,6 +77,29 @@
         UpdateList(json_data);
       }
     };
+
+    videolistsock.onmessage = function(data) {
+      var streams = JSON.parse(data.data);
+      if (streams.length == 0) {
+        return;
+      }
+      var element = document.getElementById("lists");
+      if (element == undefined) {
+        setTimeout(function(){ videolistsock.onmessage(data); }, 100);
+        return;
+      }
+      var html_string = "<li>video streams<ul class=\"collapsibleList\">";
+      for (var stream of streams) {
+        html_string += "<li><a href=\"http://" + document.location.hostname + ":5802/" + stream + ".mjpeg\">" + stream + "</a></li>";
+      }
+      html_string += "</ul></li>";
+      element.innerHTML = html_string + element.innerHTML;
+      CollapsibleLists.apply();
+    };
+
+    videolistsock.onopen = function(stream) {
+      videolistsock.send("ping");
+    }
 
     function ReadData() {
       datasock.send("ping");

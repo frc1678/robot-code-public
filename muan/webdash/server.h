@@ -25,17 +25,22 @@ class WebDashQueueWrapper {
   muan::webdash::AutoSelectionQueue auto_selection_queue_{100};
 };
 
+enum WebDashMode {
+  ROBORIO,
+  JETSON
+};
+
 class WebDashRunner {
  public:
-  WebDashRunner() = default;
+  explicit WebDashRunner(WebDashMode mode = ROBORIO) : kMode{mode} {};
   ~WebDashRunner() = default;
 
   template <class T>
   void AddQueue(const std::string &name, T *queue);
 
-  void AddAutos(const std::vector<std::string> *auto_list);
+  void AddAutos(const std::vector<std::string> more_autos);
 
-  const std::vector<std::string> *auto_list_;
+  void AddVideoStream(std::string video_stream);
 
   void DisplayObjectMaker(const std::string display_object);
 
@@ -84,10 +89,36 @@ class WebDashRunner {
     void onDisconnect(seasocks::WebSocket * /*con*/) override{};
     void onData(seasocks::WebSocket *con, const char * /*data*/) override;
 
-    explicit AutoListRequestHandler(const std::vector<std::string> *auto_list) : auto_list_(auto_list) {}
+    explicit AutoListRequestHandler(const std::vector<std::string> auto_list) : auto_list_(auto_list) {}
 
    private:
-    const std::vector<std::string> *auto_list_;
+    const std::vector<std::string> auto_list_;
+  };
+
+  struct VideoListRequestHandler : seasocks::WebSocket::Handler {
+   public:
+    std::set<seasocks::WebSocket *> cons_;
+
+    void onConnect(seasocks::WebSocket * /*con*/) override{};
+    void onDisconnect(seasocks::WebSocket * /*con*/) override{};
+    void onData(seasocks::WebSocket *con, const char * /*data*/) override;
+
+    explicit VideoListRequestHandler(const std::vector<std::string> video_list) : video_list_(video_list) {}
+
+   private:
+    const std::vector<std::string> video_list_;
+  };
+
+  struct WebDashModeRequestHandler : seasocks::WebSocket::Handler {
+   public:
+    void onConnect(seasocks::WebSocket * /*con*/) override{};
+    void onDisconnect(seasocks::WebSocket * /*con*/) override{};
+    void onData(seasocks::WebSocket *con, const char * /*data*/) override;
+
+    explicit WebDashModeRequestHandler(WebDashMode mode) : mode_{mode} {}
+
+   private:
+    const WebDashMode mode_;
   };
 
   struct DisplayRequestHandler : seasocks::WebSocket::Handler {
@@ -104,6 +135,9 @@ class WebDashRunner {
 
   std::string display_object_;
   std::vector<std::unique_ptr<QueueLog>> queue_logs_;
+  const WebDashMode kMode;
+  std::vector<std::string> auto_list_;
+  std::vector<std::string> video_stream_list_;
 };
 
 }  // namespace webdash

@@ -68,7 +68,10 @@
       var enumerator_id = "";
       for (widget of display_carryover["widgets"]) {
         coords = (widget["coordinates"][0]).toString() + "_" + (widget["coordinates"][1]).toString();
-        var source = data[widget["source"][0]][widget["source"][1]];
+        var source = null;
+        if (widget["type"] != "image") {
+          var source = data[widget["source"][0]][widget["source"][1]];
+        }
 
         // Creates boolean widgets, colored box
         if (widget["type"] == "boolean") {
@@ -136,6 +139,15 @@
           document.getElementById(bar_id).innerHTML = "<div style=width:" + number_percentage + 
                                                       ";background-color:" + color + 
                                                       ";position:absolute;height:100%;float:right;text-align:right;opacity:.7;left:0px></div>";
+        }
+
+        if (widget["type"] == "image") {
+          image_id = "image" + coords;
+          if (!document.getElementById(image_id)) { 
+            document.getElementById(coords).innerHTML += "<div id=" + image_id + "></div>";
+          }
+          document.getElementById(image_id).innerHTML = "<img src=\"http://" + document.location.hostname + ":5802/" + widget["source"] + ".mjpeg\"" +
+                                                        "alt=\"Unable to read stream\">";
         }
       }
     }

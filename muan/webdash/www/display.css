@@ -5,6 +5,11 @@ p, div {
   width: 100%;
 }
 
+img {
+  border: 2px solid black;
+  /* TODO(Lyra): prevent image from overflowing */
+}
+
 .box {
   position: relative;
   top: 10px;

@@ -14,11 +14,11 @@ int main() {
   c2017::shooter::ShooterStatusProto shooter_status_proto;
   shooter_status_queue.WriteMessage(shooter_status_proto);
 
-  muan::webdash::WebDashRunner runner;
+  muan::webdash::WebDashRunner runner(muan::webdash::ROBORIO);
   const std::vector<std::string> auto_list = {"test_auto", "teacher_assistant", "torque_anger"};
   runner.AddQueue("joystick_status", &joystick_status_queue);
   runner.AddQueue("shooter_status", &shooter_status_queue);
-  runner.AddAutos(&auto_list);
+  runner.AddAutos(auto_list);
   std::string display_object =
     "{"
     "  \"widgets\": ["
