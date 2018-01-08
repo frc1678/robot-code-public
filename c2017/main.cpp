@@ -28,7 +28,7 @@ class WpilibRobot : public IterativeRobot {
 
 int main(int argc, char **argv) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
-  if (!HAL_Initialize(0)) {
+  if (!HAL_Initialize(500, 0)) {
     std::cerr << "FATAL ERROR: HAL could not be initialized" << std::endl;
     return -1;
   }

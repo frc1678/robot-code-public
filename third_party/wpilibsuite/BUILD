@@ -3,28 +3,34 @@ licenses(['permissive'])
 cc_library(
   name = 'wpiutil',
   srcs = glob([
-    'ntcore/wpiutil/src/**/*.cpp',
+    'wpiutil/src/main/native/cpp/**/*.cpp',
+    'wpiutil/src/main/native/cpp/**/*.h',
+    'wpiutil/src/main/native/cpp/**/*.inc',
   ]),
   hdrs = glob([
-    'ntcore/wpiutil/include/**/*.h',
+    'wpiutil/src/main/native/include/**/*.h',
+    'wpiutil/src/main/native/include/**/*.inl',
   ]),
   includes = [
-    'ntcore/wpiutil/include',
+    'wpiutil/src/main/native/include/',
   ]
 )
 
 cc_library(
   name = 'ntcore',
   srcs = glob([
-    'ntcore/src/**/*.cpp',
-    'ntcore/src/**/*.h',
+    'ntcore/src/main/native/cpp/**/*.cpp',
+    # 'ntcore/src/main/native/cpp/**/*.c',
+    'ntcore/src/main/native/cpp/**/*.h',
+  ], exclude = [
+    'ntcore/src/main/native/cpp/jni/**/*',
   ]),
   hdrs = glob([
-    'ntcore/include/**/*.h',
+    'ntcore/src/main/native/include/**/*.h',
+    'ntcore/src/main/native/include/**/*.inl',
   ]),
   includes = [
-    'ntcore/include',
-    'ntcore/include/support',
+    'ntcore/src/main/native/include/',
   ],
   deps = [':wpiutil'],
   linkstatic = 1,
@@ -33,18 +39,7 @@ cc_library(
 
 cc_library(
   name = 'ni_libraries',
-  srcs = [ 'allwpilib/ni-libraries/lib/%s' % s for s in [
-    'libFRC_NetworkCommunication.so.17.0.0',
-    'libRoboRIO_FRC_ChipObject.so.17.0.0',
-    'libNiFpgaLv.so.16.0.0',
-    'libNiFpga.so.16.0.0',
-    'libNiRioSrv.so.16.0.0',
-    'libspi.so.1.0.0',
-    'libi2c.so.2.0.0',
-    'libvisa.so',
-    'libniriosession.so.16.0.0',
-    'libniriodevenum.so.16.0.0',
-  ]],
+  srcs = glob(['allwpilib/ni-libraries/lib/*']),
   hdrs = glob([
     'allwpilib/ni-libraries/include/**/*.h',
   ]),
@@ -55,19 +50,16 @@ cc_library(
 cc_library(
   name = 'hal',
   srcs = glob([
-    'allwpilib/hal/lib/**/*.cpp',
-    'allwpilib/hal/lib/**/*.h',
-    'allwpilib/ntcore/wpiutil/include/**/*.h',
+    'allwpilib/hal/src/main/native/athena/**/*.cpp',
+    'allwpilib/hal/src/main/native/shared/**/*.cpp',
+    'allwpilib/hal/src/main/native/athena/**/*.c',
+    'allwpilib/hal/src/main/native/athena/**/*.h',
   ]),
   hdrs = glob([
-    'allwpilib/hal/include/**/*.h',
-    'allwpilib/hal/include/**/*.hpp',
+    'allwpilib/hal/src/main/native/include/**/*.h',
   ]),
   includes = [
-    'allwpilib/hal/include',
-    'allwpilib/hal/lib/athena/FRC_FPGA_ChipObject',
-    'allwpilib/hal/lib/athena',
-    'ntcore/wpiutil/include',
+    'allwpilib/hal/src/main/native/include/',
   ],
   linkopts = [
     '-lpthread',
@@ -76,24 +68,36 @@ cc_library(
   deps = [':ni_libraries', ':wpiutil']
 )
 
+genrule(
+  name = 'wpilib_version',
+  srcs = [],
+  outs = ['WPILibVersion.cpp'],
+  cmd = """echo '
+#include "WPILibVersion.h"
+const char* GetWPILibVersion() {
+  return "2018.1.1";
+}
+' > '$@'""",
+)
+
 cc_library(
   name = 'wpilib',
   srcs = glob([
-    'allwpilib/wpilibc/athena/src/**/*.cpp',
-    'allwpilib/wpilibc/shared/src/**/*.cpp',
+    'allwpilib/wpilibc/src/main/native/cpp/**/*.cpp',
   ], exclude = [
-    'allwpilib/wpilibc/athena/src/CameraServer.cpp',
-    'allwpilib/wpilibc/athena/src/USBCamera.cpp',
-  ]),
+    'allwpilib/wpilibc/src/main/native/cpp/CameraServer.cpp',
+    'allwpilib/wpilibc/src/main/native/cpp/USBCamera.cpp',
+    'allwpilib/wpilibc/src/main/native/cpp/vision/VisionRunner.cpp'
+  ]) + ['WPILibVersion.cpp'],
   hdrs = glob([
-    'allwpilib/wpilibc/athena/include/**/*',
-    'allwpilib/wpilibc/shared/include/**/*',
+    'allwpilib/wpilibc/src/main/native/include/**/*.h',
+    'allwpilib/wpilibc/src/main/native/include/**/*.inc',
   ], exclude = [
-    'allwpilib/wpilibc/athena/include/CameraServer.h',
+    'allwpilib/wpilibc/src/main/native/include/CameraServer.h',
+    'allwpilib/wpilibc/src/main/native/include/vision/VisionRunner.h'
   ]),
   includes = [
-    'allwpilib/wpilibc/athena/include',
-    'allwpilib/wpilibc/shared/include',
+    'allwpilib/wpilibc/src/main/native/include/',
   ],
   linkopts = [
     '-lpthread',

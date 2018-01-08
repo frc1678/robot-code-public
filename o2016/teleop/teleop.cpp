@@ -36,7 +36,7 @@ void Teleop::SendDSMessage() {
   }
 
   status->set_battery_voltage(DriverStation::GetInstance().GetBatteryVoltage());
-  status->set_brownout(DriverStation::GetInstance().IsBrownedOut());
+  status->set_brownout(RobotController::IsBrownedOut());
   status->set_has_ds_connection(DriverStation::GetInstance().IsDSAttached());
 
   o2016::QueueManager::GetInstance().driver_station_queue().WriteMessage(status);

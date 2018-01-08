@@ -22,7 +22,7 @@ void DriverStationSender::Send() {
   }
 
   status->set_battery_voltage(DriverStation::GetInstance().GetBatteryVoltage());
-  status->set_brownout(DriverStation::GetInstance().IsBrownedOut());
+  status->set_brownout(RobotController::IsBrownedOut());
   status->set_has_ds_connection(DriverStation::GetInstance().IsDSAttached());
 
   status->set_match_time(DriverStation::GetInstance().GetMatchTime());
@@ -30,7 +30,7 @@ void DriverStationSender::Send() {
       static_cast<DriverStationStatus::Alliance>(DriverStation::GetInstance().GetAlliance()));
   status->set_driver_station_position(DriverStation::GetInstance().GetLocation());
   status->set_has_fms_connection(DriverStation::GetInstance().IsFMSAttached());
-  status->set_is_sys_active(DriverStation::GetInstance().IsSysActive());
+  status->set_is_sys_active(RobotController::IsSysActive());
 
   queue_->WriteMessage(status);
 }

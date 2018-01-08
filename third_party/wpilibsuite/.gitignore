@@ -18,3 +18,5 @@ ntcore/appveyor.yml
 ntcore/doc
 ntcore/java
 ntcore/gmock
+
+wpiutil/gmock
