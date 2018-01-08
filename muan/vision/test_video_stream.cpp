@@ -2,7 +2,7 @@
 #include <string>
 #include <thread>
 #include "muan/webdash/server.h"
-#include "muan/webdash/video_stream.h"
+#include "muan/vision/video_stream.h"
 
 int main() {
   cv::VideoCapture cap(0);

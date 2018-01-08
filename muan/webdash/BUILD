@@ -12,15 +12,6 @@ cc_binary(
     data = [":webdash_html"],
 )
 
-cc_binary(
-    name = "test_video_stream",
-    srcs = ["test_video_stream.cpp"],
-    deps = [
-      ":server",
-      ":video_stream",
-    ],
-    linkopts = ["-lopencv_imgproc"],
-)
 
 filegroup(
     name = "webdash_html",
@@ -40,24 +31,6 @@ cc_library(
         ":webdash_queues",
     ],
     data = [":webdash_html"],
-)
-
-cc_library(
-    name = "video_stream",
-    srcs = ["video_stream.cpp"],
-    hdrs = ["video_stream.h"],
-    deps = [
-        ":server",
-        ":webdash_queues",
-        "//third_party/optional:optional",
-        "//third_party/aos/common:die",
-        "//third_party/aos/common/util:phased_loop",
-        "//muan/queues:queues",
-    ],
-    linkopts = [
-        "-lopencv_core",
-        "-lopencv_highgui",
-    ],
 )
 
 cc_proto_library(

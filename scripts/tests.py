@@ -60,6 +60,8 @@ def main():
 
     for target in targets:
         vision_exclude_string = get_exclude_string(target[1], "//muan/vision")
+        vision_exclude_string += " "
+        vision_exclude_string += get_exclude_string(target[1], "//muan/vision:video_stream")
         if args.no_vision:
             vision_excludes = vision_exclude_string
         else:

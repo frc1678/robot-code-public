@@ -8,7 +8,10 @@ cc_library(
         "-lopencv_imgproc",
         "-lopencv_core",
     ],
-    deps = [":config_proto"],
+    deps = [
+        "@opencv//:opencv",
+        ":config_proto",
+    ],
     visibility = ["//visibility:public"],
 )
 
@@ -26,6 +29,34 @@ cc_binary(
         "//third_party/gflags",
         ":config_proto",
         ":vision",
+    ],
+)
+
+cc_binary(
+    name = "test_video_stream",
+    srcs = ["test_video_stream.cpp"],
+    deps = [
+      "//muan/webdash:server",
+      ":video_stream",
+    ],
+    linkopts = ["-lopencv_imgproc"],
+)
+
+cc_library(
+    name = "video_stream",
+    srcs = ["video_stream.cpp"],
+    hdrs = ["video_stream.h"],
+    deps = [
+        "//muan/webdash:server",
+        "//muan/webdash:webdash_queues",
+        "//third_party/optional:optional",
+        "//third_party/aos/common:die",
+        "//third_party/aos/common/util:phased_loop",
+        "//muan/queues:queues",
+    ],
+    linkopts = [
+        "-lopencv_core",
+        "-lopencv_highgui",
     ],
 )
 
