@@ -6,7 +6,7 @@
 namespace muan {
 namespace webdash {
 
-void WebDashRunner::AddAutos(const std::vector<std::string> more_autos) {
+void WebDashRunner::AddAutos(const std::vector<std::string>& more_autos) {
   auto_list_.insert(auto_list_.end(), more_autos.begin(), more_autos.end());
 }
 

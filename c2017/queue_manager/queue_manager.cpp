@@ -100,7 +100,7 @@ void QueueManager::StartLogging() {
     "TWO_GEAR"
   };
 
-  webdash_.AddAutos(&auto_list_);
+  webdash_.AddAutos(auto_list_);
 
   std::string display_object =
 "{"

@@ -1,5 +1,5 @@
-#ifndef MUAN_WEBDASH_VIDEO_STREAM_H_
-#define MUAN_WEBDASH_VIDEO_STREAM_H_
+#ifndef MUAN_VISION_VIDEO_STREAM_H_
+#define MUAN_VISION_VIDEO_STREAM_H_
 
 #include <netinet/in.h>
 #include <poll.h>
@@ -61,4 +61,4 @@ class WebDashStreamer {
 }  // namespace webdash
 }  // namespace muan
 
-#endif  // MUAN_WEBDASH_VIDEO_STREAM_H_
+#endif  // MUAN_VISION_VIDEO_STREAM_H_
