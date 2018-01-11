@@ -10,8 +10,10 @@ namespace muan {
 namespace wpilib {
 
 using DriverStationProto = muan::proto::StackProto<DriverStationStatus, 256>;
-
 using DriverStationQueue = muan::queues::MessageQueue<DriverStationProto>;
+
+using PdpMessage = muan::proto::StackProto<PdpStatus, 512>;
+using PdpQueue = muan::queues::MessageQueue<PdpMessage>;
 
 }  // namespace wpilib
 

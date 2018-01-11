@@ -20,7 +20,6 @@ class WpilibRobot : public IterativeRobot {
 
   std::thread subsystem_thread{std::ref(subsystem_runner_)};
   std::thread vision_thread{std::ref(vision_reader_)};
-  muan::webdash::WebDashRunner webdash_runner_;
 
   c2017::citrus_robot::CitrusRobot main_;
   std::thread citrus_robot_thread{std::ref(main_)};
@@ -28,10 +27,12 @@ class WpilibRobot : public IterativeRobot {
 
 int main(int argc, char **argv) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
+
   if (!HAL_Initialize(500, 0)) {
     std::cerr << "FATAL ERROR: HAL could not be initialized" << std::endl;
     return -1;
   }
+
   HAL_Report(HALUsageReporting::kResourceType_Language, HALUsageReporting::kLanguage_CPlusPlus);
   static WpilibRobot robot;
   std::printf("Robot program starting\n");

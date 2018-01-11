@@ -3,7 +3,6 @@
 namespace generic_robot {
 
 void QueueManager::StartLogging() {
-#ifndef FRC1678_NO_QUEUE_LOGGING
   // Logging
   logger_.AddQueue("pdp_status", &pdp_status_queue_);
   logger_.AddQueue("driver_station", &driver_station_queue_);
@@ -36,7 +35,9 @@ void QueueManager::StartLogging() {
 
   std::thread webdash_thread{std::ref(webdash_)};
   webdash_thread.detach();
-#endif  // FRC1678_NO_QUEUE_LOGGING
+
+  std::thread logger_thread{std::ref(logger_)};
+  logger_thread.detach();
 }
 
 QueueManager* QueueManager::GetInstance() {

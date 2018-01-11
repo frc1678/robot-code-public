@@ -1,14 +1,13 @@
 #include "muan/queues/queue_manager.h"
+#include <memory>
 #include <thread>
 #include <vector>
 
 namespace muan {
 namespace queues {
 
-#ifndef FRC1678_NO_QUEUE_LOGGING
-logging::Logger logger;
-#endif  // FRC1678_NO_QUEUE_LOGGING
-webdash::WebDashRunner webdash;
+std::unique_ptr<logging::Logger> logger;
+std::unique_ptr<webdash::WebDashRunner> webdash;
 
 std::vector<GenericQueue*> all_queues_all_types;
 aos::Mutex all_queues_all_types_lock;
@@ -20,20 +19,15 @@ void ResetAllQueues() {
   }
 }
 
-struct DetachThreadsOnInit {
-  DetachThreadsOnInit() {
-#ifndef FRC1678_NO_QUEUE_LOGGING
-    std::thread logger_thread{std::ref(logger)};
-    logger_thread.detach();
-#endif  // FRC1678_NO_QUEUE_LOGGING
-    std::thread webdash_thread{std::ref(webdash)};
-    webdash_thread.detach();
-  }
+void Start() {
+  logger = std::make_unique<logging::Logger>();
+  std::thread logger_thread{std::ref(*logger)};
+  logger_thread.detach();
 
-  static DetachThreadsOnInit instance;
-};
-
-DetachThreadsOnInit DetachThreadsOnInit::instance;
+  webdash = std::make_unique<webdash::WebDashRunner>();
+  std::thread webdash_thread{std::ref(*webdash)};
+  webdash_thread.detach();
+}
 
 }  // namespace queues
 }  // namespace muan

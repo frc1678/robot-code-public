@@ -64,10 +64,7 @@ class QueueManager {
   frc971::control_loops::drivetrain::OutputQueue drivetrain_output_queue_;
   frc971::control_loops::drivetrain::StatusQueue drivetrain_status_queue_;
 
-#ifndef FRC1678_NO_QUEUE_LOGGING
   muan::logging::Logger logger_;
-  std::thread logger_thread_{std::ref(logger_)};
-#endif  // FRC1678_NO_QUEUE_LOGGING
 
   muan::webdash::WebDashRunner webdash_;
 };

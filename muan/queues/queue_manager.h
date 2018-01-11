@@ -2,6 +2,7 @@
 #define MUAN_QUEUES_QUEUE_MANAGER_H_
 
 #include <algorithm>
+#include <memory>
 #include <unordered_map>
 #include <vector>
 
@@ -16,11 +17,10 @@ namespace queues {
 
 void ResetAllQueues();
 
-#ifndef FRC1678_NO_QUEUE_LOGGING
-extern logging::Logger logger;
-#endif
+extern std::unique_ptr<logging::Logger> logger;
+extern std::unique_ptr<webdash::WebDashRunner> webdash;
 
-extern webdash::WebDashRunner webdash;
+void Start();
 
 template <typename T>
 class QueueManager {
@@ -39,25 +39,39 @@ aos::Mutex QueueManager<T>::all_queues_lock_;
 template <typename T>
 std::unordered_map<const char*, MessageQueue<T>, utils::hash_cstr> QueueManager<T>::all_queues_;
 
+// A bunch of SFINAE tricks
+// Add the proto to the webdash, if it's actually a proto
 template <typename T>
 void AddProtoQueueWebdash(...) {}
-
 template <typename T>
 auto AddProtoQueueWebdash(const char* str, MessageQueue<T>* queue)
     -> decltype(typename T::ProtoType(), void()) {
-  webdash.AddQueue(str, queue);
+  if (webdash) {
+    webdash->AddQueue(str, queue);
+  }
 }
 
+// Add the proto to the logger, if it's actually a proto
 template <typename T>
 void AddProtoQueueLogger(...) {}
-
-#ifndef FRC1678_NO_QUEUE_LOGGING
 template <typename T>
 auto AddProtoQueueLogger(const char* str, MessageQueue<T>* queue)
     -> decltype(typename T::ProtoType(), void()) {
-  logger.AddQueue(str, queue);
+  if (logger) {
+    logger->AddQueue(str, queue);
+  }
 }
-#endif  // FRC1678_NO_QUEUE_LOGGING
+
+// Get the underlying type name if it's a StackProto
+template <typename T>
+const char* UnderlyingTypeName(...) {
+  return typeid(T).name();
+}
+template <typename T>
+auto UnderlyingTypeName(std::uint64_t) -> decltype(typename T::ProtoType(), (const char*)nullptr) {
+  return UnderlyingTypeName<typename T::ProtoType>();
+}
+// No more SFINAE!
 
 extern std::vector<GenericQueue*> all_queues_all_types;
 extern aos::Mutex all_queues_all_types_lock;
@@ -87,7 +101,7 @@ MessageQueue<T>* QueueManager<T>::Fetch(const char* key, int size) {
     size_t num_bytes = 1024;
     int status;
 
-    __cxa_demangle(typeid(T).name(), &typename_buffer[0], &num_bytes, &status);
+    __cxa_demangle(UnderlyingTypeName<T>(0), &typename_buffer[0], &num_bytes, &status);
 
     // Find the last colon in the unmangled typename to find the start index of
     // the unqualified name
@@ -110,19 +124,9 @@ MessageQueue<T>* QueueManager<T>::Fetch(const char* key, int size) {
     std::strncpy(filename_buffer + idx, key, key_len);
     idx += key_len;
 
-    // Add to webdash
+    // Add to webdash and logger
     AddProtoQueueWebdash<T>(filename_buffer, &(it->second));
-
-    // Append ".csv"
-    filename_buffer[idx] = '.';
-    filename_buffer[idx + 1] = 'c';
-    filename_buffer[idx + 2] = 's';
-    filename_buffer[idx + 3] = 'v';
-    filename_buffer[idx + 4] = '\0';
-
-#ifndef FRC1678_NO_QUEUE_LOGGING
     AddProtoQueueLogger<T>(filename_buffer, &(it->second));
-#endif
 
     aos::MutexLocker locker{&all_queues_all_types_lock};
     all_queues_all_types.push_back(&(it->second));

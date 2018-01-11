@@ -140,11 +140,7 @@ class QueueManager {
   muan::teleop::JoystickStatusQueue throttle_status_queue_;
   muan::teleop::XBoxRumbleQueue xbox_rumble_queue_;
 
-#ifndef FRC1678_NO_QUEUE_LOGGING
   muan::logging::Logger logger_;
-  std::thread logger_thread_{std::ref(logger_)};
-#endif  // FRC1678_NO_QUEUE_LOGGING
-
   muan::webdash::WebDashRunner webdash_;
 };
 

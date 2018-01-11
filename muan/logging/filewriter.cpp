@@ -46,7 +46,7 @@ void FileWriter::FlushAllFiles() {
 }
 
 void FileWriter::DetermineBasePath() {
-  std::vector<boost::filesystem::path> paths = {"/media/sda1", "/home/lvuser"};
+  std::vector<boost::filesystem::path> paths = {"/media/sda1", "/home/lvuser", "/tmp"};
 
   // TODO(Wesley) Check for space
   for (auto const path : paths) {
@@ -71,9 +71,7 @@ void FileWriter::DetermineBasePath() {
   }
 
   std::cerr << "Could not find valid path for logging!\n"
-               "Attempting to use /, but most likely no logs will be created.\n"
-               "If you are seeing this error while running tests, use `bazel test` instead of `bazel run`, "
-               "or pass --copt='-DFRC1678_NO_QUEUE_LOGGING'.\n";
+               "Attempting to use /, but most likely no logs will be created.\n";
   base_path_ = "/";
 }
 

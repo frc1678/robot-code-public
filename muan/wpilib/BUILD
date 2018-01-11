@@ -21,7 +21,7 @@ cc_library(
     srcs = ["pdp_wrapper.cpp"],
     hdrs = ["pdp_wrapper.h"],
     deps = [
-        ":state_protos",
+        ":wpilib_queues",
         "//muan/proto:stack_proto",
         "//muan/queues",
         "//third_party/aos/common:die",
