@@ -30,14 +30,14 @@ class QueueManager {
 
  private:
   static aos::Mutex all_queues_lock_;
-  static std::unordered_map<const char*, MessageQueue<T>, utils::hash_cstr> all_queues_;
+  static std::unordered_map<std::string, MessageQueue<T>> all_queues_;
 };
 
 template <typename T>
 aos::Mutex QueueManager<T>::all_queues_lock_;
 
 template <typename T>
-std::unordered_map<const char*, MessageQueue<T>, utils::hash_cstr> QueueManager<T>::all_queues_;
+std::unordered_map<std::string, MessageQueue<T>> QueueManager<T>::all_queues_;
 
 // A bunch of SFINAE tricks
 // Add the proto to the webdash, if it's actually a proto
@@ -102,6 +102,8 @@ MessageQueue<T>* QueueManager<T>::Fetch(const char* key, int size) {
     int status;
 
     __cxa_demangle(UnderlyingTypeName<T>(0), &typename_buffer[0], &num_bytes, &status);
+
+    num_bytes = std::strlen(typename_buffer);
 
     // Find the last colon in the unmangled typename to find the start index of
     // the unqualified name
