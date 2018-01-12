@@ -58,3 +58,8 @@ message PdpStatus {
 
   required uint64 num_failures = 23;
 }
+
+message GameSpecificString {
+  required uint64 timestamp = 1;
+  optional string code = 2;
+}

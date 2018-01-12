@@ -15,6 +15,9 @@ using DriverStationQueue = muan::queues::MessageQueue<DriverStationProto>;
 using PdpMessage = muan::proto::StackProto<PdpStatus, 512>;
 using PdpQueue = muan::queues::MessageQueue<PdpMessage>;
 
+using GameSpecificStringProto = muan::proto::StackProto<GameSpecificString, 512>;
+using GameSpecificStringQueue = muan::queues::MessageQueue<GameSpecificStringProto>;
+
 }  // namespace wpilib
 
 }  // namespace muan

@@ -1,7 +1,9 @@
 #include "c2018/citrus_robot/main.h"
-#include <WPILib.h>
-#include "gflags/gflags.h"
+
+#include "WPILib.h"
+#include "c2018/autonomous/autonomous.h"
 #include "c2018/subsystems/subsystem_runner.h"
+#include "gflags/gflags.h"
 #include "muan/queues/queue_manager.h"
 
 class WpilibRobot : public IterativeRobot {
@@ -9,16 +11,23 @@ class WpilibRobot : public IterativeRobot {
   WpilibRobot() {}
 
   void RobotInit() override {}
-
   void RobotPeriodic() override {}
+
+  void SpawnThreads() {
+    std::thread subsystem_thread(std::ref(subsystem_runner_));
+    subsystem_thread.detach();
+
+    std::thread citrus_robot_thread(std::ref(main_));
+    citrus_robot_thread.detach();
+
+    std::thread autonomous_thread(std::ref(auto_));
+    autonomous_thread.detach();
+  }
 
  private:
   c2018::SubsystemRunner subsystem_runner_;
   c2018::citrus_robot::CitrusRobot main_;
-
-  // Other threads such as reading from network may also be necessary
-  std::thread subsystem_thread{std::ref(subsystem_runner_)};
-  std::thread citrus_robot_thread{std::ref(main_)};
+  c2018::autonomous::AutonomousBase auto_;
 };
 
 int main(int argc, char **argv) {
@@ -29,7 +38,10 @@ int main(int argc, char **argv) {
     return -1;
   }
   HAL_Report(HALUsageReporting::kResourceType_Language, HALUsageReporting::kLanguage_CPlusPlus);
-  static WpilibRobot robot;
+  WpilibRobot robot;
+
+  robot.SpawnThreads();
+
   std::printf("Robot program starting\n");
   robot.StartCompetition();
 }
