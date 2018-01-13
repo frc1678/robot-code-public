@@ -1,0 +1,43 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+package c2018.climber;
+
+enum Goal {
+  NONE = 0;
+  APPROACHING = 1;
+  CLIMBING = 2;
+}
+
+enum State {
+  IDLE = 0;
+  APPROACH = 1;
+  CLIMB = 2;
+  DONE = 3;
+}
+
+message ClimberInput {
+  required uint64 timestamp = 1;
+  required double current = 2;
+  required double position = 3; // encoder position in meters, positive is up
+}
+
+message ClimberOutput {
+  required uint64 timestamp = 1;
+  required double voltage = 2; // climbing up is positive
+  required bool release_solenoid = 3; // true means the solenoid is down
+}
+
+message ClimberStatus {
+  required uint64 timestamp = 1;
+  required State climber_state = 2;
+  required double observed_velocity = 3;
+  required double observed_height = 4;
+}
+
+message ClimberGoal {
+  required uint64 timestamp = 1;
+  required bool should_release = 2;
+  required Goal climber_goal = 3;
+}
