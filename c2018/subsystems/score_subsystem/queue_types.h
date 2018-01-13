@@ -12,7 +12,6 @@ namespace score_subsystem {
 using ScoreSubsystemInputProto = muan::proto::StackProto<ScoreSubsystemInput, 256>;
 using ScoreSubsystemOutputProto = muan::proto::StackProto<ScoreSubsystemOutput, 256>;
 using ScoreSubsystemGoalProto = muan::proto::StackProto<ScoreSubsystemGoal, 256>;
-using ScoreSubsystemGoalGodModeProto = muan::proto::StackProto<ScoreSubsystemGoalGodMode, 256>;
 using ScoreSubsystemStatusProto = muan::proto::StackProto<ScoreSubsystemStatus, 256>;
 
 using ScoreSubsystemInputQueue = muan::queues::MessageQueues<ScoreSubsystemInputProto>;

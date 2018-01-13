@@ -40,14 +40,12 @@ message ScoreSubsystemOutput {
 }
 
 message ScoreSubsystemGoal {
-  required ElevatorHeight elevator_height = 1;
-  required ClawMode claw_mode = 2;
-  required IntakeMode intake_mode = 3;
-}
-
-message ScoreSubsystemGoalGodMode {
-  required double elevator_velocity = 1;
-  required double intake_voltage = 2;
+  optional ElevatorHeight elevator_height = 1;
+  optional ClawMode claw_mode = 2;
+  optional IntakeMode intake_mode = 3;
+  optional double elevator_velocity = 4;
+  optional double intake_voltage = 5;
+  required bool god_mode = 6;
 }
 
 message ScoreSubsystemStatus {
