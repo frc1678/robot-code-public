@@ -18,3 +18,16 @@ cc_library(
   		"//muan/queues",
   	],
 )
+
+cc_library(
+  name = "score_subsystem",
+  srcs = ["score_subsystem.cpp"],
+  hdrs = ["score_subsystem.h"],
+  deps = [
+    ":score_subsystem_proto",
+    ":score_subsystem_queues",
+    "//muan/wpilib:wpilib_queues",
+    "//muan/queues:queue_manager",
+  ],
+
+)
