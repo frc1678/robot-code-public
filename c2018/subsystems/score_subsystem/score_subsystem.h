@@ -9,16 +9,16 @@ namespace c2018 {
 namespace score_subsystem {
 
 class ScoreSubsystem {
-  public:
-  	ScoreSubsystem();
-    void Update();
+ public:
+  ScoreSubsystem();
+  void Update();
 
-  private:
-    c2018::score_subsystem::claw::Claw claw_;
-    c2018::score_subsystem::elevator::Elevator elevator_;
-  	c2018::score_subsystem::ScoreSubsystemGoalProto score_subsystem_goal_;
-  	c2018::score_subsystem::ScoreSubsystemGoalQueue::QueueReader goal_reader_;
-  	c2018::score_subsystem::ScoreSubsystemStatusQueue::QueueReader status_reader_;
+ private:
+  c2018::score_subsystem::claw::Claw claw_;
+  c2018::score_subsystem::elevator::Elevator elevator_;
+  c2018::score_subsystem::ScoreSubsystemGoalProto score_subsystem_goal_;
+  c2018::score_subsystem::ScoreSubsystemGoalQueue::QueueReader goal_reader_;
+  2018::score_subsystem::ScoreSubsystemStatusQueue::QueueReader status_reader_;
 };
 
 }  // namespace score_subsystem
