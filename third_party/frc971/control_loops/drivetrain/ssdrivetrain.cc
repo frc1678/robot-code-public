@@ -171,6 +171,7 @@ void DrivetrainMotorsSS::SetGoal(
     }
   } else if (goal->has_path_command()) {
     use_path_ = true;
+    use_profile_ = false;
     auto path_goal = goal->path_command();
     trajectory_.set_maximum_velocity(goal->linear_constraints().max_velocity());
     trajectory_.set_maximum_acceleration(goal->linear_constraints().max_acceleration());
@@ -186,7 +187,11 @@ void DrivetrainMotorsSS::SetGoal(
     paths::Pose final_pose((Eigen::Vector3d() << path_goal.x_goal(), path_goal.y_goal(), path_goal.theta_goal()).finished());
     if (last_goal_pose_.Get() != final_pose.Get()) {
       paths::HermitePath path(initial_pose, final_pose);
-      trajectory_.SetPath(path);
+
+      Eigen::Matrix<double, 4, 1> state_angular_linear;
+      state_angular_linear.block<2, 1>(0, 0) = LeftRightToLinear(kf_->X_hat());
+      state_angular_linear.block<2, 1>(2, 0) = LeftRightToAngular(kf_->X_hat());
+      trajectory_.SetPath(path, state_angular_linear);
 
       last_goal_pose_ = final_pose;
     }

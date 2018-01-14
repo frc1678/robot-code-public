@@ -7,8 +7,10 @@ namespace control_loops {
 
 namespace paths {
 
-void Trajectory::SetPath(const Path &path) {
+void Trajectory::SetPath(const Path &path, const State &state) {
   Reset();
+
+  state_ = state;
 
   double s_min = 0.0, s_max = 1.0;
   path.Populate(s_min, s_max, &poses_[0], kNumSamples);
