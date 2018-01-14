@@ -16,9 +16,14 @@ class ScoreSubsystem {
  private:
   c2018::score_subsystem::claw::Claw claw_;
   c2018::score_subsystem::elevator::Elevator elevator_;
-  c2018::score_subsystem::ScoreSubsystemGoalProto score_subsystem_goal_;
   c2018::score_subsystem::ScoreSubsystemGoalQueue::QueueReader goal_reader_;
-  2018::score_subsystem::ScoreSubsystemStatusQueue::QueueReader status_reader_;
+  c2018::score_subsystem::ScoreSubsystemStatusQueue::QueueReader status_reader_;
+  c2018::score_subsystem::ScoreSubsystemGoalProto score_subsystem_goal_;
+
+  double elevator_height;
+  double claw_angle;
+  IntakeMode intake_mode;
+  ClawMode claw_mode;
 };
 
 }  // namespace score_subsystem

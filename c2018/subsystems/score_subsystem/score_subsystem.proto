@@ -60,5 +60,7 @@ message ScoreSubsystemStatus {
   required double wrist_position = 9;
   required double wrist_velocity = 10;
   required bool wrist_calibrated = 11;
+  required double goal_claw_angle = 12;
+  required double goal_elevator_height = 13;
 }
 
