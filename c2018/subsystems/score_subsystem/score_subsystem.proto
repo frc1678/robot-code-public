@@ -27,7 +27,7 @@ enum ElevatorState {
   E_INITIALIZING = 0;
   E_CALIBRATING = 1;
   E_MOVING = 3;
-  E_DONE = 4;
+  E_IDLE = 4;
   E_ENCODER_FAULT = 5;
 }
 
@@ -36,7 +36,7 @@ enum ClawState {
   C_CALIBRATING = 1;
   C_CALIBRATED = 2;
   C_MOVING = 3;
-  C_DONE = 4;
+  C_IDLE = 4;
   C_ENCODER_FAULT = 5;
 }
 
