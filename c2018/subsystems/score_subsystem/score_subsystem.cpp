@@ -11,10 +11,10 @@ using muan::wpilib::DriverStationProto;
 ScoreSubsystem::ScoreSubsystem() :
                 goal_reader_{ QueueManager<ScoreSubsystemGoalProto>::Fetch()->MakeReader() },
                 status_reader_{ QueueManager<ScoreSubsystemStatusProto>::Fetch()->MakeReader() },
-                ds_status_{ QueueManager<DriverStationProto>::Fetch()->MakeReader() },
                 input_reader_{ QueueManager<ScoreSubsystemInputProto>::Fetch()->MakeReader() },
                 output_queue_{ QueueManager<ScoreSubsystemOutputProto>::Fetch() },
-                input_queue_{ QueueManager<ScoreSubsystemInputProto>::Fetch() }
+                input_queue_{ QueueManager<ScoreSubsystemInputProto>::Fetch() },
+                ds_status_{ QueueManager<DriverStationProto>::Fetch()->MakeReader() }
                 {}
 
 
@@ -22,10 +22,8 @@ void ScoreSubsystem::Update() {
   ScoreSubsystemGoalProto goal;
   ScoreSubsystemStatusProto status;
   ScoreSubsystemInputProto input;
-  DriverStationProto ds_status;
   status_reader_.ReadLastMessage(&status);
   input_reader_.ReadLastMessage(&input);
-  ds_status_.ReadLastMessage(&ds_status);
 
   if (!goal_reader_.ReadLastMessage(&goal)) {
     return;
@@ -49,7 +47,7 @@ void ScoreSubsystem::Update() {
   }
   claw_.SetGoal(claw_angle, intake_mode_);
   elevator_.SetGoal(elevator_height);
-  claw_.Update(input, status, ds_status.value()->is_sys_active());
+  claw_.Update(input, status, ds_status_.ReadLastMessage().value()->is_sys_active());
   elevator_.Update(input_queue_, output_queue_)
 }
 
