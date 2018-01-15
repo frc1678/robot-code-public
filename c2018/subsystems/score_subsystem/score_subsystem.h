@@ -7,7 +7,6 @@
 #include "muan/wpilib/queue_types.h"
 
 namespace c2018 {
-
 namespace score_subsystem {
 
 class ScoreSubsystem {
@@ -34,7 +33,6 @@ class ScoreSubsystem {
 };
 
 }  // namespace score_subsystem
-
 }  // namespace c2018
 
 #endif  // C2018_SUBSYSTEMS_SCORE_SUBSYSTEM_SCORE_SUBSYSTEM_H_

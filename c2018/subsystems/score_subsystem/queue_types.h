@@ -6,7 +6,6 @@
 #include "c2018/subsystems/score_subsystem/score_subsystem.pb.h"
 
 namespace c2018 {
-
 namespace score_subsystem {
 
 using ScoreSubsystemInputProto = muan::proto::StackProto<ScoreSubsystemInput, 256>;

@@ -1,7 +1,6 @@
 #include "c2018/subsystems/score_subsystem/score_subsystem.h"
 
 namespace c2018 {
-
 namespace score_subsystem {
 
 using muan::queues::QueueManager;
@@ -52,5 +51,4 @@ void ScoreSubsystem::Update() {
 }
 
 }  // namespace score_subsystem
-
 }  // namespace c2018
