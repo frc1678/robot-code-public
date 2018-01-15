@@ -1,6 +1,4 @@
 #include "c2018/subsystems/score_subsystem/score_subsystem.h"
-#include "muan/queues/queue_manager.h"
-#include <cmath>
 
 namespace c2018 {
 
@@ -22,29 +20,30 @@ void ScoreSubsystem::Update() {
   }
 
   if (!goal->god_mode()) {
-    score_subsystem_goal_->set_god_mode(false);
+    goal->set_god_mode(false);
     if (!status->elevator_at_top()) {
-      score_subsystem_goal_->set_claw_mode(SCORE_F);
+      claw_mode_ = SCORE_F;
     } else {
-      score_subsystem_goal_->set_claw_mode(goal->claw_mode());
-      if (claw_mode == SCORE_F) {
+      claw_mode_ = goal->claw_mode();
+      if (claw_mode_ == SCORE_F) {
         claw_angle = 0;
       } else {
-        claw_angle = M_PI;
+        claw_angle = -1*(M_PI/2);
       }
     }
-    intake_mode = goal->intake_mode();
+    intake_mode_ = goal->intake_mode();
     elevator_height = goal->elevator_height();
   } else {
-    score_subsystem_goal_->set_god_mode(true);
-    score_subsystem_goal_->set_claw_mode(SCORE_F);
-    score_subsystem_goal_->set_elevator_velocity(goal->elevator_velocity());
-    score_subsystem_goal_->set_intake_voltage(goal->intake_voltage());
+    goal->set_god_mode(true);
+    claw_mode_ = SCORE_F;
+    goal->set_elevator_velocity(goal->elevator_velocity());
+    goal->set_intake_voltage(goal->intake_voltage());
   }
-  claw_.SetGoal(claw_angle, intake_mode);
+  claw_.SetGoal(claw_angle, intake_mode_);
   elevator_.SetGoal(elevator_height);
   elevator_.SetGodModeGoal();
 }
 
 }  // namespace score_subsystem
+
 }  // namespace c2018

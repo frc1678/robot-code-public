@@ -29,11 +29,12 @@ enum SystemState {
   C_MOVING = 2;
   C_IDLE = 3;
   C_ENCODER_FAULT = 4;
-  E_INITIALIZING = 5;
-  E_CALIBRATING = 6;
-  E_MOVING = 7;
-  E_IDLE = 8;
-  E_ENCODER_FAULT = 9;
+  C_DISABLED = 5;
+  E_INITIALIZING = 6;
+  E_CALIBRATING = 7;
+  E_MOVING = 8;
+  E_IDLE = 9;
+  E_ENCODER_FAULT = 10;
 }
 
 message ScoreSubsystemInput {
@@ -54,7 +55,7 @@ message ScoreSubsystemOutput {
 
 message ScoreSubsystemGoal {
   optional ElevatorHeight elevator_height = 1;
-  optional ClawMode claw_mode_ = 2;
+  optional ClawMode claw_mode = 2;
   optional IntakeMode intake_mode = 3;
   required double elevator_profiled_goal = 4;
   required double elevator_unprofiled_goal = 5;

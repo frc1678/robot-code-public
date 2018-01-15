@@ -1,8 +1,10 @@
 #ifndef C2018_SUBSYSTEMS_SCORE_SUBSYSTEM_SCORE_SUBSYSTEM_H_
 #define C2018_SUBSYSTEMS_SCORE_SUBSYSTEM_SCORE_SUBSYSTEM_H_
 
-#include "muan/wpilib/queue_types.h"
+#include <cmath>
 #include "c2018/subsystems/score_subsystem/queue_types.h"
+#include "muan/queues/queue_manager.h"
+#include "muan/wpilib/queue_types.h"
 
 namespace c2018 {
 
@@ -18,15 +20,17 @@ class ScoreSubsystem {
   c2018::score_subsystem::elevator::Elevator elevator_;
   c2018::score_subsystem::ScoreSubsystemGoalQueue::QueueReader goal_reader_;
   c2018::score_subsystem::ScoreSubsystemStatusQueue::QueueReader status_reader_;
-  c2018::score_subsystem::ScoreSubsystemGoalProto score_subsystem_goal_;
+  c2018::score_subsystem::ScoreSubsystemGoalQueue score_subsystem_goal_queue_;
+  c2018::score_subsystem::ScoreSubsystemGoalProto score_subsystem_goal_proto_;
 
   double elevator_height;
   double claw_angle;
-  IntakeMode intake_mode;
-  ClawMode claw_mode;
+  IntakeMode intake_mode_;
+  ClawMode claw_mode_;
 };
 
 }  // namespace score_subsystem
+
 }  // namespace c2018
 
 #endif  // C2018_SUBSYSTEMS_SCORE_SUBSYSTEM_SCORE_SUBSYSTEM_H_
