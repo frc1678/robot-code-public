@@ -5,6 +5,7 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
+#include <string>
 
 #include "muan/logging/logger.h"
 #include "muan/queues/message_queue.h"
