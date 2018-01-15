@@ -23,21 +23,17 @@ enum IntakeMode {
   HOLD = 3;
 }
 
-enum ElevatorState {
-  E_INITIALIZING = 0;
-  E_CALIBRATING = 1;
-  E_MOVING = 3;
-  E_IDLE = 4;
-  E_ENCODER_FAULT = 5;
-}
-
-enum ClawState {
+enum SystemState {
   C_INITIALIZING = 0;
   C_CALIBRATING = 1;
-  C_CALIBRATED = 2;
-  C_MOVING = 3;
-  C_IDLE = 4;
-  C_ENCODER_FAULT = 5;
+  C_MOVING = 2;
+  C_IDLE = 3;
+  C_ENCODER_FAULT = 4;
+  E_INITIALIZING = 5;
+  E_CALIBRATING = 6;
+  E_MOVING = 7;
+  E_IDLE = 8;
+  E_ENCODER_FAULT = 9;
 }
 
 message ScoreSubsystemInput {
@@ -58,24 +54,24 @@ message ScoreSubsystemOutput {
 
 message ScoreSubsystemGoal {
   optional ElevatorHeight elevator_height = 1;
-  optional ClawMode claw_mode = 2;
+  optional ClawMode claw_mode_ = 2;
   optional IntakeMode intake_mode = 3;
-  optional double elevator_velocity = 4;
-  optional double intake_voltage = 5;
-  required bool god_mode = 6;
+  required double elevator_profiled_goal = 4;
+  required double elevator_unprofiled_goal = 5;
+  optional double elevator_velocity = 6;
+  optional double intake_voltage = 7;
+  required bool god_mode = 8;
 }
 
 message ScoreSubsystemStatus {
   required double elevator_actual_height = 1;
   required double estimated_velocity = 2;
   required bool elevator_at_top = 3;
-  required double elevator_profiled_goal = 4;
-  required double elevator_unprofiled_goal = 5;
-  required ElevatorState elevator_state = 6;
-  required double elevator_voltage_error = 7;
-  required double elevator_uncapped_voltage = 8;
-  required double wrist_position = 9;
-  required double wrist_velocity = 10;
-  required ClawState claw_state = 11;
+  required SystemState elevator_state = 4;
+  required double elevator_voltage_error = 5;
+  required double elevator_uncapped_voltage = 6;
+  required double wrist_position = 7;
+  required double wrist_velocity = 8;
+  required SystemState claw_state = 9;
 }
 
