@@ -23,13 +23,8 @@ void Logger::AddQueue(const std::string& name, T* queue) {
 }
 
 template<typename... Ts>
-void Logger::LogStream(const char* filename, int line, Ts... args) {
-  text_logger.LogStream(filename, line, args...);
-}
-
-template<typename... Ts>
-void Logger::LogPrintf(const char* filename, int line, Ts... args) {
-  text_logger.LogPrintf(filename, line, args...);
+void Logger::LogText(const char* filename, int line, Ts... args) {
+  text_logger.Log(filename, line, args...);
 }
 
 template <class R>

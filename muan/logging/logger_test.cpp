@@ -122,7 +122,7 @@ TEST(Logger, TextLogger) {
   muan::utils::SetMocktimeEpoch();
   muan::utils::SetCurrentThreadName("name");
   aos::time::IncrementMockTime(std::chrono::seconds(1));
-  LOG_S("test");
+  LOG_P("test");
 
   logger.Update();
   EXPECT_EQ(static_cast<MockFileWriter*>(logger.writer_.get())->mock_files["name.log"].str(),

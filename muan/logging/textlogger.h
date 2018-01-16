@@ -11,18 +11,15 @@ namespace logging {
 
 class TextLogger {
  public:
-  // Log without format strings, such as
-  // LogStream(__FILE__, __LINE__, "x=", x, " y=", y);
-  template<typename... Ts>
-  void LogStream(const char* filename, int line, Ts... args);
-
   // Log with format strings, such as
-  // LogPrintf(__FILE__, __LINE__, "x=%d y=%f", x, y);
+  // Log(__FILE__, __LINE__, "x=%d y=%f", x, y);
   template<typename... Ts>
-  void LogPrintf(const char* filename, int line, Ts... args);
+  void Log(const char* filename, int line, Ts... args);
+
+  constexpr static size_t kBufferSize = 1024;  // More than enough for any reasonable message
 
   struct LogCall {
-    muan::utils::DeferCall<void, 1024, std::ostream&> message;
+    muan::utils::DeferCall<void, kBufferSize + 120, std::ostream&> message;
     const std::string* thread_name;
   };
 
@@ -35,12 +32,6 @@ class TextLogger {
   void Stamp(std::ostream& out, uint64_t time, const char* filename, int line);
   LogQueue log_calls_{500};
 };
-
-// Helper function to write a parameter pack to an ostream
-template<typename T, typename... Ts>
-void VariadicStreamWrite(std::ostream& out, T&& head, Ts&&... tail);
-template<typename T>
-void VariadicStreamWrite(std::ostream& out, T&& head);
 
 }  // namespace logging
 }  // namespace muan
