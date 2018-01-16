@@ -186,7 +186,15 @@ void DrivetrainMotorsSS::SetGoal(
     paths::Pose initial_pose(*cartesian_position_, *integrated_kf_heading_);
     paths::Pose final_pose((Eigen::Vector3d() << path_goal.x_goal(), path_goal.y_goal(), path_goal.theta_goal()).finished());
     if (last_goal_pose_.Get() != final_pose.Get()) {
-      paths::HermitePath path(initial_pose, final_pose);
+      bool backwards;
+      if (path_goal.has_backwards()) {
+        backwards = path_goal.backwards();
+      } else {
+        auto delta = final_pose - initial_pose;
+        backwards = ::std::abs(::std::atan2(delta.translational()(1), delta.translational()(0)) -
+                               initial_pose.heading()) > M_PI / 2;
+      }
+      paths::HermitePath path(initial_pose, final_pose, backwards);
 
       Eigen::Matrix<double, 4, 1> state_angular_linear;
       state_angular_linear.block<2, 1>(0, 0) = LeftRightToLinear(kf_->X_hat());

@@ -4,8 +4,6 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-#include <iostream>
-
 namespace frc971 {
 namespace control_loops {
 namespace paths {
@@ -61,18 +59,27 @@ Pose Pose::Compose(const Pose &other) const {
   return other.RotateBy(heading()).TranslateBy(translational());
 }
 
-HermitePath::HermitePath(Pose initial, Pose final)
+HermitePath::HermitePath(Pose initial, Pose final, bool backwards)
     : HermitePath(initial.translational(),
                   FromMagDirection((final - initial).translational().norm(),
                                    initial.heading()),
                   final.translational(),
                   FromMagDirection((final - initial).translational().norm(),
-                                   final.heading())) {}
+                                   final.heading()),
+                  backwards) {}
 
 HermitePath::HermitePath(Position initial_position,
                          Eigen::Vector2d initial_tangent,
                          Position final_position,
-                         Eigen::Vector2d final_tangent) {
+                         Eigen::Vector2d final_tangent,
+                         bool backwards) {
+
+  backwards_ = backwards;
+  if (backwards_) {
+    initial_tangent *= -1;
+    final_tangent *= -1;
+  }
+
   coefficients_ = Eigen::Matrix<double, 4, 4>::Zero();
   coefficients_.block<2, 1>(0, 0) = initial_position;
   coefficients_.block<2, 1>(0, 1) = initial_tangent;
@@ -107,6 +114,13 @@ void HermitePath::Populate(double s_min, double s_max, Pose *pose_arr,
       theta = initial_heading_;
     }
 
+    if (backwards_) {
+      if (theta > 0) {
+        theta -= M_PI;
+      } else {
+        theta += M_PI;
+      }
+    }
     pose_arr[i] = Pose(combined.block<2, 1>(0, 0), theta);
   }
 }

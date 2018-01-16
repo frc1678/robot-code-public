@@ -47,9 +47,10 @@ class Path {
 
 class HermitePath : public Path {
  public:
-  HermitePath(Pose initial, Pose final);
+  HermitePath(Pose initial, Pose final, bool backwards);
   HermitePath(Position initial_position, Eigen::Vector2d initial_tangent,
-              Position final_position, Eigen::Vector2d final_tangent);
+              Position final_position, Eigen::Vector2d final_tangent,
+              bool backwards);
 
   virtual void Populate(double s_min, double s_max, Pose *pose_arr,
                         size_t arr_len) const override;
@@ -60,6 +61,8 @@ class HermitePath : public Path {
 
   // Cached, because it is lost in the first-derivative at s=0
   double initial_heading_;
+
+  bool backwards_;
 };
 
 }  // namespace paths

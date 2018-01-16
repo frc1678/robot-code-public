@@ -45,6 +45,9 @@ message DrivetrainGoal {
     required double x_goal = 1;
     required double y_goal = 2;
     required double theta_goal = 3;
+    // Only set this if you are using a weird path where you
+    // need to override the default directionality selection
+    optional bool backwards = 4;
   }
 
   required Gear gear = 2;
