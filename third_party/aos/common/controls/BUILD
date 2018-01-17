@@ -21,6 +21,7 @@ cc_test(
   deps = [
     ':polytope',
     '//third_party/aos/testing:googletest',
+    '//third_party/aos/common:check',
     '//third_party/eigen',
     '//third_party/google/googletest:googlemock',
   ],

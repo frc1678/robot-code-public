@@ -7,6 +7,8 @@ option cc_enable_arenas = true;
 enum Gear {
   kHighGear = 0;
   kLowGear = 1;
+  kShiftingUp = 2;
+  kShiftingDown = 3;
 }
 
 message MotionProfileConstraints {
@@ -68,6 +70,17 @@ message DrivetrainInput {
   // In meters, positive is forwards
   required double left_encoder = 2;
   required double right_encoder = 3;
+
+  // Position of each drivetrain shifter, scaled from 0.0 to 1.0 where smaller
+  // is towards low gear.
+  required double left_shifter_position = 4;
+  required double right_shifter_position = 5;
+
+  // Raw analog voltages of each shifter hall effect for logging purposes.
+  required double low_left_hall = 6;
+  required double high_left_hall = 7;
+  required double low_right_hall = 8;
+  required double high_right_hall = 9;
 }
 
 message DrivetrainOutput {

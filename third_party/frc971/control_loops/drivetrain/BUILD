@@ -21,12 +21,19 @@ cc_library(
 )
 
 cc_library(
+  name = 'gear',
+  hdrs = ['gear.h'],
+  deps = [':drivetrain_queues'],
+)
+
+cc_library(
   name = 'drivetrain_config',
   hdrs = [
     'drivetrain_config.h',
   ],
   deps = [
     '//third_party/frc971/control_loops:state_feedback_loop',
+    '//third_party/frc971:shifter_hall_effect',
   ],
 )
 
@@ -61,10 +68,12 @@ cc_library(
   deps = [
     ':drivetrain_queues',
     ':drivetrain_config',
+    ':gear',
     '//third_party/aos/common/controls:polytope',
     '//third_party/aos/common:math',
     '//third_party/frc971/control_loops:state_feedback_loop',
     '//third_party/frc971/control_loops:coerce_goal',
+    '//third_party/frc971:shifter_hall_effect',
   ],
 )
 

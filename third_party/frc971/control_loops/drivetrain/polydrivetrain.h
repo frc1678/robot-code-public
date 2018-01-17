@@ -3,9 +3,11 @@
 
 #include "third_party/aos/common/controls/polytope.h"
 
-#include "third_party/frc971/control_loops/drivetrain/drivetrain_config.h"
+#include "third_party/frc971/shifter_hall_effect.h"
+#include "third_party/frc971/control_loops/drivetrain/gear.h"
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
 #include "third_party/frc971/control_loops/state_feedback_loop.h"
+#include "third_party/frc971/control_loops/drivetrain/drivetrain_config.h"
 
 namespace frc971 {
 namespace control_loops {
@@ -16,11 +18,12 @@ class PolyDrivetrain {
   PolyDrivetrain(const DrivetrainConfig &dt_config,
                  StateFeedbackLoop<7, 2, 3> *kf);
 
-  int controller_index() const { return loop_->controller_index(); }
+  int controller_index() const { return loop_->index(); }
 
   // Computes the speed of the motor given the hall effect position and the
   // speed of the robot.
-  double MotorSpeed(double velocity, Gear gear);
+  double MotorSpeed(const constants::ShifterHallEffect &hall_effect,
+                    double shifter_position, double velocity, Gear gear);
 
   void SetGoal(const ::frc971::control_loops::drivetrain::GoalProto &goal);
 
@@ -64,6 +67,12 @@ class PolyDrivetrain {
 
   double goal_left_velocity_ = 0.0;
   double goal_right_velocity_ = 0.0;
+
+  // Stored from the last iteration, for logging shifting logic.
+  double left_motor_speed_ = 0.0;
+  double right_motor_speed_ = 0.0;
+  double current_left_velocity_ = 0.0;
+  double current_right_velocity_ = 0.0;
 };
 
 }  // namespace drivetrain
