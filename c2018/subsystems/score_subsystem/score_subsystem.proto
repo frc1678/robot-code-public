@@ -24,18 +24,12 @@ enum IntakeMode {
 }
 
 enum SystemState {
-  C_INITIALIZING = 0;
-  C_CALIBRATING = 1;
-  C_MOVING = 2;
-  C_IDLE = 3;
-  C_ENCODER_FAULT = 4;
-  C_DISABLED = 5;
-  E_INITIALIZING = 6;
-  E_CALIBRATING = 7;
-  E_MOVING = 8;
-  E_IDLE = 9;
-  E_ENCODER_FAULT = 10;
-  E_DISABLED = 11;
+  INITIALIZING = 0;
+  CALIBRATING = 1;
+  MOVING = 2;
+  IDLE = 3;
+  ENCODER_FAULT = 4;
+  DISABLED = 5;
 }
 
 message ScoreSubsystemInput {
@@ -58,8 +52,6 @@ message ScoreSubsystemGoal {
   optional ElevatorHeight elevator_height = 1;
   optional ClawMode claw_mode = 2;
   optional IntakeMode intake_mode = 3;
-  required double elevator_profiled_goal = 4;
-  required double elevator_unprofiled_goal = 5;
   optional double elevator_velocity = 6;
   optional double intake_voltage = 7;
   required bool god_mode = 8;
@@ -72,8 +64,10 @@ message ScoreSubsystemStatus {
   required SystemState elevator_state = 4;
   required double elevator_voltage_error = 5;
   required double elevator_uncapped_voltage = 6;
-  required double wrist_position = 7;
-  required double wrist_velocity = 8;
-  required SystemState claw_state = 9;
+  required double elevator_profiled_goal = 7;
+  required double elevator_unprofiled_goal = 8;
+  required double wrist_position = 9;
+  required double wrist_velocity = 10;
+  required SystemState claw_state = 11;
 }
 

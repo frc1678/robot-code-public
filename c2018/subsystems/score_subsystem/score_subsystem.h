@@ -17,14 +17,12 @@ class ScoreSubsystem {
  private:
   c2018::score_subsystem::claw::Claw claw_;
   c2018::score_subsystem::elevator::Elevator elevator_;
+
   c2018::score_subsystem::ScoreSubsystemGoalQueue::QueueReader goal_reader_;
-  c2018::score_subsystem::ScoreSubsystemStatusQueue::QueueReader status_reader_;
-  c2018::score_subsystem::ScoreSubsystemGoalQueue score_subsystem_goal_queue_;
-  c2018::score_subsystem::ScoreSubsystemGoalProto score_subsystem_goal_proto_;
   c2018::score_subsystem::ScoreSubsystemInputQueue::QueueReader input_reader_;
   c2018::score_subsystem::ScoreSubsystemOutputQueue* output_queue_;
-  c2018::score_subsystem::ScoreSubsystemInputQueue* input_queue_;
-  muan::wpilib::DriverStationQueue::QueueReader ds_status_;
+  c2018::score_subsystem::ScoreSubsystemStatusQueue* status_queue_;
+  muan::wpilib::DriverStationQueue::QueueReader ds_status_reader_;
 
   double elevator_height;
   double claw_angle;
