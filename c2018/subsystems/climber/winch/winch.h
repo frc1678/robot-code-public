@@ -9,9 +9,9 @@ namespace climber {
 
 namespace winch {
 
-double kWinchRadius = 3;     // WRONG
-double kAmountToClimb = 14;  // Inches
-double kRunningVoltage = 6.0;
+constexpr double kWinchRadius = 3;     // WRONG
+constexpr double kAmountToClimb = 14;  // Inches
+constexpr double kRunningVoltage = 6.0;
 
 class Winch {
  public:

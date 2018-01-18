@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import sys
-from c2017.subsystems.drivetrain.python import drivetrain
+from c2018.subsystems.drivetrain.python import drivetrain
 from third_party.frc971.control_loops.python import polydrivetrain
 
 import gflags
