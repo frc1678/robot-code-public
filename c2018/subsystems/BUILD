@@ -13,5 +13,6 @@ cc_library(
         "//third_party/aos/common/util:phased_loop",
         "//third_party/aos/linux_code:init",
         "//third_party/frc971/control_loops/drivetrain:drivetrain_lib",
+	"//c2018/subsystems/climber:climber_subsystem",
     ],
 )
