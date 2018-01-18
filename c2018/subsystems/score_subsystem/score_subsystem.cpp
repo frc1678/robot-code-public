@@ -4,7 +4,6 @@ namespace c2018 {
 namespace score_subsystem {
 
 using muan::queues::QueueManager;
-
 using muan::wpilib::DriverStationProto;
 
 ScoreSubsystem::ScoreSubsystem() :
