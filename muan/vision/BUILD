@@ -21,7 +21,7 @@ cc_binary(
     linkopts = [
         "-lopencv_imgproc",
         "-lopencv_core",
-        "-lopencv_video",
+        "-lopencv_videoio",
         "-lopencv_highgui",
     ],
     data = ["//c2017/vision/coprocessor:v4l_params_file"],
@@ -39,7 +39,10 @@ cc_binary(
       "//muan/webdash:server",
       ":video_stream",
     ],
-    linkopts = ["-lopencv_imgproc"],
+    linkopts = [
+      "-lopencv_imgproc",
+      "-lopencv_videoio",
+    ],
 )
 
 cc_library(
@@ -57,6 +60,7 @@ cc_library(
     linkopts = [
         "-lopencv_core",
         "-lopencv_highgui",
+        "-lopencv_imgcodecs",
     ],
 )
 
