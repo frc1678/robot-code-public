@@ -1,4 +1,6 @@
 #include "c2018/wpilib/score_interface.h"
+
+#include <algorithm>
 #include "muan/utils/math_utils.h"
 
 namespace c2018 {
@@ -27,18 +29,18 @@ constexpr uint32_t kCubeProxy = 1;
 constexpr double kMaxVoltage = 12;
 
 ScoreSubsystemInterface::ScoreSubsystemInterface(muan::wpilib::CanWrapper* can_wrapper)
-  : input_queue_(QueueManager<ScoreSubsystemInputProto>::Fetch()),  
-    output_reader_(QueueManager<ScoreSubsystemOutputProto>::Fetch()->MakeReader()),
-    pdp_reader_(QueueManager<muan::wpilib::PdpMessage>::Fetch()->MakeReader()),
-    elevator_{kElevatorMotor},
-    wrist_{kWristMotor},
-    roller_{kIntakeMotor},
-    elevator_encoder_{kElevatorEncoderA, kElevatorEncoderB},
-    wrist_encoder_{kWristEncoderA, kWristEncoderB},
-    has_cube_{kCubeProxy},
-    elevator_hall_{kElevatorHall},
-    wrist_hall_{kWristHall},
-    pcm_{can_wrapper->pcm()} {
+    : input_queue_(QueueManager<ScoreSubsystemInputProto>::Fetch()),
+      output_reader_(QueueManager<ScoreSubsystemOutputProto>::Fetch()->MakeReader()),
+      pdp_reader_(QueueManager<muan::wpilib::PdpMessage>::Fetch()->MakeReader()),
+      elevator_{kElevatorMotor},
+      wrist_{kWristMotor},
+      roller_{kIntakeMotor},
+      elevator_encoder_{kElevatorEncoderA, kElevatorEncoderB},
+      wrist_encoder_{kWristEncoderA, kWristEncoderB},
+      has_cube_{kCubeProxy},
+      elevator_hall_{kElevatorHall},
+      wrist_hall_{kWristHall},
+      pcm_{can_wrapper->pcm()} {
   pcm_->CreateSolenoid(kIntakeSolenoid);
 }
 
@@ -66,10 +68,10 @@ void ScoreSubsystemInterface::WriteActuators() {
   } else {
     elevator_.Set(0);
     wrist_.Set(0);
-    roller_.Set(0);    
+    roller_.Set(0);
     pcm_->WriteSolenoid(kIntakeSolenoid, false);
-  } 
+  }
 }
-    
+
 }  // namespace wpilib
 }  // namespace c2018
