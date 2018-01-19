@@ -44,6 +44,7 @@ void ScoreSubsystem::Update() {
         claw_angle = -M_PI/2;
       }
     }
+
     intake_mode_ = goal->intake_mode();
     elevator_height = goal->elevator_height();
 
@@ -52,15 +53,15 @@ void ScoreSubsystem::Update() {
   } else {
     claw_mode_ = SCORE_F;
     
-    // claw_.SetGodModeGoal(...);
+    // claw_.SetGodModeGoal(...);   doesn't exist yet
     // elevator_.SetGodModeGoal(...);
   }
 
 
-  claw_.Update(input, &output, &status, driver_station->is_sys_active());
-  elevator_.Update(input, &output, &status, driver_station->is_sys_active());
+  claw_.Update(input, &output_queue_, &status, driver_station->is_sys_active());
+  elevator_.Update(input, &output_queue_, &status, driver_station->is_sys_active());
 
-  output_queue_->WriteMessage(output);
+  // output_queue_->WriteMessage(output);
   status_queue_->WriteMessage(status);
 }
 

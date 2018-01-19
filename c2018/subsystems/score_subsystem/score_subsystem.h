@@ -19,9 +19,9 @@ class ScoreSubsystem {
   c2018::score_subsystem::elevator::Elevator elevator_;
 
   c2018::score_subsystem::ScoreSubsystemGoalQueue::QueueReader goal_reader_;
+  c2018::score_subsystem::ScoreSubsystemStatusQueue* status_queue_;
   c2018::score_subsystem::ScoreSubsystemInputQueue::QueueReader input_reader_;
   c2018::score_subsystem::ScoreSubsystemOutputQueue* output_queue_;
-  c2018::score_subsystem::ScoreSubsystemStatusQueue* status_queue_;
   muan::wpilib::DriverStationQueue::QueueReader ds_status_reader_;
 
   double elevator_height;

@@ -27,7 +27,7 @@ enum SystemState {
   INITIALIZING = 0;
   CALIBRATING = 1;
   MOVING = 2;
-  IDLE = 3;
+  SYSTEM_IDLE = 3;
   ENCODER_FAULT = 4;
   DISABLED = 5;
 }
