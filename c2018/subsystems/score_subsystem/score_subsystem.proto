@@ -18,7 +18,7 @@ enum ClawMode {
 
 enum IntakeMode {
   INTAKE = 0;
-  OUTAKE = 1;
+  OUTTAKE = 1;
   IDLE = 2;
   HOLD = 3;
 }
