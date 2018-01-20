@@ -24,7 +24,7 @@ class Trajectory {
   };
 
   // Pass in a nullptr for no path
-  void SetPath(const Path &path);
+  void SetPath(const Path &path, const State &state);
 
   // Update at 200hz, returning the new sample
   Sample Update();

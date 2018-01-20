@@ -7,10 +7,9 @@ py_binary(
     srcs = [
         "drivetrain.py",
     ],
+    main = "drivetrain.py",
     deps = [
-        # '//external:python-gflags',
-        # '//external:python-glog',
-        "//third_party/frc971/control_loops/python:controls",
+        "//third_party/frc971/control_loops/python:drivetrain",
     ],
 )
 
@@ -20,10 +19,11 @@ py_binary(
         "drivetrain.py",
         "polydrivetrain.py",
     ],
+    main = "polydrivetrain.py",
     deps = [
         # '//external:python-gflags',
         # '//external:python-glog',
-        "//third_party/frc971/control_loops/python:controls",
+        "//third_party/frc971/control_loops/python:polydrivetrain",
     ],
 )
 

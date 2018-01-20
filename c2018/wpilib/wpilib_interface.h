@@ -7,7 +7,7 @@
 #include "muan/wpilib/gyro/gyro_reader.h"
 #include "muan/queues/queue_manager.h"
 #include "c2018/wpilib/drivetrain_interface.h"
-#include "c2018/wpilib/superstructure_interface.h"
+#include "c2018/wpilib/score_interface.h"
 
 namespace c2018 {
 namespace wpilib {
@@ -25,7 +25,7 @@ class WpilibInterface {
   muan::wpilib::CanWrapper can_;
   muan::wpilib::gyro::GyroReader gyro_;
   DrivetrainInterface drivetrain_;
-  SuperstructureInterface superstructure_;
+  ScoreSubsystemInterface score_;
 };
 
 }  // namespace wpilib

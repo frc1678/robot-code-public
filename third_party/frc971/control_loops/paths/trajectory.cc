@@ -1,5 +1,4 @@
 #include "third_party/frc971/control_loops/paths/trajectory.h"
-#include <iostream>
 
 namespace frc971 {
 
@@ -7,8 +6,10 @@ namespace control_loops {
 
 namespace paths {
 
-void Trajectory::SetPath(const Path &path) {
+void Trajectory::SetPath(const Path &path, const State &state) {
   Reset();
+
+  state_ = state;
 
   double s_min = 0.0, s_max = 1.0;
   path.Populate(s_min, s_max, &poses_[0], kNumSamples);
@@ -19,6 +20,11 @@ void Trajectory::SetPath(const Path &path) {
     double curvature = ::std::abs(delta.heading() / delta.translational().norm());
     states_[i](1) = 1.0 / (1.0 / maximum_velocity_ + curvature / maximum_angular_velocity_);
     states_[i](3) = curvature * states_[i](1);
+    bool backwards = ::std::abs(::std::atan2(delta.translational()(1), delta.translational()(0)) -
+                                poses_[i].heading()) > M_PI / 2;
+    if (backwards) {
+      states_[i](1) *= -1;
+    }
   }
 
   // Backwards pass
@@ -67,22 +73,22 @@ void Trajectory::ConstrainAcceleration(const Pose &segment_begin, const Pose &se
   double final_forward_velocity =
       ::std::sqrt(initial_forward_velocity * initial_forward_velocity + 2 * acceleration * distance);
 
-  final_forward_velocity = ::std::min(final_forward_velocity, (*state_end)(1));
+  if (initial_forward_velocity < 0 || initial_forward_velocity == 0 && (*state_end)(1) < 0) {
+    final_forward_velocity *= -1;
+  }
+
+  if (::std::abs(final_forward_velocity) > ::std::abs((*state_end)(1))) {
+    final_forward_velocity = (*state_end)(1);
+  }
 
   double final_angular_velocity =
       ::std::sqrt(initial_angular_velocity * initial_angular_velocity + 2 * angular_acceleration * distance);
 
   final_angular_velocity = ::std::min(final_angular_velocity, ::std::abs((*state_end)(3)));
 
-  /* if (delta_heading / (final_angular_velocity + initial_angular_velocity) < 0) { */
-  /*   final_angular_velocity = -final_angular_velocity; */
-  /* } */
-  
-  /*
-  if (reversed) {
-    final_angular_velocity = -final_angular_velocity;
+  if (final_forward_velocity < 0 || final_forward_velocity == 0 && (*state_end)(0) < 0) {
+    distance *= -1;
   }
-  */
 
   *segment_time = ::std::abs(2 * distance / (initial_forward_velocity + final_forward_velocity));
   (*state_end)(0) = state_begin(0) + distance;
@@ -115,7 +121,7 @@ Trajectory::Sample Trajectory::Update() {
                    0.5 * angular_acceleration * time_to_go_ * time_to_go_;
   double angular_velocity = states_[index](3) + angular_acceleration * time_to_go_; // (states_[index + 1](2) - states_[index](2)) / segment_times_[index];
 
-  if (states_[index + 1](2) < states_[index](2)) {
+  if (remainder(states_[index + 1](2) - states_[index](2), 2 * M_PI) < 0) {
     angular_velocity = -angular_velocity;
   }
 

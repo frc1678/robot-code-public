@@ -80,17 +80,11 @@ class Logger {
   // This stops the logger from running. It can be resumed calling Start().
   void Stop();
 
-  // Log without format strings, such as
-  // LogStream(__FILE__, __LINE__, "x=", x, " y=", y);
-  template<typename... Ts>
-  static void LogStream(const char* filename, int line, Ts... args);
-  #define LOG_S(msg0, ...) muan::logging::Logger::LogStream(__FILE__, __LINE__, msg0, ##__VA_ARGS__)
-
   // Log with format strings, such as
-  // LogPrintf(__FILE__, __LINE__, "x=%d y=%f", x, y);
+  // LOG_P(__FILE__, __LINE__, "x=%d y=%f", x, y);
   template<typename... Ts>
-  static void LogPrintf(const char* filename, int line, Ts... args);
-  #define LOG_P(fmt, ...) muan::logging::Logger::LogPrintf(__FILE__, __LINE__, fmt, ##__VA_ARGS__)
+  static void LogText(const char* filename, int line, Ts... args);
+  #define LOG_P(fmt, ...) muan::logging::Logger::LogText(__FILE__, __LINE__, fmt, ##__VA_ARGS__)
 
  private:
   std::unique_ptr<FileWriter> writer_;

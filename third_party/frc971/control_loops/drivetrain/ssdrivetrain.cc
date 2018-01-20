@@ -39,9 +39,9 @@ void DrivetrainMotorsSS::PolyCapU(Eigen::Matrix<double, 2, 1> *U) {
   // LOG_MATRIX(DEBUG, "U_uncapped", *U);
 
   Eigen::Matrix<double, 2, 2> position_K;
-  position_K << kf_->K(0, 0), kf_->K(0, 2), kf_->K(1, 0), kf_->K(1, 2);
+  position_K << kf_->controller().K(0, 0), kf_->controller().K(0, 2), kf_->controller().K(1, 0), kf_->controller().K(1, 2);
   Eigen::Matrix<double, 2, 2> velocity_K;
-  velocity_K << kf_->K(0, 1), kf_->K(0, 3), kf_->K(1, 1), kf_->K(1, 3);
+  velocity_K << kf_->controller().K(0, 1), kf_->controller().K(0, 3), kf_->controller().K(1, 1), kf_->controller().K(1, 3);
 
   Eigen::Matrix<double, 2, 1> position_error;
   position_error << error(0, 0), error(2, 0);
@@ -153,7 +153,7 @@ void DrivetrainMotorsSS::SetGoal(
         distance_goal.right_velocity_goal(), 0.0, 0.0, 0.0;
 
     use_profile_ =
-        !kf_->Kff().isZero(0) &&
+        !kf_->controller().Kff().isZero(0) &&
         (goal->has_linear_constraints() && goal->has_angular_constraints() &&
          goal->linear_constraints().max_velocity() != 0.0 &&
          goal->linear_constraints().max_acceleration() != 0.0 &&
@@ -171,6 +171,7 @@ void DrivetrainMotorsSS::SetGoal(
     }
   } else if (goal->has_path_command()) {
     use_path_ = true;
+    use_profile_ = false;
     auto path_goal = goal->path_command();
     trajectory_.set_maximum_velocity(goal->linear_constraints().max_velocity());
     trajectory_.set_maximum_acceleration(goal->linear_constraints().max_acceleration());
@@ -185,8 +186,20 @@ void DrivetrainMotorsSS::SetGoal(
     paths::Pose initial_pose(*cartesian_position_, *integrated_kf_heading_);
     paths::Pose final_pose((Eigen::Vector3d() << path_goal.x_goal(), path_goal.y_goal(), path_goal.theta_goal()).finished());
     if (last_goal_pose_.Get() != final_pose.Get()) {
-      paths::HermitePath path(initial_pose, final_pose);
-      trajectory_.SetPath(path);
+      bool backwards;
+      if (path_goal.has_backwards()) {
+        backwards = path_goal.backwards();
+      } else {
+        auto delta = final_pose - initial_pose;
+        backwards = ::std::abs(::std::atan2(delta.translational()(1), delta.translational()(0)) -
+                               initial_pose.heading()) > M_PI / 2;
+      }
+      paths::HermitePath path(initial_pose, final_pose, backwards);
+
+      Eigen::Matrix<double, 4, 1> state_angular_linear;
+      state_angular_linear.block<2, 1>(0, 0) = LeftRightToLinear(kf_->X_hat());
+      state_angular_linear.block<2, 1>(2, 0) = LeftRightToAngular(kf_->X_hat());
+      trajectory_.SetPath(path, state_angular_linear);
 
       last_goal_pose_ = final_pose;
     }

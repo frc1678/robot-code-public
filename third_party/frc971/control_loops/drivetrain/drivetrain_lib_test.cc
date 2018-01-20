@@ -26,10 +26,14 @@ using ::aos::time::Time;
 using ::third_party::frc971::control_loops::drivetrain::y2016::
     MakeDrivetrainPlant;
 
-const DrivetrainConfig& GetDrivetrainConfig() {
+using ::frc971::constants::ShifterHallEffect;
+const ShifterHallEffect kThreeStateDriveShifter{0.0, 0.0, 0.25, 0.75};
+
+const DrivetrainConfig &GetDrivetrainConfig() {
   static DrivetrainConfig kDrivetrainConfig{
-      ::frc971::control_loops::drivetrain::ShifterType::HALL_EFFECT_SHIFTER,
+      ::frc971::control_loops::drivetrain::ShifterType::SIMPLE_SHIFTER,
       ::frc971::control_loops::drivetrain::LoopType::CLOSED_LOOP,
+      ::frc971::control_loops::drivetrain::GyroType::SPARTAN_GYRO,
 
       ::third_party::frc971::control_loops::drivetrain::y2016::
           MakeDrivetrainLoop,
@@ -45,22 +49,28 @@ const DrivetrainConfig& GetDrivetrainConfig() {
 
       ::third_party::frc971::control_loops::drivetrain::y2016::kHighGearRatio,
       ::third_party::frc971::control_loops::drivetrain::y2016::kLowGearRatio,
-      false, 0};
+      kThreeStateDriveShifter, kThreeStateDriveShifter,
+      true,
+      0.0,
+      0.4,
+      1.0
+  };
 
   return kDrivetrainConfig;
-};
+}
 
 class DrivetrainPlant : public StateFeedbackPlant<4, 2, 2> {
  public:
   explicit DrivetrainPlant(StateFeedbackPlant<4, 2, 2>&& other)
       : StateFeedbackPlant<4, 2, 2>(::std::move(other)) {}
 
-  void CheckU() override {
-    ASSERT_LE(U(0, 0), U_max(0, 0) + 0.00001 + left_voltage_offset_);
-    ASSERT_GE(U(0, 0), U_min(0, 0) - 0.00001 + left_voltage_offset_);
-    ASSERT_LE(U(1, 0), U_max(1, 0) + 0.00001 + right_voltage_offset_);
-    ASSERT_GE(U(1, 0), U_min(1, 0) - 0.00001 + right_voltage_offset_);
+  void CheckU(const Eigen::Matrix<double, 2, 1> &U) override {
+    EXPECT_LE(U(0, 0), U_max(0, 0) + 0.00001 + left_voltage_offset_);
+    EXPECT_GE(U(0, 0), U_min(0, 0) - 0.00001 + left_voltage_offset_);
+    EXPECT_LE(U(1, 0), U_max(1, 0) + 0.00001 + right_voltage_offset_);
+    EXPECT_GE(U(1, 0), U_min(1, 0) - 0.00001 + right_voltage_offset_);
   }
+
 
   double left_voltage_offset() const { return left_voltage_offset_; }
   void set_left_voltage_offset(double left_voltage_offset) {
@@ -141,7 +151,7 @@ class DrivetrainSimulation {
     last_left_position_ = drivetrain_plant_->Y(0, 0);
     last_right_position_ = drivetrain_plant_->Y(1, 0);
     auto output = output_queue_.ReadLastMessage();
-    drivetrain_plant_->mutable_U() = last_U_;
+    ::Eigen::Matrix<double, 2, 1> U = last_U_;
     if (output) {
       last_U_ << (*output)->left_voltage(), (*output)->right_voltage();
       left_gear_high_ = (*output)->high_gear();
@@ -154,23 +164,21 @@ class DrivetrainSimulation {
 
     if (left_gear_high_) {
       if (right_gear_high_) {
-        drivetrain_plant_->set_plant_index(3);
+        drivetrain_plant_->set_index(3);
       } else {
-        drivetrain_plant_->set_plant_index(2);
+        drivetrain_plant_->set_index(2);
       }
     } else {
       if (right_gear_high_) {
-        drivetrain_plant_->set_plant_index(1);
+        drivetrain_plant_->set_index(1);
       } else {
-        drivetrain_plant_->set_plant_index(0);
+        drivetrain_plant_->set_index(0);
       }
     }
 
-    drivetrain_plant_->mutable_U(0, 0) +=
-        drivetrain_plant_->left_voltage_offset();
-    drivetrain_plant_->mutable_U(1, 0) +=
-        drivetrain_plant_->right_voltage_offset();
-    drivetrain_plant_->Update();
+    U(0, 0) += drivetrain_plant_->left_voltage_offset();
+    U(1, 0) += drivetrain_plant_->right_voltage_offset();
+    drivetrain_plant_->Update(U);
   }
 
   void set_left_voltage_offset(double left_voltage_offset) {
@@ -360,7 +368,7 @@ TEST_F(DrivetrainTest, DriveStraightForward) {
     RunIteration();
     auto output = output_queue_.MakeReader().ReadLastMessage();
     ASSERT_TRUE(output);
-    EXPECT_NEAR((*output)->left_voltage(), (*output)->right_voltage(), 1e-4);
+    EXPECT_NEAR((*output)->left_voltage(), (*output)->right_voltage(), 1e-3);
     EXPECT_GT((*output)->left_voltage(), -11);
     EXPECT_GT((*output)->right_voltage(), -11);
   }
@@ -438,7 +446,7 @@ TEST_F(DrivetrainTest, ProfileStraightForward) {
     ASSERT_TRUE(output);
     EXPECT_GT((*output)->left_voltage(), -11);
     EXPECT_GT((*output)->right_voltage(), -11);
-    EXPECT_NEAR((*output)->left_voltage(), (*output)->right_voltage(), 1e-4);
+    EXPECT_NEAR((*output)->left_voltage(), (*output)->right_voltage(), 1e-3);
     EXPECT_GT((*output)->left_voltage(), -6);
     EXPECT_GT((*output)->right_voltage(), -6);
     EXPECT_LT((*output)->left_voltage(), 6);
@@ -469,7 +477,7 @@ TEST_F(DrivetrainTest, ProfileTurn) {
     ASSERT_TRUE(output);
     EXPECT_GT((*output)->left_voltage(), -11);
     EXPECT_GT((*output)->right_voltage(), -11);
-    EXPECT_NEAR((*output)->left_voltage(), -(*output)->right_voltage(), 1e-4);
+    EXPECT_NEAR((*output)->left_voltage(), -(*output)->right_voltage(), 1e-2);
     EXPECT_GT((*output)->left_voltage(), -6);
     EXPECT_GT((*output)->right_voltage(), -6);
     EXPECT_LT((*output)->left_voltage(), 6);

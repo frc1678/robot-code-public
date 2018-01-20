@@ -62,9 +62,10 @@ void CitrusRobot::Update() {
     if (ds_status->mode() == RobotMode::AUTONOMOUS) {
       // lemonscript_.Start();  // Weird to call Start in a loop, but it's a setter so it's fine
       ::frc971::control_loops::drivetrain::GoalProto dt_goal;
-      dt_goal->mutable_path_command()->set_x_goal(1.5);
-      dt_goal->mutable_path_command()->set_y_goal(-0.0);
-      dt_goal->mutable_path_command()->set_theta_goal(2.0);
+      dt_goal->mutable_path_command()->set_x_goal(-0.5);
+      dt_goal->mutable_path_command()->set_y_goal(0.0);
+      dt_goal->mutable_path_command()->set_theta_goal(-2.0);
+      dt_goal->mutable_path_command()->set_backwards(false);
 
       dt_goal->mutable_linear_constraints()->set_max_velocity(3.0);
       dt_goal->mutable_linear_constraints()->set_max_acceleration(3.0);

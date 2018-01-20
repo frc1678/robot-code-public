@@ -28,7 +28,7 @@ bool AutonomousBase::IsAutonomous() {
   if (driver_station_reader_.ReadLastMessage(&driver_station)) {
     return driver_station->mode() == RobotMode::AUTONOMOUS;
   } else {
-    LOG_S("No driver station status found.");
+    LOG_P("No driver station status found.");
     return false;
   }
 }
@@ -50,7 +50,7 @@ void AutonomousBase::StartDriveAbsolute(double left, double right) {
 void AutonomousBase::StartDriveRelative(double forward, double theta) {
   DrivetrainStatus status;
   if (!drivetrain_status_reader_.ReadLastMessage(&status)) {
-    LOG_S("No drivetrain status found.");
+    LOG_P("No drivetrain status found.");
     return;
   }
 
@@ -96,7 +96,7 @@ void AutonomousBase::operator()() {
 
   // Start of autonomous. Grab the game specific string.
   auto left_right_codes = game_specific_string->code();
-  LOG_S("Starting autonomous with layout ", left_right_codes);
+  LOG_P("Starting autonomous with layout ", left_right_codes);
   if (left_right_codes[0] == 'L') {
     if (left_right_codes[1] == 'L') {
       // Switch is left, scale is left

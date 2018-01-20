@@ -3,9 +3,9 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <unordered_map>
 #include <vector>
-#include <string>
 
 #include "muan/logging/logger.h"
 #include "muan/queues/message_queue.h"
