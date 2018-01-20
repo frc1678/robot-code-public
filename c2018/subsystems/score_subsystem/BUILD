@@ -30,4 +30,4 @@ cc_library(
     "//muan/queues:queue_manager",
   ],
 
-)
+)  //I hope this comment gets rid of the comment on github!
