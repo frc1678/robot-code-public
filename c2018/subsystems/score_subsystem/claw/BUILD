@@ -23,16 +23,16 @@ cc_library(
   srcs = ["claw.cpp"],
   hdrs = ["claw.h"],
   deps = [
-    ":claw_constants",
-    "//muan/control:state_space",
-    "//third_party/google/googletest:googletest",
-    "//muan/control/calibration:hall_calibration",
-    "//muan/units:units",
-    "//muan/wpilib:wpilib_queues",
-    "//third_party/aos/common/util:trapezoid_profile",
-    "//muan/utils:math_utils",
     "//c2018/subsystems/score_subsystem:score_subsystem_queues",
     "//c2018/subsystems/score_subsystem:score_subsystem_proto"
+    ":claw_constants",
+    "//muan/control/calibration:hall_calibration",
+    "//muan/control:state_space",
+    "//muan/units:units",
+    "//muan/utils:math_utils",
+    "//muan/wpilib:wpilib_queues",
+    "//third_party/aos/common/util:trapezoid_profile",
+    "//third_party/google/googletest:googletest",
   ],
 )
 
@@ -43,20 +43,19 @@ cc_library(
     deps = ["//third_party/eigen"],
 )
 
-
 cc_test(
     name = "claw_test",
     srcs = ["claw_test.cpp"],
     deps = [
+      "//c2018/subsystems/score_subsystem:score_subsystem_queues",
       ":claw_constants",
       ":claw_controller",
-      "//muan/control:state_space",
-      "//third_party/google/googletest:googletest",
       "//muan/control/calibration:hall_calibration",
+      "//muan/control:state_space",
+      "//muan/utils:math_utils",
       "//muan/units:units",
       "//muan/wpilib:wpilib_queues",
       "//third_party/aos/common/util:trapezoid_profile",
-      "//muan/utils:math_utils",
-      "//c2018/subsystems/score_subsystem:score_subsystem_queues",
+      "//third_party/google/googletest:googletest",
     ],
 )
