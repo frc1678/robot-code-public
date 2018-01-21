@@ -28,7 +28,7 @@ ClimberInterface::ClimberInterface(muan::wpilib::CanWrapper* can_wrapper)
 
 void ClimberInterface::ReadSensors() {
   ClimberInputProto sensors;
-  sensors->set_position(winch_encoder_.Get());
+  sensors->set_position(winch_encoder_.Get() / 1  /* This 1 is temporary. Maya will tell us this*/ );
 
   muan::wpilib::PdpMessage pdp_data;
   if (pdp_reader_.ReadLastMessage(&pdp_data)) {
@@ -39,7 +39,7 @@ void ClimberInterface::ReadSensors() {
 void ClimberInterface::WriteActuators() {
   ClimberOutputProto outputs;
   if (output_reader_.ReadLastMessage(&outputs)) {
-    winch_.Set(muan::utils::Cap(outputs->voltage(), -kMaxVoltage, kMaxVoltage));
+    winch_.Set(muan::utils::Cap(outputs->voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
     pcm_->WriteSolenoid(kBatterSolenoid, outputs->release_solenoid());
   } else {
     winch_.Set(0);

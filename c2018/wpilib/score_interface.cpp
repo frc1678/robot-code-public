@@ -1,6 +1,7 @@
 #include "c2018/wpilib/score_interface.h"
 
 #include <algorithm>
+
 #include "muan/utils/math_utils.h"
 
 namespace c2018 {
@@ -46,8 +47,9 @@ ScoreSubsystemInterface::ScoreSubsystemInterface(muan::wpilib::CanWrapper* can_w
 
 void ScoreSubsystemInterface::ReadSensors() {
   ScoreSubsystemInputProto sensors;
-  sensors->set_elevator_encoder(elevator_encoder_.Get());
-  sensors->set_wrist_encoder(wrist_encoder_.Get());
+  sensors->set_elevator_encoder(elevator_encoder_.Get() / 2.2222);
+  sensors->set_wrist_encoder(wrist_encoder_.Get() / 5.14);
+  // These numbers come from the status to outpur ratios for the encoders.
   sensors->set_elevator_hall(elevator_hall_.Get());
   sensors->set_wrist_hall(wrist_hall_.Get());
   sensors->set_has_cube(has_cube_.Get());
@@ -61,9 +63,9 @@ void ScoreSubsystemInterface::ReadSensors() {
 void ScoreSubsystemInterface::WriteActuators() {
   ScoreSubsystemOutputProto outputs;
   if (output_reader_.ReadLastMessage(&outputs)) {
-    elevator_.Set(muan::utils::Cap(outputs->elevator_voltage(), -kMaxVoltage, kMaxVoltage));
-    wrist_.Set(muan::utils::Cap(outputs->wrist_voltage(), -kMaxVoltage, kMaxVoltage));
-    roller_.Set(muan::utils::Cap(outputs->roller_voltage(), -kMaxVoltage, kMaxVoltage));
+    elevator_.Set(muan::utils::Cap(outputs->elevator_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
+    wrist_.Set(muan::utils::Cap(outputs->wrist_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
+    roller_.Set(muan::utils::Cap(outputs->roller_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
     pcm_->WriteSolenoid(kIntakeSolenoid, outputs->claw_pinch());
   } else {
     elevator_.Set(0);
