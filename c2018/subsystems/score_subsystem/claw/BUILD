@@ -6,7 +6,7 @@ py_binary(
     name = "claw_python",
     srcs = ["claw_controller.py"],
     main = "claw_controller.py",
-    deps = ["@//muan/control:python_controls"],
+    deps = ["//muan/control:python_controls"],
 )
 genrule(
   name = "claw_genrule",
@@ -24,7 +24,7 @@ cc_library(
   hdrs = ["claw.h"],
   deps = [
     "//c2018/subsystems/score_subsystem:score_subsystem_queues",
-    "//c2018/subsystems/score_subsystem:score_subsystem_proto"
+    "//c2018/subsystems/score_subsystem:score_subsystem_proto",
     ":claw_constants",
     "//muan/control/calibration:hall_calibration",
     "//muan/control:state_space",

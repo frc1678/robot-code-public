@@ -29,7 +29,7 @@ ClawController::ClawController()
 
 void ClawController::SetGoal(double angle, IntakeMode mode) {
   if (claw_state_ == C_IDLE || claw_state_ == C_MOVING) {
-    unprofiled_goal_position_ = muan::utils::Cap(angle, 0, M_PI);
+    unprofiled_goal_position_ = muan::utils::Cap(angle, -M_PI / 2, M_PI / 2);
     claw_state_ = C_MOVING;
   }
 
@@ -98,7 +98,7 @@ void ClawController::Update(ScoreSubsystemInputProto input,
         roller_voltage = 12;
         claw_pinch = true;
         break;
-      case OUTAKE:  // TODO (Mohamed) fix spelling of outtake once Zach does
+      case OUTTAKE:
         roller_voltage = -12;
         claw_pinch = true;
         break;
@@ -137,20 +137,6 @@ double ClawController::CapU(double claw_voltage, bool outputs_enabled) {
   return voltage;
 }
 
-double ClawController::CapGoal(double r) {
-  // cap goal between 0 and pi
-  double goal = unprofiled_goal_position_;
-
-  if (r > M_PI) {
-    goal = M_PI;
-  } else if (r < 0) {
-    goal = 0;
-  } else {
-    goal = unprofiled_goal_position_;
-  }
-
-  return goal;
-}
 
 Eigen::Matrix<double, 2, 1> ClawController::UpdateProfiledGoal(
     double unprofiled_goal_, bool outputs_enabled) {
@@ -160,6 +146,7 @@ Eigen::Matrix<double, 2, 1> ClawController::UpdateProfiledGoal(
 
   return profiled_goal_;
 }
+
 }  // namespace claw
 }  // namespace score_subsystem
 }  // namespace c2018

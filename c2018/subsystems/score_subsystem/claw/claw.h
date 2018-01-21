@@ -39,7 +39,6 @@ class ClawController {
   muan::control::StateSpaceObserver<1, 3, 1> claw_observer_;
 
   double CapU(double claw_voltage, bool outputs_enabled);
-  double CapGoal(double r);
 
   IntakeMode intake_mode_;
   double unprofiled_goal_position_;

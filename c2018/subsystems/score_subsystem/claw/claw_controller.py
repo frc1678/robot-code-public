@@ -19,7 +19,12 @@ def make_gains():
     name = 'gains'
 
     # Parameters
-    moment_inertia = 18.0 * 0.381 * 0.381 * (1.0 / 3.0)
+    mass = 18.0
+    length = 0.381
+    # assume wrist is a uniform rod
+    moment_inertia = mass * length * length  / 3.0
+    center_mass = length / 2.0
+
     gear_ratio = (1.0 / 100.0) * (14.0 / 72.0)
     efficiency = .81
 
@@ -47,9 +52,11 @@ def make_gains():
     # Matrix A:
     # A = |0  1 |
     #     |k1 k2|
+    # k1 is center_of_mass * mass * gravity / moment_inertia
+    # TODO (Mohamed) find out what center of mass and mass is
     A_c = np.asmatrix([
         [0., 1.],
-        [0., t2a * emf]
+        [center_mass * mass* 9.81 / moment_inertia, t2a * emf]
     ])
 
     # Matrix B:
