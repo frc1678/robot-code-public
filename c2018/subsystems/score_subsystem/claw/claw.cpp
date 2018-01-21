@@ -66,7 +66,9 @@ void ClawController::Update(ScoreSubsystemInputProto input,
   } else if (claw_state_ == C_IDLE || claw_state_ == C_MOVING) {
     // Run the controller
     Eigen::Matrix<double, 3, 1> claw_r;
-    claw_r = (Eigen::Matrix<double, 3, 1>() << UpdateProfiledGoal(unprofiled_goal_position_, outputs_enabled)).finished();
+    claw_r = (Eigen::Matrix<double, 3, 1>()
+              << UpdateProfiledGoal(unprofiled_goal_position_, outputs_enabled))
+                 .finished();
     claw_r.block<2, 1>(0, 0) =
         trapezoidal_motion_profile_.Update(unprofiled_goal_position_, 0.0);
     claw_r(2) = 0;
@@ -136,26 +138,27 @@ double ClawController::CapU(double claw_voltage, bool outputs_enabled) {
 }
 
 double ClawController::CapGoal(double r) {
-// cap goal between 0 and pi
-double goal = unprofiled_goal_position_;
+  // cap goal between 0 and pi
+  double goal = unprofiled_goal_position_;
 
-if (r > M_PI) {
-  goal = M_PI;
-} else if (r < 0){
-  goal = 0;
-} else {
-  goal = unprofiled_goal_position_;
+  if (r > M_PI) {
+    goal = M_PI;
+  } else if (r < 0) {
+    goal = 0;
+  } else {
+    goal = unprofiled_goal_position_;
+  }
+
+  return goal;
 }
 
-return goal;
-}
+Eigen::Matrix<double, 2, 1> ClawController::UpdateProfiledGoal(
+    double unprofiled_goal_, bool outputs_enabled) {
+  if (outputs_enabled) {
+    profiled_goal_ = trapezoidal_motion_profile_.Update(unprofiled_goal_, 0.0);
+  }
 
-Eigen::Matrix<double, 2, 1> ClawController::UpdateProfiledGoal(double unprofiled_goal_, bool outputs_enabled) {
-    if (outputs_enabled) {
-      profiled_goal_ = trapezoidal_motion_profile_.Update(unprofiled_goal_, 0.0);
-    }
-
-    return profiled_goal_;
+  return profiled_goal_;
 }
 }  // namespace claw
 }  // namespace score_subsystem
