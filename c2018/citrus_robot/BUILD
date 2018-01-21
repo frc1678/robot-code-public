@@ -9,4 +9,5 @@ cc_library(
         "//muan/queues:queue_manager",
         "//third_party/frc971/control_loops/drivetrain:drivetrain_queues",
     ],
+    restricted_to = ["//tools:roborio"],
 )

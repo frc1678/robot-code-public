@@ -6,4 +6,5 @@ cc_binary(
         "//o2016/teleop",
         "//third_party/wpilibsuite:wpilib",
     ],
+    restricted_to = ["//tools:roborio"],
 )

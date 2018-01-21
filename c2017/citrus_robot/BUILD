@@ -16,4 +16,5 @@ cc_library(
         "//third_party/aos/common/util:phased_loop",
         "//third_party/lemonscript",
     ],
+    restricted_to = ["//tools:roborio"],
 )

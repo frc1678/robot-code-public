@@ -24,6 +24,8 @@ COPTS = select({
         "-Woverloaded-virtual",
         "-Wno-sign-compare",
         "-Wno-unused-function",
+        # Prevents ISO C++ const string assignment warnings for pyext sources.
+        "-Wno-writable-strings",
     ],
 })
 
@@ -70,6 +72,7 @@ cc_library(
         "src/google/protobuf/extension_set.cc",
         "src/google/protobuf/generated_message_table_driven_lite.cc",
         "src/google/protobuf/generated_message_util.cc",
+        "src/google/protobuf/implicit_weak_message.cc",
         "src/google/protobuf/io/coded_stream.cc",
         "src/google/protobuf/io/zero_copy_stream.cc",
         "src/google/protobuf/io/zero_copy_stream_impl_lite.cc",
@@ -177,13 +180,13 @@ cc_library(
     visibility = ["//visibility:public"],
 )
 
-objc_library(
-    name = "protobuf_objc",
-    hdrs = ["objectivec/GPBProtocolBuffers.h"],
-    includes = ["objectivec"],
-    non_arc_srcs = ["objectivec/GPBProtocolBuffers.m"],
-    visibility = ["//visibility:public"],
-)
+# objc_library(
+#     name = "protobuf_objc",
+#     hdrs = ["objectivec/GPBProtocolBuffers.h"],
+#     includes = ["objectivec"],
+#     non_arc_srcs = ["objectivec/GPBProtocolBuffers.m"],
+#     visibility = ["//visibility:public"],
+# )
 
 # Map of all well known protos.
 # name => (include path, imports)
@@ -234,20 +237,20 @@ cc_proto_library(
 # )
 ################################################################################
 
-internal_copied_filegroup(
-    name = "_internal_wkt_protos",
-    srcs = WELL_KNOWN_PROTOS,
-    dest = "",
-    strip_prefix = "src",
-    visibility = ["//visibility:hidden"],
-)
+# internal_copied_filegroup(
+#     name = "_internal_wkt_protos",
+#     srcs = WELL_KNOWN_PROTOS,
+#     dest = "",
+#     strip_prefix = "src",
+#     visibility = ["//visibility:hidden"],
+# )
 
-[proto_library(
-    name = proto[0] + "_proto",
-    srcs = [proto[1][0]],
-    deps = [dep + "_proto" for dep in proto[1][1]],
-    visibility = ["//visibility:public"],
-    ) for proto in WELL_KNOWN_PROTO_MAP.items()]
+# [proto_library(
+#     name = proto[0] + "_proto",
+#     srcs = [proto[1][0]],
+#     deps = [dep + "_proto" for dep in proto[1][1]],
+#     visibility = ["//visibility:public"],
+#     ) for proto in WELL_KNOWN_PROTO_MAP.items()]
 
 ################################################################################
 # Protocol Buffers Compiler
@@ -594,34 +597,34 @@ cc_test(
 ################################################################################
 # Java support
 ################################################################################
-internal_gen_well_known_protos_java(
-    srcs = WELL_KNOWN_PROTOS,
-)
+# internal_gen_well_known_protos_java(
+#     srcs = WELL_KNOWN_PROTOS,
+# )
 
-java_library(
-    name = "protobuf_java",
-    srcs = glob([
-        "java/core/src/main/java/com/google/protobuf/*.java",
-    ]) + [
-        ":gen_well_known_protos_java",
-    ],
-    javacopts = ["-source 6", "-target 6"],
-    visibility = ["//visibility:public"],
-)
+# java_library(
+#     name = "protobuf_java",
+#     srcs = glob([
+#         "java/core/src/main/java/com/google/protobuf/*.java",
+#     ]) + [
+#         ":gen_well_known_protos_java",
+#     ],
+#     javacopts = ["-source 6", "-target 6"],
+#     visibility = ["//visibility:public"],
+# )
 
-java_library(
-    name = "protobuf_java_util",
-    srcs = glob([
-        "java/util/src/main/java/com/google/protobuf/util/*.java",
-    ]),
-    javacopts = ["-source 6", "-target 6"],
-    visibility = ["//visibility:public"],
-    deps = [
-        "protobuf_java",
-        "//external:gson",
-        "//external:guava",
-    ],
-)
+# java_library(
+#     name = "protobuf_java_util",
+#     srcs = glob([
+#         "java/util/src/main/java/com/google/protobuf/util/*.java",
+#     ]),
+#     javacopts = ["-source 6", "-target 6"],
+#     visibility = ["//visibility:public"],
+#     deps = [
+#         "protobuf_java",
+#         "//external:gson",
+#         "//external:guava",
+#     ],
+# )
 
 ################################################################################
 # Python support
@@ -732,6 +735,7 @@ py_proto_library(
         ":python_srcs",
         "//external:six",
     ],
+    py_extra_srcs = glob(["python/**/__init__.py"]),
     srcs_version = "PY2AND3",
     visibility = ["//visibility:public"],
 )
@@ -827,90 +831,90 @@ proto_lang_toolchain(
     visibility = ["//visibility:public"],
 )
 
-proto_lang_toolchain(
-    name = "java_toolchain",
-    command_line = "--java_out=$(OUT)",
-    runtime = ":protobuf_java",
-    visibility = ["//visibility:public"],
-)
+# proto_lang_toolchain(
+#     name = "java_toolchain",
+#     command_line = "--java_out=$(OUT)",
+#     runtime = ":protobuf_java",
+#     visibility = ["//visibility:public"],
+# )
 
-OBJC_HDRS = [
-    "objectivec/GPBArray.h",
-    "objectivec/GPBBootstrap.h",
-    "objectivec/GPBCodedInputStream.h",
-    "objectivec/GPBCodedOutputStream.h",
-    "objectivec/GPBDescriptor.h",
-    "objectivec/GPBDictionary.h",
-    "objectivec/GPBExtensionInternals.h",
-    "objectivec/GPBExtensionRegistry.h",
-    "objectivec/GPBMessage.h",
-    "objectivec/GPBProtocolBuffers.h",
-    "objectivec/GPBProtocolBuffers_RuntimeSupport.h",
-    "objectivec/GPBRootObject.h",
-    "objectivec/GPBRuntimeTypes.h",
-    "objectivec/GPBUnknownField.h",
-    "objectivec/GPBUnknownFieldSet.h",
-    "objectivec/GPBUtilities.h",
-    "objectivec/GPBWellKnownTypes.h",
-    "objectivec/GPBWireFormat.h",
-    "objectivec/google/protobuf/Any.pbobjc.h",
-    "objectivec/google/protobuf/Api.pbobjc.h",
-    "objectivec/google/protobuf/Duration.pbobjc.h",
-    "objectivec/google/protobuf/Empty.pbobjc.h",
-    "objectivec/google/protobuf/FieldMask.pbobjc.h",
-    "objectivec/google/protobuf/SourceContext.pbobjc.h",
-    "objectivec/google/protobuf/Struct.pbobjc.h",
-    "objectivec/google/protobuf/Timestamp.pbobjc.h",
-    "objectivec/google/protobuf/Type.pbobjc.h",
-    "objectivec/google/protobuf/Wrappers.pbobjc.h",
-]
+# OBJC_HDRS = [
+#     "objectivec/GPBArray.h",
+#     "objectivec/GPBBootstrap.h",
+#     "objectivec/GPBCodedInputStream.h",
+#     "objectivec/GPBCodedOutputStream.h",
+#     "objectivec/GPBDescriptor.h",
+#     "objectivec/GPBDictionary.h",
+#     "objectivec/GPBExtensionInternals.h",
+#     "objectivec/GPBExtensionRegistry.h",
+#     "objectivec/GPBMessage.h",
+#     "objectivec/GPBProtocolBuffers.h",
+#     "objectivec/GPBProtocolBuffers_RuntimeSupport.h",
+#     "objectivec/GPBRootObject.h",
+#     "objectivec/GPBRuntimeTypes.h",
+#     "objectivec/GPBUnknownField.h",
+#     "objectivec/GPBUnknownFieldSet.h",
+#     "objectivec/GPBUtilities.h",
+#     "objectivec/GPBWellKnownTypes.h",
+#     "objectivec/GPBWireFormat.h",
+#     "objectivec/google/protobuf/Any.pbobjc.h",
+#     "objectivec/google/protobuf/Api.pbobjc.h",
+#     "objectivec/google/protobuf/Duration.pbobjc.h",
+#     "objectivec/google/protobuf/Empty.pbobjc.h",
+#     "objectivec/google/protobuf/FieldMask.pbobjc.h",
+#     "objectivec/google/protobuf/SourceContext.pbobjc.h",
+#     "objectivec/google/protobuf/Struct.pbobjc.h",
+#     "objectivec/google/protobuf/Timestamp.pbobjc.h",
+#     "objectivec/google/protobuf/Type.pbobjc.h",
+#     "objectivec/google/protobuf/Wrappers.pbobjc.h",
+# ]
 
-OBJC_PRIVATE_HDRS = [
-    "objectivec/GPBArray_PackagePrivate.h",
-    "objectivec/GPBCodedInputStream_PackagePrivate.h",
-    "objectivec/GPBCodedOutputStream_PackagePrivate.h",
-    "objectivec/GPBDescriptor_PackagePrivate.h",
-    "objectivec/GPBDictionary_PackagePrivate.h",
-    "objectivec/GPBMessage_PackagePrivate.h",
-    "objectivec/GPBRootObject_PackagePrivate.h",
-    "objectivec/GPBUnknownFieldSet_PackagePrivate.h",
-    "objectivec/GPBUnknownField_PackagePrivate.h",
-    "objectivec/GPBUtilities_PackagePrivate.h",
-]
+# OBJC_PRIVATE_HDRS = [
+#     "objectivec/GPBArray_PackagePrivate.h",
+#     "objectivec/GPBCodedInputStream_PackagePrivate.h",
+#     "objectivec/GPBCodedOutputStream_PackagePrivate.h",
+#     "objectivec/GPBDescriptor_PackagePrivate.h",
+#     "objectivec/GPBDictionary_PackagePrivate.h",
+#     "objectivec/GPBMessage_PackagePrivate.h",
+#     "objectivec/GPBRootObject_PackagePrivate.h",
+#     "objectivec/GPBUnknownFieldSet_PackagePrivate.h",
+#     "objectivec/GPBUnknownField_PackagePrivate.h",
+#     "objectivec/GPBUtilities_PackagePrivate.h",
+# ]
 
-OBJC_SRCS = [
-    "objectivec/GPBArray.m",
-    "objectivec/GPBCodedInputStream.m",
-    "objectivec/GPBCodedOutputStream.m",
-    "objectivec/GPBDescriptor.m",
-    "objectivec/GPBDictionary.m",
-    "objectivec/GPBExtensionInternals.m",
-    "objectivec/GPBExtensionRegistry.m",
-    "objectivec/GPBMessage.m",
-    "objectivec/GPBRootObject.m",
-    "objectivec/GPBUnknownField.m",
-    "objectivec/GPBUnknownFieldSet.m",
-    "objectivec/GPBUtilities.m",
-    "objectivec/GPBWellKnownTypes.m",
-    "objectivec/GPBWireFormat.m",
-    "objectivec/google/protobuf/Any.pbobjc.m",
-    "objectivec/google/protobuf/Api.pbobjc.m",
-    "objectivec/google/protobuf/Duration.pbobjc.m",
-    "objectivec/google/protobuf/Empty.pbobjc.m",
-    "objectivec/google/protobuf/FieldMask.pbobjc.m",
-    "objectivec/google/protobuf/SourceContext.pbobjc.m",
-    "objectivec/google/protobuf/Struct.pbobjc.m",
-    "objectivec/google/protobuf/Timestamp.pbobjc.m",
-    "objectivec/google/protobuf/Type.pbobjc.m",
-    "objectivec/google/protobuf/Wrappers.pbobjc.m",
-]
+# OBJC_SRCS = [
+#     "objectivec/GPBArray.m",
+#     "objectivec/GPBCodedInputStream.m",
+#     "objectivec/GPBCodedOutputStream.m",
+#     "objectivec/GPBDescriptor.m",
+#     "objectivec/GPBDictionary.m",
+#     "objectivec/GPBExtensionInternals.m",
+#     "objectivec/GPBExtensionRegistry.m",
+#     "objectivec/GPBMessage.m",
+#     "objectivec/GPBRootObject.m",
+#     "objectivec/GPBUnknownField.m",
+#     "objectivec/GPBUnknownFieldSet.m",
+#     "objectivec/GPBUtilities.m",
+#     "objectivec/GPBWellKnownTypes.m",
+#     "objectivec/GPBWireFormat.m",
+#     "objectivec/google/protobuf/Any.pbobjc.m",
+#     "objectivec/google/protobuf/Api.pbobjc.m",
+#     "objectivec/google/protobuf/Duration.pbobjc.m",
+#     "objectivec/google/protobuf/Empty.pbobjc.m",
+#     "objectivec/google/protobuf/FieldMask.pbobjc.m",
+#     "objectivec/google/protobuf/SourceContext.pbobjc.m",
+#     "objectivec/google/protobuf/Struct.pbobjc.m",
+#     "objectivec/google/protobuf/Timestamp.pbobjc.m",
+#     "objectivec/google/protobuf/Type.pbobjc.m",
+#     "objectivec/google/protobuf/Wrappers.pbobjc.m",
+# ]
 
-objc_library(
-    name = "objectivec",
-    hdrs = OBJC_HDRS + OBJC_PRIVATE_HDRS,
-    includes = [
-        "objectivec",
-    ],
-    non_arc_srcs = OBJC_SRCS,
-    visibility = ["//visibility:public"],
-)
+# objc_library(
+#     name = "objectivec",
+#     hdrs = OBJC_HDRS + OBJC_PRIVATE_HDRS,
+#     includes = [
+#         "objectivec",
+#     ],
+#     non_arc_srcs = OBJC_SRCS,
+#     visibility = ["//visibility:public"],
+# )

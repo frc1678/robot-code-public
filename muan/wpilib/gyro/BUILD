@@ -30,6 +30,7 @@ cc_library(
         "//third_party/aos/linux_code:init",
         "//third_party/wpilibsuite:wpilib",
     ],
+    restricted_to = ["//tools:roborio"],
 )
 
 cc_proto_library(

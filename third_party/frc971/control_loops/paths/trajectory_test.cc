@@ -66,7 +66,7 @@ class TrajectoryTest : public ::testing::Test {
   }
 
  protected:
-  HermitePath path_{Pose(), Pose()};
+  HermitePath path_{Pose(), Pose(), false};
   Trajectory trajectory_;
 };
 

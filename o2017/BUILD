@@ -10,6 +10,7 @@ cc_binary(
         "//third_party/gflags:gflags",
         "//third_party/wpilibsuite:wpilib",
     ],
+    restricted_to = ["//tools:roborio"],
 )
 
 muan_deploy(

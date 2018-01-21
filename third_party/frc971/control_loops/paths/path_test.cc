@@ -85,7 +85,7 @@ class HermiteSplineTest : public ::testing::Test {
   }
 
  protected:
-  HermitePath path_{Pose(), Pose()};
+  HermitePath path_{Pose(), Pose(), false};
   ::std::array<Pose, kNumSamples> poses_;
 };
 

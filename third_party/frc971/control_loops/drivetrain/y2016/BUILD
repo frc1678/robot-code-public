@@ -63,15 +63,3 @@ cc_library(
     # '//third_party/frc971/control_loops/drivetrain/y2016:constants',
   ],
 )
-
-cc_binary(
-  name = 'drivetrain',
-  srcs = [
-    'drivetrain_main.cc',
-  ],
-  deps = [
-    ':drivetrain_base',
-    '//third_party/aos/linux_code:init',
-    '//third_party/frc971/control_loops/drivetrain:drivetrain_lib',
-  ],
-)

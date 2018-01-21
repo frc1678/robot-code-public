@@ -171,7 +171,7 @@ def cc_proto_library(
         deps=[],
         cc_libs=[],
         include=None,
-        protoc="//:protoc",
+        protoc="//third_party/google/protobuf:protoc",
         internal_bootstrap_hack=False,
         use_grpc_plugin=False,
         default_runtime="//:protobuf",
@@ -277,10 +277,10 @@ def internal_gen_well_known_protos_java(srcs):
     outs = [
         "wellknown.srcjar",
     ],
-    cmd = "$(location :protoc) --java_out=$(@D)/wellknown.jar" +
+    cmd = "$(location //third_party/google/protobuf:protoc) --java_out=$(@D)/wellknown.jar" +
           " %s $(SRCS) " % include +
           " && mv $(@D)/wellknown.jar $(@D)/wellknown.srcjar",
-    tools = [":protoc"],
+    tools = ["//third_party/google/protobuf:protoc"],
   )
 
 def internal_copied_filegroup(name, srcs, strip_prefix, dest, **kwargs):
@@ -319,8 +319,8 @@ def py_proto_library(
         py_libs=[],
         py_extra_srcs=[],
         include=None,
-        default_runtime="//:protobuf_python",
-        protoc="//:protoc",
+        default_runtime="//third_party/google/protobuf:protobuf_python",
+        protoc="//third_party/google/protobuf:protoc",
         use_grpc_plugin=False,
         **kargs):
   """Bazel rule to create a Python protobuf library from proto source files

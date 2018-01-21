@@ -15,7 +15,8 @@ cc_binary(
     data = [
         "//c2017/lemonscript/auto:auto_modes",
         "//muan/webdash:webdash_html"
-    ]
+    ],
+    restricted_to = ["//tools:roborio"],
 )
 
 muan_deploy(
