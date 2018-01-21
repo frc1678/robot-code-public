@@ -44,11 +44,17 @@ def make_gains():
     # rotational acceleration
     t2a = 1. / moment_inertia
 
-
+    # Matrix A:
+    # A = |0  1 |
+    #     |k1 k2|
     A_c = np.asmatrix([
         [0., 1.],
         [0., t2a * emf]
     ])
+
+    # Matrix B:
+    # B = |0 |
+    #     |k3|
 
     B_c = np.asmatrix([
         [0.],
@@ -60,6 +66,9 @@ def make_gains():
     ])
 
     # Controller weighting
+    # Q Matrix
+    # |Position error           Position * Velocity error|
+    # |Position * velocity err  Velocity error           |
     Q_controller = np.asmatrix([
         [1.0e3, 0.],
         [0., 5.0e1]
