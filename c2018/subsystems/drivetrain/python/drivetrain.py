@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from third_party.frc971.control_loops.python import drivetrain
-from third_party.frc971.control_loops.python import cim
+from third_party.frc971.control_loops.python import control_loop
 import sys
 
 import gflags
@@ -12,13 +12,13 @@ FLAGS = gflags.FLAGS
 gflags.DEFINE_bool('plot', False, 'If true, plot the loop response.')
 
 #TODO(Neil): Update robot moment of inertia, mass, and robot radius
-kDrivetrain = drivetrain.DrivetrainParams(J = 6.0,
+kDrivetrain = drivetrain.DrivetrainParams(J = 2.0,
                                           mass = 55,
                                           robot_radius = 0.59055 / 2.0,
-                                          wheel_radius = 4 * 0.0254 / 2,
+                                          wheel_radius = 4.0 * 0.0254 / 2.0,
                                           G_high = (12.0 / 50.0) * (24.0 / 40.0) * (50.0 / 34.0),
                                           G_low = (12.0 / 50.0) * (24.0 / 40.0) * (34.0 / 50.0),
-                                          motor_type = cim.MiniCIM(),
+                                          motor_type = control_loop.MiniCIM(),
                                           num_motors = 3,
                                           q_pos_low = 0.12,
                                           q_pos_high = 0.14,

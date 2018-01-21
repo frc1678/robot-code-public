@@ -91,7 +91,7 @@ class HermiteSplineTest : public ::testing::Test {
 
 TEST_F(HermiteSplineTest, StraightLine) {
   Pose a = (Eigen::Vector3d() << 0.0, 0.0, 0.0).finished();
-  Pose b = (Eigen::Vector3d() << 1.0, 0.0, 0.0).finished();
+  Pose b = (Eigen::Vector3d() << 3.0, 0.0, 0.0).finished();
   Run(a, b);
 }
 
@@ -124,6 +124,8 @@ TEST_F(HermiteSplineTest, DrivesBackwards) {
   Pose a = (Eigen::Vector3d() << 1.0, 1.0, 0.0).finished();
   Pose b = (Eigen::Vector3d() << 0.0, 0.0, 0.0).finished();
   Run(a, b, true);
+
+  Log("/tmp/reversed.csv");
 }
 
 }  // namespace testing

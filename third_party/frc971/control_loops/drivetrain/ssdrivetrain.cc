@@ -173,15 +173,36 @@ void DrivetrainMotorsSS::SetGoal(
     use_path_ = true;
     use_profile_ = false;
     auto path_goal = goal->path_command();
-    trajectory_.set_maximum_velocity(goal->linear_constraints().max_velocity());
-    trajectory_.set_maximum_acceleration(goal->linear_constraints().max_acceleration());
-    trajectory_.set_maximum_angular_velocity(goal->angular_constraints().max_velocity());
-    trajectory_.set_maximum_angular_acceleration(goal->angular_constraints().max_acceleration());
-
-    CHECK_GT(goal->linear_constraints().max_velocity(), 0.0);
     CHECK_GT(goal->linear_constraints().max_acceleration(), 0.0);
-    CHECK_GT(goal->angular_constraints().max_velocity(), 0.0);
-    CHECK_GT(goal->angular_constraints().max_acceleration(), 0.0);
+    trajectory_.set_maximum_acceleration(goal->linear_constraints().max_acceleration());
+
+    Eigen::Matrix<double, 4, 4> A_c = Eigen::Matrix<double, 4, 4>::Zero();
+    A_c(0, 1) = 1.0;
+    A_c(2, 3) = 1.0;
+
+    Eigen::Matrix<double, 4, 2> B_c = Eigen::Matrix<double, 4, 2>::Zero();
+
+    // If we're in high gear
+    if (kf_->index() > 0) {
+      A_c(1, 1) = dt_config_.alpha_high;
+      A_c(1, 3) = dt_config_.gamma_high;
+      A_c(3, 3) = dt_config_.alpha_high;
+      A_c(3, 1) = dt_config_.gamma_high;
+      B_c(1, 0) = dt_config_.beta_high;
+      B_c(1, 1) = dt_config_.delta_high;
+      B_c(3, 1) = dt_config_.beta_high;
+      B_c(3, 0) = dt_config_.delta_high;
+    } else {
+      A_c(1, 1) = dt_config_.alpha_low;
+      A_c(1, 3) = dt_config_.gamma_low;
+      A_c(3, 3) = dt_config_.alpha_low;
+      A_c(3, 1) = dt_config_.gamma_low;
+      B_c(1, 0) = dt_config_.beta_low;
+      B_c(1, 1) = dt_config_.delta_low;
+      B_c(3, 1) = dt_config_.beta_low;
+      B_c(3, 0) = dt_config_.delta_low;
+    }
+    trajectory_.set_system(A_c, B_c, dt_config_.robot_radius);
 
     paths::Pose initial_pose(*cartesian_position_, *integrated_kf_heading_);
     paths::Pose final_pose((Eigen::Vector3d() << path_goal.x_goal(), path_goal.y_goal(), path_goal.theta_goal()).finished());
@@ -196,10 +217,7 @@ void DrivetrainMotorsSS::SetGoal(
       }
       paths::HermitePath path(initial_pose, final_pose, backwards);
 
-      Eigen::Matrix<double, 4, 1> state_angular_linear;
-      state_angular_linear.block<2, 1>(0, 0) = LeftRightToLinear(kf_->X_hat());
-      state_angular_linear.block<2, 1>(2, 0) = LeftRightToAngular(kf_->X_hat());
-      trajectory_.SetPath(path, state_angular_linear);
+      trajectory_.SetPath(path, kf_->X_hat().block<4, 1>(0, 0));
 
       last_goal_pose_ = final_pose;
     }
@@ -259,8 +277,10 @@ void DrivetrainMotorsSS::Update(bool enable_control_loop) {
                                              unprofiled_angular(1, 0));
     } else if (use_path_) {
       paths::Trajectory::Sample sample = trajectory_.Update();
-      next_linear = sample.drivetrain_state.block<2, 1>(0, 0);
-      next_angular = sample.drivetrain_state.block<2, 1>(2, 0);
+      Eigen::Matrix<double, 7, 1> goal_state;
+      goal_state.block<4, 1>(0, 0) = sample.drivetrain_state;
+      next_linear = LeftRightToLinear(goal_state);
+      next_angular = LeftRightToAngular(goal_state);
     } else {
       next_angular = unprofiled_angular;
       next_linear = unprofiled_linear;

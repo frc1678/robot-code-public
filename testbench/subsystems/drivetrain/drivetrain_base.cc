@@ -37,7 +37,15 @@ const DrivetrainConfig &GetDrivetrainConfig() {
       true,
       0.0,
       0.4,
-      1.0
+      1.0,
+      kHighAlpha,
+      kLowAlpha,
+      kHighBeta,
+      kLowBeta,
+      kHighGamma,
+      kLowGamma,
+      kHighDelta,
+      kLowDelta
   };
 
 
