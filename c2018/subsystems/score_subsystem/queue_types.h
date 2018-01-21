@@ -17,6 +17,7 @@ using ScoreSubsystemStatusProto = muan::proto::StackProto<ScoreSubsystemStatus, 
 using ScoreSubsystemInputQueue = muan::queues::MessageQueue<ScoreSubsystemInputProto>;
 using ScoreSubsystemStatusQueue = muan::queues::MessageQueue<ScoreSubsystemStatusProto>;
 using ScoreSubsystemOutputQueue = muan::queues::MessageQueue<ScoreSubsystemOutputProto>;
+using ScoreSubsystemGoalQueue = muan::queues::MessageQueue<ScoreSubsystemGoalProto>;
 
 }  // namespace score_subsystem
 }  // namespace c2018
