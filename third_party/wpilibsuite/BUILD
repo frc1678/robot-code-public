@@ -108,5 +108,6 @@ cc_library(
     ':hal',
     ':ntcore',
   ],
-  visibility = ['//visibility:public']
+  visibility = ['//visibility:public'],
+  restricted_to = ['//tools:roborio'],
 )

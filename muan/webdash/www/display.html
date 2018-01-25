@@ -40,7 +40,9 @@
         coords = (widget["coordinates"][0]).toString() + "_" + (widget["coordinates"][1]).toString();  
         document.body.innerHTML += "<div id=" + coords + " style=position:absolute;top:" + top_shift + "px;left:" + left_shift + "px;width:" + box_width + "px;height:" + box_height + "px></div>";
         widget_name = widget["name"];
-        document.getElementById(coords).innerHTML = "<p>" + widget_name + ":</p>";
+        if (widget["should-title"] == true) {
+          document.getElementById(coords).innerHTML = "<p>" + widget_name + ":</p>";
+        }
       }
 
       alertData();

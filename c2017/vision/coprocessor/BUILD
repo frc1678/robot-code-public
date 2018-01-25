@@ -4,9 +4,17 @@ cc_binary(
     deps = [
         ":sender",
         ":vision",
-        "//third_party/gflags:gflags"
+        "//third_party/gflags:gflags",
+        "@opencv//:opencv",
     ],
-    linkopts = ["-lpthread"]
+    linkopts = [
+        "-lpthread",
+        "-lopencv_imgproc",
+        "-lopencv_core",
+        "-lopencv_video",
+        "-lopencv_videoio",
+        "-lopencv_highgui",
+    ],
 )
 
 cc_library(
@@ -35,6 +43,7 @@ cc_library(
     hdrs = ["vision.h"],
     deps = [
         ":sender",
+        "@opencv//:opencv",
         "//muan/vision:vision"
     ],
     data = [

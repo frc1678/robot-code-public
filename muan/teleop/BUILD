@@ -17,6 +17,7 @@ cc_library(
         "//third_party/wpilibsuite:wpilib",
         ":joystick_queues",
     ],
+    restricted_to = ["//tools:roborio"],
 )
 
 cc_library(

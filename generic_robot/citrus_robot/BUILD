@@ -8,4 +8,5 @@ cc_library(
         "//muan/teleop:joystick",
         "//muan/wpilib:ds_sender",
     ],
+    restricted_to = ["//tools:roborio"],
 )

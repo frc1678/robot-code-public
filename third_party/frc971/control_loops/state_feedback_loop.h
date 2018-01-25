@@ -5,11 +5,19 @@
 
 #include <iostream>
 #include <memory>
+#include <utility>
 #include <vector>
+#include <chrono>
 
 #include "Eigen/Dense"
+// #include "unsupported/Eigen/MatrixFunctions"
 
+// #include "aos/common/logging/logging.h"
 #include "third_party/aos/common/macros.h"
+
+template <int number_of_states, int number_of_inputs, int number_of_outputs,
+          typename PlantType, typename ObserverType, typename Scalar>
+class StateFeedbackLoop;
 
 // For everything in this file, "inputs" and "outputs" are defined from the
 // perspective of the plant. This means U is an input and Y is an output
@@ -18,161 +26,154 @@
 // controller (U is an output because that's what goes to the motors and Y is an
 // input because that's what comes back from the sensors).
 
-template <int number_of_states, int number_of_inputs, int number_of_outputs>
-class StateFeedbackPlantCoefficients final {
+template <int number_of_states, int number_of_inputs, int number_of_outputs,
+          typename Scalar = double>
+struct StateFeedbackPlantCoefficients final {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 
   StateFeedbackPlantCoefficients(const StateFeedbackPlantCoefficients &other)
-      : A_(other.A()),
-        B_(other.B()),
-        C_(other.C()),
-        D_(other.D()),
-        U_min_(other.U_min()),
-        U_max_(other.U_max()) {}
+      : A(other.A),
+        A_inv(other.A_inv),
+        B(other.B),
+        C(other.C),
+        D(other.D),
+        U_min(other.U_min),
+        U_max(other.U_max) {}
 
   StateFeedbackPlantCoefficients(
-      const Eigen::Matrix<double, number_of_states, number_of_states> &A,
-      const Eigen::Matrix<double, number_of_states, number_of_inputs> &B,
-      const Eigen::Matrix<double, number_of_outputs, number_of_states> &C,
-      const Eigen::Matrix<double, number_of_outputs, number_of_inputs> &D,
-      const Eigen::Matrix<double, number_of_inputs, 1> &U_max,
-      const Eigen::Matrix<double, number_of_inputs, 1> &U_min)
-      : A_(A), B_(B), C_(C), D_(D), U_min_(U_min), U_max_(U_max) {}
+      const Eigen::Matrix<Scalar, number_of_states, number_of_states> &A,
+      const Eigen::Matrix<Scalar, number_of_states, number_of_states> &A_inv,
+      const Eigen::Matrix<Scalar, number_of_states, number_of_inputs> &B,
+      const Eigen::Matrix<Scalar, number_of_outputs, number_of_states> &C,
+      const Eigen::Matrix<Scalar, number_of_outputs, number_of_inputs> &D,
+      const Eigen::Matrix<Scalar, number_of_inputs, 1> &U_max,
+      const Eigen::Matrix<Scalar, number_of_inputs, 1> &U_min)
+      : A(A), A_inv(A_inv), B(B), C(C), D(D), U_min(U_min), U_max(U_max) {}
 
-  const Eigen::Matrix<double, number_of_states, number_of_states> &A() const {
-    return A_;
-  }
-  double A(int i, int j) const { return A()(i, j); }
-  const Eigen::Matrix<double, number_of_states, number_of_inputs> &B() const {
-    return B_;
-  }
-  double B(int i, int j) const { return B()(i, j); }
-  const Eigen::Matrix<double, number_of_outputs, number_of_states> &C() const {
-    return C_;
-  }
-  double C(int i, int j) const { return C()(i, j); }
-  const Eigen::Matrix<double, number_of_outputs, number_of_inputs> &D() const {
-    return D_;
-  }
-  double D(int i, int j) const { return D()(i, j); }
-  const Eigen::Matrix<double, number_of_inputs, 1> &U_min() const {
-    return U_min_;
-  }
-  double U_min(int i, int j) const { return U_min()(i, j); }
-  const Eigen::Matrix<double, number_of_inputs, 1> &U_max() const {
-    return U_max_;
-  }
-  double U_max(int i, int j) const { return U_max()(i, j); }
-
- private:
-  const Eigen::Matrix<double, number_of_states, number_of_states> A_;
-  const Eigen::Matrix<double, number_of_states, number_of_inputs> B_;
-  const Eigen::Matrix<double, number_of_outputs, number_of_states> C_;
-  const Eigen::Matrix<double, number_of_outputs, number_of_inputs> D_;
-  const Eigen::Matrix<double, number_of_inputs, 1> U_min_;
-  const Eigen::Matrix<double, number_of_inputs, 1> U_max_;
-
-  StateFeedbackPlantCoefficients &operator=(
-      StateFeedbackPlantCoefficients other) = delete;
+  const Eigen::Matrix<Scalar, number_of_states, number_of_states> A;
+  const Eigen::Matrix<Scalar, number_of_states, number_of_states> A_inv;
+  const Eigen::Matrix<Scalar, number_of_states, number_of_inputs> B;
+  const Eigen::Matrix<Scalar, number_of_outputs, number_of_states> C;
+  const Eigen::Matrix<Scalar, number_of_outputs, number_of_inputs> D;
+  const Eigen::Matrix<Scalar, number_of_inputs, 1> U_min;
+  const Eigen::Matrix<Scalar, number_of_inputs, 1> U_max;
 };
 
-template <int number_of_states, int number_of_inputs, int number_of_outputs>
+template <int number_of_states, int number_of_inputs, int number_of_outputs,
+          typename Scalar = double>
 class StateFeedbackPlant {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 
   StateFeedbackPlant(
       ::std::vector<::std::unique_ptr<StateFeedbackPlantCoefficients<
-          number_of_states, number_of_inputs, number_of_outputs>>>
+          number_of_states, number_of_inputs, number_of_outputs, Scalar>>>
           *coefficients)
-      : coefficients_(::std::move(*coefficients)), plant_index_(0) {
+      : coefficients_(::std::move(*coefficients)), index_(0) {
     Reset();
   }
 
   StateFeedbackPlant(StateFeedbackPlant &&other)
-      : plant_index_(other.plant_index_) {
+      : index_(other.index_) {
     ::std::swap(coefficients_, other.coefficients_);
     X_.swap(other.X_);
     Y_.swap(other.Y_);
-    U_.swap(other.U_);
   }
 
   virtual ~StateFeedbackPlant() {}
 
-  const Eigen::Matrix<double, number_of_states, number_of_states> &A() const {
-    return coefficients().A();
+  const Eigen::Matrix<Scalar, number_of_states, number_of_states> &A() const {
+    return coefficients().A;
   }
-  double A(int i, int j) const { return A()(i, j); }
-  const Eigen::Matrix<double, number_of_states, number_of_inputs> &B() const {
-    return coefficients().B();
+  Scalar A(int i, int j) const { return A()(i, j); }
+  const Eigen::Matrix<Scalar, number_of_states, number_of_states> &A_inv() const {
+    return coefficients().A_inv;
   }
-  double B(int i, int j) const { return B()(i, j); }
-  const Eigen::Matrix<double, number_of_outputs, number_of_states> &C() const {
-    return coefficients().C();
+  Scalar A_inv(int i, int j) const { return A_inv()(i, j); }
+  const Eigen::Matrix<Scalar, number_of_states, number_of_inputs> &B() const {
+    return coefficients().B;
   }
-  double C(int i, int j) const { return C()(i, j); }
-  const Eigen::Matrix<double, number_of_outputs, number_of_inputs> &D() const {
-    return coefficients().D();
+  Scalar B(int i, int j) const { return B()(i, j); }
+  const Eigen::Matrix<Scalar, number_of_outputs, number_of_states> &C() const {
+    return coefficients().C;
   }
-  double D(int i, int j) const { return D()(i, j); }
-  const Eigen::Matrix<double, number_of_inputs, 1> &U_min() const {
-    return coefficients().U_min();
+  Scalar C(int i, int j) const { return C()(i, j); }
+  const Eigen::Matrix<Scalar, number_of_outputs, number_of_inputs> &D() const {
+    return coefficients().D;
   }
-  double U_min(int i, int j) const { return U_min()(i, j); }
-  const Eigen::Matrix<double, number_of_inputs, 1> &U_max() const {
-    return coefficients().U_max();
+  Scalar D(int i, int j) const { return D()(i, j); }
+  const Eigen::Matrix<Scalar, number_of_inputs, 1> &U_min() const {
+    return coefficients().U_min;
   }
-  double U_max(int i, int j) const { return U_max()(i, j); }
+  Scalar U_min(int i, int j) const { return U_min()(i, j); }
+  const Eigen::Matrix<Scalar, number_of_inputs, 1> &U_max() const {
+    return coefficients().U_max;
+  }
+  Scalar U_max(int i, int j) const { return U_max()(i, j); }
 
-  const Eigen::Matrix<double, number_of_states, 1> &X() const { return X_; }
-  double X(int i, int j) const { return X()(i, j); }
-  const Eigen::Matrix<double, number_of_outputs, 1> &Y() const { return Y_; }
-  double Y(int i, int j) const { return Y()(i, j); }
-  const Eigen::Matrix<double, number_of_inputs, 1> &U() const { return U_; }
-  double U(int i, int j) const { return U()(i, j); }
+  const Eigen::Matrix<Scalar, number_of_states, 1> &X() const { return X_; }
+  Scalar X(int i, int j) const { return X()(i, j); }
+  const Eigen::Matrix<Scalar, number_of_outputs, 1> &Y() const { return Y_; }
+  Scalar Y(int i, int j) const { return Y()(i, j); }
 
-  Eigen::Matrix<double, number_of_states, 1> &mutable_X() { return X_; }
-  double &mutable_X(int i, int j) { return mutable_X()(i, j); }
-  Eigen::Matrix<double, number_of_outputs, 1> &mutable_Y() { return Y_; }
-  double &mutable_Y(int i, int j) { return mutable_Y()(i, j); }
-  Eigen::Matrix<double, number_of_inputs, 1> &mutable_U() { return U_; }
-  double &mutable_U(int i, int j) { return mutable_U()(i, j); }
+  Eigen::Matrix<Scalar, number_of_states, 1> &mutable_X() { return X_; }
+  Scalar &mutable_X(int i, int j) { return mutable_X()(i, j); }
+  Eigen::Matrix<Scalar, number_of_outputs, 1> &mutable_Y() { return Y_; }
+  Scalar &mutable_Y(int i, int j) { return mutable_Y()(i, j); }
 
   const StateFeedbackPlantCoefficients<number_of_states, number_of_inputs,
-                                       number_of_outputs>
-      &coefficients() const {
-    return *coefficients_[plant_index_];
+                                       number_of_outputs, Scalar>
+      &coefficients(int index) const {
+    return *coefficients_[index];
   }
 
-  int plant_index() const { return plant_index_; }
-  void set_plant_index(int plant_index) {
-    assert(plant_index >= 0);
-    assert(plant_index < static_cast<int>(coefficients_.size()));
-    plant_index_ = plant_index;
+  const StateFeedbackPlantCoefficients<number_of_states, number_of_inputs,
+                                       number_of_outputs, Scalar>
+      &coefficients() const {
+    return *coefficients_[index_];
+  }
+
+  int index() const { return index_; }
+  void set_index(int index) {
+    assert(index >= 0);
+    assert(index < static_cast<int>(coefficients_.size()));
+    index_ = index;
   }
 
   void Reset() {
     X_.setZero();
     Y_.setZero();
-    U_.setZero();
   }
 
   // Assert that U is within the hardware range.
-  virtual void CheckU() {
+  virtual void CheckU(const Eigen::Matrix<Scalar, number_of_inputs, 1> &U) {
     for (int i = 0; i < kNumInputs; ++i) {
-      assert(U(i, 0) <= U_max(i, 0) + 0.00001);
-      assert(U(i, 0) >= U_min(i, 0) - 0.00001);
+      if (U(i, 0) > U_max(i, 0) + static_cast<Scalar>(0.00001) ||
+          U(i, 0) < U_min(i, 0) - static_cast<Scalar>(0.00001)) {
+        // LOG(FATAL, "U out of range\n");
+      }
     }
   }
 
   // Computes the new X and Y given the control input.
-  void Update() {
+  void Update(const Eigen::Matrix<Scalar, number_of_inputs, 1> &U) {
     // Powers outside of the range are more likely controller bugs than things
     // that the plant should deal with.
-    CheckU();
-    X_ = A() * X() + B() * U();
-    Y_ = C() * X() + D() * U();
+    CheckU(U);
+    X_ = Update(X(), U);
+    UpdateY(U);
+  }
+
+  // Computes the new Y given the control input.
+  void UpdateY(const Eigen::Matrix<Scalar, number_of_inputs, 1> &U) {
+    Y_ = C() * X() + D() * U;
+  }
+
+  Eigen::Matrix<Scalar, number_of_states, 1> Update(
+      const Eigen::Matrix<Scalar, number_of_states, 1> X,
+      const Eigen::Matrix<Scalar, number_of_inputs, 1> &U) const {
+    return A() * X + B() * U;
   }
 
  protected:
@@ -182,229 +183,321 @@ class StateFeedbackPlant {
   static const int kNumInputs = number_of_inputs;
 
  private:
-  Eigen::Matrix<double, number_of_states, 1> X_;
-  Eigen::Matrix<double, number_of_outputs, 1> Y_;
-  Eigen::Matrix<double, number_of_inputs, 1> U_;
+  Eigen::Matrix<Scalar, number_of_states, 1> X_;
+  Eigen::Matrix<Scalar, number_of_outputs, 1> Y_;
 
   ::std::vector<::std::unique_ptr<StateFeedbackPlantCoefficients<
-      number_of_states, number_of_inputs, number_of_outputs>>>
+      number_of_states, number_of_inputs, number_of_outputs, Scalar>>>
       coefficients_;
 
-  int plant_index_;
+  int index_;
 
   DISALLOW_COPY_AND_ASSIGN(StateFeedbackPlant);
 };
 
-// A Controller is a structure which holds a plant and the K and L matrices.
-// This is designed such that multiple controllers can share one set of state to
-// support gain scheduling easily.
-template <int number_of_states, int number_of_inputs, int number_of_outputs>
-struct StateFeedbackController final {
+// A container for all the controller coefficients.
+template <int number_of_states, int number_of_inputs, int number_of_outputs,
+          typename Scalar = double>
+struct StateFeedbackControllerCoefficients final {
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 
-  const Eigen::Matrix<double, number_of_states, number_of_outputs> L;
-  const Eigen::Matrix<double, number_of_inputs, number_of_states> K;
-  const Eigen::Matrix<double, number_of_inputs, number_of_states> Kff;
-  const Eigen::Matrix<double, number_of_states, number_of_states> A_inv;
-  StateFeedbackPlantCoefficients<number_of_states, number_of_inputs,
-                                 number_of_outputs>
-      plant;
+  const Eigen::Matrix<Scalar, number_of_inputs, number_of_states> K;
+  const Eigen::Matrix<Scalar, number_of_inputs, number_of_states> Kff;
 
-  StateFeedbackController(
-      const Eigen::Matrix<double, number_of_states, number_of_outputs> &L,
-      const Eigen::Matrix<double, number_of_inputs, number_of_states> &K,
-      const Eigen::Matrix<double, number_of_inputs, number_of_states> &Kff,
-      const Eigen::Matrix<double, number_of_states, number_of_states> &A_inv,
-      const StateFeedbackPlantCoefficients<number_of_states, number_of_inputs,
-                                           number_of_outputs> &plant)
-      : L(L), K(K), Kff(Kff), A_inv(A_inv), plant(plant) {}
-
-  // TODO(Brian): Remove this overload once they're all converted.
-  StateFeedbackController(
-      const Eigen::Matrix<double, number_of_states, number_of_outputs> &L,
-      const Eigen::Matrix<double, number_of_inputs, number_of_states> &K,
-      const Eigen::Matrix<double, number_of_states, number_of_states> &A_inv,
-      const StateFeedbackPlantCoefficients<number_of_states, number_of_inputs,
-                                           number_of_outputs> &plant)
-      : L(L),
-        K(K),
-        Kff(::Eigen::Matrix<double, number_of_inputs,
-                            number_of_states>::Zero()),
-        A_inv(A_inv),
-        plant(plant) {}
+  StateFeedbackControllerCoefficients(
+      const Eigen::Matrix<Scalar, number_of_inputs, number_of_states> &K,
+      const Eigen::Matrix<Scalar, number_of_inputs, number_of_states> &Kff)
+      : K(K), Kff(Kff) {}
 };
 
-template <int number_of_states, int number_of_inputs, int number_of_outputs>
+template <int number_of_states, int number_of_inputs, int number_of_outputs,
+          typename Scalar = double>
+class StateFeedbackController {
+ public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+
+  explicit StateFeedbackController(
+      ::std::vector<::std::unique_ptr<StateFeedbackControllerCoefficients<
+          number_of_states, number_of_inputs, number_of_outputs, Scalar>>>
+          *controllers)
+      : coefficients_(::std::move(*controllers)) {}
+
+  StateFeedbackController(StateFeedbackController &&other)
+      : index_(other.index_) {
+    ::std::swap(coefficients_, other.coefficients_);
+  }
+
+  const Eigen::Matrix<Scalar, number_of_inputs, number_of_states> &K() const {
+    return coefficients().K;
+  }
+  Scalar K(int i, int j) const { return K()(i, j); }
+  const Eigen::Matrix<Scalar, number_of_inputs, number_of_states> &Kff() const {
+    return coefficients().Kff;
+  }
+  Scalar Kff(int i, int j) const { return Kff()(i, j); }
+
+  void Reset() {}
+
+  // Sets the current controller to be index, clamped to be within range.
+  void set_index(int index) {
+    if (index < 0) {
+      index_ = 0;
+    } else if (index >= static_cast<int>(coefficients_.size())) {
+      index_ = static_cast<int>(coefficients_.size()) - 1;
+    } else {
+      index_ = index;
+    }
+  }
+
+  int index() const { return index_; }
+
+  const StateFeedbackControllerCoefficients<number_of_states, number_of_inputs,
+                                            number_of_outputs, Scalar>
+      &coefficients(int index) const {
+    return *coefficients_[index];
+  }
+
+  const StateFeedbackControllerCoefficients<number_of_states, number_of_inputs,
+                                            number_of_outputs, Scalar>
+      &coefficients() const {
+    return *coefficients_[index_];
+  }
+
+ private:
+  int index_ = 0;
+  ::std::vector<::std::unique_ptr<StateFeedbackControllerCoefficients<
+      number_of_states, number_of_inputs, number_of_outputs, Scalar>>>
+      coefficients_;
+};
+
+// A container for all the observer coefficients.
+template <int number_of_states, int number_of_inputs, int number_of_outputs,
+          typename Scalar = double>
+struct StateFeedbackObserverCoefficients final {
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+
+  const Eigen::Matrix<Scalar, number_of_states, number_of_outputs> L;
+
+  StateFeedbackObserverCoefficients(
+      const Eigen::Matrix<Scalar, number_of_states, number_of_outputs> &L)
+      : L(L) {}
+};
+
+template <int number_of_states, int number_of_inputs, int number_of_outputs,
+          typename Scalar = double>
+class StateFeedbackObserver {
+ public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+
+  explicit StateFeedbackObserver(
+      ::std::vector<::std::unique_ptr<StateFeedbackObserverCoefficients<
+          number_of_states, number_of_inputs, number_of_outputs, Scalar>>> *observers)
+      : coefficients_(::std::move(*observers)) {}
+
+  StateFeedbackObserver(StateFeedbackObserver &&other)
+      : X_hat_(other.X_hat_), index_(other.index_) {
+    ::std::swap(coefficients_, other.coefficients_);
+  }
+
+  const Eigen::Matrix<Scalar, number_of_states, number_of_outputs> &L() const {
+    return coefficients().L;
+  }
+  Scalar L(int i, int j) const { return L()(i, j); }
+
+  const Eigen::Matrix<Scalar, number_of_states, 1> &X_hat() const {
+    return X_hat_;
+  }
+  Eigen::Matrix<Scalar, number_of_states, 1> &mutable_X_hat() { return X_hat_; }
+
+  void Reset(StateFeedbackPlant<number_of_states, number_of_inputs,
+                                number_of_outputs, Scalar> * /*loop*/) {
+    X_hat_.setZero();
+  }
+
+  void Predict(StateFeedbackPlant<number_of_states, number_of_inputs,
+                                  number_of_outputs, Scalar> *plant,
+               const Eigen::Matrix<Scalar, number_of_inputs, 1> &new_u,
+               ::std::chrono::nanoseconds /*dt*/) {
+    mutable_X_hat() = plant->Update(X_hat(), new_u);
+  }
+
+  void Correct(const StateFeedbackPlant<number_of_states, number_of_inputs,
+                                        number_of_outputs, Scalar> &plant,
+               const Eigen::Matrix<Scalar, number_of_inputs, 1> &U,
+               const Eigen::Matrix<Scalar, number_of_outputs, 1> &Y) {
+    mutable_X_hat() +=
+        plant.A_inv() * L() * (Y - plant.C() * X_hat() - plant.D() * U);
+  }
+
+  // Sets the current controller to be index, clamped to be within range.
+  void set_index(int index) {
+    if (index < 0) {
+      index_ = 0;
+    } else if (index >= static_cast<int>(coefficients_.size())) {
+      index_ = static_cast<int>(coefficients_.size()) - 1;
+    } else {
+      index_ = index;
+    }
+  }
+
+  int index() const { return index_; }
+
+  const StateFeedbackObserverCoefficients<number_of_states, number_of_inputs,
+                                          number_of_outputs, Scalar>
+      &coefficients(int index) const {
+    return *coefficients_[index];
+  }
+
+  const StateFeedbackObserverCoefficients<number_of_states, number_of_inputs,
+                                          number_of_outputs, Scalar>
+      &coefficients() const {
+    return *coefficients_[index_];
+  }
+
+ private:
+  // Internal state estimate.
+  Eigen::Matrix<Scalar, number_of_states, 1> X_hat_;
+
+  int index_ = 0;
+  ::std::vector<::std::unique_ptr<StateFeedbackObserverCoefficients<
+      number_of_states, number_of_inputs, number_of_outputs, Scalar>>>
+      coefficients_;
+};
+
+template <int number_of_states, int number_of_inputs, int number_of_outputs,
+          typename Scalar = double,
+          typename PlantType = StateFeedbackPlant<
+              number_of_states, number_of_inputs, number_of_outputs, Scalar>,
+          typename ObserverType = StateFeedbackObserver<
+              number_of_states, number_of_inputs, number_of_outputs, Scalar>>
 class StateFeedbackLoop {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 
-  StateFeedbackLoop(
-      const StateFeedbackController<number_of_states, number_of_inputs,
-                                    number_of_outputs> &controller)
-      : controller_index_(0) {
-    controllers_.emplace_back(
-        new StateFeedbackController<number_of_states, number_of_inputs,
-                                    number_of_outputs>(controller));
+  explicit StateFeedbackLoop(
+      PlantType &&plant,
+      StateFeedbackController<number_of_states, number_of_inputs,
+                              number_of_outputs, Scalar> &&controller,
+      ObserverType &&observer)
+      : plant_(::std::move(plant)),
+        controller_(::std::move(controller)),
+        observer_(::std::move(observer)) {
     Reset();
   }
 
-  StateFeedbackLoop(
-      ::std::vector<::std::unique_ptr<StateFeedbackController<
-          number_of_states, number_of_inputs, number_of_outputs>>> *controllers)
-      : controllers_(::std::move(*controllers)), controller_index_(0) {
-    Reset();
-  }
-
-  StateFeedbackLoop(StateFeedbackLoop &&other) {
-    X_hat_.swap(other.X_hat_);
+  StateFeedbackLoop(StateFeedbackLoop &&other)
+      : plant_(::std::move(other.plant_)),
+        controller_(::std::move(other.controller_)),
+        observer_(::std::move(other.observer_)) {
     R_.swap(other.R_);
     next_R_.swap(other.next_R_);
     U_.swap(other.U_);
     U_uncapped_.swap(other.U_uncapped_);
     ff_U_.swap(other.ff_U_);
-    ::std::swap(controllers_, other.controllers_);
-    controller_index_ = other.controller_index_;
   }
 
   virtual ~StateFeedbackLoop() {}
 
-  const Eigen::Matrix<double, number_of_states, number_of_states> &A() const {
-    return controller().plant.A();
+  const Eigen::Matrix<Scalar, number_of_states, 1> &X_hat() const {
+    return observer().X_hat();
   }
-  double A(int i, int j) const { return A()(i, j); }
-  const Eigen::Matrix<double, number_of_states, number_of_inputs> &B() const {
-    return controller().plant.B();
-  }
-  const Eigen::Matrix<double, number_of_states, number_of_states> &A_inv()
-      const {
-    return controller().A_inv;
-  }
-  double A_inv(int i, int j) const { return A_inv()(i, j); }
-  double B(int i, int j) const { return B()(i, j); }
-  const Eigen::Matrix<double, number_of_outputs, number_of_states> &C() const {
-    return controller().plant.C();
-  }
-  double C(int i, int j) const { return C()(i, j); }
-  const Eigen::Matrix<double, number_of_outputs, number_of_inputs> &D() const {
-    return controller().plant.D();
-  }
-  double D(int i, int j) const { return D()(i, j); }
-  const Eigen::Matrix<double, number_of_inputs, 1> &U_min() const {
-    return controller().plant.U_min();
-  }
-  double U_min(int i, int j) const { return U_min()(i, j); }
-  const Eigen::Matrix<double, number_of_inputs, 1> &U_max() const {
-    return controller().plant.U_max();
-  }
-  double U_max(int i, int j) const { return U_max()(i, j); }
-
-  const Eigen::Matrix<double, number_of_inputs, number_of_states> &K() const {
-    return controller().K;
-  }
-  double K(int i, int j) const { return K()(i, j); }
-  const Eigen::Matrix<double, number_of_inputs, number_of_states> &Kff() const {
-    return controller().Kff;
-  }
-  double Kff(int i, int j) const { return Kff()(i, j); }
-  const Eigen::Matrix<double, number_of_states, number_of_outputs> &L() const {
-    return controller().L;
-  }
-  double L(int i, int j) const { return L()(i, j); }
-
-  const Eigen::Matrix<double, number_of_states, 1> &X_hat() const {
-    return X_hat_;
-  }
-  double X_hat(int i, int j) const { return X_hat()(i, j); }
-  const Eigen::Matrix<double, number_of_states, 1> &R() const { return R_; }
-  double R(int i, int j) const { return R()(i, j); }
-  const Eigen::Matrix<double, number_of_states, 1> &next_R() const {
+  Scalar X_hat(int i, int j) const { return X_hat()(i, j); }
+  const Eigen::Matrix<Scalar, number_of_states, 1> &R() const { return R_; }
+  Scalar R(int i, int j) const { return R()(i, j); }
+  const Eigen::Matrix<Scalar, number_of_states, 1> &next_R() const {
     return next_R_;
   }
-  double next_R(int i, int j) const { return next_R()(i, j); }
-  const Eigen::Matrix<double, number_of_inputs, 1> &U() const { return U_; }
-  double U(int i, int j) const { return U()(i, j); }
-  const Eigen::Matrix<double, number_of_inputs, 1> &U_uncapped() const {
+  Scalar next_R(int i, int j) const { return next_R()(i, j); }
+  const Eigen::Matrix<Scalar, number_of_inputs, 1> &U() const { return U_; }
+  Scalar U(int i, int j) const { return U()(i, j); }
+  const Eigen::Matrix<Scalar, number_of_inputs, 1> &U_uncapped() const {
     return U_uncapped_;
   }
-  double U_uncapped(int i, int j) const { return U_uncapped()(i, j); }
-  const Eigen::Matrix<double, number_of_inputs, 1> &ff_U() const {
+  Scalar U_uncapped(int i, int j) const { return U_uncapped()(i, j); }
+  const Eigen::Matrix<Scalar, number_of_inputs, 1> &ff_U() const {
     return ff_U_;
   }
-  double ff_U(int i, int j) const { return ff_U()(i, j); }
+  Scalar ff_U(int i, int j) const { return ff_U()(i, j); }
 
-  Eigen::Matrix<double, number_of_states, 1> &mutable_X_hat() { return X_hat_; }
-  double &mutable_X_hat(int i, int j) { return mutable_X_hat()(i, j); }
-  Eigen::Matrix<double, number_of_states, 1> &mutable_R() { return R_; }
-  double &mutable_R(int i, int j) { return mutable_R()(i, j); }
-  Eigen::Matrix<double, number_of_states, 1> &mutable_next_R() {
+  Eigen::Matrix<Scalar, number_of_states, 1> &mutable_X_hat() {
+    return observer_.mutable_X_hat();
+  }
+  Scalar &mutable_X_hat(int i, int j) { return mutable_X_hat()(i, j); }
+  Eigen::Matrix<Scalar, number_of_states, 1> &mutable_R() { return R_; }
+  Scalar &mutable_R(int i, int j) { return mutable_R()(i, j); }
+  Eigen::Matrix<Scalar, number_of_states, 1> &mutable_next_R() {
     return next_R_;
   }
-  double &mutable_next_R(int i, int j) { return mutable_next_R()(i, j); }
-  Eigen::Matrix<double, number_of_inputs, 1> &mutable_U() { return U_; }
-  double &mutable_U(int i, int j) { return mutable_U()(i, j); }
-  Eigen::Matrix<double, number_of_inputs, 1> &mutable_U_uncapped() {
+  Scalar &mutable_next_R(int i, int j) { return mutable_next_R()(i, j); }
+  Eigen::Matrix<Scalar, number_of_inputs, 1> &mutable_U() { return U_; }
+  Scalar &mutable_U(int i, int j) { return mutable_U()(i, j); }
+  Eigen::Matrix<Scalar, number_of_inputs, 1> &mutable_U_uncapped() {
     return U_uncapped_;
   }
-  double &mutable_U_uncapped(int i, int j) {
+  Scalar &mutable_U_uncapped(int i, int j) {
     return mutable_U_uncapped()(i, j);
   }
 
-  const StateFeedbackController<number_of_states, number_of_inputs,
-                                number_of_outputs>
-      &controller() const {
-    return *controllers_[controller_index_];
-  }
+  const PlantType &plant() const { return plant_; }
+  PlantType *mutable_plant() { return &plant_; }
 
   const StateFeedbackController<number_of_states, number_of_inputs,
-                                number_of_outputs>
-      &controller(int index) const {
-    return *controllers_[index];
+                                number_of_outputs, Scalar>
+      &controller() const {
+    return controller_;
   }
+
+  const ObserverType &observer() const { return observer_; }
 
   void Reset() {
-    X_hat_.setZero();
     R_.setZero();
     next_R_.setZero();
     U_.setZero();
     U_uncapped_.setZero();
     ff_U_.setZero();
+
+    plant_.Reset();
+    controller_.Reset();
+    observer_.Reset(this->mutable_plant());
   }
 
   // If U is outside the hardware range, limit it before the plant tries to use
   // it.
   virtual void CapU() {
     for (int i = 0; i < kNumInputs; ++i) {
-      if (U(i, 0) > U_max(i, 0)) {
-        U_(i, 0) = U_max(i, 0);
-      } else if (U(i, 0) < U_min(i, 0)) {
-        U_(i, 0) = U_min(i, 0);
+      if (U(i, 0) > plant().U_max(i, 0)) {
+        U_(i, 0) = plant().U_max(i, 0);
+      } else if (U(i, 0) < plant().U_min(i, 0)) {
+        U_(i, 0) = plant().U_min(i, 0);
       }
     }
   }
 
   // Corrects X_hat given the observation in Y.
-  void Correct(const Eigen::Matrix<double, number_of_outputs, 1> &Y) {
-    X_hat_ += A_inv() * L() * (Y - C() * X_hat_ - D() * U());
+  void Correct(const Eigen::Matrix<Scalar, number_of_outputs, 1> &Y) {
+    observer_.Correct(this->plant(), U(), Y);
   }
 
-  const Eigen::Matrix<double, number_of_states, 1> error() const {
+  const Eigen::Matrix<Scalar, number_of_states, 1> error() const {
     return R() - X_hat();
   }
 
   // Returns the calculated controller power.
-  virtual const Eigen::Matrix<double, number_of_inputs, 1> ControllerOutput() {
+  virtual const Eigen::Matrix<Scalar, number_of_inputs, 1> ControllerOutput() {
+    // TODO(austin): Should this live in StateSpaceController?
     ff_U_ = FeedForward();
-    return K() * error() + ff_U_;
+    return controller().K() * error() + ff_U_;
   }
 
   // Calculates the feed forwards power.
-  virtual const Eigen::Matrix<double, number_of_inputs, 1> FeedForward() {
-    return Kff() * (next_R() - A() * R());
+  virtual const Eigen::Matrix<Scalar, number_of_inputs, 1> FeedForward() {
+    // TODO(austin): Should this live in StateSpaceController?
+    return controller().Kff() * (next_R() - plant().A() * R());
   }
 
   // stop_motors is whether or not to output all 0s.
-  void Update(bool stop_motors) {
+  void Update(bool stop_motors,
+              ::std::chrono::nanoseconds dt = ::std::chrono::milliseconds(5)) {
     if (stop_motors) {
       U_.setZero();
       U_uncapped_.setZero();
@@ -414,7 +507,7 @@ class StateFeedbackLoop {
       CapU();
     }
 
-    UpdateObserver(U_);
+    UpdateObserver(U_, dt);
 
     UpdateFFReference();
   }
@@ -422,32 +515,33 @@ class StateFeedbackLoop {
   // Updates R() after any CapU operations happen on U().
   void UpdateFFReference() {
     ff_U_ -= U_uncapped() - U();
-    if (!Kff().isZero(0)) {
-      R_ = A() * R() + B() * ff_U_;
+    if (!controller().Kff().isZero(0)) {
+      R_ = plant().A() * R() + plant().B() * ff_U_;
     }
   }
 
-  void UpdateObserver(const Eigen::Matrix<double, number_of_inputs, 1> &new_u) {
-    X_hat_ = A() * X_hat() + B() * new_u;
+  void UpdateObserver(const Eigen::Matrix<Scalar, number_of_inputs, 1> &new_u,
+                      ::std::chrono::nanoseconds dt) {
+    observer_.Predict(this->mutable_plant(), new_u, dt);
   }
 
-  // Sets the current controller to be index, clamped to be within range.
-  void set_controller_index(int index) {
-    if (index < 0) {
-      controller_index_ = 0;
-    } else if (index >= static_cast<int>(controllers_.size())) {
-      controller_index_ = static_cast<int>(controllers_.size()) - 1;
-    } else {
-      controller_index_ = index;
-    }
+  // Sets the current controller to be index.
+  void set_index(int index) {
+    plant_.set_index(index);
+    controller_.set_index(index);
+    observer_.set_index(index);
   }
 
-  int controller_index() const { return controller_index_; }
+  int index() const { return plant_.index(); }
 
  protected:
-  ::std::vector<::std::unique_ptr<StateFeedbackController<
-      number_of_states, number_of_inputs, number_of_outputs>>>
-      controllers_;
+  PlantType plant_;
+
+  StateFeedbackController<number_of_states, number_of_inputs, number_of_outputs,
+                          Scalar>
+      controller_;
+
+  ObserverType observer_;
 
   // These are accessible from non-templated subclasses.
   static constexpr int kNumStates = number_of_states;
@@ -455,21 +549,17 @@ class StateFeedbackLoop {
   static constexpr int kNumInputs = number_of_inputs;
 
   // Portion of U which is based on the feed-forwards.
-  Eigen::Matrix<double, number_of_inputs, 1> ff_U_;
+  Eigen::Matrix<Scalar, number_of_inputs, 1> ff_U_;
 
  private:
-  // Internal state estimate.
-  Eigen::Matrix<double, number_of_states, 1> X_hat_;
   // Current goal (Used by the feed-back controller).
-  Eigen::Matrix<double, number_of_states, 1> R_;
+  Eigen::Matrix<Scalar, number_of_states, 1> R_;
   // Goal to go to in the next cycle (Used by Feed-Forward controller.)
-  Eigen::Matrix<double, number_of_states, 1> next_R_;
+  Eigen::Matrix<Scalar, number_of_states, 1> next_R_;
   // Computed output after being capped.
-  Eigen::Matrix<double, number_of_inputs, 1> U_;
+  Eigen::Matrix<Scalar, number_of_inputs, 1> U_;
   // Computed output before being capped.
-  Eigen::Matrix<double, number_of_inputs, 1> U_uncapped_;
-
-  int controller_index_;
+  Eigen::Matrix<Scalar, number_of_inputs, 1> U_uncapped_;
 
   DISALLOW_COPY_AND_ASSIGN(StateFeedbackLoop);
 };

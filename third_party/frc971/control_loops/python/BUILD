@@ -4,6 +4,7 @@ licenses(['notice'])
 py_library(
   name = 'controls',
   srcs = [
+    'cim.py',
     'control_loop.py',
     'controls.py',
     'polytope.py',
@@ -31,5 +32,26 @@ py_binary(
   ],
   deps = [
     ':controls',
+  ],
+)
+
+py_library(
+  name = 'drivetrain',
+  srcs = [
+    'drivetrain.py',
+  ],
+  deps = [
+    ':controls',
+  ],
+)
+
+py_library(
+  name = 'polydrivetrain',
+  srcs = [
+    'polydrivetrain.py',
+  ],
+  deps = [
+    ':controls',
+    ':drivetrain',
   ],
 )

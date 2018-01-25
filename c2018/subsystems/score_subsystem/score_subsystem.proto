@@ -18,7 +18,7 @@ enum ClawMode {
 
 enum IntakeMode {
   INTAKE = 0;
-  OUTAKE = 1;
+  OUTTAKE = 1;
   IDLE = 2;
   HOLD = 3;
 }
@@ -68,6 +68,7 @@ message ScoreSubsystemStatus {
   required double elevator_unprofiled_goal = 8;
   required double wrist_position = 9;
   required double wrist_velocity = 10;
-  required SystemState claw_state = 11;
+  required bool wrist_calibrated = 11;
+  required SystemState claw_state = 12;
 }
 

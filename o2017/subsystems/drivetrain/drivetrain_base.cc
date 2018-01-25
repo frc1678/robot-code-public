@@ -13,24 +13,41 @@ namespace o2017 {
 
 namespace drivetrain {
 
+using ::frc971::constants::ShifterHallEffect;
+const ShifterHallEffect kThreeStateDriveShifter{0.0, 0.0, 0.25, 0.75};
+
 const DrivetrainConfig &GetDrivetrainConfig() {
   static DrivetrainConfig kDrivetrainConfig{
-      ::frc971::control_loops::drivetrain::ShifterType::SIMPLE_SHIFTER,
-      ::frc971::control_loops::drivetrain::LoopType::OPEN_LOOP,
+      ::frc971::control_loops::drivetrain::ShifterType::NO_SHIFTER,
+      ::frc971::control_loops::drivetrain::LoopType::CLOSED_LOOP,
+      ::frc971::control_loops::drivetrain::GyroType::SPARTAN_GYRO,
 
-      ::o2017::subsystems::drivetrain::MakeDrivetrainLoop,
-      ::o2017::subsystems::drivetrain::MakeVelocityDrivetrainLoop,
-      ::o2017::subsystems::drivetrain::MakeKFDrivetrainLoop,
+      MakeDrivetrainLoop,
+      MakeVelocityDrivetrainLoop,
+      MakeKFDrivetrainLoop,
 
-      subsystems::drivetrain::kDt,
-      subsystems::drivetrain::kRobotRadius,
-      subsystems::drivetrain::kWheelRadius,
-      subsystems::drivetrain::kV,
+      kDt,
+      kRobotRadius,
+      kWheelRadius,
+      kV,
 
-      subsystems::drivetrain::kHighGearRatio,
-      subsystems::drivetrain::kLowGearRatio,
+      kHighGearRatio,
+      kLowGearRatio,
+      kThreeStateDriveShifter, kThreeStateDriveShifter,
       true,
-      0.0};
+      0.0,
+      0.4,
+      1.0,
+      kHighAlpha,
+      kLowAlpha,
+      kHighBeta,
+      kLowBeta,
+      kHighGamma,
+      kLowGamma,
+      kHighDelta,
+      kLowDelta
+  };
+
 
   return kDrivetrainConfig;
 }

@@ -14,6 +14,7 @@ cc_library(
         "//third_party/aos/common/util:phased_loop",
         "//third_party/aos/linux_code:init",
     ],
+    restricted_to = ["//tools:roborio"],
 )
 
 cc_library(
@@ -27,6 +28,7 @@ cc_library(
         "//third_party/aos/common:die",
         "//third_party/wpilibsuite:wpilib",
     ],
+    restricted_to = ["//tools:roborio"],
 )
 
 cc_library(
@@ -37,6 +39,7 @@ cc_library(
         "//third_party/aos/common:die",
         "//third_party/wpilibsuite:wpilib",
     ],
+    restricted_to = ["//tools:roborio"],
 )
 
 cc_binary(
@@ -46,6 +49,7 @@ cc_binary(
         ":can_wrapper",
         "//third_party/wpilibsuite:wpilib",
     ],
+    restricted_to = ["//tools:roborio"],
 )
 
 cc_binary(
@@ -55,6 +59,7 @@ cc_binary(
         ":can_wrapper",
         "//third_party/wpilibsuite:wpilib",
     ],
+    restricted_to = ["//tools:roborio"],
 )
 
 cc_library(
@@ -82,4 +87,5 @@ cc_library(
         ":wpilib_queues",
         "//third_party/wpilibsuite:wpilib",
     ],
+    restricted_to = ["//tools:roborio"],
 )

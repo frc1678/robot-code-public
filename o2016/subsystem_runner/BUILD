@@ -11,4 +11,5 @@ cc_library(
         "//third_party/aos/common/util:phased_loop",
         "//third_party/aos/linux_code:init",
     ],
+    restricted_to = ["//tools:roborio"],
 )

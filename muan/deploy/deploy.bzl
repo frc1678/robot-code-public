@@ -90,4 +90,5 @@ def muan_deploy(main, name, data = []):
     main = main,
     name = name,
     data = data + [main] + ["//muan/autostart:autostart"],
+    restricted_to = ["//tools:roborio"],
   )

@@ -112,7 +112,7 @@ void DrivetrainLoop::RunIteration(
       break;
   }
 
-  kf_.set_controller_index(ControllerIndexFromGears());
+  kf_.set_index(ControllerIndexFromGears());
   /*
   {
     GearLogging gear_logging;
@@ -244,7 +244,7 @@ void DrivetrainLoop::RunIteration(
   last_left_voltage_ = left_voltage;
   last_right_voltage_ = right_voltage;
 
-  kf_.UpdateObserver(U);
+  kf_.UpdateObserver(U, ::std::chrono::milliseconds(5));
 }
 
 void DrivetrainLoop::Zero(

@@ -19,7 +19,8 @@ DeferCall<T, N, Ts1...>::DeferCall(F f, Ts0... args0) {
   // count as capturing. Remembers the type of call so it can be
   // reconstructed and called from buf.
   func = [](const DeferCall<T, N, Ts1...>* defer_call, Ts1... args1) -> T {
-    return (*reinterpret_cast<const decltype(call)*>(defer_call->buf))(args1...);
+    auto as_lambda_ptr = reinterpret_cast<const decltype(call)*>(defer_call->buf);
+    return (*as_lambda_ptr)(args1...);
   };
 }
 

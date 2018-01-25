@@ -12,4 +12,5 @@ cc_library(
         "//third_party/aos/linux_code:init",
         "//third_party/frc971/control_loops/drivetrain:drivetrain_lib",
     ],
+    restricted_to = ["//tools:roborio"],
 )

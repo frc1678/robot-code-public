@@ -1,4 +1,4 @@
-#include "aos/vision/events/epoll_events.h"
+#include "third_party/aos/vision/events/epoll_events.h"
 
 #include <string.h>
 #include <sys/types.h>
@@ -8,8 +8,8 @@
 
 #include <vector>
 
-#include "aos/common/scoped_fd.h"
-#include "aos/common/logging/logging.h"
+#include "third_party/aos/common/scoped_fd.h"
+#include "third_party/aos/common/check.h"
 
 namespace aos {
 namespace events {
@@ -37,8 +37,9 @@ class EpollLoop::Impl {
         EpollEvent *event =
             static_cast<EpollEvent *>(events[i].data.ptr);
         if ((events[i].events & ~(EPOLLIN | EPOLLPRI)) != 0) {
-          LOG(FATAL, "unexpected epoll events set in %x on %d\n",
-              events[i].events, event->fd());
+          // LOG(FATAL, "unexpected epoll events set in %x on %d\n",
+          //     events[i].events, event->fd());
+          Die("Unexpected epoll events set.");
         }
         event->ReadEvent();
       }

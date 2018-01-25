@@ -40,15 +40,13 @@ class HermiteSplineTest : public ::testing::Test {
 
   void Set() {}
 
-  void Run(Pose initial, Pose final) {
-    path_ = HermitePath(initial, final);
+  void Run(Pose initial, Pose final, bool backwards = false) {
+    path_ = HermitePath(initial, final, backwards);
     path_.Populate(0.0, 1.0, &poses_[0], poses_.size());
 
     EXPECT_NEAR(poses_[0].translational()(0), initial.translational()(0), 1e-6);
     EXPECT_NEAR(poses_[0].translational()(1), initial.translational()(1), 1e-6);
     EXPECT_NEAR(poses_[0].heading(), initial.heading(), 1e-6);
-
-    std::cout << poses_[0].Get() << std::endl;
 
     for (size_t i = 1; i < kNumSamples; i++) {
       // Continuity/smoothness
@@ -61,12 +59,14 @@ class HermiteSplineTest : public ::testing::Test {
       // Accuracy: heading should be the same as heading calculated from
       // delta-xy
       Position delta = (poses_[i] - poses_[i - 1]).translational();
+      if (backwards) {
+        delta *= -1;
+      }
       EXPECT_NEAR(
           remainder(poses_[i].heading() - ::std::atan2(delta(1), delta(0)),
                     2.0 * M_PI),
           0.0, 1e-1)
-          << "(Failure exists at i=" << i << "/"
-          << ")";
+          << "(Failure exists at i=" << i << ")";
     }
 
     EXPECT_NEAR(poses_[kNumSamples - 1].translational()(0),
@@ -76,14 +76,22 @@ class HermiteSplineTest : public ::testing::Test {
     EXPECT_NEAR(poses_[kNumSamples - 1].heading(), final.heading(), 1e-6);
   }
 
+  void Log(const char* filename) {
+    ::std::ofstream file(filename);
+    for (size_t i = 0; i < kNumSamples; i++) {
+      auto p = poses_[i].Get();
+      file << p(0) << ',' << p(1) << ',' << p(2) << std::endl;
+    }
+  }
+
  protected:
-  HermitePath path_{Pose(), Pose()};
+  HermitePath path_{Pose(), Pose(), false};
   ::std::array<Pose, kNumSamples> poses_;
 };
 
 TEST_F(HermiteSplineTest, StraightLine) {
   Pose a = (Eigen::Vector3d() << 0.0, 0.0, 0.0).finished();
-  Pose b = (Eigen::Vector3d() << 1.0, 0.0, 0.0).finished();
+  Pose b = (Eigen::Vector3d() << 3.0, 0.0, 0.0).finished();
   Run(a, b);
 }
 
@@ -94,23 +102,30 @@ TEST_F(HermiteSplineTest, SimpleSCurve) {
 }
 
 TEST_F(HermiteSplineTest, Reversed) {
-  // This test and SimpleSCurve form a closed path in R^2, so one of them must
-  // cross the theta=+-pi boundary somewhere...
   Pose a = (Eigen::Vector3d() << 1.0, 1.0, 0.0).finished();
   Pose b = (Eigen::Vector3d() << 0.0, 0.0, 0.0).finished();
   Run(a, b);
-
-  ::std::ofstream file("/tmp/file.csv");
-  for (size_t i = 0; i < kNumSamples; i++) {
-    auto p = poses_[i].Get();
-    file << p(0) << ',' << p(1) << ',' << p(2) << std::endl;
-  }
 }
 
 TEST_F(HermiteSplineTest, HeadingBackwards) {
   Pose a = (Eigen::Vector3d() << 0.0, 0.0, M_PI / 2.0).finished();
   Pose b = (Eigen::Vector3d() << -1.0, -1.0, -M_PI / 2.0).finished();
   Run(a, b);
+}
+
+TEST_F(HermiteSplineTest, Wraparound) {
+  // This test crosses theta=+-pi twice, once in each direction
+  Pose a = (Eigen::Vector3d() << 0.0, 0.0, M_PI / 2).finished();
+  Pose b = (Eigen::Vector3d() << -1.0, 0.0, M_PI / 2).finished();
+  Run(a, b);
+}
+
+TEST_F(HermiteSplineTest, DrivesBackwards) {
+  Pose a = (Eigen::Vector3d() << 1.0, 1.0, 0.0).finished();
+  Pose b = (Eigen::Vector3d() << 0.0, 0.0, 0.0).finished();
+  Run(a, b, true);
+
+  Log("/tmp/reversed.csv");
 }
 
 }  // namespace testing

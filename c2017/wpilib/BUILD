@@ -37,6 +37,7 @@ cc_library(
         "//muan/wpilib:pcm_wrapper",
         "//third_party/wpilibsuite:wpilib",
     ],
+    restricted_to = ["//tools:roborio"],
 )
 
 cc_library(
@@ -58,6 +59,7 @@ cc_library(
         "//third_party/wpilibsuite:wpilib",
         "//third_party/gflags:gflags",
     ],
+    restricted_to = ["//tools:roborio"],
 )
 
 cc_library(
@@ -74,6 +76,7 @@ cc_library(
         "//muan/wpilib/gyro",
         "//third_party/wpilibsuite:wpilib",
     ],
+    restricted_to = ["//tools:roborio"],
 )
 
 cc_library(
@@ -89,4 +92,5 @@ cc_library(
         "//third_party/wpilibsuite:wpilib",
         "//c2017/queue_manager",
     ],
+    restricted_to = ["//tools:roborio"],
 )

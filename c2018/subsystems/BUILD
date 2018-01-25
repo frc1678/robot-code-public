@@ -5,6 +5,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "//c2018/subsystems/drivetrain:drivetrain_base",
+        "//c2018/subsystems/climber:climber_subsystem",
         "//c2018/wpilib:wpilib_interface",
         "//muan/utils:threading_utils",
         "//muan/queues:queue_manager",
@@ -13,4 +14,5 @@ cc_library(
         "//third_party/aos/linux_code:init",
         "//third_party/frc971/control_loops/drivetrain:drivetrain_lib",
     ],
+    restricted_to = ["//tools:roborio"],
 )
