@@ -9,8 +9,8 @@ class ClimberTest : public ::testing::Test {
   void Update() { climber_.Update(); }
 
   void ReadMessages() {
-    climber_output_queue_.ReadLastMessage(&climber_output_proto_);
-    climber_status_queue_.ReadLastMessage(&climber_status_proto_);
+    output_queue_.ReadLastMessage(&climber_output_proto_);
+    status_queue_.ReadLastMessage(&climber_status_proto_);
   }
 
   void WriteMessages() {
@@ -22,7 +22,7 @@ class ClimberTest : public ::testing::Test {
   void SetGoals(bool batter_down, c2018::climber::Goal enum_goal, bool enabled) {
     climber_goal_proto_->set_put_down_batter(batter_down);
     climber_goal_proto_->set_climber_goal(enum_goal);
-    driver_station_proto_->set_is_sys_active(enabled);
+    ds_status_reader_->set_is_sys_active(enabled);
   }
 
   void SetInput(double position) { climber_input_proto_->set_position(position); }
