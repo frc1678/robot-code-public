@@ -56,14 +56,31 @@ void ClawController::Update(ScoreSubsystemInputProto input,
     claw_voltage = CapU(claw_voltage);
   }
 
-  if (claw_state_ == INITIALIZING) {
-    claw_state_ = CALIBRATING;
-  } else if (claw_state_ == CALIBRATING) {
-    claw_voltage = kCalibVoltage;
-    if (hall_calibration_.is_calibrated()) {
-      claw_state_ = SYSTEM_IDLE;
-    }
-  } else if (claw_state_ == SYSTEM_IDLE || claw_state_ == MOVING) {
+  double roller_voltage = 0;
+
+  switch (claw_state_) {
+    case SYSTEM_IDLE:
+      claw_voltage = 0;
+      roller_voltage = 0;
+      break;
+    case ENCODER_FAULT:
+      claw_voltage = 0;
+      roller_voltage= 0;
+      break;
+    case DISABLED:
+      claw_voltage = 0;
+      roller_voltage = 0;
+      break;
+    case INITIALIZING:
+      claw_state_ = CALIBRATING;
+      break;
+    case CALIBRATING:
+      claw_voltage = kCalibVoltage;
+      if (hall_calibration_.is_calibrated()) {
+        claw_state_ = SYSTEM_IDLE;
+      }
+      break;
+    case MOVING:
     // Run the controller
     Eigen::Matrix<double, 3, 1> claw_r;
     claw_r = (Eigen::Matrix<double, 3, 1>()
@@ -74,7 +91,8 @@ void ClawController::Update(ScoreSubsystemInputProto input,
     claw_r(2) = 0;
 
     claw_voltage = claw_controller_.Update(claw_observer_.x(), claw_r)(0);
-  }
+    break;
+    }
 
   // Check for encoder faults
   if (old_pos_ == input->wrist_encoder()) {
@@ -89,7 +107,6 @@ void ClawController::Update(ScoreSubsystemInputProto input,
       (Eigen::Matrix<double, 1, 1>() << claw_voltage).finished(), claw_y);
 
   // Start of intake
-  double roller_voltage = 0;
   bool claw_pinch = false;
 
   if (outputs_enabled) {
@@ -119,6 +136,7 @@ void ClawController::Update(ScoreSubsystemInputProto input,
   output->set_roller_voltage(roller_voltage);
   output->set_wrist_voltage(claw_voltage);
   output->set_claw_pinch(claw_pinch);
+  (*status)->set_wrist_calibrated(hall_calibration_.is_calibrated());
   (*status)->set_wrist_position(wrist_position_);
 }
 
