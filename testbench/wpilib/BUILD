@@ -13,4 +13,5 @@ cc_library(
         "//testbench/queue_manager",
         "//third_party/wpilibsuite:wpilib",
     ],
+    restricted_to = ["//tools:roborio"],
 )

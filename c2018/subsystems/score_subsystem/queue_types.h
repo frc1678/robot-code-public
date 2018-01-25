@@ -1,9 +1,9 @@
 #ifndef C2018_SUBSYSTEMS_SCORE_SUBSYSTEM_QUEUE_TYPES_H_
 #define C2018_SUBSYSTEMS_SCORE_SUBSYSTEM_QUEUE_TYPES_H_
 
+#include "c2018/subsystems/score_subsystem/score_subsystem.pb.h"
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
-#include "c2018/subsystems/score_subsystem/score_subsystem.pb.h"
 
 namespace c2018 {
 
@@ -17,6 +17,7 @@ using ScoreSubsystemStatusProto = muan::proto::StackProto<ScoreSubsystemStatus, 
 using ScoreSubsystemInputQueue = muan::queues::MessageQueue<ScoreSubsystemInputProto>;
 using ScoreSubsystemStatusQueue = muan::queues::MessageQueue<ScoreSubsystemStatusProto>;
 using ScoreSubsystemOutputQueue = muan::queues::MessageQueue<ScoreSubsystemOutputProto>;
+using ScoreSubsystemGoalQueue = muan::queues::MessageQueue<ScoreSubsystemGoalProto>;
 
 }  // namespace score_subsystem
 }  // namespace c2018

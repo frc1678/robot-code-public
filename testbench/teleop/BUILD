@@ -10,4 +10,5 @@ cc_library(
         "//testbench/queue_manager",
         "//testbench/subsystems/drivetrain:drivetrain_base",
     ],
+    restricted_to = ["//tools:roborio"],
 )

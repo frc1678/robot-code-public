@@ -6,6 +6,14 @@ namespace control_loops {
 
 namespace paths {
 
+double StepVelocityByAcceleration(double distance, double initial_velocity, double acceleration) {
+  double velocity = ::std::sqrt(initial_velocity * initial_velocity + 2 * acceleration * distance);
+  if (distance / (initial_velocity + velocity) < 0) {
+    velocity = -velocity;
+  }
+  return velocity;
+}
+
 void Trajectory::SetPath(const Path &path, const State &state) {
   Reset();
 
@@ -14,87 +22,115 @@ void Trajectory::SetPath(const Path &path, const State &state) {
   double s_min = 0.0, s_max = 1.0;
   path.Populate(s_min, s_max, &poses_[0], kNumSamples);
 
+  states_[0] = state_;
   for (size_t i = 0; i < kNumSamples - 1; i++) {
     // Calculate maximum velocity given curvature
     Pose delta = poses_[i + 1] - poses_[i];
-    double curvature = ::std::abs(delta.heading() / delta.translational().norm());
-    states_[i](1) = 1.0 / (1.0 / maximum_velocity_ + curvature / maximum_angular_velocity_);
-    states_[i](3) = curvature * states_[i](1);
-    bool backwards = ::std::abs(::std::atan2(delta.translational()(1), delta.translational()(0)) -
-                                poses_[i].heading()) > M_PI / 2;
-    if (backwards) {
-      states_[i](1) *= -1;
-    }
+
+    Eigen::Vector2d forward_vector;
+    forward_vector << ::std::cos(poses_[i].heading()), ::std::sin(poses_[i].heading());
+    double forward = delta.translational().dot(forward_vector);
+
+    double angular = delta.heading() * radius_;
+    states_[i + 1](0) = states_[i](0) + forward - angular;
+    states_[i + 1](2) = states_[i](2) + forward + angular;
+  }
+
+  for (size_t i = 0; i < kNumSamples - 1; i++) {
+    const State &state_begin = states_[i];
+    State &state_end = states_[i + 1];
+    ConstrainAcceleration(state_begin, &state_end, &segment_times_[i]);
   }
 
   // Backwards pass
   states_[kNumSamples - 1](1) = states_[kNumSamples - 1](3) = 0.0;
   for (int i = kNumSamples - 2; i >= 0; i--) {
-    const Pose &segment_begin = poses_[i + 1];
-    const Pose &segment_end = poses_[i];
-    const State &state_begin = states_[i + 1];
-    State &state_end = states_[i];
-    ConstrainAcceleration(segment_begin, segment_end, state_begin, &state_end, &segment_times_[i], false);
-  }
+    State &state_begin = states_[i];
+    const State &state_end = states_[i + 1];
 
-  // Do the forwards pass last so that the state heading calculations don't stay
-  // messed up (reversed in backwards pass).
-  states_[0] = state_;
-  states_[0](2) = poses_[0].heading();
-  for (size_t i = 0; i < kNumSamples - 1; i++) {
-    const Pose &segment_begin = poses_[i];
-    const Pose &segment_end = poses_[i + 1];
-    const State &state_begin = states_[i];
-    State &state_end = states_[i + 1];
-    ConstrainAcceleration(segment_begin, segment_end, state_begin, &state_end, &segment_times_[i], true);
+    double left_distance = state_end(0) - state_begin(0);
+    if (left_distance < 0) {
+      double velocity_bound = StepVelocityByAcceleration(left_distance, state_end(1), -maximum_acceleration_);
+      if (state_begin(1) < velocity_bound) {
+        state_begin(1) = velocity_bound;
+      }
+    } else {
+      double velocity_bound = StepVelocityByAcceleration(left_distance, state_end(1), maximum_acceleration_);
+      if (state_begin(1) > velocity_bound) {
+        state_begin(1) = velocity_bound;
+      }
+    }
+
+    double right_distance = state_end(2) - state_begin(2);
+    if (right_distance < 0) {
+      double velocity_bound =
+          StepVelocityByAcceleration(right_distance, state_end(3), -maximum_acceleration_);
+      if (state_begin(3) < velocity_bound) {
+        state_begin(3) = velocity_bound;
+      }
+    } else {
+      double velocity_bound = StepVelocityByAcceleration(right_distance, state_end(3), maximum_acceleration_);
+      if (state_begin(3) > velocity_bound) {
+        state_begin(3) = velocity_bound;
+      }
+    }
+
+    double average_left_velocity = 0.5 * (state_begin(1) + state_end(1));
+    double average_right_velocity = 0.5 * (state_begin(3) + state_end(3));
+
+    if (::std::abs(left_distance * average_right_velocity) <
+        ::std::abs(right_distance * average_left_velocity)) {
+      average_left_velocity = left_distance * ::std::abs(average_right_velocity / right_distance);
+      state_begin(1) = 2.0 * average_left_velocity - state_end(1);
+    } else if (::std::abs(left_distance * average_right_velocity) >
+               ::std::abs(right_distance * average_right_velocity)) {
+      average_right_velocity = right_distance * ::std::abs(average_left_velocity / left_distance);
+      state_begin(3) = 2.0 * average_right_velocity - state_end(3);
+    }
+
+    segment_times_[i] = (left_distance + right_distance) / (average_right_velocity + average_left_velocity);
   }
 }
 
-void Trajectory::ConstrainAcceleration(const Pose &segment_begin, const Pose &segment_end,
-                                       const State &state_begin, State *state_end,
-                                       double *segment_time, bool reversed) const {
-  // The reparametrization step
-  double initial_forward_velocity = state_begin(1);
-  double initial_angular_velocity = state_begin(3);
-  double distance = (segment_end - segment_begin).translational().norm();
-  double delta_heading = (segment_end - segment_begin).heading();
+void Trajectory::ConstrainOneSide(double distance, double velocity_initial, double velocity_other_initial,
+                                  double velocity_final_from_other_pass, double *velocity_final) const {
+  constexpr double kMaxVoltage = 10.0;
 
-  double curvature = ::std::abs(delta_heading / distance);
+  double unforced_acceleration = A_(1, 1) * velocity_initial + A_(1, 3) * velocity_other_initial;
+  double input_acceleration = (B_(1, 0) + B_(1, 1)) * kMaxVoltage;
 
-  double acceleration = maximum_acceleration_;
-  double angular_acceleration = maximum_angular_acceleration_;
+  double min_acceleration = ::std::max(-maximum_acceleration_, unforced_acceleration - input_acceleration);
 
-  if (curvature * acceleration < angular_acceleration) {
-    angular_acceleration = curvature * acceleration;
+  double max_acceleration = ::std::min(maximum_acceleration_, unforced_acceleration + input_acceleration);
+
+  if (distance < 0) {
+    *velocity_final = StepVelocityByAcceleration(distance, velocity_initial, min_acceleration);
   } else {
-    acceleration = angular_acceleration / curvature;
+    *velocity_final = StepVelocityByAcceleration(distance, velocity_initial, max_acceleration);
+  }
+}
+
+void Trajectory::ConstrainAcceleration(const State &state_begin, State *state_end,
+                                       double *segment_time) const {
+  double distance_left = (*state_end)(0) - state_begin(0);
+  double distance_right = (*state_end)(2) - state_begin(2);
+  ConstrainOneSide(distance_left, state_begin(1), state_begin(3), (*state_end)(1), &(*state_end)(1));
+  ConstrainOneSide(distance_right, state_begin(3), state_begin(1), (*state_end)(3), &(*state_end)(3));
+
+  double average_left_velocity = 0.5 * (state_begin(1) + (*state_end)(1));
+  double average_right_velocity = 0.5 * (state_begin(3) + (*state_end)(3));
+  if (::std::abs(distance_left * average_right_velocity) <
+      ::std::abs(distance_right * average_left_velocity)) {
+    average_left_velocity = distance_left * average_right_velocity / distance_right;
+    (*state_end)(1) = 2 * average_left_velocity - state_begin(1);
+  } else if (::std::abs(distance_left * average_right_velocity) >
+             ::std::abs(distance_right * average_left_velocity)) {
+    average_right_velocity = distance_right * average_left_velocity / distance_left;
+    (*state_end)(3) = 2 * average_right_velocity - state_begin(3);
   }
 
-  double final_forward_velocity =
-      ::std::sqrt(initial_forward_velocity * initial_forward_velocity + 2 * acceleration * distance);
-
-  if (initial_forward_velocity < 0 || initial_forward_velocity == 0 && (*state_end)(1) < 0) {
-    final_forward_velocity *= -1;
-  }
-
-  if (::std::abs(final_forward_velocity) > ::std::abs((*state_end)(1))) {
-    final_forward_velocity = (*state_end)(1);
-  }
-
-  double final_angular_velocity =
-      ::std::sqrt(initial_angular_velocity * initial_angular_velocity + 2 * angular_acceleration * distance);
-
-  final_angular_velocity = ::std::min(final_angular_velocity, ::std::abs((*state_end)(3)));
-
-  if (final_forward_velocity < 0 || final_forward_velocity == 0 && (*state_end)(0) < 0) {
-    distance *= -1;
-  }
-
-  *segment_time = ::std::abs(2 * distance / (initial_forward_velocity + final_forward_velocity));
-  (*state_end)(0) = state_begin(0) + distance;
-  (*state_end)(1) = final_forward_velocity;
-  (*state_end)(2) = segment_end.heading();
-  (*state_end)(3) = final_angular_velocity;
+  *segment_time = (distance_left + distance_right) /
+                  (state_begin(1) + state_begin(3) + (*state_end)(1) + (*state_end)(3));
 }
 
 Trajectory::Sample Trajectory::Update() {
@@ -111,23 +147,20 @@ Trajectory::Sample Trajectory::Update() {
   }
 
   // Interpolate between the states using kinematics
-  double acceleration = (states_[index + 1](1) - states_[index](1)) / segment_times_[index];
-  double distance =
-      states_[index](0) + states_[index](1) * time_to_go_ + 0.5 * acceleration * time_to_go_ * time_to_go_;
-  double velocity = states_[index](1) + acceleration * time_to_go_;
+  double left_acceleration = (states_[index + 1](1) - states_[index](1)) / segment_times_[index];
+  double left_distance = states_[index](0) + states_[index](1) * time_to_go_ +
+                         0.5 * left_acceleration * time_to_go_ * time_to_go_;
+  double left_velocity = states_[index](1) + left_acceleration * time_to_go_;
 
-  double angular_acceleration = (states_[index + 1](3) - states_[index](3)) / segment_times_[index];
-  double heading = states_[index](2) + states_[index](3) * time_to_go_ +
-                   0.5 * angular_acceleration * time_to_go_ * time_to_go_;
-  double angular_velocity = states_[index](3) + angular_acceleration * time_to_go_; // (states_[index + 1](2) - states_[index](2)) / segment_times_[index];
-
-  if (remainder(states_[index + 1](2) - states_[index](2), 2 * M_PI) < 0) {
-    angular_velocity = -angular_velocity;
-  }
+  double right_acceleration = (states_[index + 1](3) - states_[index](3)) / segment_times_[index];
+  double right_distance = states_[index](2) + states_[index](3) * time_to_go_ +
+                          0.5 * right_acceleration * time_to_go_ * time_to_go_;
+  double right_velocity = states_[index](3) + right_acceleration * time_to_go_;
 
   last_index_ = index;
 
-  state_ = (Eigen::Matrix<double, 4, 1>() << distance, velocity, heading, angular_velocity).finished();
+  state_ = (Eigen::Matrix<double, 4, 1>() << left_distance, left_velocity, right_distance, right_velocity)
+               .finished();
   return Sample{Pose{}, state_};
 }
 

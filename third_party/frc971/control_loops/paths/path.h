@@ -56,8 +56,8 @@ class HermitePath : public Path {
                         size_t arr_len) const override;
 
  private:
-  // (1, s, s^2, s^3) -> (x, y, x', y')
-  Eigen::Matrix<double, 4, 4> coefficients_;
+  // (1, s, s^2, s^3, s^4, s^5) -> (x, y, x', y')
+  Eigen::Matrix<double, 4, 6> coefficients_;
 
   // Cached, because it is lost in the first-derivative at s=0
   double initial_heading_;

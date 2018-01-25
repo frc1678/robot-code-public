@@ -181,7 +181,7 @@ TEST(MessageQueue, MultipleWriters) {
   constexpr uint32_t num_threads = 5;
 
   MessageQueue<uint32_t> int_queue(messages_per_thread * num_threads);
-  auto reader_func = [&int_queue, messages_per_thread, num_threads]() {
+  auto reader_func = [&int_queue]() {
     auto reader = int_queue.MakeReader();
 
     uint32_t num_read = 0;
@@ -195,7 +195,7 @@ TEST(MessageQueue, MultipleWriters) {
     EXPECT_EQ(num_read, messages_per_thread * num_threads);
   };
 
-  auto writer_func = [&int_queue, messages_per_thread]() {
+  auto writer_func = [&int_queue]() {
     for (uint32_t i = 0; i < messages_per_thread; i++) {
       int_queue.WriteMessage(i);
     }

@@ -41,11 +41,13 @@ void DrivetrainInterface::ReadSensors() {
 void DrivetrainInterface::WriteActuators() {
   auto outputs = output_queue_.ReadLastMessage();
   if (outputs) {
-    motor_left_.Set(-muan::utils::Cap((*outputs)->left_voltage(), -constants::kMaxVoltage,
-                                      constants::kMaxVoltage) / 12.0);
+    motor_left_.Set(
+        -muan::utils::Cap((*outputs)->left_voltage(), -constants::kMaxVoltage, constants::kMaxVoltage) /
+        12.0);
 
-    motor_right_.Set(muan::utils::Cap((*outputs)->right_voltage(), -constants::kMaxVoltage,
-                                      constants::kMaxVoltage) / 12.0);
+    motor_right_.Set(
+        muan::utils::Cap((*outputs)->right_voltage(), -constants::kMaxVoltage, constants::kMaxVoltage) /
+        12.0);
 
     pcm_->WriteDoubleSolenoid(
         constants::kShifterA, constants::kShifterB,

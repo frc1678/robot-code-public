@@ -5,4 +5,5 @@ cc_binary(
         "//testbench/subsystems:subsystem_runner",
         "//testbench/teleop",
     ],
+    restricted_to = ["//tools:roborio"],
 )

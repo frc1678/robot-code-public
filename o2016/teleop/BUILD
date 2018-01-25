@@ -7,4 +7,5 @@ cc_library(
         "//muan/teleop:joystick",
         "//o2016/queue_manager",
     ],
+    restricted_to = ["//tools:roborio"],
 )

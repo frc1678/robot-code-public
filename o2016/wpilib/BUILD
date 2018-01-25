@@ -17,4 +17,5 @@ cc_library(
         "//o2016/subsystems/superstructure/turret:turret_queues",
         "//third_party/wpilibsuite:wpilib",
     ],
+    restricted_to = ["//tools:roborio"],
 )

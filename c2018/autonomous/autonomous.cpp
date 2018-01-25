@@ -96,7 +96,7 @@ void AutonomousBase::operator()() {
 
   // Start of autonomous. Grab the game specific string.
   auto left_right_codes = game_specific_string->code();
-  LOG_P("Starting autonomous with layout ", left_right_codes);
+  LOG_P("Starting autonomous with layout %s", left_right_codes.c_str());
   if (left_right_codes[0] == 'L') {
     if (left_right_codes[1] == 'L') {
       // Switch is left, scale is left

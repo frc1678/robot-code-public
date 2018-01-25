@@ -22,4 +22,5 @@ cc_library(
         "//third_party/frc971/control_loops/drivetrain:drivetrain_queues",
         "//third_party/wpilibsuite:wpilib",
     ],
+    restricted_to = ["//tools:roborio"],
 )

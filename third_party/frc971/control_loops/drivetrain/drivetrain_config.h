@@ -67,6 +67,11 @@ struct DrivetrainConfig {
 
   double quickturn_wheel_multiplier;
 
+  double alpha_high, alpha_low;
+  double beta_high, beta_low;
+  double gamma_high, gamma_low;
+  double delta_high, delta_low;
+
   // Converts the robot state to a linear distance position, velocity.
   static Eigen::Matrix<double, 2, 1> LeftRightToLinear(
       const Eigen::Matrix<double, 7, 1> &left_right) {

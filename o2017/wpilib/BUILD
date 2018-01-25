@@ -17,4 +17,5 @@ cc_library(
         "//muan/wpilib/gyro:gyro",
         "//third_party/wpilibsuite:wpilib",
     ],
+    restricted_to = ["//tools:roborio"],
 )

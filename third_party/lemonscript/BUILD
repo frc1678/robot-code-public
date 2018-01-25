@@ -8,4 +8,3 @@ cc_library(
   includes = ["lemonscript", "lemonscript/Commands"],
   linkopts = ["-lm"]
 )
-

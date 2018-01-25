@@ -10,7 +10,7 @@ import glog
 class DrivetrainParams(object):
   def __init__(self, J, mass, robot_radius, wheel_radius, G_high, G_low,
                q_pos_low, q_pos_high, q_vel_low, q_vel_high,
-               motor_type = control_loop.CIM(), num_motors = 2, dt = 0.00505,
+               motor_type = control_loop.CIM(), num_motors = 2, dt = 0.00500,
                controller_poles=[0.90, 0.90], observer_poles=[0.02, 0.02]):
     """Defines all constants of a drivetrain.
 
@@ -328,6 +328,24 @@ def WriteDrivetrain(drivetrain_files, kf_drivetrain_files, year_namespace,
         drivetrain_high_high.G_high))
   dog_loop_writer.AddConstant(control_loop.Constant("kHighOutputRatio", "%f",
         drivetrain_high_high.G_high * drivetrain_high_high.r))
+
+  dog_loop_writer.AddConstant(control_loop.Constant("kHighAlpha", "%f",
+        drivetrain_high_high.A_continuous[1, 1]))
+  dog_loop_writer.AddConstant(control_loop.Constant("kHighGamma", "%f",
+        drivetrain_high_high.A_continuous[1, 3]))
+  dog_loop_writer.AddConstant(control_loop.Constant("kHighBeta", "%f",
+        drivetrain_high_high.B_continuous[1, 0]))
+  dog_loop_writer.AddConstant(control_loop.Constant("kHighDelta", "%f",
+        drivetrain_high_high.B_continuous[1, 1]))
+
+  dog_loop_writer.AddConstant(control_loop.Constant("kLowAlpha", "%f",
+        drivetrain_low_low.A_continuous[1, 1]))
+  dog_loop_writer.AddConstant(control_loop.Constant("kLowGamma", "%f",
+        drivetrain_low_low.A_continuous[1, 3]))
+  dog_loop_writer.AddConstant(control_loop.Constant("kLowBeta", "%f",
+        drivetrain_low_low.B_continuous[1, 0]))
+  dog_loop_writer.AddConstant(control_loop.Constant("kLowDelta", "%f",
+        drivetrain_low_low.B_continuous[1, 1]))
 
   dog_loop_writer.Write(drivetrain_files[0], drivetrain_files[1])
 
