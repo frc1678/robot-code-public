@@ -23,7 +23,7 @@ class ClawController {
   ClawController();
 
   void SetGoal(double angle, c2018::score_subsystem::IntakeMode);
-  c2018::score_subsystem::SystemState claw_state_ = C_IDLE;
+  c2018::score_subsystem::SystemState claw_state_ = SYSTEM_IDLE;
   Eigen::Matrix<double, 2, 1> UpdateProfiledGoal(double unprofiled_goal_,
                                                  bool outputs_enabled);
   void Update(ScoreSubsystemInputProto input, ScoreSubsystemOutput* output,
@@ -38,7 +38,7 @@ class ClawController {
   muan::control::StateSpaceController<1, 3, 1> claw_controller_;
   muan::control::StateSpaceObserver<1, 3, 1> claw_observer_;
 
-  double CapU(double claw_voltage, bool outputs_enabled);
+  double CapU(double claw_voltage);
 
   IntakeMode intake_mode_;
   double unprofiled_goal_position_;

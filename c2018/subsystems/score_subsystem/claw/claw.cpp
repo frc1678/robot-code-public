@@ -28,9 +28,9 @@ ClawController::ClawController()
 }
 
 void ClawController::SetGoal(double angle, IntakeMode mode) {
-  if (claw_state_ == C_IDLE || claw_state_ == C_MOVING) {
+  if (claw_state_ == SYSTEM_IDLE || claw_state_ == MOVING) {
     unprofiled_goal_position_ = muan::utils::Cap(angle, -M_PI / 2, M_PI / 2);
-    claw_state_ = C_MOVING;
+    claw_state_ = MOVING;
   }
 
   intake_mode_ = mode;
@@ -49,21 +49,21 @@ void ClawController::Update(ScoreSubsystemInputProto input,
 
   if (!outputs_enabled) {
     claw_voltage = 0;
-    claw_state_ = C_DISABLED;
-  } else if (claw_state_ == C_DISABLED) {
-    claw_state_ = C_IDLE;
+    claw_state_ = DISABLED;
+  } else if (claw_state_ == DISABLED) {
+    claw_state_ = SYSTEM_IDLE;
   } else if (!encoder_fault_detected_) {
-    claw_voltage = CapU(claw_voltage, outputs_enabled);
+    claw_voltage = CapU(claw_voltage);
   }
 
-  if (claw_state_ == C_INITIALIZING) {
-    claw_state_ = C_CALIBRATING;
-  } else if (claw_state_ == C_CALIBRATING) {
+  if (claw_state_ == INITIALIZING) {
+    claw_state_ = CALIBRATING;
+  } else if (claw_state_ == CALIBRATING) {
     claw_voltage = kCalibVoltage;
     if (hall_calibration_.is_calibrated()) {
-      claw_state_ = C_IDLE;
+      claw_state_ = SYSTEM_IDLE;
     }
-  } else if (claw_state_ == C_IDLE || claw_state_ == C_MOVING) {
+  } else if (claw_state_ == SYSTEM_IDLE || claw_state_ == MOVING) {
     // Run the controller
     Eigen::Matrix<double, 3, 1> claw_r;
     claw_r = (Eigen::Matrix<double, 3, 1>()
@@ -122,19 +122,8 @@ void ClawController::Update(ScoreSubsystemInputProto input,
   (*status)->set_wrist_position(wrist_position_);
 }
 
-double ClawController::CapU(double claw_voltage, bool outputs_enabled) {
-  double voltage;
-  if (!outputs_enabled) {
-    voltage = 0;
-  } else if (claw_voltage > 12) {
-    voltage = 12;
-  } else if (claw_voltage < -12) {
-    voltage = -12;
-  } else {
-    voltage = claw_voltage;
-  }
-
-  return voltage;
+double ClawController::CapU(double claw_voltage) {
+  return muan::utils::Cap(claw_voltage, -12, 12);
 }
 
 
