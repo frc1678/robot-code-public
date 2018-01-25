@@ -5,29 +5,29 @@ namespace c2018 {
 namespace score_subsystem {
 namespace claw {
 
-ClawController::ClawController()
+WristController::WristController()
     : trapezoidal_motion_profile_{::std::chrono::milliseconds(5)},
       hall_calibration_{kHallMagnetPosition} {
-  auto claw_plant = muan::control::StateSpacePlant<1, 3, 1>(
-      frc1678::claw_controller::controller::A(),
-      frc1678::claw_controller::controller::B(),
-      frc1678::claw_controller::controller::C());
+  auto wrist_plant = muan::control::StateSpacePlant<1, 3, 1>(
+      frc1678::wrist_controller::controller::A(),
+      frc1678::wrist_controller::controller::B(),
+      frc1678::wrist_controller::controller::C());
 
-  claw_controller_ = muan::control::StateSpaceController<1, 3, 1>(
-      frc1678::claw_controller::controller::K(),
-      frc1678::claw_controller::controller::Kff(),
-      frc1678::claw_controller::controller::A(),
+  wrist_controller_ = muan::control::StateSpaceController<1, 3, 1>(
+      frc1678::wrist_controller::controller::K(),
+      frc1678::wrist_controller::controller::Kff(),
+      frc1678::wrist_controller::controller::A(),
       Eigen::Matrix<double, 1, 1>::Ones() * -12,
       Eigen::Matrix<double, 1, 1>::Ones() * 12);
 
-  claw_observer_ = muan::control::StateSpaceObserver<1, 3, 1>(
-      claw_plant, frc1678::claw_controller::controller::L());
+  wrist_observer_ = muan::control::StateSpaceObserver<1, 3, 1>(
+      wrist_plant, frc1678::wrist_controller::controller::L());
 
-  trapezoidal_motion_profile_.set_maximum_acceleration(kMaxClawAcceleration);
-  trapezoidal_motion_profile_.set_maximum_velocity(kMaxClawVelocity);
+  trapezoidal_motion_profile_.set_maximum_acceleration(kMaxWristAcceleration);
+  trapezoidal_motion_profile_.set_maximum_velocity(kMaxWristVelocity);
 }
 
-void ClawController::SetGoal(double angle, IntakeMode mode) {
+void WristController::SetGoal(double angle, IntakeMode mode) {
   if (claw_state_ == SYSTEM_IDLE || claw_state_ == MOVING) {
     unprofiled_goal_position_ = muan::utils::Cap(angle, -M_PI / 2, M_PI / 2);
     claw_state_ = MOVING;
@@ -36,61 +36,61 @@ void ClawController::SetGoal(double angle, IntakeMode mode) {
   intake_mode_ = mode;
 }
 
-void ClawController::Update(ScoreSubsystemInputProto input,
+void WristController::Update(ScoreSubsystemInputProto input,
                             ScoreSubsystemOutput* output,
                             ScoreSubsystemStatusProto* status,
                             bool outputs_enabled) {
   double calibrated_encoder =
       hall_calibration_.Update(input->wrist_encoder(), input->wrist_hall());
-  auto claw_y =
+  auto wrist_y =
       (Eigen::Matrix<double, 1, 1>() << calibrated_encoder).finished();
 
-  double claw_voltage = 0;
+  double wrist_voltage = 0;
 
   if (!outputs_enabled) {
-    claw_voltage = 0;
+    wrist_voltage = 0;
     claw_state_ = DISABLED;
   } else if (claw_state_ == DISABLED) {
     claw_state_ = SYSTEM_IDLE;
   } else if (!encoder_fault_detected_) {
-    claw_voltage = CapU(claw_voltage);
+    wrist_voltage = CapU(wrist_voltage);
   }
 
   double roller_voltage = 0;
 
   switch (claw_state_) {
     case SYSTEM_IDLE:
-      claw_voltage = 0;
+      wrist_voltage = 0;
       roller_voltage = 0;
       break;
     case ENCODER_FAULT:
-      claw_voltage = 0;
+      wrist_voltage = 0;
       roller_voltage= 0;
       break;
     case DISABLED:
-      claw_voltage = 0;
+      wrist_voltage = 0;
       roller_voltage = 0;
       break;
     case INITIALIZING:
       claw_state_ = CALIBRATING;
       break;
     case CALIBRATING:
-      claw_voltage = kCalibVoltage;
+      wrist_voltage = kCalibVoltage;
       if (hall_calibration_.is_calibrated()) {
         claw_state_ = SYSTEM_IDLE;
       }
       break;
     case MOVING:
     // Run the controller
-    Eigen::Matrix<double, 3, 1> claw_r;
-    claw_r = (Eigen::Matrix<double, 3, 1>()
+    Eigen::Matrix<double, 3, 1> wrist_r;
+    wrist_r = (Eigen::Matrix<double, 3, 1>()
               << UpdateProfiledGoal(unprofiled_goal_position_, outputs_enabled))
                  .finished();
-    claw_r.block<2, 1>(0, 0) =
+    wrist_r.block<2, 1>(0, 0) =
         trapezoidal_motion_profile_.Update(unprofiled_goal_position_, 0.0);
-    claw_r(2) = 0;
+    wrist_r(2) = 0;
 
-    claw_voltage = claw_controller_.Update(claw_observer_.x(), claw_r)(0);
+    wrist_voltage = wrist_controller_.Update(wrist_observer_.x(), wrist_r)(0);
     break;
     }
 
@@ -103,8 +103,8 @@ void ClawController::Update(ScoreSubsystemInputProto input,
   }
   old_pos_ = input->wrist_encoder();
 
-  claw_observer_.Update(
-      (Eigen::Matrix<double, 1, 1>() << claw_voltage).finished(), claw_y);
+  wrist_observer_.Update(
+      (Eigen::Matrix<double, 1, 1>() << wrist_voltage).finished(), wrist_y);
 
   // Start of intake
   bool claw_pinch = false;
@@ -134,18 +134,18 @@ void ClawController::Update(ScoreSubsystemInputProto input,
   }
 
   output->set_roller_voltage(roller_voltage);
-  output->set_wrist_voltage(claw_voltage);
+  output->set_wrist_voltage(wrist_voltage);
   output->set_claw_pinch(claw_pinch);
   (*status)->set_wrist_calibrated(hall_calibration_.is_calibrated());
   (*status)->set_wrist_position(wrist_position_);
 }
 
-double ClawController::CapU(double claw_voltage) {
-  return muan::utils::Cap(claw_voltage, -12, 12);
+double WristController::CapU(double wrist_voltage) {
+  return muan::utils::Cap(wrist_voltage, -12, 12);
 }
 
 
-Eigen::Matrix<double, 2, 1> ClawController::UpdateProfiledGoal(
+Eigen::Matrix<double, 2, 1> WristController::UpdateProfiledGoal(
     double unprofiled_goal_, bool outputs_enabled) {
   if (outputs_enabled) {
     profiled_goal_ = trapezoidal_motion_profile_.Update(unprofiled_goal_, 0.0);

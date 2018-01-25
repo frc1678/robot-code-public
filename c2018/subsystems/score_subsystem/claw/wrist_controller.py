@@ -175,10 +175,10 @@ def goal(t):
 if __name__ == '__main__':
     if len(sys.argv) == 3:
         from muan.control.state_space_writer import StateSpaceWriter
-        writer = StateSpaceWriter(gains, 'claw_controller')
+        writer = StateSpaceWriter(gains, 'wrist_controller')
         writer.write(sys.argv[1], sys.argv[2])
     else:
         from muan.control.state_space_scenario import StateSpaceScenario
 
-        scenario = StateSpaceScenario(plant, x0, controller, observer, x0, 'claw_controller')
+        scenario = StateSpaceScenario(plant, x0, controller, observer, x0, 'wrist_controller')
         scenario.run(goal, 4)

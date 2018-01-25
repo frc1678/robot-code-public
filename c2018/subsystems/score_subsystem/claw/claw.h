@@ -3,7 +3,7 @@
 
 #include <algorithm>
 #include <chrono>
-#include "c2018/subsystems/score_subsystem/claw/claw_constants.h"
+#include "c2018/subsystems/score_subsystem/claw/wrist_constants.h"
 #include "c2018/subsystems/score_subsystem/queue_types.h"
 #include "muan/control/calibration/hall_calibration.h"
 #include "muan/control/state_space_controller.h"
@@ -18,9 +18,9 @@ namespace c2018 {
 namespace score_subsystem {
 namespace claw {
 
-class ClawController {
+class WristController {
  public:
-  ClawController();
+  WristController();
 
   void SetGoal(double angle, c2018::score_subsystem::IntakeMode);
   c2018::score_subsystem::SystemState claw_state_ = SYSTEM_IDLE;
@@ -35,10 +35,10 @@ class ClawController {
   aos::util::TrapezoidProfile trapezoidal_motion_profile_;
   muan::control::HallCalibration hall_calibration_;
   muan::control::StateSpacePlant<1, 3, 1> plant_;
-  muan::control::StateSpaceController<1, 3, 1> claw_controller_;
-  muan::control::StateSpaceObserver<1, 3, 1> claw_observer_;
+  muan::control::StateSpaceController<1, 3, 1> wrist_controller_;
+  muan::control::StateSpaceObserver<1, 3, 1> wrist_observer_;
 
-  double CapU(double claw_voltage);
+  double CapU(double wrist_voltage);
 
   IntakeMode intake_mode_;
   double unprofiled_goal_position_;
@@ -49,14 +49,14 @@ class ClawController {
   int num_encoder_fault_ticks_ = 0;
 
   // measured in radians TODO (Mohamed) tune these constants
-  static constexpr double kMaxClawVelocity = 2;
-  static constexpr double kMaxClawAcceleration = 4;
+  static constexpr double kMaxWristVelocity = 2;
+  static constexpr double kMaxWristAcceleration = 4;
 
   static constexpr double kEncoderFaultTicksAllowed = 200;
   static constexpr double kCalibVoltage = 4;
 
   static constexpr double kHallMagnetPosition = 0.05;
-};  //  claw_controller;
+};  //  wrist_controller;
 
 }  // namespace claw
 }  // namespace score_subsystem

@@ -3,20 +3,20 @@ load("//third_party/google/protobuf:protobuf.bzl", "cc_proto_library")
 package(default_visibility = ["//visibility:public"])
 
 py_binary(
-    name = "claw_python",
-    srcs = ["claw_controller.py"],
-    main = "claw_controller.py",
+    name = "wrist_python",
+    srcs = ["wrist_controller.py"],
+    main = "wrist_controller.py",
     deps = ["//muan/control:python_controls"],
 )
 genrule(
-  name = "claw_genrule",
+  name = "wrist_genrule",
   srcs = [],
   outs = [
-      "claw_constants.h",
-      "claw_constants.cpp",
+      "wrist_constants.h",
+      "wrist_constants.cpp",
   ],
-  cmd = "$(location :claw_python) $(location claw_constants.h) $(location claw_constants.cpp)",
-  tools = [":claw_python"],
+  cmd = "$(location :wrist_python) $(location wrist_constants.h) $(location wrist_constants.cpp)",
+  tools = [":wrist_python"],
 )
 cc_library(
   name = "claw_controller",
@@ -25,7 +25,7 @@ cc_library(
   deps = [
     "//c2018/subsystems/score_subsystem:score_subsystem_queues",
     "//c2018/subsystems/score_subsystem:score_subsystem_proto",
-    ":claw_constants",
+    ":wrist_constants",
     "//muan/control/calibration:hall_calibration",
     "//muan/control:state_space",
     "//muan/units:units",
@@ -37,9 +37,9 @@ cc_library(
 )
 
 cc_library(
-    name = "claw_constants",
-    srcs = ["claw_constants.cpp"],
-    hdrs = ["claw_constants.h"],
+    name = "wrist_constants",
+    srcs = ["wrist_constants.cpp"],
+    hdrs = ["wrist_constants.h"],
     deps = ["//third_party/eigen"],
 )
 
@@ -48,8 +48,8 @@ cc_test(
     srcs = ["claw_test.cpp"],
     deps = [
       "//c2018/subsystems/score_subsystem:score_subsystem_queues",
-      ":claw_constants",
-      ":claw_controller",
+      ":wrist_constants",
+      ":wrist_controller",
       "//muan/control/calibration:hall_calibration",
       "//muan/control:state_space",
       "//muan/utils:math_utils",
