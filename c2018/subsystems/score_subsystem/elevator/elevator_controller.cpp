@@ -87,21 +87,8 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input, ScoreSubs
   (*status)->set_elevator_encoder_fault_detected(encoder_fault_detected_);
 }
 
-void ElevatorController::SetGoal(c2018::score_subsystem::ScoreSubsystemGoalProto goal) {
-  switch (goal->elevator_height()) {
-    case HEIGHT_0:
-      unprofiled_goal_ = kElevatorStartingHeight;
-      break;
-    case HEIGHT_1:
-      unprofiled_goal_ = kElevatorFirstCubeHeight;
-      break;
-    case HEIGHT_2:
-      unprofiled_goal_ = kElevatorSecondCubeHeight;
-      break;
-    case HEIGHT_SCORE:
-      unprofiled_goal_ = kElevatorMaxHeight;
-      break;
-  }
+void ElevatorController::SetGoal(double goal) {
+  unprofiled_goal_ = muan::utils::Cap(goal, 0, kElevatorMaxHeight);
 }
 
 Eigen::Matrix<double, 2, 1> ElevatorController::UpdateProfiledGoal(double unprofiled_goal_,

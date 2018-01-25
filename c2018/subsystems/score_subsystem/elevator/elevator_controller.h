@@ -18,9 +18,6 @@ namespace elevator {
 
 constexpr double kElevatorAcceleration = 2.3;
 constexpr double kElevatorVelocity = 2.2;
-constexpr double kElevatorStartingHeight = 0;
-constexpr double kElevatorFirstCubeHeight = 0.3;
-constexpr double kElevatorSecondCubeHeight = 0.6;
 constexpr double kElevatorMaxHeight = 2.06;
 constexpr double kHallEffectHeight = 0.05;
 
@@ -30,7 +27,7 @@ class ElevatorController {
   void Update(const ScoreSubsystemInputProto& input, ScoreSubsystemOutputProto* output,
               ScoreSubsystemStatusProto* status, bool outputs_enabled);
   Eigen::Matrix<double, 2, 1> UpdateProfiledGoal(double unprofiled_goal_, bool outputs_enabled);
-  void SetGoal(c2018::score_subsystem::ScoreSubsystemGoalProto goal);
+  void SetGoal(double goal);
   double CapU(double elevator_u);
 
  private:
