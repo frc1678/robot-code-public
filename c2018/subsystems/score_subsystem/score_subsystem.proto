@@ -14,6 +14,7 @@ enum ElevatorHeight {
 enum ClawMode {
   SCORE_F = 0;
   SCORE_B = 1;
+  VERTICAL = 2;
 }
 
 enum IntakeMode {
@@ -30,6 +31,13 @@ enum SystemState {
   SYSTEM_IDLE = 3;
   ENCODER_FAULT = 4;
   DISABLED = 5;
+}
+
+enum SubSystemState {
+  ELEVATOR_UP = 0;
+  WRIST_UP = 1;
+  RUNNING = 2;
+  DISABLED = 3;
 }
 
 message ScoreSubsystemInput {
@@ -70,5 +78,5 @@ message ScoreSubsystemStatus {
   required double wrist_velocity = 10;
   required bool wrist_calibrated = 11;
   required SystemState claw_state = 12;
+  required SubSystemState subsystem_state 13;
 }
-
