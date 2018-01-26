@@ -9,10 +9,14 @@ namespace c2017 {
 
 namespace shooter {
 
-using ShooterGoalProto = muan::proto::StackProto<::c2017::shooter::ShooterGoal, 256>;
-using ShooterInputProto = muan::proto::StackProto<::c2017::shooter::ShooterInput, 256>;
-using ShooterStatusProto = muan::proto::StackProto<::c2017::shooter::ShooterStatus, 256>;
-using ShooterOutputProto = muan::proto::StackProto<::c2017::shooter::ShooterOutput, 256>;
+using ShooterGoalProto =
+    muan::proto::StackProto<::c2017::shooter::ShooterGoal, 256>;
+using ShooterInputProto =
+    muan::proto::StackProto<::c2017::shooter::ShooterInput, 256>;
+using ShooterStatusProto =
+    muan::proto::StackProto<::c2017::shooter::ShooterStatus, 256>;
+using ShooterOutputProto =
+    muan::proto::StackProto<::c2017::shooter::ShooterOutput, 256>;
 
 using ShooterInputQueue = muan::queues::MessageQueue<ShooterInputProto>;
 using ShooterStatusQueue = muan::queues::MessageQueue<ShooterStatusProto>;

@@ -29,10 +29,12 @@ class AutonomousBase {
 
   frc971::control_loops::drivetrain::DrivetrainConfig config_;
   frc971::control_loops::drivetrain::GoalQueue* drivetrain_goal_queue_;
-  frc971::control_loops::drivetrain::StatusQueue::QueueReader drivetrain_status_reader_;
+  frc971::control_loops::drivetrain::StatusQueue::QueueReader
+      drivetrain_status_reader_;
 
   muan::wpilib::DriverStationQueue::QueueReader driver_station_reader_;
-  muan::wpilib::GameSpecificStringQueue::QueueReader game_specific_string_reader_;
+  muan::wpilib::GameSpecificStringQueue::QueueReader
+      game_specific_string_reader_;
 
   aos::time::PhasedLoop loop_{std::chrono::milliseconds(5)};
 };

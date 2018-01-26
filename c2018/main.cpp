@@ -37,7 +37,8 @@ int main(int argc, char **argv) {
     std::cerr << "FATAL ERROR: HAL could not be initialized" << std::endl;
     return -1;
   }
-  HAL_Report(HALUsageReporting::kResourceType_Language, HALUsageReporting::kLanguage_CPlusPlus);
+  HAL_Report(HALUsageReporting::kResourceType_Language,
+             HALUsageReporting::kLanguage_CPlusPlus);
   WpilibRobot robot;
 
   robot.SpawnThreads();

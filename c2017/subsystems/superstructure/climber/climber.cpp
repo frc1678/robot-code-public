@@ -13,7 +13,8 @@ constexpr double kStartClimbingVelocity = 0.35;
 constexpr double kFinalVelocity = 0.15;
 
 Climber::Climber()
-    : position_history_(7), status_queue_(QueueManager::GetInstance()->climber_status_queue()) {}
+    : position_history_(7),
+      status_queue_(QueueManager::GetInstance()->climber_status_queue()) {}
 
 void Climber::SetGoal(const ClimberGoalProto& goal) {
   if (goal->climbing() && current_state_ == NOTHING) {
@@ -23,12 +24,15 @@ void Climber::SetGoal(const ClimberGoalProto& goal) {
   }
 }
 
-ClimberOutputProto Climber::Update(const ClimberInputProto& input, bool outputs_enabled) {
+ClimberOutputProto Climber::Update(const ClimberInputProto& input,
+                                   bool outputs_enabled) {
   double voltage_ = 0.0;
   position_history_.Update(input->position());
-  // Get the average rate of change over the range of recorded history by finding change divided by time
+  // Get the average rate of change over the range of recorded history by
+  // finding change divided by time
   double current_vel =
-      (position_history_.GoBack(0) - position_history_.GoBack(position_history_.num_samples() - 1)) /
+      (position_history_.GoBack(0) -
+       position_history_.GoBack(position_history_.num_samples() - 1)) /
       (0.005 * position_history_.num_samples());
 
   ClimberStatusProto status;

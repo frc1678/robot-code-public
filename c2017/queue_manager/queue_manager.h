@@ -1,32 +1,32 @@
 #ifndef C2017_QUEUE_MANAGER_QUEUE_MANAGER_H_
 #define C2017_QUEUE_MANAGER_QUEUE_MANAGER_H_
 
-#include <thread>
-#include <functional>
-#include <vector>
-#include <string>
 #include <fstream>
+#include <functional>
+#include <string>
+#include <thread>
+#include <vector>
+#include "muan/logging/logger.h"
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
-#include "muan/logging/logger.h"
 
+#include "muan/teleop/queue_types.h"
 #include "muan/wpilib/gyro/queue_types.h"
 #include "muan/wpilib/queue_types.h"
-#include "muan/teleop/queue_types.h"
 
 #include "muan/webdash/queue_types.h"
 #include "muan/webdash/server.h"
 
-#include "third_party/frc971/control_loops/drivetrain/queue_types.h"
-#include "c2017/subsystems/superstructure/ground_ball_intake/queue_types.h"
-#include "c2017/subsystems/superstructure/shooter/queue_types.h"
-#include "c2017/subsystems/superstructure/magazine/queue_types.h"
-#include "c2017/subsystems/superstructure/ground_gear_intake/queue_types.h"
+#include "c2017/subsystems/lights/queue_types.h"
 #include "c2017/subsystems/superstructure/climber/queue_types.h"
+#include "c2017/subsystems/superstructure/ground_ball_intake/queue_types.h"
+#include "c2017/subsystems/superstructure/ground_gear_intake/queue_types.h"
+#include "c2017/subsystems/superstructure/magazine/queue_types.h"
 #include "c2017/subsystems/superstructure/queue_types.h"
+#include "c2017/subsystems/superstructure/shooter/queue_types.h"
 #include "c2017/vision/queue_types.h"
 #include "c2017/wpilib/queue_types.h"
-#include "c2017/subsystems/lights/queue_types.h"
+#include "third_party/frc971/control_loops/drivetrain/queue_types.h"
 
 using muan::queues::MessageQueue;
 
@@ -56,20 +56,26 @@ class QueueManager {
   frc971::control_loops::drivetrain::StatusQueue* drivetrain_status_queue();
 
   c2017::wpilib::WpilibOutputQueue* superstructure_output_queue();
-  c2017::superstructure::SuperstructureStatusQueue* superstructure_status_queue();
+  c2017::superstructure::SuperstructureStatusQueue*
+  superstructure_status_queue();
 
-  c2017::ground_ball_intake::GroundBallIntakeStatusQueue* ground_ball_intake_status_queue();
+  c2017::ground_ball_intake::GroundBallIntakeStatusQueue*
+  ground_ball_intake_status_queue();
 
   c2017::shooter::ShooterInputQueue* shooter_input_queue();
   c2017::shooter::ShooterStatusQueue* shooter_status_queue();
 
   c2017::magazine::MagazineStatusQueue* magazine_status_queue();
 
-  c2017::ground_gear_intake::GroundGearIntakeInputQueue* ground_gear_input_queue();
-  c2017::ground_gear_intake::GroundGearIntakeStatusQueue* ground_gear_status_queue();
-  c2017::ground_gear_intake::GroundGearIntakeOutputQueue* ground_gear_output_queue();
+  c2017::ground_gear_intake::GroundGearIntakeInputQueue*
+  ground_gear_input_queue();
+  c2017::ground_gear_intake::GroundGearIntakeStatusQueue*
+  ground_gear_status_queue();
+  c2017::ground_gear_intake::GroundGearIntakeOutputQueue*
+  ground_gear_output_queue();
 
-  c2017::ground_ball_intake::GroundBallIntakeStatusQueue* ball_intake_status_queue();
+  c2017::ground_ball_intake::GroundBallIntakeStatusQueue*
+  ball_intake_status_queue();
 
   c2017::climber::ClimberInputQueue* climber_input_queue();
   c2017::climber::ClimberStatusQueue* climber_status_queue();
@@ -116,11 +122,15 @@ class QueueManager {
 
   c2017::magazine::MagazineStatusQueue magazine_status_queue_;
 
-  c2017::ground_gear_intake::GroundGearIntakeInputQueue ground_gear_input_queue_;
-  c2017::ground_gear_intake::GroundGearIntakeStatusQueue ground_gear_status_queue_;
-  c2017::ground_gear_intake::GroundGearIntakeOutputQueue ground_gear_output_queue_;
+  c2017::ground_gear_intake::GroundGearIntakeInputQueue
+      ground_gear_input_queue_;
+  c2017::ground_gear_intake::GroundGearIntakeStatusQueue
+      ground_gear_status_queue_;
+  c2017::ground_gear_intake::GroundGearIntakeOutputQueue
+      ground_gear_output_queue_;
 
-  c2017::ground_ball_intake::GroundBallIntakeStatusQueue ground_ball_intake_status_queue_;
+  c2017::ground_ball_intake::GroundBallIntakeStatusQueue
+      ground_ball_intake_status_queue_;
 
   c2017::climber::ClimberGoalQueue climber_goal_queue_;
   c2017::climber::ClimberInputQueue climber_input_queue_;

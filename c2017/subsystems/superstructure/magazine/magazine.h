@@ -1,8 +1,8 @@
 #ifndef C2017_SUBSYSTEMS_SUPERSTRUCTURE_MAGAZINE_MAGAZINE_H_
 #define C2017_SUBSYSTEMS_SUPERSTRUCTURE_MAGAZINE_MAGAZINE_H_
 
-#include "c2017/subsystems/superstructure/magazine/queue_types.h"
 #include "c2017/queue_manager/queue_manager.h"
+#include "c2017/subsystems/superstructure/magazine/queue_types.h"
 #include "muan/control/ramping.h"
 #include "muan/wpilib/queue_types.h"
 

@@ -19,9 +19,12 @@ using muan::wpilib::GameSpecificStringProto;
 AutonomousBase::AutonomousBase()
     : config_(drivetrain::GetDrivetrainConfig()),
       drivetrain_goal_queue_(QueueManager<DrivetrainGoal>::Fetch()),
-      drivetrain_status_reader_(QueueManager<DrivetrainStatus>::Fetch()->MakeReader()),
-      driver_station_reader_(QueueManager<DriverStationProto>::Fetch()->MakeReader()),
-      game_specific_string_reader_(QueueManager<GameSpecificStringProto>::Fetch()->MakeReader()) {}
+      drivetrain_status_reader_(
+          QueueManager<DrivetrainStatus>::Fetch()->MakeReader()),
+      driver_station_reader_(
+          QueueManager<DriverStationProto>::Fetch()->MakeReader()),
+      game_specific_string_reader_(
+          QueueManager<GameSpecificStringProto>::Fetch()->MakeReader()) {}
 
 bool AutonomousBase::IsAutonomous() {
   DriverStationProto driver_station;
@@ -40,9 +43,11 @@ void AutonomousBase::StartDriveAbsolute(double left, double right) {
   goal->mutable_distance_command()->set_right_goal(right);
 
   goal->mutable_linear_constraints()->set_max_velocity(max_forward_velocity_);
-  goal->mutable_linear_constraints()->set_max_acceleration(max_forward_acceleration_);
+  goal->mutable_linear_constraints()->set_max_acceleration(
+      max_forward_acceleration_);
   goal->mutable_angular_constraints()->set_max_velocity(max_angular_velocity_);
-  goal->mutable_angular_constraints()->set_max_acceleration(max_angular_acceleration_);
+  goal->mutable_angular_constraints()->set_max_acceleration(
+      max_angular_acceleration_);
 
   drivetrain_goal_queue_->WriteMessage(goal);
 }
@@ -71,9 +76,11 @@ void AutonomousBase::StartDrivePath(double x, double y, double heading) {
   goal->mutable_path_command()->set_theta_goal(heading);
 
   goal->mutable_linear_constraints()->set_max_velocity(max_forward_velocity_);
-  goal->mutable_linear_constraints()->set_max_acceleration(max_forward_acceleration_);
+  goal->mutable_linear_constraints()->set_max_acceleration(
+      max_forward_acceleration_);
   goal->mutable_angular_constraints()->set_max_velocity(max_angular_velocity_);
-  goal->mutable_angular_constraints()->set_max_acceleration(max_angular_acceleration_);
+  goal->mutable_angular_constraints()->set_max_acceleration(
+      max_angular_acceleration_);
 
   drivetrain_goal_queue_->WriteMessage(goal);
 }

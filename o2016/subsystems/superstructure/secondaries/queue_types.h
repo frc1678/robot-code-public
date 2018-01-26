@@ -8,10 +8,13 @@
 namespace o2016 {
 namespace secondaries {
 
-using SecondariesGoalProto = muan::proto::StackProto<::o2016::secondaries::SecondariesGoal, 1024>;
-using SecondariesOutputProto = muan::proto::StackProto<::o2016::secondaries::SecondariesOutput, 1024>;
+using SecondariesGoalProto =
+    muan::proto::StackProto<::o2016::secondaries::SecondariesGoal, 1024>;
+using SecondariesOutputProto =
+    muan::proto::StackProto<::o2016::secondaries::SecondariesOutput, 1024>;
 
-using SecondariesOutputQueue = muan::queues::MessageQueue<SecondariesOutputProto>;
+using SecondariesOutputQueue =
+    muan::queues::MessageQueue<SecondariesOutputProto>;
 
 }  // secondaries
 }  // o2016

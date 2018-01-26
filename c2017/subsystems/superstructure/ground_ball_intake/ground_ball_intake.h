@@ -1,8 +1,8 @@
 #ifndef C2017_SUBSYSTEMS_SUPERSTRUCTURE_GROUND_BALL_INTAKE_GROUND_BALL_INTAKE_H_
 #define C2017_SUBSYSTEMS_SUPERSTRUCTURE_GROUND_BALL_INTAKE_GROUND_BALL_INTAKE_H_
 
-#include "muan/wpilib/queue_types.h"
 #include "c2017/subsystems/superstructure/ground_ball_intake/queue_types.h"
+#include "muan/wpilib/queue_types.h"
 
 namespace c2017 {
 

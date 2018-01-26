@@ -19,7 +19,8 @@ constexpr double kMaxVoltage = 12;
 ClimberInterface::ClimberInterface(muan::wpilib::CanWrapper* can_wrapper)
     : input_queue_(QueueManager<ClimberInputProto>::Fetch()),
       output_reader_(QueueManager<ClimberOutputProto>::Fetch()->MakeReader()),
-      pdp_reader_(QueueManager<muan::wpilib::PdpMessage>::Fetch()->MakeReader()),
+      pdp_reader_(
+          QueueManager<muan::wpilib::PdpMessage>::Fetch()->MakeReader()),
       winch_{kWinchMotor},
       winch_encoder_{kWinchEncoderA, kWinchEncoderB},
       pcm_{can_wrapper->pcm()} {

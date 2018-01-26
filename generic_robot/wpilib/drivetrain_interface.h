@@ -4,8 +4,8 @@
 #include "WPILib.h"
 #include "generic_robot/queue_manager/queue_manager.h"
 #include "muan/utils/math_utils.h"
-#include "muan/wpilib/pcm_wrapper.h"
 #include "muan/wpilib/can_wrapper.h"
+#include "muan/wpilib/pcm_wrapper.h"
 
 namespace generic_robot {
 namespace wpilib {

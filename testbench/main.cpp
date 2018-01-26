@@ -1,6 +1,6 @@
+#include <WPILib.h>
 #include "testbench/subsystems/subsystem_runner.h"
 #include "testbench/teleop/teleop.h"
-#include <WPILib.h>
 
 class TestBenchRobot : public IterativeRobot {
  public:

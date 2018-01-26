@@ -8,10 +8,14 @@
 namespace o2016 {
 namespace turret {
 
-using TurretGoalProto = muan::proto::StackProto<::o2016::turret::TurretGoal, 100>;
-using TurretInputProto = muan::proto::StackProto<::o2016::turret::TurretInput, 100>;
-using TurretStatusProto = muan::proto::StackProto<::o2016::turret::TurretStatus, 100>;
-using TurretOutputProto = muan::proto::StackProto<::o2016::turret::TurretOutput, 100>;
+using TurretGoalProto =
+    muan::proto::StackProto<::o2016::turret::TurretGoal, 100>;
+using TurretInputProto =
+    muan::proto::StackProto<::o2016::turret::TurretInput, 100>;
+using TurretStatusProto =
+    muan::proto::StackProto<::o2016::turret::TurretStatus, 100>;
+using TurretOutputProto =
+    muan::proto::StackProto<::o2016::turret::TurretOutput, 100>;
 
 using TurretInputQueue = muan::queues::MessageQueue<TurretInputProto>;
 using TurretGoalQueue = muan::queues::MessageQueue<TurretGoalProto>;

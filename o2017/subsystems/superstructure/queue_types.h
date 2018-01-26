@@ -9,10 +9,14 @@ namespace o2017 {
 
 namespace superstructure {
 
-using SuperstructureStatusProto = muan::proto::StackProto<SuperstructureStatus, 256>;
-using SuperstructureInputProto = muan::proto::StackProto<SuperstructureInput, 256>;
-using SuperstructureGoalProto = muan::proto::StackProto<SuperstructureGoal, 256>;
-using SuperstructureOutputProto = muan::proto::StackProto<SuperstructureOutput, 256>;
+using SuperstructureStatusProto =
+    muan::proto::StackProto<SuperstructureStatus, 256>;
+using SuperstructureInputProto =
+    muan::proto::StackProto<SuperstructureInput, 256>;
+using SuperstructureGoalProto =
+    muan::proto::StackProto<SuperstructureGoal, 256>;
+using SuperstructureOutputProto =
+    muan::proto::StackProto<SuperstructureOutput, 256>;
 
 using StatusQueue = muan::queues::MessageQueue<SuperstructureStatusProto>;
 using InputQueue = muan::queues::MessageQueue<SuperstructureInputProto>;

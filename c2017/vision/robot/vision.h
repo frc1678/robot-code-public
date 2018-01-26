@@ -11,8 +11,9 @@ namespace vision {
 
 namespace constants {
 constexpr static double kShotDistance = 2.18;  // In meters
-constexpr static double kMaxAlignDistance = 1;  // Maximum distance to move forwards
-                                                // when aligning, in meters
+constexpr static double kMaxAlignDistance =
+    1;  // Maximum distance to move forwards
+        // when aligning, in meters
 }
 
 class VisionAlignment {

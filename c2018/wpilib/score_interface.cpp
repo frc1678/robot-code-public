@@ -29,10 +29,13 @@ constexpr uint32_t kCubeProxy = 1;
 
 constexpr double kMaxVoltage = 12;
 
-ScoreSubsystemInterface::ScoreSubsystemInterface(muan::wpilib::CanWrapper* can_wrapper)
+ScoreSubsystemInterface::ScoreSubsystemInterface(
+    muan::wpilib::CanWrapper* can_wrapper)
     : input_queue_(QueueManager<ScoreSubsystemInputProto>::Fetch()),
-      output_reader_(QueueManager<ScoreSubsystemOutputProto>::Fetch()->MakeReader()),
-      pdp_reader_(QueueManager<muan::wpilib::PdpMessage>::Fetch()->MakeReader()),
+      output_reader_(
+          QueueManager<ScoreSubsystemOutputProto>::Fetch()->MakeReader()),
+      pdp_reader_(
+          QueueManager<muan::wpilib::PdpMessage>::Fetch()->MakeReader()),
       elevator_{kElevatorMotor},
       wrist_{kWristMotor},
       roller_{kIntakeMotor},
@@ -56,16 +59,20 @@ void ScoreSubsystemInterface::ReadSensors() {
 
   muan::wpilib::PdpMessage pdp_data;
   if (pdp_reader_.ReadLastMessage(&pdp_data)) {
-    sensors->set_intake_current(std::max(pdp_data->current5(), pdp_data->current6()));
+    sensors->set_intake_current(
+        std::max(pdp_data->current5(), pdp_data->current6()));
   }
 }
 
 void ScoreSubsystemInterface::WriteActuators() {
   ScoreSubsystemOutputProto outputs;
   if (output_reader_.ReadLastMessage(&outputs)) {
-    elevator_.Set(muan::utils::Cap(outputs->elevator_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
-    wrist_.Set(muan::utils::Cap(outputs->wrist_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
-    roller_.Set(muan::utils::Cap(outputs->roller_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
+    elevator_.Set(muan::utils::Cap(outputs->elevator_voltage(), -kMaxVoltage,
+                                   kMaxVoltage));
+    wrist_.Set(
+        muan::utils::Cap(outputs->wrist_voltage(), -kMaxVoltage, kMaxVoltage));
+    roller_.Set(
+        muan::utils::Cap(outputs->roller_voltage(), -kMaxVoltage, kMaxVoltage));
     pcm_->WriteSolenoid(kIntakeSolenoid, outputs->claw_pinch());
   } else {
     elevator_.Set(0);

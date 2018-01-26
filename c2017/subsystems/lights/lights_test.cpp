@@ -1,6 +1,6 @@
-#include "gtest/gtest.h"
 #include "c2017/subsystems/lights/lights.h"
 #include "c2017/queue_manager/queue_manager.h"
+#include "gtest/gtest.h"
 #include "muan/utils/threading_utils.h"
 
 TEST(LightColors, NoVisionSignal) {
@@ -12,13 +12,17 @@ TEST(LightColors, NoVisionSignal) {
   vision_status->set_has_connection(false);
   driver_station_proto->set_mode(RobotMode::TELEOP);
 
-  c2017::QueueManager::GetInstance()->vision_status_queue()->WriteMessage(vision_status);
-  c2017::QueueManager::GetInstance()->driver_station_queue()->WriteMessage(driver_station_proto);
+  c2017::QueueManager::GetInstance()->vision_status_queue()->WriteMessage(
+      vision_status);
+  c2017::QueueManager::GetInstance()->driver_station_queue()->WriteMessage(
+      driver_station_proto);
 
   c2017::lights::Lights lights;
   muan::utils::SetMocktimeEpoch();
   lights.Update();
-  auto lights_reading = c2017::QueueManager::GetInstance()->lights_output_queue()->ReadLastMessage();
+  auto lights_reading = c2017::QueueManager::GetInstance()
+                            ->lights_output_queue()
+                            ->ReadLastMessage();
   if (lights_reading) {
     EXPECT_FALSE(lights_reading.value()->red());
     EXPECT_FALSE(lights_reading.value()->green());
@@ -29,7 +33,9 @@ TEST(LightColors, NoVisionSignal) {
 
   aos::time::IncrementMockTime(std::chrono::milliseconds(250));
   lights.Update();
-  lights_reading = c2017::QueueManager::GetInstance()->lights_output_queue()->ReadLastMessage();
+  lights_reading = c2017::QueueManager::GetInstance()
+                       ->lights_output_queue()
+                       ->ReadLastMessage();
   if (lights_reading) {
     EXPECT_FALSE(lights_reading.value()->red());
     EXPECT_TRUE(lights_reading.value()->green());
@@ -50,7 +56,9 @@ TEST(LightColors, NotCalibrated) {
 
   c2017::lights::Lights lights;
   lights.Update();
-  auto lights_reading = c2017::QueueManager::GetInstance()->lights_output_queue()->ReadLastMessage();
+  auto lights_reading = c2017::QueueManager::GetInstance()
+                            ->lights_output_queue()
+                            ->ReadLastMessage();
   if (lights_reading) {
     EXPECT_TRUE(lights_reading.value()->red());
     EXPECT_FALSE(lights_reading.value()->green());
@@ -76,14 +84,19 @@ TEST(LightColors, VisionNotAlligned) {
 
   driver_station_proto->set_mode(RobotMode::TELEOP);
 
-  c2017::QueueManager::GetInstance()->vision_status_queue()->WriteMessage(vision_status);
-  c2017::QueueManager::GetInstance()->intake_group_goal_queue()->WriteMessage(intake_group_goal_proto);
+  c2017::QueueManager::GetInstance()->vision_status_queue()->WriteMessage(
+      vision_status);
+  c2017::QueueManager::GetInstance()->intake_group_goal_queue()->WriteMessage(
+      intake_group_goal_proto);
   c2017::QueueManager::GetInstance()->gyro_queue()->WriteMessage(gyro_proto);
-  c2017::QueueManager::GetInstance()->driver_station_queue()->WriteMessage(driver_station_proto);
+  c2017::QueueManager::GetInstance()->driver_station_queue()->WriteMessage(
+      driver_station_proto);
 
   c2017::lights::Lights lights;
   lights.Update();
-  auto lights_reading = c2017::QueueManager::GetInstance()->lights_output_queue()->ReadLastMessage();
+  auto lights_reading = c2017::QueueManager::GetInstance()
+                            ->lights_output_queue()
+                            ->ReadLastMessage();
   if (lights_reading) {
     EXPECT_TRUE(lights_reading.value()->red());
     EXPECT_TRUE(lights_reading.value()->green());
@@ -109,14 +122,19 @@ TEST(LightColors, VisionTargetNotFound) {
 
   driver_station_proto->set_mode(RobotMode::TELEOP);
 
-  c2017::QueueManager::GetInstance()->vision_status_queue()->WriteMessage(vision_status);
-  c2017::QueueManager::GetInstance()->intake_group_goal_queue()->WriteMessage(intake_group_goal_proto);
+  c2017::QueueManager::GetInstance()->vision_status_queue()->WriteMessage(
+      vision_status);
+  c2017::QueueManager::GetInstance()->intake_group_goal_queue()->WriteMessage(
+      intake_group_goal_proto);
   c2017::QueueManager::GetInstance()->gyro_queue()->WriteMessage(gyro_proto);
-  c2017::QueueManager::GetInstance()->driver_station_queue()->WriteMessage(driver_station_proto);
+  c2017::QueueManager::GetInstance()->driver_station_queue()->WriteMessage(
+      driver_station_proto);
 
   c2017::lights::Lights lights;
   lights.Update();
-  auto lights_reading = c2017::QueueManager::GetInstance()->lights_output_queue()->ReadLastMessage();
+  auto lights_reading = c2017::QueueManager::GetInstance()
+                            ->lights_output_queue()
+                            ->ReadLastMessage();
   if (lights_reading) {
     EXPECT_TRUE(lights_reading.value()->red());
     EXPECT_FALSE(lights_reading.value()->green());
@@ -142,14 +160,19 @@ TEST(LightColors, VisionAligned) {
 
   driver_station_proto->set_mode(RobotMode::TELEOP);
 
-  c2017::QueueManager::GetInstance()->vision_status_queue()->WriteMessage(vision_status);
-  c2017::QueueManager::GetInstance()->intake_group_goal_queue()->WriteMessage(intake_group_goal_proto);
+  c2017::QueueManager::GetInstance()->vision_status_queue()->WriteMessage(
+      vision_status);
+  c2017::QueueManager::GetInstance()->intake_group_goal_queue()->WriteMessage(
+      intake_group_goal_proto);
   c2017::QueueManager::GetInstance()->gyro_queue()->WriteMessage(gyro_proto);
-  c2017::QueueManager::GetInstance()->driver_station_queue()->WriteMessage(driver_station_proto);
+  c2017::QueueManager::GetInstance()->driver_station_queue()->WriteMessage(
+      driver_station_proto);
 
   c2017::lights::Lights lights;
   lights.Update();
-  auto lights_reading = c2017::QueueManager::GetInstance()->lights_output_queue()->ReadLastMessage();
+  auto lights_reading = c2017::QueueManager::GetInstance()
+                            ->lights_output_queue()
+                            ->ReadLastMessage();
   if (lights_reading) {
     EXPECT_FALSE(lights_reading.value()->red());
     EXPECT_TRUE(lights_reading.value()->green());
@@ -169,11 +192,14 @@ TEST(LightColors, NoDsQueue) {
   vision_status->set_has_connection(true);
 
   c2017::QueueManager::GetInstance()->gyro_queue()->WriteMessage(gyro_proto);
-  c2017::QueueManager::GetInstance()->vision_status_queue()->WriteMessage(vision_status);
+  c2017::QueueManager::GetInstance()->vision_status_queue()->WriteMessage(
+      vision_status);
 
   c2017::lights::Lights lights;
   lights.Update();
-  auto lights_reading = c2017::QueueManager::GetInstance()->lights_output_queue()->ReadLastMessage();
+  auto lights_reading = c2017::QueueManager::GetInstance()
+                            ->lights_output_queue()
+                            ->ReadLastMessage();
   if (lights_reading) {
     EXPECT_FALSE(lights_reading.value()->red());
     EXPECT_FALSE(lights_reading.value()->green());

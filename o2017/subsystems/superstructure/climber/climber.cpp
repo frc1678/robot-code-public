@@ -7,8 +7,7 @@ namespace superstructure {
 
 namespace climber {
 
-Climber::Climber()
-    : position_history_(7) {}
+Climber::Climber() : position_history_(7) {}
 
 void Climber::SetGoal(const SuperstructureGoalProto& goal) {
   if (goal->should_climb() && current_state() == NOTHING) {
@@ -18,16 +17,19 @@ void Climber::SetGoal(const SuperstructureGoalProto& goal) {
   }
 }
 
-void Climber::Update(const SuperstructureInputProto& input, const SuperstructureGoalProto& goal,
-                     SuperstructureOutputProto* output, SuperstructureStatusProto* status,
-                     bool outputs_enabled) {
+void Climber::Update(const SuperstructureInputProto& input,
+                     const SuperstructureGoalProto& goal,
+                     SuperstructureOutputProto* output,
+                     SuperstructureStatusProto* status, bool outputs_enabled) {
   SetGoal(goal);
 
   double voltage = 0.0;
   position_history_.Update(input->climber_position());
-  // By finding change divided by time, calculate average rate of change over the range of recorded history
+  // By finding change divided by time, calculate average rate of change over
+  // the range of recorded history
   double current_vel =
-      (position_history_.GoBack(0) - position_history_.GoBack(position_history_.num_samples() - 1)) /
+      (position_history_.GoBack(0) -
+       position_history_.GoBack(position_history_.num_samples() - 1)) /
       (0.005 * position_history_.num_samples());
 
   if (outputs_enabled) {

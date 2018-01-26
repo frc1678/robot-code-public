@@ -2,9 +2,9 @@
 #include "c2017/citrus_robot/citrus_robot.h"
 #include "gflags/gflags.h"
 #include "muan/teleop/joystick.h"
+#include "muan/webdash/server.h"
 #include "subsystems/subsystem_runner.h"
 #include "vision/robot/reader.h"
-#include "muan/webdash/server.h"
 
 class WpilibRobot : public IterativeRobot {
  public:
@@ -33,7 +33,8 @@ int main(int argc, char **argv) {
     return -1;
   }
 
-  HAL_Report(HALUsageReporting::kResourceType_Language, HALUsageReporting::kLanguage_CPlusPlus);
+  HAL_Report(HALUsageReporting::kResourceType_Language,
+             HALUsageReporting::kLanguage_CPlusPlus);
   static WpilibRobot robot;
   std::printf("Robot program starting\n");
   robot.StartCompetition();

@@ -70,7 +70,8 @@ MagazineOutputProto Magazine::Update(bool outputs_enabled) {
   output_->set_upper_voltage(upper_voltage);
   output_->set_side_voltage(side_ramping_.Update(side_voltage));
   output_->set_lower_voltage(lower_ramping_.Update(lower_voltage));
-  QueueManager::GetInstance()->magazine_status_queue()->WriteMessage(magazine_status_);
+  QueueManager::GetInstance()->magazine_status_queue()->WriteMessage(
+      magazine_status_);
 
   return output_;
 }

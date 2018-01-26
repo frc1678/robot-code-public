@@ -5,15 +5,24 @@ namespace c2017 {
 namespace lights {
 void Lights::Update() {
   auto_list = c2017::QueueManager::GetInstance()->auto_list_;
-  auto intake_group_goal_queue = QueueManager::GetInstance()->intake_group_goal_queue()->ReadLastMessage();
-  auto climber_status_queue = QueueManager::GetInstance()->climber_status_queue()->ReadLastMessage();
-  auto drivetrain_status_queue = QueueManager::GetInstance()->drivetrain_status_queue()->ReadLastMessage();
-  auto gyro_status_queue = QueueManager::GetInstance()->gyro_queue()->ReadLastMessage();
-  auto vision_status = QueueManager::GetInstance()->vision_status_queue()->ReadLastMessage();
-  auto ds_status = QueueManager::GetInstance()->driver_station_queue()->ReadLastMessage();
-  auto ground_gear_status = QueueManager::GetInstance()->ground_gear_status_queue()->ReadLastMessage();
-  auto auto_selection_queue =
-      muan::webdash::WebDashQueueWrapper::GetInstance().auto_selection_queue().ReadLastMessage();
+  auto intake_group_goal_queue =
+      QueueManager::GetInstance()->intake_group_goal_queue()->ReadLastMessage();
+  auto climber_status_queue =
+      QueueManager::GetInstance()->climber_status_queue()->ReadLastMessage();
+  auto drivetrain_status_queue =
+      QueueManager::GetInstance()->drivetrain_status_queue()->ReadLastMessage();
+  auto gyro_status_queue =
+      QueueManager::GetInstance()->gyro_queue()->ReadLastMessage();
+  auto vision_status =
+      QueueManager::GetInstance()->vision_status_queue()->ReadLastMessage();
+  auto ds_status =
+      QueueManager::GetInstance()->driver_station_queue()->ReadLastMessage();
+  auto ground_gear_status = QueueManager::GetInstance()
+                                ->ground_gear_status_queue()
+                                ->ReadLastMessage();
+  auto auto_selection_queue = muan::webdash::WebDashQueueWrapper::GetInstance()
+                                  .auto_selection_queue()
+                                  .ReadLastMessage();
 
   if (!calibrated_ && gyro_status_queue) {
     light_color_ = LightColor::RED;
@@ -73,15 +82,18 @@ void Lights::Update() {
 
       // Climbing lights
       if (climber_status_queue) {
-        if (climber_status_queue.value()->climber_state() == c2017::climber::State::CLIMBING) {
+        if (climber_status_queue.value()->climber_state() ==
+            c2017::climber::State::CLIMBING) {
           light_color_ = LightColor::PINK;
-        } else if (climber_status_queue.value()->climber_state() == c2017::climber::State::AT_TOP) {
+        } else if (climber_status_queue.value()->climber_state() ==
+                   c2017::climber::State::AT_TOP) {
           light_color_ = LightColor::GREEN;
         }
       }
 
       if (ground_gear_status) {
-        if (ground_gear_status.value()->current_state() == c2017::ground_gear_intake::State::INTAKING) {
+        if (ground_gear_status.value()->current_state() ==
+            c2017::ground_gear_intake::State::INTAKING) {
           light_color_ = LightColor::PINK;
         } else if (ground_gear_status.value()->current_state() ==
                        c2017::ground_gear_intake::State::CARRYING ||
@@ -99,9 +111,9 @@ void Lights::Update() {
     light_color_ = LightColor::BLUE;
   }
 
-
   if (vision_status) {
-    light_color_ = FlashLights(light_color_, light_color_, !vision_status.value()->has_connection());
+    light_color_ = FlashLights(light_color_, light_color_,
+                               !vision_status.value()->has_connection());
   } else {
     light_color_ = FlashLights(light_color_, light_color_, true);
   }
@@ -116,7 +128,8 @@ void Lights::Update() {
 }
 
 LightColor Lights::VisionAlignment() {
-  auto vision_status = QueueManager::GetInstance()->vision_status_queue()->ReadLastMessage();
+  auto vision_status =
+      QueueManager::GetInstance()->vision_status_queue()->ReadLastMessage();
   if (vision_status) {
     if (!vision_status.value()->target_found()) {
       return LightColor::RED;
@@ -129,27 +142,32 @@ LightColor Lights::VisionAlignment() {
   return FlashLights(LightColor::OFF, LightColor::TEAL, false);
 }
 
-LightColor Lights::FlashLights(LightColor color_one, LightColor color_two, bool off_between) {
-  double now =
-      std::chrono::duration<double>(aos::monotonic_clock::now() - aos::monotonic_clock::epoch()).count();
+LightColor Lights::FlashLights(LightColor color_one, LightColor color_two,
+                               bool off_between) {
+  double now = std::chrono::duration<double>(aos::monotonic_clock::now() -
+                                             aos::monotonic_clock::epoch())
+                   .count();
   auto color = (static_cast<int>(now) % 2) ? color_one : color_two;
   if (off_between && fmod(now, 0.5) < 0.25) color = LightColor::OFF;
   return color;
 }
 
 bool Lights::is_green() const {
-  return (light_color_ == LightColor::GREEN || light_color_ == LightColor::TEAL ||
-          light_color_ == LightColor::YELLOW || light_color_ == LightColor::WHITE);
+  return (
+      light_color_ == LightColor::GREEN || light_color_ == LightColor::TEAL ||
+      light_color_ == LightColor::YELLOW || light_color_ == LightColor::WHITE);
 }
 
 bool Lights::is_blue() const {
-  return (light_color_ == LightColor::BLUE || light_color_ == LightColor::TEAL ||
-          light_color_ == LightColor::PINK || light_color_ == LightColor::WHITE);
+  return (
+      light_color_ == LightColor::BLUE || light_color_ == LightColor::TEAL ||
+      light_color_ == LightColor::PINK || light_color_ == LightColor::WHITE);
 }
 
 bool Lights::is_red() const {
-  return (light_color_ == LightColor::RED || light_color_ == LightColor::YELLOW ||
-          light_color_ == LightColor::WHITE || light_color_ == LightColor::PINK);
+  return (
+      light_color_ == LightColor::RED || light_color_ == LightColor::YELLOW ||
+      light_color_ == LightColor::WHITE || light_color_ == LightColor::PINK);
 }
 
 }  // namespace lights

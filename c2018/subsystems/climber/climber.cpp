@@ -54,8 +54,10 @@ void Climber::Update() {
     }
   }
   // UPDATING MECHANISMS
-  winch_output = winch_.Update(input->position(), should_climb, outputs_enabled);
-  batter_output = batter_.Update(goal_proto->put_down_batter(), outputs_enabled);
+  winch_output =
+      winch_.Update(input->position(), should_climb, outputs_enabled);
+  batter_output =
+      batter_.Update(goal_proto->put_down_batter(), outputs_enabled);
 
   // SETTING OUTPUTS
   output_proto->set_release_solenoid(batter_output);

@@ -25,9 +25,11 @@ class ShooterController {
  public:
   ShooterController();
 
-  c2017::shooter::ShooterOutputProto Update(c2017::shooter::ShooterInputProto input, bool outputs_enabled);
+  c2017::shooter::ShooterOutputProto Update(
+      c2017::shooter::ShooterInputProto input, bool outputs_enabled);
   void SetGoal(c2017::shooter::ShooterGoalProto goal);
-  double UpdateProfiledGoalVelocity(double unprofiled_goal_velocity, bool outputs_enabled);
+  double UpdateProfiledGoalVelocity(double unprofiled_goal_velocity,
+                                    bool outputs_enabled);
 
  private:
   FRIEND_TEST(ShooterControllerTest, Brownout);
