@@ -23,6 +23,8 @@ class CitrusRobot {
   void SendSuperstructureMessage();
   void SendDrivetrainMessage();
 
+  void SetReadableLogName();
+
   muan::teleop::Joystick throttle_, wheel_;
   muan::teleop::Joystick gamepad_;
 
@@ -31,6 +33,8 @@ class CitrusRobot {
   muan::teleop::Button* quickturn_;
 
   muan::wpilib::DriverStationSender ds_sender_;
+
+  bool log_name_set_ = false;
 };
 
 }  // namespace citrus_robot

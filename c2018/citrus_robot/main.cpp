@@ -4,6 +4,7 @@
 #include "muan/wpilib/queue_types.h"
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
+#include <string>
 
 namespace c2018 {
 namespace citrus_robot {
@@ -46,7 +47,35 @@ void CitrusRobot::Update() {
   } else if (DriverStation::GetInstance().IsOperatorControl()) {
     SendDrivetrainMessage();
   }
+
+  SetReadableLogName();
+
   ds_sender_.Send();
+}
+
+void CitrusRobot::SetReadableLogName() {
+  if (DriverStation::GetInstance().GetMatchType() != DriverStation::MatchType::kNone && !log_name_set_) {
+    std::string name;
+    int match_num = DriverStation::GetInstance().GetMatchNumber();
+    std::string match_number = std::to_string(match_num);
+    // Figure out name for log file
+    switch (DriverStation::GetInstance().GetMatchType()) {
+      case DriverStation::MatchType::kNone:
+        name = "N" + match_number;
+        break;
+      case DriverStation::MatchType::kPractice:
+        name = "P" + match_number;
+        break;
+      case DriverStation::MatchType::kQualification:
+        name = "Q" + match_number;
+        break;
+      case DriverStation::MatchType::kElimination:
+        name = "E" + match_number;
+        break;
+    }
+    muan::logging::FileWriter::CreateReadableName(name);
+    log_name_set_ = true;
+  }
 }
 
 void CitrusRobot::SendDrivetrainMessage() {
