@@ -1,16 +1,16 @@
-#ifndef C2018_CITRUS_ROBOT_MAIN_H_
-#define C2018_CITRUS_ROBOT_MAIN_H_
+#ifndef C2018_TELEOP_MAIN_H_
+#define C2018_TELEOP_MAIN_H_
 
 #include <atomic>
 #include "muan/teleop/joystick.h"
 #include "muan/wpilib/ds_sender.h"
 
 namespace c2018 {
-namespace citrus_robot {
+namespace teleop {
 
-class CitrusRobot {
+class TeleopBase {
  public:
-  CitrusRobot();
+  TeleopBase();
 
   void operator()();
   void Stop();
@@ -37,7 +37,7 @@ class CitrusRobot {
   bool log_name_set_ = false;
 };
 
-}  // namespace citrus_robot
+}  // namespace teleop
 }  // namespace c2018
 
-#endif  // C2018_CITRUS_ROBOT_MAIN_H_
+#endif  // C2018_TELEOP_MAIN_H_

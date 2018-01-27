@@ -36,7 +36,8 @@ bool AutonomousBase::IsAutonomous() {
   }
 }
 
-void AutonomousBase::StartDriveAbsolute(double left, double right, bool follow_through) {
+void AutonomousBase::StartDriveAbsolute(double left, double right,
+                                        bool follow_through) {
   DrivetrainGoal goal;
   follow_through_ = follow_through;
 
@@ -53,7 +54,8 @@ void AutonomousBase::StartDriveAbsolute(double left, double right, bool follow_t
   drivetrain_goal_queue_->WriteMessage(goal);
 }
 
-void AutonomousBase::StartDriveRelative(double forward, double theta, bool follow_through) {
+void AutonomousBase::StartDriveRelative(double forward, double theta,
+                                        bool follow_through) {
   DrivetrainStatus status;
   if (!drivetrain_status_reader_.ReadLastMessage(&status)) {
     LOG_P("No drivetrain status found.");
@@ -84,7 +86,8 @@ void AutonomousBase::StartDriveRelative(double forward, double theta, bool follo
   StartDriveAbsolute(left_goal, right_goal);
 }
 
-void AutonomousBase::StartDrivePath(double x, double y, double heading, bool follow_through) {
+void AutonomousBase::StartDrivePath(double x, double y, double heading,
+                                    bool follow_through) {
   DrivetrainGoal goal;
 
   follow_through_ = follow_through;
@@ -107,9 +110,11 @@ bool AutonomousBase::IsDriveComplete() {
   DrivetrainGoal goal;
   DrivetrainStatus status;
 
-  if (drivetrain_goal_queue_->ReadLastMessage(&goal) && drivetrain_status_reader_.ReadLastMessage(&status)) {
+  if (drivetrain_goal_queue_->ReadLastMessage(&goal) &&
+      drivetrain_status_reader_.ReadLastMessage(&status)) {
     if (follow_through_) {
-      double distance_travelled = 0.5 * (status->estimated_left_position() + status->estimated_right_position());
+      double distance_travelled = 0.5 * (status->estimated_left_position() +
+                                         status->estimated_right_position());
       if (threshold_positive_ && distance_travelled > goal_dist_) {
         return true;
       } else if (!threshold_positive_ && distance_travelled < goal_dist_) {
@@ -118,8 +123,10 @@ bool AutonomousBase::IsDriveComplete() {
     }
 
     if (goal->has_distance_command()) {
-      if (std::abs(status->estimated_left_position() - goal->distance_command().left_goal()) < 1e-2 &&
-          std::abs(status->estimated_right_position() - goal->distance_command().right_goal()) < 1e-2 &&
+      if (std::abs(status->estimated_left_position() -
+                   goal->distance_command().left_goal()) < 1e-2 &&
+          std::abs(status->estimated_right_position() -
+                   goal->distance_command().right_goal()) < 1e-2 &&
           std::abs(status->estimated_left_velocity()) < 1e-2 &&
           std::abs(status->estimated_right_velocity()) < 1e-2) {
         return true;
@@ -127,10 +134,14 @@ bool AutonomousBase::IsDriveComplete() {
     }
 
     if (goal->has_path_command()) {
-      if (std::abs(status->estimated_left_position() - status->profiled_left_position_goal()) < 1e-2 &&
-          std::abs(status->estimated_right_position() - status->profiled_right_position_goal()) < 1e-2 &&
-          std::abs(status->estimated_x_position() - goal->path_command().x_goal()) < 2e-1 &&
-          std::abs(status->estimated_y_position() - goal->path_command().y_goal()) < 2e-1 &&
+      if (std::abs(status->estimated_left_position() -
+                   status->profiled_left_position_goal()) < 1e-2 &&
+          std::abs(status->estimated_right_position() -
+                   status->profiled_right_position_goal()) < 1e-2 &&
+          std::abs(status->estimated_x_position() -
+                   goal->path_command().x_goal()) < 2e-1 &&
+          std::abs(status->estimated_y_position() -
+                   goal->path_command().y_goal()) < 2e-1 &&
           std::abs(status->estimated_left_velocity()) < 1e-2 &&
           std::abs(status->estimated_right_velocity()) < 1e-2) {
         return true;
@@ -176,7 +187,7 @@ void AutonomousBase::operator()() {
       StartDriveRelative(-4.2, 0.0, true);
       WaitUntilDriveComplete();
 
-      StartDrivePath(5.2, 1, M_PI *.5);
+      StartDrivePath(5.2, 1, M_PI * .5);
       WaitUntilDriveComplete();
 
       StartDrivePath(5.7, 4.8, M_PI);
@@ -188,7 +199,7 @@ void AutonomousBase::operator()() {
       StartDriveRelative(2.5, 0.0, true);
       WaitUntilDriveComplete();
 
-      StartDrivePath(4.7, 5.2, M_PI *.5);
+      StartDrivePath(4.7, 5.2, M_PI * .5);
       WaitUntilDriveComplete();
 
       StartDrivePath(4.4, 4.2, M_PI);
@@ -221,7 +232,7 @@ void AutonomousBase::operator()() {
       WaitUntilDriveComplete();
 
       StartDriveRelative(-1.5, 0.0);
-      WaitUntilDriveComplete();    
+      WaitUntilDriveComplete();
     }
   } else if (left_right_codes[0] == 'R') {
     if (left_right_codes[1] == 'L') {
