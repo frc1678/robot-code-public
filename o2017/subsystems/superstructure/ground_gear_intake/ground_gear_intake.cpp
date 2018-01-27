@@ -3,8 +3,6 @@
 
 namespace o2017 {
 
-namespace ground_gear_intake {
-
-}  // namespace ground_gear_intake
+namespace ground_gear_intake {}  // namespace ground_gear_intake
 
 }  // namespace o2017

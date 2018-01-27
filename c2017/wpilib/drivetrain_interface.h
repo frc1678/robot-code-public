@@ -2,9 +2,9 @@
 #define C2017_WPILIB_DRIVETRAIN_INTERFACE_H_
 
 #include "WPILib.h"
-#include "muan/wpilib/gyro/gyro_reader.h"
 #include "c2017/queue_manager/queue_manager.h"
 #include "muan/utils/math_utils.h"
+#include "muan/wpilib/gyro/gyro_reader.h"
 
 namespace c2017 {
 namespace wpilib {

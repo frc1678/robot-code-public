@@ -1,9 +1,9 @@
 #ifndef C2017_SUBSYSTEMS_SUPERSTRUCTURE_CLIMBER_QUEUE_TYPES_H_
 #define C2017_SUBSYSTEMS_SUPERSTRUCTURE_CLIMBER_QUEUE_TYPES_H_
 
+#include "c2017/subsystems/superstructure/climber/climber.pb.h"
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
-#include "c2017/subsystems/superstructure/climber/climber.pb.h"
 
 namespace c2017 {
 namespace climber {

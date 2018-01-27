@@ -2,12 +2,12 @@
 #define GENERIC_ROBOT_WPILIB_WPILIB_INTERFACE_H_
 
 #include "WPILib.h"
-#include "gflags/gflags.h"
-#include "muan/wpilib/can_wrapper.h"
-#include "muan/wpilib/gyro/gyro_reader.h"
 #include "generic_robot/queue_manager/queue_manager.h"
 #include "generic_robot/wpilib/drivetrain_interface.h"
 #include "generic_robot/wpilib/superstructure_interface.h"
+#include "gflags/gflags.h"
+#include "muan/wpilib/can_wrapper.h"
+#include "muan/wpilib/gyro/gyro_reader.h"
 
 namespace generic_robot {
 namespace wpilib {

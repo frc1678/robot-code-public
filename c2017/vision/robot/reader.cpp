@@ -1,15 +1,16 @@
 #include "c2017/vision/robot/reader.h"
 #include "c2017/queue_manager/queue_manager.h"
 #include "muan/utils/threading_utils.h"
-#include "third_party/aos/vision/events/udp.h"
 #include "third_party/aos/common/time.h"
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/aos/linux_code/init.h"
+#include "third_party/aos/vision/events/udp.h"
 
 namespace c2017 {
 namespace vision {
 
-VisionReader::VisionReader() : vision_input_queue_{QueueManager::GetInstance()->vision_input_queue()} {
+VisionReader::VisionReader()
+    : vision_input_queue_{QueueManager::GetInstance()->vision_input_queue()} {
   running_ = false;
 }
 

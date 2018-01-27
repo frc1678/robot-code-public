@@ -5,7 +5,8 @@ class WinchTest : public ::testing::Test {
  public:
   WinchTest() {}
 
-  double Update(double encoder, bool outputs_enabled, int num_ticks, bool should_climb) {
+  double Update(double encoder, bool outputs_enabled, int num_ticks,
+                bool should_climb) {
     double output;
 
     for (int i = 0; i < num_ticks; i++) {

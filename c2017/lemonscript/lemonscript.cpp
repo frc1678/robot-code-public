@@ -6,18 +6,21 @@
 namespace c2017 {
 namespace lemonscript {
 
-DEFINE_string(auto_mode, "none.auto", "What auto mode to default to if none is specified on the dashboard.");
+DEFINE_string(
+    auto_mode, "none.auto",
+    "What auto mode to default to if none is specified on the dashboard.");
 
 Lemonscript::Lemonscript() {
   state_ = new ::lemonscript::LemonScriptState();
-  decls_ =
-      ::lemonscript::AvailableCppCommandDeclaration::parseCppCommands(AutoGenerator::GetAutoGenerators());
-  decls_ =
-      ::lemonscript::AvailableCppCommandDeclaration::parseCppCommands(AutoGenerator::GetAutoGenerators());
+  decls_ = ::lemonscript::AvailableCppCommandDeclaration::parseCppCommands(
+      AutoGenerator::GetAutoGenerators());
+  decls_ = ::lemonscript::AvailableCppCommandDeclaration::parseCppCommands(
+      AutoGenerator::GetAutoGenerators());
   state_->declareAvailableCppCommands(decls_);
 
   try {
-    compiler_ = new ::lemonscript::LemonScriptCompiler("c2017/lemonscript/auto/" + FLAGS_auto_mode, state_);
+    compiler_ = new ::lemonscript::LemonScriptCompiler(
+        "c2017/lemonscript/auto/" + FLAGS_auto_mode, state_);
   } catch (std::string e) {
     std::cerr << e << std::endl;
   }
@@ -89,7 +92,8 @@ void Lemonscript::UpdateAutoRoutine() {
     std::cout << filename << std::endl;
     delete compiler_;
     try {
-      compiler_ = new ::lemonscript::LemonScriptCompiler("c2017/lemonscript/auto/" + filename, state_);
+      compiler_ = new ::lemonscript::LemonScriptCompiler(
+          "c2017/lemonscript/auto/" + filename, state_);
     } catch (std::string s) {
       std::cerr << s << std::endl;
     }

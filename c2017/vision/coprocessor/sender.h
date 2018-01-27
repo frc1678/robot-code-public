@@ -1,11 +1,11 @@
 #ifndef C2017_VISION_COPROCESSOR_SENDER_H_
 #define C2017_VISION_COPROCESSOR_SENDER_H_
 
-#include <thread>
 #include <chrono>
 #include <iostream>
-#include "third_party/aos/vision/events/udp.h"
+#include <thread>
 #include "c2017/vision/queue_types.h"
+#include "third_party/aos/vision/events/udp.h"
 
 namespace c2017 {
 namespace vision {

@@ -36,7 +36,7 @@ class CitrusRobot {
 
   bool high_gear_;
   bool climbing_ = false;
-  muan::teleop::Button* shifting_high_, *shifting_low_;
+  muan::teleop::Button *shifting_high_, *shifting_low_;
   muan::teleop::Button* quickturn_;
 
   muan::teleop::Button* hp_gear_;

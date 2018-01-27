@@ -1,9 +1,9 @@
 #ifndef C2017_SUBSYSTEMS_SUPERSTRUCTURE_GROUND_GEAR_INTAKE_GROUND_GEAR_INTAKE_H_
 #define C2017_SUBSYSTEMS_SUPERSTRUCTURE_GROUND_GEAR_INTAKE_GROUND_GEAR_INTAKE_H_
 
-#include "muan/wpilib/queue_types.h"
-#include "c2017/subsystems/superstructure/ground_gear_intake/queue_types.h"
 #include "c2017/queue_manager/queue_manager.h"
+#include "c2017/subsystems/superstructure/ground_gear_intake/queue_types.h"
+#include "muan/wpilib/queue_types.h"
 
 namespace c2017 {
 
@@ -20,7 +20,8 @@ constexpr double kCurrentThreshold = 60.0;
 class GroundGearIntake {
  public:
   GroundGearIntake() = default;
-  GroundGearIntakeOutputProto Update(GroundGearIntakeInputProto input, bool outputs_enabled);
+  GroundGearIntakeOutputProto Update(GroundGearIntakeInputProto input,
+                                     bool outputs_enabled);
   void SetGoal(GroundGearIntakeGoalProto goal);
 
   State current_state() const;

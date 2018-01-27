@@ -3,12 +3,12 @@
 
 #include <string>
 #include <vector>
-#include "muan/wpilib/queue_types.h"
-#include "muan/units/units.h"
-#include "c2017/subsystems/lights/queue_types.h"
 #include "c2017/queue_manager/queue_manager.h"
+#include "c2017/subsystems/lights/queue_types.h"
+#include "muan/units/units.h"
 #include "muan/webdash/queue_types.h"
 #include "muan/webdash/webdash.pb.h"
+#include "muan/wpilib/queue_types.h"
 
 namespace c2017 {
 

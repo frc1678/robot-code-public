@@ -25,11 +25,14 @@ constexpr double kMaxVoltage = 12;
 DrivetrainInterface::DrivetrainInterface(muan::wpilib::PcmWrapper* pcm)
     : pcm_(pcm),
       input_queue_(QueueManager::GetInstance()->drivetrain_input_queue()),
-      output_queue_(QueueManager::GetInstance()->drivetrain_output_queue()->MakeReader()),
+      output_queue_(
+          QueueManager::GetInstance()->drivetrain_output_queue()->MakeReader()),
       motor_left_{ports::drivetrain::kMotorLeft},
       motor_right_{ports::drivetrain::kMotorRight},
-      encoder_left_{ports::drivetrain::kEncoderLeftA, ports::drivetrain::kEncoderLeftB},
-      encoder_right_{ports::drivetrain::kEncoderRightA, ports::drivetrain::kEncoderRightB} {
+      encoder_left_{ports::drivetrain::kEncoderLeftA,
+                    ports::drivetrain::kEncoderLeftB},
+      encoder_right_{ports::drivetrain::kEncoderRightA,
+                     ports::drivetrain::kEncoderRightB} {
   pcm_->CreateSolenoid(ports::drivetrain::kGearShiftSolenoid);
 }
 
@@ -47,13 +50,18 @@ void DrivetrainInterface::WriteActuators() {
   auto maybe_outputs = output_queue_.ReadLastMessage();
   if (maybe_outputs) {
     auto outputs = *maybe_outputs;
-    motor_left_.Set(muan::utils::Cap(outputs->left_voltage(), -ports::drivetrain::kMaxVoltage,
-                                      ports::drivetrain::kMaxVoltage) / 12.0);
+    motor_left_.Set(muan::utils::Cap(outputs->left_voltage(),
+                                     -ports::drivetrain::kMaxVoltage,
+                                     ports::drivetrain::kMaxVoltage) /
+                    12.0);
 
-    motor_right_.Set(-muan::utils::Cap(outputs->right_voltage(), -ports::drivetrain::kMaxVoltage,
-                                      ports::drivetrain::kMaxVoltage) / 12.0);
+    motor_right_.Set(-muan::utils::Cap(outputs->right_voltage(),
+                                       -ports::drivetrain::kMaxVoltage,
+                                       ports::drivetrain::kMaxVoltage) /
+                     12.0);
 
-    pcm_->WriteSolenoid(ports::drivetrain::kGearShiftSolenoid, !outputs->high_gear());
+    pcm_->WriteSolenoid(ports::drivetrain::kGearShiftSolenoid,
+                        !outputs->high_gear());
   } else {
     motor_left_.Set(0);
     motor_right_.Set(0);

@@ -7,9 +7,7 @@ class WpilibRobot : public IterativeRobot {
  public:
   WpilibRobot() {}
 
-  void AutonomousInit() override {
-    main_.RunAutonomous();
-  }
+  void AutonomousInit() override { main_.RunAutonomous(); }
 
   void RobotInit() override {}
 
@@ -28,7 +26,8 @@ int main(int argc, char **argv) {
     std::cerr << "FATAL ERROR: HAL could not be initialized" << std::endl;
     return -1;
   }
-  HAL_Report(HALUsageReporting::kResourceType_Language, HALUsageReporting::kLanguage_CPlusPlus);
+  HAL_Report(HALUsageReporting::kResourceType_Language,
+             HALUsageReporting::kLanguage_CPlusPlus);
   static WpilibRobot robot;
   std::printf("Robot program starting\n");
   robot.StartCompetition();

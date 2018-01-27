@@ -15,19 +15,25 @@ void SuperStructure::Update() {
 
   c2017::superstructure::SuperstructureStatusProto superstructure_status;
 
-  const auto maybe_shooter_group_goal =
-      QueueManager::GetInstance()->shooter_group_goal_queue()->ReadLastMessage();
-  const auto maybe_shooter_status = QueueManager::GetInstance()->shooter_status_queue()->ReadLastMessage();
-  const auto maybe_ground_gear_intake_status =
-      QueueManager::GetInstance()->ground_gear_status_queue()->ReadLastMessage();
+  const auto maybe_shooter_group_goal = QueueManager::GetInstance()
+                                            ->shooter_group_goal_queue()
+                                            ->ReadLastMessage();
+  const auto maybe_shooter_status =
+      QueueManager::GetInstance()->shooter_status_queue()->ReadLastMessage();
+  const auto maybe_ground_gear_intake_status = QueueManager::GetInstance()
+                                                   ->ground_gear_status_queue()
+                                                   ->ReadLastMessage();
   const auto maybe_intake_group_goal =
       QueueManager::GetInstance()->intake_group_goal_queue()->ReadLastMessage();
 
-  const auto maybe_shooter_input = QueueManager::GetInstance()->shooter_input_queue()->ReadLastMessage();
+  const auto maybe_shooter_input =
+      QueueManager::GetInstance()->shooter_input_queue()->ReadLastMessage();
   const auto maybe_ground_gear_input =
       QueueManager::GetInstance()->ground_gear_input_queue()->ReadLastMessage();
-  const auto maybe_climber_input = QueueManager::GetInstance()->climber_input_queue()->ReadLastMessage();
-  const auto maybe_driver_station = QueueManager::GetInstance()->driver_station_queue()->ReadLastMessage();
+  const auto maybe_climber_input =
+      QueueManager::GetInstance()->climber_input_queue()->ReadLastMessage();
+  const auto maybe_driver_station =
+      QueueManager::GetInstance()->driver_station_queue()->ReadLastMessage();
 
   bool is_climbing = false;
 
@@ -81,15 +87,18 @@ void SuperStructure::Update() {
         ground_gear_intake_goal->set_goal(ground_gear_intake::SCORE);
         break;
       case intake_group::GROUND_GEAR_START_DROPPING_BALLS:
-        ground_gear_intake_goal->set_goal(ground_gear_intake::START_DROPPING_BALLS);
+        ground_gear_intake_goal->set_goal(
+            ground_gear_intake::START_DROPPING_BALLS);
         break;
       case intake_group::GROUND_GEAR_STOP_DROPPING_BALLS:
-        ground_gear_intake_goal->set_goal(ground_gear_intake::STOP_DROPPING_BALLS);
+        ground_gear_intake_goal->set_goal(
+            ground_gear_intake::STOP_DROPPING_BALLS);
         break;
-  }
+    }
 
-    ground_ball_intake_goal->set_intake_up(intake_group_goal->ground_ball_position() ==
-                                           intake_group::GROUND_BALL_UP);
+    ground_ball_intake_goal->set_intake_up(
+        intake_group_goal->ground_ball_position() ==
+        intake_group::GROUND_BALL_UP);
 
     switch (intake_group_goal->ground_ball_rollers()) {
       case intake_group::GROUND_BALL_NONE:
@@ -99,7 +108,8 @@ void SuperStructure::Update() {
         ground_ball_intake_goal->set_run_intake(ground_ball_intake::INTAKE);
         break;
       case intake_group::GROUND_BALL_IN_SLOW:
-        ground_ball_intake_goal->set_run_intake(ground_ball_intake::INTAKE_SLOW);
+        ground_ball_intake_goal->set_run_intake(
+            ground_ball_intake::INTAKE_SLOW);
         break;
       case intake_group::GROUND_BALL_OUT:
         ground_ball_intake_goal->set_run_intake(ground_ball_intake::OUTTAKE);
@@ -108,11 +118,15 @@ void SuperStructure::Update() {
     }
 
     if (intake_group_goal->agitate()) {
-      magazine_goal->set_side_goal(c2017::magazine::SideGoalState::SIDE_AGITATE);
-      magazine_goal->set_upper_goal(c2017::magazine::UpperGoalState::UPPER_IDLE);
+      magazine_goal->set_side_goal(
+          c2017::magazine::SideGoalState::SIDE_AGITATE);
+      magazine_goal->set_upper_goal(
+          c2017::magazine::UpperGoalState::UPPER_IDLE);
     }
-    magazine_goal->set_side_magazine_extended(intake_group_goal->side_magazine_open());
-    magazine_goal->set_front_magazine_extended(intake_group_goal->front_magazine_open());
+    magazine_goal->set_side_magazine_extended(
+        intake_group_goal->side_magazine_open());
+    magazine_goal->set_front_magazine_extended(
+        intake_group_goal->front_magazine_open());
   }
 
   if (shooter_state_ == SuperstructureStatus::kShooterShooting) {
@@ -126,8 +140,9 @@ void SuperStructure::Update() {
     ground_gear_intake_goal->set_goal(c2017::ground_gear_intake::OUTTAKE);
   }
 
-  shooter_goal->set_goal_velocity(shooter_state_ == SuperstructureStatus::kShooterIdle ? 0.0
-                                                                                       : kShooterVelocity);
+  shooter_goal->set_goal_velocity(
+      shooter_state_ == SuperstructureStatus::kShooterIdle ? 0.0
+                                                           : kShooterVelocity);
 
   if (ground_gear_intake_goal->goal() == ground_gear_intake::DROP ||
       ground_gear_intake_goal->goal() == ground_gear_intake::SCORE) {
@@ -135,10 +150,14 @@ void SuperStructure::Update() {
   }
 
   if (maybe_ground_gear_intake_status) {
-    const auto ground_gear_intake_status = maybe_ground_gear_intake_status.value();
-    if (ground_gear_intake_status->current_state() == ground_gear_intake::INTAKING ||
-        ground_gear_intake_status->current_state() == ground_gear_intake::PICKING_UP ||
-        ground_gear_intake_status->current_state() == ground_gear_intake::SCORING) {
+    const auto ground_gear_intake_status =
+        maybe_ground_gear_intake_status.value();
+    if (ground_gear_intake_status->current_state() ==
+            ground_gear_intake::INTAKING ||
+        ground_gear_intake_status->current_state() ==
+            ground_gear_intake::PICKING_UP ||
+        ground_gear_intake_status->current_state() ==
+            ground_gear_intake::SCORING) {
       ground_ball_intake_goal->set_intake_up(true);
     }
   }
@@ -151,7 +170,8 @@ void SuperStructure::Update() {
   climber_.SetGoal(climber_goal);
 
   superstructure_status->set_state(shooter_state_);
-  QueueManager::GetInstance()->superstructure_status_queue()->WriteMessage(superstructure_status);
+  QueueManager::GetInstance()->superstructure_status_queue()->WriteMessage(
+      superstructure_status);
 
   bool outputs_enabled = false;
 
@@ -163,12 +183,14 @@ void SuperStructure::Update() {
   // Update the mechanisms
   shooter::ShooterOutputProto shooter_output;
   if (maybe_shooter_input) {
-    shooter_output = shooter_.Update(maybe_shooter_input.value(), outputs_enabled);
+    shooter_output =
+        shooter_.Update(maybe_shooter_input.value(), outputs_enabled);
   }
 
   ground_gear_intake::GroundGearIntakeOutputProto ground_gear_output;
   if (maybe_ground_gear_input) {
-    ground_gear_output = ground_gear_intake_.Update(maybe_ground_gear_input.value(), outputs_enabled);
+    ground_gear_output = ground_gear_intake_.Update(
+        maybe_ground_gear_input.value(), outputs_enabled);
   }
 
   auto ground_ball_output = ground_ball_intake_.Update(outputs_enabled);
@@ -176,7 +198,8 @@ void SuperStructure::Update() {
 
   climber::ClimberOutputProto climber_output;
   if (maybe_climber_input) {
-    climber_output = climber_.Update(maybe_climber_input.value(), outputs_enabled);
+    climber_output =
+        climber_.Update(maybe_climber_input.value(), outputs_enabled);
   }
 
   wpilib::WpilibOutputProto output;
@@ -192,10 +215,12 @@ void SuperStructure::Update() {
   output->set_front_magazine_open(magazine_output->front_magazine_extended());
   output->set_side_magazine_open(magazine_output->side_magazine_extended());
   output->set_shooter_voltage(shooter_output->shooter_voltage());
-  output->set_accelerator_voltage(is_climbing ? climber_output->voltage()
-                                              : shooter_output->accelerator_voltage());
+  output->set_accelerator_voltage(is_climbing
+                                      ? climber_output->voltage()
+                                      : shooter_output->accelerator_voltage());
 
-  QueueManager::GetInstance()->superstructure_output_queue()->WriteMessage(output);
+  QueueManager::GetInstance()->superstructure_output_queue()->WriteMessage(
+      output);
 }
 
 }  // namespace superstructure

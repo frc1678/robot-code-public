@@ -45,7 +45,8 @@ QueueManager* QueueManager::GetInstance() {
   return &instance;
 }
 
-MessageQueue<muan::proto::StackProto<PdpStatus, 512>>* QueueManager::pdp_status_queue() {
+MessageQueue<muan::proto::StackProto<PdpStatus, 512>>*
+QueueManager::pdp_status_queue() {
   return &pdp_status_queue_;
 }
 
@@ -73,19 +74,23 @@ muan::teleop::XBoxRumbleQueue* QueueManager::xbox_rumble_queue() {
   return &xbox_rumble_queue_;
 }
 
-frc971::control_loops::drivetrain::InputQueue* QueueManager::drivetrain_input_queue() {
+frc971::control_loops::drivetrain::InputQueue*
+QueueManager::drivetrain_input_queue() {
   return &drivetrain_input_queue_;
 }
 
-frc971::control_loops::drivetrain::GoalQueue* QueueManager::drivetrain_goal_queue() {
+frc971::control_loops::drivetrain::GoalQueue*
+QueueManager::drivetrain_goal_queue() {
   return &drivetrain_goal_queue_;
 }
 
-frc971::control_loops::drivetrain::StatusQueue* QueueManager::drivetrain_status_queue() {
+frc971::control_loops::drivetrain::StatusQueue*
+QueueManager::drivetrain_status_queue() {
   return &drivetrain_status_queue_;
 }
 
-frc971::control_loops::drivetrain::OutputQueue* QueueManager::drivetrain_output_queue() {
+frc971::control_loops::drivetrain::OutputQueue*
+QueueManager::drivetrain_output_queue() {
   return &drivetrain_output_queue_;
 }
 

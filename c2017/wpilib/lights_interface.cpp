@@ -21,7 +21,10 @@ LightsInterface::LightsInterface()
       blue_(c2017::wpilib::ports::lights::kBlue) {}
 
 void LightsInterface::WriteActuators() {
-  auto lights_output = QueueManager::GetInstance()->lights_output_queue()->MakeReader().ReadLastMessage();
+  auto lights_output = QueueManager::GetInstance()
+                           ->lights_output_queue()
+                           ->MakeReader()
+                           .ReadLastMessage();
   if (lights_output) {
     red_.Set(lights_output.value()->red());
     green_.Set(lights_output.value()->green());

@@ -8,7 +8,10 @@ namespace o2017 {
 namespace citrus_robot {
 
 CitrusRobot::CitrusRobot()
-    : throttle_(1), wheel_(0), gamepad_(2), ds_sender_(&QueueManager::GetInstance()->driver_station_queue()) {
+    : throttle_(1),
+      wheel_(0),
+      gamepad_(2),
+      ds_sender_(&QueueManager::GetInstance()->driver_station_queue()) {
   shifting_low_ = throttle_.MakeButton(4);
   shifting_high_ = throttle_.MakeButton(5);
   quickturn_ = wheel_.MakeButton(5);
@@ -16,20 +19,21 @@ CitrusRobot::CitrusRobot()
   climber_ = gamepad_.MakeButton((uint32_t)muan::teleop::XBox::BACK);
 }
 
-void CitrusRobot::RunAutonomous() {
-  auto_state_ = AutoState::kInit;
-}
+void CitrusRobot::RunAutonomous() { auto_state_ = AutoState::kInit; }
 
 void CitrusRobot::SetDriveGoal(double distance) {
-  auto maybe_status = QueueManager::GetInstance()->drivetrain_status_queue()->ReadLastMessage();
+  auto maybe_status =
+      QueueManager::GetInstance()->drivetrain_status_queue()->ReadLastMessage();
   double right_offset = 0.0, left_offset = 0.0;
   if (maybe_status) {
     auto status = *maybe_status;
     left_offset = status->estimated_left_position();
     right_offset = status->estimated_right_position();
   }
-  drivetrain_goal_->mutable_distance_command()->set_left_goal(left_offset + distance);
-  drivetrain_goal_->mutable_distance_command()->set_right_goal(right_offset + distance);
+  drivetrain_goal_->mutable_distance_command()->set_left_goal(left_offset +
+                                                              distance);
+  drivetrain_goal_->mutable_distance_command()->set_right_goal(right_offset +
+                                                               distance);
 
   drivetrain_goal_->mutable_linear_constraints()->set_max_velocity(1.0);
   drivetrain_goal_->mutable_linear_constraints()->set_max_acceleration(1.0);
@@ -40,14 +44,15 @@ void CitrusRobot::SetDriveGoal(double distance) {
 }
 
 bool CitrusRobot::DrivingDone() const {
-  auto maybe_status = QueueManager::GetInstance()->drivetrain_status_queue()->ReadLastMessage();
+  auto maybe_status =
+      QueueManager::GetInstance()->drivetrain_status_queue()->ReadLastMessage();
   constexpr double kDistanceTolerance = 0.1;
   if (maybe_status) {
     auto status = *maybe_status;
-    return std::abs(drivetrain_goal_->distance_command().left_goal() - status->estimated_left_position()) <
-               kDistanceTolerance &&
-           std::abs(drivetrain_goal_->distance_command().right_goal() - status->estimated_right_position()) <
-               kDistanceTolerance;
+    return std::abs(drivetrain_goal_->distance_command().left_goal() -
+                    status->estimated_left_position()) < kDistanceTolerance &&
+           std::abs(drivetrain_goal_->distance_command().right_goal() -
+                    status->estimated_right_position()) < kDistanceTolerance;
   }
   return true;
 }
@@ -68,7 +73,8 @@ void CitrusRobot::UpdateAutonomous() {
       break;
     case AutoState::kGearEject:
       super_goal->set_hp_gear(true);
-      if (aos::monotonic_clock::now() >= start_ + std::chrono::milliseconds(1000)) {
+      if (aos::monotonic_clock::now() >=
+          start_ + std::chrono::milliseconds(1000)) {
         auto_state_ = AutoState::kDriveBackwards;
         SetDriveGoal(-1.0);
       }
@@ -84,12 +90,15 @@ void CitrusRobot::UpdateAutonomous() {
       break;
   }
 
-  QueueManager::GetInstance()->superstructure_goal_queue()->WriteMessage(super_goal);
-  QueueManager::GetInstance()->drivetrain_goal_queue()->WriteMessage(drivetrain_goal_);
+  QueueManager::GetInstance()->superstructure_goal_queue()->WriteMessage(
+      super_goal);
+  QueueManager::GetInstance()->drivetrain_goal_queue()->WriteMessage(
+      drivetrain_goal_);
 }
 
 void CitrusRobot::Update() {
-  if (DriverStation::GetInstance().IsEnabled() && DriverStation::GetInstance().IsAutonomous()) {
+  if (DriverStation::GetInstance().IsEnabled() &&
+      DriverStation::GetInstance().IsAutonomous()) {
     UpdateAutonomous();
   } else if (DriverStation::GetInstance().IsOperatorControl()) {
     // Update joysticks
@@ -102,7 +111,8 @@ void CitrusRobot::Update() {
     super_goal->set_hp_gear(hp_gear_->is_pressed());
     climbing_ = climbing_ ^ climber_->was_clicked();
     super_goal->set_should_climb(climbing_);
-    QueueManager::GetInstance()->superstructure_goal_queue()->WriteMessage(super_goal);
+    QueueManager::GetInstance()->superstructure_goal_queue()->WriteMessage(
+        super_goal);
   }
 
   ds_sender_.Send();
@@ -125,10 +135,12 @@ void CitrusRobot::SendDrivetrainMessage() {
   drivetrain_goal->mutable_teleop_command()->set_throttle(throttle);
   drivetrain_goal->mutable_teleop_command()->set_quick_turn(quickturn);
 
-  drivetrain_goal->set_gear(high_gear_ ? frc971::control_loops::drivetrain::Gear::kHighGear
-                                       : frc971::control_loops::drivetrain::Gear::kLowGear);
+  drivetrain_goal->set_gear(
+      high_gear_ ? frc971::control_loops::drivetrain::Gear::kHighGear
+                 : frc971::control_loops::drivetrain::Gear::kLowGear);
 
-  o2017::QueueManager::GetInstance()->drivetrain_goal_queue()->WriteMessage(drivetrain_goal);
+  o2017::QueueManager::GetInstance()->drivetrain_goal_queue()->WriteMessage(
+      drivetrain_goal);
 }
 
 }  // namespace citrus_robot

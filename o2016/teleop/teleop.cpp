@@ -39,7 +39,8 @@ void Teleop::SendDSMessage() {
   status->set_brownout(RobotController::IsBrownedOut());
   status->set_has_ds_connection(DriverStation::GetInstance().IsDSAttached());
 
-  o2016::QueueManager::GetInstance().driver_station_queue().WriteMessage(status);
+  o2016::QueueManager::GetInstance().driver_station_queue().WriteMessage(
+      status);
 }
 
 void Teleop::SendDrivetrainMessage() {
@@ -69,7 +70,8 @@ void Teleop::SendDrivetrainMessage() {
   drivetrain_goal->set_gear(high_gear_ ? o2016::drivetrain::Gear::kHighGear
                                        : o2016::drivetrain::Gear::kLowGear);
 
-  o2016::QueueManager::GetInstance().drivetrain_goal_queue().WriteMessage(drivetrain_goal);
+  o2016::QueueManager::GetInstance().drivetrain_goal_queue().WriteMessage(
+      drivetrain_goal);
 }
 
 }  // namespace teleop

@@ -1,9 +1,9 @@
 #ifndef C2017_VISION_QUEUE_TYPES_H_
 #define C2017_VISION_QUEUE_TYPES_H_
 
+#include "c2017/vision/vision.pb.h"
 #include "muan/proto/stack_proto.h"
 #include "muan/queues/message_queue.h"
-#include "c2017/vision/vision.pb.h"
 
 namespace c2017 {
 namespace vision {

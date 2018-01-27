@@ -1,7 +1,7 @@
 #include "testbench/subsystems/subsystem_runner.h"
+#include "muan/utils/threading_utils.h"
 #include "testbench/queue_manager/queue_manager.h"
 #include "testbench/subsystems/drivetrain/drivetrain_base.h"
-#include "muan/utils/threading_utils.h"
 
 namespace testbench {
 

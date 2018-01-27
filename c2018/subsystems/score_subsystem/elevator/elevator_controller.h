@@ -1,5 +1,5 @@
-#ifndef C2018_SUBSYTEMS_SCORE_SUBSYSTEM_ELEVATOR_ELEVATOR_CONTROLLER_H_
-#define C2018_SUBSYTEMS_SCORE_SUBSYSTEM_ELEVATOR_ELEVATOR_CONTROLLER_H_
+#ifndef C2018_SUBSYSTEMS_SCORE_SUBSYSTEM_ELEVATOR_ELEVATOR_CONTROLLER_H_
+#define C2018_SUBSYSTEMS_SCORE_SUBSYSTEM_ELEVATOR_ELEVATOR_CONTROLLER_H_
 
 #include "c2018/subsystems/score_subsystem/elevator/elevator_constants.h"
 #include "c2018/subsystems/score_subsystem/queue_types.h"
@@ -18,11 +18,9 @@ namespace elevator {
 
 constexpr double kElevatorAcceleration = 2.3;
 constexpr double kElevatorVelocity = 2.2;
-constexpr double kElevatorStartingHeight = 0;
-constexpr double kElevatorFirstCubeHeight = 0.3;
-constexpr double kElevatorSecondCubeHeight = 0.6;
 constexpr double kElevatorMaxHeight = 2.06;
-constexpr double kHallEffectHeight = 0.05;
+constexpr double kHallEffectHeight = 1.95;
+constexpr double kCalibrationVoltage = 2.0;
 
 class ElevatorController {
  public:
@@ -30,7 +28,7 @@ class ElevatorController {
   void Update(const ScoreSubsystemInputProto& input, ScoreSubsystemOutputProto* output,
               ScoreSubsystemStatusProto* status, bool outputs_enabled);
   Eigen::Matrix<double, 2, 1> UpdateProfiledGoal(double unprofiled_goal_, bool outputs_enabled);
-  void SetGoal(c2018::score_subsystem::ScoreSubsystemGoalProto goal);
+  void SetGoal(double goal);
   double CapU(double elevator_u);
 
  private:
@@ -61,4 +59,4 @@ constexpr double kEncoderFaultTicksAllowed = 100;
 
 }  // namespace c2018
 
-#endif  // C2018_SUBSYTEMS_SCORE_SUBSYSTEM_ELEVATOR_ELEVATOR_CONTROLLER_H_
+#endif  // C2018_SUBSYSTEMS_SCORE_SUBSYSTEM_ELEVATOR_ELEVATOR_CONTROLLER_H_

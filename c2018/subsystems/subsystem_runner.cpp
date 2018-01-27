@@ -13,9 +13,12 @@ using muan::wpilib::gyro::GyroMessageProto;
 using muan::queues::QueueManager;
 
 SubsystemRunner::SubsystemRunner()
-    : drivetrain_{::c2018::drivetrain::GetDrivetrainConfig(),   QueueManager<DrivetrainGoalProto>::Fetch(),
-                  QueueManager<DrivetrainInputProto>::Fetch(),  QueueManager<DrivetrainOutputProto>::Fetch(),
-                  QueueManager<DrivetrainStatusProto>::Fetch(), QueueManager<DriverStationProto>::Fetch(),
+    : drivetrain_{::c2018::drivetrain::GetDrivetrainConfig(),
+                  QueueManager<DrivetrainGoalProto>::Fetch(),
+                  QueueManager<DrivetrainInputProto>::Fetch(),
+                  QueueManager<DrivetrainOutputProto>::Fetch(),
+                  QueueManager<DrivetrainStatusProto>::Fetch(),
+                  QueueManager<DriverStationProto>::Fetch(),
                   QueueManager<GyroMessageProto>::Fetch()} {}
 
 void SubsystemRunner::operator()() {

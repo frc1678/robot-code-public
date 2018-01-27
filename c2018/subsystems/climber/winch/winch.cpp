@@ -8,7 +8,8 @@ namespace winch {
 
 Winch::Winch() {}
 
-double Winch::Update(double encoder_i, bool should_climb, bool outputs_enabled) {
+double Winch::Update(double encoder_i, bool should_climb,
+                     bool outputs_enabled) {
   double encoder = encoder_i - first_enc_pos_;
   double voltage = 0.;
   rope_climbed_ = kWinchRadius * M_PI / 256 * encoder;
