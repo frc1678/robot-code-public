@@ -1,4 +1,5 @@
 #include "c2018/teleop/main.h"
+#include "c2018/autonomous/autonomous.h"
 #include <WPILib.h>
 #include "c2018/subsystems/subsystem_runner.h"
 #include "gflags/gflags.h"
@@ -17,15 +18,15 @@ class WpilibRobot : public IterativeRobot {
 
     std::thread teleop_thread(std::ref(main_));
     teleop_thread.detach();
+
+    std::thread autonomous_thread(std::ref(auto_));
+    autonomous_thread.detach();
   }
 
  private:
   c2018::SubsystemRunner subsystem_runner_;
   c2018::teleop::TeleopBase main_;
-
-  // Other threads such as reading from network may also be necessary
-  std::thread subsystem_thread{std::ref(subsystem_runner_)};
-  std::thread teleop_thread{std::ref(main_)};
+  c2018::autonomous::AutonomousBase auto_;
 };
 
 int main(int argc, char **argv) {
