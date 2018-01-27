@@ -4,13 +4,6 @@ option cc_enable_arenas = true;
 
 package c2018.score_subsystem;
 
-enum ElevatorHeight {
-  HEIGHT_0 = 0;
-  HEIGHT_1 = 1;
-  HEIGHT_2 = 2;
-  HEIGHT_SCORE = 3;
-}
-
 enum ClawMode {
   SCORE_F = 0;
   SCORE_B = 1;
