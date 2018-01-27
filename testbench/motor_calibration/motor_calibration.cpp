@@ -1,14 +1,15 @@
+#include <WPILib.h>
 #include <chrono>
 #include <iostream>
+#include <memory>
 #include <thread>
-#include <WPILib.h>
 
 class MotorCalibration : public IterativeRobot {
  public:
   MotorCalibration() {
     int port_to_be_calibrated;
 
-    std::cout << "Which port do you want to be calibrated?" <<std::endl;
+    std::cout << "Which port do you want to be calibrated?" << std::endl;
     std::cin >> port_to_be_calibrated;
 
     motor_ = std::make_unique<VictorSP>(port_to_be_calibrated);

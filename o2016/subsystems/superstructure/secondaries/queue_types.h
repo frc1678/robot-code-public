@@ -16,7 +16,7 @@ using SecondariesOutputProto =
 using SecondariesOutputQueue =
     muan::queues::MessageQueue<SecondariesOutputProto>;
 
-}  // secondaries
-}  // o2016
+}  // namespace secondaries
+}  // namespace o2016
 
 #endif  // O2016_SUBSYSTEMS_SUPERSTRUCTURE_SECONDARIES_QUEUE_TYPES_H_

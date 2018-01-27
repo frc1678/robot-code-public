@@ -1,4 +1,4 @@
-#include "elevator_controller.h"
+#include "c2018/subsystems/score_subsystem/elevator/elevator_controller.h"
 #include "gtest/gtest.h"
 
 class ElevatorControllerTest : public ::testing::Test {

@@ -1,10 +1,12 @@
 #include "c2018/citrus_robot/main.h"
+
+#include <string>
+
 #include "WPILib.h"
 #include "muan/queues/queue_manager.h"
 #include "muan/wpilib/queue_types.h"
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
-#include <string>
 
 namespace c2018 {
 namespace citrus_robot {
