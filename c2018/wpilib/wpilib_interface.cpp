@@ -19,6 +19,9 @@ WpilibInterface::WpilibInterface()
       score_{&can_} {
   std::thread can_thread(std::ref(can_));
   can_thread.detach();
+
+  std::thread gyro_thread(std::ref(gyro_));
+  gyro_thread.detach();
 }
 
 void WpilibInterface::WriteActuators() {

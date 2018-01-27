@@ -1,4 +1,5 @@
 #include "muan/wpilib/gyro/gyro_reader.h"
+#include "muan/logging/logger.h"
 #include "muan/utils/history.h"
 #include "muan/utils/threading_utils.h"
 #include "third_party/aos/common/util/phased_loop.h"
@@ -44,8 +45,10 @@ double GyroReader::AngleReading() {
 
 void GyroReader::Init() {
   // Try to initialize repeatedly every 100ms until it works.
+  LOG_P("Initializing!");
   aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(100));
   while (calibration_state_ == GyroState::kUninitialized && !gyro_.InitializeGyro()) {
+    LOG_P("Init failed");
     phased_loop.SleepUntilNext();
     if (gyro_queue_ != nullptr) {
       GyroMessageProto gyro_message;
