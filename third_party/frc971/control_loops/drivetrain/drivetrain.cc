@@ -96,6 +96,7 @@ void DrivetrainLoop::RunIteration(
 
   // TODO(austin): Put gear detection logic here.
   switch (dt_config_.shifter_type) {
+    case ShifterType::HALL_EFFECT_SHIFTER:
     case ShifterType::SIMPLE_SHIFTER:
       // Force the right controller for simple shifters since we assume that
       // gear switching is instantaneous.
@@ -109,6 +110,8 @@ void DrivetrainLoop::RunIteration(
       } else {
         right_gear_ = Gear::kLowGear;
       }
+      break;
+    case ShifterType::NO_SHIFTER:
       break;
   }
 
