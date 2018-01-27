@@ -37,7 +37,7 @@ enum SubSystemState {
   ELEVATOR_UP = 0;
   WRIST_UP = 1;
   RUNNING = 2;
-  DISABLED = 3;
+  SUBSYSTEM_DISABLED = 3;
 }
 
 message ScoreSubsystemInput {
@@ -78,5 +78,5 @@ message ScoreSubsystemStatus {
   required double wrist_velocity = 10;
   required bool wrist_calibrated = 11;
   required SystemState claw_state = 12;
-  required SubSystemState subsystem_state 13;
+  required SubSystemState subsystem_state = 13;
 }
