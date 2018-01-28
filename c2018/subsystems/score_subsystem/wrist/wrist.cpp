@@ -63,7 +63,10 @@ void WristController::Update(ScoreSubsystemInputProto input,
   double intake_voltage = 0;
 
   // Start of intake
+  bool wrist_solenoid_1 = false;
+  bool wrist_solenoid_2 = false;
   wrist_pinch_ = WRIST_IN;
+
 
   if (outputs_enabled) {
     switch (intake_mode_) {
@@ -89,6 +92,21 @@ void WristController::Update(ScoreSubsystemInputProto input,
     wrist_pinch_ = WRIST_IN;
   }
 
+  switch (wrist_pinch_) {
+    case WRIST_IN:
+    wrist_solenoid_1 = false;
+    wrist_solenoid_2 = false;
+    break;
+    case WRIST_OUT:
+    wrist_solenoid_1 = true;
+    wrist_solenoid_2 = true;
+    break;
+    case WRIST_IDLE:
+    // Idle or "neutral" is the starting position
+    wrist_solenoid_1 = false;
+    wrist_solenoid_2 = false;
+    break;
+  }
   switch (wrist_state_) {
     case SYSTEM_IDLE:
       wrist_voltage = 0;
@@ -150,9 +168,11 @@ void WristController::Update(ScoreSubsystemInputProto input,
 
   (*output)->set_intake_voltage(intake_voltage);
   (*output)->set_wrist_voltage(wrist_voltage);
-  (*output)->set_wrist_pinch(wrist_pinch_);
+  (*output)->set_wrist_solenoid_1(wrist_solenoid_1);
+  (*output)->set_wrist_solenoid_2(wrist_solenoid_2);
   (*status)->set_wrist_calibrated(hall_calibration_.is_calibrated());
   (*status)->set_wrist_position(wrist_observer_.x()(0, 0));
+  (*status)->set_wrist_pinch(wrist_pinch_);
   (*status)->set_wrist_state(wrist_state_);
   status_queue_->WriteMessage(*status);
   output_queue_->WriteMessage(*output);

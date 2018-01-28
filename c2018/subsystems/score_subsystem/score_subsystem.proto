@@ -59,7 +59,8 @@ message ScoreSubsystemOutput {
   required double elevator_voltage = 1;
   required double intake_voltage = 2;
   required double wrist_voltage = 3;
-  required IntakeState wrist_pinch = 4;
+  required bool wrist_solenoid_1 = 4;
+  required bool wrist_solenoid_2 = 5;
 }
 
 message ScoreSubsystemGoal {
@@ -85,6 +86,7 @@ message ScoreSubsystemStatus {
   required double wrist_position = 11;
   required double wrist_velocity = 12;
   required bool wrist_calibrated = 13;
-  required SystemState wrist_state = 14;
-  required SubsystemState subsystem_state = 15;
+  required IntakeState wrist_pinch = 14;
+  required SystemState wrist_state = 15;
+  required SubsystemState subsystem_state = 16;
 }
