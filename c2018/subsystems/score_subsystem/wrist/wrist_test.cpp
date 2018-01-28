@@ -191,4 +191,13 @@ TEST_F(WristTest, CanCapU) {
                   0.01);
 }
 
-// TEST_F(WristState, )
+TEST_F(WristTest, CalibratingEnabled){
+  outputs_enabled_ = true;
+  CalibrationSequence();
+  Update();
+
+  EXPECT_EQ(wrist_output_proto_->wrist_voltage(), 0);
+  EXPECT_EQ(wrist_output_proto_->intake_voltage(), 0);
+  EXPECT_EQ(wrist_status_proto_->wrist_state(),
+            c2018::score_subsystem::SYSTEM_IDLE);
+}
