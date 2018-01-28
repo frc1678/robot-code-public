@@ -1,6 +1,5 @@
 #include "wrist.h"
 #include "gtest/gtest.h"
-#include <iostream>
 
 class WristTest : public ::testing::Test {
  public:
@@ -49,6 +48,7 @@ class WristTest : public ::testing::Test {
   c2018::score_subsystem::IntakeMode intake_mode_;
 
   double angle_;
+  double wrist_voltage_;
   bool outputs_enabled_;
 protected:
   muan::control::StateSpacePlant<1, 3, 1> plant_;
@@ -67,7 +67,7 @@ TEST_F(WristTest, IsSane) {
 
 TEST_F(WristTest, Fault) {
   outputs_enabled_ = true;
-  angle_ = 3.14 / 2;
+  angle_ = M_PI / 2;
   intake_mode_ = c2018::score_subsystem::IntakeMode::IDLE;
   SetGoal();
 
@@ -153,4 +153,37 @@ TEST_F(WristTest, SysIdle) {
   EXPECT_EQ(wrist_output_proto_->wrist_voltage(),0);
   EXPECT_EQ(wrist_output_proto_->roller_voltage(),0);
   EXPECT_EQ(wrist_status_proto_->wrist_state(), c2018::score_subsystem::SYSTEM_IDLE);
+}
+
+TEST_F(WristTest, StateDisabled) {
+  outputs_enabled_ = false;
+  CalibrationSequence();
+  Update();
+
+  EXPECT_EQ(wrist_output_proto_->roller_voltage(),0);
+  EXPECT_EQ(wrist_output_proto_->wrist_voltage(),0);
+  EXPECT_EQ(wrist_status_proto_->wrist_state(), c2018::score_subsystem::DISABLED);
+}
+
+TEST_F(WristTest, CanCapAngle) {
+  outputs_enabled_ = true;
+  angle_ = -5;
+  CalibrationSequence();
+  Update();
+
+  SetGoal();
+  EXPECT_TRUE(wrist_status_proto_->wrist_position() >=
+              muan::utils::Cap(wrist_status_proto_->wrist_position(), 0, M_PI) - 0.01);
+  }
+
+TEST_F(WristTest, CanCapU) {
+  outputs_enabled_ = true;
+  wrist_voltage_ = -5;
+  CalibrationSequence();
+  Update();
+
+  SetGoal();
+
+  EXPECT_TRUE(wrist_output_proto_->wrist_voltage() >=
+              muan::utils::Cap(wrist_output_proto_->wrist_voltage(), -12, 12) - 0.01);
 }

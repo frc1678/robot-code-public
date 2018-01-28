@@ -29,7 +29,7 @@ WristController::WristController()
 
 void WristController::SetGoal(double angle, IntakeMode mode) {
   if (wrist_state_ == SYSTEM_IDLE || wrist_state_ == MOVING) {
-    unprofiled_goal_position_ = muan::utils::Cap(angle, -M_PI / 2, M_PI / 2);
+    unprofiled_goal_position_ = muan::utils::Cap(angle, 0.0, M_PI);
     wrist_state_ = MOVING;
   }
 
