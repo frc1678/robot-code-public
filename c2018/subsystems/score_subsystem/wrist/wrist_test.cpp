@@ -65,7 +65,7 @@ TEST_F(WristTest, IsSane) {
   EXPECT_NEAR(plant_.x(2), 0, 1e-5);
 }
 
-TEST_F(WristTest, Fault) {
+TEST_F(WristTest, EncoderFault) {
   outputs_enabled_ = true;
   angle_ = M_PI / 2;
   intake_mode_ = c2018::score_subsystem::IntakeMode::IDLE;
