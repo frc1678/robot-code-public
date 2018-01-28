@@ -5,7 +5,8 @@ namespace c2017 {
 namespace ground_ball_intake {
 
 GroundBallIntake::GroundBallIntake()
-    : status_queue_{QueueManager::GetInstance()->ground_ball_intake_status_queue()} {}
+    : status_queue_{
+          QueueManager::GetInstance()->ground_ball_intake_status_queue()} {}
 
 GroundBallIntakeOutputProto GroundBallIntake::Update(bool outputs_enabled) {
   GroundBallIntakeStatusProto status;

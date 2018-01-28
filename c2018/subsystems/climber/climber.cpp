@@ -19,51 +19,59 @@ void Climber::Update() {
   bool batter_output;
   double winch_output;
 
-  ClimberStatusProto status_proto;
-  ClimberOutputProto output_proto;
-  ClimberGoalProto goal_proto = goal_reader_.ReadLastMessage().value();
-  ClimberInputProto input = input_reader_.ReadLastMessage().value();
+  ClimberStatusProto status;
+  ClimberOutputProto output;
+  ClimberGoalProto goal;
+  ClimberInputProto input;
+  DriverStationProto ds;
 
-  if (!goal_reader_.ReadLastMessage()) {
-    goal_proto->set_climber_goal(NONE);
+  if (!goal_reader_.ReadLastMessage(&goal)) {
+    goal->set_climber_goal(NONE);
   }
-  if (input_reader_.ReadLastMessage()) {
-    outputs_enabled = ds_status_.ReadLastMessage().value()->is_sys_active();
-    // SETTING STATUS AND SHOULD_CLIMB GOAL
-    if (outputs_enabled) {
-      switch (goal_proto->climber_goal()) {
-        case NONE:
-          should_climb = false;
-          status_proto->set_climber_state(IDLE);
-          break;
-        case APPROACHING:
-          goal_proto->set_put_down_batter(true);
-          status_proto->set_climber_state(APPROACH);
-          break;
-        case CLIMBING:
-          should_climb = true;
-          status_proto->set_climber_state(CLIMB);
-          break;
-      }
-      // SETTING STATUS
-      if (winch_.has_climbed()) {
-        status_proto->set_climber_state(DONE);
-      }
-    } else {
-      status_proto->set_climber_state(IDLE);
+
+  if (!input_reader_.ReadLastMessage(&input)) {
+    return;
+  }
+
+  ds_status_.ReadLastMessage(&ds);
+  outputs_enabled = ds->is_sys_active();
+  // SETTING STATUS AND SHOULD_CLIMB GOAL
+  if (outputs_enabled) {
+    switch (goal->climber_goal()) {
+      case NONE:
+        should_climb = false;
+        status->set_climber_state(IDLE);
+        break;
+      case APPROACHING:
+        goal->set_put_down_batter(true);
+        status->set_climber_state(APPROACH);
+        break;
+      case CLIMBING:
+        should_climb = true;
+        status->set_climber_state(CLIMB);
+        break;
     }
+    // SETTING STATUS
+    if (winch_.has_climbed()) {
+      status->set_climber_state(DONE);
+    }
+  } else {
+    status->set_climber_state(IDLE);
   }
+
   // UPDATING MECHANISMS
-  winch_output = winch_.Update(input->position(), should_climb, outputs_enabled);
-  batter_output = batter_.Update(goal_proto->put_down_batter(), outputs_enabled);
+  winch_output =
+      winch_.Update(input->position(), should_climb, outputs_enabled);
+  batter_output =
+      batter_.Update(goal->put_down_batter(), outputs_enabled);
 
   // SETTING OUTPUTS
-  output_proto->set_release_solenoid(batter_output);
-  output_proto->set_voltage(winch_output);
+  output->set_release_solenoid(batter_output);
+  output->set_voltage(winch_output);
 
   // WRITING TO QUEUES
-  status_queue_->WriteMessage(status_proto);
-  output_queue_->WriteMessage(output_proto);
+  status_queue_->WriteMessage(status);
+  output_queue_->WriteMessage(output);
 }
 
 }  // namespace climber

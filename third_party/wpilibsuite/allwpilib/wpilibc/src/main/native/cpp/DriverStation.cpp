@@ -112,9 +112,9 @@ bool DriverStation::GetStickButton(int stick, int button) {
   if (button > m_joystickButtons[stick].count) {
     // Unlock early so error printing isn't locked.
     lock.unlock();
-    ReportJoystickUnpluggedWarning(
+    /*ReportJoystickUnpluggedWarning(
         "Joystick Button missing, check if all controllers are "
-        "plugged in");
+        "plugged in");*/
     return false;
   }
 
@@ -143,9 +143,9 @@ bool DriverStation::GetStickButtonPressed(int stick, int button) {
   if (button > m_joystickButtons[stick].count) {
     // Unlock early so error printing isn't locked.
     lock.unlock();
-    ReportJoystickUnpluggedWarning(
+    /*ReportJoystickUnpluggedWarning(
         "Joystick Button missing, check if all controllers are "
-        "plugged in");
+        "plugged in");*/
     return false;
   }
 
@@ -180,9 +180,9 @@ bool DriverStation::GetStickButtonReleased(int stick, int button) {
   if (button > m_joystickButtons[stick].count) {
     // Unlock early so error printing isn't locked.
     lock.unlock();
-    ReportJoystickUnpluggedWarning(
+    /*ReportJoystickUnpluggedWarning(
         "Joystick Button missing, check if all controllers are "
-        "plugged in");
+        "plugged in");*/
     return false;
   }
 
@@ -217,8 +217,8 @@ double DriverStation::GetStickAxis(int stick, int axis) {
     if (axis >= HAL_kMaxJoystickAxes)
       wpi_setWPIError(BadJoystickAxis);
     else
-      ReportJoystickUnpluggedWarning(
-          "Joystick Axis missing, check if all controllers are plugged in");
+      /*ReportJoystickUnpluggedWarning(
+          "Joystick Axis missing, check if all controllers are plugged in");*/
     return 0.0;
   }
 
@@ -242,8 +242,8 @@ int DriverStation::GetStickPOV(int stick, int pov) {
     if (pov >= HAL_kMaxJoystickPOVs)
       wpi_setWPIError(BadJoystickAxis);
     else
-      ReportJoystickUnpluggedWarning(
-          "Joystick POV missing, check if all controllers are plugged in");
+      /*ReportJoystickUnpluggedWarning(
+          "Joystick POV missing, check if all controllers are plugged in");*/
     return -1;
   }
 

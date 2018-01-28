@@ -12,7 +12,8 @@ using frc971::control_loops::drivetrain::StatusProto;
 using frc971::control_loops::drivetrain::OutputProto;
 
 Teleop::Teleop()
-    : properties_{1, 1, 1, 1, testbench::drivetrain::GetDrivetrainConfig().robot_radius},
+    : properties_{1, 1, 1, 1,
+                  testbench::drivetrain::GetDrivetrainConfig().robot_radius},
       throttle_{1},
       wheel_{0},
       ds_sender_{QueueManager::GetInstance()->driver_station_queue()} {
@@ -50,10 +51,12 @@ void Teleop::SendDrivetrainMessage() {
   drivetrain_goal->mutable_teleop_command()->set_throttle(throttle);
   drivetrain_goal->mutable_teleop_command()->set_quick_turn(quickturn);
 
-  drivetrain_goal->set_gear(high_gear_ ? frc971::control_loops::drivetrain::Gear::kHighGear
-                                       : frc971::control_loops::drivetrain::Gear::kLowGear);
+  drivetrain_goal->set_gear(
+      high_gear_ ? frc971::control_loops::drivetrain::Gear::kHighGear
+                 : frc971::control_loops::drivetrain::Gear::kLowGear);
 
-  testbench::QueueManager::GetInstance()->drivetrain_goal_queue()->WriteMessage(drivetrain_goal);
+  testbench::QueueManager::GetInstance()->drivetrain_goal_queue()->WriteMessage(
+      drivetrain_goal);
 }
 
 }  // namespace teleop

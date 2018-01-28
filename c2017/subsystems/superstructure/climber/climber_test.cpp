@@ -1,12 +1,13 @@
-#include "gtest/gtest.h"
 #include "c2017/subsystems/superstructure/climber/climber.h"
 #include "c2017/queue_manager/queue_manager.h"
+#include "gtest/gtest.h"
 
 class ClimberTest : public ::testing::Test {
  public:
   ClimberTest() {}
 
-  void Update(double current, double position, bool robot_disabled, int num_ticks) {
+  void Update(double current, double position, bool robot_disabled,
+              int num_ticks) {
     for (int i = 0; i < num_ticks; i++) {
       input->set_current(current);
       input->set_position(position);

@@ -29,8 +29,7 @@ class Climber {
   void Update(const SuperstructureInputProto& input,
               const SuperstructureGoalProto& goal,
               SuperstructureOutputProto* output,
-              SuperstructureStatusProto* status,
-              bool outputs_enabled);
+              SuperstructureStatusProto* status, bool outputs_enabled);
   void Reset();
 
   ClimberState current_state() const;

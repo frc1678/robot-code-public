@@ -18,21 +18,32 @@ class AutonomousBase {
  protected:
   bool IsAutonomous();
 
-  void StartDriveAbsolute(double left, double right);
-  void StartDriveRelative(double forward, double theta);
-  void StartDrivePath(double x, double y, double heading);
+  void StartDriveAbsolute(double left, double right, bool follow_through = false);
+  void StartDriveRelative(double forward, double theta, bool follow_through = false);
+  void StartDrivePath(double x, double y, double heading, bool follow_through = false);
 
   bool IsDriveComplete();
+  void WaitUntilDriveComplete();
 
-  double max_forward_velocity_ = 0.0, max_forward_acceleration_ = 0.0;
-  double max_angular_velocity_ = 0.0, max_angular_acceleration_ = 0.0;
+  void MakeFollowthroughFalse();
+
+  double max_forward_velocity_ = 3.0, max_forward_acceleration_ = 3.0;
+  double max_angular_velocity_ = 3.0, max_angular_acceleration_ = 3.0;
+
+  // Follow through storage
+  bool follow_through_ = false;
+  double goal_dist_;
+  // Are we crossing in the positive direction?
+  bool threshold_positive_ = true;
 
   frc971::control_loops::drivetrain::DrivetrainConfig config_;
   frc971::control_loops::drivetrain::GoalQueue* drivetrain_goal_queue_;
-  frc971::control_loops::drivetrain::StatusQueue::QueueReader drivetrain_status_reader_;
+  frc971::control_loops::drivetrain::StatusQueue::QueueReader
+      drivetrain_status_reader_;
 
   muan::wpilib::DriverStationQueue::QueueReader driver_station_reader_;
-  muan::wpilib::GameSpecificStringQueue::QueueReader game_specific_string_reader_;
+  muan::wpilib::GameSpecificStringQueue::QueueReader
+      game_specific_string_reader_;
 
   aos::time::PhasedLoop loop_{std::chrono::milliseconds(5)};
 };

@@ -19,7 +19,8 @@ constexpr double kMaxVoltage = 12;
 ClimberInterface::ClimberInterface(muan::wpilib::CanWrapper* can_wrapper)
     : input_queue_(QueueManager<ClimberInputProto>::Fetch()),
       output_reader_(QueueManager<ClimberOutputProto>::Fetch()->MakeReader()),
-      pdp_reader_(QueueManager<muan::wpilib::PdpMessage>::Fetch()->MakeReader()),
+      pdp_reader_(
+          QueueManager<muan::wpilib::PdpMessage>::Fetch()->MakeReader()),
       winch_{kWinchMotor},
       winch_encoder_{kWinchEncoderA, kWinchEncoderB},
       pcm_{can_wrapper->pcm()} {
@@ -27,8 +28,10 @@ ClimberInterface::ClimberInterface(muan::wpilib::CanWrapper* can_wrapper)
 }
 
 void ClimberInterface::ReadSensors() {
+  constexpr double kWinchEncoderRatio = 1.0 / 512.0;
+
   ClimberInputProto sensors;
-  sensors->set_position(winch_encoder_.Get() / 1  /* This 1 is temporary. Maya will tell us this*/ );
+  sensors->set_position(winch_encoder_.Get() * kWinchEncoderRatio);
 
   muan::wpilib::PdpMessage pdp_data;
   if (pdp_reader_.ReadLastMessage(&pdp_data)) {

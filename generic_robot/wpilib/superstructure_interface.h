@@ -2,9 +2,9 @@
 #define GENERIC_ROBOT_WPILIB_SUPERSTRUCTURE_INTERFACE_H_
 
 #include "WPILib.h"
-#include "muan/wpilib/pcm_wrapper.h"
-#include "muan/wpilib/can_wrapper.h"
 #include "generic_robot/queue_manager/queue_manager.h"
+#include "muan/wpilib/can_wrapper.h"
+#include "muan/wpilib/pcm_wrapper.h"
 
 namespace generic_robot {
 namespace wpilib {
@@ -18,7 +18,8 @@ class SuperstructureInterface {
 
  private:
   // Output queue readers, motors, and sensors go here
-  MessageQueue<muan::proto::StackProto<PdpStatus, 512>>::QueueReader pdp_status_;
+  MessageQueue<muan::proto::StackProto<PdpStatus, 512>>::QueueReader
+      pdp_status_;
 
   muan::wpilib::PcmWrapper* pcm_;
 };

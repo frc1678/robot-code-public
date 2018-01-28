@@ -5,7 +5,8 @@ namespace c2017 {
 
 namespace ground_gear_intake {
 
-GroundGearIntakeOutputProto GroundGearIntake::Update(GroundGearIntakeInputProto input, bool outputs_enabled) {
+GroundGearIntakeOutputProto GroundGearIntake::Update(
+    GroundGearIntakeInputProto input, bool outputs_enabled) {
   double voltage = 0;
   bool intake_down = false;
   bool current_spiked = false;
@@ -62,7 +63,8 @@ GroundGearIntakeOutputProto GroundGearIntake::Update(GroundGearIntakeInputProto 
   ground_gear_status->set_current_spiked(current_spiked);
   ground_gear_status->set_current_state(current_state_);
   ground_gear_status->set_running(fabs(voltage) <= 1e-3);
-  QueueManager::GetInstance()->ground_gear_status_queue()->WriteMessage(ground_gear_status);
+  QueueManager::GetInstance()->ground_gear_status_queue()->WriteMessage(
+      ground_gear_status);
   return output;  // Sends voltage and solenoid output
 }
 

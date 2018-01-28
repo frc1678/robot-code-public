@@ -1,4 +1,5 @@
-#include "c2018/citrus_robot/main.h"
+#include "c2018/teleop/main.h"
+#include <string>
 #include "WPILib.h"
 #include "muan/queues/queue_manager.h"
 #include "muan/wpilib/queue_types.h"
@@ -6,27 +7,31 @@
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
 
 namespace c2018 {
-namespace citrus_robot {
+namespace teleop {
 
 using DrivetrainGoalProto = frc971::control_loops::drivetrain::GoalProto;
 using muan::wpilib::DriverStationProto;
+using muan::wpilib::GameSpecificStringProto;
 using muan::teleop::JoystickStatusProto;
 using muan::queues::QueueManager;
 
-CitrusRobot::CitrusRobot()
+TeleopBase::TeleopBase()
     : throttle_{1, QueueManager<JoystickStatusProto>::Fetch("throttle")},
       wheel_{0, QueueManager<JoystickStatusProto>::Fetch("wheel")},
       gamepad_{2, QueueManager<JoystickStatusProto>::Fetch("gamepad")},
-      ds_sender_{QueueManager<DriverStationProto>::Fetch()} {
+      ds_sender_{QueueManager<DriverStationProto>::Fetch(),
+                 QueueManager<GameSpecificStringProto>::Fetch()} {
   shifting_low_ = throttle_.MakeButton(4);
   shifting_high_ = throttle_.MakeButton(5);
   quickturn_ = wheel_.MakeButton(5);
 }
 
-void CitrusRobot::operator()() {
+void TeleopBase::operator()() {
   aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(20));
   aos::SetCurrentThreadRealtimePriority(10);
-  aos::SetCurrentThreadName("CitrusRobot");
+  muan::utils::SetCurrentThreadName("TeleopBase");
+
+  LOG_P("Starting TeleopBase thread!");
 
   running_ = true;
   while (running_) {
@@ -38,18 +43,46 @@ void CitrusRobot::operator()() {
   }
 }
 
-void CitrusRobot::Stop() { running_ = false; }
+void TeleopBase::Stop() { running_ = false; }
 
-void CitrusRobot::Update() {
-  if (DriverStation::GetInstance().IsAutonomous()) {
-    // Run auto
-  } else if (DriverStation::GetInstance().IsOperatorControl()) {
+void TeleopBase::Update() {
+  if (DriverStation::GetInstance().IsOperatorControl()) {
     SendDrivetrainMessage();
   }
+
+  SetReadableLogName();
+
   ds_sender_.Send();
 }
 
-void CitrusRobot::SendDrivetrainMessage() {
+void TeleopBase::SetReadableLogName() {
+  if (DriverStation::GetInstance().GetMatchType() !=
+          DriverStation::MatchType::kNone &&
+      !log_name_set_) {
+    std::string name;
+    int match_num = DriverStation::GetInstance().GetMatchNumber();
+    std::string match_number = std::to_string(match_num);
+    // Figure out name for log file
+    switch (DriverStation::GetInstance().GetMatchType()) {
+      case DriverStation::MatchType::kNone:
+        name = "N" + match_number;
+        break;
+      case DriverStation::MatchType::kPractice:
+        name = "P" + match_number;
+        break;
+      case DriverStation::MatchType::kQualification:
+        name = "Q" + match_number;
+        break;
+      case DriverStation::MatchType::kElimination:
+        name = "E" + match_number;
+        break;
+    }
+    muan::logging::FileWriter::CreateReadableName(name);
+    log_name_set_ = true;
+  }
+}
+
+void TeleopBase::SendDrivetrainMessage() {
   using DrivetrainGoal = frc971::control_loops::drivetrain::GoalProto;
   DrivetrainGoal drivetrain_goal;
 
@@ -64,8 +97,10 @@ void CitrusRobot::SendDrivetrainMessage() {
     high_gear_ = false;
   }
 
-  drivetrain_goal->set_gear(high_gear_ ? frc971::control_loops::drivetrain::Gear::kHighGear
-                                       : frc971::control_loops::drivetrain::Gear::kLowGear);
+  drivetrain_goal->set_gear(
+      high_gear_ ? frc971::control_loops::drivetrain::Gear::kHighGear
+                 : frc971::control_loops::drivetrain::Gear::kLowGear);
+
   drivetrain_goal->mutable_teleop_command()->set_steering(wheel);
   drivetrain_goal->mutable_teleop_command()->set_throttle(throttle);
   drivetrain_goal->mutable_teleop_command()->set_quick_turn(quickturn);
@@ -73,5 +108,5 @@ void CitrusRobot::SendDrivetrainMessage() {
   QueueManager<DrivetrainGoal>::Fetch()->WriteMessage(drivetrain_goal);
 }
 
-}  // namespace citrus_robot
+}  // namespace teleop
 }  // namespace c2018

@@ -9,8 +9,8 @@
 #include "muan/wpilib/gyro/queue_types.h"
 #include "muan/wpilib/queue_types.h"
 
-#include "third_party/frc971/control_loops/drivetrain/queue_types.h"
 #include "o2017/subsystems/superstructure/queue_types.h"
+#include "third_party/frc971/control_loops/drivetrain/queue_types.h"
 
 using muan::queues::MessageQueue;
 

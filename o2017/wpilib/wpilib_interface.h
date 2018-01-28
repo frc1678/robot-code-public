@@ -2,8 +2,8 @@
 #define O2017_WPILIB_WPILIB_INTERFACE_H_
 
 #include "WPILib.h"
-#include "muan/wpilib/can_wrapper.h"
 #include "muan/units/units.h"
+#include "muan/wpilib/can_wrapper.h"
 #include "o2017/queue_manager/queue_manager.h"
 #include "o2017/wpilib/drivetrain_interface.h"
 #include "o2017/wpilib/superstructure_interface.h"

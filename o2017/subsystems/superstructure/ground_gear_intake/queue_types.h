@@ -9,14 +9,21 @@ namespace o2017 {
 
 namespace ground_gear_intake {
 
-using GroundGearIntakeOutputProto = muan::proto::StackProto<GroundGearIntakeOutput, 256>;
-using GroundGearIntakeInputProto = muan::proto::StackProto<GroundGearIntakeInput, 256>;
-using GroundGearIntakeStatusProto = muan::proto::StackProto<GroundGearIntakeStatus, 256>;
-using GroundGearIntakeGoalProto = muan::proto::StackProto<GroundGearIntakeGoal, 256>;
+using GroundGearIntakeOutputProto =
+    muan::proto::StackProto<GroundGearIntakeOutput, 256>;
+using GroundGearIntakeInputProto =
+    muan::proto::StackProto<GroundGearIntakeInput, 256>;
+using GroundGearIntakeStatusProto =
+    muan::proto::StackProto<GroundGearIntakeStatus, 256>;
+using GroundGearIntakeGoalProto =
+    muan::proto::StackProto<GroundGearIntakeGoal, 256>;
 
-using GroundGearIntakeInputQueue = muan::queues::MessageQueue<GroundGearIntakeInputProto>;
-using GroundGearIntakeStatusQueue = muan::queues::MessageQueue<GroundGearIntakeStatusProto>;
-using GroundGearIntakeOutputQueue = muan::queues::MessageQueue<GroundGearIntakeOutputProto>;
+using GroundGearIntakeInputQueue =
+    muan::queues::MessageQueue<GroundGearIntakeInputProto>;
+using GroundGearIntakeStatusQueue =
+    muan::queues::MessageQueue<GroundGearIntakeStatusProto>;
+using GroundGearIntakeOutputQueue =
+    muan::queues::MessageQueue<GroundGearIntakeOutputProto>;
 
 }  // namespace ground_gear_intake
 }  // namespace o2017

@@ -8,11 +8,15 @@ namespace generic_robot {
 namespace citrus_robot {
 
 CitrusRobot::CitrusRobot()
-    : throttle_{1, generic_robot::QueueManager::GetInstance()->throttle_status_queue()},
-      wheel_{0, generic_robot::QueueManager::GetInstance()->wheel_status_queue()},
-      gamepad_{2, generic_robot::QueueManager::GetInstance()->manipulator_status_queue()},
+    : throttle_{1, generic_robot::QueueManager::GetInstance()
+                       ->throttle_status_queue()},
+      wheel_{0,
+             generic_robot::QueueManager::GetInstance()->wheel_status_queue()},
+      gamepad_{2, generic_robot::QueueManager::GetInstance()
+                      ->manipulator_status_queue()},
       ds_sender_{QueueManager::GetInstance()->driver_station_queue()},
-      ds_reader_{QueueManager::GetInstance()->driver_station_queue()->MakeReader()} {
+      ds_reader_{
+          QueueManager::GetInstance()->driver_station_queue()->MakeReader()} {
   shifting_low_ = throttle_.MakeButton(4);
   shifting_high_ = throttle_.MakeButton(5);
   quickturn_ = wheel_.MakeButton(5);
@@ -71,16 +75,18 @@ void CitrusRobot::SendDrivetrainMessage() {
     high_gear_ = false;
   }
 
-  drivetrain_goal->set_gear(high_gear_
-                            ? frc971::control_loops::drivetrain::Gear::kHighGear
-                            : frc971::control_loops::drivetrain::Gear::kLowGear);
+  drivetrain_goal->set_gear(
+      high_gear_ ? frc971::control_loops::drivetrain::Gear::kHighGear
+                 : frc971::control_loops::drivetrain::Gear::kLowGear);
   drivetrain_goal->mutable_teleop_command()->set_steering(wheel);
   drivetrain_goal->mutable_teleop_command()->set_throttle(throttle);
   drivetrain_goal->mutable_teleop_command()->set_quick_turn(quickturn);
 
   // This line can be the only line sending drivetrain goals. If you are
   // using vision, put logic to switch between aligning and driving here.
-  generic_robot::QueueManager::GetInstance()->drivetrain_goal_queue()->WriteMessage(drivetrain_goal);
+  generic_robot::QueueManager::GetInstance()
+      ->drivetrain_goal_queue()
+      ->WriteMessage(drivetrain_goal);
 }
 
 }  // namespace citrus_robot

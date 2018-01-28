@@ -66,8 +66,10 @@ message ScoreSubsystemStatus {
   required double elevator_uncapped_voltage = 6;
   required double elevator_profiled_goal = 7;
   required double elevator_unprofiled_goal = 8;
-  required double wrist_position = 9;
-  required double wrist_velocity = 10;
-  required bool wrist_calibrated = 11;
-  required SystemState wrist_state = 12;
+  required bool elevator_encoder_fault_detected = 9;
+  required bool elevator_calibrated = 10;
+  required double wrist_position = 11;
+  required double wrist_velocity = 12;
+  required bool wrist_calibrated = 13;
+  required SystemState claw_state = 14;
 }

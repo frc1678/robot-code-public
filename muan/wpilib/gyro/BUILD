@@ -20,6 +20,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":gyro_queues",
+        "//muan/logging:logger",
         "//muan/proto:stack_proto",
         "//muan/queues",
         "//muan/units",

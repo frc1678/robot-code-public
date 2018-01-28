@@ -38,9 +38,15 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input, ScoreSubs
                                 ScoreSubsystemStatusProto* status, bool outputs_enabled) {
   Eigen::Matrix<double, 3, 1> elevator_r_;
 
-  SetWeights(elevator_observer_.x()(0, 0) >= 1.0, input->has_cube());
   auto elevator_y = (Eigen::Matrix<double, 1, 1>()
                      << hall_calib_.Update(input->elevator_encoder(), input->elevator_hall()));
+
+  if (hall_calib_.is_calibrated()) {
+    SetWeights(elevator_observer_.x()(0, 0) >= 1.0, input->has_cube());
+  } else {
+    SetWeights(false, false);
+  }
+
   elevator_r_ =
       (Eigen::Matrix<double, 3, 1>() << UpdateProfiledGoal(unprofiled_goal_, outputs_enabled)(0, 0), 0.0, 0.0)
           .finished();
@@ -51,23 +57,24 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input, ScoreSubs
 
   if (!outputs_enabled) {
     elevator_u = CapU(0);
-  } else {
-    if (!encoder_fault_detected_) {
-      (*status)->set_elevator_uncapped_voltage(elevator_u);
-      elevator_u = CapU(elevator_u);
-    } else {
-      (*status)->set_elevator_uncapped_voltage(2);
-      elevator_u = CapU(2);
-    }
-    if (old_pos_ == input->elevator_encoder() && std::abs(elevator_u) > 2) {
-      num_encoder_fault_ticks_++;
-      if (num_encoder_fault_ticks_ > kEncoderFaultTicksAllowed) {
-        encoder_fault_detected_ = true;
-      }
-    } else {
-      num_encoder_fault_ticks_ = 0;
-    }
+  } else if (!hall_calib_.is_calibrated()) {
+    elevator_u = kCalibrationVoltage;
+  } else if (encoder_fault_detected_) {
+    elevator_u = 2.0;
   }
+
+  if (old_pos_ == input->elevator_encoder() && std::abs(elevator_u) >= 2) {
+    num_encoder_fault_ticks_++;
+    if (num_encoder_fault_ticks_ > kEncoderFaultTicksAllowed) {
+      encoder_fault_detected_ = true;
+    }
+  } else {
+    num_encoder_fault_ticks_ = 0;
+  }
+
+  (*status)->set_elevator_uncapped_voltage(elevator_u);
+
+  elevator_u = CapU(elevator_u);
 
   old_pos_ = input->elevator_encoder();
 
@@ -87,21 +94,8 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input, ScoreSubs
   (*status)->set_elevator_encoder_fault_detected(encoder_fault_detected_);
 }
 
-void ElevatorController::SetGoal(c2018::score_subsystem::ScoreSubsystemGoalProto goal) {
-  switch (goal->elevator_height()) {
-    case HEIGHT_0:
-      unprofiled_goal_ = kElevatorStartingHeight;
-      break;
-    case HEIGHT_1:
-      unprofiled_goal_ = kElevatorFirstCubeHeight;
-      break;
-    case HEIGHT_2:
-      unprofiled_goal_ = kElevatorSecondCubeHeight;
-      break;
-    case HEIGHT_SCORE:
-      unprofiled_goal_ = kElevatorMaxHeight;
-      break;
-  }
+void ElevatorController::SetGoal(double goal) {
+  unprofiled_goal_ = muan::utils::Cap(goal, 0, kElevatorMaxHeight);
 }
 
 Eigen::Matrix<double, 2, 1> ElevatorController::UpdateProfiledGoal(double unprofiled_goal_,

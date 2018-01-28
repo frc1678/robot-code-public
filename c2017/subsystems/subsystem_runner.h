@@ -4,15 +4,15 @@
 #include <atomic>
 
 #include "c2017/queue_manager/queue_manager.h"
-#include "c2017/wpilib/wpilib_interface.h"
 #include "c2017/subsystems/drivetrain/drivetrain_base.h"
+#include "c2017/subsystems/lights/lights.h"
+#include "c2017/subsystems/superstructure/superstructure.h"
 #include "c2017/vision/robot/vision.h"
+#include "c2017/wpilib/wpilib_interface.h"
 #include "third_party/aos/common/time.h"
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/aos/linux_code/init.h"
 #include "third_party/frc971/control_loops/drivetrain/drivetrain.h"
-#include "c2017/subsystems/superstructure/superstructure.h"
-#include "c2017/subsystems/lights/lights.h"
 
 namespace c2017 {
 

@@ -56,8 +56,8 @@ constexpr uint32_t kHardStopCylinder = 0;
 constexpr uint32_t kScoopMotor = 4;
 constexpr uint32_t kScoopPotentiometer = 5;
 
-constexpr uint32_t kCatapultCylinderA = 4, kCatapultCylinderB = 5, kCatapultCylinderC = 6,
-                   kCatapultCylinderD = 7;
+constexpr uint32_t kCatapultCylinderA = 4, kCatapultCylinderB = 5,
+                   kCatapultCylinderC = 6, kCatapultCylinderD = 7;
 
 }  // namespace catapult
 
@@ -75,14 +75,18 @@ constexpr double kMaxVoltage = 4;  // 4 volt bringup voltage
 DrivetrainInterface::DrivetrainInterface(muan::wpilib::CanWrapper* can_wrapper)
     : pcm_{can_wrapper->pcm()},
       input_queue_(QueueManager::GetInstance().drivetrain_input_queue()),
-      output_queue_(QueueManager::GetInstance().drivetrain_output_queue().MakeReader()),
+      output_queue_(
+          QueueManager::GetInstance().drivetrain_output_queue().MakeReader()),
       motor_left_a_{ports::drivetrain::kMotorLeftA},
       motor_left_b_{ports::drivetrain::kMotorLeftB},
       motor_right_a_{ports::drivetrain::kMotorRightA},
       motor_right_b_{ports::drivetrain::kMotorRightB},
-      encoder_left_{ports::drivetrain::kEncoderLeftA, ports::drivetrain::kEncoderLeftB},
-      encoder_right_{ports::drivetrain::kEncoderRightA, ports::drivetrain::kEncoderRightB} {
-  pcm_->CreateDoubleSolenoid(ports::drivetrain::kShiftingA, ports::drivetrain::kShiftingB);
+      encoder_left_{ports::drivetrain::kEncoderLeftA,
+                    ports::drivetrain::kEncoderLeftB},
+      encoder_right_{ports::drivetrain::kEncoderRightA,
+                     ports::drivetrain::kEncoderRightB} {
+  pcm_->CreateDoubleSolenoid(ports::drivetrain::kShiftingA,
+                             ports::drivetrain::kShiftingB);
 }
 
 void DrivetrainInterface::ReadSensors() {
@@ -100,16 +104,25 @@ void DrivetrainInterface::ReadSensors() {
 void DrivetrainInterface::WriteActuators() {
   auto outputs = output_queue_.ReadLastMessage();
   if (outputs) {
-    motor_left_a_.Set(-muan::utils::Cap((*outputs)->left_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
-    motor_left_b_.Set(-muan::utils::Cap((*outputs)->left_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
+    motor_left_a_.Set(-muan::utils::Cap((*outputs)->left_voltage(),
+                                        -kMaxVoltage, kMaxVoltage) /
+                      12.0);
+    motor_left_b_.Set(-muan::utils::Cap((*outputs)->left_voltage(),
+                                        -kMaxVoltage, kMaxVoltage) /
+                      12.0);
 
-    motor_right_a_.Set(muan::utils::Cap((*outputs)->right_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
-    motor_right_b_.Set(muan::utils::Cap((*outputs)->right_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
+    motor_right_a_.Set(muan::utils::Cap((*outputs)->right_voltage(),
+                                        -kMaxVoltage, kMaxVoltage) /
+                       12.0);
+    motor_right_b_.Set(muan::utils::Cap((*outputs)->right_voltage(),
+                                        -kMaxVoltage, kMaxVoltage) /
+                       12.0);
 
     // TODO(Wesley) Verify high gear/low gear
     pcm_->WriteDoubleSolenoid(
         ports::drivetrain::kShiftingA, ports::drivetrain::kShiftingB,
-        (*outputs)->high_gear() ? DoubleSolenoid::Value::kForward : DoubleSolenoid::Value::kReverse);
+        (*outputs)->high_gear() ? DoubleSolenoid::Value::kForward
+                                : DoubleSolenoid::Value::kReverse);
   } else {
     motor_left_a_.Set(0);
     motor_left_b_.Set(0);
@@ -120,7 +133,8 @@ void DrivetrainInterface::WriteActuators() {
 
 TurretInterface::TurretInterface()
     : input_queue_(QueueManager::GetInstance().turret_input_queue()),
-      output_queue_(QueueManager::GetInstance().turret_output_queue().MakeReader()),
+      output_queue_(
+          QueueManager::GetInstance().turret_output_queue().MakeReader()),
       motor_{ports::turret::kMotor},
       encoder_{ports::turret::kEncoderA, ports::turret::kEncoderB},
       potentiometer_{ports::turret::kPotentiometer},
@@ -129,7 +143,9 @@ TurretInterface::TurretInterface()
 void TurretInterface::WriteActuators() {
   auto outputs = output_queue_.ReadLastMessage();
   if (outputs) {
-    motor_.Set(-muan::utils::Cap((*outputs)->voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
+    motor_.Set(
+        -muan::utils::Cap((*outputs)->voltage(), -kMaxVoltage, kMaxVoltage) /
+        12.0);
   } else {
     motor_.Set(0.0);
   }
@@ -144,8 +160,9 @@ void TurretInterface::ReadSensors() {
   constexpr double kEncoderScaling = 1.0 / (37.65 * 512.0) * muan::units::rev;
 
   sensors->set_encoder_position(encoder_.Get() * kEncoderScaling);
-  sensors->set_pot_position(((potentiometer_.Get() + kPotentiometerOffset) * kPotentiometerScaling) *
-                            muan::units::deg);
+  sensors->set_pot_position(
+      ((potentiometer_.Get() + kPotentiometerOffset) * kPotentiometerScaling) *
+      muan::units::deg);
   sensors->set_index_click(last_index_ != index_.Get());
   last_index_ = index_.Get();
 
@@ -154,7 +171,8 @@ void TurretInterface::ReadSensors() {
 
 IntakeInterface::IntakeInterface()
     : input_queue_(QueueManager::GetInstance().intake_input_queue()),
-      output_queue_(QueueManager::GetInstance().intake_output_queue().MakeReader()),
+      output_queue_(
+          QueueManager::GetInstance().intake_output_queue().MakeReader()),
       motor_pivot_{ports::intake::kPivotMotor},
       motor_roller_{ports::intake::kRollerMotor},
       encoder_{ports::intake::kEncoderA, ports::intake::kEncoderB},
@@ -163,8 +181,12 @@ IntakeInterface::IntakeInterface()
 void IntakeInterface::WriteActuators() {
   auto outputs = output_queue_.ReadLastMessage();
   if (outputs) {
-    motor_pivot_.Set(muan::utils::Cap((*outputs)->arm_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
-    motor_roller_.Set(-muan::utils::Cap((*outputs)->roller_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
+    motor_pivot_.Set(
+        muan::utils::Cap((*outputs)->arm_voltage(), -kMaxVoltage, kMaxVoltage) /
+        12.0);
+    motor_roller_.Set(-muan::utils::Cap((*outputs)->roller_voltage(),
+                                        -kMaxVoltage, kMaxVoltage) /
+                      12.0);
   } else {
     motor_pivot_.Set(0.0);
     motor_roller_.Set(0.0);
@@ -184,7 +206,8 @@ void IntakeInterface::ReadSensors() {
 
 CatapultInterface::CatapultInterface(muan::wpilib::CanWrapper* can)
     : input_queue_(QueueManager::GetInstance().catapult_input_queue()),
-      output_queue_(QueueManager::GetInstance().catapult_output_queue().MakeReader()),
+      output_queue_(
+          QueueManager::GetInstance().catapult_output_queue().MakeReader()),
       pcm_{can->pcm()},
       hard_stop_motor_{ports::catapult::kHardStopMotor},
       hard_stop_pot_{ports::catapult::kHardStopPotentiometer},
@@ -201,15 +224,24 @@ CatapultInterface::CatapultInterface(muan::wpilib::CanWrapper* can)
 void CatapultInterface::WriteActuators() {
   auto outputs = output_queue_.ReadLastMessage();
   if (outputs) {
-    hard_stop_motor_.Set(muan::utils::Cap((*outputs)->hardstop_output(), -kMaxVoltage, kMaxVoltage) / 12.0);
-    scoop_motor_.Set(muan::utils::Cap((*outputs)->scoop_output(), -kMaxVoltage, kMaxVoltage) / 12.0);
+    hard_stop_motor_.Set(muan::utils::Cap((*outputs)->hardstop_output(),
+                                          -kMaxVoltage, kMaxVoltage) /
+                         12.0);
+    scoop_motor_.Set(muan::utils::Cap((*outputs)->scoop_output(), -kMaxVoltage,
+                                      kMaxVoltage) /
+                     12.0);
 
-    pcm_->WriteSolenoid(ports::catapult::kCatapultCylinderA, (*outputs)->cylinder_extend());
-    pcm_->WriteSolenoid(ports::catapult::kCatapultCylinderB, (*outputs)->cylinder_extend());
-    pcm_->WriteSolenoid(ports::catapult::kCatapultCylinderC, (*outputs)->cylinder_extend());
-    pcm_->WriteSolenoid(ports::catapult::kCatapultCylinderD, (*outputs)->cylinder_extend());
+    pcm_->WriteSolenoid(ports::catapult::kCatapultCylinderA,
+                        (*outputs)->cylinder_extend());
+    pcm_->WriteSolenoid(ports::catapult::kCatapultCylinderB,
+                        (*outputs)->cylinder_extend());
+    pcm_->WriteSolenoid(ports::catapult::kCatapultCylinderC,
+                        (*outputs)->cylinder_extend());
+    pcm_->WriteSolenoid(ports::catapult::kCatapultCylinderD,
+                        (*outputs)->cylinder_extend());
 
-    pcm_->WriteSolenoid(ports::catapult::kHardStopCylinder, (*outputs)->disc_brake_activate());
+    pcm_->WriteSolenoid(ports::catapult::kHardStopCylinder,
+                        (*outputs)->disc_brake_activate());
   } else {
     hard_stop_motor_.Set(0.0);
     scoop_motor_.Set(0.0);
@@ -232,14 +264,17 @@ void CatapultInterface::ReadSensors() {
   constexpr double kHardStopScaling = -10.0;
   constexpr double kHardStopOffset = -0.44;
 
-  sensors->set_scoop_pot(((scoop_pot_.Get() + kScoopOffset) * kScoopScaling) * muan::units::deg);
-  sensors->set_hardstop_pot((hard_stop_pot_.Get() + kHardStopOffset) * kHardStopScaling);
+  sensors->set_scoop_pot(((scoop_pot_.Get() + kScoopOffset) * kScoopScaling) *
+                         muan::units::deg);
+  sensors->set_hardstop_pot((hard_stop_pot_.Get() + kHardStopOffset) *
+                            kHardStopScaling);
 
   input_queue_.WriteMessage(sensors);
 }
 
 SecondariesInterface::SecondariesInterface(muan::wpilib::CanWrapper* can)
-    : output_queue_(QueueManager::GetInstance().secondaries_output_queue().MakeReader()),
+    : output_queue_(
+          QueueManager::GetInstance().secondaries_output_queue().MakeReader()),
       pcm_{can->pcm()},
       secondaries_motor_{ports::secondaries::kSecondariesMotor} {
   pcm_->CreateSolenoid(ports::secondaries::kSecondariesCylinder);
@@ -248,9 +283,12 @@ SecondariesInterface::SecondariesInterface(muan::wpilib::CanWrapper* can)
 void SecondariesInterface::WriteActuators() {
   auto outputs = output_queue_.ReadLastMessage();
   if (outputs) {
-    secondaries_motor_.Set(muan::utils::Cap(-(*outputs)->voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
+    secondaries_motor_.Set(
+        muan::utils::Cap(-(*outputs)->voltage(), -kMaxVoltage, kMaxVoltage) /
+        12.0);
 
-    pcm_->WriteSolenoid(ports::secondaries::kSecondariesCylinder, (*outputs)->is_down());
+    pcm_->WriteSolenoid(ports::secondaries::kSecondariesCylinder,
+                        (*outputs)->is_down());
   } else {
     secondaries_motor_.Set(0.0);
     pcm_->WriteSolenoid(ports::secondaries::kSecondariesCylinder, false);

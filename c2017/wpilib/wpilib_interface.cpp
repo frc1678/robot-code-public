@@ -1,6 +1,6 @@
 #include "c2017/wpilib/wpilib_interface.h"
-#include "muan/units/units.h"
 #include "c2017/queue_manager/queue_manager.h"
+#include "muan/units/units.h"
 
 namespace c2017 {
 namespace wpilib {
@@ -9,7 +9,8 @@ DEFINE_int32(gyro_time, 10, "How long to calibrate the gyro for.");
 
 WpilibInterface::WpilibInterface()
     : can_{QueueManager::GetInstance()->pdp_status_queue()},
-      gyro_{QueueManager::GetInstance()->gyro_queue(), QueueManager::GetInstance()->driver_station_queue(),
+      gyro_{QueueManager::GetInstance()->gyro_queue(),
+            QueueManager::GetInstance()->driver_station_queue(),
             FLAGS_gyro_time, true},
       drivetrain_{},
       superstructure_{&can_},
