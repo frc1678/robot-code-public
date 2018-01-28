@@ -79,8 +79,8 @@ void ScoreSubsystemInterface::WriteActuators() {
     wrist_.Set(
         muan::utils::Cap(outputs->wrist_voltage(), -kMaxVoltage, kMaxVoltage));
     roller_.Set(
-        muan::utils::Cap(outputs->roller_voltage(), -kMaxVoltage, kMaxVoltage));
-    pcm_->WriteSolenoid(kIntakeSolenoid, outputs->wrist_pinch());
+        muan::utils::Cap(outputs->intake_voltage(), -kMaxVoltage, kMaxVoltage));
+    pcm_->WriteSolenoid(kIntakeSolenoid, outputs->claw_pinch());
   } else {
     elevator_.Set(0);
     wrist_.Set(0);
