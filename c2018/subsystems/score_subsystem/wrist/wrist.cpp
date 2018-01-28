@@ -7,11 +7,10 @@ namespace wrist {
 
 using muan::queues::QueueManager;
 
-
 WristController::WristController()
     : trapezoidal_motion_profile_{::std::chrono::milliseconds(5)},
-    status_queue_{QueueManager<ScoreSubsystemStatusProto>::Fetch()},
-    output_queue_{QueueManager<ScoreSubsystemOutputProto>::Fetch()},
+      status_queue_{QueueManager<ScoreSubsystemStatusProto>::Fetch()},
+      output_queue_{QueueManager<ScoreSubsystemOutputProto>::Fetch()},
       hall_calibration_{kHallMagnetPosition} {
   auto wrist_plant = muan::control::StateSpacePlant<1, 3, 1>(
       frc1678::wrist_controller::controller::A(),
@@ -42,9 +41,9 @@ void WristController::SetGoal(double angle, IntakeMode mode) {
 }
 
 void WristController::Update(ScoreSubsystemInputProto input,
-                            ScoreSubsystemOutputProto* output,
-                            ScoreSubsystemStatusProto* status,
-                            bool outputs_enabled = true) {
+                             ScoreSubsystemOutputProto* output,
+                             ScoreSubsystemStatusProto* status,
+                             bool outputs_enabled = true) {
   double calibrated_encoder =
       hall_calibration_.Update(input->wrist_encoder(), input->wrist_hall());
   auto wrist_y =
@@ -92,40 +91,44 @@ void WristController::Update(ScoreSubsystemInputProto input,
 
   switch (wrist_state_) {
     case SYSTEM_IDLE:
-    wrist_voltage = 0;
-    roller_voltage = 0;
-    break;
+      wrist_voltage = 0;
+      roller_voltage = 0;
+      break;
     case ENCODER_FAULT:
-    wrist_voltage = 0;
-    roller_voltage= 0;
-    break;
+      wrist_voltage = 0;
+      roller_voltage = 0;
+      break;
     case DISABLED:
-    wrist_voltage = 0;
-    roller_voltage = 0;
-    break;
+      wrist_voltage = 0;
+      roller_voltage = 0;
+      break;
     case INITIALIZING:
-    wrist_state_ = CALIBRATING;
-    break;
+      wrist_state_ = CALIBRATING;
+      break;
     case CALIBRATING:
-    wrist_voltage = kCalibVoltage;
-    roller_voltage = 0;
-    if (hall_calibration_.is_calibrated()) {
-      wrist_state_ = SYSTEM_IDLE;
-    }
-    break;
+      wrist_voltage = kCalibVoltage;
+      roller_voltage = 0;
+      if (hall_calibration_.is_calibrated()) {
+        wrist_state_ = SYSTEM_IDLE;
+      }
+      break;
     case MOVING:
-    // Run the controller
-    Eigen::Matrix<double, 3, 1> wrist_r = (Eigen::Matrix<double, 3, 1>() << UpdateProfiledGoal(unprofiled_goal_position_, outputs_enabled)(0, 0), 0.0, 0.0).finished();
+      // Run the controller
+      Eigen::Matrix<double, 3, 1> wrist_r =
+          (Eigen::Matrix<double, 3, 1>() << UpdateProfiledGoal(
+               unprofiled_goal_position_, outputs_enabled)(0, 0),
+           0.0, 0.0)
+              .finished();
 
-    wrist_controller_.r() = wrist_r;
+      wrist_controller_.r() = wrist_r;
 
-    wrist_voltage = wrist_controller_.Update(wrist_observer_.x())(0, 0);
+      wrist_voltage = wrist_controller_.Update(wrist_observer_.x())(0, 0);
 
-    break;
+      break;
   }
 
   // Check for encoder faults
-  if (old_pos_ == input->wrist_encoder() && wrist_voltage > 2 ) {
+  if (old_pos_ == input->wrist_encoder() && wrist_voltage > 2) {
     num_encoder_fault_ticks_++;
     if (num_encoder_fault_ticks_ > kEncoderFaultTicksAllowed) {
       encoder_fault_detected_ = true;
@@ -153,13 +156,11 @@ void WristController::Update(ScoreSubsystemInputProto input,
   (*status)->set_wrist_state(wrist_state_);
   status_queue_->WriteMessage(*status);
   output_queue_->WriteMessage(*output);
-
 }
 
 double WristController::CapU(double wrist_voltage) {
   return muan::utils::Cap(wrist_voltage, -12, 12);
 }
-
 
 Eigen::Matrix<double, 2, 1> WristController::UpdateProfiledGoal(
     double unprofiled_goal_, bool outputs_enabled) {

@@ -11,17 +11,16 @@ class WristTest : public ::testing::Test {
   }
   // UPDATE
   void Update() {
-
-    wrist_.Update(wrist_input_proto_, &wrist_output_proto_, &wrist_status_proto_, outputs_enabled_);
+    wrist_.Update(wrist_input_proto_, &wrist_output_proto_,
+                  &wrist_status_proto_, outputs_enabled_);
     plant_.Update(
         (Eigen::Matrix<double, 1, 1>() << wrist_output_proto_->wrist_voltage())
             .finished());
-    wrist_input_proto_->set_wrist_hall(plant_.x(0) >= 0.04 && plant_.x(0) <= 0.06);
+    wrist_input_proto_->set_wrist_hall(plant_.x(0) >= 0.04 &&
+                                       plant_.x(0) <= 0.06);
   }
 
-  void SetGoal() {
-    wrist_.SetGoal(angle_, intake_mode_);
-  }
+  void SetGoal() { wrist_.SetGoal(angle_, intake_mode_); }
 
   void SetInput(double position, bool hall, double current, bool has_cube) {
     wrist_input_proto_->set_wrist_encoder(position);
@@ -32,12 +31,15 @@ class WristTest : public ::testing::Test {
   }
 
   void CalibrationSequence() {
-    double offset = 0.5; //TODO (Mohamed) make it the real number when it is made
+    double offset =
+        0.5;  // TODO (Mohamed) make it the real number when it is made
     for (int i = 0; i < 2000; i++) {
       wrist_input_proto_->set_wrist_encoder(plant_.x(0) + offset);
       Update();
-      EXPECT_TRUE(wrist_output_proto_->wrist_voltage() >=
-                  muan::utils::Cap(wrist_output_proto_->wrist_voltage(), -12, 12) - 0.01);
+      EXPECT_TRUE(
+          wrist_output_proto_->wrist_voltage() >=
+          muan::utils::Cap(wrist_output_proto_->wrist_voltage(), -12, 12) -
+              0.01);
     }
   }
 
@@ -50,8 +52,10 @@ class WristTest : public ::testing::Test {
   double angle_;
   double wrist_voltage_;
   bool outputs_enabled_;
-protected:
+
+ protected:
   muan::control::StateSpacePlant<1, 3, 1> plant_;
+
  private:
   c2018::score_subsystem::wrist::WristController wrist_;
 };
@@ -74,15 +78,16 @@ TEST_F(WristTest, EncoderFault) {
   for (int i = 0; i < 600; i++) {
     wrist_input_proto_->set_wrist_encoder(0);
     Update();
-    EXPECT_TRUE(wrist_output_proto_->wrist_voltage() >=
-                muan::utils::Cap(wrist_output_proto_->wrist_voltage(), -12, 12) - 0.01);
+    EXPECT_TRUE(
+        wrist_output_proto_->wrist_voltage() >=
+        muan::utils::Cap(wrist_output_proto_->wrist_voltage(), -12, 12) - 0.01);
   }
 
   EXPECT_NEAR(wrist_output_proto_->wrist_voltage(), 0, 1e-2);
   EXPECT_NEAR(wrist_output_proto_->roller_voltage(), 0, 1e-2);
-  EXPECT_EQ(wrist_status_proto_->wrist_state(), c2018::score_subsystem::ENCODER_FAULT);
+  EXPECT_EQ(wrist_status_proto_->wrist_state(),
+            c2018::score_subsystem::ENCODER_FAULT);
 }
-
 
 TEST_F(WristTest, IntakeEnabled) {
   outputs_enabled_ = true;
@@ -92,7 +97,8 @@ TEST_F(WristTest, IntakeEnabled) {
   Update();
 
   EXPECT_NEAR(wrist_output_proto_->roller_voltage(), 12.0, 1e-3);
-  EXPECT_EQ(wrist_output_proto_->wrist_pinch(), c2018::score_subsystem::WRIST_OUT);
+  EXPECT_EQ(wrist_output_proto_->wrist_pinch(),
+            c2018::score_subsystem::WRIST_OUT);
 }
 
 TEST_F(WristTest, OuttakeEnabled) {
@@ -103,7 +109,8 @@ TEST_F(WristTest, OuttakeEnabled) {
   Update();
 
   EXPECT_NEAR(wrist_output_proto_->roller_voltage(), -12.0, 1e-3);
-  EXPECT_EQ(wrist_output_proto_->wrist_pinch(), c2018::score_subsystem::WRIST_IN);
+  EXPECT_EQ(wrist_output_proto_->wrist_pinch(),
+            c2018::score_subsystem::WRIST_IN);
 }
 
 TEST_F(WristTest, IdleEnabled) {
@@ -113,7 +120,8 @@ TEST_F(WristTest, IdleEnabled) {
   SetGoal();
   Update();
 
-  EXPECT_EQ(wrist_output_proto_->wrist_pinch(), c2018::score_subsystem::WRIST_IN);
+  EXPECT_EQ(wrist_output_proto_->wrist_pinch(),
+            c2018::score_subsystem::WRIST_IN);
   EXPECT_EQ(wrist_output_proto_->roller_voltage(), 0);
 }
 
@@ -124,13 +132,14 @@ TEST_F(WristTest, HoldEnabled) {
   SetGoal();
   Update();
 
-  EXPECT_EQ(wrist_output_proto_->wrist_pinch(), c2018::score_subsystem::WRIST_OUT);
+  EXPECT_EQ(wrist_output_proto_->wrist_pinch(),
+            c2018::score_subsystem::WRIST_OUT);
   EXPECT_EQ(wrist_output_proto_->roller_voltage(), 0);
 }
 
 TEST_F(WristTest, Disabled) {
   outputs_enabled_ = false;
-  EXPECT_EQ(wrist_output_proto_->wrist_voltage(),0.0);
+  EXPECT_EQ(wrist_output_proto_->wrist_voltage(), 0.0);
 }
 
 TEST_F(WristTest, Calibration) {
@@ -150,9 +159,10 @@ TEST_F(WristTest, SysIdle) {
   CalibrationSequence();
   Update();
 
-  EXPECT_EQ(wrist_output_proto_->wrist_voltage(),0);
-  EXPECT_EQ(wrist_output_proto_->roller_voltage(),0);
-  EXPECT_EQ(wrist_status_proto_->wrist_state(), c2018::score_subsystem::SYSTEM_IDLE);
+  EXPECT_EQ(wrist_output_proto_->wrist_voltage(), 0);
+  EXPECT_EQ(wrist_output_proto_->roller_voltage(), 0);
+  EXPECT_EQ(wrist_status_proto_->wrist_state(),
+            c2018::score_subsystem::SYSTEM_IDLE);
 }
 
 TEST_F(WristTest, StateDisabled) {
@@ -160,9 +170,10 @@ TEST_F(WristTest, StateDisabled) {
   CalibrationSequence();
   Update();
 
-  EXPECT_EQ(wrist_output_proto_->roller_voltage(),0);
-  EXPECT_EQ(wrist_output_proto_->wrist_voltage(),0);
-  EXPECT_EQ(wrist_status_proto_->wrist_state(), c2018::score_subsystem::DISABLED);
+  EXPECT_EQ(wrist_output_proto_->roller_voltage(), 0);
+  EXPECT_EQ(wrist_output_proto_->wrist_voltage(), 0);
+  EXPECT_EQ(wrist_status_proto_->wrist_state(),
+            c2018::score_subsystem::DISABLED);
 }
 
 TEST_F(WristTest, CanCapAngle) {
@@ -173,8 +184,9 @@ TEST_F(WristTest, CanCapAngle) {
 
   SetGoal();
   EXPECT_TRUE(wrist_status_proto_->wrist_position() >=
-              muan::utils::Cap(wrist_status_proto_->wrist_position(), 0, M_PI) - 0.01);
-  }
+              muan::utils::Cap(wrist_status_proto_->wrist_position(), 0, M_PI) -
+                  0.01);
+}
 
 TEST_F(WristTest, CanCapU) {
   outputs_enabled_ = true;
@@ -185,5 +197,6 @@ TEST_F(WristTest, CanCapU) {
   SetGoal();
 
   EXPECT_TRUE(wrist_output_proto_->wrist_voltage() >=
-              muan::utils::Cap(wrist_output_proto_->wrist_voltage(), -12, 12) - 0.01);
+              muan::utils::Cap(wrist_output_proto_->wrist_voltage(), -12, 12) -
+                  0.01);
 }

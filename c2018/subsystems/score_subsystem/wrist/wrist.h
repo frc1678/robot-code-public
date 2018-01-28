@@ -3,22 +3,29 @@
 
 #include <algorithm>
 #include <chrono>
-#include "c2018/subsystems/score_subsystem/wrist/wrist_constants.h"
 #include "c2018/subsystems/score_subsystem/queue_types.h"
+#include "c2018/subsystems/score_subsystem/wrist/wrist_constants.h"
 #include "muan/control/calibration/hall_calibration.h"
 #include "muan/control/state_space_controller.h"
 #include "muan/control/state_space_observer.h"
 #include "muan/control/state_space_plant.h"
+#include "muan/queues/queue_manager.h"
 #include "muan/units/units.h"
 #include "muan/utils/math_utils.h"
 #include "muan/wpilib/queue_types.h"
 #include "third_party/aos/common/util/trapezoid_profile.h"
-#include "muan/queues/queue_manager.h"
 
 namespace c2018 {
 namespace score_subsystem {
 namespace wrist {
 
+  static constexpr double kMaxWristVelocity = 2;
+  static constexpr double kMaxWristAcceleration = 4;
+
+  static constexpr double kEncoderFaultTicksAllowed = 200;
+  static constexpr double kCalibVoltage = 4;
+
+  static constexpr double kHallMagnetPosition = 0.05;
 class WristController {
  public:
   WristController();
@@ -48,18 +55,9 @@ class WristController {
   bool encoder_fault_detected_ = false;
   int num_encoder_fault_ticks_ = 0;
 
-
-
   c2018::score_subsystem::SystemState wrist_state_ = SYSTEM_IDLE;
   c2018::score_subsystem::WristState wrist_pinch_ = WRIST_IN;
   // measured in radians TODO (Mohamed) tune these constants
-  static constexpr double kMaxWristVelocity = 2;
-  static constexpr double kMaxWristAcceleration = 4;
-
-  static constexpr double kEncoderFaultTicksAllowed = 200;
-  static constexpr double kCalibVoltage = 4;
-
-  static constexpr double kHallMagnetPosition = 0.05;
 };
 
 }  // namespace claw
