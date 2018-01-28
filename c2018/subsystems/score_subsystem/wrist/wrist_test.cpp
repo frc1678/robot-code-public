@@ -194,8 +194,6 @@ TEST_F(WristTest, CanCapU) {
   CalibrationSequence();
   Update();
 
-  SetGoal();
-
   EXPECT_TRUE(wrist_output_proto_->wrist_voltage() >=
               muan::utils::Cap(wrist_output_proto_->wrist_voltage(), -12, 12) -
                   0.01);
