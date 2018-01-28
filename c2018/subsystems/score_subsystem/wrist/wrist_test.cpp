@@ -92,7 +92,7 @@ TEST_F(WristTest, IntakeEnabled) {
   Update();
 
   EXPECT_NEAR(wrist_output_proto_->roller_voltage(), 12.0, 1e-3);
-  EXPECT_TRUE(wrist_output_proto_->wrist_pinch());
+  EXPECT_EQ(wrist_output_proto_->wrist_pinch(), c2018::score_subsystem::WRIST_OUT);
 }
 
 TEST_F(WristTest, OuttakeEnabled) {
@@ -103,7 +103,7 @@ TEST_F(WristTest, OuttakeEnabled) {
   Update();
 
   EXPECT_NEAR(wrist_output_proto_->roller_voltage(), -12.0, 1e-3);
-  EXPECT_FALSE(wrist_output_proto_->wrist_pinch());
+  EXPECT_EQ(wrist_output_proto_->wrist_pinch(), c2018::score_subsystem::WRIST_IN);
 }
 
 TEST_F(WristTest, IdleEnabled) {
@@ -113,7 +113,7 @@ TEST_F(WristTest, IdleEnabled) {
   SetGoal();
   Update();
 
-  EXPECT_FALSE(wrist_output_proto_->wrist_pinch());
+  EXPECT_EQ(wrist_output_proto_->wrist_pinch(), c2018::score_subsystem::WRIST_IN);
   EXPECT_EQ(wrist_output_proto_->roller_voltage(), 0);
 }
 
@@ -124,7 +124,7 @@ TEST_F(WristTest, HoldEnabled) {
   SetGoal();
   Update();
 
-  EXPECT_TRUE(wrist_output_proto_->wrist_pinch());
+  EXPECT_EQ(wrist_output_proto_->wrist_pinch(), c2018::score_subsystem::WRIST_OUT);
   EXPECT_EQ(wrist_output_proto_->roller_voltage(), 0);
 }
 

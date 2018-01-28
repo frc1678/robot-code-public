@@ -59,30 +59,30 @@ void WristController::Update(ScoreSubsystemInputProto input,
   double roller_voltage = 0;
 
   // Start of intake
-  bool wrist_pinch = false;
+  wrist_pinch_ = WRIST_IN;
 
   if (outputs_enabled) {
     switch (intake_mode_) {
       case INTAKE:
         roller_voltage = 12;
-        wrist_pinch = true;
+        wrist_pinch_ = WRIST_OUT;
         break;
       case OUTTAKE:
         roller_voltage = -12;
-        wrist_pinch = false;
+        wrist_pinch_ = WRIST_IN;
         break;
       case IDLE:
         roller_voltage = 0;
-        wrist_pinch = false;
+        wrist_pinch_ = WRIST_IN;
         break;
       case HOLD:
         roller_voltage = 0;
-        wrist_pinch = true;
+        wrist_pinch_ = WRIST_OUT;
         break;
     }
   } else {
     roller_voltage = 0;
-    wrist_pinch = false;
+    wrist_pinch_ = WRIST_IN;
   }
 
   switch (wrist_state_) {
@@ -142,7 +142,7 @@ void WristController::Update(ScoreSubsystemInputProto input,
 
   (*output)->set_roller_voltage(roller_voltage);
   (*output)->set_wrist_voltage(wrist_voltage);
-  (*output)->set_wrist_pinch(wrist_pinch);
+  (*output)->set_wrist_pinch(wrist_pinch_);
   (*status)->set_wrist_calibrated(hall_calibration_.is_calibrated());
   (*status)->set_wrist_position(wrist_observer_.x()(0, 0));
   (*status)->set_wrist_state(wrist_state_);
