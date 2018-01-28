@@ -156,7 +156,7 @@ void WristController::Update(ScoreSubsystemInputProto input,
   old_pos_ = input->wrist_encoder();
 
   if (!encoder_fault_detected_) {
-    wrist_voltage = CapU(wrist_voltage);
+    wrist_voltage = muan::utils::Cap(wrist_voltage, -12, 12);
   } else {
     wrist_voltage = 0;
   }
@@ -174,10 +174,6 @@ void WristController::Update(ScoreSubsystemInputProto input,
   (*status)->set_wrist_state(wrist_state_);
   status_queue_->WriteMessage(*status);
   output_queue_->WriteMessage(*output);
-}
-
-double WristController::CapU(double wrist_voltage) {
-  return muan::utils::Cap(wrist_voltage, -12, 12);
 }
 
 Eigen::Matrix<double, 2, 1> WristController::UpdateProfiledGoal(
