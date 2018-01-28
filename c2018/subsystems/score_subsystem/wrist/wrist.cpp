@@ -43,7 +43,7 @@ void WristController::SetGoal(double angle, IntakeMode mode) {
 void WristController::Update(ScoreSubsystemInputProto input,
                              ScoreSubsystemOutputProto* output,
                              ScoreSubsystemStatusProto* status,
-                             bool outputs_enabled = true) {
+                             bool outputs_enabled) {
   double calibrated_encoder =
       hall_calibration_.Update(input->wrist_encoder(), input->wrist_hall());
   auto wrist_y =
