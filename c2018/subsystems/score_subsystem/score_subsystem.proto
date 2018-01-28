@@ -71,5 +71,5 @@ message ScoreSubsystemStatus {
   required double wrist_position = 11;
   required double wrist_velocity = 12;
   required bool wrist_calibrated = 13;
-  required SystemState claw_state = 14;
+  required SystemState wrist_state = 14;
 }
