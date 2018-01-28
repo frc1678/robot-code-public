@@ -19,9 +19,9 @@ genrule(
   tools = [":wrist_python"],
 )
 cc_library(
-  name = "claw_controller",
-  srcs = ["claw.cpp"],
-  hdrs = ["claw.h"],
+  name = "wrist_controller",
+  srcs = ["wrist.cpp"],
+  hdrs = ["wrist.h"],
   deps = [
     "//c2018/subsystems/score_subsystem:score_subsystem_queues",
     "//c2018/subsystems/score_subsystem:score_subsystem_proto",
@@ -44,17 +44,10 @@ cc_library(
 )
 
 cc_test(
-    name = "claw_test",
-    srcs = ["claw_test.cpp"],
+    name = "wrist_test",
+    srcs = ["wrist_test.cpp"],
     deps = [
-      "//c2018/subsystems/score_subsystem:score_subsystem_queues",
-      ":wrist_constants",
       ":wrist_controller",
-      "//muan/control/calibration:hall_calibration",
-      "//muan/control:state_space",
-      "//muan/utils:math_utils",
-      "//muan/units:units",
-      "//muan/wpilib:wpilib_queues",
       "//third_party/aos/common/util:trapezoid_profile",
       "//third_party/google/googletest:googletest",
     ],

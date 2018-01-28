@@ -3,7 +3,7 @@
 
 #include <algorithm>
 #include <chrono>
-#include "c2018/subsystems/score_subsystem/claw/wrist_constants.h"
+#include "c2018/subsystems/score_subsystem/wrist/wrist_constants.h"
 #include "c2018/subsystems/score_subsystem/queue_types.h"
 #include "muan/control/calibration/hall_calibration.h"
 #include "muan/control/state_space_controller.h"
@@ -16,22 +16,19 @@
 
 namespace c2018 {
 namespace score_subsystem {
-namespace claw {
+namespace wrist {
 
 class WristController {
  public:
   WristController();
 
   void SetGoal(double angle, c2018::score_subsystem::IntakeMode);
-  c2018::score_subsystem::SystemState claw_state_ = SYSTEM_IDLE;
   Eigen::Matrix<double, 2, 1> UpdateProfiledGoal(double unprofiled_goal_,
                                                  bool outputs_enabled);
-  void Update(ScoreSubsystemInputProto input, ScoreSubsystemOutput* output,
+  void Update(ScoreSubsystemInputProto input, ScoreSubsystemOutputProto* output,
               ScoreSubsystemStatusProto* status, bool outputs_enabled);
 
  private:
-  double wrist_position_;
-
   aos::util::TrapezoidProfile trapezoidal_motion_profile_;
   muan::control::HallCalibration hall_calibration_;
   muan::control::StateSpacePlant<1, 3, 1> plant_;
@@ -48,6 +45,7 @@ class WristController {
   bool encoder_fault_detected_ = false;
   int num_encoder_fault_ticks_ = 0;
 
+  c2018::score_subsystem::SystemState wrist_state_ = SYSTEM_IDLE;
   // measured in radians TODO (Mohamed) tune these constants
   static constexpr double kMaxWristVelocity = 2;
   static constexpr double kMaxWristAcceleration = 4;
@@ -56,7 +54,7 @@ class WristController {
   static constexpr double kCalibVoltage = 4;
 
   static constexpr double kHallMagnetPosition = 0.05;
-};  //  wrist_controller;
+};
 
 }  // namespace claw
 }  // namespace score_subsystem

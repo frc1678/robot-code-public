@@ -1,9 +1,9 @@
-#include "c2018/subsystems/score_subsystem/claw/claw.h"
+#include "c2018/subsystems/score_subsystem/wrist/wrist.h"
 #include <cmath>
 
 namespace c2018 {
 namespace score_subsystem {
-namespace claw {
+namespace wrist {
 
 WristController::WristController()
     : trapezoidal_motion_profile_{::std::chrono::milliseconds(5)},
@@ -28,116 +28,121 @@ WristController::WristController()
 }
 
 void WristController::SetGoal(double angle, IntakeMode mode) {
-  if (claw_state_ == SYSTEM_IDLE || claw_state_ == MOVING) {
+  if (wrist_state_ == SYSTEM_IDLE || wrist_state_ == MOVING) {
     unprofiled_goal_position_ = muan::utils::Cap(angle, -M_PI / 2, M_PI / 2);
-    claw_state_ = MOVING;
+    wrist_state_ = MOVING;
   }
 
   intake_mode_ = mode;
 }
 
 void WristController::Update(ScoreSubsystemInputProto input,
-                            ScoreSubsystemOutput* output,
+                            ScoreSubsystemOutputProto* output,
                             ScoreSubsystemStatusProto* status,
-                            bool outputs_enabled) {
+                            bool outputs_enabled = true) {
   double calibrated_encoder =
       hall_calibration_.Update(input->wrist_encoder(), input->wrist_hall());
   auto wrist_y =
       (Eigen::Matrix<double, 1, 1>() << calibrated_encoder).finished();
 
-  double wrist_voltage = 0;
+  double wrist_voltage = 0.0;
 
   if (!outputs_enabled) {
-    wrist_voltage = 0;
-    claw_state_ = DISABLED;
-  } else if (claw_state_ == DISABLED) {
-    claw_state_ = SYSTEM_IDLE;
+    wrist_voltage = 0.0;
+    wrist_state_ = DISABLED;
+  } else if (!hall_calibration_.is_calibrated() && !encoder_fault_detected_) {
+    wrist_state_ = CALIBRATING;
+  } else if (wrist_state_ == DISABLED) {
+    wrist_state_ = SYSTEM_IDLE;
   } else if (!encoder_fault_detected_) {
     wrist_voltage = CapU(wrist_voltage);
   }
 
   double roller_voltage = 0;
 
-  switch (claw_state_) {
+  // Start of intake
+  bool wrist_pinch = false;
+
+  if (outputs_enabled) {
+    switch (intake_mode_) {
+      case INTAKE:
+        roller_voltage = 12;
+        wrist_pinch = true;
+        break;
+      case OUTTAKE:
+        roller_voltage = -12;
+        wrist_pinch = false;
+        break;
+      case IDLE:
+        roller_voltage = 0;
+        wrist_pinch = false;
+        break;
+      case HOLD:
+        roller_voltage = 0;
+        wrist_pinch = true;
+        break;
+    }
+  } else {
+    roller_voltage = 0;
+    wrist_pinch = false;
+  }
+
+  switch (wrist_state_) {
     case SYSTEM_IDLE:
-      wrist_voltage = 0;
-      roller_voltage = 0;
-      break;
+    wrist_voltage = 0;
+    roller_voltage = 0;
+    break;
     case ENCODER_FAULT:
-      wrist_voltage = 0;
-      roller_voltage= 0;
-      break;
+    wrist_voltage = 0;
+    roller_voltage= 0;
+    break;
     case DISABLED:
-      wrist_voltage = 0;
-      roller_voltage = 0;
-      break;
+    wrist_voltage = 0;
+    roller_voltage = 0;
+    break;
     case INITIALIZING:
-      claw_state_ = CALIBRATING;
-      break;
+    wrist_state_ = CALIBRATING;
+    break;
     case CALIBRATING:
-      wrist_voltage = kCalibVoltage;
-      if (hall_calibration_.is_calibrated()) {
-        claw_state_ = SYSTEM_IDLE;
-      }
-      break;
+    wrist_voltage = kCalibVoltage;
+    roller_voltage = 0;
+    if (hall_calibration_.is_calibrated()) {
+      wrist_state_ = SYSTEM_IDLE;
+    }
+    break;
     case MOVING:
     // Run the controller
-    Eigen::Matrix<double, 3, 1> wrist_r;
-    wrist_r = (Eigen::Matrix<double, 3, 1>()
-              << UpdateProfiledGoal(unprofiled_goal_position_, outputs_enabled))
-                 .finished();
-    wrist_r.block<2, 1>(0, 0) =
-        trapezoidal_motion_profile_.Update(unprofiled_goal_position_, 0.0);
-    wrist_r(2) = 0;
+    Eigen::Matrix<double, 3, 1> wrist_r = (Eigen::Matrix<double, 3, 1>() << UpdateProfiledGoal(unprofiled_goal_position_, outputs_enabled)(0, 0), 0.0, 0.0).finished();
 
-    wrist_voltage = wrist_controller_.Update(wrist_observer_.x(), wrist_r)(0);
+    wrist_controller_.r() = wrist_r;
+
+    wrist_voltage = wrist_controller_.Update(wrist_observer_.x())(0, 0);
+
     break;
-    }
+  }
 
   // Check for encoder faults
-  if (old_pos_ == input->wrist_encoder()) {
+  if (old_pos_ == input->wrist_encoder() && wrist_voltage > 2 ) {
     num_encoder_fault_ticks_++;
     if (num_encoder_fault_ticks_ > kEncoderFaultTicksAllowed) {
       encoder_fault_detected_ = true;
+      wrist_state_ = ENCODER_FAULT;
     }
+  } else {
+    num_encoder_fault_ticks_ = 0;
   }
   old_pos_ = input->wrist_encoder();
 
   wrist_observer_.Update(
       (Eigen::Matrix<double, 1, 1>() << wrist_voltage).finished(), wrist_y);
 
-  // Start of intake
-  bool claw_pinch = false;
-
-  if (outputs_enabled) {
-    switch (intake_mode_) {
-      case INTAKE:
-        roller_voltage = 12;
-        claw_pinch = true;
-        break;
-      case OUTTAKE:
-        roller_voltage = -12;
-        claw_pinch = true;
-        break;
-      case IDLE:
-        roller_voltage = 0;
-        claw_pinch = false;
-        break;
-      case HOLD:
-        roller_voltage = 0;
-        claw_pinch = true;
-        break;
-    }
-  } else {
-    roller_voltage = 0;
-    claw_pinch = false;
-  }
-
-  output->set_roller_voltage(roller_voltage);
-  output->set_wrist_voltage(wrist_voltage);
-  output->set_claw_pinch(claw_pinch);
+  (*output)->set_roller_voltage(roller_voltage);
+  (*output)->set_wrist_voltage(wrist_voltage);
+  (*output)->set_wrist_pinch(wrist_pinch);
   (*status)->set_wrist_calibrated(hall_calibration_.is_calibrated());
-  (*status)->set_wrist_position(wrist_position_);
+  (*status)->set_wrist_position(wrist_observer_.x()(0, 0));
+  (*status)->set_wrist_state(wrist_state_);
+
 }
 
 double WristController::CapU(double wrist_voltage) {
@@ -154,6 +159,6 @@ Eigen::Matrix<double, 2, 1> WristController::UpdateProfiledGoal(
   return profiled_goal_;
 }
 
-}  // namespace claw
+}  // namespace wrist
 }  // namespace score_subsystem
 }  // namespace c2018
