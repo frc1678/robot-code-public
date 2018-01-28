@@ -24,6 +24,7 @@ TeleopBase::TeleopBase()
   shifting_low_ = throttle_.MakeButton(4);
   shifting_high_ = throttle_.MakeButton(5);
   quickturn_ = wheel_.MakeButton(5);
+  elevator_up_ = gamepad_.MakeButton(1);
 }
 
 void TeleopBase::operator()() {
@@ -49,6 +50,12 @@ void TeleopBase::Update() {
   if (DriverStation::GetInstance().IsOperatorControl()) {
     SendDrivetrainMessage();
   }
+
+  if (elevator_up_.isPressed()) {
+    elevator_goal->set_goal_height(1.0);
+  }
+
+  score_goal_queue->WriteMessage(elevator_goal);
 
   SetReadableLogName();
 

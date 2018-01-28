@@ -50,12 +50,11 @@ message ScoreSubsystemOutput {
 }
 
 message ScoreSubsystemGoal {
-  optional ElevatorHeight elevator_height = 1;
-  optional ClawMode claw_mode = 2;
-  optional IntakeMode intake_mode = 3;
-  optional double elevator_velocity = 6;
-  optional double intake_voltage = 7;
-  required bool god_mode = 8;
+  optional ClawMode claw_mode = 1;
+  optional IntakeMode intake_mode = 2;
+  optional double elevator_velocity = 3;
+  optional double intake_voltage = 4;
+  required bool god_mode = 5;
 }
 
 message ScoreSubsystemStatus {
@@ -74,4 +73,4 @@ message ScoreSubsystemStatus {
   required bool wrist_calibrated = 13;
   required SystemState claw_state = 14;
 }
-  
+
