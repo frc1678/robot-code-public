@@ -80,7 +80,7 @@ void WristController::Update(ScoreSubsystemInputProto input,
         wrist_pinch_ = WRIST_IN;
         break;
       case HOLD:
-        intake_voltage = 0;
+        intake_voltage = kHoldingVoltage;
         wrist_pinch_ = WRIST_OUT;
         break;
     }
