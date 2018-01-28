@@ -1,6 +1,5 @@
 #include "wrist.h"
 #include "gtest/gtest.h"
-#include <iostream>
 
 class WristTest : public ::testing::Test {
  public:
