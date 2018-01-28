@@ -57,7 +57,7 @@ class WristController {
   int num_encoder_fault_ticks_ = 0;
 
   c2018::score_subsystem::SystemState wrist_state_ = SYSTEM_IDLE;
-  c2018::score_subsystem::WristState wrist_pinch_ = WRIST_IN;
+  c2018::score_subsystem::IntakeState wrist_pinch_ = WRIST_IN;
   // measured in radians TODO (Mohamed) tune these constants
 };
 

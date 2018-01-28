@@ -33,7 +33,7 @@ enum SystemState {
   DISABLED = 5;
 }
 
-enum WristState {
+enum IntakeState {
   WRIST_IDLE = 0;
   WRIST_OUT = 1;
   WRIST_IN = 2;
@@ -59,7 +59,7 @@ message ScoreSubsystemOutput {
   required double elevator_voltage = 1;
   required double intake_voltage = 2;
   required double wrist_voltage = 3;
-  required WristState wrist_pinch = 4;
+  required IntakeState wrist_pinch = 4;
 }
 
 message ScoreSubsystemGoal {
