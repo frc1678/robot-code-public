@@ -22,14 +22,6 @@ class WristTest : public ::testing::Test {
 
   void SetGoal() { wrist_.SetGoal(angle_, intake_mode_); }
 
-  void SetInput(double position, bool hall, double current, bool has_cube) {
-    wrist_input_proto_->set_wrist_encoder(position);
-    wrist_input_proto_->set_wrist_hall(hall);
-    wrist_input_proto_->set_intake_current(current);
-    wrist_input_proto_->set_has_cube(has_cube);
-    wrist_input_proto_->set_wrist_encoder(plant_.x(0));
-  }
-
   void CalibrationSequence() {
     double offset =
         0.5;  // TODO (Mohamed) make it the real number when it is made
