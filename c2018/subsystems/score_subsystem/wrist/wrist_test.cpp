@@ -67,7 +67,7 @@ TEST_F(WristTest, IsSane) {
 
 TEST_F(WristTest, Fault) {
   outputs_enabled_ = true;
-  angle_ = 3.14 / 2;
+  angle_ = M_PI / 2;
   intake_mode_ = c2018::score_subsystem::IntakeMode::IDLE;
   SetGoal();
 
