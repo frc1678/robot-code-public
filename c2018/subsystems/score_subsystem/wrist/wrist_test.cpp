@@ -84,7 +84,7 @@ TEST_F(WristTest, EncoderFault) {
   }
 
   EXPECT_NEAR(wrist_output_proto_->wrist_voltage(), 0, 1e-2);
-  EXPECT_NEAR(wrist_output_proto_->roller_voltage(), 0, 1e-2);
+  EXPECT_NEAR(wrist_output_proto_->intake_voltage(), 0, 1e-2);
   EXPECT_EQ(wrist_status_proto_->wrist_state(),
             c2018::score_subsystem::ENCODER_FAULT);
 }
@@ -96,7 +96,7 @@ TEST_F(WristTest, IntakeEnabled) {
   SetGoal();
   Update();
 
-  EXPECT_NEAR(wrist_output_proto_->roller_voltage(), 12.0, 1e-3);
+  EXPECT_NEAR(wrist_output_proto_->intake_voltage(), 12.0, 1e-3);
   EXPECT_EQ(wrist_output_proto_->wrist_pinch(),
             c2018::score_subsystem::WRIST_OUT);
 }
@@ -108,7 +108,7 @@ TEST_F(WristTest, OuttakeEnabled) {
   SetGoal();
   Update();
 
-  EXPECT_NEAR(wrist_output_proto_->roller_voltage(), -12.0, 1e-3);
+  EXPECT_NEAR(wrist_output_proto_->intake_voltage(), -12.0, 1e-3);
   EXPECT_EQ(wrist_output_proto_->wrist_pinch(),
             c2018::score_subsystem::WRIST_IN);
 }
@@ -122,7 +122,7 @@ TEST_F(WristTest, IdleEnabled) {
 
   EXPECT_EQ(wrist_output_proto_->wrist_pinch(),
             c2018::score_subsystem::WRIST_IN);
-  EXPECT_EQ(wrist_output_proto_->roller_voltage(), 0);
+  EXPECT_EQ(wrist_output_proto_->intake_voltage(), 0);
 }
 
 TEST_F(WristTest, HoldEnabled) {
@@ -134,7 +134,7 @@ TEST_F(WristTest, HoldEnabled) {
 
   EXPECT_EQ(wrist_output_proto_->wrist_pinch(),
             c2018::score_subsystem::WRIST_OUT);
-  EXPECT_EQ(wrist_output_proto_->roller_voltage(), 0);
+  EXPECT_EQ(wrist_output_proto_->intake_voltage(), 0);
 }
 
 TEST_F(WristTest, Disabled) {
@@ -160,7 +160,7 @@ TEST_F(WristTest, SysIdle) {
   Update();
 
   EXPECT_EQ(wrist_output_proto_->wrist_voltage(), 0);
-  EXPECT_EQ(wrist_output_proto_->roller_voltage(), 0);
+  EXPECT_EQ(wrist_output_proto_->intake_voltage(), 0);
   EXPECT_EQ(wrist_status_proto_->wrist_state(),
             c2018::score_subsystem::SYSTEM_IDLE);
 }
@@ -170,7 +170,7 @@ TEST_F(WristTest, StateDisabled) {
   CalibrationSequence();
   Update();
 
-  EXPECT_EQ(wrist_output_proto_->roller_voltage(), 0);
+  EXPECT_EQ(wrist_output_proto_->intake_voltage(), 0);
   EXPECT_EQ(wrist_output_proto_->wrist_voltage(), 0);
   EXPECT_EQ(wrist_status_proto_->wrist_state(),
             c2018::score_subsystem::DISABLED);

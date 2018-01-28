@@ -60,7 +60,7 @@ void WristController::Update(ScoreSubsystemInputProto input,
     wrist_state_ = SYSTEM_IDLE;
   }
 
-  double roller_voltage = 0;
+  double intake_voltage = 0;
 
   // Start of intake
   wrist_pinch_ = WRIST_IN;
@@ -68,46 +68,46 @@ void WristController::Update(ScoreSubsystemInputProto input,
   if (outputs_enabled) {
     switch (intake_mode_) {
       case INTAKE:
-        roller_voltage = 12;
+        intake_voltage = 12;
         wrist_pinch_ = WRIST_OUT;
         break;
       case OUTTAKE:
-        roller_voltage = -12;
+        intake_voltage = -12;
         wrist_pinch_ = WRIST_IN;
         break;
       case IDLE:
-        roller_voltage = 0;
+        intake_voltage = 0;
         wrist_pinch_ = WRIST_IN;
         break;
       case HOLD:
-        roller_voltage = 0;
+        intake_voltage = 0;
         wrist_pinch_ = WRIST_OUT;
         break;
     }
   } else {
-    roller_voltage = 0;
+    intake_voltage = 0;
     wrist_pinch_ = WRIST_IN;
   }
 
   switch (wrist_state_) {
     case SYSTEM_IDLE:
       wrist_voltage = 0;
-      roller_voltage = 0;
+      intake_voltage = 0;
       break;
     case ENCODER_FAULT:
       wrist_voltage = 0;
-      roller_voltage = 0;
+      intake_voltage = 0;
       break;
     case DISABLED:
       wrist_voltage = 0;
-      roller_voltage = 0;
+      intake_voltage = 0;
       break;
     case INITIALIZING:
       wrist_state_ = CALIBRATING;
       break;
     case CALIBRATING:
       wrist_voltage = kCalibVoltage;
-      roller_voltage = 0;
+      intake_voltage = 0;
       if (hall_calibration_.is_calibrated()) {
         wrist_state_ = SYSTEM_IDLE;
       }
@@ -128,7 +128,7 @@ void WristController::Update(ScoreSubsystemInputProto input,
   }
 
   // Check for encoder faults
-  if (old_pos_ == input->wrist_encoder() && wrist_voltage > 2) {
+  if (old_pos_ == input->wrist_encoder() && wrist_voltage > kHoldingVoltage) {
     num_encoder_fault_ticks_++;
     if (num_encoder_fault_ticks_ > kEncoderFaultTicksAllowed) {
       encoder_fault_detected_ = true;
@@ -148,7 +148,7 @@ void WristController::Update(ScoreSubsystemInputProto input,
   wrist_observer_.Update(
       (Eigen::Matrix<double, 1, 1>() << wrist_voltage).finished(), wrist_y);
 
-  (*output)->set_roller_voltage(roller_voltage);
+  (*output)->set_intake_voltage(intake_voltage);
   (*output)->set_wrist_voltage(wrist_voltage);
   (*output)->set_wrist_pinch(wrist_pinch_);
   (*status)->set_wrist_calibrated(hall_calibration_.is_calibrated());
