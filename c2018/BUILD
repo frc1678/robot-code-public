@@ -5,7 +5,7 @@ cc_binary(
     srcs = ["main.cpp"],
     deps = [
         "//c2018/subsystems:subsystem_runner",
-        "//c2018/citrus_robot:main",
+        "//c2018/teleop:main",
         "//c2018/autonomous",
         "//third_party/frc971/control_loops/drivetrain:drivetrain_queues",
         "//muan/wpilib:ds_sender",

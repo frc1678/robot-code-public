@@ -1,7 +1,6 @@
-#include "c2018/citrus_robot/main.h"
-
-#include "WPILib.h"
+#include "c2018/teleop/main.h"
 #include "c2018/autonomous/autonomous.h"
+#include <WPILib.h>
 #include "c2018/subsystems/subsystem_runner.h"
 #include "gflags/gflags.h"
 #include "muan/queues/queue_manager.h"
@@ -17,8 +16,8 @@ class WpilibRobot : public IterativeRobot {
     std::thread subsystem_thread(std::ref(subsystem_runner_));
     subsystem_thread.detach();
 
-    std::thread citrus_robot_thread(std::ref(main_));
-    citrus_robot_thread.detach();
+    std::thread teleop_thread(std::ref(main_));
+    teleop_thread.detach();
 
     std::thread autonomous_thread(std::ref(auto_));
     autonomous_thread.detach();
@@ -26,7 +25,7 @@ class WpilibRobot : public IterativeRobot {
 
  private:
   c2018::SubsystemRunner subsystem_runner_;
-  c2018::citrus_robot::CitrusRobot main_;
+  c2018::teleop::TeleopBase main_;
   c2018::autonomous::AutonomousBase auto_;
 };
 

@@ -13,9 +13,9 @@ gflags.DEFINE_bool('plot', False, 'If true, plot the loop response.')
 
 #TODO(Neil): Update robot moment of inertia, mass, and robot radius
 kDrivetrain = drivetrain.DrivetrainParams(J = 2.0,
-                                          mass = 55,
-                                          robot_radius = 0.59055 / 2.0,
-                                          wheel_radius = 4.0 * 0.0254 / 2.0,
+                                          mass = 20,
+                                          robot_radius = 0.35,
+                                          wheel_radius = 6.0 * 0.0254 / 2.0,
                                           G_high = (12.0 / 50.0) * (24.0 / 40.0) * (50.0 / 34.0),
                                           G_low = (12.0 / 50.0) * (24.0 / 40.0) * (34.0 / 50.0),
                                           motor_type = control_loop.MiniCIM(),
