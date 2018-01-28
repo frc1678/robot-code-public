@@ -70,11 +70,11 @@ void WristController::Update(ScoreSubsystemInputProto input,
   if (outputs_enabled) {
     switch (intake_mode_) {
       case INTAKE:
-        intake_voltage = 12;
+        intake_voltage = kIntakeVoltage;
         wrist_pinch_ = WRIST_OUT;
         break;
       case OUTTAKE:
-        intake_voltage = -12;
+        intake_voltage = kOuttakeVoltage;
         wrist_pinch_ = WRIST_IN;
         break;
       case IDLE:

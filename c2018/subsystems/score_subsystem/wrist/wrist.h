@@ -25,6 +25,10 @@ static constexpr double kMaxWristAcceleration = 4;
 
 static constexpr double kEncoderFaultTicksAllowed = 200;
 static constexpr double kCalibVoltage = 4;
+static constexpr double kOuttakeVoltage = -12;
+static constexpr double kIntakeVoltage = 12;
+
+
 
 static constexpr double kHallMagnetPosition = 0.05;
 
