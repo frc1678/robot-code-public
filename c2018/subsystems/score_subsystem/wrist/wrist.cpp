@@ -67,7 +67,6 @@ void WristController::Update(ScoreSubsystemInputProto input,
   bool wrist_solenoid_2 = false;
   wrist_pinch_ = WRIST_IN;
 
-
   if (outputs_enabled) {
     switch (intake_mode_) {
       case INTAKE:
@@ -94,18 +93,18 @@ void WristController::Update(ScoreSubsystemInputProto input,
 
   switch (wrist_pinch_) {
     case WRIST_IN:
-    wrist_solenoid_1 = false;
-    wrist_solenoid_2 = false;
-    break;
+      wrist_solenoid_1 = false;
+      wrist_solenoid_2 = false;
+      break;
     case WRIST_OUT:
-    wrist_solenoid_1 = true;
-    wrist_solenoid_2 = true;
-    break;
+      wrist_solenoid_1 = true;
+      wrist_solenoid_2 = true;
+      break;
     case WRIST_IDLE:
-    // Idle or "neutral" is the starting position
-    wrist_solenoid_1 = false;
-    wrist_solenoid_2 = false;
-    break;
+      // Idle or "neutral" is the starting position
+      wrist_solenoid_1 = false;
+      wrist_solenoid_2 = false;
+      break;
   }
   switch (wrist_state_) {
     case SYSTEM_IDLE:
