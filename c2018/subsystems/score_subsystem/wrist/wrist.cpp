@@ -54,8 +54,6 @@ void WristController::Update(ScoreSubsystemInputProto input,
     wrist_state_ = CALIBRATING;
   } else if (wrist_state_ == DISABLED) {
     wrist_state_ = SYSTEM_IDLE;
-  } else if (!encoder_fault_detected_) {
-    wrist_voltage = CapU(wrist_voltage);
   }
 
   double roller_voltage = 0;
@@ -132,6 +130,12 @@ void WristController::Update(ScoreSubsystemInputProto input,
     num_encoder_fault_ticks_ = 0;
   }
   old_pos_ = input->wrist_encoder();
+
+  if (!encoder_fault_detected_) {
+    wrist_voltage = CapU(wrist_voltage);
+  } else {
+    wrist_voltage = 0;
+  }
 
   wrist_observer_.Update(
       (Eigen::Matrix<double, 1, 1>() << wrist_voltage).finished(), wrist_y);
