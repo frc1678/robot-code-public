@@ -20,7 +20,9 @@ class WristTest : public ::testing::Test {
                                        plant_.x(0) <= 0.06);
   }
 
-  void SetGoal() { wrist_.SetGoal(angle_, intake_mode_); }
+  void SetGoal(double angle, c2018::score_subsystem::IntakeMode intake_mode) {
+    wrist_.SetGoal(angle, intake_mode);
+  }
 
   void CalibrationSequence() {
     double offset =
@@ -39,9 +41,7 @@ class WristTest : public ::testing::Test {
   c2018::score_subsystem::ScoreSubsystemOutputProto wrist_output_proto_;
   c2018::score_subsystem::ScoreSubsystemStatusProto wrist_status_proto_;
   c2018::score_subsystem::ScoreSubsystemGoalProto wrist_goal_proto_;
-  c2018::score_subsystem::IntakeMode intake_mode_;
 
-  double angle_;
   double wrist_voltage_;
   bool outputs_enabled_;
 
@@ -63,9 +63,7 @@ TEST_F(WristTest, IsSane) {
 
 TEST_F(WristTest, EncoderFault) {
   outputs_enabled_ = true;
-  angle_ = M_PI / 2;
-  intake_mode_ = c2018::score_subsystem::IntakeMode::IDLE;
-  SetGoal();
+  SetGoal(M_PI / 2, c2018::score_subsystem::IntakeMode::IDLE);
 
   for (int i = 0; i < 600; i++) {
     wrist_input_proto_->set_wrist_encoder(0);
@@ -84,8 +82,7 @@ TEST_F(WristTest, EncoderFault) {
 TEST_F(WristTest, IntakeEnabled) {
   outputs_enabled_ = true;
   CalibrationSequence();
-  intake_mode_ = c2018::score_subsystem::IntakeMode::INTAKE;
-  SetGoal();
+  SetGoal(0.0, c2018::score_subsystem::IntakeMode::INTAKE);
   Update();
 
   EXPECT_NEAR(wrist_output_proto_->intake_voltage(), 12.0, 1e-3);
@@ -96,8 +93,7 @@ TEST_F(WristTest, IntakeEnabled) {
 TEST_F(WristTest, OuttakeEnabled) {
   outputs_enabled_ = true;
   CalibrationSequence();
-  intake_mode_ = c2018::score_subsystem::IntakeMode::OUTTAKE;
-  SetGoal();
+  SetGoal(0.0, c2018::score_subsystem::IntakeMode::OUTTAKE);
   Update();
 
   EXPECT_NEAR(wrist_output_proto_->intake_voltage(), -12.0, 1e-3);
@@ -108,8 +104,7 @@ TEST_F(WristTest, OuttakeEnabled) {
 TEST_F(WristTest, IdleEnabled) {
   outputs_enabled_ = true;
   CalibrationSequence();
-  intake_mode_ = c2018::score_subsystem::IntakeMode::IDLE;
-  SetGoal();
+  SetGoal(0.0, c2018::score_subsystem::IntakeMode::IDLE);
   Update();
 
   EXPECT_EQ(wrist_output_proto_->wrist_pinch(),
@@ -120,8 +115,7 @@ TEST_F(WristTest, IdleEnabled) {
 TEST_F(WristTest, HoldEnabled) {
   outputs_enabled_ = true;
   CalibrationSequence();
-  intake_mode_ = c2018::score_subsystem::IntakeMode::HOLD;
-  SetGoal();
+  SetGoal(0.0, c2018::score_subsystem::IntakeMode::HOLD);
   Update();
 
   EXPECT_EQ(wrist_output_proto_->wrist_pinch(),
@@ -136,11 +130,10 @@ TEST_F(WristTest, Disabled) {
 
 TEST_F(WristTest, Calibration) {
   outputs_enabled_ = true;
-  intake_mode_ = c2018::score_subsystem::IntakeMode::INTAKE;
   wrist_input_proto_->set_wrist_hall(false);
   wrist_input_proto_->set_wrist_encoder(0);
 
-  SetGoal();
+  SetGoal(0.0, c2018::score_subsystem::IntakeMode::INTAKE);
   CalibrationSequence();
 
   EXPECT_TRUE(wrist_status_proto_->wrist_calibrated());
@@ -170,11 +163,10 @@ TEST_F(WristTest, StateDisabled) {
 
 TEST_F(WristTest, CanCapAngle) {
   outputs_enabled_ = true;
-  angle_ = -5;
   CalibrationSequence();
+  SetGoal(-5, c2018::score_subsystem::IntakeMode::IDLE);
   Update();
 
-  SetGoal();
   EXPECT_TRUE(wrist_status_proto_->wrist_position() >=
               muan::utils::Cap(wrist_status_proto_->wrist_position(), 0, M_PI) -
                   0.01);
