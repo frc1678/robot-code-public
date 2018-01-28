@@ -5,8 +5,13 @@ namespace c2018 {
 namespace score_subsystem {
 namespace wrist {
 
+using muan::queues::QueueManager;
+
+
 WristController::WristController()
     : trapezoidal_motion_profile_{::std::chrono::milliseconds(5)},
+    status_queue_{QueueManager<ScoreSubsystemStatusProto>::Fetch()},
+    output_queue_{QueueManager<ScoreSubsystemOutputProto>::Fetch()},
       hall_calibration_{kHallMagnetPosition} {
   auto wrist_plant = muan::control::StateSpacePlant<1, 3, 1>(
       frc1678::wrist_controller::controller::A(),
@@ -146,6 +151,8 @@ void WristController::Update(ScoreSubsystemInputProto input,
   (*status)->set_wrist_calibrated(hall_calibration_.is_calibrated());
   (*status)->set_wrist_position(wrist_observer_.x()(0, 0));
   (*status)->set_wrist_state(wrist_state_);
+  status_queue_->WriteMessage(*status);
+  output_queue_->WriteMessage(*output);
 
 }
 

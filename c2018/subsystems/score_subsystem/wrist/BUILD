@@ -33,6 +33,7 @@ cc_library(
     "//muan/wpilib:wpilib_queues",
     "//third_party/aos/common/util:trapezoid_profile",
     "//third_party/google/googletest:googletest",
+    "//muan/queues:queue_manager"
   ],
 )
 

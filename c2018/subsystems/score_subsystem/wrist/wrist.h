@@ -13,6 +13,7 @@
 #include "muan/utils/math_utils.h"
 #include "muan/wpilib/queue_types.h"
 #include "third_party/aos/common/util/trapezoid_profile.h"
+#include "muan/queues/queue_manager.h"
 
 namespace c2018 {
 namespace score_subsystem {
@@ -30,6 +31,8 @@ class WristController {
 
  private:
   aos::util::TrapezoidProfile trapezoidal_motion_profile_;
+  ScoreSubsystemStatusQueue* status_queue_;
+  ScoreSubsystemOutputQueue* output_queue_;
   muan::control::HallCalibration hall_calibration_;
   muan::control::StateSpacePlant<1, 3, 1> plant_;
   muan::control::StateSpaceController<1, 3, 1> wrist_controller_;
@@ -44,6 +47,8 @@ class WristController {
   double old_pos_;
   bool encoder_fault_detected_ = false;
   int num_encoder_fault_ticks_ = 0;
+
+
 
   c2018::score_subsystem::SystemState wrist_state_ = SYSTEM_IDLE;
   c2018::score_subsystem::WristState wrist_pinch_ = WRIST_IN;
