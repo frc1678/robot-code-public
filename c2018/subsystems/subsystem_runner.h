@@ -11,6 +11,7 @@
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/aos/linux_code/init.h"
 #include "third_party/frc971/control_loops/drivetrain/drivetrain.h"
+#include "c2018/subsystems/score_subsystem/score_subsystem.h"
 
 namespace c2018 {
 
@@ -26,6 +27,7 @@ class SubsystemRunner {
   wpilib::WpilibInterface wpilib_;
   frc971::control_loops::drivetrain::DrivetrainLoop drivetrain_;
   c2018::climber::Climber climber_;
+  c2018::score_subsystem::ScoreSubsystem score_subsystem_;
 };
 
 }  // namespace c2018

@@ -9,6 +9,7 @@ cc_library(
         "//muan/queues:queue_manager",
         "//muan/wpilib:wpilib_queues",
         "//c2018/subsystems/score_subsystem:score_subsystem_queues",
+        "//c2018/subsystems/score_subsystem:score_subsystem",
         "//third_party/frc971/control_loops/drivetrain:drivetrain_queues",
     ],
     restricted_to = ["//tools:roborio"],

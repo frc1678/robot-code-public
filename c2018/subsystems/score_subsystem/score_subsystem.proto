@@ -34,43 +34,48 @@ enum SubSystemState {
 }
 
 message ScoreSubsystemInput {
-  required double elevator_encoder = 1;
-  required bool elevator_hall = 2;
-  required double wrist_encoder = 3;
-  required bool wrist_hall = 4;
-  required double intake_current = 5;
-  required bool has_cube = 6;
+  required uint64 timestamp = 1;
+  required double elevator_encoder = 2;
+  required bool elevator_hall = 3;
+  required double wrist_encoder = 4;
+  required bool wrist_hall = 5;
+  required double intake_current = 6;
+  required bool has_cube = 7;
 }
 
 message ScoreSubsystemOutput {
-  required double elevator_voltage = 1;
-  required double roller_voltage = 2;
-  required double wrist_voltage = 3;
-  required bool claw_pinch = 4;
+  required uint64 timestamp = 1;
+  required double elevator_voltage = 2;
+  required double roller_voltage = 3;
+  required double wrist_voltage = 4;
+  required bool claw_pinch = 5;
 }
 
 message ScoreSubsystemGoal {
-  optional ClawMode claw_mode = 1;
-  optional IntakeMode intake_mode = 2;
-  optional double elevator_velocity = 3;
-  optional double intake_voltage = 4;
-  required bool god_mode = 5;
+  required uint64 timestamp = 1;
+  optional ClawMode claw_mode = 2;
+  optional IntakeMode intake_mode = 3;
+  optional double elevator_height = 4;
+  optional double elevator_velocity = 5;
+  optional double intake_voltage = 6;
+  required bool god_mode = 7;
 }
 
 message ScoreSubsystemStatus {
-  required double elevator_actual_height = 1;
-  required double estimated_velocity = 2;
-  required bool elevator_at_top = 3;
-  required SystemState elevator_state = 4;
-  required double elevator_voltage_error = 5;
-  required double elevator_uncapped_voltage = 6;
-  required double elevator_profiled_goal = 7;
-  required double elevator_unprofiled_goal = 8;
-  required bool elevator_encoder_fault_detected = 9;
-  required bool elevator_calibrated = 10;
-  required double wrist_position = 11;
-  required double wrist_velocity = 12;
-  required bool wrist_calibrated = 13;
-  required SystemState claw_state = 14;
+  required uint64 timestamp = 1;
+  required double elevator_actual_height = 2;
+  required double estimated_velocity = 3;
+  required bool elevator_at_top = 4;
+  required SystemState elevator_state = 5;
+  required double elevator_voltage_error = 6;
+  required double elevator_uncapped_voltage = 7;
+  required double elevator_profiled_goal = 8;
+  required double elevator_unprofiled_goal = 9;
+  required bool elevator_encoder_fault_detected = 10;
+  required bool elevator_calibrated = 11;
+  required double wrist_position = 12;
+  required double wrist_velocity = 13;
+  required bool wrist_calibrated = 14;
+  required SystemState claw_state = 15;
 }
 

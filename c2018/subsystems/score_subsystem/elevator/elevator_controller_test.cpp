@@ -14,7 +14,7 @@ class ElevatorControllerTest : public ::testing::Test {
     if (plant_.x(0) < 0) {
       plant_.x(0) = 0;
     }
-    elevator_input_proto_->set_elevator_hall(plant_.x(0) >= 1.94 && plant_.x(0) <= 1.96);
+    elevator_input_proto_->set_elevator_hall(plant_.x(0) >= 0.88 && plant_.x(0) <= 0.92);
     elevator_.Update(elevator_input_proto_, &elevator_output_proto_, &elevator_status_proto_,
                      outputs_enabled_);
     SetWeights(plant_.x()(0, 0) >= 1.0, elevator_input_proto_->has_cube());

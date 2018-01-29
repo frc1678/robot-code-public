@@ -6,19 +6,21 @@ namespace score_subsystem {
 using muan::queues::QueueManager;
 using muan::wpilib::DriverStationProto;
 
-ScoreSubsystem::ScoreSubsystem() :
-                goal_reader_{ QueueManager<ScoreSubsystemGoalProto>::Fetch()->MakeReader() },
-                status_queue_{ QueueManager<ScoreSubsystemStatusProto>::Fetch() },
-                input_reader_{ QueueManager<ScoreSubsystemInputProto>::Fetch()->MakeReader() },
-                output_queue_{ QueueManager<ScoreSubsystemOutputProto>::Fetch() },
-                ds_status_reader_{ QueueManager<DriverStationProto>::Fetch()->MakeReader() }
-                {}
-
+ScoreSubsystem::ScoreSubsystem()
+    : goal_reader_{QueueManager<ScoreSubsystemGoalProto>::Fetch()
+                       ->MakeReader()},
+      status_queue_{QueueManager<ScoreSubsystemStatusProto>::Fetch()},
+      input_reader_{
+          QueueManager<ScoreSubsystemInputProto>::Fetch()->MakeReader()},
+      output_queue_{QueueManager<ScoreSubsystemOutputProto>::Fetch()},
+      ds_status_reader_{
+          QueueManager<DriverStationProto>::Fetch()->MakeReader()} {}
 
 void ScoreSubsystem::Update() {
   ScoreSubsystemGoalProto goal;
   ScoreSubsystemStatusProto status;
   ScoreSubsystemInputProto input;
+  ScoreSubsystemOutputProto output;
   DriverStationProto driver_station;
 
   if (!input_reader_.ReadLastMessage(&input)) {
@@ -35,33 +37,19 @@ void ScoreSubsystem::Update() {
 
   if (!goal->god_mode()) {
     if (!status->elevator_at_top()) {
-      claw_mode_ = SCORE_F;
+      elevator_height = goal->elevator_height();
+
+      elevator_.SetGoal(elevator_height);
     } else {
-      claw_mode_ = goal->claw_mode();
-      if (claw_mode_ == SCORE_F) {
-        claw_angle = M_PI/2;
-      } else {
-        claw_angle = -M_PI/2;
-      }
+      // claw_mode_ = SCORE_F;
+
+      // claw_.SetGodModeGoal(...);   doesn't exist yet
+      // elevator_.SetGodModeGoal(...);
     }
-
-    intake_mode_ = goal->intake_mode();
-    elevator_height = goal->elevator_height();
-
-    claw_.SetGoal(claw_angle, intake_mode_);
-    elevator_.SetGoal(elevator_height);
-  } else {
-    claw_mode_ = SCORE_F;
-    
-    // claw_.SetGodModeGoal(...);   doesn't exist yet
-    // elevator_.SetGodModeGoal(...);
   }
 
-
-  claw_.Update(input, &output_queue_, &status, driver_station->is_sys_active());
-  elevator_.Update(input, &output_queue_, &status, driver_station->is_sys_active());
-
-  // output_queue_->WriteMessage(output);
+  elevator_.Update(input, &output, &status, driver_station->is_sys_active());
+  output_queue_->WriteMessage(output);
   status_queue_->WriteMessage(status);
 }
 

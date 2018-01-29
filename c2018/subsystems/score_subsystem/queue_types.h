@@ -23,6 +23,8 @@ using ScoreSubsystemStatusQueue =
     muan::queues::MessageQueue<ScoreSubsystemStatusProto>;
 using ScoreSubsystemOutputQueue =
     muan::queues::MessageQueue<ScoreSubsystemOutputProto>;
+using ScoreSubsystemGoalQueue =
+    muan::queues::MessageQueue<ScoreSubsystemGoalProto>;
 
 }  // namespace score_subsystem
 }  // namespace c2018

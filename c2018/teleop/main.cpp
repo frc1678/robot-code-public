@@ -24,7 +24,10 @@ TeleopBase::TeleopBase()
   shifting_low_ = throttle_.MakeButton(4);
   shifting_high_ = throttle_.MakeButton(5);
   quickturn_ = wheel_.MakeButton(5);
-  elevator_up_ = gamepad_.MakeButton(1);
+  elevator_zero_ = gamepad_.MakeButton(1);
+  elevator_one_ = gamepad_.MakeButton(2);
+  elevator_two_ = gamepad_.MakeButton(3);
+  elevator_score_ = gamepad_.MakeButton(4);
 }
 
 void TeleopBase::operator()() {
@@ -51,11 +54,23 @@ void TeleopBase::Update() {
     SendDrivetrainMessage();
   }
 
-  if (elevator_up_.isPressed()) {
-    elevator_goal->set_goal_height(1.0);
+  if (elevator_zero_->was_clicked()) {
+    score_goal_proto_->set_elevator_height(0);
   }
 
-  score_goal_queue->WriteMessage(elevator_goal);
+  if (elevator_one_->was_clicked()) {
+    score_goal_proto_->set_elevator_height(0.3);
+  }
+
+  if (elevator_two_->was_clicked()) {
+    score_goal_proto_->set_elevator_height(0.6);
+  }
+
+  if (elevator_score_->was_clicked()) {
+    score_goal_proto_->set_elevator_height(1.8);
+  }
+
+  score_goal_queue_->WriteMessage(score_goal_proto_);
 
   SetReadableLogName();
 

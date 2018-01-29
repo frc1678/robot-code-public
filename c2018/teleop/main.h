@@ -7,6 +7,7 @@
 #include "muan/queues/queue_manager.h"
 #include "muan/wpilib/queue_types.h"
 #include "c2018/subsystems/score_subsystem/queue_types.h"
+#include "c2018/subsystems/score_subsystem/score_subsystem.h"
 
 using muan::queues::QueueManager;
 
@@ -36,10 +37,14 @@ class TeleopBase {
   bool high_gear_;
   muan::teleop::Button *shifting_high_, *shifting_low_;
   muan::teleop::Button* quickturn_;
-  muan::teleop::Button* elevator_up_;
-  c2018::score_subsystem::ScoreSubsystemGoalProto elevator_goal;
+  muan::teleop::Button* elevator_one_;
+  muan::teleop::Button* elevator_zero_;
+  muan::teleop::Button* elevator_two_;
+  muan::teleop::Button* elevator_score_;
+  c2018::score_subsystem::ScoreSubsystem score_subsystem_;
+  c2018::score_subsystem::ScoreSubsystemGoalProto score_goal_proto_;
 
-  c2018::score_subsystem::ScoreSubsystemGoalQueue* score_goal_queue_ = QueueManager<ScoreSubsystemGoalProto>::Fetch();
+  c2018::score_subsystem::ScoreSubsystemGoalQueue* score_goal_queue_ = QueueManager<c2018::score_subsystem::ScoreSubsystemGoalProto>::Fetch();
 
   muan::wpilib::DriverStationSender ds_sender_;
 

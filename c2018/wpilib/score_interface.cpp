@@ -4,6 +4,8 @@
 
 #include "muan/utils/math_utils.h"
 
+#include <iostream>
+
 namespace c2018 {
 namespace wpilib {
 
@@ -55,13 +57,13 @@ ScoreSubsystemInterface::ScoreSubsystemInterface(
 
 void ScoreSubsystemInterface::ReadSensors() {
   ScoreSubsystemInputProto sensors;
-  sensors->set_elevator_encoder(elevator_encoder_.Get() * kPitchRadius *
+  sensors->set_elevator_encoder(-elevator_encoder_.Get() * kPitchRadius *
                                 (2 * M_PI) / 512 / kElevatorSensorRatio);
   sensors->set_wrist_encoder(wrist_encoder_.Get() * (2 * M_PI) / 512 /
                              kWristSensorRatio);
-  // These numbers come from the status to outpur ratios for the encoders.
-  sensors->set_elevator_hall(elevator_hall_.Get());
-  sensors->set_wrist_hall(wrist_hall_.Get());
+  // These numbers come from the status to output ratios for the encoders.
+  sensors->set_elevator_hall(!elevator_hall_.Get());
+  sensors->set_wrist_hall(!wrist_hall_.Get());
   sensors->set_has_cube(has_cube_.Get());
 
   muan::wpilib::PdpMessage pdp_data;
@@ -69,20 +71,22 @@ void ScoreSubsystemInterface::ReadSensors() {
     sensors->set_intake_current(
         std::max(pdp_data->current5(), pdp_data->current6()));
   }
+
+  input_queue_->WriteMessage(sensors);
 }
 
 void ScoreSubsystemInterface::WriteActuators() {
   ScoreSubsystemOutputProto outputs;
   if (output_reader_.ReadLastMessage(&outputs)) {
-    elevator_.Set(muan::utils::Cap(outputs->elevator_voltage(), -kMaxVoltage,
-                                   kMaxVoltage));
+    elevator_.Set(muan::utils::Cap(-outputs->elevator_voltage(), -kMaxVoltage,
+                                   kMaxVoltage) / 12.0);
     wrist_.Set(
-        muan::utils::Cap(outputs->wrist_voltage(), -kMaxVoltage, kMaxVoltage));
+        muan::utils::Cap(outputs->wrist_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
     roller_.Set(
-        muan::utils::Cap(outputs->roller_voltage(), -kMaxVoltage, kMaxVoltage));
+        muan::utils::Cap(outputs->roller_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
     pcm_->WriteSolenoid(kIntakeSolenoid, outputs->claw_pinch());
   } else {
-    elevator_.Set(0);
+    elevator_.Set(0.0);
     wrist_.Set(0);
     roller_.Set(0);
     pcm_->WriteSolenoid(kIntakeSolenoid, false);

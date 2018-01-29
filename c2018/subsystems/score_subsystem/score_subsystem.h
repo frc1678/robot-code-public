@@ -5,6 +5,7 @@
 #include "c2018/subsystems/score_subsystem/queue_types.h"
 #include "muan/queues/queue_manager.h"
 #include "muan/wpilib/queue_types.h"
+#include "c2018/subsystems/score_subsystem/elevator/elevator_controller.h"
 
 namespace c2018 {
 namespace score_subsystem {
@@ -15,8 +16,7 @@ class ScoreSubsystem {
   void Update();
 
  private:
-  c2018::score_subsystem::claw::Claw claw_;
-  c2018::score_subsystem::elevator::Elevator elevator_;
+  c2018::score_subsystem::elevator::ElevatorController elevator_;
 
   c2018::score_subsystem::ScoreSubsystemGoalQueue::QueueReader goal_reader_;
   c2018::score_subsystem::ScoreSubsystemStatusQueue* status_queue_;
@@ -25,9 +25,6 @@ class ScoreSubsystem {
   muan::wpilib::DriverStationQueue::QueueReader ds_status_reader_;
 
   double elevator_height;
-  double claw_angle;
-  IntakeMode intake_mode_;
-  ClawMode claw_mode_;
 };
 
 }  // namespace score_subsystem
