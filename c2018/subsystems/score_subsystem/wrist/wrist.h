@@ -1,5 +1,5 @@
-#ifndef C2018_SUBSYSTEMS_SCORE_SUBSYSTEM_CLAW_CLAW_H_
-#define C2018_SUBSYSTEMS_SCORE_SUBSYSTEM_CLAW_CLAW_H_
+#ifndef C2018_SUBSYSTEMS_SCORE_SUBSYSTEM_WRIST_WRIST_H_
+#define C2018_SUBSYSTEMS_SCORE_SUBSYSTEM_WRIST_WRIST_H_
 
 #include <algorithm>
 #include <chrono>
@@ -67,8 +67,8 @@ class WristController {
   c2018::score_subsystem::IntakeState wrist_pinch_ = WRIST_IN;
 };
 
-}  // namespace claw
+}  // namespace wrist
 }  // namespace score_subsystem
 }  // namespace c2018
 
-#endif  // C2018_SUBSYSTEMS_SCORE_SUBSYSTEM_CLAW_H_
+#endif  // C2018_SUBSYSTEMS_SCORE_SUBSYSTEM_WRIST_WRIST_H_

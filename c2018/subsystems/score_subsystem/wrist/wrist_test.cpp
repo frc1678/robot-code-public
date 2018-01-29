@@ -1,4 +1,4 @@
-#include "wrist.h"
+#include "//c2018/subsystems/score_subsystem/wrist/wrist.h"
 #include "gtest/gtest.h"
 
 class WristTest : public ::testing::Test {
@@ -35,7 +35,7 @@ class WristTest : public ::testing::Test {
 
   void CalibrationSequence() {
     double offset =
-        0.5;  // TODO (Mohamed) make it the real number when it is made
+        0.5;  // TODO(Mohamed): make it the real number when it is made
     for (int i = 0; i < 2000; i++) {
       wrist_input_proto_->set_wrist_encoder(plant_.x(0) + offset);
       ReadMessages();
