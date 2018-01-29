@@ -46,7 +46,7 @@ ScoreSubsystemInterface::ScoreSubsystemInterface(
       roller_{kIntakeMotor},
       elevator_encoder_{kElevatorEncoderA, kElevatorEncoderB},
       wrist_encoder_{kWristEncoderA, kWristEncoderB},
-      has_cube_{kCubeProxy},
+      // has_cube_{kCubeProxy},
       elevator_hall_{kElevatorHall},
       wrist_hall_{kWristHall},
       pcm_{can_wrapper->pcm()} {
@@ -62,12 +62,12 @@ void ScoreSubsystemInterface::ReadSensors() {
   // These numbers come from the status to outpur ratios for the encoders.
   sensors->set_elevator_hall(elevator_hall_.Get());
   sensors->set_wrist_hall(wrist_hall_.Get());
-  sensors->set_has_cube(has_cube_.Get());
+  // sensors->set_has_cube(has_cube_.Get());
 
   muan::wpilib::PdpMessage pdp_data;
   if (pdp_reader_.ReadLastMessage(&pdp_data)) {
-    sensors->set_intake_current(
-        std::max(pdp_data->current5(), pdp_data->current6()));
+   // sensors->set_intake_current(
+  //    std::max(pdp_data->current5(), pdp_data->current6()));
   }
 }
 
@@ -80,7 +80,6 @@ void ScoreSubsystemInterface::WriteActuators() {
         muan::utils::Cap(outputs->wrist_voltage(), -kMaxVoltage, kMaxVoltage));
     roller_.Set(
         muan::utils::Cap(outputs->intake_voltage(), -kMaxVoltage, kMaxVoltage));
-    pcm_->WriteSolenoid(kIntakeSolenoid, outputs->claw_pinch());
   } else {
     elevator_.Set(0);
     wrist_.Set(0);
