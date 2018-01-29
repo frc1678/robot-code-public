@@ -20,6 +20,11 @@ class WristTest : public ::testing::Test {
                                        plant_.x(0) <= 0.06);
   }
 
+  void ReadMessages() {
+    wrist_output_queue_.ReadLastMessage(&wrist_output_proto_);
+    wrist_status_queue_.ReadLastMessage(&wrist_status_proto_);
+  }
+
   void SetGoal(double angle, c2018::score_subsystem::IntakeMode intake_mode) {
     wrist_.SetGoal(angle, intake_mode);
   }
@@ -29,13 +34,27 @@ class WristTest : public ::testing::Test {
         0.5;  // TODO (Mohamed) make it the real number when it is made
     for (int i = 0; i < 2000; i++) {
       wrist_input_proto_->set_wrist_encoder(plant_.x(0) + offset);
+      ReadMessages();
       Update();
+
       EXPECT_TRUE(
           wrist_output_proto_->wrist_voltage() >=
           muan::utils::Cap(wrist_output_proto_->wrist_voltage(), -12, 12) -
               0.01);
     }
   }
+
+  c2018::score_subsystem::ScoreSubsystemStatusQueue::QueueReader
+      wrist_status_queue_ =
+          muan::queues::QueueManager<
+              c2018::score_subsystem::ScoreSubsystemStatusProto>::Fetch()
+              ->MakeReader();
+
+  c2018::score_subsystem::ScoreSubsystemOutputQueue::QueueReader
+      wrist_output_queue_ =
+          muan::queues::QueueManager<
+              c2018::score_subsystem::ScoreSubsystemOutputProto>::Fetch()
+              ->MakeReader();
 
   c2018::score_subsystem::ScoreSubsystemInputProto wrist_input_proto_;
   c2018::score_subsystem::ScoreSubsystemOutputProto wrist_output_proto_;
@@ -67,7 +86,9 @@ TEST_F(WristTest, EncoderFault) {
 
   for (int i = 0; i < 600; i++) {
     wrist_input_proto_->set_wrist_encoder(0);
+    ReadMessages();
     Update();
+
     EXPECT_TRUE(
         wrist_output_proto_->wrist_voltage() >=
         muan::utils::Cap(wrist_output_proto_->wrist_voltage(), -12, 12) - 0.01);
@@ -84,6 +105,7 @@ TEST_F(WristTest, IntakeEnabled) {
   CalibrationSequence();
   SetGoal(0.0, c2018::score_subsystem::IntakeMode::INTAKE);
   Update();
+  ReadMessages();
 
   EXPECT_NEAR(wrist_output_proto_->intake_voltage(), 12.0, 1e-3);
   EXPECT_EQ(wrist_status_proto_->wrist_pinch(),
@@ -96,6 +118,7 @@ TEST_F(WristTest, OuttakeEnabled) {
   outputs_enabled_ = true;
   CalibrationSequence();
   SetGoal(0.0, c2018::score_subsystem::IntakeMode::OUTTAKE);
+  ReadMessages();
   Update();
 
   EXPECT_NEAR(wrist_output_proto_->intake_voltage(), -12.0, 1e-3);
@@ -109,6 +132,7 @@ TEST_F(WristTest, IdleEnabled) {
   outputs_enabled_ = true;
   CalibrationSequence();
   SetGoal(0.0, c2018::score_subsystem::IntakeMode::IDLE);
+  ReadMessages();
   Update();
 
   EXPECT_EQ(wrist_status_proto_->wrist_pinch(),
@@ -122,6 +146,7 @@ TEST_F(WristTest, HoldEnabled) {
   outputs_enabled_ = true;
   CalibrationSequence();
   SetGoal(0.0, c2018::score_subsystem::IntakeMode::HOLD);
+  ReadMessages();
   Update();
 
   EXPECT_EQ(wrist_status_proto_->wrist_pinch(),
@@ -150,6 +175,7 @@ TEST_F(WristTest, Calibration) {
 TEST_F(WristTest, SysIdle) {
   outputs_enabled_ = true;
   CalibrationSequence();
+  ReadMessages();
   Update();
 
   EXPECT_EQ(wrist_output_proto_->wrist_voltage(), 0);
@@ -161,6 +187,7 @@ TEST_F(WristTest, SysIdle) {
 TEST_F(WristTest, StateDisabled) {
   outputs_enabled_ = false;
   CalibrationSequence();
+  ReadMessages();
   Update();
 
   EXPECT_EQ(wrist_output_proto_->intake_voltage(), 0);
@@ -173,6 +200,7 @@ TEST_F(WristTest, CanCapAngle) {
   outputs_enabled_ = true;
   CalibrationSequence();
   SetGoal(-5, c2018::score_subsystem::IntakeMode::IDLE);
+  ReadMessages();
   Update();
 
   EXPECT_TRUE(wrist_status_proto_->wrist_position() >=
@@ -184,6 +212,7 @@ TEST_F(WristTest, CanCapU) {
   outputs_enabled_ = true;
   wrist_voltage_ = -5;
   CalibrationSequence();
+  ReadMessages();
   Update();
 
   EXPECT_TRUE(wrist_output_proto_->wrist_voltage() >=
@@ -191,9 +220,10 @@ TEST_F(WristTest, CanCapU) {
                   0.01);
 }
 
-TEST_F(WristTest, CalibratingEnabled){
+TEST_F(WristTest, CalibratingEnabled) {
   outputs_enabled_ = true;
   CalibrationSequence();
+  ReadMessages();
   Update();
 
   EXPECT_EQ(wrist_output_proto_->wrist_voltage(), 0);
