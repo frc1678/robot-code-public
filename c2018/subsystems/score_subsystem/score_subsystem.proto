@@ -51,6 +51,7 @@ message ScoreSubsystemInput {
   required bool elevator_hall = 2;
   required double wrist_encoder = 3;
   required bool wrist_hall = 4;
+  required bool has_cube = 5;
 }
 
 message ScoreSubsystemOutput {
