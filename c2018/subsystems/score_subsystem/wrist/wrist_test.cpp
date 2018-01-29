@@ -1,4 +1,4 @@
-#include "//c2018/subsystems/score_subsystem/wrist/wrist.h"
+#include "c2018/subsystems/score_subsystem/wrist/wrist.h"
 #include "gtest/gtest.h"
 
 class WristTest : public ::testing::Test {
