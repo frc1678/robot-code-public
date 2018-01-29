@@ -19,7 +19,11 @@ class WristTest : public ::testing::Test {
     wrist_input_proto_->set_wrist_hall(plant_.x(0) >= 0.04 &&
                                        plant_.x(0) <= 0.06);
   }
-
+  void RunFor(int ticks) {
+      for (int j = 0; j < ticks; j++) {
+      Update();
+      }
+    }
   void ReadMessages() {
     wrist_output_queue_.ReadLastMessage(&wrist_output_proto_);
     wrist_status_queue_.ReadLastMessage(&wrist_status_proto_);
@@ -35,7 +39,7 @@ class WristTest : public ::testing::Test {
     for (int i = 0; i < 2000; i++) {
       wrist_input_proto_->set_wrist_encoder(plant_.x(0) + offset);
       ReadMessages();
-      Update();
+    Update();
 
       EXPECT_TRUE(
           wrist_output_proto_->wrist_voltage() >=
@@ -104,7 +108,7 @@ TEST_F(WristTest, IntakeEnabled) {
   outputs_enabled_ = true;
   CalibrationSequence();
   SetGoal(0.0, c2018::score_subsystem::IntakeMode::INTAKE);
-  Update();
+  RunFor(20);
   ReadMessages();
 
   EXPECT_NEAR(wrist_output_proto_->intake_voltage(), 12.0, 1e-3);
@@ -119,7 +123,7 @@ TEST_F(WristTest, OuttakeEnabled) {
   CalibrationSequence();
   SetGoal(0.0, c2018::score_subsystem::IntakeMode::OUTTAKE);
   ReadMessages();
-  Update();
+  RunFor(20);
 
   EXPECT_NEAR(wrist_output_proto_->intake_voltage(), -12.0, 1e-3);
   EXPECT_EQ(wrist_status_proto_->wrist_pinch(),
@@ -133,7 +137,7 @@ TEST_F(WristTest, IdleEnabled) {
   CalibrationSequence();
   SetGoal(0.0, c2018::score_subsystem::IntakeMode::IDLE);
   ReadMessages();
-  Update();
+  RunFor(20);
 
   EXPECT_EQ(wrist_status_proto_->wrist_pinch(),
             c2018::score_subsystem::WRIST_IN);
@@ -147,7 +151,7 @@ TEST_F(WristTest, HoldEnabled) {
   CalibrationSequence();
   SetGoal(0.0, c2018::score_subsystem::IntakeMode::HOLD);
   ReadMessages();
-  Update();
+  RunFor(20);
 
   EXPECT_EQ(wrist_status_proto_->wrist_pinch(),
             c2018::score_subsystem::WRIST_OUT);
@@ -176,7 +180,7 @@ TEST_F(WristTest, SysIdle) {
   outputs_enabled_ = true;
   CalibrationSequence();
   ReadMessages();
-  Update();
+  RunFor(20);
 
   EXPECT_EQ(wrist_output_proto_->wrist_voltage(), 0);
   EXPECT_EQ(wrist_output_proto_->intake_voltage(), 0);
@@ -188,7 +192,7 @@ TEST_F(WristTest, StateDisabled) {
   outputs_enabled_ = false;
   CalibrationSequence();
   ReadMessages();
-  Update();
+  RunFor(20);
 
   EXPECT_EQ(wrist_output_proto_->intake_voltage(), 0);
   EXPECT_EQ(wrist_output_proto_->wrist_voltage(), 0);
@@ -201,7 +205,7 @@ TEST_F(WristTest, CanCapAngle) {
   CalibrationSequence();
   SetGoal(-5, c2018::score_subsystem::IntakeMode::IDLE);
   ReadMessages();
-  Update();
+  RunFor(20);
 
   EXPECT_TRUE(wrist_status_proto_->wrist_position() >=
               muan::utils::Cap(wrist_status_proto_->wrist_position(), 0, M_PI) -
@@ -213,7 +217,7 @@ TEST_F(WristTest, CanCapU) {
   wrist_voltage_ = -5;
   CalibrationSequence();
   ReadMessages();
-  Update();
+  RunFor(20);
 
   EXPECT_TRUE(wrist_output_proto_->wrist_voltage() >=
               muan::utils::Cap(wrist_output_proto_->wrist_voltage(), -12, 12) -
@@ -224,7 +228,7 @@ TEST_F(WristTest, CalibratingEnabled) {
   outputs_enabled_ = true;
   CalibrationSequence();
   ReadMessages();
-  Update();
+  RunFor(20);
 
   EXPECT_EQ(wrist_output_proto_->wrist_voltage(), 0);
   EXPECT_EQ(wrist_output_proto_->intake_voltage(), 0);
