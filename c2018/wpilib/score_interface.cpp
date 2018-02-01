@@ -68,6 +68,7 @@ void ScoreSubsystemInterface::ReadSensors() {
   if (pdp_reader_.ReadLastMessage(&pdp_data)) {
    // sensors->set_intake_current(
   //    std::max(pdp_data->current5(), pdp_data->current6()));
+  // TODO (Mohamed): fill in constants
   }
 }
 

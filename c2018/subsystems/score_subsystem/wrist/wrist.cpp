@@ -10,8 +10,7 @@ using muan::queues::QueueManager;
 WristController::WristController()
     : trapezoidal_motion_profile_{::std::chrono::milliseconds(5)},
       status_queue_{QueueManager<ScoreSubsystemStatusProto>::Fetch()},
-      output_queue_{QueueManager<ScoreSubsystemOutputProto>::Fetch()},
-      hall_calibration_{kHallMagnetPosition} {
+      output_queue_{QueueManager<ScoreSubsystemOutputProto>::Fetch()} {
   auto wrist_plant = muan::control::StateSpacePlant<1, 3, 1>(
       frc1678::wrist_controller::controller::A(),
       frc1678::wrist_controller::controller::B(),
@@ -40,6 +39,8 @@ void WristController::SetGoal(double angle, IntakeMode mode) {
   intake_mode_ = mode;
 }
 
+//if first time move the atet to there using
+
 void WristController::Update(ScoreSubsystemInputProto input,
                              ScoreSubsystemOutputProto* output,
                              ScoreSubsystemStatusProto* status,
@@ -51,6 +52,17 @@ void WristController::Update(ScoreSubsystemInputProto input,
 
   double wrist_voltage = 0.0;
 
+  bool was_calibrated = hall_calibration_.is_calibrated();
+
+  if (!outputs_enabled) {
+    trapezoidal_motion_profile_.MoveCurrentState(
+      wrist_observer_.x().block<2, 1>(0, 0));
+  }
+  if (hall_calibration_.is_calibrated() && !was_calibrated) {
+    trapezoidal_motion_profile_.MoveCurrentState(
+      wrist_observer_.x().block<2, 1>(0, 0));
+    wrist_observer_.x()(0) = kHallEffectAngle;
+  }
   if (!outputs_enabled) {
     wrist_voltage = 0.0;
     wrist_state_ = DISABLED;
@@ -127,6 +139,7 @@ void WristController::Update(ScoreSubsystemInputProto input,
       intake_voltage = 0;
       if (hall_calibration_.is_calibrated()) {
         wrist_state_ = SYSTEM_IDLE;
+        plant_.x()(0, 0) += hall_calibration_.offset();
       }
       break;
     case MOVING:

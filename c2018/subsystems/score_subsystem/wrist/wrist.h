@@ -28,9 +28,7 @@ static constexpr double kCalibVoltage = 4;
 static constexpr double kOuttakeVoltage = -12;
 static constexpr double kIntakeVoltage = 12;
 
-
-
-static constexpr double kHallMagnetPosition = 0.05;
+static constexpr double kHallEffectAngle = 0;
 
 static constexpr double kHoldingVoltage = 0;
 
@@ -48,7 +46,7 @@ class WristController {
   aos::util::TrapezoidProfile trapezoidal_motion_profile_;
   ScoreSubsystemStatusQueue* status_queue_;
   ScoreSubsystemOutputQueue* output_queue_;
-  muan::control::HallCalibration hall_calibration_;
+  muan::control::HallCalibration hall_calibration_{kHallEffectAngle};
   muan::control::StateSpacePlant<1, 3, 1> plant_;
   muan::control::StateSpaceController<1, 3, 1> wrist_controller_;
   muan::control::StateSpaceObserver<1, 3, 1> wrist_observer_;

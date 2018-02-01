@@ -1,3 +1,4 @@
+import math
 import numpy as np
 import sys
 
@@ -18,13 +19,18 @@ def make_gains():
 
     name = 'gains'
 
+    # Moment of inertia constants
+    # M= mass and L = length
+    M = 18.0
+    L = 0.381
+
     # Parameters
-    moment_inertia = 18.0 * 0.381 * 0.381 * (1.0 / 3.0)
+    moment_inertia = M * L* L * (1.0 / 3.0)
     gear_ratio = (1.0 / 100.0) * (14.0 / 72.0)
     efficiency = .81
 
     # motor characteristics
-    free_speed = 18730
+    free_speed = 18730.0 * 2 * math.pi / 60
     free_current = .7
     stall_torque = .71
     stall_current = 134.
