@@ -36,7 +36,7 @@ class WristController {
  public:
   WristController();
 
-  void SetGoal(double angle, c2018::score_subsystem::IntakeMode);
+  void SetGoal(double angle, c2018::score_subsystem::IntakeMode mode);
   Eigen::Matrix<double, 2, 1> UpdateProfiledGoal(double unprofiled_goal_,
                                                  bool outputs_enabled);
   void Update(ScoreSubsystemInputProto input, ScoreSubsystemOutputProto* output,

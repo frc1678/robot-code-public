@@ -18,7 +18,7 @@ def make_gains(second_stage, has_cube, subname='gains'):
 
     name = subname
 
-    mass_carriage = 8.55 # 2.55 Kilo plus 3 miniCIM * 2
+    mass_carriage = 3.0 # 8.55 # 2.55 Kilo plus 3 miniCIM * 2
 
     if second_stage:
         mass_carriage += 2.14
@@ -27,7 +27,7 @@ def make_gains(second_stage, has_cube, subname='gains'):
         mass_carriage += 1.59
 
     # Parameters
-    r = 0.0508
+    r = (1.0 + 1.0 / 16.0) * 0.0254
     J = 0.68 * r ** 2 + mass_carriage * r ** 2
     G = 1 / 18.52
     eff = .8
@@ -59,8 +59,8 @@ def make_gains(second_stage, has_cube, subname='gains'):
 
     # Controller weighting
     Q_controller = np.asmatrix([
-        [1e4, 0.],
-        [0., 0.2]
+        [7e3, 0.],
+        [0., 3e2]
     ])
 
     R_controller = np.asmatrix([

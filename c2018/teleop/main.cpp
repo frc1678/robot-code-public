@@ -24,6 +24,7 @@ TeleopBase::TeleopBase()
   shifting_low_ = throttle_.MakeButton(4);
   shifting_high_ = throttle_.MakeButton(5);
   quickturn_ = wheel_.MakeButton(5);
+  wrist_90_ = gamepad_.MakeButton(1);
 }
 
 void TeleopBase::operator()() {
@@ -49,6 +50,13 @@ void TeleopBase::Update() {
   if (DriverStation::GetInstance().IsOperatorControl()) {
     SendDrivetrainMessage();
   }
+
+  if (wrist_90_->was_clicked()) {
+    score_goal_proto_->set_intake_mode(c2018::score_subsystem::IntakeMode::OUTTAKE);
+    score_goal_proto_->set_wrist_angle(3.14 / 2.);
+  }
+
+  score_goal_queue_->WriteMessage(score_goal_proto_);
 
   SetReadableLogName();
 

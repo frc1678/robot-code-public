@@ -8,9 +8,9 @@ using DrivetrainGoalProto = frc971::control_loops::drivetrain::GoalProto;
 using DrivetrainInputProto = frc971::control_loops::drivetrain::InputProto;
 using DrivetrainOutputProto = frc971::control_loops::drivetrain::OutputProto;
 using DrivetrainStatusProto = frc971::control_loops::drivetrain::StatusProto;
+using muan::queues::QueueManager;
 using muan::wpilib::DriverStationProto;
 using muan::wpilib::gyro::GyroMessageProto;
-using muan::queues::QueueManager;
 
 SubsystemRunner::SubsystemRunner()
     : drivetrain_{::c2018::drivetrain::GetDrivetrainConfig(),
@@ -37,6 +37,8 @@ void SubsystemRunner::operator()() {
     drivetrain_.Update();
 
     climber_.Update();
+
+    score_subsystem_.Update();
 
     wpilib_.WriteActuators();
 

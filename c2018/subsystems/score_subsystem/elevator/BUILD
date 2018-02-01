@@ -1,3 +1,5 @@
+package(default_visibility = ["//visibility:public"])
+
 cc_library(
   name = "elevator_controller",
   srcs = ["elevator_controller.cpp"],
