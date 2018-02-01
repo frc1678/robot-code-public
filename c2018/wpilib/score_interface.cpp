@@ -48,7 +48,7 @@ ScoreSubsystemInterface::ScoreSubsystemInterface(
       roller_{kIntakeMotor},
       elevator_encoder_{kElevatorEncoderA, kElevatorEncoderB},
       wrist_encoder_{kWristEncoderA, kWristEncoderB},
-      // has_cube_{kCubeProxy},
+      has_cube_{kCubeProxy},
       elevator_hall_{kElevatorHall},
       wrist_hall_{kWristHall},
       pcm_{can_wrapper->pcm()} {
@@ -86,8 +86,8 @@ void ScoreSubsystemInterface::WriteActuators() {
     wrist_.Set(
         muan::utils::Cap(outputs->wrist_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
     roller_.Set(
-        muan::utils::Cap(outputs->roller_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
-    pcm_->WriteSolenoid(kIntakeSolenoid, outputs->claw_pinch());
+        muan::utils::Cap(outputs->intake_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
+    pcm_->WriteSolenoid(kIntakeSolenoid, outputs->wrist_solenoid_1());
   } else {
     elevator_.Set(0.0);
     wrist_.Set(0);
