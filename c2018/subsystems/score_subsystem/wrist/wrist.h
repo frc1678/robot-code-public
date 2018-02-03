@@ -19,7 +19,6 @@ namespace c2018 {
 namespace score_subsystem {
 namespace wrist {
 
-// measured in radians TODO (Mohamed) tune these constants
 static constexpr double kMaxWristVelocity = 2;
 static constexpr double kMaxWristAcceleration = 4;
 
@@ -28,9 +27,10 @@ static constexpr double kCalibVoltage = 4;
 static constexpr double kOuttakeVoltage = -12;
 static constexpr double kIntakeVoltage = 12;
 
-static constexpr double kHallEffectAngle = 0;
+static constexpr double kHallEffectAngle = 0.00;
 
 static constexpr double kHoldingVoltage = 0;
+static constexpr double kMaxVoltage = 4;
 
 class WristController {
  public:
@@ -60,6 +60,8 @@ class WristController {
   double old_pos_;
   bool encoder_fault_detected_ = false;
   int num_encoder_fault_ticks_ = 0;
+
+  double intake_voltage = 0;
 
   c2018::score_subsystem::SystemState wrist_state_ = SYSTEM_IDLE;
   c2018::score_subsystem::IntakeState wrist_pinch_ = WRIST_IN;

@@ -21,8 +21,8 @@ def make_gains():
 
     # Moment of inertia constants
     # M= mass and L = length
-    M = 18.0
-    L = 0.381
+    M = 9.0
+    L = 0.3
 
     # Parameters
     moment_inertia = M * L* L * (1.0 / 3.0)
@@ -141,12 +141,14 @@ def make_augmented_gains():
     ])
 
     # Kalman noise matrix
-    Q_kalman = np.asmatrix(np.zeros((3, 3)))
-    Q_kalman[:2, :2] = unaugmented_gains.Q_c
-    Q_kalman[2, 2] = 3.0
+    Q_kalman = np.asmatrix([
+        [1e0, 0.0, 0.0],
+        [0.0, 2e0, 0.0],
+        [0.0, 0.0, 3e2]
+    ])
 
     Q_ff = np.asmatrix([
-        [1.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0],
         [0.0, 1.0, 0.0],
         [0.0, 0.0, 0.0]
     ])

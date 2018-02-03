@@ -40,14 +40,17 @@ void ScoreSubsystem::Update() {
 
     elevator_.SetGoal(elevator_height);
     wrist_.SetGoal(goal->wrist_angle(), goal->intake_mode());
+    std::cout << "Set wrist goal" << std::endl;
   } else {
     // claw_mode_ = SCORE_F;
 
     // claw_.SetGodModeGoal(...);   doesn't exist yet
-    // elevator_.SetGodModeGoal(...);
+    wrist_.SetGoal(goal->wrist_angle(), goal->intake_mode());
+    std::cout << "Set wrist goal" << std::endl;
   }
 
   elevator_.Update(input, &output, &status, driver_station->is_sys_active());
+  wrist_.Update(input, &output, &status, driver_station->is_sys_active());
   output_queue_->WriteMessage(output);
   status_queue_->WriteMessage(status);
 }

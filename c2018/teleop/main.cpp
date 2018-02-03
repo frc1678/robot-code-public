@@ -24,7 +24,9 @@ TeleopBase::TeleopBase()
   shifting_low_ = throttle_.MakeButton(4);
   shifting_high_ = throttle_.MakeButton(5);
   quickturn_ = wheel_.MakeButton(5);
-  wrist_90_ = gamepad_.MakeButton(1);
+  start_intake_ = gamepad_.MakeButton(1);
+  start_outtake_ = gamepad_.MakeButton(3);
+  stop_intake_ = gamepad_.MakeButton(2);
 }
 
 void TeleopBase::operator()() {
@@ -51,9 +53,18 @@ void TeleopBase::Update() {
     SendDrivetrainMessage();
   }
 
-  if (wrist_90_->was_clicked()) {
+  if (start_intake_->was_clicked()) {
+    score_goal_proto_->set_intake_mode(c2018::score_subsystem::IntakeMode::INTAKE);
+    score_goal_proto_->set_wrist_angle(3.14 / 4);
+  }
+
+  if (start_outtake_->was_clicked()) {
     score_goal_proto_->set_intake_mode(c2018::score_subsystem::IntakeMode::OUTTAKE);
-    score_goal_proto_->set_wrist_angle(3.14 / 2.);
+    score_goal_proto_->set_wrist_angle(3.14 / 4);
+  }
+  if (stop_intake_->was_clicked()) {
+    score_goal_proto_->set_intake_mode(c2018::score_subsystem::IntakeMode::IDLE);
+    score_goal_proto_->set_wrist_angle(3.14 / 4);
   }
 
   score_goal_queue_->WriteMessage(score_goal_proto_);

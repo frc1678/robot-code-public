@@ -15,8 +15,9 @@ constexpr double kElevatorSensorRatio = 2.14;
 constexpr double kWristSensorRatio = 5.14;
 
 constexpr uint32_t kElevatorMotor = 4;
-constexpr uint32_t kIntakeMotor = 2;
-constexpr uint32_t kWristMotor = 3;
+constexpr uint32_t kHighIntakeMotor = 2;
+constexpr uint32_t kLowIntakeMotor = 3;
+constexpr uint32_t kWristMotor = 6;
 
 constexpr uint32_t kElevatorEncoderA = 14;
 constexpr uint32_t kElevatorEncoderB = 15;
@@ -45,7 +46,8 @@ ScoreSubsystemInterface::ScoreSubsystemInterface(
           QueueManager<muan::wpilib::PdpMessage>::Fetch()->MakeReader()),
       elevator_{kElevatorMotor},
       wrist_{kWristMotor},
-      roller_{kIntakeMotor},
+      high_roller_{kHighIntakeMotor},
+      low_roller_{kLowIntakeMotor},
       elevator_encoder_{kElevatorEncoderA, kElevatorEncoderB},
       wrist_encoder_{kWristEncoderA, kWristEncoderB},
       has_cube_{kCubeProxy},
@@ -59,13 +61,11 @@ void ScoreSubsystemInterface::ReadSensors() {
   ScoreSubsystemInputProto sensors;
   sensors->set_elevator_encoder(-elevator_encoder_.Get() * kPitchRadius *
                                 (2 * M_PI) / 512 / kElevatorSensorRatio);
-  sensors->set_wrist_encoder(wrist_encoder_.Get() * (2 * M_PI) / 512 /
+  sensors->set_wrist_encoder(wrist_encoder_.Get() * (2 * M_PI) / 1024 /
                              kWristSensorRatio);
-  std::cout << sensors->wrist_encoder() << std::endl;
   // These numbers come from the status to outpur ratios for the encoders.
   sensors->set_elevator_hall(!elevator_hall_.Get());
   sensors->set_wrist_hall(!wrist_hall_.Get());
-  std::cout << sensors->wrist_hall();
   sensors->set_has_cube(has_cube_.Get());
 
   muan::wpilib::PdpMessage pdp_data;
@@ -81,17 +81,22 @@ void ScoreSubsystemInterface::ReadSensors() {
 void ScoreSubsystemInterface::WriteActuators() {
   ScoreSubsystemOutputProto outputs;
   if (output_reader_.ReadLastMessage(&outputs)) {
-    elevator_.Set(muan::utils::Cap(-outputs->elevator_voltage(), -kMaxVoltage,
+    elevator_.Set(muan::utils::Cap(0, -kMaxVoltage,
                                    kMaxVoltage) / 12.0);
     wrist_.Set(
-        muan::utils::Cap(outputs->wrist_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
-    roller_.Set(
-        muan::utils::Cap(outputs->intake_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
-    pcm_->WriteSolenoid(kIntakeSolenoid, outputs->wrist_solenoid_1());
+        muan::utils::Cap(0, -kMaxVoltage, kMaxVoltage) / 12.0);
+    high_roller_.Set(
+        muan::utils::Cap(-outputs->intake_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
+    low_roller_.Set(
+        muan::utils::Cap(-outputs->intake_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
+    std::cout << "OK" << std::endl;
+    pcm_->WriteSolenoid(kIntakeSolenoid, false);
   } else {
     elevator_.Set(0.0);
     wrist_.Set(0);
-    roller_.Set(0);
+    high_roller_.Set(0);
+    low_roller_.Set(0);
+    std::cout << "yum" << std::endl;
     pcm_->WriteSolenoid(kIntakeSolenoid, false);
   }
 }

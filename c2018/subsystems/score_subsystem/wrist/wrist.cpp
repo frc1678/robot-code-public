@@ -1,5 +1,5 @@
-#include "c2018/subsystems/score_subsystem/wrist/wrist.h"
 #include <cmath>
+#include "c2018/subsystems/score_subsystem/wrist/wrist.h"
 
 namespace c2018 {
 namespace score_subsystem {
@@ -36,10 +36,9 @@ void WristController::SetGoal(double angle, IntakeMode mode) {
     wrist_state_ = MOVING;
   }
 
+  wrist_state_ = MOVING;
   intake_mode_ = mode;
 }
-
-//if first time move the atet to there using
 
 void WristController::Update(ScoreSubsystemInputProto input,
                              ScoreSubsystemOutputProto* output,
@@ -52,16 +51,9 @@ void WristController::Update(ScoreSubsystemInputProto input,
 
   double wrist_voltage = 0.0;
 
-  bool was_calibrated = hall_calibration_.is_calibrated();
-
   if (!outputs_enabled) {
     trapezoidal_motion_profile_.MoveCurrentState(
-      wrist_observer_.x().block<2, 1>(0, 0));
-  }
-  if (hall_calibration_.is_calibrated() && !was_calibrated) {
-    trapezoidal_motion_profile_.MoveCurrentState(
-      wrist_observer_.x().block<2, 1>(0, 0));
-    wrist_observer_.x()(0) = kHallEffectAngle;
+        wrist_observer_.x().block<2, 1>(0, 0));
   }
   if (!outputs_enabled) {
     wrist_voltage = 0.0;
@@ -71,8 +63,6 @@ void WristController::Update(ScoreSubsystemInputProto input,
   } else if (wrist_state_ == DISABLED) {
     wrist_state_ = SYSTEM_IDLE;
   }
-
-  double intake_voltage = 0;
 
   // Start of intake
   bool wrist_solenoid_1 = false;
@@ -106,11 +96,11 @@ void WristController::Update(ScoreSubsystemInputProto input,
   switch (wrist_pinch_) {
     case WRIST_IN:
       wrist_solenoid_1 = false;
-      wrist_solenoid_2 = false;
+      wrist_solenoid_2 = true;
       break;
     case WRIST_OUT:
       wrist_solenoid_1 = true;
-      wrist_solenoid_2 = true;
+      wrist_solenoid_2 = false;
       break;
     case WRIST_IDLE:
       // Idle or "neutral" is the starting position
@@ -118,6 +108,7 @@ void WristController::Update(ScoreSubsystemInputProto input,
       wrist_solenoid_2 = false;
       break;
   }
+
   switch (wrist_state_) {
     case SYSTEM_IDLE:
       wrist_voltage = 0;
@@ -142,17 +133,25 @@ void WristController::Update(ScoreSubsystemInputProto input,
         plant_.x()(0, 0) += hall_calibration_.offset();
       }
       break;
-    case MOVING:
+    case HOLDING:
+      intake_voltage = kIntakeHoldVoltage;
+      // Fall through to MOVING
+    case RUNNING:
       // Run the controller
       Eigen::Matrix<double, 3, 1> wrist_r =
           (Eigen::Matrix<double, 3, 1>() << UpdateProfiledGoal(
                unprofiled_goal_position_, outputs_enabled)(0, 0),
-           0.0, 0.0).finished();
+           0.0, 0.0)
+              .finished();
 
       wrist_controller_.r() = wrist_r;
 
       wrist_voltage = wrist_controller_.Update(wrist_observer_.x())(0, 0);
-
+      break;
+    case INTAKING:
+      if (input->intake_current() > kIntakeStallCurrent) {
+        // Now we have a cube! Go to HOLDING!
+      }
       break;
   }
 
@@ -169,7 +168,7 @@ void WristController::Update(ScoreSubsystemInputProto input,
   old_pos_ = input->wrist_encoder();
 
   if (!encoder_fault_detected_) {
-    wrist_voltage = muan::utils::Cap(wrist_voltage, -12, 12);
+    wrist_voltage = muan::utils::Cap(wrist_voltage, -kMaxVoltage, kMaxVoltage);
   } else {
     wrist_voltage = 0;
   }
@@ -177,8 +176,13 @@ void WristController::Update(ScoreSubsystemInputProto input,
   wrist_observer_.Update(
       (Eigen::Matrix<double, 1, 1>() << wrist_voltage).finished(), wrist_y);
 
+  if (input->intake_current() > 30) {
+    intake_voltage = 0;
+  }
+
   (*output)->set_intake_voltage(intake_voltage);
-  (*output)->set_wrist_voltage(wrist_voltage);
+  std::cout << "Intake voltage: " << (*output)->intake_voltage() << std::endl;
+  (*output)->set_wrist_voltage(0);
   (*output)->set_wrist_solenoid_1(wrist_solenoid_1);
   (*output)->set_wrist_solenoid_2(wrist_solenoid_2);
   (*status)->set_wrist_calibrated(hall_calibration_.is_calibrated());
