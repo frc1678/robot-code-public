@@ -19,18 +19,20 @@ namespace c2018 {
 namespace score_subsystem {
 namespace wrist {
 
-static constexpr double kMaxWristVelocity = 2;
-static constexpr double kMaxWristAcceleration = 4;
+static constexpr double kMaxWristVelocity = 4;
+static constexpr double kMaxWristAcceleration = 7;
 
 static constexpr double kEncoderFaultTicksAllowed = 200;
 static constexpr double kCalibVoltage = 4;
 static constexpr double kOuttakeVoltage = -12;
 static constexpr double kIntakeVoltage = 12;
 
-static constexpr double kHallEffectAngle = 0.00;
+static constexpr double kHallEffectAngle = 0.23;
 
 static constexpr double kHoldingVoltage = 0;
-static constexpr double kMaxVoltage = 4;
+static constexpr double kMaxVoltage = 12;
+
+static constexpr double kStallCurrent = 20;
 
 class WristController {
  public:
@@ -54,7 +56,7 @@ class WristController {
   double CapU(double wrist_voltage);
 
   IntakeMode intake_mode_;
-  double unprofiled_goal_position_;
+  double unprofiled_goal_;
   Eigen::Matrix<double, 2, 1> profiled_goal_;
 
   double old_pos_;
@@ -62,9 +64,6 @@ class WristController {
   int num_encoder_fault_ticks_ = 0;
 
   double intake_voltage = 0;
-
-  c2018::score_subsystem::SystemState wrist_state_ = SYSTEM_IDLE;
-  c2018::score_subsystem::IntakeState wrist_pinch_ = WRIST_IN;
 };
 
 }  // namespace wrist

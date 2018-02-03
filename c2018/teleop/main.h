@@ -40,6 +40,8 @@ class TeleopBase {
   muan::teleop::Button* start_intake_;
   muan::teleop::Button* start_outtake_;
   muan::teleop::Button* stop_intake_;
+  muan::teleop::Button* wrist_down_;
+  muan::teleop::Button* wrist_stow_;
   c2018::score_subsystem::ScoreSubsystem score_subsystem_;
   c2018::score_subsystem::ScoreSubsystemGoalProto score_goal_proto_;
 

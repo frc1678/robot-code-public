@@ -1,6 +1,6 @@
-#include "c2018/teleop/main.h"
 #include <string>
 #include "WPILib.h"
+#include "c2018/teleop/main.h"
 #include "muan/queues/queue_manager.h"
 #include "muan/wpilib/queue_types.h"
 #include "third_party/aos/common/util/phased_loop.h"
@@ -10,10 +10,10 @@ namespace c2018 {
 namespace teleop {
 
 using DrivetrainGoalProto = frc971::control_loops::drivetrain::GoalProto;
+using muan::queues::QueueManager;
+using muan::teleop::JoystickStatusProto;
 using muan::wpilib::DriverStationProto;
 using muan::wpilib::GameSpecificStringProto;
-using muan::teleop::JoystickStatusProto;
-using muan::queues::QueueManager;
 
 TeleopBase::TeleopBase()
     : throttle_{1, QueueManager<JoystickStatusProto>::Fetch("throttle")},
@@ -27,6 +27,8 @@ TeleopBase::TeleopBase()
   start_intake_ = gamepad_.MakeButton(1);
   start_outtake_ = gamepad_.MakeButton(3);
   stop_intake_ = gamepad_.MakeButton(2);
+  wrist_down_ = gamepad_.MakeButton(4);
+  wrist_stow_ = gamepad_.MakeButton(5);
 }
 
 void TeleopBase::operator()() {
@@ -53,18 +55,14 @@ void TeleopBase::Update() {
     SendDrivetrainMessage();
   }
 
-  if (start_intake_->was_clicked()) {
-    score_goal_proto_->set_intake_mode(c2018::score_subsystem::IntakeMode::INTAKE);
-    score_goal_proto_->set_wrist_angle(3.14 / 4);
+  if (wrist_down_->was_clicked()) {
+    score_goal_proto_->set_score_goal(
+        c2018::score_subsystem::ScoreGoal::IDLE_BOTTOM);
   }
 
-  if (start_outtake_->was_clicked()) {
-    score_goal_proto_->set_intake_mode(c2018::score_subsystem::IntakeMode::OUTTAKE);
-    score_goal_proto_->set_wrist_angle(3.14 / 4);
-  }
-  if (stop_intake_->was_clicked()) {
-    score_goal_proto_->set_intake_mode(c2018::score_subsystem::IntakeMode::IDLE);
-    score_goal_proto_->set_wrist_angle(3.14 / 4);
+  if (wrist_stow_->was_clicked()) {
+    score_goal_proto_->set_score_goal(
+        c2018::score_subsystem::ScoreGoal::IDLE_STOW);
   }
 
   score_goal_queue_->WriteMessage(score_goal_proto_);

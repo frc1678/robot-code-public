@@ -30,14 +30,9 @@ WristController::WristController()
   trapezoidal_motion_profile_.set_maximum_velocity(kMaxWristVelocity);
 }
 
-void WristController::SetGoal(double angle, IntakeMode mode) {
-  if (wrist_state_ == SYSTEM_IDLE || wrist_state_ == MOVING) {
-    unprofiled_goal_position_ = muan::utils::Cap(angle, 0.0, M_PI);
-    wrist_state_ = MOVING;
-  }
-
-  wrist_state_ = MOVING;
-  intake_mode_ = mode;
+void WristController::SetGoal(double wrist_angle, IntakeMode intake_mode) {
+  unprofiled_goal_ = wrist_angle;
+  intake_mode_ = intake_mode;
 }
 
 void WristController::Update(ScoreSubsystemInputProto input,
@@ -52,115 +47,63 @@ void WristController::Update(ScoreSubsystemInputProto input,
   double wrist_voltage = 0.0;
 
   if (!outputs_enabled) {
+    wrist_voltage = 0.0;
     trapezoidal_motion_profile_.MoveCurrentState(
         wrist_observer_.x().block<2, 1>(0, 0));
   }
-  if (!outputs_enabled) {
-    wrist_voltage = 0.0;
-    wrist_state_ = DISABLED;
-  } else if (!hall_calibration_.is_calibrated() && !encoder_fault_detected_) {
-    wrist_state_ = CALIBRATING;
-  } else if (wrist_state_ == DISABLED) {
-    wrist_state_ = SYSTEM_IDLE;
-  }
 
   // Start of intake
-  bool wrist_solenoid_1 = false;
-  bool wrist_solenoid_2 = false;
-  wrist_pinch_ = WRIST_IN;
+  bool wrist_solenoid_close = false;
+  bool wrist_solenoid_open = false;
 
   if (outputs_enabled) {
     switch (intake_mode_) {
       case INTAKE:
         intake_voltage = kIntakeVoltage;
-        wrist_pinch_ = WRIST_OUT;
+        wrist_solenoid_close = false;
+        wrist_solenoid_open = false;
         break;
       case OUTTAKE:
         intake_voltage = kOuttakeVoltage;
-        wrist_pinch_ = WRIST_IN;
+        wrist_solenoid_close = false;
+        wrist_solenoid_open = false;
         break;
       case IDLE:
         intake_voltage = 0;
-        wrist_pinch_ = WRIST_IN;
-        break;
-      case HOLD:
-        intake_voltage = kHoldingVoltage;
-        wrist_pinch_ = WRIST_OUT;
+        wrist_solenoid_close = true;
+        wrist_solenoid_open = true;
         break;
     }
   } else {
     intake_voltage = 0;
-    wrist_pinch_ = WRIST_IN;
   }
+  /*
+  if (!hall_calibration_.is_calibrated()) {
+    wrist_voltage = kCalibVoltage;
+    intake_voltage = 0;
+  } else {
+*/ plant_.x()(0, 0) += hall_calibration_.offset();
+  //}
 
-  switch (wrist_pinch_) {
-    case WRIST_IN:
-      wrist_solenoid_1 = false;
-      wrist_solenoid_2 = true;
-      break;
-    case WRIST_OUT:
-      wrist_solenoid_1 = true;
-      wrist_solenoid_2 = false;
-      break;
-    case WRIST_IDLE:
-      // Idle or "neutral" is the starting position
-      wrist_solenoid_1 = false;
-      wrist_solenoid_2 = false;
-      break;
-  }
+  Eigen::Matrix<double, 3, 1> wrist_r =
+      (Eigen::Matrix<double, 3, 1>()
+           << UpdateProfiledGoal(unprofiled_goal_, outputs_enabled)(0, 0),
+       0.0, 0.0)
+          .finished();
 
-  switch (wrist_state_) {
-    case SYSTEM_IDLE:
-      wrist_voltage = 0;
-      intake_voltage = 0;
-      break;
-    case ENCODER_FAULT:
-      wrist_voltage = 0;
-      intake_voltage = 0;
-      break;
-    case DISABLED:
-      wrist_voltage = 0;
-      intake_voltage = 0;
-      break;
-    case INITIALIZING:
-      wrist_state_ = CALIBRATING;
-      break;
-    case CALIBRATING:
-      wrist_voltage = kCalibVoltage;
-      intake_voltage = 0;
-      if (hall_calibration_.is_calibrated()) {
-        wrist_state_ = SYSTEM_IDLE;
-        plant_.x()(0, 0) += hall_calibration_.offset();
-      }
-      break;
-    case HOLDING:
-      intake_voltage = kIntakeHoldVoltage;
-      // Fall through to MOVING
-    case RUNNING:
-      // Run the controller
-      Eigen::Matrix<double, 3, 1> wrist_r =
-          (Eigen::Matrix<double, 3, 1>() << UpdateProfiledGoal(
-               unprofiled_goal_position_, outputs_enabled)(0, 0),
-           0.0, 0.0)
-              .finished();
+  wrist_controller_.r() = wrist_r;
 
-      wrist_controller_.r() = wrist_r;
+  wrist_voltage = wrist_controller_.Update(wrist_observer_.x(), wrist_r)(0, 0);
 
-      wrist_voltage = wrist_controller_.Update(wrist_observer_.x())(0, 0);
-      break;
-    case INTAKING:
-      if (input->intake_current() > kIntakeStallCurrent) {
-        // Now we have a cube! Go to HOLDING!
-      }
-      break;
+  if (input->intake_current() > kStallCurrent) {
+    intake_voltage = kHoldingVoltage;
   }
 
   // Check for encoder faults
-  if (old_pos_ == input->wrist_encoder() && wrist_voltage > kHoldingVoltage) {
+  if (old_pos_ == input->wrist_encoder() && std::abs(wrist_voltage) > 2) {
     num_encoder_fault_ticks_++;
     if (num_encoder_fault_ticks_ > kEncoderFaultTicksAllowed) {
       encoder_fault_detected_ = true;
-      wrist_state_ = ENCODER_FAULT;
     }
   } else {
     num_encoder_fault_ticks_ = 0;
@@ -176,22 +119,19 @@ void WristController::Update(ScoreSubsystemInputProto input,
   wrist_observer_.Update(
       (Eigen::Matrix<double, 1, 1>() << wrist_voltage).finished(), wrist_y);
 
-  if (input->intake_current() > 30) {
+  if (input->intake_current() > kStallCurrent) {
     intake_voltage = 0;
   }
 
   (*output)->set_intake_voltage(intake_voltage);
-  std::cout << "Intake voltage: " << (*output)->intake_voltage() << std::endl;
-  (*output)->set_wrist_voltage(0);
-  (*output)->set_wrist_solenoid_1(wrist_solenoid_1);
-  (*output)->set_wrist_solenoid_2(wrist_solenoid_2);
+  (*output)->set_wrist_voltage(wrist_voltage);
+  (*output)->set_wrist_solenoid_open(wrist_solenoid_open);
+  (*output)->set_wrist_solenoid_close(wrist_solenoid_close);
   (*status)->set_wrist_calibrated(hall_calibration_.is_calibrated());
-  (*status)->set_wrist_position(wrist_observer_.x()(0, 0));
-  (*status)->set_wrist_pinch(wrist_pinch_);
-  (*status)->set_wrist_state(wrist_state_);
-  status_queue_->WriteMessage(*status);
-  output_queue_->WriteMessage(*output);
-}
+  (*status)->set_wrist_angle(wrist_observer_.x()(0, 0));
+  std::cout << (*status)->wrist_angle() << std::endl;
+  (*status)->set_has_cube(input->intake_current() > kStallCurrent);
+}  // namespace wrist
 
 Eigen::Matrix<double, 2, 1> WristController::UpdateProfiledGoal(
     double unprofiled_goal_, bool outputs_enabled) {

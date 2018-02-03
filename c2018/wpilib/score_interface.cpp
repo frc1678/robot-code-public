@@ -70,9 +70,7 @@ void ScoreSubsystemInterface::ReadSensors() {
 
   muan::wpilib::PdpMessage pdp_data;
   if (pdp_reader_.ReadLastMessage(&pdp_data)) {
-   // sensors->set_intake_current(
-  //    std::max(pdp_data->current5(), pdp_data->current6()));
-  // TODO (Mohamed): fill in constants
+    sensors->set_intake_current(std::max(pdp_data->current5(), pdp_data->current6()));
   }
 
   input_queue_->WriteMessage(sensors);
@@ -83,8 +81,8 @@ void ScoreSubsystemInterface::WriteActuators() {
   if (output_reader_.ReadLastMessage(&outputs)) {
     elevator_.Set(muan::utils::Cap(0, -kMaxVoltage,
                                    kMaxVoltage) / 12.0);
-    wrist_.Set(
-        muan::utils::Cap(0, -kMaxVoltage, kMaxVoltage) / 12.0);
+    wrist_.Set(0);
+        //-muan::utils::Cap(outputs->wrist_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
     high_roller_.Set(
         muan::utils::Cap(-outputs->intake_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
     low_roller_.Set(
