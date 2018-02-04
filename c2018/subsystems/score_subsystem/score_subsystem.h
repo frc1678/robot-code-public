@@ -11,14 +11,15 @@
 namespace c2018 {
 namespace score_subsystem {
 
-constexpr double kElevatorBottom = 0;
-constexpr double kElevatorFirstStage = 1;
-constexpr double kElevatorSecondStage = 2;
-constexpr double kElevatorFirstCube = 0;
-constexpr double kElevatorSecondCube = 0.3;
-constexpr double kElevatorThirdCube = 0.6;
-constexpr double kElevatorScoreLow = 0.6;
-constexpr double kElevatorScoreHigh = 2;
+static constexpr double kElevatorBottom = 0;
+static constexpr double kElevatorFirstStage = 1;
+static constexpr double kElevatorSecondStage = 2;
+static constexpr double kElevatorFirstCube = 0;
+static constexpr double kElevatorSecondCube = 0.3;
+static constexpr double kElevatorThirdCube = 0.5;
+static constexpr double kElevatorScoreLow = 0.5;
+static constexpr double kElevatorScoreMid = 1.5;
+static constexpr double kElevatorScoreHigh = 2;
 
 class ScoreSubsystem {
  public:
@@ -34,11 +35,13 @@ class ScoreSubsystem {
   c2018::score_subsystem::ScoreSubsystemInputQueue::QueueReader input_reader_;
   c2018::score_subsystem::ScoreSubsystemOutputQueue* output_queue_;
   muan::wpilib::DriverStationQueue::QueueReader ds_status_reader_;
-  double elevator_height;
+  ScoreSubsystemStatusProto status_;
+  double elevator_height_;
 
-  double wrist_angle;
-  c2018::score_subsystem::IntakeMode intake_mode;
-  c2018::score_subsystem::ScoreGoal score_mode;
+  double wrist_angle_;
+  c2018::score_subsystem::IntakeMode intake_mode_ = IDLE;
+  c2018::score_subsystem::ScoreGoal score_goal_ = IDLE_BOTTOM;
+  bool has_cube_ = false;
 
 };
 

@@ -30,6 +30,7 @@ cc_library(
     "//muan/control:state_space",
     "//muan/units:units",
     "//muan/utils:math_utils",
+    "//muan/utils:monitor",
     "//muan/wpilib:wpilib_queues",
     "//third_party/aos/common/util:trapezoid_profile",
     "//third_party/google/googletest:googletest",

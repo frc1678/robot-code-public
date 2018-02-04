@@ -18,7 +18,7 @@ def make_gains(second_stage, has_cube, subname='gains'):
 
     name = subname
 
-    mass_carriage = 3.0 # 8.55 # 2.55 Kilo plus 3 miniCIM * 2
+    mass_carriage = 11.0 # 8.55 # 2.55 Kilo plus 3 miniCIM * 2
 
     if second_stage:
         mass_carriage += 2.14

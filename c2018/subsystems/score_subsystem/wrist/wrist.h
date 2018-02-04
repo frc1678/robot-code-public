@@ -12,6 +12,7 @@
 #include "muan/queues/queue_manager.h"
 #include "muan/units/units.h"
 #include "muan/utils/math_utils.h"
+#include "muan/utils/monitor.h"
 #include "muan/wpilib/queue_types.h"
 #include "third_party/aos/common/util/trapezoid_profile.h"
 
@@ -32,7 +33,7 @@ static constexpr double kHallEffectAngle = 0.23;
 static constexpr double kHoldingVoltage = 0;
 static constexpr double kMaxVoltage = 12;
 
-static constexpr double kStallCurrent = 20;
+static constexpr double kStallCurrent = 30;
 
 class WristController {
  public:
@@ -53,10 +54,12 @@ class WristController {
   muan::control::StateSpaceController<1, 3, 1> wrist_controller_;
   muan::control::StateSpaceObserver<1, 3, 1> wrist_observer_;
 
+  muan::utils::Monitor current_monitor_{30};
+
   double CapU(double wrist_voltage);
 
-  IntakeMode intake_mode_;
-  double unprofiled_goal_;
+  IntakeMode intake_mode_ = IDLE;
+  double unprofiled_goal_ = 0;
   Eigen::Matrix<double, 2, 1> profiled_goal_;
 
   double old_pos_;

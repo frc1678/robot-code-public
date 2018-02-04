@@ -65,7 +65,6 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
     elevator_observer_.x(0) = kHallEffectHeight;
     trapezoid_profile_.MoveCurrentState(
         elevator_observer_.x().block<2, 1>(0, 0));
-    std::cout << "Moving!! Whee wowhowhfwoeifh" << std::endl;
   }
 
   UpdateProfiledGoal(unprofiled_goal_, outputs_enabled);
@@ -83,7 +82,7 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
   } else if (encoder_fault_detected_) {
     elevator_u = 2.0;
   }
-
+/*
   if (old_pos_ == input->elevator_encoder() && std::abs(elevator_u) >= 2) {
     num_encoder_fault_ticks_++;
     if (num_encoder_fault_ticks_ > kEncoderFaultTicksAllowed) {
@@ -92,7 +91,7 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
   } else {
     num_encoder_fault_ticks_ = 0;
   }
-
+*/
   (*status)->set_elevator_uncapped_voltage(elevator_u);
 
   elevator_u = CapU(elevator_u);

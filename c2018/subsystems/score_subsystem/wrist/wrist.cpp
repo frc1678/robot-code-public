@@ -71,19 +71,18 @@ void WristController::Update(ScoreSubsystemInputProto input,
       case IDLE:
         intake_voltage = 0;
         wrist_solenoid_close = true;
-        wrist_solenoid_open = true;
+        wrist_solenoid_open = false;
         break;
     }
   } else {
     intake_voltage = 0;
   }
-  /*
+
   if (!hall_calibration_.is_calibrated()) {
     wrist_voltage = kCalibVoltage;
-    intake_voltage = 0;
   } else {
-*/ plant_.x()(0, 0) += hall_calibration_.offset();
-  //}
+    plant_.x()(0, 0) += hall_calibration_.offset();
+  }
 
   Eigen::Matrix<double, 3, 1> wrist_r =
       (Eigen::Matrix<double, 3, 1>()
@@ -94,10 +93,6 @@ void WristController::Update(ScoreSubsystemInputProto input,
   wrist_controller_.r() = wrist_r;
 
   wrist_voltage = wrist_controller_.Update(wrist_observer_.x(), wrist_r)(0, 0);
-
-  if (input->intake_current() > kStallCurrent) {
-    intake_voltage = kHoldingVoltage;
-  }
 
   // Check for encoder faults
   if (old_pos_ == input->wrist_encoder() && std::abs(wrist_voltage) > 2) {
@@ -119,8 +114,13 @@ void WristController::Update(ScoreSubsystemInputProto input,
   wrist_observer_.Update(
       (Eigen::Matrix<double, 1, 1>() << wrist_voltage).finished(), wrist_y);
 
-  if (input->intake_current() > kStallCurrent) {
+  current_monitor_.Update(input->intake_current(), input->intake_current());
+
+  if (current_monitor_.is_at_thresh()) {
     intake_voltage = 0;
+    (*status)->set_has_cube(true);
+  } else {
+    (*status)->set_has_cube(false);
   }
 
   (*output)->set_intake_voltage(intake_voltage);
@@ -129,7 +129,6 @@ void WristController::Update(ScoreSubsystemInputProto input,
   (*output)->set_wrist_solenoid_close(wrist_solenoid_close);
   (*status)->set_wrist_calibrated(hall_calibration_.is_calibrated());
   (*status)->set_wrist_angle(wrist_observer_.x()(0, 0));
-  std::cout << (*status)->wrist_angle() << std::endl;
   (*status)->set_has_cube(input->intake_current() > kStallCurrent);
 }  // namespace wrist
 

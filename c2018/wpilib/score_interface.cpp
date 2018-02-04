@@ -27,7 +27,8 @@ constexpr uint32_t kWristEncoderA = 18;
 constexpr uint32_t kWristEncoderB = 19;
 constexpr uint32_t kWristEncoderIndex = 6;
 
-constexpr uint32_t kIntakeSolenoid = 2;
+constexpr uint32_t kIntakeSolenoidOpen = 1;
+constexpr uint32_t kIntakeSolenoidClose = 2;
 
 constexpr uint32_t kWristPotentiometer = 0;
 
@@ -54,7 +55,8 @@ ScoreSubsystemInterface::ScoreSubsystemInterface(
       elevator_hall_{kElevatorHall},
       wrist_hall_{kWristHall},
       pcm_{can_wrapper->pcm()} {
-  pcm_->CreateSolenoid(kIntakeSolenoid);
+  pcm_->CreateSolenoid(kIntakeSolenoidOpen);
+  pcm_->CreateSolenoid(kIntakeSolenoidClose);
 }
 
 void ScoreSubsystemInterface::ReadSensors() {
@@ -70,7 +72,8 @@ void ScoreSubsystemInterface::ReadSensors() {
 
   muan::wpilib::PdpMessage pdp_data;
   if (pdp_reader_.ReadLastMessage(&pdp_data)) {
-    sensors->set_intake_current(std::max(pdp_data->current5(), pdp_data->current6()));
+    sensors->set_intake_current(
+        std::max(pdp_data->current5(), pdp_data->current6()));
   }
 
   input_queue_->WriteMessage(sensors);
@@ -79,23 +82,27 @@ void ScoreSubsystemInterface::ReadSensors() {
 void ScoreSubsystemInterface::WriteActuators() {
   ScoreSubsystemOutputProto outputs;
   if (output_reader_.ReadLastMessage(&outputs)) {
-    elevator_.Set(muan::utils::Cap(0, -kMaxVoltage,
-                                   kMaxVoltage) / 12.0);
-    wrist_.Set(0);
-        //-muan::utils::Cap(outputs->wrist_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
-    high_roller_.Set(
-        muan::utils::Cap(-outputs->intake_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
-    low_roller_.Set(
-        muan::utils::Cap(-outputs->intake_voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
-    std::cout << "OK" << std::endl;
-    pcm_->WriteSolenoid(kIntakeSolenoid, false);
+    elevator_.Set(-muan::utils::Cap(outputs->elevator_voltage(), -kMaxVoltage,
+                                   kMaxVoltage) /
+                  12.0);
+    wrist_.Set(
+        -muan::utils::Cap(outputs->wrist_voltage(), -kMaxVoltage, kMaxVoltage) /
+        12.0);
+    high_roller_.Set(muan::utils::Cap(-outputs->intake_voltage(), -kMaxVoltage,
+                                      kMaxVoltage) /
+                     12.0);
+    low_roller_.Set(muan::utils::Cap(-outputs->intake_voltage(), -kMaxVoltage,
+                                     kMaxVoltage) /
+                    12.0);
+    pcm_->WriteSolenoid(kIntakeSolenoidOpen, outputs->wrist_solenoid_open());
+    pcm_->WriteSolenoid(kIntakeSolenoidClose, !outputs->wrist_solenoid_close());
   } else {
     elevator_.Set(0.0);
     wrist_.Set(0);
     high_roller_.Set(0);
     low_roller_.Set(0);
-    std::cout << "yum" << std::endl;
-    pcm_->WriteSolenoid(kIntakeSolenoid, false);
+    pcm_->WriteSolenoid(kIntakeSolenoidOpen, false);
+    pcm_->WriteSolenoid(kIntakeSolenoidClose, false);
   }
 }
 

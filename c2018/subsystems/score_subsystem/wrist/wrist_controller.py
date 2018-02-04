@@ -174,7 +174,7 @@ plant = StateSpacePlant(gains, x0)
 controller = StateSpaceController(gains, -u_max, u_max)
 observer = StateSpaceObserver(gains, x0)
 
-t_profile = TrapezoidalMotionProfile (3.14159, 3, 3)
+t_profile = TrapezoidalMotionProfile (3.14159 * 2, 3, 3)
 
 def goal(t):
     # Make goal a trapezoidal profile
