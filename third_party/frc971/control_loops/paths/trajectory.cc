@@ -1,4 +1,6 @@
 #include "third_party/frc971/control_loops/paths/trajectory.h"
+#include "third_party/aos/common/die.h"
+#include "muan/logging/logger.h"
 
 namespace frc971 {
 
@@ -31,6 +33,13 @@ void Trajectory::SetPath(const Path &path, const State &state) {
     forward_vector << ::std::cos(poses_[i].heading()), ::std::sin(poses_[i].heading());
     double forward = delta.translational().dot(forward_vector);
 
+    if (forward > 0 && state_(1) + state_(3) < -0.01 ||
+        forward < 0 && state_(1) + state_(3) > 0.01) {
+      ::aos::Die("Conflicting path directionality: path %s and robot %s",
+                 forward > 0 ? "forward" : "backward",
+                 state_(1) + state_(3) > 0 ? "forward" : "backward");
+    }
+
     double angular = delta.heading() * radius_;
     states_[i + 1](0) = states_[i](0) + forward - angular;
     states_[i + 1](2) = states_[i](2) + forward + angular;
@@ -39,7 +48,7 @@ void Trajectory::SetPath(const Path &path, const State &state) {
   for (size_t i = 0; i < kNumSamples - 1; i++) {
     const State &state_begin = states_[i];
     State &state_end = states_[i + 1];
-    ConstrainAcceleration(state_begin, &state_end, &segment_times_[i]);
+    ConstrainAcceleration(state_begin, &state_end, &segment_times_[i], false, false);
   }
 
   // Backwards pass
@@ -47,75 +56,62 @@ void Trajectory::SetPath(const Path &path, const State &state) {
   for (int i = kNumSamples - 2; i >= 0; i--) {
     State &state_begin = states_[i];
     const State &state_end = states_[i + 1];
+    ConstrainAcceleration(state_end, &state_begin, &segment_times_[i], true, true);
+  }
 
-    double left_distance = state_end(0) - state_begin(0);
-    if (left_distance < 0) {
-      double velocity_bound = StepVelocityByAcceleration(left_distance, state_end(1), -maximum_acceleration_);
-      if (state_begin(1) < velocity_bound) {
-        state_begin(1) = velocity_bound;
-      }
-    } else {
-      double velocity_bound = StepVelocityByAcceleration(left_distance, state_end(1), maximum_acceleration_);
-      if (state_begin(1) > velocity_bound) {
-        state_begin(1) = velocity_bound;
-      }
-    }
-
-    double right_distance = state_end(2) - state_begin(2);
-    if (right_distance < 0) {
-      double velocity_bound =
-          StepVelocityByAcceleration(right_distance, state_end(3), -maximum_acceleration_);
-      if (state_begin(3) < velocity_bound) {
-        state_begin(3) = velocity_bound;
-      }
-    } else {
-      double velocity_bound = StepVelocityByAcceleration(right_distance, state_end(3), maximum_acceleration_);
-      if (state_begin(3) > velocity_bound) {
-        state_begin(3) = velocity_bound;
-      }
-    }
-
-    double average_left_velocity = 0.5 * (state_begin(1) + state_end(1));
-    double average_right_velocity = 0.5 * (state_begin(3) + state_end(3));
-
-    if (::std::abs(left_distance * average_right_velocity) <
-        ::std::abs(right_distance * average_left_velocity)) {
-      average_left_velocity = left_distance * ::std::abs(average_right_velocity / right_distance);
-      state_begin(1) = 2.0 * average_left_velocity - state_end(1);
-    } else if (::std::abs(left_distance * average_right_velocity) >
-               ::std::abs(right_distance * average_right_velocity)) {
-      average_right_velocity = right_distance * ::std::abs(average_left_velocity / left_distance);
-      state_begin(3) = 2.0 * average_right_velocity - state_end(3);
-    }
-
-    segment_times_[i] = (left_distance + right_distance) / (average_right_velocity + average_left_velocity);
+  if (states_[0](1) > state_(1) + 0.01 ||
+      states_[0](1) < state_(1) - 0.01 ||
+      states_[0](3) > state_(3) + 0.01 ||
+      states_[0](3) < state_(3) - 0.01) {
+    LOG_P("WARNING: Unable to follow path given initial speed: starting (%f, %f) and max (%f, %f)",
+          state_(1), state_(3), states_[0](1), states_[0](3));
   }
 }
 
 void Trajectory::ConstrainOneSide(double distance, double velocity_initial, double velocity_other_initial,
-                                  double velocity_final_from_other_pass, double *velocity_final) const {
+                                  double velocity_final_from_other_pass, double *velocity_final,
+                                  bool reverse_pass, bool preserve_other_pass) const {
   constexpr double kMaxVoltage = 10.0;
 
   double unforced_acceleration = A_(1, 1) * velocity_initial + A_(1, 3) * velocity_other_initial;
   double input_acceleration = (B_(1, 0) + B_(1, 1)) * kMaxVoltage;
 
-  double min_acceleration = ::std::max(-maximum_acceleration_, unforced_acceleration - input_acceleration);
+  double min_acceleration = -maximum_acceleration_;
+  double max_acceleration = maximum_acceleration_;
 
-  double max_acceleration = ::std::min(maximum_acceleration_, unforced_acceleration + input_acceleration);
+  if (!reverse_pass) {
+    min_acceleration = ::std::max(min_acceleration, unforced_acceleration - input_acceleration);
+    max_acceleration = ::std::min(max_acceleration, unforced_acceleration + input_acceleration);
+  }
+
+  double min_velocity_final = StepVelocityByAcceleration(distance, velocity_initial, min_acceleration);
+
+  double max_velocity_final = StepVelocityByAcceleration(distance, velocity_initial, max_acceleration);
+
+  if (preserve_other_pass) {
+    min_velocity_final = ::std::max(min_velocity_final, velocity_final_from_other_pass);
+    max_velocity_final = ::std::min(max_velocity_final, velocity_final_from_other_pass);
+  }
 
   if (distance < 0) {
-    *velocity_final = StepVelocityByAcceleration(distance, velocity_initial, min_acceleration);
+    *velocity_final = min_velocity_final;
   } else {
-    *velocity_final = StepVelocityByAcceleration(distance, velocity_initial, max_acceleration);
+    *velocity_final = max_velocity_final;
   }
 }
 
-void Trajectory::ConstrainAcceleration(const State &state_begin, State *state_end,
-                                       double *segment_time) const {
+void Trajectory::ConstrainAcceleration(const State &state_begin, State *state_end, double *segment_time,
+                                       bool reverse_pass, bool preserve_other_pass) const {
   double distance_left = (*state_end)(0) - state_begin(0);
   double distance_right = (*state_end)(2) - state_begin(2);
-  ConstrainOneSide(distance_left, state_begin(1), state_begin(3), (*state_end)(1), &(*state_end)(1));
-  ConstrainOneSide(distance_right, state_begin(3), state_begin(1), (*state_end)(3), &(*state_end)(3));
+  if (reverse_pass) {
+    distance_left *= -1;
+    distance_right *= -1;
+  }
+  ConstrainOneSide(distance_left, state_begin(1), state_begin(3),
+                   (*state_end)(1), &(*state_end)(1), reverse_pass, preserve_other_pass);
+  ConstrainOneSide(distance_right, state_begin(3), state_begin(1),
+                   (*state_end)(3), &(*state_end)(3), reverse_pass, preserve_other_pass);
 
   double average_left_velocity = 0.5 * (state_begin(1) + (*state_end)(1));
   double average_right_velocity = 0.5 * (state_begin(3) + (*state_end)(3));
@@ -130,7 +126,7 @@ void Trajectory::ConstrainAcceleration(const State &state_begin, State *state_en
   }
 
   *segment_time = (distance_left + distance_right) /
-                  (state_begin(1) + state_begin(3) + (*state_end)(1) + (*state_end)(3));
+                  (average_left_velocity + average_right_velocity);
 }
 
 Trajectory::Sample Trajectory::Update() {

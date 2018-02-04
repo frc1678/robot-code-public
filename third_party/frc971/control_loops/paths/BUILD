@@ -24,6 +24,8 @@ cc_library(
   deps = [
     ':path',
     '//third_party/eigen',
+    '//third_party/aos/common:die',
+    '//muan/logging:logger',
   ],
 )
 

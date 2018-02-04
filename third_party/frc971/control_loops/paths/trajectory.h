@@ -50,9 +50,13 @@ class Trajectory {
   ::std::array<double, kNumSamples - 1> segment_times_;
 
  private:
-  void ConstrainAcceleration(const State &state_begin, State *state_end, double *segment_time) const;
+  void ConstrainAcceleration(const State &state_begin, State *state_end, double *segment_time,
+                             bool reverse_pass, bool preserve_other_pass) const;
+
   void ConstrainOneSide(double distance, double velocity_initial, double velocity_other_initial,
-                        double velocity_final_from_other_pass, double *velocity_final) const;
+                        double velocity_final_from_other_pass, double *velocity_final,
+                        bool reverse_pass, bool preserve_other_pass) const;
+
   double maximum_acceleration_;
 
   Eigen::Matrix<double, 4, 4> A_;

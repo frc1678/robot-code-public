@@ -83,7 +83,7 @@ void AutonomousBase::StartDriveRelative(double forward, double theta,
     }
   }
 
-  StartDriveAbsolute(left_goal, right_goal);
+  StartDriveAbsolute(left_goal, right_goal, follow_through);
 }
 
 void AutonomousBase::StartDrivePath(double x, double y, double heading,

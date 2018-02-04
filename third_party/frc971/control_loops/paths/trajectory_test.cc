@@ -34,11 +34,13 @@ class TrajectoryTest : public ::testing::Test {
     trajectory_.Reset();
   }
 
-  void Run(Pose initial, Pose final, bool backwards = false, double initial_velocity = 0) {
+  void Run(Pose initial, Pose final, bool backwards = false,
+           double initial_velocity = 0, double initial_velocity_difference = 0) {
     initial_ = initial;
     path_ = HermitePath(initial, final, backwards);
 
-    State initial_state = (State() << 0, initial_velocity, 0, initial_velocity).finished();
+    State initial_state = (State() << 0, initial_velocity + initial_velocity_difference,
+            0, initial_velocity - initial_velocity_difference).finished();
 
     trajectory_.SetPath(path_, initial_state);
 
@@ -72,8 +74,9 @@ class TrajectoryTest : public ::testing::Test {
     }
   }
 
-  void Log(const char* filename, double initial_velocity = 0) {
-    trajectory_.SetPath(path_, (Eigen::Matrix<double, 4, 1>() << 0, initial_velocity, 0, initial_velocity).finished());
+  void Log(const char* filename, double initial_velocity = 0, double initial_velocity_difference = 0) {
+    trajectory_.SetPath(path_, (Eigen::Matrix<double, 4, 1>() << 0, initial_velocity + initial_velocity_difference,
+            0, initial_velocity - initial_velocity_difference).finished());
 
     ::std::ofstream file(filename);
     for (size_t i = 0; i < 2000; i++) {
@@ -113,6 +116,25 @@ TEST_F(TrajectoryTest, StartAtFollowThrough) {
   Pose b = (Eigen::Vector3d() << 3.0, 1.0, 0.0).finished();
   Run(a, b, false, 1.0);
 }
+
+TEST_F(TrajectoryTest, InitialVelocityBackwards) {
+  Pose a = (Eigen::Vector3d() << 3.0, 1.0, 0.0).finished();
+  Pose b = (Eigen::Vector3d() << 0.0, 0.0, 0.0).finished();
+  Run(a, b, true, -1.0);
+}
+
+TEST_F(TrajectoryTest, ConflictingDirectionality) {
+  Pose a = (Eigen::Vector3d() << 0.0, 0.0, 0.0).finished();
+  Pose b = (Eigen::Vector3d() << 1.0, 0.0, 0.0).finished();
+  EXPECT_DEATH(Run(a, b, false, -1.0), "Conflicting path directionality");
+}
+
+TEST_F(TrajectoryTest, SlightAngularVelocity) {
+  Pose a = (Eigen::Vector3d() << 0.0, 0.0, 0.0).finished();
+  Pose b = (Eigen::Vector3d() << 2.0, 2.0, 0.0).finished();
+  Run(a, b, false, 1.0, 0.005);
+}
+
 
 TEST_F(TrajectoryTest, StepByAcceleration) {
   auto test_step_acc = [](double d, double v0, double a) {

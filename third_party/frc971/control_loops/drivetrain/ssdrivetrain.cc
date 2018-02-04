@@ -208,7 +208,12 @@ void DrivetrainMotorsSS::SetGoal(
     paths::Pose final_pose((Eigen::Vector3d() << path_goal.x_goal(), path_goal.y_goal(), path_goal.theta_goal()).finished());
     if (last_goal_pose_.Get() != final_pose.Get()) {
       bool backwards;
-      if (path_goal.has_backwards()) {
+      auto state = kf_->X_hat().block<4, 1>(0, 0);
+      if (state(1) + state(3) > 0.01) {
+        backwards = false;
+      } else if (state(1) + state(3) < -0.01) {
+        backwards = true;
+      } else if (path_goal.has_backwards()) {
         backwards = path_goal.backwards();
       } else {
         auto delta = final_pose - initial_pose;
@@ -217,7 +222,7 @@ void DrivetrainMotorsSS::SetGoal(
       }
       paths::HermitePath path(initial_pose, final_pose, backwards);
 
-      trajectory_.SetPath(path, kf_->X_hat().block<4, 1>(0, 0));
+      trajectory_.SetPath(path, state);
 
       last_goal_pose_ = final_pose;
     }
