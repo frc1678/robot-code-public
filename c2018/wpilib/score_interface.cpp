@@ -59,7 +59,7 @@ void ScoreSubsystemInterface::ReadSensors() {
                                 (2 * M_PI) / 512 / kElevatorSensorRatio);
   sensors->set_wrist_encoder(wrist_encoder_.Get() * (2 * M_PI) / 512 /
                              kWristSensorRatio);
-  // These numbers come from the status to outpur ratios for the encoders.
+  // These numbers come from the status to output ratios for the encoders.
   sensors->set_elevator_hall(elevator_hall_.Get());
   sensors->set_wrist_hall(wrist_hall_.Get());
   sensors->set_has_cube(has_cube_.Get());
