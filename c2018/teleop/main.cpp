@@ -4,12 +4,10 @@
 #include "muan/queues/queue_manager.h"
 #include "muan/wpilib/queue_types.h"
 #include "third_party/aos/common/util/phased_loop.h"
-#include "third_party/frc971/control_loops/drivetrain/queue_types.h"
 
 namespace c2018 {
 namespace teleop {
 
-using DrivetrainGoalProto = frc971::control_loops::drivetrain::GoalProto;
 using muan::queues::QueueManager;
 using muan::teleop::JoystickStatusProto;
 using muan::wpilib::DriverStationProto;
@@ -24,11 +22,17 @@ TeleopBase::TeleopBase()
   shifting_low_ = throttle_.MakeButton(4);
   shifting_high_ = throttle_.MakeButton(5);
   quickturn_ = wheel_.MakeButton(5);
-  start_intake_ = gamepad_.MakeButton(1);
-  start_outtake_ = gamepad_.MakeButton(3);
-  stop_intake_ = gamepad_.MakeButton(2);
-  wrist_down_ = gamepad_.MakeButton(4);
-  wrist_stow_ = gamepad_.MakeButton(5);
+  intake_ = gamepad_.MakeButton(1);
+  outtake_ = gamepad_.MakeButton(2);
+  prep_low_ = gamepad_.MakeButton(3);
+  prep_mid_ = throttle_.MakeButton(10);
+  prep_mid_back_ = throttle_.MakeButton(11);
+  prep_high_ = gamepad_.MakeButton(4);
+  prep_high_back_ = gamepad_.MakeButton(6);
+  idle_bottom_ = gamepad_.MakeButton(5);
+  intake_h0_ = gamepad_.MakePov(0, muan::teleop::Pov::kSouth);
+  intake_h1_ = gamepad_.MakePov(0, muan::teleop::Pov::kEast);
+  intake_h2_ = gamepad_.MakePov(0, muan::teleop::Pov::kNorth);
 }
 
 void TeleopBase::operator()() {
@@ -55,14 +59,61 @@ void TeleopBase::Update() {
     SendDrivetrainMessage();
   }
 
-  if (wrist_down_->was_clicked()) {
-    score_goal_proto_->set_score_goal(
-        c2018::score_subsystem::ScoreGoal::IDLE_BOTTOM);
+  if (intake_h0_->was_clicked()) {
+    score_goal_proto_->set_score_goal(c2018::score_subsystem::ScoreGoal::HEIGHT_0);
   }
 
-  if (wrist_stow_->was_clicked()) {
+  if (intake_h1_->was_clicked()) {
+    score_goal_proto_->set_score_goal(c2018::score_subsystem::ScoreGoal::HEIGHT_1);
+  }
+
+  if (intake_h2_->was_clicked()) {
+    score_goal_proto_->set_score_goal(c2018::score_subsystem::ScoreGoal::HEIGHT_2);
+  }
+
+  if (prep_mid_->was_clicked()) {
     score_goal_proto_->set_score_goal(
-        c2018::score_subsystem::ScoreGoal::IDLE_STOW);
+        c2018::score_subsystem::ScoreGoal::PREP_SCORE_MID);
+    std::cout << "button detected" << std::endl;
+  }
+
+  if (prep_mid_back_->was_clicked()) {
+    score_goal_proto_->set_score_goal(
+        c2018::score_subsystem::ScoreGoal::PREP_SCORE_MID_BACK);
+    std::cout << "button detected" << std::endl;
+  }
+
+  if (prep_high_->was_clicked()) {
+    score_goal_proto_->set_score_goal(
+        c2018::score_subsystem::ScoreGoal::PREP_SCORE_HIGH);
+    std::cout << "button detected" << std::endl;
+  }
+
+  if (prep_high_back_->was_clicked()) {
+    score_goal_proto_->set_score_goal(
+        c2018::score_subsystem::ScoreGoal::PREP_SCORE_HIGH_BACK);
+    std::cout << "button detected" << std::endl;
+  }
+
+  if (idle_bottom_->was_clicked()) {
+    score_goal_proto_->set_score_goal(
+        c2018::score_subsystem::ScoreGoal::IDLE_BOTTOM);
+    std::cout << "button detected" << std::endl;
+  }
+
+  if (prep_low_->was_clicked()) {
+    score_goal_proto_->set_score_goal(c2018::score_subsystem::PREP_SCORE_LOW);
+    std::cout << "button detected" << std::endl;
+  }
+
+  if (intake_->is_pressed()) {
+    score_goal_proto_->set_score_goal(c2018::score_subsystem::INTAKE_LOW);
+  } else if (outtake_->is_pressed()) {
+    score_goal_proto_->set_score_goal(c2018::score_subsystem::OUTTAKE_LOW);
+  }
+  
+  if (intake_->was_released() || outtake_->was_released()) {
+    score_goal_proto_->set_score_goal(c2018::score_subsystem::IDLE_LOW);
   }
 
   score_goal_queue_->WriteMessage(score_goal_proto_);
@@ -122,7 +173,7 @@ void TeleopBase::SendDrivetrainMessage() {
   drivetrain_goal->mutable_teleop_command()->set_throttle(throttle);
   drivetrain_goal->mutable_teleop_command()->set_quick_turn(quickturn);
 
-  QueueManager<DrivetrainGoal>::Fetch()->WriteMessage(drivetrain_goal);
+  drivetrain_goal_queue_->WriteMessage(drivetrain_goal);
 }
 
 }  // namespace teleop

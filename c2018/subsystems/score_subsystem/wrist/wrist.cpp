@@ -129,6 +129,7 @@ void WristController::Update(ScoreSubsystemInputProto input,
   (*output)->set_wrist_solenoid_close(wrist_solenoid_close);
   (*status)->set_wrist_calibrated(hall_calibration_.is_calibrated());
   (*status)->set_wrist_angle(wrist_observer_.x()(0, 0));
+  (*status)->set_wrist_encoder_fault_detected(encoder_fault_detected_);
   (*status)->set_has_cube(input->intake_current() > kStallCurrent);
 }  // namespace wrist
 

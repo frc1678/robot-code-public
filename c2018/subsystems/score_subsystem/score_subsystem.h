@@ -16,8 +16,8 @@ static constexpr double kElevatorFirstStage = 1;
 static constexpr double kElevatorSecondStage = 2;
 static constexpr double kElevatorFirstCube = 0;
 static constexpr double kElevatorSecondCube = 0.3;
-static constexpr double kElevatorThirdCube = 0.5;
-static constexpr double kElevatorScoreLow = 0.5;
+static constexpr double kElevatorThirdCube = 0.55;
+static constexpr double kElevatorScoreLow = 0.6;
 static constexpr double kElevatorScoreMid = 1.5;
 static constexpr double kElevatorScoreHigh = 2;
 

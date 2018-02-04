@@ -71,10 +71,11 @@ message ScoreSubsystemStatus {
   required double elevator_profiled_goal = 7;
   required double elevator_unprofiled_goal = 8;
   required bool elevator_encoder_fault_detected = 9;
-  required bool elevator_calibrated = 10;
-  required double wrist_angle = 11;
-  required double wrist_velocity = 12;
-  required bool wrist_calibrated = 13;
-  required bool claw_pinch = 14;
-  required bool has_cube = 15;
+  required bool wrist_encoder_fault_detected = 10;
+  required bool elevator_calibrated = 11;
+  required double wrist_angle = 12;
+  required double wrist_velocity = 13;
+  required bool wrist_calibrated = 14;
+  required bool claw_pinch = 15;
+  required bool has_cube = 16;
 }

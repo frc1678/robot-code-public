@@ -82,8 +82,8 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
   } else if (encoder_fault_detected_) {
     elevator_u = 2.0;
   }
-/*
-  if (old_pos_ == input->elevator_encoder() && std::abs(elevator_u) >= 2) {
+
+  if (old_pos_ == input->elevator_encoder() && std::abs(elevator_u) >= 6) {
     num_encoder_fault_ticks_++;
     if (num_encoder_fault_ticks_ > kEncoderFaultTicksAllowed) {
       encoder_fault_detected_ = true;
@@ -91,7 +91,7 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
   } else {
     num_encoder_fault_ticks_ = 0;
   }
-*/
+
   (*status)->set_elevator_uncapped_voltage(elevator_u);
 
   elevator_u = CapU(elevator_u);
