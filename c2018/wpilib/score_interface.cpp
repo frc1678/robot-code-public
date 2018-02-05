@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "muan/utils/math_utils.h"
+#include "muan/logging/logger.h"
 
 namespace c2018 {
 namespace wpilib {
@@ -68,6 +69,8 @@ void ScoreSubsystemInterface::ReadSensors() {
   if (pdp_reader_.ReadLastMessage(&pdp_data)) {
     sensors->set_intake_current(
         std::max(pdp_data->current5(), pdp_data->current6()));
+  } else {
+    LOG_P("PDP data not available");
   }
 }
 
@@ -86,6 +89,7 @@ void ScoreSubsystemInterface::WriteActuators() {
     wrist_.Set(0);
     roller_.Set(0);
     pcm_->WriteSolenoid(kIntakeSolenoid, false);
+    LOG_P("No score output message available!");
   }
 }
 

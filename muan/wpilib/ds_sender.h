@@ -9,7 +9,8 @@ namespace wpilib {
 
 class DriverStationSender {
  public:
-  explicit DriverStationSender(DriverStationQueue* ds_queue, GameSpecificStringQueue* gss_queue = nullptr);
+  explicit DriverStationSender(DriverStationQueue* ds_queue,
+                               GameSpecificStringQueue* gss_queue = nullptr);
   void Send();
 
  private:

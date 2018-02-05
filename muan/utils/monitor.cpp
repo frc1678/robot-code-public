@@ -1,4 +1,5 @@
 #include "muan/utils/monitor.h"
+#include "muan/logging/logger.h"
 
 namespace muan {
 

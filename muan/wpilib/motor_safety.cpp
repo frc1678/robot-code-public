@@ -1,10 +1,12 @@
 #include "muan/wpilib/motor_safety.h"
+#include "muan/logger/logging.h"
 
 namespace muan {
 
 namespace wpilib {
 
-MotorSafety::MotorSafety(double current_threshold, double stall_time, double reset_time, double dt)
+MotorSafety::MotorSafety(double current_threshold, double stall_time,
+                         double reset_time, double dt)
     : current_history_(20) {
   current_threshold_ = current_threshold;
   stall_time_ = stall_time;
@@ -37,6 +39,7 @@ double MotorSafety::Update(double voltage, double current) {
   // Determine if the motor has been stalling
   if (time_above_ >= stall_time_) {
     is_stalled_ = true;
+    LOG_P("motor stalled")
   } else if (time_below_ > reset_time_) {
     is_stalled_ = false;
   }

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include "muan/utils/math_utils.h"
+#include "muan/logging/logger.h"
 
 namespace c2018 {
 namespace wpilib {
@@ -47,6 +48,7 @@ void ClimberInterface::WriteActuators() {
   } else {
     winch_.Set(0);
     pcm_->WriteSolenoid(kBatterSolenoid, false);
+    LOG_P("No output queue");
   }
 }
 

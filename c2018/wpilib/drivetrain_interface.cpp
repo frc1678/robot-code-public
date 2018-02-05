@@ -1,4 +1,5 @@
 #include "c2018/wpilib/drivetrain_interface.h"
+#include "muan/logging/logger.h"
 
 namespace c2018 {
 namespace wpilib {
@@ -52,6 +53,7 @@ void DrivetrainInterface::WriteActuators() {
   } else {
     motor_left_.Set(0);
     motor_right_.Set(0);
+    LOG_P("No outptut queue given");
   }
 }
 

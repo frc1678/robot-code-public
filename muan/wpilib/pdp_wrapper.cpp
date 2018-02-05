@@ -1,4 +1,5 @@
 #include "muan/wpilib/pdp_wrapper.h"
+#include "muan/logging/logger.h"
 #include "third_party/aos/common/die.h"
 
 namespace muan {
@@ -10,7 +11,9 @@ PdpWrapper::PdpWrapper(int module) : module_{module} {
   HAL_InitializePDP(module_, &status);
 
   if (status != 0) {
-    std::cerr << "Error in PDP wrapper init: " << HAL_GetErrorMessage(status) << std::endl;
+    std::cerr << "Error in PDP wrapper init: " << HAL_GetErrorMessage(status)
+              << std::endl;
+    LOG_P("Error in PDP wrapper init", HAL_GetErrorMessage(status));
     num_failures_++;
   }
 }
@@ -41,7 +44,9 @@ void PdpWrapper::SendValues() {
   message->set_temperature(HAL_GetPDPTemperature(module_, &status));
 
   if (status != 0) {
-    std::cerr << "Error in PDP wrapper: " << HAL_GetErrorMessage(status) << std::endl;
+    std::cerr << "Error in PDP wrapper: " << HAL_GetErrorMessage(status)
+              << std::endl;
+    LOG_P("Error in PDP wrapper", HAL_GetErrorMessage(status));
     num_failures_++;
   }
 
@@ -51,6 +56,7 @@ void PdpWrapper::SendValues() {
     queue_->WriteMessage(message);
   } else {
     aos::Die("PDP queue not set!");
+    LOG_P("PDP queue not set, null");
   }
 }
 

@@ -1,8 +1,8 @@
-#include <unistd.h>
-#include <sys/wait.h>
 #include <sys/stat.h>
-#include <iostream>
+#include <sys/wait.h>
+#include <unistd.h>
 #include <fstream>
+#include <iostream>
 #include <string>
 
 pid_t code_pid = 0;
@@ -18,7 +18,6 @@ void handle_signal(int signum) {
   exit(signum);
 }
 
-
 int main(int /*argc*/, char **argv) {
   signal(SIGINT, handle_signal);
   signal(SIGTERM, handle_signal);
@@ -29,7 +28,8 @@ int main(int /*argc*/, char **argv) {
     std::ifstream pidfile{pidfile_name};
     int autostart_pid;
     pidfile >> autostart_pid;
-    std::cout << "Autostart already running (PID " << autostart_pid << "), killing." << std::endl;
+    std::cout << "Autostart already running (PID " << autostart_pid
+              << "), killing." << std::endl;
     kill(autostart_pid, SIGTERM);
   }
 
@@ -45,7 +45,7 @@ int main(int /*argc*/, char **argv) {
         perror("fork");
         break;
       case 0:
-        execv(argv[2], (argv+2));
+        execv(argv[2], (argv + 2));
         perror("exec");
         break;
       default:

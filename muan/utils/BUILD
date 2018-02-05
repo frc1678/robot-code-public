@@ -56,7 +56,10 @@ cc_library(
     name = "monitor",
     srcs = ["monitor.cpp"],
     hdrs = ["monitor.h"],
-    deps = [":history"]
+    deps = [
+        ":history",
+        "//muan/logging:logger",    
+      ],
 )
 
 cc_library(

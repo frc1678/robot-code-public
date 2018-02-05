@@ -9,7 +9,10 @@ cc_library(
     name = "pot_calibration",
     srcs = ["pot_calibration.cpp"],
     hdrs = ["pot_calibration.h"],
-    visibility = ["//visibility:public"],
+    visibility = ["//visibility:public"] ,
+    deps = [
+        "//muan/logging:logger",
+        ]
 )
 
 cc_test(

@@ -1,6 +1,7 @@
 #include "c2018/teleop/main.h"
 #include <string>
 #include "WPILib.h"
+#include "muan/logging/logger.h"
 #include "muan/queues/queue_manager.h"
 #include "muan/wpilib/queue_types.h"
 #include "third_party/aos/common/util/phased_loop.h"

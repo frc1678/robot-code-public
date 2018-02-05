@@ -4,6 +4,7 @@ cc_library(
     hdrs = ["main.h"],
     visibility = ["//visibility:public"],
     deps = [
+        "//muan/logging:logger",
         "//muan/teleop:joystick",
         "//muan/wpilib:ds_sender",
         "//muan/queues:queue_manager",

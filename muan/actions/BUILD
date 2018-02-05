@@ -3,7 +3,10 @@ cc_library(
     srcs = ["drivetrain_action.cpp"],
     hdrs = ["drivetrain_action.h"],
     visibility = ["//visibility:public"],
-    deps = ["//third_party/frc971/control_loops/drivetrain:drivetrain_queues"],
+    deps = [
+        "//third_party/frc971/control_loops/drivetrain:drivetrain_queues",
+        "//muan/logging:logger",
+    ]       
 )
 
 cc_test(

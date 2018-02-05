@@ -25,6 +25,7 @@ void GyroReader::operator()() {
   muan::utils::SetCurrentThreadName("Gyro");
 
   if (gyro_queue_ == nullptr) {
+    LOG_P("No queue provided to gyro reader");
     aos::Die(
         "Please supply a queue to the gyro reader - otherwise there's no "
         "reason to run it!");
@@ -123,6 +124,8 @@ void GyroReader::RunCalibration() {
       auto ds_message = ds_queue_->ReadLastMessage();
       if (ds_message) {
         robot_disabled = ds_message.value()->mode() == RobotMode::DISABLED;
+      } else {
+          LOG_P("The driverstation queue is null");
       }
     }
   }
