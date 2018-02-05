@@ -6,7 +6,8 @@ namespace muan {
 
 namespace wpilib {
 
-DriverStationSender::DriverStationSender(DriverStationQueue* ds_queue, GameSpecificStringQueue* gss_queue)
+DriverStationSender::DriverStationSender(DriverStationQueue* ds_queue,
+                                         GameSpecificStringQueue* gss_queue)
     : ds_queue_{ds_queue}, gss_queue_{gss_queue} {}
 
 void DriverStationSender::Send() {
@@ -27,9 +28,10 @@ void DriverStationSender::Send() {
   status->set_has_ds_connection(DriverStation::GetInstance().IsDSAttached());
 
   status->set_match_time(DriverStation::GetInstance().GetMatchTime());
-  status->set_alliance(
-      static_cast<DriverStationStatus::Alliance>(DriverStation::GetInstance().GetAlliance()));
-  status->set_driver_station_position(DriverStation::GetInstance().GetLocation());
+  status->set_alliance(static_cast<DriverStationStatus::Alliance>(
+      DriverStation::GetInstance().GetAlliance()));
+  status->set_driver_station_position(
+      DriverStation::GetInstance().GetLocation());
   status->set_has_fms_connection(DriverStation::GetInstance().IsFMSAttached());
   status->set_is_sys_active(RobotController::IsSysActive());
 
@@ -51,7 +53,8 @@ void DriverStationSender::Send() {
 
   ds_queue_->WriteMessage(status);
 
-  std::string game_string = DriverStation::GetInstance().GetGameSpecificMessage();
+  std::string game_string =
+      DriverStation::GetInstance().GetGameSpecificMessage();
   if (!game_string.empty() && gss_queue_) {
     GameSpecificStringProto gss;
     gss->set_code(game_string);

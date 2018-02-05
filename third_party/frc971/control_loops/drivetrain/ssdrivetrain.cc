@@ -152,7 +152,6 @@ void DrivetrainMotorsSS::SetGoal(
         distance_goal.left_velocity_goal(), distance_goal.right_goal(),
         distance_goal.right_velocity_goal(), 0.0, 0.0, 0.0;
 
-    use_path_ = false;
     use_profile_ =
         !kf_->controller().Kff().isZero(0) &&
         (goal->has_linear_constraints() && goal->has_angular_constraints() &&
@@ -227,8 +226,6 @@ void DrivetrainMotorsSS::SetGoal(
 
       last_goal_pose_ = final_pose;
     }
-  } else {
-    use_profile_ = use_path_ = false;
   }
 }
 

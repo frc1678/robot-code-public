@@ -25,7 +25,8 @@ class PcmWrapper {
   // values that will be written in the CAN thread. These functions will die if
   // the corresponding channel is not initialized.
   void WriteSolenoid(uint8_t channel, bool on);
-  void WriteDoubleSolenoid(uint8_t channel_forward, uint8_t channel_reverse, DoubleSolenoid::Value value);
+  void WriteDoubleSolenoid(uint8_t channel_forward, uint8_t channel_reverse,
+                           DoubleSolenoid::Value value);
 
  private:
   friend class CanWrapper;

@@ -55,7 +55,9 @@ cc_library(
         "//third_party/optional:optional",
         "//third_party/aos/common:die",
         "//third_party/aos/common/util:phased_loop",
+        "//muan/logging:textlogger",
         "//muan/queues:queues",
+        "//muan/logging:logger",
     ],
     linkopts = [
         "-lopencv_core",

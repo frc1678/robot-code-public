@@ -1,12 +1,12 @@
 #include "muan/vision/video_stream.h"
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
 #include <sys/socket.h>
+#include <unistd.h>
+#include "muan/logging/logger.h"
 #include "third_party/aos/common/die.h"
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/optional/optional.hpp"
-
 namespace muan {
 namespace webdash {
 
@@ -15,7 +15,8 @@ namespace webdash {
 //     Conent-Type: multipart/x-mixed-replace; boundary=boundary
 //
 //     --boundary
-//     Content-Length: [JPEG size] (not actually necessary but there may be one frame lag otherwise)
+//     Content-Length: [JPEG size] (not actually necessary but there may be one
+//     frame lag otherwise)
 //
 //     [JPEG binary data]--boundary
 //     Content-Length: [JPEG size]
@@ -31,13 +32,14 @@ WebDashStreamer::WebDashStreamer(WebDashRunner* runner) {
   info_.address.sin_port = htons(5802);
   info_.addrlen = sizeof(info_.address);
   // 1MiB initial buffer size
-  buffer_ = std::vector<char>(1024*1024);
+  buffer_ = std::vector<char>(1024 * 1024);
   runner_ = runner;
 }
 
-void WebDashStreamer::AddQueue(std::string name, VideoStreamQueue *queue) {
+void WebDashStreamer::AddQueue(std::string name, VideoStreamQueue* queue) {
   std::string key = "/" + name + ".mjpeg";
   if (streams_.find(key) != streams_.end()) {
+    LOG_P("Two video streams with same name");
     aos::Die("Two video streams with same name %s", name.c_str());
   }
   streams_.emplace(key, queue);
@@ -74,8 +76,10 @@ void WebDashStreamer::Update() {
     // Input on an open connection is a HTTP request or a disconnection
     if (connections_[i].revents & POLLIN && connections_[i].fd != 0) {
       bool keep_alive = HandleRequest(i);
+      LOG_P("HTTP request");
       if (!keep_alive) {
         CloseConnection(i);
+        LOG_P("Disconnection");
       }
     }
   }
@@ -85,8 +89,9 @@ void WebDashStreamer::Update() {
     stream_sent[stream.first] = false;
   }
   for (size_t i = 1; i < connections_.size(); i++) {
-    // Is this connection is requesting a stream that has not already been sent?
-    // This prevents streams that aren't requested from being serialized unnecessarily
+    // Is this connection requesting a stream that has not already been sent?
+    // This prevents streams that aren't requested from being serialized
+    // unnecessarily
     if (stream_requests_[i] != "" && !stream_sent[stream_requests_[i]]) {
       std::experimental::optional<cv::Mat> frame;
       if ((frame = streams_[stream_requests_[i]]->ReadLastMessage())) {
@@ -102,19 +107,25 @@ void WebDashStreamer::InitNetworking() {
   stream_requests_.push_back("");
   // Get a TCP socket
   if ((connections_[0].fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+    LOG_P("Socket failed");
     aos::Die("socket failed");
   }
   // Tell the socket to reuse resources from closed connections
   int opt = 1;
-  if (setsockopt(connections_[0].fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
+  if (setsockopt(connections_[0].fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
+                 &opt, sizeof(opt))) {
+    LOG_P("Setsockopt Connection failed");
     aos::Die("setsockopt failed");
   }
   // Attach the socket to the specified port
-  if (bind(connections_[0].fd, reinterpret_cast<sockaddr*>(&info_.address), info_.addrlen) < 0) {
+  if (bind(connections_[0].fd, reinterpret_cast<sockaddr*>(&info_.address),
+           info_.addrlen) < 0) {
+    LOG_P("Bind connection failed");
     aos::Die("bind failed");
   }
   // Put the socket in server mode
   if (listen(connections_[0].fd, info_.max_backlog) < 0) {
+    LOG_P("Listen Connection failed");
     aos::Die("listen failed");
   }
   // Poll for incoming connections
@@ -122,16 +133,20 @@ void WebDashStreamer::InitNetworking() {
 }
 
 void WebDashStreamer::AcceptConnection() {
-  int new_connection_fd = accept4(connections_[0].fd, reinterpret_cast<sockaddr*>(&info_.address),
-                                  reinterpret_cast<socklen_t*>(&info_.addrlen), SOCK_NONBLOCK);
+  int new_connection_fd =
+      accept4(connections_[0].fd, reinterpret_cast<sockaddr*>(&info_.address),
+              reinterpret_cast<socklen_t*>(&info_.addrlen), SOCK_NONBLOCK);
   if (new_connection_fd < 0) {
+    LOG_P("New connection failed");
     aos::Die("accept4 failed");
   }
   // Store the new connection
   for (size_t i = 1; i < connections_.size(); i++) {
-    // If fd is 0, the connection that was there is unused and the new connection can be stored there
+    // If fd is 0, the connection that was there is unused and the new
+    // connection can be stored there
     if (connections_[i].fd == 0) {
       connections_[i].fd = new_connection_fd;
+      LOG_P("fd = 0, connection unused replacing with new");
       // Begin watching for input on the connection
       connections_[i].events = POLLIN;
       return;
@@ -147,28 +162,39 @@ void WebDashStreamer::AcceptConnection() {
 
 bool WebDashStreamer::HandleRequest(int connection_index) {
   bool keep_alive = false;
-  int lenread = recv(connections_[connection_index].fd, buffer_.data(), buffer_.size(), MSG_DONTWAIT);
+  int lenread = recv(connections_[connection_index].fd, buffer_.data(),
+                     buffer_.size(), MSG_DONTWAIT);
   if (lenread > 0) {
     // Set terminating null
     buffer_[lenread] = 0;
     std::string name = ParseRequest(buffer_.data());
     // Well-formed GET requests will set name
     if (name == "") {
-      snprintf(buffer_.data(), buffer_.size(), "HTTP/1.1 400 Bad Request\r\n\r\n"
-               "400 Bad Request or 501 Not Implemented\r\nRequest:\r\n%s", buffer_.data());
+      snprintf(buffer_.data(), buffer_.size(),
+               "HTTP/1.1 400 Bad Request\r\n\r\n"
+               "400 Bad Request or 501 Not Implemented\r\nRequest:\r\n%s",
+               buffer_.data());
+      LOG_P("Not a valid HTTP GET request");
     } else if (streams_.find(name) == streams_.end()) {
-      snprintf(buffer_.data(), buffer_.size(), "HTTP/1.1 404 Not Found\r\n\r\n"
-               "404 Not Found: %s\r\n\r\n", name.c_str());
+      snprintf(buffer_.data(), buffer_.size(),
+               "HTTP/1.1 404 Not Found\r\n\r\n"
+               "404 Not Found: %s\r\n\r\n",
+               name.c_str());
+      LOG_P("Streams not found");
     } else {
       // MJPEG is a series of mixed-replace JPEGs
-      snprintf(buffer_.data(), buffer_.size(), "HTTP/1.1 200 OK\r\n"
-             "Content-Type: multipart/x-mixed-replace; boundary=boundary\r\n\r\n");
+      snprintf(
+          buffer_.data(), buffer_.size(),
+          "HTTP/1.1 200 OK\r\n"
+          "Content-Type: multipart/x-mixed-replace; boundary=boundary\r\n\r\n");
       stream_requests_[connection_index] = name;
       keep_alive = true;
     }
-    if (send(connections_[connection_index].fd, buffer_.data(), strlen(buffer_.data()),
-             MSG_NOSIGNAL | MSG_DONTWAIT) != static_cast<ssize_t>(strlen(buffer_.data()))) {
+    if (send(connections_[connection_index].fd, buffer_.data(),
+             strlen(buffer_.data()), MSG_NOSIGNAL | MSG_DONTWAIT) !=
+        static_cast<ssize_t>(strlen(buffer_.data()))) {
       keep_alive = false;
+      LOG_P("No signal");
     }
   }
   return keep_alive;
@@ -178,7 +204,8 @@ void WebDashStreamer::SendImage(std::string name, cv::Mat image) {
   // Serialize image
   static std::vector<uchar> jpeg_buffer;
   cv::imencode(".jpeg", image, jpeg_buffer);
-  snprintf(buffer_.data(), buffer_.size(), "--boundary\r\nContent-Length: %d\r\n\r\n",
+  snprintf(buffer_.data(), buffer_.size(),
+           "--boundary\r\nContent-Length: %d\r\n\r\n",
            static_cast<int>(jpeg_buffer.size()));
   int response_length = strlen(buffer_.data());
   // Make sure copying the JPEG data won't write past the end of the buffer
@@ -186,12 +213,14 @@ void WebDashStreamer::SendImage(std::string name, cv::Mat image) {
     // Reserve 20% extra space to accomodate slightly larger images
     buffer_.reserve((response_length + jpeg_buffer.size()) * 1.2);
   }
-  memcpy(buffer_.data() + response_length, jpeg_buffer.data(), jpeg_buffer.size());
+  memcpy(buffer_.data() + response_length, jpeg_buffer.data(),
+         jpeg_buffer.size());
   response_length += jpeg_buffer.size();
   // Send data to all connections requesting this stream
   for (size_t i = 0; i < connections_.size(); i++) {
     if (stream_requests_[i] == name) {
-      send(connections_[i].fd, buffer_.data(), response_length, MSG_NOSIGNAL | MSG_DONTWAIT);
+      send(connections_[i].fd, buffer_.data(), response_length,
+           MSG_NOSIGNAL | MSG_DONTWAIT);
     }
   }
 }
@@ -219,6 +248,7 @@ std::string WebDashStreamer::ParseRequest(std::string request) {
 
 void WebDashStreamer::CloseConnection(int connection_index) {
   if (close(connections_[connection_index].fd)) {
+    LOG_P("Couldn't close connection");
     aos::Die("close failed");
   }
   // Mark the connection as unused so it can be recycled
@@ -227,6 +257,8 @@ void WebDashStreamer::CloseConnection(int connection_index) {
   connections_[connection_index].events = 0;
   // Stop requesting the stream to be serialized
   stream_requests_[connection_index] = "";
+  LOG_P(
+      "Connection unused, stopped receiving input, stopped serializing stream");
 }
 
 }  // namespace webdash

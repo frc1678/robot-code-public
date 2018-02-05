@@ -27,6 +27,7 @@ cc_library(
         "//muan/queues",
         "//third_party/aos/common:die",
         "//third_party/wpilibsuite:wpilib",
+        "//muan/logging:logger",
     ],
     restricted_to = ["//tools:roborio"],
 )

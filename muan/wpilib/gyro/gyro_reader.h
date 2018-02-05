@@ -66,7 +66,7 @@ class GyroReader {
 
   // Based on logs, this gives plenty of room for bad luck, as actual values
   // were less than 0.015, but being pushed will exceed this value.
-  constexpr static double kCalibrationVelocityLimit = 0.10;
+  constexpr static double kCalibrationVelocityLimit = 0.05;
 };
 
 }  // namespace gyro
