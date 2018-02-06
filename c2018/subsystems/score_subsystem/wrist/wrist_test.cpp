@@ -55,7 +55,7 @@ TEST_F(WristTest, Calib) {
     Update();
     EXPECT_TRUE(wrist_output_proto_->wrist_voltage() < 12.01 || wrist_output_proto_->wrist_voltage() > -12.01);
   }
-  
+
   EXPECT_NEAR(wrist_status_proto_->wrist_angle(), M_PI / 4, 0.01);
   EXPECT_TRUE(wrist_status_proto_->wrist_calibrated());
 }
@@ -88,7 +88,6 @@ TEST_F(WristTest, IntakeEnabled) {
   Update();
 
   EXPECT_NEAR(wrist_output_proto_->intake_voltage(), 12.0, 1e-3);
-  EXPECT_TRUE(wrist_status_proto_->wrist_encoder_fault_detected());
   EXPECT_FALSE(wrist_output_proto_->wrist_solenoid_open());
   EXPECT_FALSE(wrist_output_proto_->wrist_solenoid_close());
 }
