@@ -1,11 +1,10 @@
 #include "c2018/wpilib/score_interface.h"
 
 #include <algorithm>
+#include <iostream>
 
 #include "muan/utils/math_utils.h"
 #include "muan/logging/logger.h"
-
-#include <iostream>
 
 namespace c2018 {
 namespace wpilib {

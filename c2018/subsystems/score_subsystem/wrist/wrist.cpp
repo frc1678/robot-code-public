@@ -1,5 +1,5 @@
-#include <cmath>
 #include "c2018/subsystems/score_subsystem/wrist/wrist.h"
+#include <cmath>
 
 namespace c2018 {
 namespace score_subsystem {

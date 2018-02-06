@@ -16,7 +16,8 @@ class WristTest : public ::testing::Test {
     }
     wrist_.Update(wrist_input_proto_, &wrist_output_proto_,
                   &wrist_status_proto_, outputs_enabled_);
-    wrist_input_proto_->set_wrist_hall(plant_.x(0) >= 0.21 && plant_.x(0) <= 0.25);
+    wrist_input_proto_->set_wrist_hall(plant_.x(0) >= 0.21 &&
+                                       plant_.x(0) <= 0.25);
     plant_.Update(
         (Eigen::Matrix<double, 1, 1>() << wrist_output_proto_->wrist_voltage())
             .finished());
@@ -53,7 +54,8 @@ TEST_F(WristTest, Calib) {
   for (int i = 0; i < 1000; i++) {
     wrist_input_proto_->set_wrist_encoder(plant_.x(0) + offset);
     Update();
-    EXPECT_TRUE(wrist_output_proto_->wrist_voltage() < 12.01 || wrist_output_proto_->wrist_voltage() > -12.01);
+    EXPECT_TRUE(wrist_output_proto_->wrist_voltage() < 12.01 ||
+                wrist_output_proto_->wrist_voltage() > -12.01);
   }
 
   EXPECT_NEAR(wrist_status_proto_->wrist_angle(), M_PI / 4, 0.01);

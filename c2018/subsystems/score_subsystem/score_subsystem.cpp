@@ -133,7 +133,6 @@ void ScoreSubsystem::Update() {
     intake_mode_ = IDLE;
   }
 
-
   // If wrist is past 80 degrees: keep elevator height above 0.9
   if (status_->wrist_angle() > (M_PI / 180.0) * 80.0) {
     elevator_height_ = muan::utils::Cap(elevator_height_, 1.9, 2);

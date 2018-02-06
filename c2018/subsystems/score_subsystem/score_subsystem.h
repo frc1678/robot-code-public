@@ -42,7 +42,6 @@ class ScoreSubsystem {
   c2018::score_subsystem::IntakeMode intake_mode_ = IDLE;
   c2018::score_subsystem::ScoreGoal score_goal_ = IDLE_BOTTOM;
   bool has_cube_ = false;
-
 };
 
 }  // namespace score_subsystem
