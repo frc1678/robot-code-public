@@ -31,7 +31,7 @@ WristController::WristController()
 }
 
 void WristController::SetGoal(double wrist_angle, IntakeMode intake_mode) {
-  unprofiled_goal_ = wrist_angle;
+  unprofiled_goal_ = muan::utils::Cap(wrist_angle, 0, M_PI);
   intake_mode_ = intake_mode;
 }
 
@@ -105,7 +105,7 @@ void WristController::Update(ScoreSubsystemInputProto input,
   }
   old_pos_ = input->wrist_encoder();
 
-  if (!encoder_fault_detected_) {
+  if (!encoder_fault_detected_ && outputs_enabled) {
     wrist_voltage = muan::utils::Cap(wrist_voltage, -kMaxVoltage, kMaxVoltage);
   } else {
     wrist_voltage = 0;
@@ -131,6 +131,8 @@ void WristController::Update(ScoreSubsystemInputProto input,
   (*status)->set_wrist_angle(wrist_observer_.x()(0, 0));
   (*status)->set_wrist_encoder_fault_detected(encoder_fault_detected_);
   (*status)->set_has_cube(input->intake_current() > kStallCurrent);
+  (*status)->set_wrist_profiled_goal(profiled_goal_(0, 0));
+  (*status)->set_wrist_unprofiled_goal(unprofiled_goal_);
 }  // namespace wrist
 
 Eigen::Matrix<double, 2, 1> WristController::UpdateProfiledGoal(
