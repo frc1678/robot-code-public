@@ -1,8 +1,8 @@
+#include "c2018/subsystems/score_subsystem/elevator/elevator_controller.h"
 #include <cmath>
 #include <limits>
-#include "c2018/subsystems/score_subsystem/elevator/elevator_controller.h"
+#include "muan/logging/logger.h"
 #include "muan/utils/math_utils.h"
-
 namespace c2018 {
 
 namespace score_subsystem {
@@ -54,6 +54,7 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
                false);  // input->has_cube());
   } else {
     SetWeights(false, false);
+    LOG_P("Hall effect sensor not calibrated");
   }
 
   if (!outputs_enabled) {
@@ -77,16 +78,19 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
 
   if (!outputs_enabled) {
     elevator_u = CapU(0);
+    LOG_P("Elavator outputs not enabled!");
   } else if (!hall_calib_.is_calibrated()) {
     elevator_u = kCalibrationVoltage;
   } else if (encoder_fault_detected_) {
     elevator_u = 2.0;
+    LOG_P("Encoder fault detected, setting voltage to 2.0");
   }
 
   if (old_pos_ == input->elevator_encoder() && std::abs(elevator_u) >= 6) {
     num_encoder_fault_ticks_++;
     if (num_encoder_fault_ticks_ > kEncoderFaultTicksAllowed) {
       encoder_fault_detected_ = true;
+      LOG_P("Encoder fault detected due to offset velocity");
     }
   } else {
     num_encoder_fault_ticks_ = 0;
@@ -100,6 +104,7 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
 
   elevator_observer_.Update(
       (Eigen::Matrix<double, 1, 1>() << elevator_u).finished(), elevator_y);
+
   plant_.Update((Eigen::Matrix<double, 1, 1>() << elevator_u).finished());
 
   elevator_observer_.x(0) =
@@ -127,6 +132,7 @@ Eigen::Matrix<double, 2, 1> ElevatorController::UpdateProfiledGoal(
     profiled_goal_ = trapezoid_profile_.Update(unprofiled_goal_, 0);
   } else {
     profiled_goal_ = elevator_observer_.x().block<2, 1>(0, 0);
+    LOG_P("Elavator controlled outputs not enabled");
   }
   return profiled_goal_;
 }

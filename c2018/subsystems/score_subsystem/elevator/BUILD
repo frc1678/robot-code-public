@@ -13,7 +13,8 @@ cc_library(
       "//muan/wpilib:wpilib_queues",
       "//third_party/aos/common/util:trapezoid_profile",
       "//muan/control/calibration:hall_calibration",
-      "//muan/utils:math_utils"
+      "//muan/logging:logger",
+      "//muan/utils:math_utils",
   ]
 )
 
