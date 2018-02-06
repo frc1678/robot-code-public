@@ -8,53 +8,54 @@ class ScoreSubsystemTest : public ::testing::Test {
   void Update() { score_subsystem_.Update(); }
 
   void ReadMessages() {
-    output_reader_.ReadLastMessage(&score_subsystem_output_proto_);
-    status_reader_.ReadLastMessage(&score_subsystem_status_proto_);
+    score_subsystem_output_queue_.ReadLastMessage(&score_subsystem_output_proto_);
+    score_subsystem_status_queue_.ReadLastMessage(&score_subsystem_status_proto_);
   }
 
   void WriteMessages() {
-    input_queue_->WriteMessage(score_subsystem_input_proto_);
-    goal_reader_->WriteMessage(score_subsystem_goal_proto_);
-    ds_status_reader_->WriteMessage(driver_station_proto_);
+    score_subsystem_input_queue_->WriteMessage(score_subsystem_input_proto_);
+    score_subsystem_goal_queue_->WriteMessage(score_subsystem_goal_proto_);
+    driver_station_queue_->WriteMessage(driver_station_proto_);
   }
 
-  void SetGoals(ElevatorHeight elevator_height, ClawMode claw_mode, IntakeMode intake_mode, double elevator_velocity, double intake_voltage) {
-   score_subsystem_goal_proto_->set_elevator_height(batter_down);
-   score_subsystem_goal_proto_->set_climber_goal(enum_goal);
-   driver_station_proto_->set_is_sys_active(enabled);
+  void SetGoals(c2018::score_subsystem::ScoreGoal score_goal, bool outputs_enabled) {
+   score_subsystem_goal_proto_->set_score_goal(score_goal);
+   driver_station_proto_->set_is_sys_active(outputs_enabled);
   }
 
+  void SetInput(double elevator_encoder, bool elevator_hall, double wrist_encoder, bool wrist_hall) {
+    score_subsystem_input_proto_->set_elevator_encoder(elevator_encoder);
+    score_subsystem_input_proto_->set_wrist_encoder(wrist_encoder);
+    score_subsystem_input_proto_->set_elevator_hall(elevator_hall);
+    score_subsystem_input_proto_->set_wrist_hall(wrist_hall);
+  }
 
+  bool outputs_enabled_;
 
-  void SetInput(double elevator_encoder, elevator_hall, wrist_encoder, wrist_hall) { score_subsystem_input_proto_->set_position(position); }
- private:
-  c2018::score_subsystem::ScoreSubsystem score_subsystem_;
+  muan::wpilib::DriverStationQueue* driver_station_queue_ =
+      muan::queues::QueueManager<muan::wpilib::DriverStationProto>::Fetch();
 
-  muan::wpilib::DriverStationQueue* driver_station_queue_ = 
-      muan::queues::QueueReader<muan::wpilib::DriverStationProto>::Fetch();
+  c2018::score_subsystem::ScoreSubsystemGoalQueue* score_subsystem_goal_queue_ =
+      muan::queues::QueueManager<c2018::score_subsystem::ScoreSubsystemGoalProto>::Fetch();
 
-  muan::queues::MessageQueue<c2018::score_subsystem::ScoreSubsystemInputProto>* input_queue_ =
+  c2018::score_subsystem::ScoreSubsystemInputQueue* score_subsystem_input_queue_ =
       muan::queues::QueueManager<c2018::score_subsystem::ScoreSubsystemInputProto>::Fetch();
 
-  muan::queues::MessageQueue<c2018::score_subsystem::ScoreSubsystemGoalProto>* goal_queue_ =
-      muan::queues::QueueManager<c2018::score_subsystem::ScoreSubsystemInputProto>::Fetch();
+  c2018::score_subsystem::ScoreSubsystemStatusQueue::QueueReader score_subsystem_status_queue_ =
+      muan::queues::QueueManager<c2018::score_subsystem::ScoreSubsystemStatusProto>::Fetch()
+          ->MakeReader();
 
-  muan::queues::MessageQueue<c2018::score_subsystem::ScoreSubsystemStatusProto>::QueueReader status_reader_ =
-      muan::queues::QueueManager<c2018::score_subsystem::ScoreSubsystemInputProto>::Fetch()->MakeReader();
+  c2018::score_subsystem::ScoreSubsystemOutputQueue::QueueReader score_subsystem_output_queue_ =
+      muan::queues::QueueManager<c2018::score_subsystem::ScoreSubsystemOutputProto>::Fetch()
+          ->MakeReader();
 
-  muan::queues::MessageQueue<c2018::score_subsystem::ScoreSubsystemOutputProto>::QueueReader output_reader_ =
-      muan::queues::QueueManager<c2018::score_subsystem::ScoreSubsystemInputProto>::Fetch()->MakeReader();
-
-  //PROTOS
   muan::wpilib::DriverStationProto driver_station_proto_;
-  c2018::score_subsystem::ScoreSubsystemGoalProto score-subsystem_goal_proto_;
+  c2018::score_subsystem::ScoreSubsystemGoalProto score_subsystem_goal_proto_;
   c2018::score_subsystem::ScoreSubsystemInputProto score_subsystem_input_proto_;
   c2018::score_subsystem::ScoreSubsystemStatusProto score_subsystem_status_proto_;
   c2018::score_subsystem::ScoreSubsystemOutputProto score_subsystem_output_proto_;
+
+ private:
+  c2018::score_subsystem::ScoreSubsystem score_subsystem_;
 };
 
-TEST_F(ScoreSubsystemTest, Idle) {
-  SetGoals(c2018::score_subsystem::ElevatorHeight::HEIGHT_0, );
-  SetInput();
-
-}
