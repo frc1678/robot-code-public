@@ -57,7 +57,8 @@ class ScoreSubsystemTest : public ::testing::Test {
                   80 * (M_PI / 180));
     }
 
-    if (score_subsystem_status_proto_->wrist_angle() > (M_PI / 180.0) * 80.0 + 0.01) {
+    if (score_subsystem_status_proto_->wrist_angle() >
+        (M_PI / 180.0) * 80.0 + 0.01) {
       EXPECT_NEAR(score_subsystem_status_proto_->elevator_unprofiled_goal(),
                   muan::utils::Cap(
                       score_subsystem_status_proto_->elevator_unprofiled_goal(),
@@ -439,7 +440,8 @@ TEST_F(ScoreSubsystemTest, IdleStow) {
   }
 
   EXPECT_NEAR(score_subsystem_status_proto_->elevator_actual_height(), 0, 1e-2);
-  EXPECT_NEAR(score_subsystem_status_proto_->wrist_angle(), 80 * (M_PI / 180), 1e-3);
+  EXPECT_NEAR(score_subsystem_status_proto_->wrist_angle(), 80 * (M_PI / 180),
+              1e-3);
   EXPECT_NEAR(score_subsystem_output_proto_->intake_voltage(), 0, 1e-3);
   EXPECT_FALSE(score_subsystem_output_proto_->wrist_solenoid_open());
   EXPECT_TRUE(score_subsystem_output_proto_->wrist_solenoid_close());
@@ -457,7 +459,7 @@ TEST_F(ScoreSubsystemTest, IntakeManual) {
   SetGoal(c2018::score_subsystem::ScoreGoal::INTAKE_MANUAL, true);
   SetLoopInput(elevator_plant_.y(0), wrist_plant_.y(0));
   Update();
-  
+
   EXPECT_NEAR(score_subsystem_status_proto_->elevator_actual_height(), 0, 1e-3);
   EXPECT_NEAR(score_subsystem_status_proto_->wrist_angle(), 0, 1e-3);
   EXPECT_NEAR(score_subsystem_output_proto_->intake_voltage(), 12, 1e-3);
@@ -477,7 +479,7 @@ TEST_F(ScoreSubsystemTest, OuttakeManual) {
   SetGoal(c2018::score_subsystem::ScoreGoal::OUTTAKE_MANUAL, true);
   SetLoopInput(elevator_plant_.y(0), wrist_plant_.y(0));
   Update();
-  
+
   EXPECT_NEAR(score_subsystem_status_proto_->elevator_actual_height(), 0, 1e-3);
   EXPECT_NEAR(score_subsystem_status_proto_->wrist_angle(), 0, 1e-3);
   EXPECT_NEAR(score_subsystem_output_proto_->intake_voltage(), -12, 1e-3);
@@ -497,7 +499,7 @@ TEST_F(ScoreSubsystemTest, IdleManual) {
   SetGoal(c2018::score_subsystem::ScoreGoal::IDLE_MANUAL, true);
   SetLoopInput(elevator_plant_.y(0), wrist_plant_.y(0));
   Update();
-  
+
   EXPECT_NEAR(score_subsystem_status_proto_->elevator_actual_height(), 0, 1e-3);
   EXPECT_NEAR(score_subsystem_status_proto_->wrist_angle(), 0, 1e-3);
   EXPECT_NEAR(score_subsystem_output_proto_->intake_voltage(), 0, 1e-3);
