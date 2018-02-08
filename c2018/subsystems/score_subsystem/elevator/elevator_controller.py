@@ -18,7 +18,7 @@ def make_gains(second_stage, has_cube, subname='gains'):
 
     name = subname
 
-    mass_carriage = 11.0 # 8.55 # 2.55 Kilo plus 3 miniCIM * 2
+    mass_carriage = 14.0 # 8.55 # 2.55 Kilo plus 3 miniCIM * 2
 
     if second_stage:
         mass_carriage += 2.14
@@ -29,7 +29,7 @@ def make_gains(second_stage, has_cube, subname='gains'):
     # Parameters
     r = (1.0 + 1.0 / 16.0) * 0.0254
     J = 0.68 * r ** 2 + mass_carriage * r ** 2
-    G = 1 / 18.52
+    G = 1 / 17.86
     eff = .8
 
     w_free = 18730. / 60. * 6.28
@@ -57,16 +57,6 @@ def make_gains(second_stage, has_cube, subname='gains'):
         [sensor_ratio, 0.]
     ])
 
-    # Controller weighting
-    Q_controller = np.asmatrix([
-        [7e3, 0.],
-        [0., 3e2]
-    ])
-
-    R_controller = np.asmatrix([
-        [1.]
-    ])
-
     # Noise
     Q_noise = np.asmatrix([
         [0., 0.],
@@ -83,7 +73,7 @@ def make_gains(second_stage, has_cube, subname='gains'):
     ])
 
     A_d, B_d, Q_d, R_d = c2d(A_c, B_c, dt, Q_noise, R_noise)
-    K = clqr(A_c, B_c, Q_controller, R_controller)
+    K = place(A_c, B_c, [-10.0, -7.0])
     Kff = feedforwards(A_d, B_d, Q_ff)
     L = dkalman(A_d, C, Q_d, R_d)
 
@@ -120,13 +110,13 @@ def make_augmented_gains(second_stage, has_cube, subname):
     Q_noise[2, 2] = 10.
 
     R_noise = np.asmatrix([
-        [0.1]
+        [1e-5]
     ])
 
     # Kalman noise matrix
     Q_kalman = np.asmatrix([
-        [1e0, 0.0, 0.0],
-        [0.0, 2e0, 0.0],
+        [1e-2, 0.0, 0.0],
+        [0.0, 2e-1, 0.0],
         [0.0, 0.0, 3e2]
     ])
 
