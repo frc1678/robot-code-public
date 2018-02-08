@@ -127,19 +127,18 @@ void ScoreSubsystem::Update() {
     }
   }
 
-  if (status_->has_cube() && intake_mode_ = INTAKE) {
+  if (status_->has_cube() && intake_mode_ == INTAKE) {
     intake_mode_ = IDLE;
   }
 
   // If wrist is past 80 degrees: keep elevator height above 0.9
   if (status_->wrist_angle() > (M_PI / 180.0) * 80.0) {
-    elevator_height_ = muan::utils::Cap(elevator_height_, 1.9, 2);
+    elevator_height_ = muan::utils::Cap(elevator_height_, 0.9, 2);
   }
   elevator_.SetGoal(elevator_height_);
 
   elevator_.Update(input, &output, &status_, driver_station->is_sys_active());
 
-  // If elevator height is below 0.9, keep wrist goal on same side of 90
   if (status_->elevator_actual_height() < 0.89 || elevator_height_ < 0.89) {
     wrist_angle_ = muan::utils::Cap(wrist_angle_, 0, (M_PI / 180.0) * 80.0);
   }
