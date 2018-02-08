@@ -14,10 +14,10 @@ class WristTest : public ::testing::Test {
     if (plant_.x(0) < 0) {
       plant_.x(0) = 0;
     }
-    wrist_.Update(wrist_input_proto_, &wrist_output_proto_,
-                  &wrist_status_proto_, outputs_enabled_);
     wrist_input_proto_->set_wrist_hall(plant_.x(0) >= 0.21 &&
                                        plant_.x(0) <= 0.25);
+    wrist_.Update(wrist_input_proto_, &wrist_output_proto_,
+                  &wrist_status_proto_, outputs_enabled_);
     plant_.Update(
         (Eigen::Matrix<double, 1, 1>() << wrist_output_proto_->wrist_voltage())
             .finished());
