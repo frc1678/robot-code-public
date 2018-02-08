@@ -70,3 +70,14 @@ class ScoreSubsystemTest : public ::testing::Test {
  private:
   c2018::score_subsystem::ScoreSubsystem score_subsystem_;
 };
+
+TEST_F(ScoreSubsystemTest, Disabled) {
+  SetGoals(c2018::score_subsystem::ScoreGoal::HEIGHT_2, false);
+  WriteMessages();
+  Update();
+  ReadMessages();
+
+  EXPECT_EQ(score_subsystem_output_proto_->elevator_voltage(), 0);
+  EXPECT_EQ(score_subsystem_output_proto_->intake_voltage(), 0);
+  EXPECT_EQ(score_subsystem_output_proto_->wrist_voltage(), 0);
+}
