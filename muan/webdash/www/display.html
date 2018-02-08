@@ -11,7 +11,10 @@
     var datasock = new WebSocket("ws://" + document.location.host + "/data");
     // Used for information required in UpdateDisplay from displaysock
     var display_carryover = {};
-    
+    // Used in case widgets require box size, set in MakeDisplay
+    var box_width = 0;
+    var box_height = 0;
+    var encouragement_time = 100;
     // Two functions used due to separate sockets
     displaysock.onmessage = function(data) {
       var display = JSON.parse(data.data);
@@ -21,13 +24,13 @@
       var data = JSON.parse(data.data);
       UpdateDisplay(data);
     }
-    
+
     // Creates framework for display, makes boxes based on number of widgets, equal portions of screen alloted to each widget
     function MakeDisplay(display) {
       display_carryover = display;
       var num_boxes = display["settings"]["size"][0] * display["settings"]["size"][1];
-      var box_width = window.innerWidth / display.settings.size[0];
-      var box_height = window.innerHeight / display.settings.size[1];
+      box_width = window.innerWidth / display.settings.size[0];
+      box_height = window.innerHeight / display.settings.size[1];
       var widget_name = "";
       // Coords used to determine specific position of widgets
       var coords = "";
@@ -37,10 +40,10 @@
       for (widget of display["widgets"]) {
         left_shift = box_width * widget["coordinates"][0];
         top_shift = box_height * widget["coordinates"][1];
-        coords = (widget["coordinates"][0]).toString() + "_" + (widget["coordinates"][1]).toString();  
+        coords = (widget["coordinates"][0]).toString() + "_" + (widget["coordinates"][1]).toString();
         document.body.innerHTML += "<div id=" + coords + " style=position:absolute;top:" + top_shift + "px;left:" + left_shift + "px;width:" + box_width + "px;height:" + box_height + "px></div>";
         widget_name = widget["name"];
-        if (widget["should-title"] == true) {
+        if (widget["should-title"]) {
           document.getElementById(coords).innerHTML = "<p>" + widget_name + ":</p>";
         }
       }
@@ -65,13 +68,25 @@
       var enum_box = "";
       var number_width = 0;
       var number_percentage = "";
+      var encourage_id = "";
       var bar_id = "";
       var box_id = "";
       var enumerator_id = "";
+      var gss_id = "";
+      var link_id = "";
+      var alliance_color = "#000000";
+      var other_alliance_color = "#000000";
+      if (data["driver_station"]["alliance"] == 0) {
+        alliance_color = "#ff0000";
+        other_alliance_color = "#0000ff";
+      } else if (data["driver_station"]["alliance"] == 1) {
+        alliance_color = "#0000ff";
+        other_alliance_color = "#ff0000";
+      }
       for (widget of display_carryover["widgets"]) {
         coords = (widget["coordinates"][0]).toString() + "_" + (widget["coordinates"][1]).toString();
         var source = null;
-        if (widget["type"] != "image") {
+        if (widget["type"] != "image" && widget["type"] != "encouragement") {
           var source = data[widget["source"][0]][widget["source"][1]];
         }
 
@@ -109,7 +124,7 @@
           document.getElementById(enumerator_id).setAttribute("style", enum_background_color);
 
         }
-        
+
         // Creates number widgets, sliding bar
         if (widget["type"] == "number") {
           bar_id = "full_bar" + coords;
@@ -125,7 +140,7 @@
           else if (source > widget["goal"] && source <= widget["max"]) {
             color = widget["colors"]["max"];
           }
-          if (!document.getElementById(bar_id)) { 
+          if (!document.getElementById(bar_id)) {
             document.getElementById(coords).innerHTML += "<div id=" + bar_id + " style=border:solid;height:10px;position:relative></div>";
           }
           // If value is too high, just fills the bar
@@ -138,20 +153,47 @@
           }
           // As the colored bar is surrounded by min to max outline, this decides the percentage of the outline taken up by the bar
           number_percentage = (number_width * 100).toString() + "%";
-          document.getElementById(bar_id).innerHTML = "<div style=width:" + number_percentage + 
-                                                      ";background-color:" + color + 
+          document.getElementById(bar_id).innerHTML = "<div style=width:" + number_percentage +
+                                                      ";background-color:" + color +
                                                       ";position:absolute;height:100%;float:right;text-align:right;opacity:.7;left:0px></div>";
         }
 
         if (widget["type"] == "image") {
           image_id = "image" + coords;
-          if (!document.getElementById(image_id)) { 
+          if (!document.getElementById(image_id)) {
             document.getElementById(coords).innerHTML += "<div id=" + image_id + "></div>";
           }
           document.getElementById(image_id).innerHTML = "<img src=\"http://" + document.location.hostname + ":5802/" + widget["source"] + ".mjpeg\"" +
                                                         "alt=\"Unable to read stream\">";
         }
+
+        if (widget["type"] == "gss") {
+          gss_id = "gss" + coords;
+          eval(widget["code"].join("\n"));
+        }
+
+        if (widget["type"] == "link") {
+          link_id = "link" + coords;
+          if (!document.getElementById(link_id)) {
+            document.getElementById(coords).innerHTML += "<a href=" + widget["source"] + ">" + widget["name"] + "</a>";
+          }
+        }
+
+        if (widget["type"] == "encouragement") {
+          encouragement_id = "encouragement" + coords;
+          var encouragement_list = ["Remember the UPs!", "Fail Faster!", "You can do this!", "Good luck out there", "Break a leg (but not the robot)", "We're all rooting for you", "Remember the Super Woody", "Happy Kickoff!"];
+          var color_list = ["#ff0000", "#ff8800", "#ffe303", "#00ff00", "#0000ff", "#00ffff"];
+          if (!document.getElementById(encouragement_id)) {
+            document.getElementById(coords).innerHTML = "<div id=" + encouragement_id + "></div>";
+          }
+          if (encouragement_time == 100) {
+            document.getElementById(encouragement_id).innerHTML = encouragement_list[Math.floor(Math.random() * encouragement_list.length)];
+            document.getElementById(encouragement_id).setAttribute("style", "color:" + color_list[Math.floor(Math.random() * color_list.length)]);
+            encouragement_time = 0;
+          }
+        }
       }
+      encouragement_time++;
     }
     displaysock.onopen = function() {
       displaysock.send("ping");
@@ -162,6 +204,6 @@
    }
 
    // Updates data every 100 milliseconds
-   var intervalID = setInterval(ReadData, 100); 
+   var intervalID = setInterval(ReadData, 100);
   </script>
 </html>

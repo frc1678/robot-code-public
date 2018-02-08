@@ -25,10 +25,7 @@ class WebDashQueueWrapper {
   muan::webdash::AutoSelectionQueue auto_selection_queue_{100};
 };
 
-enum WebDashMode {
-  ROBORIO,
-  JETSON
-};
+enum WebDashMode { ROBORIO, JETSON };
 
 class WebDashRunner {
  public:
@@ -38,7 +35,7 @@ class WebDashRunner {
   template <class T>
   void AddQueue(const std::string &name, T *queue);
 
-  void AddAutos(const std::vector<std::string>& more_autos);
+  void AddAutos(const std::vector<std::string> &more_autos);
 
   void AddVideoStream(std::string video_stream);
 
@@ -74,11 +71,13 @@ class WebDashRunner {
     void onData(seasocks::WebSocket *con, const char * /*data*/) override;
 
     explicit DataRequestHandler(
-        const std::vector<std::unique_ptr<webdash::WebDashRunner::QueueLog>> &queue_logs)
+        const std::vector<std::unique_ptr<webdash::WebDashRunner::QueueLog>>
+            &queue_logs)
         : queue_logs_(&queue_logs) {}
 
    private:
-    const std::vector<std::unique_ptr<webdash::WebDashRunner::QueueLog>> *queue_logs_;
+    const std::vector<std::unique_ptr<webdash::WebDashRunner::QueueLog>>
+        *queue_logs_;
   };
 
   struct AutoListRequestHandler : seasocks::WebSocket::Handler {
@@ -89,7 +88,8 @@ class WebDashRunner {
     void onDisconnect(seasocks::WebSocket * /*con*/) override{};
     void onData(seasocks::WebSocket *con, const char * /*data*/) override;
 
-    explicit AutoListRequestHandler(const std::vector<std::string> auto_list) : auto_list_(auto_list) {}
+    explicit AutoListRequestHandler(const std::vector<std::string> auto_list)
+        : auto_list_(auto_list) {}
 
    private:
     const std::vector<std::string> auto_list_;
@@ -103,7 +103,8 @@ class WebDashRunner {
     void onDisconnect(seasocks::WebSocket * /*con*/) override{};
     void onData(seasocks::WebSocket *con, const char * /*data*/) override;
 
-    explicit VideoListRequestHandler(const std::vector<std::string> video_list) : video_list_(video_list) {}
+    explicit VideoListRequestHandler(const std::vector<std::string> video_list)
+        : video_list_(video_list) {}
 
    private:
     const std::vector<std::string> video_list_;
@@ -127,7 +128,8 @@ class WebDashRunner {
     void onDisconnect(seasocks::WebSocket * /*con*/) override{};
     void onData(seasocks::WebSocket *con, const char * /*data*/) override;
 
-    explicit DisplayRequestHandler(const std::string *display_object) : display_object_(display_object) {}
+    explicit DisplayRequestHandler(const std::string *display_object)
+        : display_object_(display_object) {}
 
    private:
     const std::string *display_object_;

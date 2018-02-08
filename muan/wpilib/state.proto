@@ -9,6 +9,12 @@ enum RobotMode {
   ESTOP = 3;
 }
 
+enum Alliance {
+  kRed = 0;
+  kBlue = 1;
+  kNone = 2;
+}
+
 message DriverStationStatus {
   required uint64 timestamp = 1;
   required RobotMode mode = 2;
@@ -17,11 +23,6 @@ message DriverStationStatus {
   optional bool brownout = 4;
   optional bool has_ds_connection = 5;
 
-  enum Alliance {
-    kRed = 0;
-    kBlue = 1;
-    kNone = 2;
-  }
 
   enum MatchType {
     None = 0;

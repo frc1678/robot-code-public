@@ -7,6 +7,7 @@ cc_binary(
     deps = [
         ":server",
         "//muan/teleop:joystick_queues",
+        "//muan/wpilib:wpilib_queues",
         "//c2017/subsystems/superstructure/shooter:shooter_queues",
     ],
     data = [":webdash_html"],

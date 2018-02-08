@@ -99,7 +99,6 @@ void QueueManager::StartLogging() {
                                                "RED_FAR_PEG_PLUS_KPA_DRIVE",
                                                "TWO_GEAR"};
 
-  webdash_.AddAutos(auto_list_);
 
   std::string display_object =
       "{"
