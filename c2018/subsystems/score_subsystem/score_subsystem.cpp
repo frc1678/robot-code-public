@@ -116,11 +116,9 @@ void ScoreSubsystem::Update() {
         intake_mode_ = IDLE;
         break;
       case INTAKE_LOW:
-        has_cube_ = true;
         intake_mode_ = INTAKE;
         break;
       case OUTTAKE_LOW:
-        has_cube_ = false;
         intake_mode_ = OUTTAKE;
         break;
       case IDLE_LOW:
@@ -129,7 +127,7 @@ void ScoreSubsystem::Update() {
     }
   }
 
-  if (status_->has_cube()) {
+  if (status_->has_cube() && intake_mode_ = INTAKE) {
     intake_mode_ = IDLE;
   }
 
