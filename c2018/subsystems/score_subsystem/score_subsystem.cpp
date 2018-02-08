@@ -112,16 +112,16 @@ void ScoreSubsystem::Update() {
         break;
       case IDLE_STOW:
         elevator_height_ = 0;
-        wrist_angle_ = M_PI / 2;
+        wrist_angle_ = 80 * (M_PI / 180);
         intake_mode_ = IDLE;
         break;
-      case INTAKE_LOW:
+      case INTAKE_MANUAL:
         intake_mode_ = INTAKE;
         break;
-      case OUTTAKE_LOW:
+      case OUTTAKE_MANUAL:
         intake_mode_ = OUTTAKE;
         break;
-      case IDLE_LOW:
+      case IDLE_MANUAL:
         intake_mode_ = IDLE;
         break;
     }

@@ -20,9 +20,9 @@ enum ScoreGoal {
   SCORE_MID_BACK = 12;
   SCORE_HIGH = 13;
   SCORE_HIGH_BACK = 14;
-  INTAKE_LOW = 15;
-  OUTTAKE_LOW = 16;
-  IDLE_LOW = 17;
+  INTAKE_MANUAL = 15;
+  OUTTAKE_MANUAL = 16;
+  IDLE_MANUAL = 17;
 }
 
 enum IntakeMode {
