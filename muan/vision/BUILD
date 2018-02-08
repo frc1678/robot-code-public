@@ -11,6 +11,7 @@ cc_library(
     deps = [
         "@opencv//:opencv",
         ":config_proto",
+        "//muan/logging:logger",
     ],
     visibility = ["//visibility:public"],
 )

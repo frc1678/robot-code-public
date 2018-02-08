@@ -33,8 +33,8 @@ void Capture(const std::string& filename, int camera_index = -1) {
   }
 
   camera.set(CV_CAP_PROP_BRIGHTNESS, 0);  // minimum
-  camera.set(CV_CAP_PROP_CONTRAST, 1);    // maximun
-  camera.set(CV_CAP_PROP_SATURATION, 1);  // maximun
+  camera.set(CV_CAP_PROP_CONTRAST, 1);    // maximum
+  camera.set(CV_CAP_PROP_SATURATION, 1);  // maximum
   std::string command =
       "v4l2ctrl -d /dev/video" + std::to_string(camera_index) + " -l c2017/vision/coprocessor/camera_params";
   std::cout << command << std::endl;

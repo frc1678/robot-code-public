@@ -1,5 +1,5 @@
-#include "muan/wpilib/gyro/gyro_reader.h"
 #include "muan/logging/logger.h"
+#include "muan/wpilib/gyro/gyro_reader.h"
 #include "muan/utils/history.h"
 #include "muan/utils/threading_utils.h"
 #include "third_party/aos/common/util/phased_loop.h"
@@ -55,6 +55,7 @@ void GyroReader::Init() {
       GyroMessageProto gyro_message;
       gyro_message->set_state(GyroState::kUninitialized);
       gyro_queue_->WriteMessage(gyro_message);
+      LOG_P("Uninitialized");
     }
   }
   calibration_state_ = GyroState::kInitialized;
@@ -76,6 +77,7 @@ void GyroReader::RunCalibration() {
 
   if (calibration_state_ == GyroState::kInitialized) {
     calibration_state_ = GyroState::kCalibrating;
+    LOG_P("Calibrating");
   }
 
   bool robot_disabled = true;
@@ -95,6 +97,7 @@ void GyroReader::RunCalibration() {
       velocity_history.Update(raw_velocity);
     } else {
       velocity_history.reset();
+      LOG_P("Velocity limit exceeded, Calibration Reset");
     }
 
     // Send out a GyroMessage if the queue exists
@@ -147,6 +150,7 @@ void GyroReader::RunReader() {
     // Reset if the should_reset_ flag is set, then clear it.
     if (should_reset_.exchange(false)) {
       angle_ = 0.0;
+      LOG_P("reset_ flag sent, Resetting");
     }
 
     // Send out a GyroMessage if the queue exists

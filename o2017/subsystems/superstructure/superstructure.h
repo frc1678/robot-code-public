@@ -1,6 +1,5 @@
 #ifndef O2017_SUBSYSTEMS_SUPERSTRUCTURE_SUPERSTRUCTURE_H_
 #define O2017_SUBSYSTEMS_SUPERSTRUCTURE_SUPERSTRUCTURE_H_
-
 #include "o2017/subsystems/superstructure/climber/climber.h"
 
 namespace o2017 {
