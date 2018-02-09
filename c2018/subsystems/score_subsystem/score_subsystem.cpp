@@ -138,8 +138,8 @@ void ScoreSubsystem::Update() {
 
   elevator_.Update(input, &output, &status_, driver_station->is_sys_active());
 
-  if (status_->elevator_actual_height() < 0.89 || elevator_height_ < 0.89) {
-    wrist_angle_ = muan::utils::Cap(wrist_angle_, kWristForwardAngle, kWristStowAngle);
+  if (status_->elevator_actual_height() < 0.89) {
+    wrist_angle_ = muan::utils::Cap(wrist_angle_, 0, M_PI / 2);
   }
 
   wrist_.SetGoal(wrist_angle_, intake_mode_);

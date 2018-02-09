@@ -53,7 +53,7 @@ class ScoreSubsystemTest : public ::testing::Test {
   void LogicCheck() {
     if (score_subsystem_status_proto_->elevator_actual_height() < 0.89 ||
         score_subsystem_status_proto_->elevator_unprofiled_goal() < 0.89) {
-      EXPECT_TRUE(score_subsystem_status_proto_->wrist_unprofiled_goal() <= c2018::score_subsystem::kWristStowAngle);
+      EXPECT_TRUE(score_subsystem_status_proto_->wrist_unprofiled_goal() <= M_PI / 2);
     }
 
     if (score_subsystem_status_proto_->wrist_angle() > M_PI / 2) {
