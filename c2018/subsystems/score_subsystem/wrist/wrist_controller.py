@@ -71,19 +71,6 @@ def make_gains():
         [sensor_ratio, 0.]
     ])
 
-    # Controller weighting
-    # Q Matrix
-    # |Position error           Position * Velocity error|
-    # |Position * velocity err  Velocity error           |
-    Q_controller = np.asmatrix([
-        [1.0e3, 0.],
-        [0., 5.0e1]
-    ])
-
-    R_controller = np.asmatrix([
-        [1.]
-    ])
-
     # Noise
     Q_noise = np.asmatrix([
         [1e-2, 0.],
@@ -100,7 +87,7 @@ def make_gains():
     ])
 
     A_d, B_d, Q_d, R_d = c2d(A_c, B_c, dt, Q_noise, R_noise)
-    K = clqr(A_c, B_c, Q_controller, R_controller)
+    K = place(A_c, B_c, [-10.0, -7.0])
     Kff = feedforwards(A_d, B_d, Q_ff)
     L = dkalman(A_d, C, Q_d, R_d)
 
