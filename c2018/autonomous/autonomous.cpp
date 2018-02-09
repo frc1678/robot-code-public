@@ -21,6 +21,11 @@ AutonomousBase::AutonomousBase()
       drivetrain_goal_queue_(QueueManager<DrivetrainGoal>::Fetch()),
       drivetrain_status_reader_(
           QueueManager<DrivetrainStatus>::Fetch()->MakeReader()),
+      score_goal_queue_(
+          QueueManager<score_subsystem::ScoreSubsystemGoalProto>::Fetch()),
+      score_status_reader_(
+          QueueManager<score_subsystem::ScoreSubsystemStatusProto>::Fetch()
+              ->MakeReader()),
       driver_station_reader_(
           QueueManager<DriverStationProto>::Fetch()->MakeReader()),
       game_specific_string_reader_(
@@ -219,6 +224,7 @@ void AutonomousBase::operator()() {
 
       StartDrivePath(5.25, 2.5, M_PI * -.5);
       WaitUntilDriveComplete();
+
       StartDrivePath(4.25, 4.5, M_PI);
       WaitUntilDriveComplete();
 
@@ -284,6 +290,47 @@ void AutonomousBase::operator()() {
 void AutonomousBase::WaitUntilDriveComplete() {
   while (!IsDriveComplete()) {
     loop_.SleepUntilNext();
+  }
+}
+
+void AutonomousBase::IntakeGround() {
+  score_goal_->set_elevator_height(score_subsystem::ElevatorHeight::HEIGHT_0);
+  score_goal_->set_claw_mode(score_subsystem::ClawMode::SCORE_F);
+  score_goal_->set_intake_mode(score_subsystem::IntakeMode::INTAKE);
+  score_goal_queue_->WriteMessage(score_goal_);
+}
+
+void AutonomousBase::StopIntakeGround() {
+  score_goal_->set_claw_mode(score_subsystem::ClawMode::SCORE_F);
+  score_goal_->set_intake_mode(score_subsystem::IntakeMode::HOLD);
+  score_goal_queue_->WriteMessage(score_goal_);
+}
+
+void AutonomousBase::MoveToSwitch() {
+  score_goal_->set_elevator_height(score_subsystem::ElevatorHeight::HEIGHT_2);
+  score_goal_->set_claw_mode(score_subsystem::ClawMode::SCORE_F);
+  score_goal_queue_->WriteMessage(score_goal_);
+}
+
+void AutonomousBase::MoveToScale(bool front) {
+  score_goal_->set_elevator_height(
+      score_subsystem::ElevatorHeight::HEIGHT_SCORE);
+  score_goal_->set_claw_mode(front ? score_subsystem::ClawMode::SCORE_F
+                                   : score_subsystem::ClawMode::SCORE_B);
+  score_goal_queue_->WriteMessage(score_goal_);
+}
+
+void AutonomousBase::Score() {
+  score_goal_->set_intake_mode(score_subsystem::IntakeMode::OUTTAKE);
+  score_goal_queue_->WriteMessage(score_goal_);
+}
+
+bool AutonomousBase::IsAtScoreHeight() {
+  if (score_status_reader_.ReadLastMessage(&score_status_)) {
+    return (std::abs(score_status_->elevator_unprofiled_goal() -
+                     score_status_->elevator_actual_height()) < 1e-2);
+  } else {
+    return false;
   }
 }
 

@@ -8,6 +8,7 @@ cc_library(
         "//muan/logging:logger",
         "//muan/wpilib:wpilib_queues",
         "//c2018/subsystems/drivetrain:drivetrain_base",
+        "//c2018/subsystems/score_subsystem:score_subsystem_queues",
     ],
     visibility = ["//visibility:public"],
 )
