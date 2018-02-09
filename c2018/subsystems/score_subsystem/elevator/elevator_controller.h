@@ -27,9 +27,11 @@ constexpr double kEncoderFaultMinVoltage = 6;
 class ElevatorController {
  public:
   ElevatorController();
-  void Update(const ScoreSubsystemInputProto& input, ScoreSubsystemOutputProto* output,
+  void Update(const ScoreSubsystemInputProto& input,
+              ScoreSubsystemOutputProto* output,
               ScoreSubsystemStatusProto* status, bool outputs_enabled);
-  Eigen::Matrix<double, 2, 1> UpdateProfiledGoal(double unprofiled_goal_, bool outputs_enabled);
+  Eigen::Matrix<double, 2, 1> UpdateProfiledGoal(double unprofiled_goal_,
+                                                 bool outputs_enabled);
   void SetGoal(double goal);
   double CapU(double elevator_u);
 

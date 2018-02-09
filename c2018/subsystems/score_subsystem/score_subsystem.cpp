@@ -33,8 +33,9 @@ void ScoreSubsystem::Update() {
   if (!goal_reader_.ReadLastMessage(&goal)) {
     // Set default goal
     wrist_angle_ = kWristForwardAngle;
-    intake_mode_ = IDLE; // Set goal to be upright, and for intake to not spin
-    elevator_height_ = kElevatorBottom;  // Set the elevator to be halfway so ready for calib
+    intake_mode_ = IDLE;  // Set goal to be upright, and for intake to not spin
+    elevator_height_ =
+        kElevatorBottom;  // Set the elevator to be halfway so ready for calib
   } else {
     score_goal_ = goal->score_goal();
     switch (score_goal_) {

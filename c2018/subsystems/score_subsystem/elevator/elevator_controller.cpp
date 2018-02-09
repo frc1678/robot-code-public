@@ -1,6 +1,6 @@
+#include "c2018/subsystems/score_subsystem/elevator/elevator_controller.h"
 #include <cmath>
 #include <limits>
-#include "c2018/subsystems/score_subsystem/elevator/elevator_controller.h"
 #include "muan/logging/logger.h"
 #include "muan/utils/math_utils.h"
 namespace c2018 {
@@ -85,7 +85,8 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
     LOG_P("Encoder fault detected, setting voltage to 2.0");
   }
 
-  if (old_pos_ == input->elevator_encoder() && std::abs(elevator_u) >= kEncoderFaultMinVoltage) {
+  if (old_pos_ == input->elevator_encoder() &&
+      std::abs(elevator_u) >= kEncoderFaultMinVoltage) {
     num_encoder_fault_ticks_++;
     if (num_encoder_fault_ticks_ > kEncoderFaultTicksAllowed) {
       encoder_fault_detected_ = true;

@@ -31,7 +31,8 @@ WristController::WristController()
 }
 
 void WristController::SetGoal(double wrist_angle, IntakeMode intake_mode) {
-  unprofiled_goal_ = muan::utils::Cap(wrist_angle, kWristMinAngle, kWristMaxAngle);
+  unprofiled_goal_ =
+      muan::utils::Cap(wrist_angle, kWristMinAngle, kWristMaxAngle);
   intake_mode_ = intake_mode;
 }
 

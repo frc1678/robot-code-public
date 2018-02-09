@@ -14,11 +14,15 @@ class ElevatorControllerTest : public ::testing::Test {
     if (plant_.x(0) < 0) {
       plant_.x(0) = 0;
     }
-    elevator_input_proto_->set_elevator_hall(std::abs(plant_.x(0) - c2018::score_subsystem::elevator::kHallEffectHeight) < 2e-2);
-    elevator_.Update(elevator_input_proto_, &elevator_output_proto_, &elevator_status_proto_,
-                     outputs_enabled_);
+    elevator_input_proto_->set_elevator_hall(
+        std::abs(plant_.x(0) -
+                 c2018::score_subsystem::elevator::kHallEffectHeight) < 2e-2);
+    elevator_.Update(elevator_input_proto_, &elevator_output_proto_,
+                     &elevator_status_proto_, outputs_enabled_);
     SetWeights(plant_.x()(0, 0) >= 1.0, elevator_input_proto_->has_cube());
-    plant_.Update((Eigen::Matrix<double, 1, 1>() << elevator_output_proto_->elevator_voltage()).finished());
+    plant_.Update((Eigen::Matrix<double, 1, 1>()
+                   << elevator_output_proto_->elevator_voltage())
+                      .finished());
   }
 
   void SetGoal(double goal) { elevator_.SetGoal(goal); }
@@ -42,21 +46,33 @@ class ElevatorControllerTest : public ::testing::Test {
 
   void SetWeights(bool second_stage, bool has_cube) {
     if (second_stage && has_cube) {
-      plant_.A() = frc1678::elevator_controller::controller::second_stage_cube_integral::A();
-      plant_.B() = frc1678::elevator_controller::controller::second_stage_cube_integral::B();
-      plant_.C() = frc1678::elevator_controller::controller::second_stage_cube_integral::C();
+      plant_.A() = frc1678::elevator_controller::controller::
+          second_stage_cube_integral::A();
+      plant_.B() = frc1678::elevator_controller::controller::
+          second_stage_cube_integral::B();
+      plant_.C() = frc1678::elevator_controller::controller::
+          second_stage_cube_integral::C();
     } else if (second_stage && !has_cube) {
-      plant_.A() = frc1678::elevator_controller::controller::second_stage_integral::A();
-      plant_.B() = frc1678::elevator_controller::controller::second_stage_integral::B();
-      plant_.C() = frc1678::elevator_controller::controller::second_stage_integral::C();
+      plant_.A() =
+          frc1678::elevator_controller::controller::second_stage_integral::A();
+      plant_.B() =
+          frc1678::elevator_controller::controller::second_stage_integral::B();
+      plant_.C() =
+          frc1678::elevator_controller::controller::second_stage_integral::C();
     } else if (!second_stage && has_cube) {
-      plant_.A() = frc1678::elevator_controller::controller::first_stage_cube_integral::A();
-      plant_.B() = frc1678::elevator_controller::controller::first_stage_cube_integral::B();
-      plant_.C() = frc1678::elevator_controller::controller::first_stage_cube_integral::C();
+      plant_.A() = frc1678::elevator_controller::controller::
+          first_stage_cube_integral::A();
+      plant_.B() = frc1678::elevator_controller::controller::
+          first_stage_cube_integral::B();
+      plant_.C() = frc1678::elevator_controller::controller::
+          first_stage_cube_integral::C();
     } else if (!second_stage && !has_cube) {
-      plant_.A() = frc1678::elevator_controller::controller::first_stage_integral::A();
-      plant_.B() = frc1678::elevator_controller::controller::first_stage_integral::B();
-      plant_.C() = frc1678::elevator_controller::controller::first_stage_integral::C();
+      plant_.A() =
+          frc1678::elevator_controller::controller::first_stage_integral::A();
+      plant_.B() =
+          frc1678::elevator_controller::controller::first_stage_integral::B();
+      plant_.C() =
+          frc1678::elevator_controller::controller::first_stage_integral::C();
     }
   }
 };
