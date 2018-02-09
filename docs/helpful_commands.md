@@ -12,10 +12,10 @@ Deploys code onto specified robot. YOU MUST BE CONNECTED TO THE ROBOT’S WIFI! 
 Use this to test just your subsystem.
 
 `./scripts/tests.py`:
-This is what Travis does- builds and test all directories in the robot-code folder. Also checks formatting. Takes a long time!
+This is what Jenkins does- builds and test all directories in the robot-code folder. Also checks formatting. Takes a long time!
 
 `clang-format -i your-file.cpp`:
-Run Clang-Format on a specific file. You can include a path if the target file isn’t in your current directory. 
+Run Clang-Format on a specific file. You can include a path if the target file isn’t in your current directory.
 
 ## Networking and Debugging
 

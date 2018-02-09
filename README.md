@@ -27,7 +27,7 @@ You should also test anything that you change:
 bazel test //c2018/submarine_subsystem/...
 ```
 
-Before you push your code, you can run our automated test script. This is what Travis CI runs, so if you don't like failed travis builds you should always run it before pushing:
+Before you push your code, you can run our automated test script. This is what Jenkins CI runs, so if you don't like failed Jenkins builds you should always run it before pushing:
 
 ```
 ./scripts/tests.py
@@ -95,11 +95,11 @@ Here's how to get your code into the main robot repository:
       2. 2 experienced students and one other person have approved
   * If there are any concerns about your pull request, fix them. Depending on how severe the concerns are, the pull request may be merged without it, but everyone will be happier if you fix your code. To update your PR, just push to the branch on your forked repo.
   * Don't dismiss someone's review when you make changes - instead, ask them to re-review it.
-8. Merge your changes into master
+7. Merge your changes into master
   * If there are no conflicts, push the "Squash and merge" button, write a good commit message, and merge the changes.
-  * If there are conflicts, fix them locally on your branch, push them, wait for Travis to pass, and then squash and merge.
-9. ???
-10. Profit
+  * If there are conflicts, fix them locally on your branch, push them, wait for Jenkins to pass, and then squash and merge.
+8. ???
+9. Profit
 
 ## Helpful Tips
 
