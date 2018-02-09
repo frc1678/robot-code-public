@@ -32,7 +32,8 @@ class ScoreSubsystemInterface {
 
   VictorSP elevator_;
   VictorSP wrist_;
-  VictorSP roller_;
+  VictorSP high_roller_;
+  VictorSP low_roller_;
   Encoder elevator_encoder_;
   Encoder wrist_encoder_;
   DigitalInput has_cube_;

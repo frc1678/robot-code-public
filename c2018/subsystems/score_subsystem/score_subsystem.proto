@@ -4,82 +4,79 @@ option cc_enable_arenas = true;
 
 package c2018.score_subsystem;
 
-enum ElevatorHeight {
-  HEIGHT_0 = 0;
-  HEIGHT_1 = 1;
-  HEIGHT_2 = 2;
-  HEIGHT_SCORE = 3;
-}
-
-enum ClawMode {
-  SCORE_F = 0;
-  SCORE_B = 1;
-  VERTICAL = 2;
+enum ScoreGoal {
+  IDLE_BOTTOM = 0;
+  IDLE_STOW = 1;
+  HEIGHT_0 = 2;
+  HEIGHT_1 = 3;
+  HEIGHT_2 = 4;
+  PREP_SCORE_LOW = 5;
+  PREP_SCORE_MID = 6;
+  PREP_SCORE_MID_BACK = 7;
+  PREP_SCORE_HIGH = 8;
+  PREP_SCORE_HIGH_BACK = 9;
+  SCORE_LOW = 10;
+  SCORE_MID = 11;
+  SCORE_MID_BACK = 12;
+  SCORE_HIGH = 13;
+  SCORE_HIGH_BACK = 14;
+  INTAKE_MANUAL = 15;
+  OUTTAKE_MANUAL = 16;
+  IDLE_MANUAL = 17;
 }
 
 enum IntakeMode {
-  INTAKE = 0;
-  OUTTAKE = 1;
-  IDLE = 2;
-  HOLD = 3;
-}
-
-enum SystemState {
-  INITIALIZING = 0;
-  CALIBRATING = 1;
-  MOVING = 2;
-  SYSTEM_IDLE = 3;
-  ENCODER_FAULT = 4;
-  DISABLED = 5;
-}
-
-enum SubsystemState {
-  ELEVATOR_UP = 0;
-  WRIST_UP = 1;
-  RUNNING = 2;
-  SUBSYSTEM_DISABLED = 3;
+  IDLE = 0;
+  INTAKE = 1;
+  OUTTAKE = 2;
 }
 
 message ScoreSubsystemInput {
-  required double elevator_encoder = 1;
-  required bool elevator_hall = 2;
-  required double wrist_encoder = 3;
-  required bool wrist_hall = 4;
-  required double intake_current = 5;
-  required bool has_cube = 6;
+  required uint64 timestamp = 1;
+  required double elevator_encoder = 2;
+  required bool elevator_hall = 3;
+  required double wrist_encoder = 4;
+  required bool wrist_hall = 5;
+  required double intake_current = 6;
+  required bool has_cube = 7;
 }
 
 message ScoreSubsystemOutput {
   required double elevator_voltage = 1;
   required double intake_voltage = 2;
   required double wrist_voltage = 3;
-  required bool claw_pinch = 4;
+  required bool wrist_solenoid_open = 4;
+  required bool wrist_solenoid_close = 5;
 }
 
 message ScoreSubsystemGoal {
-  optional ElevatorHeight elevator_height = 1;
-  optional ClawMode claw_mode = 2;
-  optional IntakeMode intake_mode = 3;
-  optional double elevator_velocity = 4;
-  optional double intake_voltage = 5;
-  required bool god_mode = 6;
+  required uint64 timestamp = 1;
+  optional double wrist_angle = 2;
+  required double elevator_voltage = 3;
+  required double roller_voltage = 4;
+  required double wrist_voltage = 5;
+  required bool claw_pinch = 6;
+  required ScoreGoal score_goal = 7;
+  required bool score_forward = 8;
+
 }
 
 message ScoreSubsystemStatus {
-  required double elevator_actual_height = 1;
-  required double estimated_velocity = 2;
-  required bool elevator_at_top = 3;
-  required SystemState elevator_state = 4;
+  required uint64 timestamp = 1;
+  required double elevator_actual_height = 2;
+  required double estimated_velocity = 3;
+  required bool elevator_at_top = 4;
   required double elevator_voltage_error = 5;
   required double elevator_uncapped_voltage = 6;
   required double elevator_profiled_goal = 7;
   required double elevator_unprofiled_goal = 8;
   required bool elevator_encoder_fault_detected = 9;
-  required bool elevator_calibrated = 10;
-  required double wrist_position = 11;
-  required double wrist_velocity = 12;
-  required bool wrist_calibrated = 13;
-  required SystemState claw_state = 14;
-  required SubsystemState subsystem_state = 15;
+  required bool elevator_calibrated = 11;
+  required double wrist_angle = 12;
+  required double wrist_velocity = 13;
+  required bool wrist_calibrated = 14;
+  required double wrist_profiled_goal = 15;
+  required double wrist_unprofiled_goal = 16;
+  required bool claw_pinch = 17;
+  required bool has_cube = 18;
 }
-

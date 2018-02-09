@@ -43,24 +43,37 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
                                 bool outputs_enabled) {
   Eigen::Matrix<double, 3, 1> elevator_r_;
 
+  bool was_calibrated = hall_calib_.is_calibrated();
+
   auto elevator_y = (Eigen::Matrix<double, 1, 1>() << hall_calib_.Update(
-                         input->elevator_encoder(), input->elevator_hall()));
+                         input->elevator_encoder(), input->elevator_hall()))
+                        .finished();
 
   if (hall_calib_.is_calibrated()) {
-    SetWeights(elevator_observer_.x()(0, 0) >= 1.0, input->has_cube());
+    SetWeights(elevator_observer_.x()(0, 0) >= 1.0, (*status)->has_cube());
   } else {
     SetWeights(false, false);
     LOG_P("Hall effect sensor not calibrated");
   }
 
-  elevator_r_ = (Eigen::Matrix<double, 3, 1>() << UpdateProfiledGoal(
-                     unprofiled_goal_, outputs_enabled)(0, 0),
-                 0.0, 0.0)
+  if (!outputs_enabled) {
+    trapezoid_profile_.MoveCurrentState(
+        elevator_observer_.x().block<2, 1>(0, 0));
+  }
+
+  if (hall_calib_.is_calibrated() && !was_calibrated) {
+    elevator_observer_.x(0) += hall_calib_.offset();
+    trapezoid_profile_.MoveCurrentState(
+        elevator_observer_.x().block<2, 1>(0, 0));
+  }
+
+  UpdateProfiledGoal(unprofiled_goal_, outputs_enabled);
+  elevator_r_ = (Eigen::Matrix<double, 3, 1>() << profiled_goal_(0),
+                 profiled_goal_(1), 0.0)
                     .finished();
 
-  elevator_controller_.r() = elevator_r_;
-
-  auto elevator_u = elevator_controller_.Update(elevator_observer_.x())(0, 0);
+  auto elevator_u =
+      elevator_controller_.Update(elevator_observer_.x(), elevator_r_)(0, 0);
 
   if (!outputs_enabled) {
     elevator_u = CapU(0);
@@ -72,7 +85,8 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
     LOG_P("Encoder fault detected, setting voltage to 2.0");
   }
 
-  if (old_pos_ == input->elevator_encoder() && std::abs(elevator_u) >= 2) {
+  if (old_pos_ == input->elevator_encoder() &&
+      std::abs(elevator_u) >= kEncoderFaultMinVoltage) {
     num_encoder_fault_ticks_++;
     if (num_encoder_fault_ticks_ > kEncoderFaultTicksAllowed) {
       encoder_fault_detected_ = true;
@@ -89,8 +103,8 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
   old_pos_ = input->elevator_encoder();
 
   elevator_observer_.Update(
-      (Eigen::Matrix<double, 1, 1>() << elevator_u).finished(),
-      elevator_y.finished());
+      (Eigen::Matrix<double, 1, 1>() << elevator_u).finished(), elevator_y);
+
   plant_.Update((Eigen::Matrix<double, 1, 1>() << elevator_u).finished());
 
   elevator_observer_.x(0) =
@@ -124,8 +138,10 @@ Eigen::Matrix<double, 2, 1> ElevatorController::UpdateProfiledGoal(
 }
 
 double ElevatorController::CapU(double elevator_u) {
-  return muan::utils::Cap(elevator_u, -12, 12);
+  return muan::utils::Cap(elevator_u, -kElevatorMaxVoltage,
+                          kElevatorMaxVoltage);
 }
+
 void ElevatorController::SetWeights(bool second_stage, bool has_cube) {
   if (second_stage && has_cube) {
     elevator_controller_.A() = frc1678::elevator_controller::controller::

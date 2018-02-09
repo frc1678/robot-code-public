@@ -1,28 +1,30 @@
+package(default_visibility = ["//visibility:public"])
+
 cc_library(
-  name = "elevator_controller",
-  srcs = ["elevator_controller.cpp"],
-  hdrs = ["elevator_controller.h"],
-  deps = [
-      ":elevator_constants",
-      "//c2018/subsystems/score_subsystem:score_subsystem_queues",
-      "//c2018/subsystems/score_subsystem:score_subsystem_proto",
-      "//muan/queues:queue_manager",
-      "//muan/control:state_space",
-      "//muan/wpilib:wpilib_queues",
-      "//third_party/aos/common/util:trapezoid_profile",
-      "//muan/control/calibration:hall_calibration",
-      "//muan/logging:logger",
-      "//muan/utils:math_utils",
-  ]
+    name = "elevator_controller",
+    srcs = ["elevator_controller.cpp"],
+    hdrs = ["elevator_controller.h"],
+    deps = [
+        ":elevator_constants",
+        "//c2018/subsystems/score_subsystem:score_subsystem_proto",
+        "//c2018/subsystems/score_subsystem:score_subsystem_queues",
+        "//muan/control:state_space",
+        "//muan/control/calibration:hall_calibration",
+        "//muan/logging:logger",
+        "//muan/queues:queue_manager",
+        "//muan/utils:math_utils",
+        "//muan/wpilib:wpilib_queues",
+        "//third_party/aos/common/util:trapezoid_profile",
+    ],
 )
 
 cc_test(
-  name = "elevator_controller_test",
-  srcs = ["elevator_controller_test.cpp"],
-  deps = [
-      ":elevator_controller",
-      "//third_party/google/googletest",
-  ]
+    name = "elevator_controller_test",
+    srcs = ["elevator_controller_test.cpp"],
+    deps = [
+        ":elevator_controller",
+        "//third_party/google/googletest",
+    ],
 )
 
 cc_library(

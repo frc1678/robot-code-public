@@ -1,6 +1,7 @@
 #include "c2018/wpilib/score_interface.h"
 
 #include <algorithm>
+#include <iostream>
 
 #include "muan/utils/math_utils.h"
 #include "muan/logging/logger.h"
@@ -14,8 +15,9 @@ constexpr double kElevatorSensorRatio = 2.14;
 constexpr double kWristSensorRatio = 5.14;
 
 constexpr uint32_t kElevatorMotor = 4;
-constexpr uint32_t kIntakeMotor = 2;
-constexpr uint32_t kWristMotor = 3;
+constexpr uint32_t kHighIntakeMotor = 2;
+constexpr uint32_t kLowIntakeMotor = 3;
+constexpr uint32_t kWristMotor = 6;
 
 constexpr uint32_t kElevatorEncoderA = 14;
 constexpr uint32_t kElevatorEncoderB = 15;
@@ -25,7 +27,8 @@ constexpr uint32_t kWristEncoderA = 18;
 constexpr uint32_t kWristEncoderB = 19;
 constexpr uint32_t kWristEncoderIndex = 6;
 
-constexpr uint32_t kIntakeSolenoid = 2;
+constexpr uint32_t kIntakeSolenoidOpen = 1;
+constexpr uint32_t kIntakeSolenoidClose = 2;
 
 constexpr uint32_t kWristPotentiometer = 0;
 
@@ -44,25 +47,27 @@ ScoreSubsystemInterface::ScoreSubsystemInterface(
           QueueManager<muan::wpilib::PdpMessage>::Fetch()->MakeReader()),
       elevator_{kElevatorMotor},
       wrist_{kWristMotor},
-      roller_{kIntakeMotor},
+      high_roller_{kHighIntakeMotor},
+      low_roller_{kLowIntakeMotor},
       elevator_encoder_{kElevatorEncoderA, kElevatorEncoderB},
       wrist_encoder_{kWristEncoderA, kWristEncoderB},
       has_cube_{kCubeProxy},
       elevator_hall_{kElevatorHall},
       wrist_hall_{kWristHall},
       pcm_{can_wrapper->pcm()} {
-  pcm_->CreateSolenoid(kIntakeSolenoid);
+  pcm_->CreateSolenoid(kIntakeSolenoidOpen);
+  pcm_->CreateSolenoid(kIntakeSolenoidClose);
 }
 
 void ScoreSubsystemInterface::ReadSensors() {
   ScoreSubsystemInputProto sensors;
-  sensors->set_elevator_encoder(elevator_encoder_.Get() * kPitchRadius *
+  sensors->set_elevator_encoder(-elevator_encoder_.Get() * kPitchRadius *
                                 (2 * M_PI) / 512 / kElevatorSensorRatio);
-  sensors->set_wrist_encoder(wrist_encoder_.Get() * (2 * M_PI) / 512 /
+  sensors->set_wrist_encoder(wrist_encoder_.Get() * (2 * M_PI) / 1024 /
                              kWristSensorRatio);
-  // These numbers come from the status to output ratios for the encoders.
-  sensors->set_elevator_hall(elevator_hall_.Get());
-  sensors->set_wrist_hall(wrist_hall_.Get());
+  // These numbers come from the status to outpur ratios for the encoders.
+  sensors->set_elevator_hall(!elevator_hall_.Get());
+  sensors->set_wrist_hall(!wrist_hall_.Get());
   sensors->set_has_cube(has_cube_.Get());
 
   muan::wpilib::PdpMessage pdp_data;
@@ -72,23 +77,34 @@ void ScoreSubsystemInterface::ReadSensors() {
   } else {
     LOG_P("PDP data not available");
   }
+
+  input_queue_->WriteMessage(sensors);
 }
 
 void ScoreSubsystemInterface::WriteActuators() {
   ScoreSubsystemOutputProto outputs;
   if (output_reader_.ReadLastMessage(&outputs)) {
-    elevator_.Set(muan::utils::Cap(outputs->elevator_voltage(), -kMaxVoltage,
-                                   kMaxVoltage));
+    elevator_.Set(-muan::utils::Cap(outputs->elevator_voltage(), -kMaxVoltage,
+                                   kMaxVoltage) /
+                  12.0);
     wrist_.Set(
-        muan::utils::Cap(outputs->wrist_voltage(), -kMaxVoltage, kMaxVoltage));
-    roller_.Set(
-        muan::utils::Cap(outputs->intake_voltage(), -kMaxVoltage, kMaxVoltage));
-    pcm_->WriteSolenoid(kIntakeSolenoid, outputs->claw_pinch());
+        -muan::utils::Cap(outputs->wrist_voltage(), -kMaxVoltage, kMaxVoltage) /
+        12.0);
+    high_roller_.Set(muan::utils::Cap(-outputs->intake_voltage(), -kMaxVoltage,
+                                      kMaxVoltage) /
+                     12.0);
+    low_roller_.Set(muan::utils::Cap(-outputs->intake_voltage(), -kMaxVoltage,
+                                     kMaxVoltage) /
+                    12.0);
+    pcm_->WriteSolenoid(kIntakeSolenoidOpen, outputs->wrist_solenoid_open());
+    pcm_->WriteSolenoid(kIntakeSolenoidClose, !outputs->wrist_solenoid_close());
   } else {
-    elevator_.Set(0);
+    elevator_.Set(0.0);
     wrist_.Set(0);
-    roller_.Set(0);
-    pcm_->WriteSolenoid(kIntakeSolenoid, false);
+    high_roller_.Set(0);
+    low_roller_.Set(0);
+    pcm_->WriteSolenoid(kIntakeSolenoidOpen, false);
+    pcm_->WriteSolenoid(kIntakeSolenoidClose, false);
     LOG_P("No score output message available!");
   }
 }
