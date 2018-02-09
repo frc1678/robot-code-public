@@ -294,34 +294,29 @@ void AutonomousBase::WaitUntilDriveComplete() {
 }
 
 void AutonomousBase::IntakeGround() {
-  score_goal_->set_elevator_height(score_subsystem::ElevatorHeight::HEIGHT_0);
-  score_goal_->set_claw_mode(score_subsystem::ClawMode::SCORE_F);
-  score_goal_->set_intake_mode(score_subsystem::IntakeMode::INTAKE);
+  score_goal_->set_score_goal(score_subsystem::ScoreGoal::HEIGHT_0);
   score_goal_queue_->WriteMessage(score_goal_);
 }
 
 void AutonomousBase::StopIntakeGround() {
-  score_goal_->set_claw_mode(score_subsystem::ClawMode::SCORE_F);
-  score_goal_->set_intake_mode(score_subsystem::IntakeMode::HOLD);
+  score_goal_->set_score_goal(score_subsystem::ScoreGoal::IDLE_MANUAL);
   score_goal_queue_->WriteMessage(score_goal_);
 }
 
 void AutonomousBase::MoveToSwitch() {
-  score_goal_->set_elevator_height(score_subsystem::ElevatorHeight::HEIGHT_2);
-  score_goal_->set_claw_mode(score_subsystem::ClawMode::SCORE_F);
+  score_goal_->set_score_goal(score_subsystem::ScoreGoal::PREP_SCORE_LOW);
   score_goal_queue_->WriteMessage(score_goal_);
 }
 
 void AutonomousBase::MoveToScale(bool front) {
-  score_goal_->set_elevator_height(
-      score_subsystem::ElevatorHeight::HEIGHT_SCORE);
-  score_goal_->set_claw_mode(front ? score_subsystem::ClawMode::SCORE_F
-                                   : score_subsystem::ClawMode::SCORE_B);
+  score_goal_->set_score_goal(front
+                                  ? score_subsystem::ScoreGoal::SCORE_MID
+                                  : score_subsystem::ScoreGoal::SCORE_MID_BACK);
   score_goal_queue_->WriteMessage(score_goal_);
 }
 
 void AutonomousBase::Score() {
-  score_goal_->set_intake_mode(score_subsystem::IntakeMode::OUTTAKE);
+  score_goal_->set_score_goal(score_subsystem::ScoreGoal::OUTTAKE_MANUAL);
   score_goal_queue_->WriteMessage(score_goal_);
 }
 
