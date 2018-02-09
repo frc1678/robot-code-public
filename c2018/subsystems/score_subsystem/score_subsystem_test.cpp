@@ -53,12 +53,10 @@ class ScoreSubsystemTest : public ::testing::Test {
   void LogicCheck() {
     if (score_subsystem_status_proto_->elevator_actual_height() < 0.89 ||
         score_subsystem_status_proto_->elevator_unprofiled_goal() < 0.89) {
-      EXPECT_TRUE(score_subsystem_status_proto_->wrist_unprofiled_goal() <=
-                  80 * (M_PI / 180));
+      EXPECT_TRUE(score_subsystem_status_proto_->wrist_unprofiled_goal() <= c2018::score_subsystem::kWristStowAngle);
     }
 
-    if (score_subsystem_status_proto_->wrist_angle() >
-        (M_PI / 180.0) * 80.0 + 0.01) {
+    if (score_subsystem_status_proto_->wrist_angle() > M_PI / 2) {
       EXPECT_NEAR(score_subsystem_status_proto_->elevator_unprofiled_goal(),
                   muan::utils::Cap(
                       score_subsystem_status_proto_->elevator_unprofiled_goal(),
@@ -350,7 +348,7 @@ TEST_F(ScoreSubsystemTest, PrepMidScoreBack) {
 
   EXPECT_NEAR(score_subsystem_status_proto_->elevator_actual_height(),
               c2018::score_subsystem::kElevatorScoreMid, 1e-3);
-  EXPECT_NEAR(score_subsystem_status_proto_->wrist_angle(), M_PI * 0.9, 1e-3);
+  EXPECT_NEAR(score_subsystem_status_proto_->wrist_angle(), c2018::score_subsystem::kWristBackwardAngle, 1e-3);
   EXPECT_NEAR(score_subsystem_output_proto_->intake_voltage(), 0, 1e-3);
   EXPECT_FALSE(score_subsystem_output_proto_->wrist_solenoid_open());
   EXPECT_TRUE(score_subsystem_output_proto_->wrist_solenoid_close());
@@ -367,7 +365,7 @@ TEST_F(ScoreSubsystemTest, PrepHighScoreBack) {
 
   EXPECT_NEAR(score_subsystem_status_proto_->elevator_actual_height(),
               c2018::score_subsystem::kElevatorScoreHigh, 1e-3);
-  EXPECT_NEAR(score_subsystem_status_proto_->wrist_angle(), M_PI * 0.9, 1e-3);
+  EXPECT_NEAR(score_subsystem_status_proto_->wrist_angle(), c2018::score_subsystem::kWristBackwardAngle, 1e-3);
   EXPECT_NEAR(score_subsystem_output_proto_->intake_voltage(), 0, 1e-3);
   EXPECT_FALSE(score_subsystem_output_proto_->wrist_solenoid_open());
   EXPECT_TRUE(score_subsystem_output_proto_->wrist_solenoid_close());
@@ -384,7 +382,7 @@ TEST_F(ScoreSubsystemTest, MidScoreBack) {
 
   EXPECT_NEAR(score_subsystem_status_proto_->elevator_actual_height(),
               c2018::score_subsystem::kElevatorScoreMid, 1e-3);
-  EXPECT_NEAR(score_subsystem_status_proto_->wrist_angle(), M_PI * 0.9, 1e-3);
+  EXPECT_NEAR(score_subsystem_status_proto_->wrist_angle(), c2018::score_subsystem::kWristBackwardAngle, 1e-3);
   EXPECT_NEAR(score_subsystem_output_proto_->intake_voltage(), -12, 1e-3);
   EXPECT_FALSE(score_subsystem_output_proto_->wrist_solenoid_open());
   EXPECT_FALSE(score_subsystem_output_proto_->wrist_solenoid_close());
@@ -401,7 +399,7 @@ TEST_F(ScoreSubsystemTest, HighScoreBack) {
 
   EXPECT_NEAR(score_subsystem_status_proto_->elevator_actual_height(),
               c2018::score_subsystem::kElevatorScoreHigh, 1e-3);
-  EXPECT_NEAR(score_subsystem_status_proto_->wrist_angle(), M_PI * 0.9, 1e-3);
+  EXPECT_NEAR(score_subsystem_status_proto_->wrist_angle(), c2018::score_subsystem::kWristBackwardAngle, 1e-3);
   EXPECT_NEAR(score_subsystem_output_proto_->intake_voltage(), -12, 1e-3);
   EXPECT_FALSE(score_subsystem_output_proto_->wrist_solenoid_open());
   EXPECT_FALSE(score_subsystem_output_proto_->wrist_solenoid_close());
@@ -433,7 +431,7 @@ TEST_F(ScoreSubsystemTest, IdleStow) {
   }
 
   EXPECT_NEAR(score_subsystem_status_proto_->elevator_actual_height(), 0, 1e-2);
-  EXPECT_NEAR(score_subsystem_status_proto_->wrist_angle(), 80 * (M_PI / 180),
+  EXPECT_NEAR(score_subsystem_status_proto_->wrist_angle(), c2018::score_subsystem::kWristStowAngle,
               1e-3);
   EXPECT_NEAR(score_subsystem_output_proto_->intake_voltage(), 0, 1e-3);
   EXPECT_FALSE(score_subsystem_output_proto_->wrist_solenoid_open());

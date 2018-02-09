@@ -105,7 +105,7 @@ void ScoreSubsystem::Update() {
         break;
       case IDLE_BOTTOM:
         elevator_height_ = kElevatorBottom;
-        wrist_angle_ = kWristBackwardAngle;
+        wrist_angle_ = kWristForwardAngle;
         intake_mode_ = IDLE;
         break;
       case IDLE_STOW:
@@ -126,12 +126,14 @@ void ScoreSubsystem::Update() {
   }
 
   if (status_->has_cube() && intake_mode_ == INTAKE) {
+    wrist_angle_ = kWristStowAngle;
     intake_mode_ = IDLE;
   }
 
-  if (status_->wrist_angle() > (M_PI / 180.0) * 80.0) {
+  if (status_->wrist_angle() > M_PI / 2.0) {
     elevator_height_ = muan::utils::Cap(elevator_height_, 0.9, 2);
   }
+
   elevator_.SetGoal(elevator_height_);
 
   elevator_.Update(input, &output, &status_, driver_station->is_sys_active());

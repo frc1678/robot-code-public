@@ -20,7 +20,7 @@ static constexpr double kElevatorThirdCube = 0.55;
 static constexpr double kElevatorScoreLow = 0.6;
 static constexpr double kElevatorScoreMid = 1.5;
 static constexpr double kElevatorScoreHigh = 2;
-static constexpr double kWristForwardAngle = 2 * (M_PI / 180);
+static constexpr double kWristForwardAngle = 0 * (M_PI / 180);
 static constexpr double kWristStowAngle = 80 * (M_PI / 180);
 static constexpr double kWristBackwardAngle = 160 * (M_PI / 180);
 
