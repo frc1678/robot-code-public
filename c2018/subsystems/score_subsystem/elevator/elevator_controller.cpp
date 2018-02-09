@@ -1,6 +1,6 @@
-#include "c2018/subsystems/score_subsystem/elevator/elevator_controller.h"
 #include <cmath>
 #include <limits>
+#include "c2018/subsystems/score_subsystem/elevator/elevator_controller.h"
 #include "muan/logging/logger.h"
 #include "muan/utils/math_utils.h"
 namespace c2018 {
@@ -50,8 +50,7 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
                         .finished();
 
   if (hall_calib_.is_calibrated()) {
-    SetWeights(elevator_observer_.x()(0, 0) >= 1.0,
-               false);  // input->has_cube());
+    SetWeights(elevator_observer_.x()(0, 0) >= 1.0, (*status)->has_cube());
   } else {
     SetWeights(false, false);
     LOG_P("Hall effect sensor not calibrated");
@@ -63,7 +62,7 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
   }
 
   if (hall_calib_.is_calibrated() && !was_calibrated) {
-    elevator_observer_.x(0) = kHallEffectHeight;
+    elevator_observer_.x(0) += hall_calib_.offset();
     trapezoid_profile_.MoveCurrentState(
         elevator_observer_.x().block<2, 1>(0, 0));
   }
@@ -86,7 +85,7 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
     LOG_P("Encoder fault detected, setting voltage to 2.0");
   }
 
-  if (old_pos_ == input->elevator_encoder() && std::abs(elevator_u) >= 6) {
+  if (old_pos_ == input->elevator_encoder() && std::abs(elevator_u) >= kEncoderFaultMinVoltage) {
     num_encoder_fault_ticks_++;
     if (num_encoder_fault_ticks_ > kEncoderFaultTicksAllowed) {
       encoder_fault_detected_ = true;

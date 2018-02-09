@@ -22,6 +22,9 @@ namespace wrist {
 
 static constexpr double kMaxWristVelocity = 4;
 static constexpr double kMaxWristAcceleration = 7;
+static constexpr double kWristMinAngle = 0;
+static constexpr double kWristStowAngle = 80 * (M_PI / 180);
+static constexpr double kWristMaxAngle = 160 * (M_PI / 180);
 
 static constexpr double kEncoderFaultTicksAllowed = 200;
 static constexpr double kCalibVoltage = 4;
@@ -63,8 +66,6 @@ class WristController {
   Eigen::Matrix<double, 2, 1> profiled_goal_;
 
   double old_pos_;
-  bool encoder_fault_detected_ = false;
-  int num_encoder_fault_ticks_ = 0;
 
   double intake_voltage = 0;
 };

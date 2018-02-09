@@ -71,7 +71,6 @@ message ScoreSubsystemStatus {
   required double elevator_profiled_goal = 7;
   required double elevator_unprofiled_goal = 8;
   required bool elevator_encoder_fault_detected = 9;
-  required bool wrist_encoder_fault_detected = 10;
   required bool elevator_calibrated = 11;
   required double wrist_angle = 12;
   required double wrist_velocity = 13;

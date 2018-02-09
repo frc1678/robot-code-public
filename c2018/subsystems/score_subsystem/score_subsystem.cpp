@@ -32,86 +32,84 @@ void ScoreSubsystem::Update() {
 
   if (!goal_reader_.ReadLastMessage(&goal)) {
     // Set default goal
-    wrist_angle_ = 0;
-    intake_mode_ = IDLE;
-    // Set goal to be upright, and for intake to not spin
-    elevator_height_ =
-        0.5;  // Set the elevator to be halfway so ready for calib
+    wrist_angle_ = kWristForwardAngle;
+    intake_mode_ = IDLE; // Set goal to be upright, and for intake to not spin
+    elevator_height_ = kElevatorBottom;  // Set the elevator to be halfway so ready for calib
   } else {
     score_goal_ = goal->score_goal();
     switch (score_goal_) {
       case HEIGHT_0:
         elevator_height_ = kElevatorFirstCube;
-        wrist_angle_ = 0;
+        wrist_angle_ = kWristForwardAngle;
         intake_mode_ = INTAKE;
         break;
       case HEIGHT_1:
         elevator_height_ = kElevatorSecondCube;
-        wrist_angle_ = 0;
+        wrist_angle_ = kWristForwardAngle;
         intake_mode_ = INTAKE;
         break;
       case HEIGHT_2:
         elevator_height_ = kElevatorThirdCube;
-        wrist_angle_ = 0;
+        wrist_angle_ = kWristForwardAngle;
         intake_mode_ = INTAKE;
         break;
       case PREP_SCORE_LOW:
         elevator_height_ = kElevatorScoreLow;
-        wrist_angle_ = 0;
+        wrist_angle_ = kWristForwardAngle;
         intake_mode_ = IDLE;
         break;
       case PREP_SCORE_MID:
         elevator_height_ = kElevatorScoreMid;
-        wrist_angle_ = 0;
+        wrist_angle_ = kWristForwardAngle;
         intake_mode_ = IDLE;
         break;
       case PREP_SCORE_MID_BACK:
         elevator_height_ = kElevatorScoreMid;
-        wrist_angle_ = M_PI * 0.9;
+        wrist_angle_ = kWristBackwardAngle;
         intake_mode_ = IDLE;
         break;
       case PREP_SCORE_HIGH:
         elevator_height_ = kElevatorScoreHigh;
-        wrist_angle_ = 0;
+        wrist_angle_ = kWristForwardAngle;
         intake_mode_ = IDLE;
         break;
       case PREP_SCORE_HIGH_BACK:
         elevator_height_ = kElevatorScoreHigh;
-        wrist_angle_ = M_PI * 0.9;
+        wrist_angle_ = kWristBackwardAngle;
         intake_mode_ = IDLE;
         break;
       case SCORE_LOW:
         elevator_height_ = kElevatorScoreLow;
-        wrist_angle_ = 0;
+        wrist_angle_ = kWristForwardAngle;
         intake_mode_ = OUTTAKE;
         break;
       case SCORE_MID:
         elevator_height_ = kElevatorScoreMid;
-        wrist_angle_ = 0;
+        wrist_angle_ = kWristForwardAngle;
         intake_mode_ = OUTTAKE;
         break;
       case SCORE_HIGH:
         elevator_height_ = kElevatorScoreHigh;
-        wrist_angle_ = 0;
+        wrist_angle_ = kWristForwardAngle;
         intake_mode_ = OUTTAKE;
         break;
       case SCORE_MID_BACK:
         elevator_height_ = kElevatorScoreMid;
-        wrist_angle_ = M_PI * 0.9;
+        wrist_angle_ = kWristBackwardAngle;
         intake_mode_ = OUTTAKE;
         break;
       case SCORE_HIGH_BACK:
         elevator_height_ = kElevatorScoreHigh;
-        wrist_angle_ = M_PI * 0.9;
+        wrist_angle_ = kWristBackwardAngle;
         intake_mode_ = OUTTAKE;
         break;
       case IDLE_BOTTOM:
-        elevator_height_ = 0;
-        wrist_angle_ = 0;
+        elevator_height_ = kElevatorBottom;
+        wrist_angle_ = kWristBackwardAngle;
         intake_mode_ = IDLE;
         break;
       case IDLE_STOW:
-        elevator_height_ = 0;
+        elevator_height_ = kElevatorBottom;
         wrist_angle_ = 80 * (M_PI / 180);
         intake_mode_ = IDLE;
         break;
@@ -131,7 +129,6 @@ void ScoreSubsystem::Update() {
     intake_mode_ = IDLE;
   }
 
-  // If wrist is past 80 degrees: keep elevator height above 0.9
   if (status_->wrist_angle() > (M_PI / 180.0) * 80.0) {
     elevator_height_ = muan::utils::Cap(elevator_height_, 0.9, 2);
   }
@@ -140,7 +137,7 @@ void ScoreSubsystem::Update() {
   elevator_.Update(input, &output, &status_, driver_station->is_sys_active());
 
   if (status_->elevator_actual_height() < 0.89 || elevator_height_ < 0.89) {
-    wrist_angle_ = muan::utils::Cap(wrist_angle_, 0, (M_PI / 180.0) * 80.0);
+    wrist_angle_ = muan::utils::Cap(wrist_angle_, kWristForwardAngle, kWristStowAngle);
   }
 
   wrist_.SetGoal(wrist_angle_, intake_mode_);

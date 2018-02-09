@@ -29,7 +29,7 @@ def make_gains(second_stage, has_cube, subname='gains'):
     # Parameters
     r = (1.0 + 1.0 / 16.0) * 0.0254
     J = 0.68 * r ** 2 + mass_carriage * r ** 2
-    G = 1 / 17.86
+    G = (12.0 / 100.0) * (14.0 / 30.0)
     eff = .8
 
     w_free = 18730. / 60. * 6.28

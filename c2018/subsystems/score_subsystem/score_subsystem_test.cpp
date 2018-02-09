@@ -66,15 +66,8 @@ class ScoreSubsystemTest : public ::testing::Test {
                   1e-3);
     }
 
-    EXPECT_TRUE(
-        score_subsystem_output_proto_->elevator_voltage() >=
-        muan::utils::Cap(score_subsystem_output_proto_->elevator_voltage(), -12,
-                         12) -
-            1e-3);
-    EXPECT_TRUE(score_subsystem_output_proto_->wrist_voltage() >=
-                muan::utils::Cap(score_subsystem_output_proto_->wrist_voltage(),
-                                 -12, 12) -
-                    1e-3);
+    EXPECT_NEAR(score_subsystem_output_proto_->elevator_voltage(), 0, 12);
+    EXPECT_NEAR(score_subsystem_output_proto_->wrist_voltage(), 0, 12);
   }
 
   void ReadMessages() {
