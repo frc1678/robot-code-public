@@ -107,5 +107,6 @@ cc_test(
     '//third_party/frc971/control_loops:state_feedback_loop',
     '//muan/wpilib/gyro:gyro_queues',
     '//third_party/frc971/control_loops/drivetrain/y2016:polydrivetrain_plants',
+    '//third_party/frc971/control_loops/drivetrain/y2016:drivetrain_base',
   ],
 )

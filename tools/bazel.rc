@@ -7,8 +7,8 @@ build --auto_cpu_environment_group=//tools:cpus
 
 build --copt -Werror
 # Turn off warnings from third_party
-build --per_file_copt=//third_party.*@-w
-build --output_filter='^//(?!third_party).*'
+build --per_file_copt='third_party(?!/frc971).*@-w'
+build --output_filter='^//((?!third_party)|third_party/frc971).*'
 
 # Always include debug information in the non-.stripped binaries.
 build --strip=never
@@ -58,5 +58,3 @@ build --show_result 5
 # test --test_output=errors
 
 build --define=use_fast_cpp_protos=true
-
-test -- -//third_party/... -//muan/vision/...

@@ -33,8 +33,8 @@ void Trajectory::SetPath(const Path &path, const State &state) {
     forward_vector << ::std::cos(poses_[i].heading()), ::std::sin(poses_[i].heading());
     double forward = delta.translational().dot(forward_vector);
 
-    if (forward > 0 && state_(1) + state_(3) < -0.01 ||
-        forward < 0 && state_(1) + state_(3) > 0.01) {
+    if ((forward > 0 && state_(1) + state_(3) < -0.01) ||
+        (forward < 0 && state_(1) + state_(3) > 0.01)) {
       ::aos::Die("Conflicting path directionality: path %s and robot %s",
                  forward > 0 ? "forward" : "backward",
                  state_(1) + state_(3) > 0 ? "forward" : "backward");

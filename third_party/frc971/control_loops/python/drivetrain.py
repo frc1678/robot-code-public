@@ -268,9 +268,15 @@ class KFDrivetrain(Drivetrain):
 
     self.InitializeState()
 
-
 def WriteDrivetrain(drivetrain_files, kf_drivetrain_files, year_namespace,
                     drivetrain_params):
+  WriteDrivetrainFullName(drivetrain_files, kf_drivetrain_files,
+                          [year_namespace, 'drivetrain'],
+                          [year_namespace, 'subsystems', 'drivetrain'],
+                          drivetrain_params)
+
+def WriteDrivetrainFullName(drivetrain_files, kf_drivetrain_files,
+                            namespaces, directories, drivetrain_params):
 
   # Write the generated constants out to a file.
   drivetrain_low_low = Drivetrain(name="DrivetrainLowLow",
@@ -291,8 +297,6 @@ def WriteDrivetrain(drivetrain_files, kf_drivetrain_files, year_namespace,
   kf_drivetrain_high_high = KFDrivetrain(name="KFDrivetrainHighHigh",
           left_low=False, right_low=False, drivetrain_params=drivetrain_params)
 
-  namespaces = [year_namespace, 'drivetrain']
-  directories = [year_namespace, 'subsystems', 'drivetrain']
   dog_loop_writer = control_loop.ControlLoopWriter(
       "Drivetrain", [drivetrain_low_low, drivetrain_low_high,
                      drivetrain_high_low, drivetrain_high_high],

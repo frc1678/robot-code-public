@@ -408,9 +408,15 @@ class VelocityDrivetrain(object):
 
 def WritePolyDrivetrain(drivetrain_files, motor_files, year_namespace,
                         drivetrain_params):
+  WritePolyDrivetrainFullName(drivetrain_files, motor_files,
+                              [year_namespace, 'drivetrain'],
+                              [year_namespace, 'subsystems', 'drivetrain'],
+                              drivetrain_params)
+
+def WritePolyDrivetrainFullName(drivetrain_files, motor_files,
+                                namespaces, directories, drivetrain_params):
+
   vdrivetrain = VelocityDrivetrain(drivetrain_params)
-  namespaces = [year_namespace, 'drivetrain']
-  directories = [year_namespace, 'subsystems', 'drivetrain']
   dog_loop_writer = control_loop.ControlLoopWriter(
       "VelocityDrivetrain", [vdrivetrain.drivetrain_low_low,
                      vdrivetrain.drivetrain_low_high,

@@ -7,7 +7,7 @@ py_binary(
     'drivetrain.py',
   ],
   deps = [
-    '//third_party/frc971/control_loops/python:controls',
+    '//third_party/frc971/control_loops/python:drivetrain',
   ],
 )
 
@@ -18,7 +18,7 @@ py_binary(
     'drivetrain.py',
   ],
   deps = [
-    '//third_party/frc971/control_loops/python:controls',
+    '//third_party/frc971/control_loops/python:polydrivetrain',
   ],
 )
 

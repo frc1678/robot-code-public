@@ -40,14 +40,14 @@ const DrivetrainConfig &GetDrivetrainConfig() {
       0.0,
       0.4,
       1.0,
-      kHighAlpha,
-      kLowAlpha,
-      kHighBeta,
-      kLowBeta,
-      kHighGamma,
-      kLowGamma,
-      kHighDelta,
-      kLowDelta
+      ::third_party::frc971::control_loops::drivetrain::y2016::kHighAlpha,
+      ::third_party::frc971::control_loops::drivetrain::y2016::kLowAlpha,
+      ::third_party::frc971::control_loops::drivetrain::y2016::kHighBeta,
+      ::third_party::frc971::control_loops::drivetrain::y2016::kLowBeta,
+      ::third_party::frc971::control_loops::drivetrain::y2016::kHighGamma,
+      ::third_party::frc971::control_loops::drivetrain::y2016::kLowGamma,
+      ::third_party::frc971::control_loops::drivetrain::y2016::kHighDelta,
+      ::third_party::frc971::control_loops::drivetrain::y2016::kLowDelta
   };
 
   return kDrivetrainConfig;

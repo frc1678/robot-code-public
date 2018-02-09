@@ -12,6 +12,7 @@
 #include "third_party/frc971/control_loops/drivetrain/y2016/drivetrain_dog_motor_plant.h"
 #include "third_party/frc971/control_loops/drivetrain/y2016/kalman_drivetrain_motor_plant.h"
 #include "third_party/frc971/control_loops/drivetrain/y2016/polydrivetrain_dog_motor_plant.h"
+#include "third_party/frc971/control_loops/drivetrain/y2016/drivetrain_base.h"
 #include "third_party/frc971/control_loops/state_feedback_loop.h"
 
 #include "third_party/aos/common/time.h"
@@ -26,38 +27,7 @@ using ::aos::time::Time;
 using ::third_party::frc971::control_loops::drivetrain::y2016::
     MakeDrivetrainPlant;
 
-using ::frc971::constants::ShifterHallEffect;
-const ShifterHallEffect kThreeStateDriveShifter{0.0, 0.0, 0.25, 0.75};
-
-const DrivetrainConfig &GetDrivetrainConfig() {
-  static DrivetrainConfig kDrivetrainConfig{
-      ::frc971::control_loops::drivetrain::ShifterType::SIMPLE_SHIFTER,
-      ::frc971::control_loops::drivetrain::LoopType::CLOSED_LOOP,
-      ::frc971::control_loops::drivetrain::GyroType::SPARTAN_GYRO,
-
-      ::third_party::frc971::control_loops::drivetrain::y2016::
-          MakeDrivetrainLoop,
-      ::third_party::frc971::control_loops::drivetrain::y2016::
-          MakeVelocityDrivetrainLoop,
-      ::third_party::frc971::control_loops::drivetrain::y2016::
-          MakeKFDrivetrainLoop,
-
-      ::third_party::frc971::control_loops::drivetrain::y2016::kDt,
-      ::third_party::frc971::control_loops::drivetrain::y2016::kRobotRadius,
-      ::third_party::frc971::control_loops::drivetrain::y2016::kWheelRadius,
-      ::third_party::frc971::control_loops::drivetrain::y2016::kV,
-
-      ::third_party::frc971::control_loops::drivetrain::y2016::kHighGearRatio,
-      ::third_party::frc971::control_loops::drivetrain::y2016::kLowGearRatio,
-      kThreeStateDriveShifter, kThreeStateDriveShifter,
-      true,
-      0.0,
-      0.4,
-      1.0
-  };
-
-  return kDrivetrainConfig;
-}
+using ::y2016::control_loops::drivetrain::GetDrivetrainConfig;
 
 class DrivetrainPlant : public StateFeedbackPlant<4, 2, 2> {
  public:
@@ -364,13 +334,13 @@ TEST_F(DrivetrainTest, DriveStraightForward) {
 
   goal_queue_.WriteMessage(goal);
 
-  for (int i = 0; i < 500; ++i) {
+  for (int i = 0; i < 600; ++i) {
     RunIteration();
     auto output = output_queue_.MakeReader().ReadLastMessage();
     ASSERT_TRUE(output);
     EXPECT_NEAR((*output)->left_voltage(), (*output)->right_voltage(), 1e-3);
-    EXPECT_GT((*output)->left_voltage(), -11);
-    EXPECT_GT((*output)->right_voltage(), -11);
+    EXPECT_GE((*output)->left_voltage(), -12.001);
+    EXPECT_GE((*output)->right_voltage(), -12.001);
   }
   VerifyNearGoal();
 }
@@ -384,12 +354,12 @@ TEST_F(DrivetrainTest, DriveAlmostStraightForward) {
 
   goal_queue_.WriteMessage(goal);
 
-  for (int i = 0; i < 500; ++i) {
+  for (int i = 0; i < 600; ++i) {
     RunIteration();
     auto output = output_queue_.MakeReader().ReadLastMessage();
     ASSERT_TRUE(output);
-    EXPECT_GT((*output)->left_voltage(), -11);
-    EXPECT_GT((*output)->right_voltage(), -11);
+    EXPECT_GE((*output)->left_voltage(), -12.001);
+    EXPECT_GE((*output)->right_voltage(), -12.001);
   }
   VerifyNearGoal();
 }
@@ -444,13 +414,13 @@ TEST_F(DrivetrainTest, ProfileStraightForward) {
 
     auto output = output_queue_.MakeReader().ReadLastMessage();
     ASSERT_TRUE(output);
-    EXPECT_GT((*output)->left_voltage(), -11);
-    EXPECT_GT((*output)->right_voltage(), -11);
+    EXPECT_GE((*output)->left_voltage(), -12.001);
+    EXPECT_GE((*output)->right_voltage(), -12.001);
     EXPECT_NEAR((*output)->left_voltage(), (*output)->right_voltage(), 1e-3);
-    EXPECT_GT((*output)->left_voltage(), -6);
-    EXPECT_GT((*output)->right_voltage(), -6);
-    EXPECT_LT((*output)->left_voltage(), 6);
-    EXPECT_LT((*output)->right_voltage(), 6);
+    EXPECT_GE((*output)->left_voltage(), -12.001);
+    EXPECT_GE((*output)->right_voltage(), -12.001);
+    EXPECT_LE((*output)->left_voltage(), 12.001);
+    EXPECT_LE((*output)->right_voltage(), 12.001);
   }
   VerifyNearGoal();
 }
@@ -475,13 +445,13 @@ TEST_F(DrivetrainTest, ProfileTurn) {
 
     auto output = output_queue_.MakeReader().ReadLastMessage();
     ASSERT_TRUE(output);
-    EXPECT_GT((*output)->left_voltage(), -11);
-    EXPECT_GT((*output)->right_voltage(), -11);
+    EXPECT_GE((*output)->left_voltage(), -12.001);
+    EXPECT_GE((*output)->right_voltage(), -12.001);
     EXPECT_NEAR((*output)->left_voltage(), -(*output)->right_voltage(), 1e-2);
-    EXPECT_GT((*output)->left_voltage(), -6);
-    EXPECT_GT((*output)->right_voltage(), -6);
-    EXPECT_LT((*output)->left_voltage(), 6);
-    EXPECT_LT((*output)->right_voltage(), 6);
+    EXPECT_GE((*output)->left_voltage(), -12.001);
+    EXPECT_GE((*output)->right_voltage(), -12.001);
+    EXPECT_LE((*output)->left_voltage(), 12.001);
+    EXPECT_LE((*output)->right_voltage(), 12.001);
   }
   VerifyNearGoal();
 }
@@ -501,7 +471,7 @@ TEST_F(DrivetrainTest, SaturatedTurnDrive) {
     goal_queue_.WriteMessage(goal);
   }
 
-  while (aos::time::Time::Now() < aos::time::Time::InSeconds(3)) {
+  while (aos::time::Time::Now() < aos::time::Time::InSeconds(3.5)) {
     RunIteration();
     ASSERT_TRUE(output_queue_.MakeReader().ReadLastMessage());
   }
@@ -569,10 +539,10 @@ TEST_F(DrivetrainTest, OpenLoopThenClosed) {
 
     auto output = output_queue_.MakeReader().ReadLastMessage();
     ASSERT_TRUE(output);
-    EXPECT_GT((*output)->left_voltage(), -6);
-    EXPECT_GT((*output)->right_voltage(), -6);
-    EXPECT_LT((*output)->left_voltage(), 6);
-    EXPECT_LT((*output)->right_voltage(), 6);
+    EXPECT_GE((*output)->left_voltage(), -12.001);
+    EXPECT_GE((*output)->right_voltage(), -12.001);
+    EXPECT_LE((*output)->left_voltage(), 12.001);
+    EXPECT_LE((*output)->right_voltage(), 12.001);
   }
   VerifyNearGoal();
 }
@@ -624,7 +594,7 @@ TEST_F(DrivetrainTest, PathDrive) {
   goal->mutable_angular_constraints()->set_max_acceleration(1.0);
 
   goal_queue_.WriteMessage(goal);
-  RunForTime(::std::chrono::seconds(5));
+  RunForTime(::std::chrono::seconds(7));
   {
     auto maybe_status = status_queue_.ReadLastMessage();
     ASSERT_TRUE(maybe_status);

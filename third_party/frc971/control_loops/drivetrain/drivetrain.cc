@@ -29,9 +29,9 @@ DrivetrainLoop::DrivetrainLoop(
       driver_station_queue_(driver_station_queue->MakeReader()),
       gyro_queue_(gyro_queue->MakeReader()),
       dt_config_(dt_config),
+      cartesian_position_(Eigen::Matrix<double, 2, 1>::Zero()),
       kf_(dt_config_.make_kf_drivetrain_loop()),
       dt_openloop_(dt_config_, &kf_),
-      cartesian_position_(Eigen::Matrix<double, 2, 1>::Zero()),
       dt_closedloop_(dt_config_, &kf_, &integrated_kf_heading_, &cartesian_position_),
       left_gear_(dt_config_.default_high_gear ? Gear::kHighGear
                                               : Gear::kLowGear),

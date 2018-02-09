@@ -1,3 +1,6 @@
+#!/bin/bash
+cd ${BASH_SOURCE%/*}/../..
+
 # Get all C++ files not in ./.git, ./third_party, or ./tools
 find . -type f | grep -Ev '^\./(\.git|third_party|tools)' | grep -E '\.(h|hpp|cpp|cc)$' |
 # Send them to cpplint
