@@ -73,12 +73,12 @@ def make_gains():
 
     # Noise
     Q_noise = np.asmatrix([
-        [1e-2, 0.],
-        [0., 1e-1]
+        [0., 0.],
+        [0., 0.]
     ])
 
     R_noise = np.asmatrix([
-        [0.1]
+        [1e-5]
     ])
 
     Q_ff = np.asmatrix([
@@ -161,7 +161,7 @@ plant = StateSpacePlant(gains, x0)
 controller = StateSpaceController(gains, -u_max, u_max)
 observer = StateSpaceObserver(gains, x0)
 
-t_profile = TrapezoidalMotionProfile (3.14159 * 2, 3, 3)
+t_profile = TrapezoidalMotionProfile (3.14159, 3, 3)
 
 def goal(t):
     # Make goal a trapezoidal profile

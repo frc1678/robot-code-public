@@ -21,7 +21,7 @@ namespace score_subsystem {
 namespace wrist {
 
 static constexpr double kMaxWristVelocity = 4;
-static constexpr double kMaxWristAcceleration = 7;
+static constexpr double kMaxWristAcceleration = 9.3;
 static constexpr double kWristMinAngle = 0;
 static constexpr double kWristStowAngle = 80 * (M_PI / 180);
 static constexpr double kWristMaxAngle = 160 * (M_PI / 180);
