@@ -21,7 +21,7 @@ def make_gains():
 
     # Moment of inertia constants
     # M= mass and L = length
-    M = 9.0
+    M = 11.0
     L = 0.25
 
     # Parameters
@@ -78,7 +78,7 @@ def make_gains():
     ])
 
     R_noise = np.asmatrix([
-        [1e-5]
+        [0.01]
     ])
 
     Q_ff = np.asmatrix([
@@ -124,14 +124,14 @@ def make_augmented_gains():
     Q_noise[2, 2] = 1
 
     R_noise = np.asmatrix([
-        [0.1]
+        [1e-5]
     ])
 
     # Kalman noise matrix
     Q_kalman = np.asmatrix([
-        [1e0, 0.0, 0.0],
-        [0.0, 2e-1, 0.0],
-        [0.0, 0.0, 3e2]
+        [1e-1, 0.0, 0.0],
+        [0.0, 2e0, 0.0],
+        [0.0, 0.0, 3e4]
     ])
 
     Q_ff = np.asmatrix([
@@ -161,7 +161,7 @@ plant = StateSpacePlant(gains, x0)
 controller = StateSpaceController(gains, -u_max, u_max)
 observer = StateSpaceObserver(gains, x0)
 
-t_profile = TrapezoidalMotionProfile (3.14159, 3, 3)
+t_profile = TrapezoidalMotionProfile (np.pi * 2, 3, 3)
 
 def goal(t):
     # Make goal a trapezoidal profile
