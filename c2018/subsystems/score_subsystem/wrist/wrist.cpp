@@ -40,6 +40,7 @@ void WristController::Update(ScoreSubsystemInputProto input,
                              ScoreSubsystemOutputProto* output,
                              ScoreSubsystemStatusProto* status,
                              bool outputs_enabled) {
+  was_calibrated_ = hall_calibration_.is_calibrated();
   double calibrated_encoder =
       hall_calibration_.Update(input->wrist_encoder(), input->wrist_hall());
   auto wrist_y =
@@ -60,28 +61,28 @@ void WristController::Update(ScoreSubsystemInputProto input,
   if (outputs_enabled) {
     switch (intake_mode_) {
       case INTAKE:
-        intake_voltage = kIntakeVoltage;
+        intake_voltage_ = kIntakeVoltage;
         wrist_solenoid_close = false;
         wrist_solenoid_open = false;
         break;
       case OUTTAKE:
-        intake_voltage = kOuttakeVoltage;
+        intake_voltage_ = kOuttakeVoltage;
         wrist_solenoid_close = false;
         wrist_solenoid_open = false;
         break;
       case IDLE:
-        intake_voltage = 0;
+        intake_voltage_ = 0;
         wrist_solenoid_close = true;
         wrist_solenoid_open = false;
         break;
     }
   } else {
-    intake_voltage = 0;
+    intake_voltage_ = 0;
   }
 
   if (!hall_calibration_.is_calibrated()) {
     wrist_voltage = kCalibVoltage;
-  } else {
+  } else if (!was_calibrated_) {
     plant_.x()(0, 0) += hall_calibration_.offset();
   }
 
@@ -107,13 +108,13 @@ void WristController::Update(ScoreSubsystemInputProto input,
   current_monitor_.Update(input->intake_current(), input->intake_current());
 
   if (current_monitor_.is_at_thresh()) {
-    intake_voltage = 0;
+    intake_voltage_ = 0;
     (*status)->set_has_cube(true);
   } else {
     (*status)->set_has_cube(false);
   }
 
-  (*output)->set_intake_voltage(intake_voltage);
+  (*output)->set_intake_voltage(intake_voltage_);
   (*output)->set_wrist_voltage(wrist_voltage);
   (*output)->set_wrist_solenoid_open(wrist_solenoid_open);
   (*output)->set_wrist_solenoid_close(wrist_solenoid_close);

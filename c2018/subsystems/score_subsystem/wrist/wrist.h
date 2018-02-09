@@ -67,7 +67,9 @@ class WristController {
 
   double old_pos_;
 
-  double intake_voltage = 0;
+  double intake_voltage_ = 0;
+
+  bool was_calibrated_ = false;
 };
 
 }  // namespace wrist
