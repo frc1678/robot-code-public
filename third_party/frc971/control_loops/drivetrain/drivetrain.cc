@@ -44,7 +44,7 @@ DrivetrainLoop::DrivetrainLoop(
 
 int DrivetrainLoop::ControllerIndexFromGears() {
   // 3 is high gear, 0 is low
-  return left_gear_ ? 3 : 0;
+  return (left_gear_ == Gear::kHighGear) ? 3 : 0;
 }
 
 void DrivetrainLoop::Update() {

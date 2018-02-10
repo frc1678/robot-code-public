@@ -1,3 +1,5 @@
+print __name__
+
 import sys
 import subprocess as sp
 import re
