@@ -1,5 +1,7 @@
 #include "c2018/teleop/main.h"
+
 #include <string>
+
 #include "WPILib.h"
 #include "muan/logging/logger.h"
 #include "muan/queues/queue_manager.h"
@@ -15,16 +17,50 @@ using muan::wpilib::DriverStationProto;
 using muan::wpilib::GameSpecificStringProto;
 using muan::teleop::JoystickStatusProto;
 using muan::queues::QueueManager;
+using c2018::climber::ClimberGoalProto;
+using c2018::score_subsystem::ScoreSubsystemGoalProto;
 
 TeleopBase::TeleopBase()
     : throttle_{1, QueueManager<JoystickStatusProto>::Fetch("throttle")},
       wheel_{0, QueueManager<JoystickStatusProto>::Fetch("wheel")},
       gamepad_{2, QueueManager<JoystickStatusProto>::Fetch("gamepad")},
       ds_sender_{QueueManager<DriverStationProto>::Fetch(),
-                 QueueManager<GameSpecificStringProto>::Fetch()} {
+                 QueueManager<GameSpecificStringProto>::Fetch()},
+      climber_goal_queue_{QueueManager<ClimberGoalProto>::Fetch()},
+      score_subsystem_goal_queue_{
+          QueueManager<ScoreSubsystemGoalProto>::Fetch()} {
+  initialize_climb_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::BACK));
+  climb_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::START));
+  stop_climb_ =
+      gamepad_.MakeButton(uint32_t(muan::teleop::XBox::RIGHT_CLICK_IN));
+  godmode_ = gamepad_.MakeButton(
+      uint32_t(muan::teleop::XBox::LEFT_CLICK_IN));  // TODO(hanson/gemma/ellie)
+                                                     // add godmodes for
+                                                     // intaking/outtaking
+  intake_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::A_BUTTON));
+  outtake_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::B_BUTTON));
+  score_back_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::RIGHT_BUMPER));
+  score_front_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_BUMPER));
+
+  height_0_ = gamepad_.MakePov(0, muan::teleop::Pov::kSouth);
+  height_1_ = gamepad_.MakePov(0, muan::teleop::Pov::kEast);
+  height_2_ = gamepad_.MakePov(0, muan::teleop::Pov::kNorth);
+
+  godmode_up_ = gamepad_.MakeAxis(5, .7);     // Right Joystick North
+  godmode_down_ = gamepad_.MakeAxis(5, -.7);  // Right Joystick South
+
+  top_mode_ = gamepad_.MakeAxis(1, .7);      // Left Joystick North
+  bottom_mode_ = gamepad_.MakeAxis(1, -.7);  // Left Joystick South
+
   shifting_low_ = throttle_.MakeButton(4);
   shifting_high_ = throttle_.MakeButton(5);
+
   quickturn_ = wheel_.MakeButton(5);
+
+  // Default values
+  climber_goal_->set_climber_goal(c2018::climber::NONE);
+
+  score_subsystem_goal_->set_score_goal(c2018::score_subsystem::IDLE_BOTTOM);
 }
 
 void TeleopBase::operator()() {
@@ -49,8 +85,9 @@ void TeleopBase::Stop() { running_ = false; }
 void TeleopBase::Update() {
   if (DriverStation::GetInstance().IsOperatorControl()) {
     SendDrivetrainMessage();
+    SendScoreSubsystemMessage();
+    SendClimbSubsystemMessage();
   }
-
   SetReadableLogName();
 
   ds_sender_.Send();
@@ -107,6 +144,75 @@ void TeleopBase::SendDrivetrainMessage() {
   drivetrain_goal->mutable_teleop_command()->set_quick_turn(quickturn);
 
   QueueManager<DrivetrainGoal>::Fetch()->WriteMessage(drivetrain_goal);
+}
+
+void TeleopBase::SendScoreSubsystemMessage() {
+  score_subsystem_goal_->set_score_goal(c2018::score_subsystem::IDLE_MANUAL);
+
+  // Godmode
+  if (godmode_->is_pressed()) {
+    if (godmode_up_->is_pressed()) {
+      // logic
+    } else if (godmode_down_->is_pressed()) {
+      // more logic
+    }
+    // room for more godmode buttons if needed
+  }
+
+  // Elevator heights + intakes
+  if (height_0_->is_pressed()) {
+    score_subsystem_goal_->set_score_goal(c2018::score_subsystem::HEIGHT_0);
+  } else if (height_1_->is_pressed()) {
+    score_subsystem_goal_->set_score_goal(c2018::score_subsystem::HEIGHT_1);
+  } else if (height_2_->is_pressed()) {
+    score_subsystem_goal_->set_score_goal(c2018::score_subsystem::HEIGHT_2);
+  } else {
+    score_subsystem_goal_->set_score_goal(c2018::score_subsystem::IDLE_BOTTOM);
+  }
+
+  // Intake modes
+  if (intake_->is_pressed()) {
+    score_subsystem_goal_->set_score_goal(
+        c2018::score_subsystem::INTAKE_MANUAL);
+  } else if (outtake_->is_pressed()) {
+    score_subsystem_goal_->set_score_goal(
+        c2018::score_subsystem::OUTTAKE_MANUAL);
+  }  // Intake mode is set to idle if you're not pressing anything. See line 150
+
+  // Scoring modes
+  if (score_front_->is_pressed()) {
+    if (top_mode_->is_pressed()) {
+      score_subsystem_goal_->set_score_goal(c2018::score_subsystem::SCORE_HIGH);
+    } else if (bottom_mode_->is_pressed()) {
+      score_subsystem_goal_->set_score_goal(c2018::score_subsystem::SCORE_LOW);
+    } else {
+      score_subsystem_goal_->set_score_goal(c2018::score_subsystem::SCORE_MID);
+    }
+  }
+  if (score_back_->is_pressed()) {
+    if (top_mode_->is_pressed()) {
+      score_subsystem_goal_->set_score_goal(
+          c2018::score_subsystem::SCORE_HIGH_BACK);
+    } else {
+      score_subsystem_goal_->set_score_goal(
+          c2018::score_subsystem::SCORE_MID_BACK);
+    }
+  }
+
+  score_subsystem_goal_queue_->WriteMessage(score_subsystem_goal_);
+}
+
+void TeleopBase::SendClimbSubsystemMessage() {
+  if (initialize_climb_->was_clicked()) {
+    climber_goal_->set_climber_goal(c2018::climber::APPROACHING);
+    if (climb_->was_clicked()) {
+      climber_goal_->set_climber_goal(c2018::climber::CLIMBING);
+    }
+  } else if (stop_climb_->was_clicked()) {
+    climber_goal_->set_climber_goal(c2018::climber::NONE);
+  }
+
+  climber_goal_queue_->WriteMessage(climber_goal_);
 }
 
 }  // namespace teleop
