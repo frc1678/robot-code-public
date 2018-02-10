@@ -42,11 +42,12 @@ message ScoreSubsystemInput {
 }
 
 message ScoreSubsystemOutput {
-  required double elevator_voltage = 1;
-  required double intake_voltage = 2;
-  required double wrist_voltage = 3;
-  required bool wrist_solenoid_open = 4;
-  required bool wrist_solenoid_close = 5;
+  required uint64 timestamp = 1;
+  required double elevator_voltage = 2;
+  required double intake_voltage = 3;
+  required double wrist_voltage = 4;
+  required bool wrist_solenoid_open = 5;
+  required bool wrist_solenoid_close = 6;
 }
 
 message ScoreSubsystemGoal {
