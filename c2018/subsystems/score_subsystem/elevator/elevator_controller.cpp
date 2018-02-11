@@ -77,7 +77,7 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
 
   if (!outputs_enabled) {
     elevator_u = CapU(0);
-    LOG_P("Elavator outputs not enabled!");
+    LOG_P("Elevator outputs not enabled!");
   } else if (!hall_calib_.is_calibrated()) {
     elevator_u = kCalibrationVoltage;
   } else if (encoder_fault_detected_) {
@@ -107,9 +107,6 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
 
   plant_.Update((Eigen::Matrix<double, 1, 1>() << elevator_u).finished());
 
-  elevator_observer_.x(0) =
-      muan::utils::Cap(elevator_observer_.x(0), 0, kElevatorMaxHeight);
-
   (*output)->set_elevator_voltage(elevator_u);
   (*status)->set_elevator_actual_height(elevator_observer_.x()(0, 0));
   (*status)->set_elevator_voltage_error(elevator_observer_.x()(2, 0));
@@ -131,8 +128,7 @@ Eigen::Matrix<double, 2, 1> ElevatorController::UpdateProfiledGoal(
   if (outputs_enabled) {
     profiled_goal_ = trapezoid_profile_.Update(unprofiled_goal_, 0);
   } else {
-    profiled_goal_ = elevator_observer_.x().block<2, 1>(0, 0);
-    LOG_P("Elavator controlled outputs not enabled");
+    profiled_goal_ = trapezoid_profile_.Update(elevator_observer_.x()(0, 0), 0);;
   }
   return profiled_goal_;
 }
