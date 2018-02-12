@@ -210,6 +210,10 @@ void ElevatorController::SetWeights(bool second_stage, bool has_cube) {
   }
 }
 
+bool ElevatorController::is_calibrated() const {
+  return hall_calib_.is_calibrated();
+}
+
 }  // namespace elevator
 
 }  // namespace score_subsystem

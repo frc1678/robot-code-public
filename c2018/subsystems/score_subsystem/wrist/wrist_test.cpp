@@ -1,6 +1,12 @@
 #include "c2018/subsystems/score_subsystem/wrist/wrist.h"
 #include "gtest/gtest.h"
 
+namespace c2018 {
+
+namespace score_subsystem {
+
+namespace wrist {
+
 class WristTest : public ::testing::Test {
  public:
   WristTest() {
@@ -23,14 +29,14 @@ class WristTest : public ::testing::Test {
             .finished());
   }
 
-  void SetGoal(double angle, c2018::score_subsystem::IntakeMode intake_mode) {
+  void SetGoal(double angle, IntakeMode intake_mode) {
     wrist_.SetGoal(angle, intake_mode);
   }
 
-  c2018::score_subsystem::ScoreSubsystemInputProto wrist_input_proto_;
-  c2018::score_subsystem::ScoreSubsystemOutputProto wrist_output_proto_;
-  c2018::score_subsystem::ScoreSubsystemStatusProto wrist_status_proto_;
-  c2018::score_subsystem::ScoreSubsystemGoalProto wrist_goal_proto_;
+  ScoreSubsystemInputProto wrist_input_proto_;
+  ScoreSubsystemOutputProto wrist_output_proto_;
+  ScoreSubsystemStatusProto wrist_status_proto_;
+  ScoreSubsystemGoalProto wrist_goal_proto_;
 
   double wrist_voltage_;
   bool outputs_enabled_;
@@ -39,15 +45,15 @@ class WristTest : public ::testing::Test {
   muan::control::StateSpacePlant<1, 3, 1> plant_;
 
  private:
-  c2018::score_subsystem::wrist::WristController wrist_;
+  WristController wrist_;
 };
-// TESTS
+
 TEST_F(WristTest, Calib) {
   wrist_input_proto_->set_wrist_encoder(0);
   wrist_input_proto_->set_wrist_hall(false);
   outputs_enabled_ = true;
 
-  SetGoal(M_PI / 4, c2018::score_subsystem::IDLE);
+  SetGoal(M_PI / 4, IntakeMode::IDLE);
 
   double offset = -M_PI / 2;
 
@@ -65,7 +71,7 @@ TEST_F(WristTest, Intake) {
   wrist_input_proto_->set_wrist_encoder(0);
   wrist_input_proto_->set_wrist_hall(false);
   outputs_enabled_ = true;
-  SetGoal(0.0, c2018::score_subsystem::IntakeMode::INTAKE);
+  SetGoal(0.0, IntakeMode::IN);
   Update();
 
   EXPECT_NEAR(wrist_output_proto_->intake_voltage(), 12.0, 1e-3);
@@ -77,19 +83,19 @@ TEST_F(WristTest, Outtake) {
   wrist_input_proto_->set_wrist_encoder(0);
   wrist_input_proto_->set_wrist_hall(false);
   outputs_enabled_ = true;
-  SetGoal(0.0, c2018::score_subsystem::IntakeMode::OUTTAKE);
+  SetGoal(0.0, IntakeMode::OUT);
   Update();
 
   EXPECT_NEAR(wrist_output_proto_->intake_voltage(), -12.0, 1e-3);
   EXPECT_FALSE(wrist_output_proto_->wrist_solenoid_open());
-  EXPECT_FALSE(wrist_output_proto_->wrist_solenoid_close());
+  EXPECT_TRUE(wrist_output_proto_->wrist_solenoid_close());
 }
 
 TEST_F(WristTest, Idle) {
   wrist_input_proto_->set_wrist_encoder(0);
   wrist_input_proto_->set_wrist_hall(false);
   outputs_enabled_ = true;
-  SetGoal(0.0, c2018::score_subsystem::IntakeMode::IDLE);
+  SetGoal(0.0, IntakeMode::IDLE);
   Update();
 
   EXPECT_NEAR(wrist_output_proto_->intake_voltage(), 0, 1e-3);
@@ -101,8 +107,7 @@ TEST_F(WristTest, Stow) {
   wrist_input_proto_->set_wrist_encoder(0);
   wrist_input_proto_->set_wrist_hall(false);
   outputs_enabled_ = true;
-  SetGoal(c2018::score_subsystem::wrist::kWristStowAngle,
-          c2018::score_subsystem::IntakeMode::IDLE);
+  SetGoal(kWristStowAngle, IntakeMode::IDLE);
   Update();
 
   for (int i = 0; i < 1000; i++) {
@@ -111,25 +116,23 @@ TEST_F(WristTest, Stow) {
     EXPECT_NEAR(wrist_output_proto_->wrist_voltage(), 0, 12);
   }
 
-  EXPECT_NEAR(wrist_status_proto_->wrist_angle(),
-              c2018::score_subsystem::wrist::kWristStowAngle, 0.01);
+  EXPECT_NEAR(wrist_status_proto_->wrist_angle(), kWristStowAngle, 0.01);
   EXPECT_TRUE(wrist_status_proto_->wrist_calibrated());
 
   EXPECT_NEAR(wrist_output_proto_->intake_voltage(), 0, 1e-3);
   EXPECT_FALSE(wrist_output_proto_->wrist_solenoid_open());
   EXPECT_TRUE(wrist_output_proto_->wrist_solenoid_close());
-  EXPECT_NEAR(wrist_status_proto_->wrist_profiled_goal(),
-              c2018::score_subsystem::wrist::kWristStowAngle, 1e-3);
-  EXPECT_NEAR(wrist_status_proto_->wrist_unprofiled_goal(),
-              c2018::score_subsystem::wrist::kWristStowAngle, 1e-3);
+  EXPECT_NEAR(wrist_status_proto_->wrist_profiled_goal(), kWristStowAngle,
+              1e-3);
+  EXPECT_NEAR(wrist_status_proto_->wrist_unprofiled_goal(), kWristStowAngle,
+              1e-3);
 }
 
 TEST_F(WristTest, Backwards) {
   wrist_input_proto_->set_wrist_encoder(0);
   wrist_input_proto_->set_wrist_hall(false);
   outputs_enabled_ = true;
-  SetGoal(c2018::score_subsystem::wrist::kWristMaxAngle,
-          c2018::score_subsystem::IntakeMode::IDLE);
+  SetGoal(kWristMaxAngle, IntakeMode::IDLE);
   Update();
 
   for (int i = 0; i < 1000; i++) {
@@ -138,13 +141,11 @@ TEST_F(WristTest, Backwards) {
     EXPECT_NEAR(wrist_output_proto_->wrist_voltage(), 0, 12);
   }
 
-  EXPECT_NEAR(wrist_status_proto_->wrist_angle(),
-              c2018::score_subsystem::wrist::kWristMaxAngle, 1e-3);
+  EXPECT_NEAR(wrist_status_proto_->wrist_angle(), kWristMaxAngle, 1e-3);
   EXPECT_TRUE(wrist_status_proto_->wrist_calibrated());
-  EXPECT_NEAR(wrist_status_proto_->wrist_profiled_goal(),
-              c2018::score_subsystem::wrist::kWristMaxAngle, 1e-3);
-  EXPECT_NEAR(wrist_status_proto_->wrist_unprofiled_goal(),
-              c2018::score_subsystem::wrist::kWristMaxAngle, 1e-3);
+  EXPECT_NEAR(wrist_status_proto_->wrist_profiled_goal(), kWristMaxAngle, 1e-3);
+  EXPECT_NEAR(wrist_status_proto_->wrist_unprofiled_goal(), kWristMaxAngle,
+              1e-3);
 
   EXPECT_NEAR(wrist_output_proto_->intake_voltage(), 0, 1e-3);
   EXPECT_FALSE(wrist_output_proto_->wrist_solenoid_open());
@@ -156,8 +157,7 @@ TEST_F(WristTest, Disabled) {
   wrist_input_proto_->set_wrist_hall(false);
   outputs_enabled_ = false;
 
-  SetGoal(c2018::score_subsystem::wrist::kWristMaxAngle,
-          c2018::score_subsystem::IntakeMode::INTAKE);
+  SetGoal(kWristMaxAngle, IntakeMode::IN);
 
   Update();
 
@@ -167,16 +167,18 @@ TEST_F(WristTest, Disabled) {
 
 TEST_F(WristTest, CanCapAngle) {
   outputs_enabled_ = true;
-  SetGoal(6e5, c2018::score_subsystem::IntakeMode::IDLE);
+  SetGoal(6e5, IntakeMode::IDLE);
 
   Update();
 
-  EXPECT_TRUE(wrist_status_proto_->wrist_profiled_goal() <=
-              c2018::score_subsystem::wrist::kWristMaxAngle);
-  EXPECT_TRUE(wrist_status_proto_->wrist_unprofiled_goal() >=
-              c2018::score_subsystem::wrist::kWristMinAngle);
-  EXPECT_TRUE(wrist_status_proto_->wrist_profiled_goal() <=
-              c2018::score_subsystem::wrist::kWristMaxAngle);
-  EXPECT_TRUE(wrist_status_proto_->wrist_unprofiled_goal() >=
-              c2018::score_subsystem::wrist::kWristMinAngle);
+  EXPECT_TRUE(wrist_status_proto_->wrist_profiled_goal() <= kWristMaxAngle);
+  EXPECT_TRUE(wrist_status_proto_->wrist_unprofiled_goal() >= kWristMinAngle);
+  EXPECT_TRUE(wrist_status_proto_->wrist_profiled_goal() <= kWristMaxAngle);
+  EXPECT_TRUE(wrist_status_proto_->wrist_unprofiled_goal() >= kWristMinAngle);
 }
+
+}  // namespace wrist
+
+}  // namespace score_subsystem
+
+}  // namespace c2018

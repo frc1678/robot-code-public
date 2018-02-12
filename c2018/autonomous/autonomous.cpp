@@ -187,6 +187,21 @@ void AutonomousBase::Wait(uint32_t num_cycles) {
   }
 }
 
+bool AutonomousBase::HasCube() {
+  score_subsystem::ScoreSubsystemStatusProto status;
+  if (!score_status_reader_.ReadLastMessage(&status)) {
+    return false;
+  }
+
+  return status->has_cube();
+}
+
+void AutonomousBase::WaitForCube() {
+  while (!HasCube() && IsAutonomous()) {
+    loop_.SleepUntilNext();
+  }
+}
+
 void AutonomousBase::operator()() {
   aos::SetCurrentThreadRealtimePriority(10);
   muan::utils::SetCurrentThreadName("Autonomous");
@@ -391,36 +406,45 @@ void AutonomousBase::WaitUntilDriveComplete() {
 }
 
 void AutonomousBase::IntakeGround() {
-  score_goal_->set_score_goal(score_subsystem::ScoreGoal::HEIGHT_0);
-  score_goal_queue_->WriteMessage(score_goal_);
+  score_subsystem::ScoreSubsystemGoalProto score_goal;
+  score_goal->set_score_goal(score_subsystem::ScoreGoal::INTAKE_0);
+  score_goal->set_intake_goal(score_subsystem::IntakeGoal::INTAKE);
+  score_goal_queue_->WriteMessage(score_goal);
 }
 
 void AutonomousBase::StopIntakeGround() {
-  score_goal_->set_score_goal(score_subsystem::ScoreGoal::IDLE_MANUAL);
-  score_goal_queue_->WriteMessage(score_goal_);
+  score_subsystem::ScoreSubsystemGoalProto score_goal;
+  score_goal->set_intake_goal(score_subsystem::IntakeGoal::INTAKE_NONE);
+  score_goal_queue_->WriteMessage(score_goal);
 }
 
 void AutonomousBase::MoveToSwitch() {
-  score_goal_->set_score_goal(score_subsystem::ScoreGoal::PREP_SCORE_LOW);
-  score_goal_queue_->WriteMessage(score_goal_);
+  score_subsystem::ScoreSubsystemGoalProto score_goal;
+  score_goal->set_score_goal(score_subsystem::ScoreGoal::SWITCH);
+  score_goal->set_intake_goal(score_subsystem::IntakeGoal::INTAKE_NONE);
+  score_goal_queue_->WriteMessage(score_goal);
 }
 
 void AutonomousBase::MoveToScale(bool front) {
-  score_goal_->set_score_goal(front
-                                  ? score_subsystem::ScoreGoal::SCORE_MID
-                                  : score_subsystem::ScoreGoal::SCORE_MID_BACK);
-  score_goal_queue_->WriteMessage(score_goal_);
+  score_subsystem::ScoreSubsystemGoalProto score_goal;
+  score_goal->set_score_goal(front
+                                  ? score_subsystem::ScoreGoal::SCALE_MID_FORWARD
+                                  : score_subsystem::ScoreGoal::SCALE_MID_REVERSE);
+  score_goal->set_intake_goal(score_subsystem::IntakeGoal::INTAKE_NONE);
+  score_goal_queue_->WriteMessage(score_goal);
 }
 
 void AutonomousBase::Score() {
-  score_goal_->set_score_goal(score_subsystem::ScoreGoal::OUTTAKE_MANUAL);
-  score_goal_queue_->WriteMessage(score_goal_);
+  score_subsystem::ScoreSubsystemGoalProto score_goal;
+  score_goal->set_intake_goal(score_subsystem::IntakeGoal::OUTTAKE);
+  score_goal_queue_->WriteMessage(score_goal);
 }
 
 bool AutonomousBase::IsAtScoreHeight() {
-  if (score_status_reader_.ReadLastMessage(&score_status_)) {
-    return (std::abs(score_status_->elevator_unprofiled_goal() -
-                     score_status_->elevator_actual_height()) < 1e-2);
+  score_subsystem::ScoreSubsystemStatusProto score_status;
+  if (score_status_reader_.ReadLastMessage(&score_status)) {
+    return (std::abs(score_status->elevator_unprofiled_goal() -
+                     score_status->elevator_actual_height()) < 1e-2);
   } else {
     return false;
   }

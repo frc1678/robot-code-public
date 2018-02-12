@@ -33,20 +33,30 @@ static constexpr double kIntakeVoltage = 12;
 
 static constexpr double kHallEffectAngle = 0.23;
 
-static constexpr double kHoldingVoltage = 0;
+static constexpr double kHoldingVoltage = 2.5;
 static constexpr double kMaxVoltage = 12;
 
 static constexpr double kStallCurrent = 30;
+
+static constexpr int kNumHasCubeTicks = 50;
+
+enum class IntakeMode {
+  IDLE = 0,
+  IN = 1,
+  OUT = 2
+};
 
 class WristController {
  public:
   WristController();
 
-  void SetGoal(double angle, c2018::score_subsystem::IntakeMode mode);
+  void SetGoal(double angle, IntakeMode mode);
   Eigen::Matrix<double, 2, 1> UpdateProfiledGoal(double unprofiled_goal_,
                                                  bool outputs_enabled);
   void Update(ScoreSubsystemInputProto input, ScoreSubsystemOutputProto* output,
               ScoreSubsystemStatusProto* status, bool outputs_enabled);
+
+  bool is_calibrated() const;
 
  private:
   aos::util::TrapezoidProfile trapezoidal_motion_profile_;
@@ -57,11 +67,9 @@ class WristController {
   muan::control::StateSpaceController<1, 3, 1> wrist_controller_;
   muan::control::StateSpaceObserver<1, 3, 1> wrist_observer_;
 
-  muan::utils::Monitor current_monitor_{30};
-
   double CapU(double wrist_voltage);
 
-  IntakeMode intake_mode_ = IDLE;
+  IntakeMode intake_mode_ = IntakeMode::IDLE;
   double unprofiled_goal_ = 0;
   Eigen::Matrix<double, 2, 1> profiled_goal_;
 
@@ -70,6 +78,8 @@ class WristController {
   double intake_voltage_ = 0;
 
   bool was_calibrated_ = false;
+
+  int has_cube_for_ticks_ = 0;
 };
 
 }  // namespace wrist

@@ -18,6 +18,7 @@ namespace elevator {
 
 constexpr double kElevatorAcceleration = 2.3;
 constexpr double kElevatorVelocity = 2.2;
+constexpr double kElevatorMinHeight = 0.0;
 constexpr double kElevatorMaxHeight = 2.06;
 constexpr double kHallEffectHeight = 0.898;
 constexpr double kCalibrationVoltage = 6;
@@ -34,6 +35,8 @@ class ElevatorController {
                                                  bool outputs_enabled);
   void SetGoal(double goal);
   double CapU(double elevator_u);
+
+  bool is_calibrated() const;
 
  private:
   muan::control::StateSpacePlant<1, 3, 1> plant_;

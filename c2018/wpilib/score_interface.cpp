@@ -68,7 +68,7 @@ void ScoreSubsystemInterface::ReadSensors() {
   // These numbers come from the status to outpur ratios for the encoders.
   sensors->set_elevator_hall(!elevator_hall_.Get());
   sensors->set_wrist_hall(!wrist_hall_.Get());
-  sensors->set_has_cube(has_cube_.Get());
+  sensors->set_has_cube(!has_cube_.Get());
 
   muan::wpilib::PdpMessage pdp_data;
   if (pdp_reader_.ReadLastMessage(&pdp_data)) {

@@ -40,6 +40,8 @@ class AutonomousBase {
   void MoveToScale(bool front);
   void Score();
   bool IsAtScoreHeight();
+  bool HasCube();
+  void WaitForCube();
 
   double max_forward_velocity_ = 3.0, max_forward_acceleration_ = 3.0;
   double max_angular_velocity_ = 5.0, max_angular_acceleration_ = 4.0;
@@ -61,9 +63,6 @@ class AutonomousBase {
       game_specific_string_reader_;
 
   aos::time::PhasedLoop loop_{std::chrono::milliseconds(5)};
-
-  c2018::score_subsystem::ScoreSubsystemGoalProto score_goal_;
-  c2018::score_subsystem::ScoreSubsystemStatusProto score_status_;
 };
 
 }  // namespace autonomous

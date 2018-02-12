@@ -1,5 +1,5 @@
-#include "c2018/subsystems/score_subsystem/wrist/wrist.h"
 #include <cmath>
+#include "c2018/subsystems/score_subsystem/wrist/wrist.h"
 
 namespace c2018 {
 namespace score_subsystem {
@@ -48,6 +48,13 @@ void WristController::Update(ScoreSubsystemInputProto input,
 
   double wrist_voltage = 0.0;
 
+  if (input->has_cube()) {
+    has_cube_for_ticks_++;
+  } else {
+    has_cube_for_ticks_ = 0;
+  }
+  bool has_cube = has_cube_for_ticks_ > kNumHasCubeTicks;
+
   if (!outputs_enabled) {
     wrist_voltage = 0.0;
     trapezoidal_motion_profile_.MoveCurrentState(
@@ -60,18 +67,22 @@ void WristController::Update(ScoreSubsystemInputProto input,
 
   if (outputs_enabled) {
     switch (intake_mode_) {
-      case INTAKE:
+      case IntakeMode::IN:
         intake_voltage_ = kIntakeVoltage;
         wrist_solenoid_close = false;
         wrist_solenoid_open = false;
         break;
-      case OUTTAKE:
+      case IntakeMode::OUT:
         intake_voltage_ = kOuttakeVoltage;
-        wrist_solenoid_close = false;
+        wrist_solenoid_close = true;
         wrist_solenoid_open = false;
         break;
-      case IDLE:
-        intake_voltage_ = 0;
+      case IntakeMode::IDLE:
+        if (has_cube) {
+          intake_voltage_ = kHoldingVoltage;
+        } else {
+          intake_voltage_ = 0;
+        }
         wrist_solenoid_close = true;
         wrist_solenoid_open = false;
         break;
@@ -105,22 +116,13 @@ void WristController::Update(ScoreSubsystemInputProto input,
   wrist_observer_.Update(
       (Eigen::Matrix<double, 1, 1>() << wrist_voltage).finished(), wrist_y);
 
-  current_monitor_.Update(input->intake_current(), input->intake_current());
-
-  if (current_monitor_.is_at_thresh()) {
-    intake_voltage_ = 0;
-    (*status)->set_has_cube(true);
-  } else {
-    (*status)->set_has_cube(false);
-  }
-
   (*output)->set_intake_voltage(intake_voltage_);
   (*output)->set_wrist_voltage(wrist_voltage);
   (*output)->set_wrist_solenoid_open(wrist_solenoid_open);
   (*output)->set_wrist_solenoid_close(wrist_solenoid_close);
   (*status)->set_wrist_calibrated(hall_calibration_.is_calibrated());
   (*status)->set_wrist_angle(wrist_observer_.x()(0, 0));
-  (*status)->set_has_cube(input->intake_current() > kStallCurrent);
+  (*status)->set_has_cube(has_cube);
   (*status)->set_wrist_profiled_goal(profiled_goal_(0, 0));
   (*status)->set_wrist_unprofiled_goal(unprofiled_goal_);
 }
@@ -132,6 +134,10 @@ Eigen::Matrix<double, 2, 1> WristController::UpdateProfiledGoal(
   }
 
   return profiled_goal_;
+}
+
+bool WristController::is_calibrated() const {
+  return hall_calibration_.is_calibrated();
 }
 
 }  // namespace wrist

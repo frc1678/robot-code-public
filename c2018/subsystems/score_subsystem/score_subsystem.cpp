@@ -9,12 +9,24 @@ using muan::wpilib::DriverStationProto;
 ScoreSubsystem::ScoreSubsystem()
     : goal_reader_{QueueManager<ScoreSubsystemGoalProto>::Fetch()
                        ->MakeReader()},
-      status_queue_{QueueManager<ScoreSubsystemStatusProto>::Fetch()},
       input_reader_{
           QueueManager<ScoreSubsystemInputProto>::Fetch()->MakeReader()},
+      status_queue_{QueueManager<ScoreSubsystemStatusProto>::Fetch()},
       output_queue_{QueueManager<ScoreSubsystemOutputProto>::Fetch()},
       ds_status_reader_{
           QueueManager<DriverStationProto>::Fetch()->MakeReader()} {}
+
+void ScoreSubsystem::BoundGoal(double* elevator_goal,
+                               double* wrist_goal) const {
+  if (status_->wrist_angle() > kWristSafeAngle) {
+    *elevator_goal = muan::utils::Cap(*elevator_goal, kElevatorWristSafeHeight,
+                                      elevator::kElevatorMaxHeight);
+  }
+
+  if (status_->elevator_actual_height() < kElevatorWristSafeHeight) {
+    *wrist_goal = muan::utils::Cap(*wrist_goal, 0, kWristSafeAngle);
+  }
+}
 
 void ScoreSubsystem::Update() {
   ScoreSubsystemGoalProto goal;
@@ -23,6 +35,7 @@ void ScoreSubsystem::Update() {
   DriverStationProto driver_station;
 
   if (!input_reader_.ReadLastMessage(&input)) {
+    // TODO(Kyle) handle this gracefully
     return;
   }
 
@@ -31,123 +44,152 @@ void ScoreSubsystem::Update() {
   }
 
   if (!goal_reader_.ReadLastMessage(&goal)) {
-    // Set default goal
-    wrist_angle_ = kWristForwardAngle;
-    intake_mode_ = IDLE;  // Set goal to be upright, and for intake to not spin
-    elevator_height_ =
-        kElevatorBottom;  // Set the elevator to be halfway so ready for calib
-  } else {
-    score_goal_ = goal->score_goal();
-    switch (score_goal_) {
-      case HEIGHT_0:
-        elevator_height_ = kElevatorFirstCube;
-        wrist_angle_ = kWristForwardAngle;
-        intake_mode_ = INTAKE;
-        break;
-      case HEIGHT_1:
-        elevator_height_ = kElevatorSecondCube;
-        wrist_angle_ = kWristForwardAngle;
-        intake_mode_ = INTAKE;
-        break;
-      case HEIGHT_2:
-        elevator_height_ = kElevatorThirdCube;
-        wrist_angle_ = kWristForwardAngle;
-        intake_mode_ = INTAKE;
-        break;
-      case PREP_SCORE_LOW:
-        elevator_height_ = kElevatorScoreLow;
-        wrist_angle_ = kWristForwardAngle;
-        intake_mode_ = IDLE;
-        break;
-      case PREP_SCORE_MID:
-        elevator_height_ = kElevatorScoreMid;
-        wrist_angle_ = kWristForwardAngle;
-        intake_mode_ = IDLE;
-        break;
-      case PREP_SCORE_MID_BACK:
-        elevator_height_ = kElevatorScoreMid;
-        wrist_angle_ = kWristBackwardAngle;
-        intake_mode_ = IDLE;
-        break;
-      case PREP_SCORE_HIGH:
-        elevator_height_ = kElevatorScoreHigh;
-        wrist_angle_ = kWristForwardAngle;
-        intake_mode_ = IDLE;
-        break;
-      case PREP_SCORE_HIGH_BACK:
-        elevator_height_ = kElevatorScoreHigh;
-        wrist_angle_ = kWristBackwardAngle;
-        intake_mode_ = IDLE;
-        break;
-      case SCORE_LOW:
-        elevator_height_ = kElevatorScoreLow;
-        wrist_angle_ = kWristForwardAngle;
-        intake_mode_ = OUTTAKE;
-        break;
-      case SCORE_MID:
-        elevator_height_ = kElevatorScoreMid;
-        wrist_angle_ = kWristForwardAngle;
-        intake_mode_ = OUTTAKE;
-        break;
-      case SCORE_HIGH:
-        elevator_height_ = kElevatorScoreHigh;
-        wrist_angle_ = kWristForwardAngle;
-        intake_mode_ = OUTTAKE;
-        break;
-      case SCORE_MID_BACK:
-        elevator_height_ = kElevatorScoreMid;
-        wrist_angle_ = kWristBackwardAngle;
-        intake_mode_ = OUTTAKE;
-        break;
-      case SCORE_HIGH_BACK:
-        elevator_height_ = kElevatorScoreHigh;
-        wrist_angle_ = kWristBackwardAngle;
-        intake_mode_ = OUTTAKE;
-        break;
-      case IDLE_BOTTOM:
-        elevator_height_ = kElevatorBottom;
-        wrist_angle_ = kWristForwardAngle;
-        intake_mode_ = IDLE;
-        break;
-      case IDLE_STOW:
-        elevator_height_ = kElevatorBottom;
-        wrist_angle_ = 80 * (M_PI / 180);
-        intake_mode_ = IDLE;
-        break;
-      case INTAKE_MANUAL:
-        intake_mode_ = INTAKE;
-        break;
-      case OUTTAKE_MANUAL:
-        intake_mode_ = OUTTAKE;
-        break;
-      case IDLE_MANUAL:
-        intake_mode_ = IDLE;
-        break;
-    }
+    goal->set_score_goal(SCORE_NONE);
+    goal->set_intake_goal(INTAKE_NONE);
   }
 
-  if (status_->has_cube() && intake_mode_ == INTAKE) {
-    wrist_angle_ = kWristStowAngle;
-    intake_mode_ = IDLE;
-  }
+  RunStateMachine();
 
-  if (status_->wrist_angle() > M_PI / 2.0) {
-    elevator_height_ = muan::utils::Cap(elevator_height_, 0.9, 2);
-  }
+  SetGoal(goal);
 
-  elevator_.SetGoal(elevator_height_);
+  double constrained_elevator_height = elevator_height_;
+  double constrained_wrist_angle = wrist_angle_;
 
+  BoundGoal(&constrained_elevator_height, &constrained_wrist_angle);
+
+  elevator_.SetGoal(constrained_elevator_height);
   elevator_.Update(input, &output, &status_, driver_station->is_sys_active());
 
-  if (status_->elevator_actual_height() < 0.89) {
-    wrist_angle_ = muan::utils::Cap(wrist_angle_, 0, M_PI / 2);
+  wrist::IntakeMode intake_mode = wrist::IntakeMode::IDLE;
+  switch (state_) {
+    case ScoreSubsystemState::CALIBRATING:
+    case ScoreSubsystemState::HOLDING:
+      intake_mode = wrist::IntakeMode::IDLE;
+      break;
+    case ScoreSubsystemState::INTAKING:
+      intake_mode = wrist::IntakeMode::IN;
+      break;
+    case ScoreSubsystemState::SCORING:
+      intake_mode = wrist::IntakeMode::OUT;
+      break;
   }
 
-  wrist_.SetGoal(wrist_angle_, intake_mode_);
+  wrist_.SetGoal(constrained_wrist_angle, intake_mode);
   wrist_.Update(input, &output, &status_, driver_station->is_sys_active());
+
+  status_->set_state(state_);
 
   output_queue_->WriteMessage(output);
   status_queue_->WriteMessage(status_);
+}
+
+void ScoreSubsystem::SetGoal(const ScoreSubsystemGoalProto& goal) {
+  switch (goal->score_goal()) {
+    case SCORE_NONE:
+      break;
+    case INTAKE_0:
+      elevator_height_ = kElevatorFirstCube;
+      wrist_angle_ = kWristForwardAngle;
+      break;
+    case INTAKE_1:
+      elevator_height_ = kElevatorSecondCube;
+      wrist_angle_ = kWristForwardAngle;
+      break;
+    case INTAKE_2:
+      elevator_height_ = kElevatorThirdCube;
+      wrist_angle_ = kWristForwardAngle;
+      break;
+    case FORCE_STOW:
+      elevator_height_ = kElevatorStowHeight;
+      wrist_angle_ = kWristStowAngle;
+      break;
+    case SWITCH:
+      elevator_height_ = kElevatorScoreLow;
+      wrist_angle_ = kWristForwardAngle;
+      break;
+    case SCALE_MID_FORWARD:
+      elevator_height_ = kElevatorScoreMid;
+      wrist_angle_ = kWristForwardAngle;
+      break;
+    case SCALE_MID_REVERSE:
+      elevator_height_ = kElevatorScoreMid;
+      wrist_angle_ = kWristBackwardAngle;
+      break;
+    case SCALE_HIGH_FORWARD:
+      elevator_height_ = kElevatorScoreHigh;
+      wrist_angle_ = kWristForwardAngle;
+      break;
+    case SCALE_HIGH_REVERSE:
+      elevator_height_ = kElevatorScoreHigh;
+      wrist_angle_ = kWristBackwardAngle;
+      break;
+    case EXCHANGE:
+      elevator_height_ = kElevatorExchangeHeight;
+      wrist_angle_ = kWristBackwardAngle;
+      break;
+  }
+
+  switch (goal->intake_goal()) {
+    case INTAKE_NONE:
+      // Just let the state machine take over
+      break;
+    case INTAKE:
+      GoToState(ScoreSubsystemState::INTAKING);
+      break;
+    case OUTTAKE:
+      GoToState(ScoreSubsystemState::SCORING);
+      break;
+    case FORCE_STOP:
+      GoToState(ScoreSubsystemState::HOLDING);
+      break;
+  }
+}
+
+void ScoreSubsystem::RunStateMachine() {
+  switch (state_) {
+    case ScoreSubsystemState::CALIBRATING:
+      elevator_height_ = status_->elevator_actual_height();
+      wrist_angle_ = status_->wrist_angle();
+      if (status_->wrist_calibrated() && status_->elevator_calibrated()) {
+        // These need to be set right away because calibration moves the
+        // goalposts.
+        elevator_height_ = kElevatorStowHeight;
+        wrist_angle_ = kWristStowAngle;
+
+        GoToState(HOLDING);
+      }
+      break;
+    case HOLDING:
+      break;
+    case INTAKING:
+      if (status_->has_cube()) {
+        GoToState(HOLDING);
+      }
+      break;
+    case SCORING:
+      if (!status_->has_cube()) {
+        GoToState(HOLDING);
+      }
+      break;
+  }
+}
+
+void ScoreSubsystem::GoToState(ScoreSubsystemState desired_state) {
+  switch (state_) {
+    case ScoreSubsystemState::CALIBRATING:
+      if (wrist_.is_calibrated() && elevator_.is_calibrated()) {
+        state_ = desired_state;
+      } else {
+        LOG_P("Tried to go to invalid state %d while calibrating!",
+              static_cast<int>(desired_state));
+      }
+      break;
+    case ScoreSubsystemState::HOLDING:
+    case ScoreSubsystemState::INTAKING:
+    case ScoreSubsystemState::SCORING:
+      state_ = desired_state;
+      break;
+  }
 }
 
 }  // namespace score_subsystem

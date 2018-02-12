@@ -5,30 +5,24 @@ option cc_enable_arenas = true;
 package c2018.score_subsystem;
 
 enum ScoreGoal {
-  IDLE_BOTTOM = 0;
-  IDLE_STOW = 1;
-  HEIGHT_0 = 2;
-  HEIGHT_1 = 3;
-  HEIGHT_2 = 4;
-  PREP_SCORE_LOW = 5;
-  PREP_SCORE_MID = 6;
-  PREP_SCORE_MID_BACK = 7;
-  PREP_SCORE_HIGH = 8;
-  PREP_SCORE_HIGH_BACK = 9;
-  SCORE_LOW = 10;
-  SCORE_MID = 11;
-  SCORE_MID_BACK = 12;
-  SCORE_HIGH = 13;
-  SCORE_HIGH_BACK = 14;
-  INTAKE_MANUAL = 15;
-  OUTTAKE_MANUAL = 16;
-  IDLE_MANUAL = 17;
+  SCORE_NONE = 0; // Let the state machine progress
+  INTAKE_0 = 1;
+  INTAKE_1 = 2;
+  INTAKE_2 = 3;
+  FORCE_STOW = 4;
+  SWITCH = 5;
+  SCALE_MID_FORWARD = 6;
+  SCALE_MID_REVERSE = 7;
+  SCALE_HIGH_FORWARD = 8;
+  SCALE_HIGH_REVERSE = 9;
+  EXCHANGE = 10;
 }
 
-enum IntakeMode {
-  IDLE = 0;
+enum IntakeGoal {
+  INTAKE_NONE = 0; // Let the state machine progress
   INTAKE = 1;
   OUTTAKE = 2;
+  FORCE_STOP = 3;
 }
 
 message ScoreSubsystemInput {
@@ -52,14 +46,20 @@ message ScoreSubsystemOutput {
 
 message ScoreSubsystemGoal {
   required uint64 timestamp = 1;
-  optional double wrist_angle = 2;
-  required double elevator_voltage = 3;
-  required double roller_voltage = 4;
-  required double wrist_voltage = 5;
-  required bool claw_pinch = 6;
-  required ScoreGoal score_goal = 7;
-  required bool score_forward = 8;
+  required ScoreGoal score_goal = 2;
+  required IntakeGoal intake_goal = 3;
 
+  required double godmode_elevator = 4;
+  required double godmode_roller = 5;
+  required double godmode_wrist = 6;
+  required bool godmode_claw_pinch = 7;
+}
+
+enum ScoreSubsystemState {
+  CALIBRATING = 0;
+  HOLDING = 1;
+  INTAKING = 2;
+  SCORING = 3;
 }
 
 message ScoreSubsystemStatus {
@@ -72,6 +72,7 @@ message ScoreSubsystemStatus {
   required double elevator_profiled_goal = 7;
   required double elevator_unprofiled_goal = 8;
   required bool elevator_encoder_fault_detected = 9;
+  required ScoreSubsystemState state = 10;
   required bool elevator_calibrated = 11;
   required double wrist_angle = 12;
   required double wrist_velocity = 13;
