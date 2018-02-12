@@ -20,19 +20,21 @@ int main() {
   c2017::shooter::ShooterStatusProto shooter_status_proto;
   shooter_status_queue.WriteMessage(shooter_status_proto);
 
+  muan::wpilib::DriverStationQueue driver_station_status_queue;
+  muan::wpilib::DriverStationProto driver_station_status_proto;
+  driver_station_status_proto->set_alliance(Alliance::kRed);
+  driver_station_status_queue.WriteMessage(driver_station_status_proto);
+
   muan::wpilib::GameSpecificStringQueue gss_queue;
   muan::wpilib::GameSpecificStringProto gss_proto;
   gss_proto->set_code("RRL");
   gss_queue.WriteMessage(gss_proto);
 
   muan::webdash::WebDashRunner runner(muan::webdash::ROBORIO);
-  const std::vector<std::string> auto_list = {"test_auto", "teacher_assistant",
-                                              "torque_anger"};
   runner.AddQueue("joystick_status", &joystick_status_queue);
   runner.AddQueue("gss", &gss_queue);
   runner.AddQueue("shooter_status", &shooter_status_queue);
-  runner.AddQueue("driver_station", &driver_station_queue);
-  runner.AddAutos(auto_list);
+  runner.AddQueue("driver_station_status", &driver_station_queue);
   std::string display_object =
       "{"
       "  \"widgets\": ["

@@ -13,7 +13,6 @@ namespace climber {
 class Climber {
  public:
   Climber();
-
   void Update();
   winch::Winch winch_;
   batter::Batter batter_;

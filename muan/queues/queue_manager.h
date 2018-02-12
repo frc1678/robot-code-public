@@ -124,8 +124,10 @@ MessageQueue<T>* QueueManager<T>::Fetch(const char* key, int size) {
       idx++;
     }
 
-    std::strncpy(filename_buffer + idx, key, key_len);
+    std::memcpy(filename_buffer + idx, key, key_len);
     idx += key_len;
+
+    filename_buffer[idx] = '\0';
 
     // Add to webdash and logger
     AddProtoQueueWebdash<T>(filename_buffer, &(it->second));

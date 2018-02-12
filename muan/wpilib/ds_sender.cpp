@@ -28,8 +28,8 @@ void DriverStationSender::Send() {
   status->set_has_ds_connection(DriverStation::GetInstance().IsDSAttached());
 
   status->set_match_time(DriverStation::GetInstance().GetMatchTime());
-  status->set_alliance(
-      static_cast<Alliance>(DriverStation::GetInstance().GetAlliance()));
+  status->set_alliance(static_cast<Alliance>(
+      DriverStation::GetInstance().GetAlliance()));
   status->set_driver_station_position(
       DriverStation::GetInstance().GetLocation());
   status->set_has_fms_connection(DriverStation::GetInstance().IsFMSAttached());

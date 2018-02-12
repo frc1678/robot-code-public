@@ -2,13 +2,14 @@
 
 <html>
   <head>
-    <link href="/display.css" type="text/css" rel="stylesheet"/>
+    <link href = "/display.css" type = "text/css" rel ="stylesheet" />
   </head>
   <body>
-	</body>
+  </body>
   <script>
     var displaysock = new WebSocket("ws://" + document.location.host + "/display");
     var datasock = new WebSocket("ws://" + document.location.host + "/data");
+    var autosock = new WebSocket("ws://" + document.location.host + "/data");
     // Used for information required in UpdateDisplay from displaysock
     var display_carryover = {};
     // Used in case widgets require box size, set in MakeDisplay
@@ -25,10 +26,24 @@
       UpdateDisplay(data);
     }
 
-    // Creates framework for display, makes boxes based on number of widgets, equal portions of screen alloted to each widget
+    function sendAutoData() { autosock.send(getRadioCheckedValue("auto")); }
+
+    function getRadioCheckedValue(radio_name) {
+      var oRadio = document.getElementsByName("auto");
+      for (var i = 0; i < oRadio.length; i++) {
+        if (oRadio[i].checked) {
+          return oRadio[i].value;
+        }
+      }
+      return '';
+    }
+
+    // Creates framework for display, makes boxes based on number of widgets, equal
+    // portions of screen alloted to each widget
     function MakeDisplay(display) {
       display_carryover = display;
-      var num_boxes = display["settings"]["size"][0] * display["settings"]["size"][1];
+      var num_boxes =
+          display["settings"]["size"][0] * display["settings"]["size"][1];
       box_width = window.innerWidth / display.settings.size[0];
       box_height = window.innerHeight / display.settings.size[1];
       var widget_name = "";
@@ -40,14 +55,32 @@
       for (widget of display["widgets"]) {
         left_shift = box_width * widget["coordinates"][0];
         top_shift = box_height * widget["coordinates"][1];
-        coords = (widget["coordinates"][0]).toString() + "_" + (widget["coordinates"][1]).toString();
-        document.body.innerHTML += "<div id=" + coords + " style=position:absolute;top:" + top_shift + "px;left:" + left_shift + "px;width:" + box_width + "px;height:" + box_height + "px></div>";
+        coords = (widget["coordinates"][0]).toString() + "_" +
+                 (widget["coordinates"][1]).toString();
+        document.body.innerHTML +=
+            "<div id=" + coords + " style=position:absolute;top:" + top_shift +
+            "px;left:" + left_shift + "px;width:" + box_width + "px;height:" +
+            box_height + "px></div>";
         widget_name = widget["name"];
         if (widget["should-title"]) {
           document.getElementById(coords).innerHTML = "<p>" + widget_name + ":</p>";
         }
       }
-
+      if (widget["type"] == "auto") {
+        auto_id = "auto" + coords;
+        html_string = "<div id=" + coords + "><p>Auto Mode:</p>";
+        if (!document.getElementById(auto_id)) {
+          for (var i = 0; i < widget["autos"].length; i++) {
+            html_string += "<input type=\"radio\" name=\"auto\" value=\"" +
+                           widget["autos"][i] + "\">" + widget["autos"][i] +
+                           "<br>\n";
+          }
+          html_string +=
+              "<input type= \"button\"value= \"Update Auto\" "
+              "onclick=\"sendAutoData()\"></div>";
+          document.getElementById(coords).innerHTML = html_string;
+        }
+      }
       alertData();
     }
 
@@ -60,7 +93,8 @@
       }
     }
 
-    // Adds widgets to divs in display based on coordinates and type, aesthetic based on JSON and done through
+    // Adds widgets to divs in display based on coordinates and type, aesthetic
+    // based on JSON and done through
     function UpdateDisplay(data) {
       var bool_box = "";
       var color = "";
@@ -76,17 +110,19 @@
       var link_id = "";
       var alliance_color = "#000000";
       var other_alliance_color = "#000000";
-      if (data["driver_station"]["alliance"] == 0) {
+      if (data["driver_station_status"]["alliance"] == 0) {
         alliance_color = "#ff0000";
         other_alliance_color = "#0000ff";
-      } else if (data["driver_station"]["alliance"] == 1) {
+      } else if (data["driver_station_status"]["alliance"] == 1) {
         alliance_color = "#0000ff";
         other_alliance_color = "#ff0000";
       }
       for (widget of display_carryover["widgets"]) {
-        coords = (widget["coordinates"][0]).toString() + "_" + (widget["coordinates"][1]).toString();
+        coords = (widget["coordinates"][0]).toString() + "_" +
+                 (widget["coordinates"][1]).toString();
         var source = null;
-        if (widget["type"] != "image" && widget["type"] != "encouragement") {
+        if (widget["type"] != "image" && widget["type"] != "encouragement" &&
+            widget["type"] != "auto" && widget["type"] != "link") {
           var source = data[widget["source"][0]][widget["source"][1]];
         }
 
@@ -111,7 +147,8 @@
         if (widget["type"] == "enum") {
           for (widget_name of widget["names"]) {
             enumerator_id = "enum" + coords;
-            // Yet again, hex values gotten from JSON script, but now with n different colors
+            // Yet again, hex values gotten from JSON script, but now with n
+            // different colors
             if (widget_name == source) {
               color = widget["colors"][widget_name];
             }
@@ -121,16 +158,17 @@
               document.getElementById(coords).innerHTML += enum_box;
             }
           }
-          document.getElementById(enumerator_id).setAttribute("style", enum_background_color);
-
+          document.getElementById(enumerator_id)
+              .setAttribute("style", enum_background_color);
         }
 
         // Creates number widgets, sliding bar
         if (widget["type"] == "number") {
           bar_id = "full_bar" + coords;
           // Automatic color for consistency
-          color = "#000000"
-          // Checks value of number and compares to a maximum, minimum, and goal, as decided in the JSON script
+          color = "#000000";
+          // Checks value of number and compares to a maximum, minimum, and
+          // goal, as decided in the JSON script
           if (source == widget["goal"]) {
             color = widget["colors"]["goal"];
           }
@@ -141,7 +179,9 @@
             color = widget["colors"]["max"];
           }
           if (!document.getElementById(bar_id)) {
-            document.getElementById(coords).innerHTML += "<div id=" + bar_id + " style=border:solid;height:10px;position:relative></div>";
+            document.getElementById(coords).innerHTML +=
+                "<div id=" + bar_id +
+                " style=border:solid;height:10px;position:relative></div>";
           }
           // If value is too high, just fills the bar
           if (number_width > widget["max"]) {
@@ -149,22 +189,28 @@
           } else if (number_width < widget["min"]) {
             number_width = 0;
           } else {
-            number_width = (source + widget["min"]) / (widget["max"] - widget["min"]);
+            number_width =
+                (source + widget["min"]) / (widget["max"] - widget["min"]);
           }
-          // As the colored bar is surrounded by min to max outline, this decides the percentage of the outline taken up by the bar
+          // As the colored bar is surrounded by min to max outline, this decides
+          // the percentage of the outline taken up by the bar
           number_percentage = (number_width * 100).toString() + "%";
-          document.getElementById(bar_id).innerHTML = "<div style=width:" + number_percentage +
-                                                      ";background-color:" + color +
-                                                      ";position:absolute;height:100%;float:right;text-align:right;opacity:.7;left:0px></div>";
+          document.getElementById(bar_id).innerHTML =
+              "<div style=width:" + number_percentage + ";background-color:" +
+              color +
+              ";position:absolute;height:100%;float:right;text-align:right;opacity:"
+              ".7;left:0px></div>";
         }
 
         if (widget["type"] == "image") {
           image_id = "image" + coords;
           if (!document.getElementById(image_id)) {
-            document.getElementById(coords).innerHTML += "<div id=" + image_id + "></div>";
+            document.getElementById(coords).innerHTML +=
+                "<div id=" + image_id + "></div>";
           }
-          document.getElementById(image_id).innerHTML = "<img src=\"http://" + document.location.hostname + ":5802/" + widget["source"] + ".mjpeg\"" +
-                                                        "alt=\"Unable to read stream\">";
+          document.getElementById(image_id).innerHTML =
+              "<img src=\"http://" + document.location.hostname + ":5802/" +
+              widget["source"] + ".mjpeg\"" + "alt=\"Unable to read stream\">";
         }
 
         if (widget["type"] == "gss") {
@@ -175,35 +221,44 @@
         if (widget["type"] == "link") {
           link_id = "link" + coords;
           if (!document.getElementById(link_id)) {
-            document.getElementById(coords).innerHTML += "<a href=" + widget["source"] + ">" + widget["name"] + "</a>";
+            document.getElementById(coords).innerHTML +=
+              "<div id=" + link_id + "><a href=" + widget["source"] + ">" + widget["name"] + "</a></div>";
           }
         }
 
         if (widget["type"] == "encouragement") {
           encouragement_id = "encouragement" + coords;
-          var encouragement_list = ["Remember the UPs!", "Fail Faster!", "You can do this!", "Good luck out there", "Break a leg (but not the robot)", "We're all rooting for you", "Remember the Super Woody", "Happy Kickoff!"];
-          var color_list = ["#ff0000", "#ff8800", "#ffe303", "#00ff00", "#0000ff", "#00ffff"];
+          var encouragement_list = [
+            "Remember the UPs!", "Fail Faster!", "You can do this!",
+            "Good luck out there", "Break a leg (but not the robot)",
+            "We're all rooting for you", "Remember the Super Woody",
+            "Happy Kickoff!"
+          ];
+          var color_list =
+              [ "#ff0000", "#ff8800", "#ffe303", "#00ff00", "#0000ff", "#00ffff" ];
           if (!document.getElementById(encouragement_id)) {
-            document.getElementById(coords).innerHTML = "<div id=" + encouragement_id + "></div>";
+            document.getElementById(coords).innerHTML =
+                "<div id=" + encouragement_id + "></div>";
           }
           if (encouragement_time == 100) {
-            document.getElementById(encouragement_id).innerHTML = encouragement_list[Math.floor(Math.random() * encouragement_list.length)];
-            document.getElementById(encouragement_id).setAttribute("style", "color:" + color_list[Math.floor(Math.random() * color_list.length)]);
+            document.getElementById(encouragement_id).innerHTML =
+                encouragement_list[Math.floor(Math.random() *
+                                              encouragement_list.length)];
+            document.getElementById(encouragement_id).setAttribute(
+                    "style",
+                    "color:" +
+                        color_list[Math.floor(Math.random() * color_list.length)]);
             encouragement_time = 0;
           }
         }
       }
       encouragement_time++;
     }
-    displaysock.onopen = function() {
-      displaysock.send("ping");
-    }
+    displaysock.onopen = function() { displaysock.send("ping"); }
 
-   function ReadData() {
-     datasock.send("ping");
-   }
+    function ReadData() { datasock.send("ping"); }
 
-   // Updates data every 100 milliseconds
-   var intervalID = setInterval(ReadData, 100);
+    // Updates data every 100 milliseconds
+    var intervalID = setInterval(ReadData, 100);
   </script>
 </html>

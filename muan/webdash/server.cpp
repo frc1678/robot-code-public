@@ -6,10 +6,6 @@
 namespace muan {
 namespace webdash {
 
-void WebDashRunner::AddAutos(const std::vector<std::string>& more_autos) {
-  auto_list_.insert(auto_list_.end(), more_autos.begin(), more_autos.end());
-}
-
 void WebDashRunner::AddVideoStream(std::string video_stream) {
   video_stream_list_.push_back(video_stream);
 }
@@ -64,24 +60,6 @@ void WebDashRunner::DataRequestHandler::onData(seasocks::WebSocket* con,
   con->send(output_json.str().c_str());
 }
 
-// Creates a vector in correct syntax from list of autos to be interpreted by
-// json
-void WebDashRunner::AutoListRequestHandler::onData(seasocks::WebSocket* con,
-                                                   const char* /*data*/) {
-  std::string json_auto_list = "[\"";
-  bool first_auto = true;
-  for (auto auto_name : auto_list_) {
-    if (!first_auto) {
-      json_auto_list += ", \"";
-    } else {
-      first_auto = false;
-    }
-    json_auto_list += auto_name + "\"";
-  }
-  json_auto_list += "]";
-  con->send(json_auto_list.c_str());
-}
-
 void WebDashRunner::VideoListRequestHandler::onData(seasocks::WebSocket* con,
                                                     const char* /*data*/) {
   std::string json_video_list = "[\"";
@@ -125,8 +103,6 @@ void WebDashRunner::operator()() {
   seasocks::Server server{logger};
   server.addWebSocketHandler("/auto", std::make_shared<AutoChangeHandler>());
   server.addWebSocketHandler(
-      "/autolist", std::make_shared<AutoListRequestHandler>(auto_list_));
-  server.addWebSocketHandler(
       "/videolist",
       std::make_shared<VideoListRequestHandler>(video_stream_list_));
   server.addWebSocketHandler("/logname", std::make_shared<LogNameHandler>());
@@ -138,6 +114,5 @@ void WebDashRunner::operator()() {
       "/display", std::make_shared<DisplayRequestHandler>(&display_object_));
   server.serve("muan/webdash/www/", 5801);
 }
-
 }  // namespace webdash
 }  // namespace muan

@@ -35,8 +35,6 @@ class WebDashRunner {
   template <class T>
   void AddQueue(const std::string &name, T *queue);
 
-  void AddAutos(const std::vector<std::string> &more_autos);
-
   void AddVideoStream(std::string video_stream);
 
   void DisplayObjectMaker(const std::string display_object);
@@ -78,21 +76,6 @@ class WebDashRunner {
    private:
     const std::vector<std::unique_ptr<webdash::WebDashRunner::QueueLog>>
         *queue_logs_;
-  };
-
-  struct AutoListRequestHandler : seasocks::WebSocket::Handler {
-   public:
-    std::set<seasocks::WebSocket *> cons_;
-
-    void onConnect(seasocks::WebSocket * /*con*/) override{};
-    void onDisconnect(seasocks::WebSocket * /*con*/) override{};
-    void onData(seasocks::WebSocket *con, const char * /*data*/) override;
-
-    explicit AutoListRequestHandler(const std::vector<std::string> auto_list)
-        : auto_list_(auto_list) {}
-
-   private:
-    const std::vector<std::string> auto_list_;
   };
 
   struct VideoListRequestHandler : seasocks::WebSocket::Handler {
