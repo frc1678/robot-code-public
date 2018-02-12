@@ -206,11 +206,11 @@
           image_id = "image" + coords;
           if (!document.getElementById(image_id)) {
             document.getElementById(coords).innerHTML +=
-                "<div id=" + image_id + "></div>";
+                "<div id=" + image_id + " style=width:" + box_width*4 + ";heigth:" + box_height*4 + "></div>";
           }
           document.getElementById(image_id).innerHTML =
               "<img src=\"http://" + document.location.hostname + ":5802/" +
-              widget["source"] + ".mjpeg\"" + "alt=\"Unable to read stream\">";
+              widget["source"] + "\"" + "alt=\"Unable to read stream\">";
         }
 
         if (widget["type"] == "gss") {

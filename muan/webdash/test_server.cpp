@@ -35,6 +35,7 @@ int main() {
   runner.AddQueue("gss", &gss_queue);
   runner.AddQueue("shooter_status", &shooter_status_queue);
   runner.AddQueue("driver_station_status", &driver_station_queue);
+  runner.AddVideoStream("?action=stream");
   std::string display_object =
       "{"
       "  \"widgets\": ["
@@ -42,12 +43,19 @@ int main() {
       "       \"name\": \"Button 1\","
       "       \"type\": \"boolean\","
       "       \"source\": [\"joystick_status\", \"button1\"],"
-      "       \"coordinates\": [1, 1],"
+      "       \"coordinates\": [3, 0],"
       "       \"should-title\": true,"
       "       \"colors\": {"
       "         \"if_true\": \"#00ff00\","
       "         \"if_false\": \"#ff0000\""
       "       }"
+      "     },"
+      "     {"
+      "       \"name\": \"Video Stream\","
+      "       \"type\": \"image\","
+      "       \"source\": \"?action=stream\","
+      "       \"coordinates\": [1, 1],"
+      "       \"should-title\": false"
       "     },"
       "     {"
       "       \"name\": \"Shooter Speed\","
@@ -73,7 +81,7 @@ int main() {
       "       \"name\": \"Game Layout\","
       "       \"type\": \"gss\","
       "       \"source\": [\"gss\", \"code\"],"
-      "       \"coordinates\": [0, 2],"
+      "       \"coordinates\": [0, 3],"
       "       \"should-title\": false,"
       "       \"code\": ["
       "          \"if (!document.getElementById(\\\"gss_box_1\\\")) {\","
@@ -83,7 +91,7 @@ int main() {
       "          \"                                                 \\\" "
       "style=width:\\\" + \","
       "          \"                                                 "
-      "box_width/2 + \","
+      "box_width/2.5 + \","
       "          \"                                                 "
       "\\\"px;height:\\\" + \","
       "          \"                                                 "
@@ -153,7 +161,7 @@ int main() {
       "     }"
       "  ],"
       "  \"settings\": {"
-      "    \"size\": [3, 3]"
+      "    \"size\": [4, 4]"
       "  }"
       "}";
   runner.DisplayObjectMaker(display_object);

@@ -10,6 +10,7 @@ using muan::queues::webdash;
 void StartWebdash() {
   // Video Stream
 
+  webdash->AddVideoStream("?action=stream");
 
   // Display Object
   std::ifstream display_stream("c2018/webdash/display_object.json");
@@ -23,4 +24,3 @@ void StartWebdash() {
 }
 
 }  // namespace c2018
-
