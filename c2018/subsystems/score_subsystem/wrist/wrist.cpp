@@ -1,4 +1,3 @@
-#include <cmath>
 #include "c2018/subsystems/score_subsystem/wrist/wrist.h"
 
 namespace c2018 {

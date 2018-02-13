@@ -1,10 +1,5 @@
 #include "c2018/wpilib/score_interface.h"
 
-#include <algorithm>
-#include <iostream>
-
-#include "muan/utils/math_utils.h"
-#include "muan/logging/logger.h"
 
 namespace c2018 {
 namespace wpilib {
@@ -85,7 +80,7 @@ void ScoreSubsystemInterface::WriteActuators() {
   ScoreSubsystemOutputProto outputs;
   if (output_reader_.ReadLastMessage(&outputs)) {
     elevator_.Set(-muan::utils::Cap(outputs->elevator_voltage(), -kMaxVoltage,
-                                   kMaxVoltage) /
+                                    kMaxVoltage) /
                   12.0);
     wrist_.Set(
         -muan::utils::Cap(outputs->wrist_voltage(), -kMaxVoltage, kMaxVoltage) /

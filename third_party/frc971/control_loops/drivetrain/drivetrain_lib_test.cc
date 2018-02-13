@@ -338,7 +338,7 @@ TEST_F(DrivetrainTest, DriveStraightForward) {
     RunIteration();
     auto output = output_queue_.MakeReader().ReadLastMessage();
     ASSERT_TRUE(output);
-    EXPECT_NEAR((*output)->left_voltage(), (*output)->right_voltage(), 1e-3);
+    EXPECT_NEAR((*output)->left_voltage(), (*output)->right_voltage(), 1e-2);
     EXPECT_GE((*output)->left_voltage(), -12.001);
     EXPECT_GE((*output)->right_voltage(), -12.001);
   }

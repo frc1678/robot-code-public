@@ -1,9 +1,5 @@
 #include "c2018/wpilib/climber_interface.h"
 
-#include <algorithm>
-#include "muan/utils/math_utils.h"
-#include "muan/logging/logger.h"
-
 namespace c2018 {
 namespace wpilib {
 
@@ -43,7 +39,8 @@ void ClimberInterface::ReadSensors() {
 void ClimberInterface::WriteActuators() {
   ClimberOutputProto outputs;
   if (output_reader_.ReadLastMessage(&outputs)) {
-    winch_.Set(muan::utils::Cap(outputs->voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
+    winch_.Set(muan::utils::Cap(outputs->voltage(), -kMaxVoltage, kMaxVoltage) /
+               12.0);
     pcm_->WriteSolenoid(kBatterSolenoid, outputs->release_solenoid());
   } else {
     winch_.Set(0);

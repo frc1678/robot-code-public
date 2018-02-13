@@ -1,6 +1,6 @@
 #include "c2018/teleop/main.h"
-#include "c2018/autonomous/autonomous.h"
 #include <WPILib.h>
+#include "c2018/autonomous/autonomous.h"
 #include "c2018/subsystems/subsystem_runner.h"
 #include "c2018/webdash/webdash_setup.h"
 #include "gflags/gflags.h"

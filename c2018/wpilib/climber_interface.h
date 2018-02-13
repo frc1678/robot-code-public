@@ -1,10 +1,12 @@
 #ifndef C2018_WPILIB_CLIMBER_INTERFACE_H_
 #define C2018_WPILIB_CLIMBER_INTERFACE_H_
 
+#include <algorithm>
 #include <cmath>
 
 #include "WPILib.h"
 #include "c2018/subsystems/climber/queue_types.h"
+#include "muan/logging/logger.h"
 #include "muan/queues/queue_manager.h"
 #include "muan/utils/math_utils.h"
 #include "muan/wpilib/can_wrapper.h"
@@ -41,3 +43,4 @@ class ClimberInterface {
 }  // namespace c2018
 
 #endif  // C2018_WPILIB_CLIMBER_INTERFACE_H_
+

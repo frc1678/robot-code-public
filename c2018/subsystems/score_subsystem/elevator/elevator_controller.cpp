@@ -1,12 +1,7 @@
 #include "c2018/subsystems/score_subsystem/elevator/elevator_controller.h"
-#include <cmath>
-#include <limits>
-#include "muan/logging/logger.h"
-#include "muan/utils/math_utils.h"
+
 namespace c2018 {
-
 namespace score_subsystem {
-
 namespace elevator {
 
 ElevatorController::ElevatorController() {
@@ -215,7 +210,5 @@ bool ElevatorController::is_calibrated() const {
 }
 
 }  // namespace elevator
-
 }  // namespace score_subsystem
-
 }  // namespace c2018

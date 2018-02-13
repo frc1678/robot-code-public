@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cmath>
 #include "c2018/subsystems/score_subsystem/queue_types.h"
 #include "c2018/subsystems/score_subsystem/wrist/wrist_constants.h"
 #include "muan/control/calibration/hall_calibration.h"

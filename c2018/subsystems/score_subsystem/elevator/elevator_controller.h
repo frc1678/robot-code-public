@@ -1,15 +1,19 @@
 #ifndef C2018_SUBSYSTEMS_SCORE_SUBSYSTEM_ELEVATOR_ELEVATOR_CONTROLLER_H_
 #define C2018_SUBSYSTEMS_SCORE_SUBSYSTEM_ELEVATOR_ELEVATOR_CONTROLLER_H_
 
+#include <cmath>
+#include <limits>
+
 #include "c2018/subsystems/score_subsystem/elevator/elevator_constants.h"
 #include "c2018/subsystems/score_subsystem/queue_types.h"
 #include "muan/control/calibration/hall_calibration.h"
 #include "muan/control/state_space_controller.h"
 #include "muan/control/state_space_observer.h"
 #include "muan/control/state_space_plant.h"
+#include "muan/logging/logger.h"
 #include "muan/queues/queue_manager.h"
+#include "muan/utils/math_utils.h"
 #include "third_party/aos/common/util/trapezoid_profile.h"
-
 namespace c2018 {
 
 namespace score_subsystem {
