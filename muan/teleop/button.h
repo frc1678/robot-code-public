@@ -9,26 +9,6 @@ namespace teleop {
 
 class Joystick;
 
-class Button {
- public:
-  bool was_clicked();
-  bool was_released();
-  bool is_pressed();
-
- protected:
-  friend class muan::teleop::Joystick;
-
-  Button(Joystick* joystick, uint32_t button);
-  virtual void Update();
-  void Update(bool value);
-
-  Joystick* joystick_;
-  uint32_t id_;
-
- private:
-  bool current_{false}, last_{false};
-};
-
 enum class Pov {
   kNorth = 0,
   kNorthEast = 45,
@@ -38,6 +18,28 @@ enum class Pov {
   kSouthWest = 225,
   kWest = 270,
   kNorthWest = 315,
+  kNorthAgain = 360
+};
+
+class Button {
+ public:
+  bool was_clicked();
+  bool was_released();
+  bool is_pressed();
+
+  virtual void Update();
+
+ protected:
+  friend class muan::teleop::Joystick;
+
+  Button(Joystick* joystick, uint32_t button);
+  void Update(bool value);
+
+  Joystick* joystick_;
+  uint32_t id_;
+
+ private:
+  bool current_{false}, last_{false};
 };
 
 class PovButton : public Button {
@@ -45,9 +47,23 @@ class PovButton : public Button {
   friend class muan::teleop::Joystick;
 
   PovButton(Joystick* joystick, uint32_t pov, Pov position);
+
+ public:
   void Update() override;
 
   Pov pov_position_;
+};
+
+class PovRange : public Button {
+ public:
+  friend class muan::teleop::Joystick;
+
+  PovRange(Joystick* joystick, uint32_t button, int minimum, int maximum);
+
+  void Update();
+
+  int minimum;
+  int maximum;
 };
 
 class AxisButton : public Button {
@@ -56,7 +72,8 @@ class AxisButton : public Button {
   void Update();
 
  private:
-  // Negative values will cause the button to be triggered when the axis drops below the threshold, positive
+  // Negative values will cause the button to be triggered when the axis drops
+  // below the threshold, positive
   // values when it is above.
   double trigger_threshold_;
 };

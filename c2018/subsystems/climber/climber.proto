@@ -7,14 +7,16 @@ package c2018.climber;
 enum Goal {
   NONE = 0;
   APPROACHING = 1;
-  CLIMBING = 2;
+  BATTERING = 2;
+  CLIMBING = 3;
 }
 
 enum State {
   IDLE = 0;
   APPROACH = 1;
-  CLIMB = 2;
-  DONE = 3;
+  BATTER = 2;
+  CLIMB = 3;
+  DONE = 4;
 }
 
 message ClimberInput {
@@ -26,7 +28,8 @@ message ClimberInput {
 message ClimberOutput {
   required uint64 timestamp = 1;
   required double voltage = 2; // climbing up is positive
-  required bool release_solenoid = 3; // true means the solenoid is down
+  required bool hook_solenoid = 3; // true means the solenoid is down
+  required bool batter_solenoid = 4;
 }
 
 message ClimberStatus {
@@ -38,6 +41,5 @@ message ClimberStatus {
 
 message ClimberGoal {
   required uint64 timestamp = 1;
-  required bool put_down_batter = 2;
-  required Goal climber_goal = 3;
+  required Goal climber_goal = 2;
 }

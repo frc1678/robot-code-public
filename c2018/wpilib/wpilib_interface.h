@@ -2,6 +2,7 @@
 #define C2018_WPILIB_WPILIB_INTERFACE_H_
 
 #include "WPILib.h"
+#include "c2018/wpilib/climber_interface.h"
 #include "c2018/wpilib/drivetrain_interface.h"
 #include "c2018/wpilib/score_interface.h"
 #include "gflags/gflags.h"
@@ -26,6 +27,7 @@ class WpilibInterface {
   muan::wpilib::gyro::GyroReader gyro_;
   DrivetrainInterface drivetrain_;
   ScoreSubsystemInterface score_;
+  ClimberInterface climb_;
 };
 
 }  // namespace wpilib

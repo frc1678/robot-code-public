@@ -29,16 +29,16 @@ TeleopBase::TeleopBase()
       climber_goal_queue_{QueueManager<ClimberGoalProto>::Fetch()},
       score_subsystem_goal_queue_{
           QueueManager<ScoreSubsystemGoalProto>::Fetch()} {
-  initialize_climb_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::BACK));
-  climb_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::START));
-  stop_climb_ =
-      gamepad_.MakeButton(uint32_t(muan::teleop::XBox::RIGHT_CLICK_IN));
+  hook_up_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::BACK));
+  batter_down_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::START));
   godmode_ = gamepad_.MakeButton(
       uint32_t(muan::teleop::XBox::LEFT_CLICK_IN));  // TODO(hanson/gemma/ellie)
                                                      // add godmodes for
                                                      // intaking/outtaking
   intake_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::A_BUTTON));
+
   stow_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::X_BUTTON));
+
   outtake_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::B_BUTTON));
   score_back_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::RIGHT_BUMPER));
   score_front_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_BUMPER));
@@ -211,17 +211,17 @@ void TeleopBase::SendScoreSubsystemMessage() {
           c2018::score_subsystem::SCALE_MID_REVERSE);
     }
   }
-
   score_subsystem_goal_queue_->WriteMessage(score_subsystem_goal_);
 }
 
 void TeleopBase::SendClimbSubsystemMessage() {
-  if (initialize_climb_->was_clicked()) {
+  if (hook_up_->is_pressed() && !batter_down_->is_pressed()) {
     climber_goal_->set_climber_goal(c2018::climber::APPROACHING);
-    if (climb_->was_clicked()) {
-      climber_goal_->set_climber_goal(c2018::climber::CLIMBING);
-    }
-  } else if (stop_climb_->was_clicked()) {
+  } else if (!hook_up_->is_pressed() && batter_down_->is_pressed()) {
+    climber_goal_->set_climber_goal(c2018::climber::BATTERING);
+  } else if (hook_up_->is_pressed() && batter_down_->is_pressed()) {
+    climber_goal_->set_climber_goal(c2018::climber::CLIMBING);
+  } else {
     climber_goal_->set_climber_goal(c2018::climber::NONE);
   }
 

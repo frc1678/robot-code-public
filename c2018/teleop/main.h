@@ -43,7 +43,7 @@ class TeleopBase {
 
   // Gamepad Buttons
   muan::teleop::Button *outtake_, *intake_, *stow_, *score_back_, *score_front_;
-  muan::teleop::Button *initialize_climb_, *climb_, *stop_climb_, *godmode_;
+  muan::teleop::Button *batter_down_, *hook_up_, *godmode_;
   // Gamepad POVs
   muan::teleop::Button *height_0_, *height_1_, *height_2_;
   // Gamepad Axes

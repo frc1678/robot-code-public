@@ -19,9 +19,7 @@ class ClimberTest : public ::testing::Test {
     driver_station_queue_->WriteMessage(driver_station_proto_);
   }
 
-  void SetGoals(bool batter_down, c2018::climber::Goal enum_goal,
-                bool enabled) {
-    climber_goal_proto_->set_put_down_batter(batter_down);
+  void SetGoals(c2018::climber::Goal enum_goal, bool enabled) {
     climber_goal_proto_->set_climber_goal(enum_goal);
     driver_station_proto_->set_is_sys_active(enabled);
   }
@@ -60,7 +58,7 @@ class ClimberTest : public ::testing::Test {
 };
 
 TEST_F(ClimberTest, Idle) {
-  SetGoals(false, c2018::climber::Goal::NONE, true);
+  SetGoals(c2018::climber::Goal::NONE, true);
   SetInput(0.0);
 
   WriteMessages();
@@ -68,7 +66,8 @@ TEST_F(ClimberTest, Idle) {
   ReadMessages();
 
   EXPECT_EQ(climber_output_proto_->voltage(), 0.);
-  EXPECT_FALSE(climber_output_proto_->release_solenoid());
+  EXPECT_FALSE(climber_output_proto_->hook_solenoid());
+  EXPECT_FALSE(climber_output_proto_->batter_solenoid());
   EXPECT_EQ(climber_status_proto_->climber_state(),
             c2018::climber::State::IDLE);
   EXPECT_EQ(climber_status_proto_->observed_velocity(), 0.);
@@ -76,7 +75,7 @@ TEST_F(ClimberTest, Idle) {
 }
 
 TEST_F(ClimberTest, Approach) {
-  SetGoals(true, c2018::climber::Goal::APPROACHING, true);
+  SetGoals(c2018::climber::Goal::APPROACHING, true);
   SetInput(0.0);
 
   WriteMessages();
@@ -85,15 +84,34 @@ TEST_F(ClimberTest, Approach) {
 
   // TEST VALUES
   EXPECT_EQ(climber_output_proto_->voltage(), 0.);
-  EXPECT_TRUE(climber_output_proto_->release_solenoid());
+  EXPECT_TRUE(climber_output_proto_->hook_solenoid());
+  EXPECT_FALSE(climber_output_proto_->batter_solenoid());
   EXPECT_EQ(climber_status_proto_->climber_state(),
             c2018::climber::State::APPROACH);
   EXPECT_EQ(climber_status_proto_->observed_velocity(), 0.);
   EXPECT_EQ(climber_status_proto_->observed_height(), 0.);
 }
 
+TEST_F(ClimberTest, Batter) {
+  SetGoals(c2018::climber::Goal::BATTERING, true);
+  SetInput(0.0);
+
+  WriteMessages();
+  Update();
+  ReadMessages();
+
+  // TEST VALUES
+  EXPECT_EQ(climber_output_proto_->voltage(), 0.);
+  EXPECT_TRUE(climber_output_proto_->hook_solenoid());
+  EXPECT_TRUE(climber_output_proto_->batter_solenoid());
+  EXPECT_EQ(climber_status_proto_->climber_state(),
+            c2018::climber::State::BATTER);
+  EXPECT_EQ(climber_status_proto_->observed_velocity(), 0.);
+  EXPECT_EQ(climber_status_proto_->observed_height(), 0.);
+}
+
 TEST_F(ClimberTest, Climb) {
-  SetGoals(true, c2018::climber::Goal::CLIMBING, true);
+  SetGoals(c2018::climber::Goal::CLIMBING, true);
 
   WriteMessages();
 
@@ -119,16 +137,17 @@ TEST_F(ClimberTest, Climb) {
   ReadMessages();
 
   // TESTING OUTPUTS
-  EXPECT_EQ(climber_output_proto_->voltage(), 0.);
-  EXPECT_TRUE(climber_output_proto_->release_solenoid());
+  EXPECT_EQ(climber_output_proto_->voltage(), 12.0);
+  EXPECT_TRUE(climber_output_proto_->hook_solenoid());
+  EXPECT_TRUE(climber_output_proto_->batter_solenoid());
   EXPECT_EQ(climber_status_proto_->climber_state(),
-            c2018::climber::State::DONE);
+            c2018::climber::State::CLIMB);
   EXPECT_EQ(climber_status_proto_->observed_velocity(), 0.);
   EXPECT_EQ(climber_status_proto_->observed_height(), 0.);
 }
 
 TEST_F(ClimberTest, OutputsNotEnabled) {
-  SetGoals(false, c2018::climber::Goal::NONE, false);
+  SetGoals(c2018::climber::Goal::NONE, false);
 
   WriteMessages();
 
@@ -137,7 +156,8 @@ TEST_F(ClimberTest, OutputsNotEnabled) {
   ReadMessages();
 
   EXPECT_EQ(climber_output_proto_->voltage(), 0.);
-  EXPECT_FALSE(climber_output_proto_->release_solenoid());
+  EXPECT_FALSE(climber_output_proto_->hook_solenoid());
+  EXPECT_FALSE(climber_output_proto_->batter_solenoid());
   EXPECT_EQ(climber_status_proto_->climber_state(),
             c2018::climber::State::IDLE);
   EXPECT_EQ(climber_status_proto_->observed_velocity(), 0.);

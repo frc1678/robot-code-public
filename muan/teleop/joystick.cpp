@@ -6,15 +6,19 @@ namespace muan {
 namespace teleop {
 
 // No queue, no rumble
-Joystick::Joystick(int32_t port) : status_queue_{nullptr}, rumble_queue_{nullptr}, wpilib_joystick_{port} {}
+Joystick::Joystick(int32_t port)
+    : status_queue_{nullptr}, rumble_queue_{nullptr}, wpilib_joystick_{port} {}
 
 // Queue, no rumble
 Joystick::Joystick(int32_t port, JoystickStatusQueue* queue)
     : status_queue_{queue}, rumble_queue_{nullptr}, wpilib_joystick_{port} {}
 
 // Queue and rumble
-Joystick::Joystick(int32_t port, JoystickStatusQueue* queue, XBoxRumbleQueue* rumble_queue)
-    : status_queue_{queue}, rumble_queue_{rumble_queue}, wpilib_joystick_{port} {}
+Joystick::Joystick(int32_t port, JoystickStatusQueue* queue,
+                   XBoxRumbleQueue* rumble_queue)
+    : status_queue_{queue},
+      rumble_queue_{rumble_queue},
+      wpilib_joystick_{port} {}
 
 ::Joystick* Joystick::wpilib_joystick() { return &wpilib_joystick_; }
 
@@ -25,6 +29,13 @@ Button* Joystick::MakeButton(uint32_t button_id) {
 
 muan::teleop::Button* Joystick::MakePov(uint32_t button, Pov position) {
   buttons_.emplace_back(new muan::teleop::PovButton(this, button, position));
+  return buttons_[buttons_.size() - 1].get();
+}
+
+muan::teleop::Button* Joystick::MakePovRange(uint32_t button, int minimum,
+                                             int maximum) {
+  buttons_.emplace_back(
+      new muan::teleop::PovRange(this, button, minimum, maximum));
   return buttons_[buttons_.size() - 1].get();
 }
 
@@ -43,7 +54,8 @@ void Joystick::Update() {
   if (rumble_queue_) {
     auto xbox_rumble = rumble_queue_->ReadLastMessage();
     if (xbox_rumble) {
-      wpilib_joystick_.SetRumble(frc::Joystick::kRightRumble, xbox_rumble.value()->rumble());
+      wpilib_joystick_.SetRumble(frc::Joystick::kRightRumble,
+                                 xbox_rumble.value()->rumble());
     }
   }
 }
