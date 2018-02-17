@@ -67,7 +67,7 @@ class GyroReader {
   // Based on logs, this gives plenty of room for bad luck, as actual values
   // were less than 0.015, but being pushed will exceed this value.
   // TODO(Kyle): Figure out why Alpha's gyro reads 0.07 static.
-  constexpr static double kCalibrationVelocityLimit = 0.09;
+  constexpr static double kCalibrationVelocityLimit = 0.15;
 };
 
 }  // namespace gyro

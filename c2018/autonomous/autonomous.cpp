@@ -153,9 +153,9 @@ bool AutonomousBase::IsDriveComplete() {
 
     if (goal->has_distance_command()) {
       if (std::abs(status->estimated_left_position() -
-                   goal->distance_command().left_goal()) < 1e-2 &&
+                   goal->distance_command().left_goal()) < 3e-2 &&
           std::abs(status->estimated_right_position() -
-                   goal->distance_command().right_goal()) < 1e-2 &&
+                   goal->distance_command().right_goal()) < 3e-2 &&
           std::abs(status->estimated_left_velocity()) < 1e-2 &&
           std::abs(status->estimated_right_velocity()) < 1e-2) {
         return true;
@@ -234,57 +234,103 @@ void AutonomousBase::operator()() {
       // Switch is left, scale is left
       LOG_P("Running LEFT SWITCH LEFT SCALE auto");
 
+      MoveToSwitch();
+
       // Start going back
-      StartDriveRelative(-4.0, 0.0, -1.9);
+      StartDriveRelative(-3.0, 0.0, -2.0);
       WaitUntilDriveComplete();
 
       // Turn
-      StartDriveRelative(-1.0, M_PI * 0.5, -1.0);
+      StartDriveRelative(-2.0, M_PI * 0.5, -2.0);
       WaitUntilDriveComplete();
 
       // Go over bump
-      StartDriveAtAngle(-4.0, M_PI * 0.5, -1.0);
+      StartDriveAtAngle(-3.8, M_PI * 0.5, -1.5);
       WaitUntilDriveComplete();
 
       // Go to scale
-      StartDriveAtAngle(-3.1, -0.3, 0.0);
+      StartDriveAtAngle(-1.6, M_PI * 0.1, -1.0);
+      Wait(50);
+      MoveToScale(false);
       WaitUntilDriveComplete();
+      StartDriveAtAngle(-1.15, M_PI * -0.1, -1.0);
+      WaitUntilDriveComplete();
+
+      // Score on scale here
+      Score();
+      Wait(50);
+      StopScore();
+
+      IntakeGround();
+      Wait(200);
 
       // Go to switch
-      StartDriveAtAngle(2.0, 0.15, 0.0);
+      StartDriveAtAngle(1.75, 0.15, 0.0);
+      WaitForCube();
+      Wait(25);
+
+      // Back up to prevent dragging cube against switch
+      StartDriveRelative(-0.15, 0.0);
+      MoveToSwitch();
+
+      Wait(150);
+
+      // Drive so bumpers get on switch
+      StartDriveRelative(0.2, 0.0, 1.5);
       WaitUntilDriveComplete();
 
-      // Scoring:
-      // At some point we'll probably have to drive forward once we have the
-      // cube so that we don't get in trouble for launching
-      Wait(100);
+      StopIntakeGround();
+
+      // Without wait it scores while driving back
+      Score();
 
       // Quickturn to next cube
-      StartDriveAtAngle(0.0, M_PI * 0.3, 0.0);
+      StartDriveAtAngle(-0.15, M_PI * 0.3);
+
+      // Not get intake caught on switch
+      Wait(125);
+
+      // Go to ground intake
+      IntakeGround();
+
       WaitUntilDriveComplete();
 
       // Drive to next cube
-      StartDriveAtAngle(.35, M_PI * 0.3, 0.0);
-      WaitUntilDriveComplete();
+      StartDriveAtAngle(.7, M_PI * 0.33, 0.0);
+      WaitForCube();
 
-      // Start drive back to scale
-      StartDriveRelative(-0.175, 0.0, 1.0);
-      WaitUntilDriveComplete();
-
+      max_angular_acceleration_ = 5.5;
+      max_forward_acceleration_ = 2.0;
       // Drive back to scale
-      StartDriveAtAngle(-2.2, -0.4, 0.0);
+      StartDriveAtAngle(-2.2, -0.2, 0.0);
+      Wait(100);
+      MoveToScale(false);
       WaitUntilDriveComplete();
+
+      Score();
+      Wait(50);
+      StopScore();
+
+      IntakeGround();
     } else if (left_right_codes[1] == 'R') {
       // Switch is left, scale is right
       LOG_P("Running LEFT SWITCH RIGHT SCALE auto");
+
+      StopIntakeGround();
+      MoveToScale(false);
 
       // Start drive to scale
       StartDriveRelative(-4.75, 0.0, 1.9);
       WaitUntilDriveComplete();
 
       // Turn and get to scale
-      StartDriveAtAngle(-2.5, 0.5, 0.0);
-      WaitUntilDriveComplete();
+      StartDriveAtAngle(-2.8, 0.5, 0.0);
+      WaitForCube();
+
+      // Score on scale
+      Score();
+      Wait(50);
+      StopScore();
 
       // Start backing off scale
       StartDriveRelative(0.2, 0.0, 0.5);
@@ -303,19 +349,30 @@ void AutonomousBase::operator()() {
       WaitUntilDriveComplete();
 
       // Drive to cube
-      // StartDriveRelative(0.2, 0.0, 0.0);
-      // WaitUntilDriveComplete();
+      StartDriveRelative(0.2, 0.0, 0.0);
+      WaitForCube();
 
-      // Doing scoring and stuff
+      // Back up to prevent cube drag
+      StartDriveRelative(-0.15, 0.0);
       Wait(100);
+      MoveToSwitch();
+
+      // Drive so bumpers get on switch
+      StartDriveRelative(0.2, 0.0, 1.5);
+      WaitUntilDriveComplete();
+
+      // Without wait it scores while driving back
+      Score();
 
       // Quickturn towards other cube
       StartDriveAtAngle(0.0, M_PI * 0.25, 0.0);
       WaitUntilDriveComplete();
+      IntakeGround();
+      Wait(100);
 
       // Drive to other cube
       StartDriveRelative(0.2, 0.0, 0.0);
-      WaitUntilDriveComplete();
+      WaitForCube();
 
       // Drive towards scale
       StartDriveAtAngle(2.0, M_PI * 0.6, 0.6);
@@ -325,15 +382,24 @@ void AutonomousBase::operator()() {
       StartDriveAtAngle(1.0, M_PI * 0.5, 1.5);
       WaitUntilDriveComplete();
 
+      MoveToScale(true);
       // To scale
       StartDriveRelative(2.0, M_PI * 0.6, 0.0);
       WaitUntilDriveComplete();
-      // TODO(Livy) use splines to make this way better
+
+      Score();
+      Wait(100);
+      StopScore();
+
+      StartDriveRelative(-0.5, 0.0);
+      IntakeGround();
+      WaitUntilDriveComplete();
     }
   } else if (left_right_codes[0] == 'R') {
     if (left_right_codes[1] == 'L') {
       LOG_P("Running RIGHT SWITCH LEFT SCALE auto");
 
+      MoveToScale(false);
       // Back up
       StartDriveRelative(-2.5, M_PI * 0.025, 1.5);
       WaitUntilDriveComplete();
@@ -342,21 +408,17 @@ void AutonomousBase::operator()() {
       StartDriveAtAngle(-1.5, M_PI * 0.5, 0.0);
       WaitUntilDriveComplete();
 
-      // Turn uppppp
-      StartDriveAtAngle(1.0, M_PI, 2.0);
-      WaitUntilDriveComplete();
+      Score();
+      Wait(50);
+      StopScore();
+      IntakeGround();
 
-      // Turn uppppp pt 2
-      StartDriveAtAngle(1.0, M_PI * 1.5, 2.0);
-      WaitUntilDriveComplete();
-
-      // Turn uppppp pt 3
-      StartDriveAtAngle(1.3, M_PI * 1.95, 1.0);
+      StartDriveAtAngle(1.0, M_PI * 1.65, 1.0);
       WaitUntilDriveComplete();
 
       // Go get cube boi
       StartDriveRelative(0.5, 0.0, 0.0);
-      WaitUntilDriveComplete();
+      WaitForCube();
 
       Wait(200);
 
@@ -368,39 +430,104 @@ void AutonomousBase::operator()() {
       // Switch is right, scale is right
       LOG_P("Running RIGHT SWITCH RIGHT SCALE auto");
 
-      // Go straight
-      StartDriveRelative(-3.5, 0.0, -2);
+      StopIntakeGround();
+      MoveToScale(false);
+
+      // Start drive to scale
+      StartDriveRelative(-4.375, 0.0, 2.5);
       WaitUntilDriveComplete();
 
-      // Align to scale
-      StartDrivePath(-6.8, -1.3, 0.15, -1);
+      // Turn and get to scale
+      StartDriveAtAngle(-2.6, 0.5, -1.2);
       WaitUntilDriveComplete();
 
+      // Score on scale
+      Score();
+      Wait(20);
+      StopScore();
+
+      // Lower intake
+      IntakeGround();
+      Wait(90);
+
+      // Drive to switch to pick up cube
+      StartDriveAtAngle(2.0, M_PI * -0.1);
+      WaitForCube();
       Wait(25);
 
-      // Score
-      // Drive to switch & score
-      StartDriveRelative(0.25, 0.0, 1.0);
-      WaitUntilDriveComplete();
-      StartDrivePath(-5.4, -1.4, -0.3, 1);
+      // Back up to prevent dragging cube against switch
+      StartDriveRelative(-0.15, 0.0);
+      MoveToSwitch();
+      // WaitUntilElevatorAtPosition();  // TODO(Livy) Make sure this actually
+      // works
+      Wait(100);
+      StopIntakeGround();
+
+      // Drive so bumpers get on switch
+      StartDriveRelative(0.2, 0.0, 1.5);
       WaitUntilDriveComplete();
 
-      // Quickturn to get in position to grab second cube
-      StartDriveRelative(0.0, -70 * deg);
+      // Without wait it scores while driving back
+      Score();
+
+      // Turn to get in position to grab second cube
+      StartDriveAtAngle(-0.3, M_PI * -0.3141592, 0.01);
+      Wait(150);
+      StopScore();
+      IntakeGround();
       WaitUntilDriveComplete();
 
-      // Drive forwards to cube
-      StartDriveRelative(1.0, 0.0);
+      // Drive forwards to 2nd cube
+      StartDriveRelative(1.0, 0.0, 0.01);
+      WaitForCube();
+
+      // TODO(Livy) If/when we can control elevator speed make it go way slower
+      // here
+      StopIntakeGround();
+
+      // Start drive to scale
+
+      max_forward_acceleration_ = 1.7;
+      StartDriveAtAngle(-1.5, 0.0, 1.7);
+      Wait(100);
+      MoveToScale(false);
       WaitUntilDriveComplete();
 
-      StartDrivePath(-6.95, -1.3, 0.3, -1);
+      StartDriveAtAngle(-0.8, M_PI * 0.1, 1.0);
       WaitUntilDriveComplete();
+      Score();
+      Wait(100);
+      StopScore();
+
+      IntakeGround();
+      StartDriveRelative(0.5, 0.0);
+      WaitUntilElevatorAtPosition();
     }
   }
 }
 
+/*void AutonomousBase::WaitUntilDriveComplete(int ticks) {
+  int c = 0;
+  if (ticks == -1) {
+    while (!IsDriveComplete() && IsAutonomous()) {
+      loop_.SleepUntilNext();
+    }
+  } else {
+    if (!IsDriveComplete() && IsAutonomous() && c < ticks) {
+      loop_.SleepUntilNext();
+      c++;
+    }
+  }
+}*/
+
 void AutonomousBase::WaitUntilDriveComplete() {
   while (!IsDriveComplete() && IsAutonomous()) {
+    loop_.SleepUntilNext();
+  }
+}
+
+void AutonomousBase::WaitUntilElevatorAtPosition() {
+  while (!IsAtScoreHeight() && IsAutonomous()) {
     loop_.SleepUntilNext();
   }
 }
@@ -427,9 +554,9 @@ void AutonomousBase::MoveToSwitch() {
 
 void AutonomousBase::MoveToScale(bool front) {
   score_subsystem::ScoreSubsystemGoalProto score_goal;
-  score_goal->set_score_goal(front
-                                  ? score_subsystem::ScoreGoal::SCALE_MID_FORWARD
-                                  : score_subsystem::ScoreGoal::SCALE_MID_REVERSE);
+  score_goal->set_score_goal(
+      front ? score_subsystem::ScoreGoal::SCALE_MID_FORWARD
+            : score_subsystem::ScoreGoal::SCALE_MID_REVERSE);
   score_goal->set_intake_goal(score_subsystem::IntakeGoal::INTAKE_NONE);
   score_goal_queue_->WriteMessage(score_goal);
 }
@@ -437,6 +564,12 @@ void AutonomousBase::MoveToScale(bool front) {
 void AutonomousBase::Score() {
   score_subsystem::ScoreSubsystemGoalProto score_goal;
   score_goal->set_intake_goal(score_subsystem::IntakeGoal::OUTTAKE);
+  score_goal_queue_->WriteMessage(score_goal);
+}
+
+void AutonomousBase::StopScore() {
+  score_subsystem::ScoreSubsystemGoalProto score_goal;
+  score_goal->set_intake_goal(score_subsystem::IntakeGoal::FORCE_STOP);
   score_goal_queue_->WriteMessage(score_goal);
 }
 

@@ -27,7 +27,7 @@ constexpr uint32_t kIntakeSolenoidClose = 2;
 
 constexpr uint32_t kWristPotentiometer = 0;
 
-constexpr uint32_t kElevatorHall = 0;
+constexpr uint32_t kElevatorHall = 4;
 constexpr uint32_t kWristHall = 3;
 constexpr uint32_t kCubeProxy = 1;
 

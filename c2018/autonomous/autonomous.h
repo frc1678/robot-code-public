@@ -32,6 +32,7 @@ class AutonomousBase {
 
   bool IsDriveComplete();
   void WaitUntilDriveComplete();
+  void WaitUntilElevatorAtPosition();
 
   void Wait(uint32_t num_cycles);
   void IntakeGround();
@@ -39,6 +40,7 @@ class AutonomousBase {
   void MoveToSwitch();
   void MoveToScale(bool front);
   void Score();
+  void StopScore();
   bool IsAtScoreHeight();
   bool HasCube();
   void WaitForCube();
@@ -57,7 +59,8 @@ class AutonomousBase {
   frc971::control_loops::drivetrain::StatusQueue::QueueReader
       drivetrain_status_reader_;
   c2018::score_subsystem::ScoreSubsystemGoalQueue* score_goal_queue_;
-  c2018::score_subsystem::ScoreSubsystemStatusQueue::QueueReader score_status_reader_;
+  c2018::score_subsystem::ScoreSubsystemStatusQueue::QueueReader
+      score_status_reader_;
   muan::wpilib::DriverStationQueue::QueueReader driver_station_reader_;
   muan::wpilib::GameSpecificStringQueue::QueueReader
       game_specific_string_reader_;
