@@ -55,7 +55,7 @@ void ClimberInterface::WriteActuators() {
     winch_.Set(0);
     pcm_->WriteSolenoid(kBatterSolenoid, false);
     pcm_->WriteSolenoid(kHookSolenoid, false);
-    LOG_P("No output queue");
+    LOG(ERROR, "No output queue");
   }
 }
 

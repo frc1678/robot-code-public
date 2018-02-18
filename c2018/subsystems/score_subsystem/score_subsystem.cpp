@@ -200,7 +200,7 @@ void ScoreSubsystem::GoToState(ScoreSubsystemState desired_state) {
       if (wrist_.is_calibrated() && elevator_.is_calibrated()) {
         state_ = desired_state;
       } else {
-        LOG_P("Tried to go to invalid state %d while calibrating!",
+        LOG(ERROR, "Tried to go to invalid state %d while calibrating!",
               static_cast<int>(desired_state));
       }
       break;

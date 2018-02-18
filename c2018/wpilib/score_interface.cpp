@@ -73,7 +73,7 @@ void ScoreSubsystemInterface::ReadSensors() {
     sensors->set_intake_current(
         std::max(pdp_data->current5(), pdp_data->current6()));
   } else {
-    LOG_P("PDP data not available");
+    LOG(ERROR, "PDP data not available");
   }
 
   input_queue_->WriteMessage(sensors);
@@ -103,7 +103,7 @@ void ScoreSubsystemInterface::WriteActuators() {
     low_roller_.Set(0);
     pcm_->WriteSolenoid(kIntakeSolenoidOpen, false);
     pcm_->WriteSolenoid(kIntakeSolenoidClose, false);
-    LOG_P("No score output message available!");
+    LOG(WARNING, "No score output message available!");
   }
 }
 

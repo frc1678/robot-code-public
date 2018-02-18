@@ -4,11 +4,14 @@ load("//third_party/google/protobuf:protobuf.bzl", "cc_proto_library")
 
 cc_library(
     name = "logger",
-    srcs = ["logger.hpp", "logger.cpp"],
+    srcs = [
+        "logger.hpp",
+        "logger.cpp"
+    ],
     hdrs = ["logger.h"],
     deps = [
         "filewriter",
-        "textlogger",
+        ":textlogger",
         "//muan/queues:queues",
         "//muan/utils:proto_utils",
         "//muan/utils:threading_utils",
@@ -34,7 +37,10 @@ cc_library(
 
 cc_library(
     name = "textlogger",
-    srcs = ["textlogger.hpp", "textlogger.cpp"],
+    srcs = [
+        "textlogger.hpp",
+        "textlogger.cpp"
+    ],
     hdrs = ["textlogger.h"],
     deps = [
         "//muan/queues",
@@ -47,7 +53,7 @@ cc_test(
     srcs = ["logger_test.cpp"],
     deps = [
         "filewriter",
-        "logger",
+        ":logger",
         "logger_test_protobufs",
         "//muan/proto:stack_proto",
         "//third_party/google/googletest",
@@ -68,5 +74,6 @@ cc_test(
     deps = [
         "textlogger",
         "//third_party/google/googletest",
+        "//muan/logging:logger",
     ],
 )

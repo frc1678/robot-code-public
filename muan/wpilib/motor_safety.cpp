@@ -39,7 +39,7 @@ double MotorSafety::Update(double voltage, double current) {
   // Determine if the motor has been stalling
   if (time_above_ >= stall_time_) {
     is_stalled_ = true;
-    LOG_P("motor stalled")
+    LOG(WARNING, "motor stalled")
   } else if (time_below_ > reset_time_) {
     is_stalled_ = false;
   }

@@ -13,7 +13,7 @@ PdpWrapper::PdpWrapper(int module) : module_{module} {
   if (status != 0) {
     std::cerr << "Error in PDP wrapper init: " << HAL_GetErrorMessage(status)
               << std::endl;
-    LOG_P("Error in PDP wrapper init", HAL_GetErrorMessage(status));
+    LOG(ERROR, "Error in PDP wrapper init", HAL_GetErrorMessage(status));
     num_failures_++;
   }
 }
@@ -46,7 +46,7 @@ void PdpWrapper::SendValues() {
   if (status != 0) {
     std::cerr << "Error in PDP wrapper: " << HAL_GetErrorMessage(status)
               << std::endl;
-    LOG_P("Error in PDP wrapper", HAL_GetErrorMessage(status));
+    LOG(ERROR, "Error in PDP wrapper", HAL_GetErrorMessage(status));
     num_failures_++;
   }
 
@@ -55,8 +55,8 @@ void PdpWrapper::SendValues() {
   if (queue_ != nullptr) {
     queue_->WriteMessage(message);
   } else {
+    LOG(FATAL, "PDP queue not set, null");
     aos::Die("PDP queue not set!");
-    LOG_P("PDP queue not set, null");
   }
 }
 

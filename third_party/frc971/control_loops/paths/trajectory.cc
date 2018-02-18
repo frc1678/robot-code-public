@@ -63,7 +63,7 @@ void Trajectory::SetPath(const Path &path, const State &state) {
       states_[0](1) < state_(1) - 0.01 ||
       states_[0](3) > state_(3) + 0.01 ||
       states_[0](3) < state_(3) - 0.01) {
-    LOG_P("WARNING: Unable to follow path given initial speed: starting (%f, %f) and max (%f, %f)",
+    LOG(WARNING, "WARNING: Unable to follow path given initial speed: starting (%f, %f) and max (%f, %f)",
           state_(1), state_(3), states_[0](1), states_[0](3));
   }
 }

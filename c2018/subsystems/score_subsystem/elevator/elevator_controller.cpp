@@ -48,7 +48,6 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
     SetWeights(elevator_observer_.x()(0, 0) >= 1.0, (*status)->has_cube());
   } else {
     SetWeights(false, false);
-    LOG_P("Hall effect sensor not calibrated");
   }
 
   if (!outputs_enabled) {
@@ -72,12 +71,11 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
 
   if (!outputs_enabled) {
     elevator_u = CapU(0);
-    LOG_P("Elevator outputs not enabled!");
   } else if (!hall_calib_.is_calibrated()) {
     elevator_u = kCalibrationVoltage;
   } else if (encoder_fault_detected_) {
     elevator_u = 2.0;
-    LOG_P("Encoder fault detected, setting voltage to 2.0");
+    LOG(WARNING, "Encoder fault detected, setting voltage to 2.0");
   }
 
   if (old_pos_ == input->elevator_encoder() &&
@@ -85,7 +83,7 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
     num_encoder_fault_ticks_++;
     if (num_encoder_fault_ticks_ > kEncoderFaultTicksAllowed) {
       encoder_fault_detected_ = true;
-      LOG_P("Encoder fault detected due to offset velocity");
+      LOG(WARNING, "Encoder fault detected due to offset velocity");
     }
   } else {
     num_encoder_fault_ticks_ = 0;

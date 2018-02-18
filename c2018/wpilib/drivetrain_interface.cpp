@@ -53,7 +53,7 @@ void DrivetrainInterface::WriteActuators() {
   } else {
     motor_left_.Set(0);
     motor_right_.Set(0);
-    LOG_P("No outptut queue given");
+    LOG(ERROR, "No output queue given");
   }
 }
 

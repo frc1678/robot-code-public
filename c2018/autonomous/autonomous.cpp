@@ -38,7 +38,7 @@ bool AutonomousBase::IsAutonomous() {
   if (driver_station_reader_.ReadLastMessage(&driver_station)) {
     return driver_station->mode() == RobotMode::AUTONOMOUS;
   } else {
-    LOG_P("No driver station status found.");
+    LOG(WARNING, "No driver station status found.");
     return false;
   }
 }
@@ -65,7 +65,7 @@ void AutonomousBase::StartDriveRelative(double forward, double theta,
                                         double final_velocity) {
   DrivetrainStatus status;
   if (!drivetrain_status_reader_.ReadLastMessage(&status)) {
-    LOG_P("No drivetrain status found.");
+    LOG(WARNING, "No drivetrain status message provided.");
     return;
   }
 
@@ -101,7 +101,7 @@ void AutonomousBase::StartDriveAtAngle(double distance, double theta_absolute,
                                        double final_velocity) {
   DrivetrainStatus status;
   if (!drivetrain_status_reader_.ReadLastMessage(&status)) {
-    LOG_P("No drivetrain status found.");
+    LOG(ERROR, "No drivetrain status found.");
     return;
   }
 
@@ -209,10 +209,8 @@ void AutonomousBase::operator()() {
   DriverStationProto driver_station;
   GameSpecificStringProto game_specific_string;
 
-  LOG_P("Autonomous thread starting!");
-
   while (!driver_station_reader_.ReadLastMessage(&driver_station)) {
-    LOG_P("No driver station message!");
+    LOG(WARNING, "No driver station message!");
     loop_.SleepUntilNext();
   }
 
@@ -222,17 +220,17 @@ void AutonomousBase::operator()() {
   }
 
   while (!game_specific_string_reader_.ReadLastMessage(&game_specific_string)) {
-    LOG_P("Waiting on auto because there's no game specific message yet!");
+    LOG(ERROR, "Waiting on auto because there's no game specific message yet!");
     loop_.SleepUntilNext();
   }
 
   // Start of autonomous. Grab the game specific string.
   auto left_right_codes = game_specific_string->code();
-  LOG_P("Starting autonomous with layout %s", left_right_codes.c_str());
+  LOG(INFO, "Starting autonomous with layout %s", left_right_codes.c_str());
   if (left_right_codes[0] == 'L') {
     if (left_right_codes[1] == 'L') {
       // Switch is left, scale is left
-      LOG_P("Running LEFT SWITCH LEFT SCALE auto");
+      LOG(INFO, "Running LEFT SWITCH LEFT SCALE auto");
 
       MoveToSwitch();
 
@@ -314,7 +312,7 @@ void AutonomousBase::operator()() {
       IntakeGround();
     } else if (left_right_codes[1] == 'R') {
       // Switch is left, scale is right
-      LOG_P("Running LEFT SWITCH RIGHT SCALE auto");
+      LOG(INFO, "Running LEFT SWITCH RIGHT SCALE auto");
 
       StopIntakeGround();
       MoveToScale(false);
@@ -397,7 +395,7 @@ void AutonomousBase::operator()() {
     }
   } else if (left_right_codes[0] == 'R') {
     if (left_right_codes[1] == 'L') {
-      LOG_P("Running RIGHT SWITCH LEFT SCALE auto");
+      LOG(INFO, "Running RIGHT SWITCH LEFT SCALE auto");
 
       MoveToScale(false);
       // Back up
@@ -428,7 +426,7 @@ void AutonomousBase::operator()() {
 
     } else if (left_right_codes[1] == 'R') {
       // Switch is right, scale is right
-      LOG_P("Running RIGHT SWITCH RIGHT SCALE auto");
+      LOG(INFO, "Running RIGHT SWITCH RIGHT SCALE auto");
 
       StopIntakeGround();
       MoveToScale(false);
@@ -503,7 +501,7 @@ void AutonomousBase::operator()() {
       StartDriveRelative(0.5, 0.0);
     }
   }
-  LOG_P("Finished with auto!");
+  LOG(INFO, "Finished with auto!");
 }
 
 /*void AutonomousBase::WaitUntilDriveComplete(int ticks) {

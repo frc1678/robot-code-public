@@ -38,7 +38,7 @@ bool DrivetrainAction::Update() {
     return true;
   }
   return false;
-  LOG_P("Drivetrain Terminated");
+  LOG(FATAL, "Drivetrain Terminated");
 }
 
 void DrivetrainAction::SendMessage() {
@@ -210,12 +210,12 @@ void DrivetrainAction::ExecuteDrive(DrivetrainActionParams params) {
   if (max_forward_velocity_ == 0.0) {
     max_forward_velocity_ = 1e-4;
     max_forward_velocity_ = 1e-4;
-    LOG_P("Max forward velocity is set to zero");
+    LOG(WARNING, "Max forward velocity is set to zero");
   }
   if (max_angular_velocity_ == 0.0) {
     max_angular_velocity_ = 1e-4;
     max_angular_acceleration_ = 1e-4;
-    LOG_P("Max angular velocity is set to 0");
+    LOG(WARNING, "Max angular velocity is set to 0");
   }
 
   this->goal_left_ = left_offset + left_distance;

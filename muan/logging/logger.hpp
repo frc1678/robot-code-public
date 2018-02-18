@@ -2,8 +2,8 @@
 #define MUAN_LOGGING_LOGGER_HPP_
 
 #include <memory>
-#include <utility>
 #include <string>
+#include <utility>
 #include "muan/logging/logger.h"
 
 namespace muan {
@@ -16,19 +16,21 @@ void Logger::AddQueue(const std::string& name, T* queue) {
       aos::Die("Two queues with same name \"%s\"", name.c_str());
     }
   }
-  QueueLog queue_log = {std::make_unique<Reader<typename T::QueueReader>>(queue->MakeReader()), name,
-                        name + ".csv", true};
+  QueueLog queue_log = {
+      std::make_unique<Reader<typename T::QueueReader>>(queue->MakeReader()),
+      name, name + ".csv", true};
 
   queue_logs_.push_back(std::make_unique<QueueLog>(std::move(queue_log)));
 }
 
-template<typename... Ts>
-void Logger::LogText(const char* filename, int line, Ts... args) {
-  text_logger.Log(filename, line, args...);
+template <typename... Ts>
+void Logger::LogText(int level, const char* filename, int line, Ts... args) {
+  text_logger.Log(level, filename, line, args...);
 }
 
 template <class R>
-std::experimental::optional<std::string> Logger::Reader<R>::GetMessageAsCSV(bool header) {
+std::experimental::optional<std::string> Logger::Reader<R>::GetMessageAsCSV(
+    bool header) {
   uint64_t queue_index = reader_.GetNextMessageIndex();
   auto message = reader_.ReadMessage();
   if (message) {
@@ -38,7 +40,8 @@ std::experimental::optional<std::string> Logger::Reader<R>::GetMessageAsCSV(bool
       ss << ",queue_index\n";
     }
 
-    // TODO(Kyle) Refactor Reader's interface to have GetMessageAsCSV write directly to an ostream.
+    // TODO(Kyle) Refactor Reader's interface to have GetMessageAsCSV write
+    // directly to an ostream.
     muan::util::ProtoToCsv(*message.value().get(), ss);
     ss << "," << queue_index << std::endl;
     return ss.str();
@@ -48,8 +51,7 @@ std::experimental::optional<std::string> Logger::Reader<R>::GetMessageAsCSV(bool
 }
 
 template <class R>
-Logger::Reader<R>::Reader(R reader)
-    : reader_{reader} {}
+Logger::Reader<R>::Reader(R reader) : reader_{reader} {}
 
 }  // namespace logging
 }  // namespace muan

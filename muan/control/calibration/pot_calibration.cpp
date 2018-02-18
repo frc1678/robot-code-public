@@ -56,7 +56,7 @@ double PotCalibration::Update(double enc_value, double pot_value, bool index_cli
       // Error checking, changes a boolean if there is a change in offset
     } else if (offset_ != -last_index_pulse_ + section * units_per_index_) {
       index_error_ = true;
-      LOG_P("Got an index pulse that was different than expected!");
+      LOG(WARNING, "Got an index pulse that was different than expected!");
     }
     has_index_pulse_ = false;
   }

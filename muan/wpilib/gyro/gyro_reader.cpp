@@ -25,7 +25,7 @@ void GyroReader::operator()() {
   muan::utils::SetCurrentThreadName("Gyro");
 
   if (gyro_queue_ == nullptr) {
-    LOG_P("No queue provided to gyro reader");
+    LOG(FATAL, "No queue provided to gyro reader");
     aos::Die(
         "Please supply a queue to the gyro reader - otherwise there's no "
         "reason to run it!");
@@ -46,16 +46,15 @@ double GyroReader::AngleReading() {
 
 void GyroReader::Init() {
   // Try to initialize repeatedly every 100ms until it works.
-  LOG_P("Initializing!");
   aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(100));
   while (calibration_state_ == GyroState::kUninitialized && !gyro_.InitializeGyro()) {
-    LOG_P("Init failed");
+    LOG(ERROR, "Init failed");
     phased_loop.SleepUntilNext();
     if (gyro_queue_ != nullptr) {
       GyroMessageProto gyro_message;
       gyro_message->set_state(GyroState::kUninitialized);
       gyro_queue_->WriteMessage(gyro_message);
-      LOG_P("Uninitialized");
+      LOG(ERROR, "Uninitialized");
     }
   }
   calibration_state_ = GyroState::kInitialized;
@@ -77,7 +76,6 @@ void GyroReader::RunCalibration() {
 
   if (calibration_state_ == GyroState::kInitialized) {
     calibration_state_ = GyroState::kCalibrating;
-    LOG_P("Calibrating");
   }
 
   bool robot_disabled = true;
@@ -97,7 +95,7 @@ void GyroReader::RunCalibration() {
       velocity_history.Update(raw_velocity);
     } else {
       velocity_history.reset();
-      LOG_P("Velocity limit exceeded, Calibration Reset");
+      LOG(WARNING, "Velocity limit exceeded, Calibration Reset");
     }
 
     // Send out a GyroMessage if the queue exists
@@ -128,7 +126,7 @@ void GyroReader::RunCalibration() {
       if (ds_message) {
         robot_disabled = ds_message.value()->mode() == RobotMode::DISABLED;
       } else {
-          LOG_P("The driverstation queue is null");
+          LOG(WARNING, "The driverstation queue is null");
       }
     }
   }
@@ -150,7 +148,7 @@ void GyroReader::RunReader() {
     // Reset if the should_reset_ flag is set, then clear it.
     if (should_reset_.exchange(false)) {
       angle_ = 0.0;
-      LOG_P("reset_ flag sent, Resetting");
+      LOG(WARNING, "reset_ flag sent, Resetting");
     }
 
     // Send out a GyroMessage if the queue exists

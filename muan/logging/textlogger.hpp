@@ -1,11 +1,12 @@
 #include <cstdio>
 #include <utility>
+#include "muan/logging/textlogger.h"
 
 namespace muan {
 namespace logging {
 
-template<typename... Ts>
-void TextLogger::Log(const char* filename, int line, Ts... args) {
+template <typename... Ts>
+void TextLogger::Log(int level, const char* filename, int line, Ts... args) {
   // Get time and thread when function is called.
   // Lambda is called later in a different thread.
   uint64_t time = muan::utils::Timestamp();
@@ -21,8 +22,8 @@ void TextLogger::Log(const char* filename, int line, Ts... args) {
 #endif
   LogCall call;
   call.thread_name = &muan::utils::GetCurrentThreadName();
-  call.message = [buf, time, filename, line, this](std::ostream& out){
-    Stamp(out, time, filename, line);
+  call.message = [buf, time, level, filename, line, this](std::ostream& out) {
+    Stamp(out, time, level, filename, line);
     out << buf << "\n";
   };
   log_calls_.WriteMessage(call);

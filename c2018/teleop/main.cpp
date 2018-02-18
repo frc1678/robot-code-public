@@ -76,7 +76,7 @@ void TeleopBase::operator()() {
   aos::SetCurrentThreadRealtimePriority(10);
   muan::utils::SetCurrentThreadName("TeleopBase");
 
-  LOG_P("Starting TeleopBase thread!");
+  LOG(INFO, "Starting TeleopBase thread!");
 
   running_ = true;
   while (running_) {

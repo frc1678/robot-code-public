@@ -8,13 +8,13 @@
 #include <utility>
 #include <vector>
 
-#include "muan/logging/filewriter.h"
 #include "gtest/gtest_prod.h"
+#include "muan/logging/filewriter.h"
+#include "muan/logging/textlogger.h"
 #include "muan/queues/message_queue.h"
 #include "muan/units/units.h"
 #include "muan/utils/proto_utils.h"
 #include "muan/utils/threading_utils.h"
-#include "muan/logging/textlogger.h"
 #include "third_party/aos/common/time.h"
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/aos/linux_code/init.h"
@@ -46,7 +46,8 @@ namespace logging {
  *  - Adding a Queue to be logged
  *  - Creating a textlog
  * However, these operations should only happen in the beginning of the robot
- * code, when the subsystems are being initialized, this should not be a problem.
+ * code, when the subsystems are being initialized, this should not be a
+ * problem.
  *
  * Right now, textlog uses std::string, which is non-realtime if it needs to be
  * expanded, so it is up to callers to ensure that the construction of the
@@ -81,10 +82,11 @@ class Logger {
   void Stop();
 
   // Log with format strings, such as
-  // LOG_P(__FILE__, __LINE__, "x=%d y=%f", x, y);
-  template<typename... Ts>
-  static void LogText(const char* filename, int line, Ts... args);
-  #define LOG_P(fmt, ...) muan::logging::Logger::LogText(__FILE__, __LINE__, fmt, ##__VA_ARGS__)
+  // LOG(level, "x=%d y=%f", x, y);
+  template <typename... Ts>
+  static void LogText(int level, const char* filename, int line, Ts... args);
+#define LOG(level, fmt, ...) \
+  muan::logging::Logger::LogText(level, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 
  private:
   std::unique_ptr<FileWriter> writer_;
@@ -94,14 +96,16 @@ class Logger {
 
   class GenericReader {
    public:
-    virtual std::experimental::optional<std::string> GetMessageAsCSV(bool header) = 0;
+    virtual std::experimental::optional<std::string> GetMessageAsCSV(
+        bool header) = 0;
   };
 
   template <class R>
   class Reader : public GenericReader {
    public:
     explicit Reader(R reader);
-    std::experimental::optional<std::string> GetMessageAsCSV(bool header) override;
+    std::experimental::optional<std::string> GetMessageAsCSV(
+        bool header) override;
 
    private:
     R reader_;
@@ -116,10 +120,8 @@ class Logger {
 
   std::vector<std::unique_ptr<QueueLog>> queue_logs_;
   TextLogger::LogQueue::QueueReader textlog_reader_;
-
   static TextLogger text_logger;
 };  // class Logger
-
 }  // namespace logging
 }  // namespace muan
 
