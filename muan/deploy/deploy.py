@@ -36,7 +36,7 @@ def get_args():
 def install(ssh_target, pkg):
     """Installs a package from NI on the ssh target."""
     print('Installing', pkg)
-    PKG_URL = 'http://download.ni.com/ni-linux-rt/feeds/2015/arm/ipk/cortexa9-vfpv3/' + pkg
+    PKG_URL = 'http://download.ni.com/ni-linux-rt/feeds/2017/arm/ipk/cortexa9-vfpv3/' + pkg
     sp.check_call(['wget', PKG_URL, '-O', pkg])
     try:
         sp.check_call(['scp', pkg, ssh_target + ':/tmp/' + pkg])
@@ -141,8 +141,11 @@ def main():
     sp.check_call(ssh_suid_command)
     print("Running set autostart setup command: {}".format(' '.join(ssh_autostart_command)))
     sp.check_call(ssh_autostart_command)
-    print("Running kill robot code command: {}".format(' '.join(ssh_kill_code_command)))
-    sp.check_call(ssh_kill_code_command)
+    try:
+        print("Running kill robot code command: {}".format(' '.join(ssh_kill_code_command)))
+        sp.check_call(ssh_kill_code_command)
+    except:
+        print("\033[93m WARN: Couldn't kill but deployed\033[0m")
     print("Deploying completed successfully.")
 
 if __name__ == '__main__':
