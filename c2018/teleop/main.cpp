@@ -19,6 +19,7 @@ using muan::teleop::JoystickStatusProto;
 using muan::queues::QueueManager;
 using c2018::climber::ClimberGoalProto;
 using c2018::score_subsystem::ScoreSubsystemGoalProto;
+using c2018::score_subsystem::ScoreSubsystemStatusProto;
 
 TeleopBase::TeleopBase()
     : throttle_{1, QueueManager<JoystickStatusProto>::Fetch("throttle")},
@@ -28,30 +29,35 @@ TeleopBase::TeleopBase()
                  QueueManager<GameSpecificStringProto>::Fetch()},
       climber_goal_queue_{QueueManager<ClimberGoalProto>::Fetch()},
       score_subsystem_goal_queue_{
-          QueueManager<ScoreSubsystemGoalProto>::Fetch()} {
+          QueueManager<ScoreSubsystemGoalProto>::Fetch()},
+      score_subsystem_status_queue_{
+          QueueManager<ScoreSubsystemStatusProto>::Fetch()} {
   hook_up_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::BACK));
   batter_down_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::START));
   godmode_ = gamepad_.MakeButton(
       uint32_t(muan::teleop::XBox::LEFT_CLICK_IN));  // TODO(hanson/gemma/ellie)
                                                      // add godmodes for
                                                      // intaking/outtaking
-  intake_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::A_BUTTON));
-
-  stow_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::X_BUTTON));
-
-  outtake_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::B_BUTTON));
-  score_back_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::RIGHT_BUMPER));
-  score_front_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_BUMPER));
-
   height_0_ = gamepad_.MakePov(0, muan::teleop::Pov::kSouth);
   height_1_ = gamepad_.MakePov(0, muan::teleop::Pov::kEast);
   height_2_ = gamepad_.MakePov(0, muan::teleop::Pov::kNorth);
+  height_portal_ = gamepad_.MakePov(0, muan::teleop::Pov::kWest);
+
+  low_ = gamepad_.MakeAxis(1, .85);
+  front_ = gamepad_.MakeAxis(0, .85);
+  back_ = gamepad_.MakeAxis(0, -.85);
+
+  stow_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_BUMPER));
+  intake_ = gamepad_.MakeAxis(3, 0.7);
+  outtake_ = gamepad_.MakeAxis(2, 0.7);
+
+  pos_0_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::A_BUTTON));
+  pos_1_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::B_BUTTON));
+  pos_2_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::X_BUTTON));
+  pos_3_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::Y_BUTTON));
 
   godmode_up_ = gamepad_.MakeAxis(5, -.7);   // Right Joystick North
   godmode_down_ = gamepad_.MakeAxis(5, .7);  // Right Joystick South
-
-  top_mode_ = gamepad_.MakeAxis(1, -.7);    // Left Joystick North
-  bottom_mode_ = gamepad_.MakeAxis(1, .7);  // Left Joystick South
 
   shifting_low_ = throttle_.MakeButton(4);
   shifting_high_ = throttle_.MakeButton(5);
@@ -91,6 +97,22 @@ void TeleopBase::Update() {
     SendClimbSubsystemMessage();
   }
   SetReadableLogName();
+
+  ScoreSubsystemStatusProto score_status;
+  score_subsystem_status_queue_->ReadLastMessage(&score_status);
+  if (score_status->has_cube() && !had_cube_) {
+    rumble_ticks_left_ = kNumRumbleTicks;
+  }
+  had_cube_ = score_status->has_cube();
+
+  if (rumble_ticks_left_ > 0) {
+    // Set rumble on
+    rumble_ticks_left_--;
+    gamepad_.wpilib_joystick()->SetRumble(GenericHID::kLeftRumble, 1.0);
+  } else {
+    // Set rumble off
+    gamepad_.wpilib_joystick()->SetRumble(GenericHID::kLeftRumble, 0.0);
+  }
 
   ds_sender_.Send();
 }
@@ -169,6 +191,8 @@ void TeleopBase::SendScoreSubsystemMessage() {
     score_subsystem_goal_->set_score_goal(c2018::score_subsystem::INTAKE_1);
   } else if (height_2_->is_pressed()) {
     score_subsystem_goal_->set_score_goal(c2018::score_subsystem::INTAKE_2);
+  } else if (height_portal_->is_pressed()) {
+    score_subsystem_goal_->set_score_goal(c2018::score_subsystem::PORTAL);
   }
 
   // Intake modes
@@ -179,7 +203,7 @@ void TeleopBase::SendScoreSubsystemMessage() {
   }
 
   if (stow_->was_clicked()) {
-    score_subsystem_goal_->set_score_goal(c2018::score_subsystem::FORCE_STOW);
+    score_subsystem_goal_->set_score_goal(c2018::score_subsystem::STOW);
   }
 
   if (outtake_->is_pressed()) {
@@ -189,26 +213,41 @@ void TeleopBase::SendScoreSubsystemMessage() {
   }
 
   // Scoring modes
-  if (score_front_->is_pressed()) {
-    if (top_mode_->is_pressed()) {
+  if (low_->is_pressed()) {
+    if (pos_0_->is_pressed()) {
       score_subsystem_goal_->set_score_goal(
-          c2018::score_subsystem::SCALE_HIGH_FORWARD);
-    } else if (bottom_mode_->is_pressed()) {
-      score_subsystem_goal_->set_score_goal(c2018::score_subsystem::SWITCH);
-    } else {
+          c2018::score_subsystem::EXCHANGE);
+    } else if (pos_1_->is_pressed()) {
+      score_subsystem_goal_->set_score_goal(
+          c2018::score_subsystem::SWITCH);
+    }
+  } else if (front_->is_pressed()) {
+    if (pos_0_->is_pressed()) {
+      score_subsystem_goal_->set_score_goal(
+          c2018::score_subsystem::SCALE_LOW_FORWARD);
+    } else if (pos_1_->is_pressed()) {
       score_subsystem_goal_->set_score_goal(
           c2018::score_subsystem::SCALE_MID_FORWARD);
-    }
-  }
-  if (score_back_->is_pressed()) {
-    if (top_mode_->is_pressed()) {
+    } else if (pos_2_->is_pressed()) {
       score_subsystem_goal_->set_score_goal(
-          c2018::score_subsystem::SCALE_HIGH_REVERSE);
-    } else if (bottom_mode_->is_pressed()) {
-      score_subsystem_goal_->set_score_goal(c2018::score_subsystem::EXCHANGE);
-    } else {
+          c2018::score_subsystem::SCALE_HIGH_FORWARD);
+    } else if (pos_3_->is_pressed()) {
+      score_subsystem_goal_->set_score_goal(
+          c2018::score_subsystem::SCALE_SUPER_HIGH_FORWARD);
+    }
+  } else if (back_->is_pressed()) {
+    if (pos_0_->is_pressed()) {
+      score_subsystem_goal_->set_score_goal(
+          c2018::score_subsystem::SCALE_LOW_REVERSE);
+    } else if (pos_1_->is_pressed()) {
       score_subsystem_goal_->set_score_goal(
           c2018::score_subsystem::SCALE_MID_REVERSE);
+    } else if (pos_2_->is_pressed()) {
+      score_subsystem_goal_->set_score_goal(
+          c2018::score_subsystem::SCALE_HIGH_REVERSE);
+    } else if (pos_3_->is_pressed()) {
+      score_subsystem_goal_->set_score_goal(
+          c2018::score_subsystem::SCALE_SUPER_HIGH_REVERSE);
     }
   }
   score_subsystem_goal_queue_->WriteMessage(score_subsystem_goal_);

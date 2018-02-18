@@ -88,44 +88,64 @@ void ScoreSubsystem::SetGoal(const ScoreSubsystemGoalProto& goal) {
     case SCORE_NONE:
       break;
     case INTAKE_0:
-      elevator_height_ = kElevatorFirstCube;
+      elevator_height_ = kElevatorIntake0;
       wrist_angle_ = kWristForwardAngle;
       break;
     case INTAKE_1:
-      elevator_height_ = kElevatorSecondCube;
+      elevator_height_ = kElevatorIntake1;
       wrist_angle_ = kWristForwardAngle;
       break;
     case INTAKE_2:
-      elevator_height_ = kElevatorThirdCube;
+      elevator_height_ = kElevatorIntake2;
       wrist_angle_ = kWristForwardAngle;
       break;
-    case FORCE_STOW:
-      elevator_height_ = kElevatorStowHeight;
+    case STOW:
+      elevator_height_ = kElevatorStow;
       wrist_angle_ = kWristStowAngle;
       break;
     case SWITCH:
-      elevator_height_ = kElevatorScoreLow;
+      elevator_height_ = kElevatorSwitch;
       wrist_angle_ = kWristForwardAngle;
       break;
+    case SCALE_LOW_FORWARD:
+      elevator_height_ = kElevatorScaleLow;
+      wrist_angle_ = kWristForwardAngle;
+      break;
+    case SCALE_LOW_REVERSE:
+      elevator_height_ = kElevatorScaleLow + kElevatorReversedOffset;
+      wrist_angle_ = kWristBackwardAngle;
+      break;
     case SCALE_MID_FORWARD:
-      elevator_height_ = kElevatorScoreMid;
+      elevator_height_ = kElevatorScaleMid;
       wrist_angle_ = kWristForwardAngle;
       break;
     case SCALE_MID_REVERSE:
-      elevator_height_ = kElevatorScoreMid;
+      elevator_height_ = kElevatorScaleMid + kElevatorReversedOffset;
       wrist_angle_ = kWristBackwardAngle;
       break;
     case SCALE_HIGH_FORWARD:
-      elevator_height_ = kElevatorScoreHigh;
+      elevator_height_ = kElevatorScaleHigh;
       wrist_angle_ = kWristForwardAngle;
       break;
     case SCALE_HIGH_REVERSE:
-      elevator_height_ = kElevatorScoreHigh;
+      elevator_height_ = kElevatorScaleHigh + kElevatorReversedOffset;
+      wrist_angle_ = kWristBackwardAngle;
+      break;
+    case SCALE_SUPER_HIGH_FORWARD:
+      elevator_height_ = kElevatorScaleSuperHighFront;
+      wrist_angle_ = kWristTiltUpAngle;
+      break;
+    case SCALE_SUPER_HIGH_REVERSE:
+      elevator_height_ = kElevatorScaleSuperHighBack + kElevatorReversedOffset;
       wrist_angle_ = kWristBackwardAngle;
       break;
     case EXCHANGE:
-      elevator_height_ = kElevatorExchangeHeight;
-      wrist_angle_ = kWristBackwardAngle;
+      elevator_height_ = kElevatorExchange;
+      wrist_angle_ = kWristForwardAngle;
+      break;
+    case PORTAL:
+      elevator_height_ = kElevatorPortal;
+      wrist_angle_ = kWristPortalAngle;
       break;
   }
 
@@ -153,7 +173,7 @@ void ScoreSubsystem::RunStateMachine() {
       if (status_->wrist_calibrated() && status_->elevator_calibrated()) {
         // These need to be set right away because calibration moves the
         // goalposts.
-        elevator_height_ = kElevatorStowHeight;
+        elevator_height_ = kElevatorStow;
         wrist_angle_ = kWristStowAngle;
 
         GoToState(HOLDING);

@@ -246,70 +246,77 @@ TEST_F(ScoreSubsystemTest, MoveTo) {
   RunFor(1);
   SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::INTAKE_NONE, true);
   RunFor(1000);
-  CheckGoal(kElevatorFirstCube, kWristForwardAngle);
+  CheckGoal(kElevatorIntake0, kWristForwardAngle);
 
   // Intake 1
   SetGoal(ScoreGoal::INTAKE_1, IntakeGoal::INTAKE_NONE, true);
   RunFor(1);
   SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::INTAKE_NONE, true);
   RunFor(1000);
-  CheckGoal(kElevatorSecondCube, kWristForwardAngle);
+  CheckGoal(kElevatorIntake1, kWristForwardAngle);
 
   // Intake 2
   SetGoal(ScoreGoal::INTAKE_2, IntakeGoal::INTAKE_NONE, true);
   RunFor(1);
   SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::INTAKE_NONE, true);
   RunFor(1000);
-  CheckGoal(kElevatorThirdCube, kWristForwardAngle);
-
-  // Intake 2
-  SetGoal(ScoreGoal::INTAKE_2, IntakeGoal::INTAKE_NONE, true);
-  RunFor(1);
-  SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::INTAKE_NONE, true);
-  RunFor(1000);
-  CheckGoal(kElevatorThirdCube, kWristForwardAngle);
+  CheckGoal(kElevatorIntake2, kWristForwardAngle);
 
   // Force stow
-  SetGoal(ScoreGoal::FORCE_STOW, IntakeGoal::INTAKE_NONE, true);
+  SetGoal(ScoreGoal::STOW, IntakeGoal::INTAKE_NONE, true);
   RunFor(1);
   SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::INTAKE_NONE, true);
   RunFor(1000);
-  CheckGoal(kElevatorStowHeight, kWristStowAngle);
+  CheckGoal(kElevatorStow, kWristStowAngle);
 
   // Switch
   SetGoal(ScoreGoal::SWITCH, IntakeGoal::INTAKE_NONE, true);
   RunFor(1);
   SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::INTAKE_NONE, true);
   RunFor(1000);
-  CheckGoal(kElevatorScoreLow, kWristForwardAngle);
+  CheckGoal(kElevatorSwitch, kWristForwardAngle);
+
+  // Scale low forward
+  SetGoal(ScoreGoal::SCALE_LOW_FORWARD, IntakeGoal::INTAKE_NONE, true);
+  RunFor(1);
+  SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::INTAKE_NONE, true);
+  RunFor(1000);
+  CheckGoal(kElevatorScaleLow, kWristForwardAngle);
+
+  // Scale low reverse
+  SetGoal(ScoreGoal::SCALE_LOW_REVERSE, IntakeGoal::INTAKE_NONE, true);
+  RunFor(1);
+  SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::INTAKE_NONE, true);
+  RunFor(1000);
+  CheckGoal(kElevatorScaleLow + kElevatorReversedOffset, kWristBackwardAngle);
 
   // Scale mid forward
   SetGoal(ScoreGoal::SCALE_MID_FORWARD, IntakeGoal::INTAKE_NONE, true);
   RunFor(1);
   SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::INTAKE_NONE, true);
   RunFor(1000);
-  CheckGoal(kElevatorScoreMid, kWristForwardAngle);
+  CheckGoal(kElevatorScaleMid, kWristForwardAngle);
 
   // Scale mid reverse
   SetGoal(ScoreGoal::SCALE_MID_REVERSE, IntakeGoal::INTAKE_NONE, true);
   RunFor(1);
   SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::INTAKE_NONE, true);
   RunFor(1000);
-  CheckGoal(kElevatorScoreMid, kWristBackwardAngle);
+  CheckGoal(kElevatorScaleMid + kElevatorReversedOffset, kWristBackwardAngle);
 
   // Scale high forward
   SetGoal(ScoreGoal::SCALE_HIGH_FORWARD, IntakeGoal::INTAKE_NONE, true);
   RunFor(1);
   SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::INTAKE_NONE, true);
   RunFor(1000);
-  CheckGoal(kElevatorScoreHigh, kWristForwardAngle);
+  CheckGoal(kElevatorScaleHigh, kWristForwardAngle);
 
   // Scale high reverse
   SetGoal(ScoreGoal::SCALE_HIGH_REVERSE, IntakeGoal::INTAKE_NONE, true);
   RunFor(1);
   SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::INTAKE_NONE, true);
   RunFor(1000);
-  CheckGoal(kElevatorScoreHigh, kWristBackwardAngle);
+  CheckGoal(kElevatorScaleHigh + kElevatorReversedOffset, kWristBackwardAngle);
 }
 
 TEST_F(ScoreSubsystemTest, IntakeManual) {
@@ -375,7 +382,7 @@ TEST_F(ScoreSubsystemTest, ScoreToIdle) {
   Update();
   SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::INTAKE_NONE, true);
   RunFor(600);
-  CheckGoal(kElevatorScoreMid, kWristBackwardAngle);
+  CheckGoal(kElevatorScaleMid + kElevatorReversedOffset, kWristBackwardAngle);
 
   SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::OUTTAKE, true);
   Update();
@@ -402,7 +409,7 @@ TEST_F(ScoreSubsystemTest, ForceIntake) {
   EXPECT_EQ(score_subsystem_output_proto_->intake_voltage(),
             wrist::kIntakeVoltage);
   EXPECT_EQ(score_subsystem_status_proto_->state(), INTAKING);
-  CheckGoal(kElevatorFirstCube, kWristForwardAngle);
+  CheckGoal(kElevatorIntake0, kWristForwardAngle);
 }
 
 }  // namespace score_subsystem

@@ -15,6 +15,8 @@
 namespace c2018 {
 namespace teleop {
 
+constexpr int kNumRumbleTicks = 25;
+
 class TeleopBase {
  public:
   TeleopBase();
@@ -42,12 +44,16 @@ class TeleopBase {
   muan::teleop::Button *quickturn_;
 
   // Gamepad Buttons
-  muan::teleop::Button *outtake_, *intake_, *stow_, *score_back_, *score_front_;
+  muan::teleop::Button *outtake_, *intake_, *stow_;
   muan::teleop::Button *batter_down_, *hook_up_, *godmode_;
+
   // Gamepad POVs
-  muan::teleop::Button *height_0_, *height_1_, *height_2_;
+  muan::teleop::Button *height_0_, *height_1_, *height_2_, *height_portal_;
   // Gamepad Axes
   muan::teleop::Button *godmode_up_, *godmode_down_, *top_mode_, *bottom_mode_;
+
+  muan::teleop::Button *front_, *back_, *low_;
+  muan::teleop::Button *pos_0_, *pos_1_, *pos_2_, *pos_3_;
 
   bool god_mode_ = false;
 
@@ -60,6 +66,10 @@ class TeleopBase {
 
   c2018::climber::ClimberGoalQueue *climber_goal_queue_;
   c2018::score_subsystem::ScoreSubsystemGoalQueue *score_subsystem_goal_queue_;
+  c2018::score_subsystem::ScoreSubsystemStatusQueue *score_subsystem_status_queue_;
+
+  int rumble_ticks_left_ = 0;
+  bool had_cube_ = false;
 };
 
 }  // namespace teleop

@@ -501,9 +501,9 @@ void AutonomousBase::operator()() {
 
       IntakeGround();
       StartDriveRelative(0.5, 0.0);
-      WaitUntilElevatorAtPosition();
     }
   }
+  LOG_P("Finished with auto!");
 }
 
 /*void AutonomousBase::WaitUntilDriveComplete(int ticks) {
@@ -555,8 +555,8 @@ void AutonomousBase::MoveToSwitch() {
 void AutonomousBase::MoveToScale(bool front) {
   score_subsystem::ScoreSubsystemGoalProto score_goal;
   score_goal->set_score_goal(
-      front ? score_subsystem::ScoreGoal::SCALE_MID_FORWARD
-            : score_subsystem::ScoreGoal::SCALE_MID_REVERSE);
+      front ? score_subsystem::ScoreGoal::SCALE_HIGH_FORWARD
+            : score_subsystem::ScoreGoal::SCALE_HIGH_REVERSE);
   score_goal->set_intake_goal(score_subsystem::IntakeGoal::INTAKE_NONE);
   score_goal_queue_->WriteMessage(score_goal);
 }

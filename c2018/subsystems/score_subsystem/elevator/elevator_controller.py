@@ -18,10 +18,10 @@ def make_gains(second_stage, has_cube, subname='gains'):
 
     name = subname
 
-    mass_carriage = 14.0 # 8.55 # 2.55 Kilo plus 3 miniCIM * 2
+    mass_carriage = 6.0
 
     if second_stage:
-        mass_carriage += 2.14
+        mass_carriage += 2.5
 
     if has_cube:
         mass_carriage += 1.59
@@ -117,7 +117,7 @@ def make_augmented_gains(second_stage, has_cube, subname):
     Q_kalman = np.asmatrix([
         [1e-2, 0.0, 0.0],
         [0.0, 2e-1, 0.0],
-        [0.0, 0.0, 3e2]
+        [0.0, 0.0, 3e3]
     ])
 
     Q_ff = np.asmatrix([

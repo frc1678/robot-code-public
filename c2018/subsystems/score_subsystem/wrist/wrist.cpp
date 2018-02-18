@@ -47,10 +47,10 @@ void WristController::Update(ScoreSubsystemInputProto input,
 
   double wrist_voltage = 0.0;
 
-  if (input->has_cube()) {
+  if (input->has_cube() && has_cube_for_ticks_ < kNumHasCubeTicks * 2) {
     has_cube_for_ticks_++;
-  } else {
-    has_cube_for_ticks_ = 0;
+  } else if (!input->has_cube() && has_cube_for_ticks_ > 0) {
+    has_cube_for_ticks_--;
   }
   bool has_cube = has_cube_for_ticks_ > kNumHasCubeTicks;
 

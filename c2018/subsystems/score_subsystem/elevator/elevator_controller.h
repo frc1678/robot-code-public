@@ -20,8 +20,8 @@ namespace score_subsystem {
 
 namespace elevator {
 
-constexpr double kElevatorAcceleration = 2.3;
-constexpr double kElevatorVelocity = 2.2;
+constexpr double kElevatorAcceleration = 4.0;
+constexpr double kElevatorVelocity = 2.5;
 constexpr double kElevatorMinHeight = 0.0;
 constexpr double kElevatorMaxHeight = 2.06;
 constexpr double kHallEffectHeight = 0.898;
