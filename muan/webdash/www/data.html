@@ -27,8 +27,8 @@
       }
       text += "</ul>"
       document.body.innerHTML = text;
-      CollapsibleLists.apply();
     }
+    
 
     var graph_data_list = {};
     var video_streams = [];
@@ -36,6 +36,8 @@
     function UpdateList(data) {
       for (var key in data) {
         for (var element in data[key]) {
+          CollapsibleLists.apply();
+          CollapsibleLists.apply();
           document.getElementById(key + "_" + element).innerHTML = element + " = " + data[key][element];
 
           // Updating graph info
@@ -62,7 +64,7 @@
                                                                              });
             }
           } else { // Collapsible list is closed
-            delete graph_data_list[key + "_" + element + "_dygraph"];
+            graph_data_list[key + "_" + element + "_dygraph"] = "";
           }
         }
       }
