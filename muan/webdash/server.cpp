@@ -34,15 +34,6 @@ struct AutoChangeHandler : seasocks::WebSocket::Handler {
   void onDisconnect(seasocks::WebSocket* /*socket*/) override {}
 };
 
-struct LogNameHandler : seasocks::WebSocket::Handler {
-  void onConnect(seasocks::WebSocket* /* socket */) override {}
-  void onDisconnect(seasocks::WebSocket* /* socket */) override {}
-
-  void onData(seasocks::WebSocket* /*socket*/, const char* data) override {
-    muan::logging::FileWriter::CreateReadableName(data);
-  }
-};
-
 void WebDashRunner::DataRequestHandler::onData(seasocks::WebSocket* con,
                                                const char* /*data*/) {
   std::stringstream output_json;
@@ -76,17 +67,6 @@ void WebDashRunner::VideoListRequestHandler::onData(seasocks::WebSocket* con,
   con->send(json_video_list.c_str());
 }
 
-void WebDashRunner::WebDashModeRequestHandler::onData(seasocks::WebSocket* con,
-                                                      const char* /*data*/) {
-  if (mode_ == ROBORIO) {
-    con->send("Roborio");
-  } else if (mode_ == JETSON) {
-    con->send("Jetson");
-  } else {
-    con->send("Undefined");
-  }
-}
-
 void WebDashRunner::DisplayRequestHandler::onData(seasocks::WebSocket* con,
                                                   const char* /*data*/) {
   std::string json_display = "";
@@ -105,11 +85,8 @@ void WebDashRunner::operator()() {
   server.addWebSocketHandler(
       "/videolist",
       std::make_shared<VideoListRequestHandler>(video_stream_list_));
-  server.addWebSocketHandler("/logname", std::make_shared<LogNameHandler>());
   server.addWebSocketHandler("/data",
                              std::make_shared<DataRequestHandler>(queue_logs_));
-  server.addWebSocketHandler(
-      "/webdashmode", std::make_shared<WebDashModeRequestHandler>(kMode));
   server.addWebSocketHandler(
       "/display", std::make_shared<DisplayRequestHandler>(&display_object_));
   server.serve("muan/webdash/www/", 5801);

@@ -6,12 +6,6 @@
   </head>
   <body>
     <center>
-      <form id="auto">
-      </form>
-      <form>
-        <input type="text" id="logname">
-        <input type="button" value="Set a name for this run" onclick="sendLogName()">
-      </form>
       <a href="/data.html">Live data view</a>
       <br/>
       <a href="/display.html">Operator Display</a>
@@ -19,17 +13,4 @@
       <p>Don't Panic!</p>
     </center>
   </body>
-  <script>
-    var webdashmodesock = new WebSocket("ws://" + document.location.host + "/webdashmode");
-    webdashmodesock.onmessage = function(data) {
-      if (data.data != "Roborio") {
-        var element = document.getElementById("auto");
-        element.parentNode.removeChild(element);
-      }
-    }
-    var logsock = new WebSocket("ws://" + document.location.host + "/logname");
-    function sendLogName() {
-      logsock.send(document.getElementById("logname").value);
-    }
-  </script>
 </html>

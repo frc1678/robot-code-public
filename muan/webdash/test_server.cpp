@@ -30,7 +30,7 @@ int main() {
   gss_proto->set_code("RRL");
   gss_queue.WriteMessage(gss_proto);
 
-  muan::webdash::WebDashRunner runner(muan::webdash::ROBORIO);
+  muan::webdash::WebDashRunner runner;
   runner.AddQueue("joystick_status", &joystick_status_queue);
   runner.AddQueue("gss", &gss_queue);
   runner.AddQueue("shooter_status", &shooter_status_queue);
