@@ -594,7 +594,7 @@ TEST_F(DrivetrainTest, PathDrive) {
   goal->mutable_angular_constraints()->set_max_acceleration(1.0);
 
   goal_queue_.WriteMessage(goal);
-  RunForTime(::std::chrono::seconds(7));
+  RunForTime(::std::chrono::seconds(10));
   {
     auto maybe_status = status_queue_.ReadLastMessage();
     ASSERT_TRUE(maybe_status);
