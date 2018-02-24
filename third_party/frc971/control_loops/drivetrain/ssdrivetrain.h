@@ -64,6 +64,8 @@ class DrivetrainMotorsSS {
 
   aos::util::TrapezoidProfile linear_profile_, angular_profile_;
 
+  bool is_high_gear_ = false;
+
   bool output_was_capped_ = false;
 
   bool use_profile_ = false;

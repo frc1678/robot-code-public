@@ -9,4 +9,5 @@ cc_binary(
     deps = [
         "//muan/vision",
     ],
+    restricted_to = ["//tools:k8", "//tools:armhf-debian"],
 )

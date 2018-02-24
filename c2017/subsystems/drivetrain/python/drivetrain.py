@@ -31,7 +31,7 @@ def main(argv):
   if FLAGS.plot:
     drivetrain.PlotDrivetrainMotions(kDrivetrain)
   elif len(argv) != 5:
-    print "Expected .h file name and .cc file name"
+    print("Expected .h file name and .cc file name")
   else:
     # Write the generated constants out to a file.
     drivetrain.WriteDrivetrain(argv[1:3], argv[3:5], 'c2017', kDrivetrain)

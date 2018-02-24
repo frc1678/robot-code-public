@@ -33,7 +33,7 @@ def main(argv):
   if FLAGS.plot:
     drivetrain.PlotDrivetrainMotions(kDrivetrain)
   elif len(argv) != 5:
-    print "Expected .h file name and .cc file name"
+    print("Expected .h file name and .cc file name")
   else:
     # Write the generated constants out to a file.
     namespaces = ['third_party', 'frc971', 'control_loops', 'drivetrain', 'y2016']

@@ -8,6 +8,10 @@ import ctypes
 import os
 import sys
 
+ctypes.cdll.LoadLibrary("libc.so.6")
+libc = ctypes.CDLL("libc.so.6")
+
+"""
 # Wrapper around PyFile_AsFile so that we can print out the error messages.
 # Set the arg type and return types of the function call.
 class FILE(ctypes.Structure):
@@ -15,6 +19,7 @@ class FILE(ctypes.Structure):
 
 ctypes.pythonapi.PyFile_AsFile.argtypes = [ctypes.py_object]
 ctypes.pythonapi.PyFile_AsFile.restype = ctypes.POINTER(FILE)
+"""
 
 # Load and init libcdd.  libcdd is a C library that implements algorithm to
 # manipulate half space and vertex representations of polytopes.
@@ -24,7 +29,7 @@ libcdd = None
 for path in os.environ.get('PYTHONPATH').split(':'):
   try:
     libcdd = ctypes.cdll.LoadLibrary(os.path.join(path, 'third_party/cddlib/_cddlib.so'))
-  except OSError, e:
+  except (OSError) as e:
     pass
 
 assert libcdd is not None, 'Failed to find _cddlib.so'
@@ -127,7 +132,7 @@ def dd_DDMatrix2Poly(matrixptr):
   if error.value != DD_NO_ERRORS:
     # Dump out the errors to stderr
     libcdd.dd_WriteErrorMessages(
-        ctypes.pythonapi.PyFile_AsFile(ctypes.py_object(sys.stdout)),
+        libc.stderr,
         error)
     dd_FreePolyhedra(polyhedraptr)
     return None

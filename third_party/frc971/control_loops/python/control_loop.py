@@ -1,6 +1,8 @@
-import controls
+import third_party.frc971.control_loops.python.controls as controls
 import numpy
 import os
+
+from builtins import range
 
 class Constant(object):
   def __init__ (self, name, formatt, value):
@@ -318,8 +320,8 @@ class ControlLoop(object):
     """
     ans = ['  Eigen::Matrix<%s, %d, %d> %s;\n' % (
         scalar_type, matrix.shape[0], matrix.shape[1], matrix_name)]
-    for x in xrange(matrix.shape[0]):
-      for y in xrange(matrix.shape[1]):
+    for x in range(matrix.shape[0]):
+      for y in range(matrix.shape[1]):
         write_type =  repr(matrix[x, y])
         if scalar_type == 'float':
           write_type += 'f'

@@ -248,7 +248,7 @@ TEST(ShooterControllerTest, SaturationTest) {
 
   plant.x(1) = 100;  // Disturbance
 
-  bool saturation_works;
+  bool saturation_works = false;
 
   for (int i = 0; i <= 500; i++) {
     auto status = c2017::QueueManager::GetInstance()
@@ -256,7 +256,7 @@ TEST(ShooterControllerTest, SaturationTest) {
                       ->ReadLastMessage();
 
     saturation_works =
-        saturation_works || status.value()->profiled_goal_velocity() < 300;
+        saturation_works || (status.value()->profiled_goal_velocity() < 300);
 
     input->set_shooter_encoder_position(plant.x(0));
 

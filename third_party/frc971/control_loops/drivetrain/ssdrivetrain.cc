@@ -145,6 +145,8 @@ DrivetrainMotorsSS::DrivetrainMotorsSS(const DrivetrainConfig &dt_config,
 
 void DrivetrainMotorsSS::SetGoal(
     const ::frc971::control_loops::drivetrain::GoalProto &goal) {
+  is_high_gear_ = goal->gear() == Gear::kHighGear
+               || goal->gear() == Gear::kShiftingUp;
   // This is only valid if we're actually using a distance goal
   if (goal->has_distance_command()) {
     auto distance_goal = goal->distance_command();
@@ -361,7 +363,7 @@ void DrivetrainMotorsSS::SetOutput(
   if (output) {
     (*output)->set_left_voltage(kf_->U(0, 0));
     (*output)->set_right_voltage(kf_->U(1, 0));
-    (*output)->set_high_gear(true);
+    (*output)->set_high_gear(is_high_gear_);
   }
 }
 

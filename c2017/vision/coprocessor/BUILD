@@ -15,6 +15,7 @@ cc_binary(
         "-lopencv_videoio",
         "-lopencv_highgui",
     ],
+    restricted_to = ["//tools:k8", "//tools:armhf-debian"],
 )
 
 cc_library(
@@ -55,4 +56,5 @@ cc_library(
         "-lopencv_highgui",
     ],
     visibility = ["//visibility:public"],
+    restricted_to = ["//tools:k8", "//tools:armhf-debian"],
 )

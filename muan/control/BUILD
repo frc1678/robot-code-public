@@ -138,6 +138,7 @@ cc_library(
     name = "ramping",
     srcs = ["ramping.cpp"],
     hdrs = ["ramping.h"],
+    linkopts = ["-lm"],
 )
 
 cc_test(

@@ -3,6 +3,7 @@
 import numpy
 from numpy.testing import *
 import unittest
+from builtins import range
 
 import third_party.frc971.control_loops.python.polytope as polytope
 
@@ -54,12 +55,12 @@ class TestHPolytope(unittest.TestCase):
 
   def AreVertices(self, p, vertices):
     """Checks that all the vertices are on corners of the set."""
-    for i in xrange(vertices.shape[0]):
+    for i in range(vertices.shape[0]):
       # Check that all the vertices have the correct number of active
       # constraints.
       lmda = p.H * vertices[i,:].T - p.k
       num_active_constraints = 0
-      for j in xrange(lmda.shape[0]):
+      for j in range(lmda.shape[0]):
         # Verify that the constraints are either active, or not violated.
         if numpy.abs(lmda[j, 0]) <= 1e-9:
           num_active_constraints += 1
@@ -72,9 +73,9 @@ class TestHPolytope(unittest.TestCase):
     """Verifies that the points in expected are in actual."""
     found_points = set()
     self.assertEqual(expected.shape, actual.shape)
-    for index in xrange(expected.shape[0]):
+    for index in range(expected.shape[0]):
       expected_point = expected[index, :]
-      for actual_index in xrange(actual.shape[0]):
+      for actual_index in range(actual.shape[0]):
         actual_point = actual[actual_index, :]
         if numpy.abs(expected_point - actual_point).max() <= 1e-4:
           found_points.add(actual_index)

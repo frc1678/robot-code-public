@@ -14,6 +14,7 @@ cc_library(
         "//muan/logging:logger",
     ],
     visibility = ["//visibility:public"],
+    restricted_to = ["//tools:k8", "//tools:armhf-debian"],
 )
 
 cc_binary(
@@ -31,6 +32,7 @@ cc_binary(
         ":config_proto",
         ":vision",
     ],
+    restricted_to = ["//tools:k8", "//tools:armhf-debian"],
 )
 
 cc_binary(
@@ -44,6 +46,7 @@ cc_binary(
       "-lopencv_imgproc",
       "-lopencv_videoio",
     ],
+    restricted_to = ["//tools:k8", "//tools:armhf-debian"],
 )
 
 cc_library(
@@ -65,6 +68,7 @@ cc_library(
         "-lopencv_highgui",
         "-lopencv_imgcodecs",
     ],
+    restricted_to = ["//tools:k8", "//tools:armhf-debian"],
 )
 
 cc_proto_library(
@@ -82,5 +86,6 @@ cc_test(
         ":vision",
         "//third_party/google/googletest",
     ],
-    linkopts = ["-lopencv_highgui"]
+    linkopts = ["-lopencv_highgui"],
+    restricted_to = ["//tools:k8", "//tools:armhf-debian"],
 )
