@@ -35,14 +35,12 @@ class ScoreSubsystemTest : public ::testing::Test {
   void CalibrateDisabled() {
     driver_station_proto_->set_is_sys_active(false);
 
-    for (int i = 0; i < 200; i++) {
-      elevator_plant_.x(0) = i * 0.5e-2;
-      elevator_plant_.x(1) = 1.0;
-      wrist_plant_.x(0) = i * .125e-2;
-      wrist_plant_.x(1) = 0.25;
+    for (int i = 0; i < 2500; i++) {
+      elevator_plant_.x(0) = i * 5e-4;
+      wrist_plant_.x(0) = i * 5e-4;
 
       Update();
-      if (i < 50) {
+      if (i < 1000) {
         EXPECT_EQ(score_subsystem_status_proto_->state(),
                   ScoreSubsystemState::CALIBRATING);
       }
@@ -58,12 +56,15 @@ class ScoreSubsystemTest : public ::testing::Test {
   }
 
   void Update() {
+    elevator_plant_.x(2) = -2;
+
     // Hard stops
-    if (elevator_plant_.x(0) < 0) {
+    if (elevator_plant_.x(0) <= 0) {
       elevator_plant_.x(0) = 0;
+      elevator_plant_.x(2) = 0;
     }
 
-    if (wrist_plant_.x(0) < 0) {
+    if (wrist_plant_.x(0) <= 0) {
       wrist_plant_.x(0) = 0;
     }
 
@@ -98,13 +99,13 @@ class ScoreSubsystemTest : public ::testing::Test {
     if (score_subsystem_status_proto_->elevator_actual_height() < 0.89 ||
         score_subsystem_status_proto_->elevator_unprofiled_goal() < 0.89) {
       EXPECT_LE(score_subsystem_status_proto_->wrist_unprofiled_goal(),
-                 kWristSafeAngle);
+                kWristSafeAngle);
       EXPECT_LE(wrist_plant_.x(0), kWristSafeAngle);
     }
 
     if (score_subsystem_status_proto_->wrist_angle() > M_PI / 2) {
       EXPECT_GE(score_subsystem_status_proto_->elevator_unprofiled_goal(),
-                 kElevatorWristSafeHeight);
+                kElevatorWristSafeHeight);
       EXPECT_GE(elevator_plant_.x(0), kElevatorWristSafeHeight);
     }
 
@@ -173,6 +174,11 @@ class ScoreSubsystemTest : public ::testing::Test {
   double wrist_offset_ = 0.0;
 
   void CheckGoal(double elevator, double wrist) const {
+    EXPECT_NEAR(score_subsystem_status_proto_->elevator_unprofiled_goal(),
+                elevator, 1e-3);
+    EXPECT_NEAR(score_subsystem_status_proto_->wrist_unprofiled_goal(), wrist,
+                1e-3);
+
     EXPECT_NEAR(score_subsystem_status_proto_->elevator_actual_height(),
                 elevator, 1e-3);
     EXPECT_NEAR(score_subsystem_status_proto_->wrist_angle(), wrist, 1e-3);
@@ -281,42 +287,44 @@ TEST_F(ScoreSubsystemTest, MoveTo) {
   RunFor(1);
   SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::INTAKE_NONE, true);
   RunFor(1000);
-  CheckGoal(kElevatorScaleLow, kWristForwardAngle);
+  CheckGoal(kElevatorBaseHeight, kWristForwardAngle);
 
   // Scale low reverse
   SetGoal(ScoreGoal::SCALE_LOW_REVERSE, IntakeGoal::INTAKE_NONE, true);
   RunFor(1);
   SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::INTAKE_NONE, true);
   RunFor(1000);
-  CheckGoal(kElevatorScaleLow + kElevatorReversedOffset, kWristBackwardAngle);
+  CheckGoal(kElevatorBaseHeight + kElevatorReversedOffset, kWristBackwardAngle);
 
   // Scale mid forward
   SetGoal(ScoreGoal::SCALE_MID_FORWARD, IntakeGoal::INTAKE_NONE, true);
   RunFor(1);
   SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::INTAKE_NONE, true);
   RunFor(1000);
-  CheckGoal(kElevatorScaleMid, kWristForwardAngle);
+  CheckGoal(kElevatorBaseHeight + kCubeHeight, kWristForwardAngle);
 
   // Scale mid reverse
   SetGoal(ScoreGoal::SCALE_MID_REVERSE, IntakeGoal::INTAKE_NONE, true);
   RunFor(1);
   SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::INTAKE_NONE, true);
   RunFor(1000);
-  CheckGoal(kElevatorScaleMid + kElevatorReversedOffset, kWristBackwardAngle);
+  CheckGoal(kElevatorBaseHeight + kCubeHeight + kElevatorReversedOffset,
+            kWristBackwardAngle);
 
   // Scale high forward
   SetGoal(ScoreGoal::SCALE_HIGH_FORWARD, IntakeGoal::INTAKE_NONE, true);
   RunFor(1);
   SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::INTAKE_NONE, true);
   RunFor(1000);
-  CheckGoal(kElevatorScaleHigh, kWristForwardAngle);
+  CheckGoal(elevator::kElevatorMaxHeight, kWristForwardAngle);
 
   // Scale high reverse
   SetGoal(ScoreGoal::SCALE_HIGH_REVERSE, IntakeGoal::INTAKE_NONE, true);
   RunFor(1);
   SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::INTAKE_NONE, true);
   RunFor(1000);
-  CheckGoal(kElevatorScaleHigh + kElevatorReversedOffset, kWristBackwardAngle);
+  CheckGoal(kElevatorBaseHeight + 2 * kCubeHeight + kElevatorReversedOffset,
+            kWristBackwardAngle);
 }
 
 TEST_F(ScoreSubsystemTest, IntakeManual) {
@@ -339,12 +347,12 @@ TEST_F(ScoreSubsystemTest, IntakeManual) {
 TEST_F(ScoreSubsystemTest, OuttakeManual) {
   CalibrateDisabled();
 
-  SetGoal(ScoreGoal::INTAKE_0, IntakeGoal::OUTTAKE, true);
+  SetGoal(ScoreGoal::INTAKE_0, IntakeGoal::OUTTAKE_FAST, true);
   Update();
 
   EXPECT_EQ(score_subsystem_output_proto_->intake_voltage(),
-            wrist::kOuttakeVoltage);
-  EXPECT_EQ(score_subsystem_status_proto_->state(), SCORING);
+            wrist::kFastOuttakeVoltage);
+  EXPECT_EQ(score_subsystem_status_proto_->state(), SCORING_FAST);
 
   SetGoal(ScoreGoal::INTAKE_0, IntakeGoal::FORCE_STOP, true);
   Update();
@@ -373,38 +381,12 @@ TEST_F(ScoreSubsystemTest, IntakeToHolding) {
             wrist::kHoldingVoltage);
 }
 
-TEST_F(ScoreSubsystemTest, ScoreToIdle) {
-  score_subsystem_input_proto_->set_has_cube(true);
-
-  CalibrateDisabled();
-
-  SetGoal(ScoreGoal::SCALE_MID_REVERSE, IntakeGoal::INTAKE_NONE, true);
-  Update();
-  SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::INTAKE_NONE, true);
-  RunFor(600);
-  CheckGoal(kElevatorScaleMid + kElevatorReversedOffset, kWristBackwardAngle);
-
-  SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::OUTTAKE, true);
-  Update();
-  SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::INTAKE_NONE, true);
-  RunFor(10);
-
-  EXPECT_EQ(score_subsystem_output_proto_->intake_voltage(),
-            wrist::kOuttakeVoltage);
-  EXPECT_EQ(score_subsystem_status_proto_->state(), SCORING);
-
-  score_subsystem_input_proto_->set_has_cube(false);
-  RunFor(500);
-
-  EXPECT_EQ(score_subsystem_output_proto_->intake_voltage(), 0);
-}
-
 TEST_F(ScoreSubsystemTest, ForceIntake) {
   CalibrateDisabled();
 
   score_subsystem_input_proto_->set_has_cube(true);
   SetGoal(ScoreGoal::INTAKE_0, IntakeGoal::INTAKE, true);
-  RunFor(500);
+  RunFor(700);
 
   EXPECT_EQ(score_subsystem_output_proto_->intake_voltage(),
             wrist::kIntakeVoltage);

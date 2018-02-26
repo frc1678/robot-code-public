@@ -561,7 +561,7 @@ void AutonomousBase::MoveToScale(bool front) {
 
 void AutonomousBase::Score() {
   score_subsystem::ScoreSubsystemGoalProto score_goal;
-  score_goal->set_intake_goal(score_subsystem::IntakeGoal::OUTTAKE);
+  score_goal->set_intake_goal(score_subsystem::IntakeGoal::OUTTAKE_FAST);
   score_goal_queue_->WriteMessage(score_goal);
 }
 

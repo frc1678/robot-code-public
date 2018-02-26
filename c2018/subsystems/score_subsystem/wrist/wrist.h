@@ -21,30 +21,32 @@ namespace c2018 {
 namespace score_subsystem {
 namespace wrist {
 
-static constexpr double kMaxWristVelocity = 3.5;
-static constexpr double kMaxWristAcceleration = 6.0;
+static constexpr double kMaxWristVelocity = 4.0;
+static constexpr double kMaxWristAcceleration = 4.0;
 static constexpr double kWristMinAngle = 0;
 static constexpr double kWristStowAngle = 80 * (M_PI / 180);
 static constexpr double kWristMaxAngle = 160 * (M_PI / 180);
 
 static constexpr double kEncoderFaultTicksAllowed = 200;
 static constexpr double kCalibVoltage = 4;
-static constexpr double kOuttakeVoltage = -12;
+static constexpr double kSlowOuttakeVoltage = -5;
+static constexpr double kFastOuttakeVoltage = -9;
 static constexpr double kIntakeVoltage = 12;
 
-static constexpr double kHallEffectAngle = 0.23;
+static constexpr double kHallEffectAngle = 0.34;
 
-static constexpr double kHoldingVoltage = 2.5;
+static constexpr double kHoldingVoltage = 1.5;
 static constexpr double kMaxVoltage = 12;
 
 static constexpr double kStallCurrent = 30;
 
-static constexpr int kNumHasCubeTicks = 50;
+static constexpr int kNumHasCubeTicks = 10;
 
 enum class IntakeMode {
   IDLE = 0,
   IN = 1,
-  OUT = 2
+  OUT_FAST = 2,
+  OUT_SLOW = 3
 };
 
 class WristController {

@@ -71,8 +71,13 @@ void WristController::Update(ScoreSubsystemInputProto input,
         wrist_solenoid_close = false;
         wrist_solenoid_open = false;
         break;
-      case IntakeMode::OUT:
-        intake_voltage_ = kOuttakeVoltage;
+      case IntakeMode::OUT_SLOW:
+        intake_voltage_ = kSlowOuttakeVoltage;
+        wrist_solenoid_close = true;
+        wrist_solenoid_open = false;
+        break;
+      case IntakeMode::OUT_FAST:
+        intake_voltage_ = kFastOuttakeVoltage;
         wrist_solenoid_close = true;
         wrist_solenoid_open = false;
         break;
@@ -106,6 +111,11 @@ void WristController::Update(ScoreSubsystemInputProto input,
 
   wrist_voltage = wrist_controller_.Update(wrist_observer_.x(), wrist_r)(0, 0);
 
+  if (hall_calibration_.is_calibrated() && wrist_r(0) <= 1e-5) {
+    // If we're trying to stay at 0, set 0 voltage automatically
+    wrist_voltage = 0.0;
+  }
+
   if (outputs_enabled) {
     wrist_voltage = muan::utils::Cap(wrist_voltage, -kMaxVoltage, kMaxVoltage);
   } else {
@@ -124,6 +134,7 @@ void WristController::Update(ScoreSubsystemInputProto input,
   (*status)->set_has_cube(has_cube);
   (*status)->set_wrist_profiled_goal(profiled_goal_(0, 0));
   (*status)->set_wrist_unprofiled_goal(unprofiled_goal_);
+  (*status)->set_wrist_calibration_offset(hall_calibration_.offset());
 }
 
 Eigen::Matrix<double, 2, 1> WristController::UpdateProfiledGoal(

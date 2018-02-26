@@ -21,13 +21,16 @@ enum ScoreGoal {
   SCALE_HIGH_REVERSE = 13;
   SCALE_SUPER_HIGH_FORWARD = 14;
   SCALE_SUPER_HIGH_REVERSE = 15;
+  SCALE_SHOOT = 16;
 }
 
 enum IntakeGoal {
   INTAKE_NONE = 0; // Let the state machine progress
   INTAKE = 1;
-  OUTTAKE = 2;
-  FORCE_STOP = 3;
+  INTAKE_ONLY = 2;
+  OUTTAKE_SLOW = 3;
+  OUTTAKE_FAST = 4;
+  FORCE_STOP = 5;
 }
 
 message ScoreSubsystemInput {
@@ -64,7 +67,9 @@ enum ScoreSubsystemState {
   CALIBRATING = 0;
   HOLDING = 1;
   INTAKING = 2;
-  SCORING = 3;
+  INTAKING_ONLY = 3;
+  SCORING_SLOW = 4;
+  SCORING_FAST = 5;
 }
 
 message ScoreSubsystemStatus {
@@ -77,13 +82,15 @@ message ScoreSubsystemStatus {
   required double elevator_profiled_goal = 7;
   required double elevator_unprofiled_goal = 8;
   required bool elevator_encoder_fault_detected = 9;
-  required ScoreSubsystemState state = 10;
-  required bool elevator_calibrated = 11;
-  required double wrist_angle = 12;
-  required double wrist_velocity = 13;
-  required bool wrist_calibrated = 14;
-  required double wrist_profiled_goal = 15;
-  required double wrist_unprofiled_goal = 16;
-  required bool claw_pinch = 17;
-  required bool has_cube = 18;
+  required double elevator_calibration_offset = 10;
+  required ScoreSubsystemState state = 11;
+  required bool elevator_calibrated = 12;
+  required double wrist_angle = 13;
+  required double wrist_velocity = 14;
+  required bool wrist_calibrated = 15;
+  required double wrist_profiled_goal = 16;
+  required double wrist_unprofiled_goal = 17;
+  required double wrist_calibration_offset = 18;
+  required bool claw_pinch = 19;
+  required bool has_cube = 20;
 }

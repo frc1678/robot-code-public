@@ -21,13 +21,13 @@ def make_gains():
 
     # Moment of inertia constants
     # M= mass and L = length
-    M = 11.0
+    M = 6.0
     L = 0.25
 
     # Parameters
-    moment_inertia = M * L* L * (1.0 / 3.0)
-    gear_ratio = (1.0 / 100.0) * (14.0 / 72.0)
-    efficiency = .81
+    moment_inertia = M * L * L
+    gear_ratio = (12.0 / 100.0) * (14.0 / 72.0) * (18.0 / 60.0)
+    efficiency = .9
 
     # motor characteristics
     free_speed = 18730.0 * 2 * math.pi / 60
@@ -36,16 +36,15 @@ def make_gains():
     stall_current = 134.
     resistance = 12. / stall_current
     torque_constant = stall_torque / stall_current
-    velocity_constant = (12. -free_current * resistance) / free_speed
+    velocity_constant = (12. - free_current * resistance) / free_speed
 
-    num_motors = 1.0
     sensor_ratio = 1.0
 
     # back emf torque
-    emf = -(torque_constant * velocity_constant) / (resistance * gear_ratio**2. / num_motors)
+    emf = -(torque_constant * velocity_constant) / (resistance * gear_ratio ** 2.0)
 
     # motor torque
-    mtq = efficiency * torque_constant / (gear_ratio * resistance / num_motors)
+    mtq = efficiency * torque_constant / (gear_ratio * resistance)
 
     # rotational acceleration
     t2a = 1. / moment_inertia
@@ -55,7 +54,7 @@ def make_gains():
     #     |k1 k2|
     A_c = np.asmatrix([
         [0., 1.],
-        [0., t2a * emf]
+        [0., t2a * emf],
     ])
 
     # Matrix B:
@@ -87,7 +86,7 @@ def make_gains():
     ])
 
     A_d, B_d, Q_d, R_d = c2d(A_c, B_c, dt, Q_noise, R_noise)
-    K = place(A_c, B_c, [-10.0, -7.0])
+    K = place(A_c, B_c, [-27.0 + 3.j, -27.0 - 3.j])
     Kff = feedforwards(A_d, B_d, Q_ff)
     L = dkalman(A_d, C, Q_d, R_d)
 
@@ -117,11 +116,11 @@ def make_augmented_gains():
 
     K = np.zeros((1, 3))
     K[:, :2] = unaugmented_gains.K
-    K[0, 2] = 1.
+    K[0, 2] = 0.
 
     Q_noise = np.zeros((3, 3))
-    Q_noise[:2, :2] = unaugmented_gains.Q_c
-    Q_noise[2, 2] = 1
+    # Q_noise[:2, :2] = unaugmented_gains.Q_c
+    # Q_noise[2, 2] = 1
 
     R_noise = np.asmatrix([
         [1e-5]
@@ -131,7 +130,7 @@ def make_augmented_gains():
     Q_kalman = np.asmatrix([
         [1e-1, 0.0, 0.0],
         [0.0, 2e0, 0.0],
-        [0.0, 0.0, 3e4]
+        [0.0, 0.0, 3e3]
     ])
 
     Q_ff = np.asmatrix([
@@ -141,6 +140,7 @@ def make_augmented_gains():
     ])
 
     A_d, B_d, Q_d, R_d = c2d(A_c, B_c, dt, Q_noise, R_noise)
+    print A_d, B_d
     _, _, Q_dkalman, R_dkalman = c2d(A_c, B_c, dt, Q_kalman, R_noise)
     L = dkalman(A_d, C, Q_dkalman, R_dkalman)
     Kff = feedforwards(A_d, B_d, Q_ff)
@@ -161,7 +161,7 @@ plant = StateSpacePlant(gains, x0)
 controller = StateSpaceController(gains, -u_max, u_max)
 observer = StateSpaceObserver(gains, x0)
 
-t_profile = TrapezoidalMotionProfile (np.pi * 2, 3, 3)
+t_profile = TrapezoidalMotionProfile (np.pi / 2, 40, 40)
 
 def goal(t):
     # Make goal a trapezoidal profile

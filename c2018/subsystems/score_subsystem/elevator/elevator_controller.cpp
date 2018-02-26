@@ -76,6 +76,9 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
   } else if (encoder_fault_detected_) {
     elevator_u = 2.0;
     LOG(WARNING, "Encoder fault detected, setting voltage to 2.0");
+  } else if (profiled_goal_(0) <= 1e-5) {
+    // If we're trying to stay at 0, set 0 voltage automatically
+    elevator_u = 0.0;
   }
 
   if (old_pos_ == input->elevator_encoder() &&
@@ -85,8 +88,9 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
       encoder_fault_detected_ = true;
       LOG(WARNING, "Encoder fault detected due to offset velocity");
     }
-  } else {
+  } else if (old_pos_ != input->elevator_encoder()) {
     num_encoder_fault_ticks_ = 0;
+    encoder_fault_detected_ = false;
   }
 
   (*status)->set_elevator_uncapped_voltage(elevator_u);
@@ -110,6 +114,7 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
   (*status)->set_elevator_at_top((*status)->elevator_actual_height() >=
                                  kElevatorMaxHeight - 0.01);
   (*status)->set_elevator_encoder_fault_detected(encoder_fault_detected_);
+  (*status)->set_elevator_calibration_offset(hall_calib_.offset());
 }
 
 void ElevatorController::SetGoal(double goal) {
@@ -121,7 +126,7 @@ Eigen::Matrix<double, 2, 1> ElevatorController::UpdateProfiledGoal(
   if (outputs_enabled) {
     profiled_goal_ = trapezoid_profile_.Update(unprofiled_goal_, 0);
   } else {
-    profiled_goal_ = trapezoid_profile_.Update(elevator_observer_.x()(0, 0), 0);;
+    profiled_goal_ = trapezoid_profile_.Update(elevator_observer_.x()(0, 0), 0);
   }
   return profiled_goal_;
 }

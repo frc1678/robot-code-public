@@ -63,7 +63,7 @@ TEST_F(WristTest, Calib) {
     EXPECT_NEAR(wrist_output_proto_->wrist_voltage(), 0, 12);
   }
 
-  EXPECT_NEAR(wrist_status_proto_->wrist_angle(), M_PI / 4, 0.01);
+  EXPECT_NEAR(wrist_status_proto_->wrist_angle(), M_PI / 4, 1e-3);
   EXPECT_TRUE(wrist_status_proto_->wrist_calibrated());
 }
 
@@ -83,10 +83,10 @@ TEST_F(WristTest, Outtake) {
   wrist_input_proto_->set_wrist_encoder(0);
   wrist_input_proto_->set_wrist_hall(false);
   outputs_enabled_ = true;
-  SetGoal(0.0, IntakeMode::OUT);
+  SetGoal(0.0, IntakeMode::OUT_FAST);
   Update();
 
-  EXPECT_NEAR(wrist_output_proto_->intake_voltage(), -12.0, 1e-3);
+  EXPECT_NEAR(wrist_output_proto_->intake_voltage(), kFastOuttakeVoltage, 1e-3);
   EXPECT_FALSE(wrist_output_proto_->wrist_solenoid_open());
   EXPECT_TRUE(wrist_output_proto_->wrist_solenoid_close());
 }
@@ -116,7 +116,7 @@ TEST_F(WristTest, Stow) {
     EXPECT_NEAR(wrist_output_proto_->wrist_voltage(), 0, 12);
   }
 
-  EXPECT_NEAR(wrist_status_proto_->wrist_angle(), kWristStowAngle, 0.01);
+  EXPECT_NEAR(wrist_status_proto_->wrist_angle(), kWristStowAngle, 1e-3);
   EXPECT_TRUE(wrist_status_proto_->wrist_calibrated());
 
   EXPECT_NEAR(wrist_output_proto_->intake_voltage(), 0, 1e-3);

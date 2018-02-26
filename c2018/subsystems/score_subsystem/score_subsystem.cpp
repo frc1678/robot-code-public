@@ -69,8 +69,14 @@ void ScoreSubsystem::Update() {
     case ScoreSubsystemState::INTAKING:
       intake_mode = wrist::IntakeMode::IN;
       break;
-    case ScoreSubsystemState::SCORING:
-      intake_mode = wrist::IntakeMode::OUT;
+    case ScoreSubsystemState::INTAKING_ONLY:
+      intake_mode = wrist::IntakeMode::IN;
+      break;
+    case ScoreSubsystemState::SCORING_SLOW:
+      intake_mode = wrist::IntakeMode::OUT_SLOW;
+      break;
+    case ScoreSubsystemState::SCORING_FAST:
+      intake_mode = wrist::IntakeMode::OUT_FAST;
       break;
   }
 
@@ -108,36 +114,40 @@ void ScoreSubsystem::SetGoal(const ScoreSubsystemGoalProto& goal) {
       wrist_angle_ = kWristForwardAngle;
       break;
     case SCALE_LOW_FORWARD:
-      elevator_height_ = kElevatorScaleLow;
+      elevator_height_ = kElevatorBaseHeight;
       wrist_angle_ = kWristForwardAngle;
       break;
     case SCALE_LOW_REVERSE:
-      elevator_height_ = kElevatorScaleLow + kElevatorReversedOffset;
+      elevator_height_ = kElevatorBaseHeight + kElevatorReversedOffset;
       wrist_angle_ = kWristBackwardAngle;
       break;
     case SCALE_MID_FORWARD:
-      elevator_height_ = kElevatorScaleMid;
+      elevator_height_ = kElevatorBaseHeight + kCubeHeight;
       wrist_angle_ = kWristForwardAngle;
       break;
     case SCALE_MID_REVERSE:
-      elevator_height_ = kElevatorScaleMid + kElevatorReversedOffset;
+      elevator_height_ = kElevatorBaseHeight + kCubeHeight + kElevatorReversedOffset;
       wrist_angle_ = kWristBackwardAngle;
       break;
     case SCALE_HIGH_FORWARD:
-      elevator_height_ = kElevatorScaleHigh;
+      elevator_height_ = kElevatorBaseHeight + 2 * kCubeHeight;
       wrist_angle_ = kWristForwardAngle;
       break;
     case SCALE_HIGH_REVERSE:
-      elevator_height_ = kElevatorScaleHigh + kElevatorReversedOffset;
+      elevator_height_ = kElevatorBaseHeight + 2 * kCubeHeight + kElevatorReversedOffset;
       wrist_angle_ = kWristBackwardAngle;
       break;
     case SCALE_SUPER_HIGH_FORWARD:
-      elevator_height_ = kElevatorScaleSuperHighFront;
+      elevator_height_ = elevator::kElevatorMaxHeight - 0.02;
       wrist_angle_ = kWristTiltUpAngle;
       break;
     case SCALE_SUPER_HIGH_REVERSE:
-      elevator_height_ = kElevatorScaleSuperHighBack + kElevatorReversedOffset;
+      elevator_height_ = kElevatorBaseHeight + 3 * kCubeHeight + kElevatorReversedOffset;
       wrist_angle_ = kWristBackwardAngle;
+      break;
+    case SCALE_SHOOT:
+      elevator_height_ = 1.0;
+      wrist_angle_ = kWristShootAngle;
       break;
     case EXCHANGE:
       elevator_height_ = kElevatorExchange;
@@ -153,11 +163,17 @@ void ScoreSubsystem::SetGoal(const ScoreSubsystemGoalProto& goal) {
     case INTAKE_NONE:
       // Just let the state machine take over
       break;
+    case INTAKE_ONLY:
+      GoToState(ScoreSubsystemState::INTAKING_ONLY);
+      break;
     case INTAKE:
       GoToState(ScoreSubsystemState::INTAKING);
       break;
-    case OUTTAKE:
-      GoToState(ScoreSubsystemState::SCORING);
+    case OUTTAKE_SLOW:
+      GoToState(ScoreSubsystemState::SCORING_SLOW);
+      break;
+    case OUTTAKE_FAST:
+      GoToState(ScoreSubsystemState::SCORING_FAST);
       break;
     case FORCE_STOP:
       GoToState(ScoreSubsystemState::HOLDING);
@@ -183,13 +199,15 @@ void ScoreSubsystem::RunStateMachine() {
       break;
     case INTAKING:
       if (status_->has_cube()) {
+        elevator_height_ = kElevatorStow;
+        wrist_angle_ = kWristStowAngle;
         GoToState(HOLDING);
       }
       break;
-    case SCORING:
-      if (!status_->has_cube()) {
-        GoToState(HOLDING);
-      }
+    case INTAKING_ONLY:
+      break;
+    case SCORING_FAST:
+    case SCORING_SLOW:
       break;
   }
 }
@@ -206,7 +224,9 @@ void ScoreSubsystem::GoToState(ScoreSubsystemState desired_state) {
       break;
     case ScoreSubsystemState::HOLDING:
     case ScoreSubsystemState::INTAKING:
-    case ScoreSubsystemState::SCORING:
+    case ScoreSubsystemState::INTAKING_ONLY:
+    case ScoreSubsystemState::SCORING_FAST:
+    case ScoreSubsystemState::SCORING_SLOW:
       state_ = desired_state;
       break;
   }

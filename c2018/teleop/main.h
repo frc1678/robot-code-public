@@ -44,7 +44,7 @@ class TeleopBase {
   muan::teleop::Button *quickturn_;
 
   // Gamepad Buttons
-  muan::teleop::Button *outtake_, *intake_, *stow_;
+  muan::teleop::Button *outtake_fast_, *outtake_slow_, *intake_, *intake_only_, *stow_;
   muan::teleop::Button *batter_down_, *hook_up_, *godmode_;
 
   // Gamepad POVs
@@ -52,7 +52,7 @@ class TeleopBase {
   // Gamepad Axes
   muan::teleop::Button *godmode_up_, *godmode_down_, *top_mode_, *bottom_mode_;
 
-  muan::teleop::Button *front_, *back_, *low_;
+  muan::teleop::Button *front_, *back_, *low_, *shoot_;
   muan::teleop::Button *pos_0_, *pos_1_, *pos_2_, *pos_3_;
 
   bool god_mode_ = false;
@@ -62,7 +62,6 @@ class TeleopBase {
   bool log_name_set_ = false;
 
   c2018::climber::ClimberGoalProto climber_goal_;
-  c2018::score_subsystem::ScoreSubsystemGoalProto score_subsystem_goal_;
 
   c2018::climber::ClimberGoalQueue *climber_goal_queue_;
   c2018::score_subsystem::ScoreSubsystemGoalQueue *score_subsystem_goal_queue_;

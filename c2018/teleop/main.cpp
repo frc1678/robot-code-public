@@ -46,10 +46,13 @@ TeleopBase::TeleopBase()
   low_ = gamepad_.MakeAxis(1, .85);
   front_ = gamepad_.MakeAxis(0, .85);
   back_ = gamepad_.MakeAxis(0, -.85);
+  shoot_ = gamepad_.MakeAxis(1, -.85);
 
   stow_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_BUMPER));
-  intake_ = gamepad_.MakeAxis(3, 0.7);
-  outtake_ = gamepad_.MakeAxis(2, 0.7);
+  intake_ = gamepad_.MakeAxis(3, 0.3);
+  intake_only_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::RIGHT_BUMPER));
+  outtake_fast_ = gamepad_.MakeAxis(2, 0.85);
+  outtake_slow_ = gamepad_.MakeAxis(2, 0.3);
 
   pos_0_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::A_BUTTON));
   pos_1_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::B_BUTTON));
@@ -66,9 +69,6 @@ TeleopBase::TeleopBase()
 
   // Default values
   climber_goal_->set_climber_goal(c2018::climber::NONE);
-
-  score_subsystem_goal_->set_score_goal(c2018::score_subsystem::SCORE_NONE);
-  score_subsystem_goal_->set_intake_goal(c2018::score_subsystem::INTAKE_NONE);
 }
 
 void TeleopBase::operator()() {
@@ -171,8 +171,9 @@ void TeleopBase::SendDrivetrainMessage() {
 }
 
 void TeleopBase::SendScoreSubsystemMessage() {
-  score_subsystem_goal_->set_score_goal(c2018::score_subsystem::SCORE_NONE);
-  score_subsystem_goal_->set_intake_goal(c2018::score_subsystem::INTAKE_NONE);
+  ScoreSubsystemGoalProto score_subsystem_goal;
+  score_subsystem_goal->set_score_goal(c2018::score_subsystem::SCORE_NONE);
+  score_subsystem_goal->set_intake_goal(c2018::score_subsystem::INTAKE_NONE);
 
   // Godmode
   if (godmode_->is_pressed()) {
@@ -186,71 +187,85 @@ void TeleopBase::SendScoreSubsystemMessage() {
 
   // Elevator heights + intakes
   if (height_0_->is_pressed()) {
-    score_subsystem_goal_->set_score_goal(c2018::score_subsystem::INTAKE_0);
+    score_subsystem_goal->set_score_goal(c2018::score_subsystem::INTAKE_0);
   } else if (height_1_->is_pressed()) {
-    score_subsystem_goal_->set_score_goal(c2018::score_subsystem::INTAKE_1);
+    score_subsystem_goal->set_score_goal(c2018::score_subsystem::INTAKE_1);
   } else if (height_2_->is_pressed()) {
-    score_subsystem_goal_->set_score_goal(c2018::score_subsystem::INTAKE_2);
+    score_subsystem_goal->set_score_goal(c2018::score_subsystem::INTAKE_2);
   } else if (height_portal_->is_pressed()) {
-    score_subsystem_goal_->set_score_goal(c2018::score_subsystem::PORTAL);
+    score_subsystem_goal->set_score_goal(c2018::score_subsystem::PORTAL);
   }
 
   // Intake modes
-  if (intake_->is_pressed()) {
-    score_subsystem_goal_->set_intake_goal(c2018::score_subsystem::INTAKE);
+  if (intake_->was_clicked()) {
+    score_subsystem_goal->set_intake_goal(c2018::score_subsystem::INTAKE);
   } else if (intake_->was_released()) {
-    score_subsystem_goal_->set_intake_goal(c2018::score_subsystem::FORCE_STOP);
+    score_subsystem_goal->set_intake_goal(c2018::score_subsystem::FORCE_STOP);
+  }
+
+  // Intake modes
+  if (intake_only_->was_clicked()) {
+    score_subsystem_goal->set_intake_goal(c2018::score_subsystem::INTAKE_ONLY);
+  } else if (intake_only_->was_released()) {
+    score_subsystem_goal->set_intake_goal(c2018::score_subsystem::FORCE_STOP);
   }
 
   if (stow_->was_clicked()) {
-    score_subsystem_goal_->set_score_goal(c2018::score_subsystem::STOW);
+    score_subsystem_goal->set_score_goal(c2018::score_subsystem::STOW);
   }
 
-  if (outtake_->is_pressed()) {
-    score_subsystem_goal_->set_intake_goal(c2018::score_subsystem::OUTTAKE);
-  } else if (outtake_->was_released()) {
-    score_subsystem_goal_->set_intake_goal(c2018::score_subsystem::FORCE_STOP);
+  if (outtake_fast_->is_pressed()) {
+    score_subsystem_goal->set_intake_goal(c2018::score_subsystem::OUTTAKE_FAST);
+  } else if (outtake_slow_->is_pressed()) {
+    score_subsystem_goal->set_intake_goal(c2018::score_subsystem::OUTTAKE_SLOW);
+  } else if (outtake_slow_->was_released()) {
+    score_subsystem_goal->set_intake_goal(c2018::score_subsystem::FORCE_STOP);
   }
 
   // Scoring modes
   if (low_->is_pressed()) {
     if (pos_0_->is_pressed()) {
-      score_subsystem_goal_->set_score_goal(
+      score_subsystem_goal->set_score_goal(
           c2018::score_subsystem::EXCHANGE);
     } else if (pos_1_->is_pressed()) {
-      score_subsystem_goal_->set_score_goal(
+      score_subsystem_goal->set_score_goal(
           c2018::score_subsystem::SWITCH);
     }
   } else if (front_->is_pressed()) {
     if (pos_0_->is_pressed()) {
-      score_subsystem_goal_->set_score_goal(
+      score_subsystem_goal->set_score_goal(
           c2018::score_subsystem::SCALE_LOW_FORWARD);
     } else if (pos_1_->is_pressed()) {
-      score_subsystem_goal_->set_score_goal(
+      score_subsystem_goal->set_score_goal(
           c2018::score_subsystem::SCALE_MID_FORWARD);
     } else if (pos_2_->is_pressed()) {
-      score_subsystem_goal_->set_score_goal(
+      score_subsystem_goal->set_score_goal(
           c2018::score_subsystem::SCALE_HIGH_FORWARD);
     } else if (pos_3_->is_pressed()) {
-      score_subsystem_goal_->set_score_goal(
+      score_subsystem_goal->set_score_goal(
           c2018::score_subsystem::SCALE_SUPER_HIGH_FORWARD);
     }
   } else if (back_->is_pressed()) {
     if (pos_0_->is_pressed()) {
-      score_subsystem_goal_->set_score_goal(
+      score_subsystem_goal->set_score_goal(
           c2018::score_subsystem::SCALE_LOW_REVERSE);
     } else if (pos_1_->is_pressed()) {
-      score_subsystem_goal_->set_score_goal(
+      score_subsystem_goal->set_score_goal(
           c2018::score_subsystem::SCALE_MID_REVERSE);
     } else if (pos_2_->is_pressed()) {
-      score_subsystem_goal_->set_score_goal(
+      score_subsystem_goal->set_score_goal(
           c2018::score_subsystem::SCALE_HIGH_REVERSE);
     } else if (pos_3_->is_pressed()) {
-      score_subsystem_goal_->set_score_goal(
+      score_subsystem_goal->set_score_goal(
           c2018::score_subsystem::SCALE_SUPER_HIGH_REVERSE);
     }
+  } else if (shoot_->is_pressed()) {
+    if (pos_0_->is_pressed()) {
+      score_subsystem_goal->set_score_goal(
+          c2018::score_subsystem::SCALE_SHOOT);
+    }
   }
-  score_subsystem_goal_queue_->WriteMessage(score_subsystem_goal_);
+  score_subsystem_goal_queue_->WriteMessage(score_subsystem_goal);
 }
 
 void TeleopBase::SendClimbSubsystemMessage() {

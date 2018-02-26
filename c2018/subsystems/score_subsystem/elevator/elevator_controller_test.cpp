@@ -32,6 +32,17 @@ class ElevatorControllerTest : public ::testing::Test {
     elevator_input_proto_->set_elevator_hall(hall);
   }
 
+  void CalibrateDisabled() {
+    outputs_enabled_ = false;
+
+    for (int i = 0; i < 2000; i++) {
+      double h = i * .0005;
+      plant_.x(0) = h;
+      elevator_input_proto_->set_elevator_encoder(plant_.y(0));
+      Update();
+    }
+  }
+
   c2018::score_subsystem::ScoreSubsystemInputProto elevator_input_proto_;
   c2018::score_subsystem::ScoreSubsystemStatusProto elevator_status_proto_;
   c2018::score_subsystem::ScoreSubsystemOutputProto elevator_output_proto_;
@@ -95,9 +106,9 @@ TEST_F(ElevatorControllerTest, Calibration) {
 
   double offset = 1.0;
 
-  SetGoal(2.06);
+  SetGoal(c2018::score_subsystem::elevator::kElevatorMaxHeight);
 
-  for (int i = 0; i < 2000; i++) {
+  for (int i = 0; i < 1000; i++) {
     elevator_input_proto_->set_elevator_encoder(plant_.y(0) + offset);
     Update();
     EXPECT_NEAR(elevator_output_proto_->elevator_voltage(), 0, 12);
@@ -105,19 +116,24 @@ TEST_F(ElevatorControllerTest, Calibration) {
 
   EXPECT_TRUE(elevator_status_proto_->elevator_calibrated());
   EXPECT_TRUE(elevator_status_proto_->elevator_at_top());
-  EXPECT_NEAR(elevator_status_proto_->elevator_actual_height(), 2.06, 1e-3);
-  EXPECT_NEAR(elevator_status_proto_->elevator_unprofiled_goal(), 2.06, 1e-3);
-  EXPECT_NEAR(elevator_status_proto_->elevator_profiled_goal(), 2.06, 1e-3);
+  EXPECT_NEAR(elevator_status_proto_->elevator_actual_height(),
+              c2018::score_subsystem::elevator::kElevatorMaxHeight, 1e-3);
+  EXPECT_NEAR(elevator_status_proto_->elevator_unprofiled_goal(),
+              c2018::score_subsystem::elevator::kElevatorMaxHeight, 1e-3);
+  EXPECT_NEAR(elevator_status_proto_->elevator_profiled_goal(),
+              c2018::score_subsystem::elevator::kElevatorMaxHeight, 1e-3);
 }
 
 TEST_F(ElevatorControllerTest, AllHeights) {
+  CalibrateDisabled();
+
   elevator_input_proto_->set_elevator_encoder(0);
   elevator_input_proto_->set_elevator_hall(false);
   outputs_enabled_ = true;
 
-  SetGoal(2.06);
+  SetGoal(c2018::score_subsystem::elevator::kElevatorMaxHeight);
 
-  for (int i = 0; i < 2000; i++) {
+  for (int i = 0; i < 1000; i++) {
     elevator_input_proto_->set_elevator_encoder(plant_.y(0));
     Update();
     EXPECT_NEAR(elevator_output_proto_->elevator_voltage(), 0, 12);
@@ -125,12 +141,15 @@ TEST_F(ElevatorControllerTest, AllHeights) {
 
   EXPECT_TRUE(elevator_status_proto_->elevator_calibrated());
   EXPECT_TRUE(elevator_status_proto_->elevator_at_top());
-  EXPECT_NEAR(elevator_status_proto_->elevator_actual_height(), 2.06, 1e-3);
-  EXPECT_NEAR(elevator_status_proto_->elevator_unprofiled_goal(), 2.06, 1e-3);
-  EXPECT_NEAR(elevator_status_proto_->elevator_profiled_goal(), 2.06, 1e-3);
+  EXPECT_NEAR(elevator_status_proto_->elevator_actual_height(),
+              c2018::score_subsystem::elevator::kElevatorMaxHeight, 1e-3);
+  EXPECT_NEAR(elevator_status_proto_->elevator_unprofiled_goal(),
+              c2018::score_subsystem::elevator::kElevatorMaxHeight, 1e-3);
+  EXPECT_NEAR(elevator_status_proto_->elevator_profiled_goal(),
+              c2018::score_subsystem::elevator::kElevatorMaxHeight, 1e-3);
   SetGoal(0.6);
 
-  for (int i = 0; i < 2000; i++) {
+  for (int i = 0; i < 1000; i++) {
     elevator_input_proto_->set_elevator_encoder(plant_.y(0));
     Update();
     EXPECT_NEAR(elevator_output_proto_->elevator_voltage(), 0, 12);
@@ -141,7 +160,7 @@ TEST_F(ElevatorControllerTest, AllHeights) {
   EXPECT_NEAR(elevator_status_proto_->elevator_profiled_goal(), 0.6, 1e-3);
   SetGoal(0);
 
-  for (int i = 0; i < 2000; i++) {
+  for (int i = 0; i < 1000; i++) {
     elevator_input_proto_->set_elevator_encoder(plant_.y(0));
     Update();
     EXPECT_NEAR(elevator_output_proto_->elevator_voltage(), 0, 12);
@@ -152,7 +171,7 @@ TEST_F(ElevatorControllerTest, AllHeights) {
   EXPECT_NEAR(elevator_status_proto_->elevator_profiled_goal(), 0, 1e-3);
   SetGoal(0.3);
 
-  for (int i = 0; i < 2000; i++) {
+  for (int i = 0; i < 1000; i++) {
     elevator_input_proto_->set_elevator_encoder(plant_.y(0));
     Update();
     EXPECT_NEAR(elevator_output_proto_->elevator_voltage(), 0, 12);
@@ -164,11 +183,13 @@ TEST_F(ElevatorControllerTest, AllHeights) {
 }
 
 TEST_F(ElevatorControllerTest, EncoderFault) {
+  CalibrateDisabled();
+
   elevator_input_proto_->set_elevator_encoder(0);
   elevator_input_proto_->set_elevator_hall(false);
   outputs_enabled_ = true;
 
-  SetGoal(2.06);
+  SetGoal(c2018::score_subsystem::elevator::kElevatorMaxHeight);
 
   for (int i = 0; i < 400; i++) {
     elevator_input_proto_->set_elevator_encoder(0);
@@ -181,19 +202,24 @@ TEST_F(ElevatorControllerTest, EncoderFault) {
 }
 
 TEST_F(ElevatorControllerTest, HeightTooHigh) {
+  CalibrateDisabled();
+
   elevator_input_proto_->set_elevator_encoder(0);
   elevator_input_proto_->set_elevator_hall(false);
   outputs_enabled_ = true;
 
   SetGoal(4000);
 
-  for (int i = 0; i < 2000; i++) {
+  for (int i = 0; i < 1000; i++) {
     elevator_input_proto_->set_elevator_encoder(plant_.y(0));
     Update();
     EXPECT_NEAR(elevator_output_proto_->elevator_voltage(), 0, 12);
   }
 
-  EXPECT_NEAR(elevator_status_proto_->elevator_actual_height(), 2.06, 1e-3);
-  EXPECT_NEAR(elevator_status_proto_->elevator_unprofiled_goal(), 2.06, 1e-3);
-  EXPECT_NEAR(elevator_status_proto_->elevator_profiled_goal(), 2.06, 1e-3);
+  EXPECT_NEAR(elevator_status_proto_->elevator_actual_height(),
+              c2018::score_subsystem::elevator::kElevatorMaxHeight, 1e-3);
+  EXPECT_NEAR(elevator_status_proto_->elevator_unprofiled_goal(),
+              c2018::score_subsystem::elevator::kElevatorMaxHeight, 1e-3);
+  EXPECT_NEAR(elevator_status_proto_->elevator_profiled_goal(),
+              c2018::score_subsystem::elevator::kElevatorMaxHeight, 1e-3);
 }

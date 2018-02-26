@@ -23,8 +23,8 @@ namespace elevator {
 constexpr double kElevatorAcceleration = 4.0;
 constexpr double kElevatorVelocity = 2.5;
 constexpr double kElevatorMinHeight = 0.0;
-constexpr double kElevatorMaxHeight = 2.06;
-constexpr double kHallEffectHeight = 0.898;
+constexpr double kElevatorMaxHeight = 1.92;
+constexpr double kHallEffectHeight = 0.884;
 constexpr double kCalibrationVoltage = 6;
 constexpr double kElevatorMaxVoltage = 12;
 constexpr double kEncoderFaultMinVoltage = 6;
