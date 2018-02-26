@@ -22,7 +22,7 @@ def get_args():
     parser.add_argument('--port', dest='port', default='22')
     parser.add_argument('--deploy-path', dest='deploy_path', help="The path on the RoboRIO to deploy code to", default='/home/lvuser/robot_code')
     parser.add_argument('--robot-command', dest='command', help="The robotCommand file to create", default='/home/lvuser/start_robot_code')
-    parser.add_argument('--password', dest='password', help="The password for the user on the RoboRIO")
+    parser.add_argument('--password', dest='password', help="The password for the user on the RoboRIO", default="")
     args = parser.parse_args()
     if args.target is None:
         if args.team is not None:
@@ -59,9 +59,6 @@ def main():
 
     options = get_args()
 
-    if options.password is None:
-        options.password = ""
-
     # Set the password to be used by sshpass
     os.environ["SSHPASS"] = options.password
 
@@ -75,12 +72,19 @@ def main():
     # The ssh command to use
     ssh_command = get_ssh_command(options.port)
 
+    # mjpg_streamer command
+    mjpg_streamer = "./mjpg_streamer -i './input_uvc.so -n -y -f 25 -q 25 -r 320x240 -d /dev/video0' -o './output_http.so -w ./www/ -p 5802'"
+
     # rsync all of the runfiles over. This will also copy this script over, which isn't the cleanest way to
     # do it, but it works and this file is small enough that it doesn't matter. Also, if this file doesn't change (which it shouldn't) there will be no problem.
     rsync = ['rsync', '-e', ' '.join(ssh_command), '-c', '-v', '-z', '-r', '-L', '.', ssh_deploy_path]
 
-    # This will look like (cd /home/lvuser/robot_code && ./c2017/frc1678).
+    # This will look like (cd /home/lvuser/robot_code && ./c20XX/frc1678).
     robot_command_contents = '''cd {};./muan/autostart/autostart /tmp/autostart.pid {}'''.format(options.deploy_path, options.main_binary)
+    if sp.call(['ssh', ssh_target, 'test', '-d', '/home/lvuser/mjpg-streamer-182']):
+        print("No mjpg-streamer detected")
+    else:
+        robot_command_contents += ''' & cd /home/lvuser/mjpg-streamer-182; {}'''.format(mjpg_streamer)
 
     # The ssh command that we're going to run to create robotCommand
     ssh = ssh_command + [
