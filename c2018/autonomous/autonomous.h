@@ -36,10 +36,12 @@ class AutonomousBase {
 
   void Wait(uint32_t num_cycles);
   void IntakeGround();
+  void GoToIntake();
   void StopIntakeGround();
   void MoveToSwitch();
   void MoveToScale(bool front);
-  void Score();
+  void MoveTo(c2018::score_subsystem::ScoreGoal goal);
+  void Score(bool fast = true);
   void StopScore();
   bool IsAtScoreHeight();
   bool HasCube();
