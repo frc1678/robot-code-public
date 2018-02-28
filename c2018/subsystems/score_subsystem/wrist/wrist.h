@@ -21,8 +21,8 @@ namespace c2018 {
 namespace score_subsystem {
 namespace wrist {
 
-static constexpr double kMaxWristVelocity = 4.0;
-static constexpr double kMaxWristAcceleration = 4.0;
+static constexpr double kMaxWristVelocity = 8.0;
+static constexpr double kMaxWristAcceleration = 8.0;
 static constexpr double kWristMinAngle = 0;
 static constexpr double kWristStowAngle = 80 * (M_PI / 180);
 static constexpr double kWristMaxAngle = 160 * (M_PI / 180);
@@ -33,7 +33,7 @@ static constexpr double kSlowOuttakeVoltage = -5;
 static constexpr double kFastOuttakeVoltage = -9;
 static constexpr double kIntakeVoltage = 12;
 
-static constexpr double kHallEffectAngle = 0.34;
+static constexpr double kHallEffectAngle = 0.24;
 
 static constexpr double kHoldingVoltage = 1.5;
 static constexpr double kMaxVoltage = 12;
