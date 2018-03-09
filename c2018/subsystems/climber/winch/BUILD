@@ -12,7 +12,7 @@ cc_test(
   name = "winch_test",
   srcs = ["//c2018/subsystems/climber/winch:winch_test.cpp"],
   deps = [ 
-    ":winch",
-    "//third_party/google/googletest",
+      ":winch",
+      "//third_party/google/googletest",
   ],
 )

@@ -42,12 +42,7 @@ static constexpr double kStallCurrent = 30;
 
 static constexpr int kNumHasCubeTicks = 10;
 
-enum class IntakeMode {
-  IDLE = 0,
-  IN = 1,
-  OUT_FAST = 2,
-  OUT_SLOW = 3
-};
+enum class IntakeMode { IDLE = 0, IN = 1, OUT_FAST = 2, OUT_SLOW = 3 };
 
 class WristController {
  public:

@@ -14,10 +14,9 @@
 #include "muan/queues/queue_manager.h"
 #include "muan/utils/math_utils.h"
 #include "third_party/aos/common/util/trapezoid_profile.h"
+
 namespace c2018 {
-
 namespace score_subsystem {
-
 namespace elevator {
 
 constexpr double kElevatorAcceleration = 4.0;
@@ -65,9 +64,7 @@ class ElevatorController {
 constexpr double kEncoderFaultTicksAllowed = 100;
 
 }  // namespace elevator
-
 }  // namespace score_subsystem
-
 }  // namespace c2018
 
 #endif  // C2018_SUBSYSTEMS_SCORE_SUBSYSTEM_ELEVATOR_ELEVATOR_CONTROLLER_H_

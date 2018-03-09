@@ -1,9 +1,7 @@
 #include "c2018/subsystems/climber/winch/winch.h"
 
 namespace c2018 {
-
 namespace climber {
-
 namespace winch {
 
 Winch::Winch() {}
@@ -38,7 +36,5 @@ double Winch::Update(double encoder_i, bool should_climb,
 }
 
 }  // namespace winch
-
 }  // namespace climber
-
 }  // namespace c2018

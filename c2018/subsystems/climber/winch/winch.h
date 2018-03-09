@@ -4,9 +4,7 @@
 #include <cmath>
 
 namespace c2018 {
-
 namespace climber {
-
 namespace winch {
 
 constexpr double kWinchRadius = 3;     // WRONG
@@ -30,9 +28,7 @@ class Winch {
 };
 
 }  // namespace winch
-
 }  // namespace climber
-
 }  // namespace c2018
 
 #endif  // C2018_SUBSYSTEMS_CLIMBER_WINCH_WINCH_H_

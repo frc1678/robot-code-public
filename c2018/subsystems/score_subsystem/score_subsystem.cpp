@@ -126,7 +126,8 @@ void ScoreSubsystem::SetGoal(const ScoreSubsystemGoalProto& goal) {
       wrist_angle_ = kWristForwardAngle;
       break;
     case SCALE_MID_REVERSE:
-      elevator_height_ = kElevatorBaseHeight + kCubeHeight + kElevatorReversedOffset;
+      elevator_height_ =
+          kElevatorBaseHeight + kCubeHeight + kElevatorReversedOffset;
       wrist_angle_ = kWristBackwardAngle;
       break;
     case SCALE_HIGH_FORWARD:
@@ -134,7 +135,8 @@ void ScoreSubsystem::SetGoal(const ScoreSubsystemGoalProto& goal) {
       wrist_angle_ = kWristForwardAngle;
       break;
     case SCALE_HIGH_REVERSE:
-      elevator_height_ = kElevatorBaseHeight + 2 * kCubeHeight + kElevatorReversedOffset;
+      elevator_height_ =
+          kElevatorBaseHeight + 2 * kCubeHeight + kElevatorReversedOffset;
       wrist_angle_ = kWristBackwardAngle;
       break;
     case SCALE_SUPER_HIGH_FORWARD:
@@ -142,7 +144,8 @@ void ScoreSubsystem::SetGoal(const ScoreSubsystemGoalProto& goal) {
       wrist_angle_ = kWristTiltUpAngle;
       break;
     case SCALE_SUPER_HIGH_REVERSE:
-      elevator_height_ = kElevatorBaseHeight + 3 * kCubeHeight + kElevatorReversedOffset;
+      elevator_height_ =
+          kElevatorBaseHeight + 3 * kCubeHeight + kElevatorReversedOffset;
       wrist_angle_ = kWristBackwardAngle;
       break;
     case SCALE_SHOOT:
@@ -219,7 +222,7 @@ void ScoreSubsystem::GoToState(ScoreSubsystemState desired_state) {
         state_ = desired_state;
       } else {
         LOG(ERROR, "Tried to go to invalid state %d while calibrating!",
-              static_cast<int>(desired_state));
+            static_cast<int>(desired_state));
       }
       break;
     case ScoreSubsystemState::HOLDING:

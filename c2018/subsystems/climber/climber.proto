@@ -21,13 +21,14 @@ enum State {
 
 message ClimberInput {
   required uint64 timestamp = 1;
-  required double position = 2; // encoder position of the winch in meters, positive is up
+  required double position =
+      2; // encoder position of the winch in meters, positive is up
   required double current = 3;
 }
 
 message ClimberOutput {
   required uint64 timestamp = 1;
-  required double voltage = 2; // climbing up is positive
+  required double voltage = 2;     // climbing up is positive
   required bool hook_solenoid = 3; // true means the solenoid is down
   required bool batter_solenoid = 4;
 }
