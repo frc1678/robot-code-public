@@ -75,7 +75,7 @@ void AutonomousBase::StartDriveRelative(double forward, double theta,
   double left_goal = left_offset + forward - theta * config_.robot_radius;
   double right_goal = right_offset + forward + theta * config_.robot_radius;
 
-  follow_through_ = std::abs(final_velocity) > 0.0;
+  follow_through_ = final_velocity != 0.0;
 
   if (follow_through_) {
     goal_dist_ = (left_goal + right_goal) / 2.0;
@@ -619,5 +619,4 @@ bool AutonomousBase::IsAtScoreHeight() {
 }
 
 }  // namespace autonomous
-
 }  // namespace c2018

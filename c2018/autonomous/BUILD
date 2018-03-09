@@ -3,12 +3,12 @@ cc_library(
     srcs = ["autonomous.cpp"],
     hdrs = ["autonomous.h"],
     deps = [
-        "//third_party/frc971/control_loops/drivetrain:drivetrain_lib",
+        "//c2018/subsystems/drivetrain:drivetrain_base",
+        "//c2018/subsystems/score_subsystem:score_subsystem_queues",
         "//muan/queues:queue_manager",
         "//muan/logging:logger",
         "//muan/wpilib:wpilib_queues",
-        "//c2018/subsystems/drivetrain:drivetrain_base",
-        "//c2018/subsystems/score_subsystem:score_subsystem_queues",
+        "//third_party/frc971/control_loops/drivetrain:drivetrain_lib",
     ],
     visibility = ["//visibility:public"],
 )

@@ -35,9 +35,8 @@ TeleopBase::TeleopBase()
   hook_up_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::BACK));
   batter_down_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::START));
   godmode_ = gamepad_.MakeButton(
-      uint32_t(muan::teleop::XBox::LEFT_CLICK_IN));  // TODO(hanson/gemma/ellie)
-                                                     // add godmodes for
-                                                     // intaking/outtaking
+      uint32_t(muan::teleop::XBox::LEFT_CLICK_IN));
+  // TODO(Hanson/Gemma/Ellie) add godmodes for intaking/outtaking
   height_0_ = gamepad_.MakePov(0, muan::teleop::Pov::kSouth);
   height_1_ = gamepad_.MakePov(0, muan::teleop::Pov::kEast);
   height_2_ = gamepad_.MakePov(0, muan::teleop::Pov::kNorth);
@@ -119,8 +118,7 @@ void TeleopBase::Update() {
 
 void TeleopBase::SetReadableLogName() {
   if (DriverStation::GetInstance().GetMatchType() !=
-          DriverStation::MatchType::kNone &&
-      !log_name_set_) {
+          DriverStation::MatchType::kNone && !log_name_set_) {
     std::string name;
     int match_num = DriverStation::GetInstance().GetMatchNumber();
     std::string match_number = std::to_string(match_num);
@@ -225,44 +223,33 @@ void TeleopBase::SendScoreSubsystemMessage() {
   // Scoring modes
   if (low_->is_pressed()) {
     if (pos_0_->is_pressed()) {
-      score_subsystem_goal->set_score_goal(
-          c2018::score_subsystem::EXCHANGE);
+      score_subsystem_goal->set_score_goal(c2018::score_subsystem::EXCHANGE);
     } else if (pos_1_->is_pressed()) {
-      score_subsystem_goal->set_score_goal(
-          c2018::score_subsystem::SWITCH);
+      score_subsystem_goal->set_score_goal(c2018::score_subsystem::SWITCH);
     }
   } else if (front_->is_pressed()) {
     if (pos_0_->is_pressed()) {
-      score_subsystem_goal->set_score_goal(
-          c2018::score_subsystem::SCALE_LOW_FORWARD);
+      score_subsystem_goal->set_score_goal(c2018::score_subsystem::SCALE_LOW_FORWARD);
     } else if (pos_1_->is_pressed()) {
-      score_subsystem_goal->set_score_goal(
-          c2018::score_subsystem::SCALE_MID_FORWARD);
+      score_subsystem_goal->set_score_goal(c2018::score_subsystem::SCALE_MID_FORWARD);
     } else if (pos_2_->is_pressed()) {
-      score_subsystem_goal->set_score_goal(
-          c2018::score_subsystem::SCALE_HIGH_FORWARD);
+      score_subsystem_goal->set_score_goal(c2018::score_subsystem::SCALE_HIGH_FORWARD);
     } else if (pos_3_->is_pressed()) {
-      score_subsystem_goal->set_score_goal(
-          c2018::score_subsystem::SCALE_SUPER_HIGH_FORWARD);
+      score_subsystem_goal->set_score_goal(c2018::score_subsystem::SCALE_SUPER_HIGH_FORWARD);
     }
   } else if (back_->is_pressed()) {
     if (pos_0_->is_pressed()) {
-      score_subsystem_goal->set_score_goal(
-          c2018::score_subsystem::SCALE_LOW_REVERSE);
+      score_subsystem_goal->set_score_goal(c2018::score_subsystem::SCALE_LOW_REVERSE);
     } else if (pos_1_->is_pressed()) {
-      score_subsystem_goal->set_score_goal(
-          c2018::score_subsystem::SCALE_MID_REVERSE);
+      score_subsystem_goal->set_score_goal(c2018::score_subsystem::SCALE_MID_REVERSE);
     } else if (pos_2_->is_pressed()) {
-      score_subsystem_goal->set_score_goal(
-          c2018::score_subsystem::SCALE_HIGH_REVERSE);
+      score_subsystem_goal->set_score_goal(c2018::score_subsystem::SCALE_HIGH_REVERSE);
     } else if (pos_3_->is_pressed()) {
-      score_subsystem_goal->set_score_goal(
-          c2018::score_subsystem::SCALE_SUPER_HIGH_REVERSE);
+      score_subsystem_goal->set_score_goal(c2018::score_subsystem::SCALE_SUPER_HIGH_REVERSE);
     }
   } else if (shoot_->is_pressed()) {
     if (pos_0_->is_pressed()) {
-      score_subsystem_goal->set_score_goal(
-          c2018::score_subsystem::SCALE_SHOOT);
+      score_subsystem_goal->set_score_goal(c2018::score_subsystem::SCALE_SHOOT);
     }
   }
   score_subsystem_goal_queue_->WriteMessage(score_subsystem_goal);
