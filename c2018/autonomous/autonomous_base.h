@@ -1,5 +1,5 @@
-#ifndef C2018_AUTONOMOUS_AUTONOMOUS_H_
-#define C2018_AUTONOMOUS_AUTONOMOUS_H_
+#ifndef C2018_AUTONOMOUS_AUTONOMOUS_BASE_H_
+#define C2018_AUTONOMOUS_AUTONOMOUS_BASE_H_
 
 #include "c2018/subsystems/score_subsystem/queue_types.h"
 #include "c2018/subsystems/score_subsystem/score_subsystem.pb.h"
@@ -64,9 +64,6 @@ class AutonomousBase {
   c2018::score_subsystem::ScoreSubsystemStatusQueue::QueueReader
       score_status_reader_;
   muan::wpilib::DriverStationQueue::QueueReader driver_station_reader_;
-  muan::wpilib::GameSpecificStringQueue::QueueReader
-      game_specific_string_reader_;
-
   aos::time::PhasedLoop loop_{std::chrono::milliseconds(5)};
 };
 
@@ -74,4 +71,4 @@ class AutonomousBase {
 
 }  // namespace c2018
 
-#endif  // C2018_AUTONOMOUS_AUTONOMOUS_H_
+#endif  // C2018_AUTONOMOUS_AUTONOMOUS_BASE_H_
