@@ -3,8 +3,8 @@
 
 #include <ctime>
 #include <fstream>
-#include <string>
 #include <map>
+#include <string>
 #include "boost/filesystem.hpp"
 #include "gflags/gflags.h"
 
@@ -32,9 +32,10 @@ class FileWriter {
   // However, calls with the same filename to different instances of
   // FileWriter may go to different files.
   virtual void WriteLine(const std::string &filename, const std::string &line);
-  virtual void WriteBytes(const std::string &filename, const std::string &bytes);
-  virtual std::ostream& GetTextFile(const std::string &filename);
-  virtual std::ostream& GetBinaryFile(const std::string &filename);
+  virtual void WriteBytes(const std::string &filename,
+                          const std::string &bytes);
+  virtual std::ostream &GetTextFile(const std::string &filename);
+  virtual std::ostream &GetBinaryFile(const std::string &filename);
 
   void FlushAllFiles();
 
@@ -42,7 +43,8 @@ class FileWriter {
   // if the current log directory is /media/sda1/logs/12345678, and the desired
   // name is CVR_Quals_20, a symlink /media/sda1/logs/CVR_Quals_20 would be
   // created pointing to the current log directory. If the name is not a valid
-  // POSIX filename, nothing happens. Overrwites existing file/directory with the
+  // POSIX filename, nothing happens. Overrwites existing file/directory with
+  // the
   // same name.
   static void CreateReadableName(std::string name);
 

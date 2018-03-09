@@ -20,7 +20,8 @@ class LinearInterpolation {
  protected:
   std::vector<std::pair<double, T>> data_;
   // necessary for sorting
-  static bool ComparePoints(const std::pair<double, T> &a, const std::pair<double, T> &b);
+  static bool ComparePoints(const std::pair<double, T> &a,
+                            const std::pair<double, T> &b);
 };
 
 }  // namespace utils

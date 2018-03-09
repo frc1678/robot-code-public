@@ -1,5 +1,5 @@
-#include "gtest/gtest.h"
 #include "muan/utils/history.h"
+#include "gtest/gtest.h"
 
 using muan::utils::History;
 

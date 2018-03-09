@@ -4,7 +4,8 @@ namespace muan {
 
 PidController::PidController(double kP, double kI, double kD)
     : kP(kP), kI(kI), kD(kD), integral_(0), last_proportional_(0) {}
-PidController::PidController(const PidGains& gains) : PidController(gains.kP, gains.kI, gains.kD) {}
+PidController::PidController(const PidGains& gains)
+    : PidController(gains.kP, gains.kI, gains.kD) {}
 
 double PidController::Calculate(muan::units::Time dt, double error) {
   return ((error * kP) + (CalculateIntegral(dt, error) * kI) +

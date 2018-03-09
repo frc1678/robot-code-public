@@ -5,8 +5,9 @@ namespace muan {
 
 namespace utils {
 
-Monitor::Monitor(double threshold, double delay_time, double reset_time, double dt, bool check_above,
-                 double standing_voltage, size_t size)
+Monitor::Monitor(double threshold, double delay_time, double reset_time,
+                 double dt, bool check_above, double standing_voltage,
+                 size_t size)
     : current_history_(size) {
   threshold_ = threshold;
   delay_time_ = delay_time;

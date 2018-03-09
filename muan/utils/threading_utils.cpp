@@ -6,10 +6,13 @@ namespace muan {
 namespace utils {
 
 int64_t Timestamp() {
-  static int64_t start_time{ std::chrono::duration_cast<std::chrono::milliseconds>(
-    aos::monotonic_clock::now() - aos::monotonic_clock::epoch()).count()};
-  int64_t now{ std::chrono::duration_cast<std::chrono::milliseconds>(
-    aos::monotonic_clock::now() - aos::monotonic_clock::epoch()).count()};
+  static int64_t start_time{
+      std::chrono::duration_cast<std::chrono::milliseconds>(
+          aos::monotonic_clock::now() - aos::monotonic_clock::epoch())
+          .count()};
+  int64_t now{std::chrono::duration_cast<std::chrono::milliseconds>(
+                  aos::monotonic_clock::now() - aos::monotonic_clock::epoch())
+                  .count()};
   // In some tests, mocktime is used and timestamp needs to be fixed
   if (now == 0) {
     start_time = 0;
@@ -34,9 +37,7 @@ void SetCurrentThreadName(const std::string& name) {
   thread_name = name;
 }
 
-const std::string& GetCurrentThreadName() {
-  return thread_name;
-}
+const std::string& GetCurrentThreadName() { return thread_name; }
 
 }  // namespace utils
 }  // namespace muan

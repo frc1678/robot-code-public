@@ -2,10 +2,10 @@
 #define MUAN_UTILS_THREADING_UTILS_H_
 
 #include <stdint.h>
-#include <vector>
-#include <memory>
 #include <functional>
+#include <memory>
 #include <string>
+#include <vector>
 #include "third_party/aos/common/time.h"
 
 namespace muan {
@@ -16,16 +16,18 @@ namespace utils {
 // T - Return type
 // N - Number of bytes to be used. Must be enough to store arguments.
 // Ts - The arguments ommited from the constructor, to be called later
-template<typename T, size_t N, typename... Ts1>
+template <typename T, size_t N, typename... Ts1>
 class DeferCall {
  public:
   // Defers the call f(args). If you call this with a pointer or
   // reference to something that will go out of scope, it will segfault
   // when evaluated, so don't do that.
-  template<typename F, typename... Ts0> DeferCall(F f, Ts0... args0);
+  template <typename F, typename... Ts0>
+  DeferCall(F f, Ts0... args0);
   DeferCall() { func = nullptr; }
   // Evaluate the call
   T operator()(Ts1... args1) const { return func(this, args1...); }
+
  protected:
   // The buffer where the function call is stored
   char buf[N];

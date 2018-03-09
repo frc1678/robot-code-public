@@ -1,9 +1,9 @@
-#include <thread>
 #include "muan/queues/message_queue.h"
+#include <thread>
+#include "gtest/gtest.h"
+#include "muan/proto/stack_proto.h"
 #include "muan/queues/queue_manager.h"
 #include "muan/queues/test_proto.pb.h"
-#include "muan/proto/stack_proto.h"
-#include "gtest/gtest.h"
 
 using muan::queues::MessageQueue;
 using muan::queues::QueueManager;
@@ -16,7 +16,8 @@ TEST(MessageQueue, DeliversSingleMessage) {
   EXPECT_EQ(reader.ReadMessage().value(), 10);
 }
 
-// Ensure that the queue reads the last message correctly through it's public API
+// Ensure that the queue reads the last message correctly through it's public
+// API
 TEST(MessageQueue, QueueReadsLastMessage) {
   MessageQueue<uint32_t> int_queue(10);
   // We haven't written anything, so expect nullopt
@@ -24,7 +25,8 @@ TEST(MessageQueue, QueueReadsLastMessage) {
   int_queue.WriteMessage(254);
   int_queue.WriteMessage(971);
   int_queue.WriteMessage(1678);
-  // Expect reading the last value, but not "consuming" it (unlike a QueueReader)
+  // Expect reading the last value, but not "consuming" it (unlike a
+  // QueueReader)
   EXPECT_EQ(int_queue.ReadLastMessage().value(), 1678);
   EXPECT_EQ(int_queue.ReadLastMessage().value(), 1678);
 }
@@ -148,9 +150,11 @@ TEST(MessageQueue, Multithreading) {
   auto func = [&int_queue, num_messages]() {
     uint32_t next = 0;
     auto reader = int_queue.MakeReader();
-    auto timeout_end = std::chrono::steady_clock::now() + std::chrono::milliseconds(1000);
+    auto timeout_end =
+        std::chrono::steady_clock::now() + std::chrono::milliseconds(1000);
 
-    while (next < num_messages && std::chrono::steady_clock::now() < timeout_end) {
+    while (next < num_messages &&
+           std::chrono::steady_clock::now() < timeout_end) {
       auto val = reader.ReadMessage();
       if (val) {
         EXPECT_EQ(next, *val);
@@ -185,9 +189,11 @@ TEST(MessageQueue, MultipleWriters) {
     auto reader = int_queue.MakeReader();
 
     uint32_t num_read = 0;
-    auto timeout_end = std::chrono::steady_clock::now() + std::chrono::milliseconds(1000);
+    auto timeout_end =
+        std::chrono::steady_clock::now() + std::chrono::milliseconds(1000);
 
-    while (num_read < messages_per_thread * num_threads && std::chrono::steady_clock::now() < timeout_end) {
+    while (num_read < messages_per_thread * num_threads &&
+           std::chrono::steady_clock::now() < timeout_end) {
       if (reader.ReadMessage()) {
         num_read++;
       }
@@ -255,29 +261,34 @@ TEST(MessageQueue, MessageIndex) {
 }
 
 TEST(MessageQueue, TimestampMessage) {
-  muan::proto::StackProto<muan::queues::TimestampTestMessage, 256> stack_test_message;
-  MessageQueue<muan::proto::StackProto<muan::queues::TimestampTestMessage, 256>> stack_test_queue(10);
+  muan::proto::StackProto<muan::queues::TimestampTestMessage, 256>
+      stack_test_message;
+  MessageQueue<muan::proto::StackProto<muan::queues::TimestampTestMessage, 256>>
+      stack_test_queue(10);
 
   aos::time::EnableMockTime(aos::monotonic_clock::now());
 
   stack_test_queue.WriteMessage(stack_test_message);
   EXPECT_EQ(stack_test_queue.ReadLastMessage().value()->timestamp(),
-            std::chrono::duration_cast<std::chrono::milliseconds>(aos::monotonic_clock::now() -
-                                                                  aos::monotonic_clock::epoch()).count() -
+            std::chrono::duration_cast<std::chrono::milliseconds>(
+                aos::monotonic_clock::now() - aos::monotonic_clock::epoch())
+                    .count() -
                 muan::proto::start_time);
   muan::queues::TimestampTestMessage test_message;
   MessageQueue<muan::queues::TimestampTestMessage> test_queue(10);
 
   test_queue.WriteMessage(test_message);
   EXPECT_EQ(test_queue.ReadLastMessage().value().timestamp(),
-            std::chrono::duration_cast<std::chrono::milliseconds>(aos::monotonic_clock::now() -
-                                                                  aos::monotonic_clock::epoch()).count() -
+            std::chrono::duration_cast<std::chrono::milliseconds>(
+                aos::monotonic_clock::now() - aos::monotonic_clock::epoch())
+                    .count() -
                 muan::proto::start_time);
 }
 
 TEST(QueueManager, FetchQueue) {
   MessageQueue<int>* queue = QueueManager<int>::Fetch("test_queue");
-  typename MessageQueue<int>::QueueReader reader = QueueManager<int>::Fetch("test_queue")->MakeReader();
+  typename MessageQueue<int>::QueueReader reader =
+      QueueManager<int>::Fetch("test_queue")->MakeReader();
   queue->WriteMessage(5);
 
   int msg;

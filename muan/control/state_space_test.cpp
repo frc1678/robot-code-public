@@ -2,10 +2,10 @@
 #include <random>
 #include "Eigen/Dense"
 #include "gtest/gtest.h"
-#include "muan/utils/math_utils.h"
 #include "muan/control/state_space_controller.h"
 #include "muan/control/state_space_observer.h"
 #include "muan/control/state_space_plant.h"
+#include "muan/utils/math_utils.h"
 
 // Ensure that all state-space objects are properly zero-initialized
 TEST(StateSpace, Initialization) {
@@ -51,7 +51,8 @@ TEST(StateSpace, Initialization) {
   }
 
   // Use default parameters
-  muan::control::StateSpacePlant<1, 2, 1> plant2(plant.A(), plant.B(), plant.C());
+  muan::control::StateSpacePlant<1, 2, 1> plant2(plant.A(), plant.B(),
+                                                 plant.C());
 
   // Ensure that the plant uses the gains given to it
   for (uint32_t i = 0; i < 2; i++) {
@@ -70,8 +71,9 @@ TEST(StateSpace, StablePlant) {
   A << 1.0, .01, -.05, .95;
 
   muan::control::StateSpacePlant<1, 2, 1> plant(
-      A, Eigen::Matrix<double, 2, 1>::Zero(), Eigen::Matrix<double, 1, 2>::Zero(),
-      Eigen::Matrix<double, 1, 1>::Zero(), (Eigen::Matrix<double, 2, 1>() << 1.0, 1.0).finished());
+      A, Eigen::Matrix<double, 2, 1>::Zero(),
+      Eigen::Matrix<double, 1, 2>::Zero(), Eigen::Matrix<double, 1, 1>::Zero(),
+      (Eigen::Matrix<double, 2, 1>() << 1.0, 1.0).finished());
 
   auto u = Eigen::Matrix<double, 1, 1>::Zero();
 
@@ -95,8 +97,9 @@ TEST(StateSpace, UnstablePlant) {
   A << 1.0, .01, .05, 0.99;
 
   muan::control::StateSpacePlant<1, 2, 1> plant(
-      A, Eigen::Matrix<double, 2, 1>::Zero(), Eigen::Matrix<double, 1, 2>::Zero(),
-      Eigen::Matrix<double, 1, 1>::Zero(), (Eigen::Matrix<double, 2, 1>() << 1.0, 0.0).finished());
+      A, Eigen::Matrix<double, 2, 1>::Zero(),
+      Eigen::Matrix<double, 1, 2>::Zero(), Eigen::Matrix<double, 1, 1>::Zero(),
+      (Eigen::Matrix<double, 2, 1>() << 1.0, 0.0).finished());
 
   auto u = Eigen::Matrix<double, 1, 1>::Zero();
 
@@ -122,7 +125,8 @@ TEST(StateSpace, ControllerConverges) {
   controller.K() << 10.0, 1.0;
   controller.A() = plant.A();
   // Kff is the pseudoinverse of B
-  controller.Kff() = (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
+  controller.Kff() =
+      (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
   controller.r() << 0.0, 0.0;
 
   for (uint32_t t = 0; t < 1000; t++) {
@@ -147,7 +151,8 @@ TEST(StateSpace, ControllerGoesToGoal) {
   controller.K() << 10.0, 1.0;
   controller.A() = plant.A();
   // Kff is the pseudoinverse of B
-  controller.Kff() = (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
+  controller.Kff() =
+      (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
   controller.r() << 1.0, 0.0;
 
   for (uint32_t t = 0; t < 1000; t++) {
@@ -173,7 +178,8 @@ TEST(StateSpace, ControllerHoldsSteadyState) {
   controller.K() << 10.0, 1.0;
   controller.A() = plant.A();
   // Kff is the pseudoinverse of B
-  controller.Kff() = (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
+  controller.Kff() =
+      (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
   controller.r() << 1.0, 0.0;
 
   for (uint32_t t = 0; t < 1000; t++) {
@@ -199,7 +205,8 @@ TEST(StateSpace, ControllerObeysInputConstraints) {
   controller.K() << 10.0, 1.0;
   controller.A() = plant.A();
   // Kff is the pseudoinverse of B
-  controller.Kff() = (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
+  controller.Kff() =
+      (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
   controller.r() << 1.0, 0.0;
   controller.u_max() << 12;
   controller.u_min() << -12;
@@ -230,7 +237,8 @@ TEST(StateSpace, ControllerTracksFeedForward) {
   controller.K() << 0, 0;
   controller.A() = plant.A();
   // Kff is the pseudoinverse of B
-  controller.Kff() = (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
+  controller.Kff() =
+      (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
   controller.r() << 0, 0;
 
   Eigen::Matrix<double, 2, 1> r = controller.r();
@@ -264,7 +272,8 @@ TEST(StateSpace, ObserverRecoversFromInitialError) {
   muan::control::StateSpaceController<1, 2, 1> controller{};
   controller.K() << 0, 0;
   controller.A() = plant.A();
-  controller.Kff() = (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
+  controller.Kff() =
+      (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
   controller.r() << 0, 0;
 
   muan::control::StateSpaceObserver<1, 2, 1> observer{plant};
@@ -294,7 +303,8 @@ TEST(StateSpace, ObserverRecoversFromInitialErrorMovingSystem) {
   muan::control::StateSpaceController<1, 2, 1> controller{};
   controller.K() << 0, 0;
   controller.A() = plant.A();
-  controller.Kff() = (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
+  controller.Kff() =
+      (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
   controller.r() << 0, 0;
 
   muan::control::StateSpaceObserver<1, 2, 1> observer{plant};
@@ -324,7 +334,8 @@ TEST(StateSpace, ObserverRecoversFromIncorrectModel) {
   muan::control::StateSpaceController<1, 2, 1> controller{};
   controller.K() << 0, 0;
   controller.A() = plant.A();
-  controller.Kff() = (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
+  controller.Kff() =
+      (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
   controller.r() << 0, 0;
 
   muan::control::StateSpaceObserver<1, 2, 1> observer{plant};
@@ -360,7 +371,8 @@ TEST(StateSpace, ObserverRecoversFromNoise) {
   muan::control::StateSpaceController<1, 2, 1> controller{};
   controller.K() << 0, 0;
   controller.A() = plant.A();
-  controller.Kff() = (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
+  controller.Kff() =
+      (plant.B().transpose() * plant.B()).inverse() * plant.B().transpose();
   controller.r() << 0, 0;
 
   muan::control::StateSpaceObserver<1, 2, 1> observer{plant};

@@ -1,7 +1,7 @@
-#include <thread>
-#include <chrono>
-#include "gtest/gtest.h"
 #include "muan/utils/threading_utils.h"
+#include <chrono>
+#include <thread>
+#include "gtest/gtest.h"
 
 int TestF(int x) { return x * 3; }
 
@@ -17,7 +17,10 @@ TEST(DeferCall, FuncPtr) {
 }
 
 TEST(DeferCall, Closure) {
-  auto closure = []() { int x = 2; return [x]() { return TestA(x); }; }();
+  auto closure = []() {
+    int x = 2;
+    return [x]() { return TestA(x); };
+  }();
   muan::utils::DeferCall<TestA, 128> f(closure);
   EXPECT_EQ(f().x_, 2);
 }
@@ -29,7 +32,7 @@ TEST(DeferCall, StdFunction) {
 
 TEST(DeferCall, Defers) {
   double x = 0.1;
-  muan::utils::DeferCall<void, 128> f([&](){ x *= 5; });
+  muan::utils::DeferCall<void, 128> f([&]() { x *= 5; });
   EXPECT_EQ(x, 0.1);
   f();
   EXPECT_EQ(x, 0.5);
@@ -46,7 +49,8 @@ TEST(DeferCall, Copyable) {
 }
 
 TEST(DeferCall, Curry) {
-  muan::utils::DeferCall<int, 128, int> f([](int x, int y){ return x*y; }, 2);
+  muan::utils::DeferCall<int, 128, int> f([](int x, int y) { return x * y; },
+                                          2);
   EXPECT_EQ(f(3), 6);
 }
 
@@ -68,7 +72,7 @@ TEST(ThreadName, All) {
   EXPECT_EQ(muan::utils::GetCurrentThreadName(), "unnamed_thread");
   muan::utils::SetCurrentThreadName("foo");
   EXPECT_EQ(muan::utils::GetCurrentThreadName(), "foo");
-  std::thread([](){
+  std::thread([]() {
     EXPECT_EQ(muan::utils::GetCurrentThreadName(), "unnamed_thread");
     muan::utils::SetCurrentThreadName("bar");
     EXPECT_EQ(muan::utils::GetCurrentThreadName(), "bar");

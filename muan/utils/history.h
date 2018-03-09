@@ -2,8 +2,8 @@
 #define MUAN_UTILS_HISTORY_H_
 
 #include <algorithm>
-#include <vector>
 #include <cmath>
+#include <vector>
 #include "muan/units/units.h"
 #include "third_party/aos/common/die.h"
 
@@ -18,14 +18,18 @@ class History {
     Iterator(const Iterator&) = default;
     Iterator& operator=(const Iterator&) = default;
 
-    bool operator!=(const Iterator& other) { return position_ != other.position_; }
+    bool operator!=(const Iterator& other) {
+      return position_ != other.position_;
+    }
 
     Iterator operator++() {
       Iterator prev = *this;
       position_++;
       return prev;
     }
-    T& operator*() { return hist_->hist_arr_[position_ % hist_->hist_arr_.size()]; }
+    T& operator*() {
+      return hist_->hist_arr_[position_ % hist_->hist_arr_.size()];
+    }
 
    private:
     Iterator(int position, History* hist) : position_{position}, hist_{hist} {}
@@ -36,7 +40,9 @@ class History {
     friend class History;
   };
 
-  explicit History(int size) : current_pos_(0) { hist_arr_.resize(static_cast<int>(size)); }
+  explicit History(int size) : current_pos_(0) {
+    hist_arr_.resize(static_cast<int>(size));
+  }
 
   void Update(T val) {
     hist_arr_[current_pos_ % hist_arr_.size()] = val;
@@ -68,7 +74,9 @@ class History {
   int current_pos_;
 
   // The position of the earliest element kept in history
-  int earliest() { return std::max(0, current_pos_ - static_cast<int>(hist_arr_.size())); }
+  int earliest() {
+    return std::max(0, current_pos_ - static_cast<int>(hist_arr_.size()));
+  }
 
   std::vector<T> hist_arr_;
 

@@ -1,27 +1,31 @@
 #include <fcntl.h>
-#include <unistd.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/text_format.h>
-#include <opencv2/opencv.hpp>
+#include <unistd.h>
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <opencv2/opencv.hpp>
 #include <string>
 #include <thread>
 #include <vector>
-#include "muan/vision/config.pb.h"
 #include "gflags/gflags.h"
+#include "muan/vision/config.pb.h"
 #include "muan/vision/vision.h"
 
+DEFINE_string(mode, "capture",
+              "The mode, either capture or tune, to run in. Capture mode "
+              "captures a video for later use, while "
+              "tune allows you to tune vision parameters off of a previously "
+              "captured video.");
 DEFINE_string(
-    mode, "capture",
-    "The mode, either capture or tune, to run in. Capture mode captures a video for later use, while "
-    "tune allows you to tune vision parameters off of a previously captured video.");
-DEFINE_string(filename, "/tmp/capture.avi",
-              "The filename to write video to/read video from depending on mode.");
-DEFINE_string(params_file, "/tmp/thresholds.pb.text",
-              "The filename to which params should be written, if in tuning mode.");
-DEFINE_int32(camera_index, 0, "The ID of the camera to use to capture video, in capture mode.");
+    filename, "/tmp/capture.avi",
+    "The filename to write video to/read video from depending on mode.");
+DEFINE_string(
+    params_file, "/tmp/thresholds.pb.text",
+    "The filename to which params should be written, if in tuning mode.");
+DEFINE_int32(camera_index, 0,
+             "The ID of the camera to use to capture video, in capture mode.");
 
 constexpr int kEscapeKey = 27;
 
@@ -35,16 +39,19 @@ void Capture(const std::string& filename, int camera_index = -1) {
   camera.set(CV_CAP_PROP_BRIGHTNESS, 0);  // minimum
   camera.set(CV_CAP_PROP_CONTRAST, 1);    // maximum
   camera.set(CV_CAP_PROP_SATURATION, 1);  // maximum
-  std::string command =
-      "v4l2ctrl -d /dev/video" + std::to_string(camera_index) + " -l c2017/vision/coprocessor/camera_params";
+  std::string command = "v4l2ctrl -d /dev/video" +
+                        std::to_string(camera_index) +
+                        " -l c2017/vision/coprocessor/camera_params";
   std::cout << command << std::endl;
   system(command.c_str());
 
   int ex = CV_FOURCC('P', 'I', 'M', '1');
-  cv::Size video_size = cv::Size(camera.get(CV_CAP_PROP_FRAME_WIDTH), camera.get(CV_CAP_PROP_FRAME_HEIGHT));
+  cv::Size video_size = cv::Size(camera.get(CV_CAP_PROP_FRAME_WIDTH),
+                                 camera.get(CV_CAP_PROP_FRAME_HEIGHT));
   cv::VideoWriter writer;
   if (!writer.open(filename.c_str(), ex, 30, video_size, true)) {
-    std::cout << "Could not open file " << filename << " for writing" << std::endl;
+    std::cout << "Could not open file " << filename << " for writing"
+              << std::endl;
     return;
   }
 
@@ -61,7 +68,8 @@ void Capture(const std::string& filename, int camera_index = -1) {
   writer.release();
 }
 
-void Tune(const std::string& video_filename, const std::string& output_filename) {
+void Tune(const std::string& video_filename,
+          const std::string& output_filename) {
   cv::VideoCapture video(video_filename);
   if (!video.isOpened()) {
     std::cout << "Could not open video: " << video_filename << std::endl;
@@ -76,7 +84,8 @@ void Tune(const std::string& video_filename, const std::string& output_filename)
     close(file);
   }
 
-  int colorspace_code = muan::vision::ConversionCode(muan::vision::VisionThresholds::Bgr, thresholds.space());
+  int colorspace_code = muan::vision::ConversionCode(
+      muan::vision::VisionThresholds::Bgr, thresholds.space());
   switch (thresholds.space()) {
     case muan::vision::VisionThresholds::Rgb:
       std::cout << "Tuning in RGB" << std::endl;
@@ -91,8 +100,10 @@ void Tune(const std::string& video_filename, const std::string& output_filename)
       break;
   }
 
-  int a_min = thresholds.a_low(), b_min = thresholds.b_low(), c_min = thresholds.c_low();
-  int a_max = thresholds.a_high(), b_max = thresholds.b_high(), c_max = thresholds.c_high();
+  int a_min = thresholds.a_low(), b_min = thresholds.b_low(),
+      c_min = thresholds.c_low();
+  int a_max = thresholds.a_high(), b_max = thresholds.b_high(),
+      c_max = thresholds.c_high();
   cv::namedWindow("Parameters");
   cv::createTrackbar("A min", "Parameters", &a_min, 255);
   cv::createTrackbar("B min", "Parameters", &b_min, 255);
@@ -114,7 +125,8 @@ void Tune(const std::string& video_filename, const std::string& output_filename)
     // Threshold
     cv::imshow("Input", frame);
     cv::cvtColor(frame, frame, colorspace_code);
-    cv::inRange(frame, cv::Scalar(a_min, b_min, c_min), cv::Scalar(a_max, b_max, c_max), frame);
+    cv::inRange(frame, cv::Scalar(a_min, b_min, c_min),
+                cv::Scalar(a_max, b_max, c_max), frame);
     cv::imshow("Output", frame);
   }
 

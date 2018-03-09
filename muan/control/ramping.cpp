@@ -15,12 +15,14 @@ double Ramping::Update(double goal) {
   unprofiled_goal_ = goal;
   if (unprofiled_goal_ < profiled_goal_) {
     if (deccelerate_) {
-      profiled_goal_ = std::fmax(profiled_goal_ - acceleration_, unprofiled_goal_);
+      profiled_goal_ =
+          std::fmax(profiled_goal_ - acceleration_, unprofiled_goal_);
     } else {
       profiled_goal_ = unprofiled_goal_;
     }
   } else {
-    profiled_goal_ = std::fmin(profiled_goal_ + acceleration_, unprofiled_goal_);
+    profiled_goal_ =
+        std::fmin(profiled_goal_ + acceleration_, unprofiled_goal_);
   }
   return profiled_goal_;
 }

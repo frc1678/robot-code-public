@@ -7,7 +7,8 @@ namespace control {
 
 class Ramping {
  public:
-  explicit Ramping(double acceleration, double initial = 0.0, bool deccelerate = false);
+  explicit Ramping(double acceleration, double initial = 0.0,
+                   bool deccelerate = false);
   double Update(double goal);
 
  private:

@@ -11,7 +11,8 @@ class DiskBrake {
   explicit DiskBrake(bool locked);
   DiskBrake(bool locked, units::Time change_state_time);
   enum BrakeState { LOCKED, UNLOCKED, CHANGING };
-  // Update state based on whether it is being told to lock and returns a BrakeState
+  // Update state based on whether it is being told to lock and returns a
+  // BrakeState
   BrakeState Update(bool locking);
 
  protected:

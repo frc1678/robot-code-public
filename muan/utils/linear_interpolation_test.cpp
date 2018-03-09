@@ -1,5 +1,5 @@
-#include "gtest/gtest.h"
 #include "muan/utils/linear_interpolation.h"
+#include "gtest/gtest.h"
 
 using muan::utils::LinearInterpolation;
 
@@ -9,7 +9,8 @@ TEST(LinearInterpolation, VerifiesListSize) {
 }
 
 TEST(LinearInterpolation, CalculatesCorrectly) {
-  muan::utils::LinearInterpolation<double> f({std::make_pair(3., 2.), std::make_pair(1., 0.)});
+  muan::utils::LinearInterpolation<double> f(
+      {std::make_pair(3., 2.), std::make_pair(1., 0.)});
   f.AddControlPoint(std::make_pair(0., 0.));
   f.AddControlPoint(std::make_pair(7., 7.));
   f.AddControlPoint(std::make_pair(6., 8.));
@@ -23,5 +24,7 @@ TEST(LinearInterpolation, CalculatesCorrectly) {
   EXPECT_EQ(f(5), 6);
   EXPECT_EQ(f(6), 8);
   EXPECT_EQ(f(7), 7);
-  EXPECT_DEATH(f(100), "An interpolation is only defined between the lowest and highest x-values");
+  EXPECT_DEATH(f(100),
+               "An interpolation is only defined between the lowest and "
+               "highest x-values");
 }

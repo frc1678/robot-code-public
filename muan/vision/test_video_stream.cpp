@@ -1,8 +1,8 @@
 #include <opencv2/opencv.hpp>
 #include <string>
 #include <thread>
-#include "muan/webdash/server.h"
 #include "muan/vision/video_stream.h"
+#include "muan/webdash/server.h"
 
 int main() {
   cv::VideoCapture cap(0);
@@ -16,27 +16,27 @@ int main() {
   std::thread webdash_runner_thread{std::ref(runner)};
   cv::Mat input, output;
   std::string display_object =
-    "{"
-    "  \"widgets\": ["
-    "     {"
-    "       \"name\": \"Raw Camera\","
-    "       \"type\": \"image\","
-    "       \"source\": \"input\","
-    "       \"coordinates\": [0, 0],"
-    "       \"should-title\": false"
-    "     },"
-    "     {"
-    "       \"name\": \"Processed Camera\","
-    "       \"type\": \"image\","
-    "       \"source\": \"output\","
-    "       \"coordinates\": [1, 0],"
-    "       \"should-title\": false"
-    "     }"
-    "  ],"
-    "  \"settings\": {"
-    "    \"size\": [2, 1]"
-    "  }"
-    "}";
+      "{"
+      "  \"widgets\": ["
+      "     {"
+      "       \"name\": \"Raw Camera\","
+      "       \"type\": \"image\","
+      "       \"source\": \"input\","
+      "       \"coordinates\": [0, 0],"
+      "       \"should-title\": false"
+      "     },"
+      "     {"
+      "       \"name\": \"Processed Camera\","
+      "       \"type\": \"image\","
+      "       \"source\": \"output\","
+      "       \"coordinates\": [1, 0],"
+      "       \"should-title\": false"
+      "     }"
+      "  ],"
+      "  \"settings\": {"
+      "    \"size\": [2, 1]"
+      "  }"
+      "}";
   runner.DisplayObjectMaker(display_object);
   while (true) {
     cap >> input;

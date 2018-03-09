@@ -26,7 +26,8 @@ void Start();
 template <typename T>
 class QueueManager {
  public:
-  // Fetch the queue of type T with the specified name, or create a new one with the given size.
+  // Fetch the queue of type T with the specified name, or create a new one with
+  // the given size.
   static MessageQueue<T>* Fetch(const char* key = "", int size = 200);
 
  private:
@@ -69,7 +70,8 @@ const char* UnderlyingTypeName(...) {
   return typeid(T).name();
 }
 template <typename T>
-auto UnderlyingTypeName(std::uint64_t) -> decltype(typename T::ProtoType(), (const char*)nullptr) {
+auto UnderlyingTypeName(std::uint64_t)
+    -> decltype(typename T::ProtoType(), (const char*)nullptr) {
   return UnderlyingTypeName<typename T::ProtoType>();
 }
 // No more SFINAE!
@@ -77,7 +79,8 @@ auto UnderlyingTypeName(std::uint64_t) -> decltype(typename T::ProtoType(), (con
 extern std::vector<GenericQueue*> all_queues_all_types;
 extern aos::Mutex all_queues_all_types_lock;
 
-extern "C" char* __cxa_demangle(const char* mangled_name, char* buf, size_t* n, int* status);
+extern "C" char* __cxa_demangle(const char* mangled_name, char* buf, size_t* n,
+                                int* status);
 
 template <typename T>
 MessageQueue<T>* QueueManager<T>::Fetch(const char* key, int size) {
@@ -102,7 +105,8 @@ MessageQueue<T>* QueueManager<T>::Fetch(const char* key, int size) {
     size_t num_bytes = 1024;
     int status;
 
-    __cxa_demangle(UnderlyingTypeName<T>(0), &typename_buffer[0], &num_bytes, &status);
+    __cxa_demangle(UnderlyingTypeName<T>(0), &typename_buffer[0], &num_bytes,
+                   &status);
 
     num_bytes = std::strlen(typename_buffer);
 
@@ -115,8 +119,9 @@ MessageQueue<T>* QueueManager<T>::Fetch(const char* key, int size) {
       }
     }
 
-    size_t idx = muan::utils::CamelToSnake(&typename_buffer[last_colon_idx + 1], num_bytes,
-                                           &filename_buffer[0], 1024 - 5);
+    size_t idx =
+        muan::utils::CamelToSnake(&typename_buffer[last_colon_idx + 1],
+                                  num_bytes, &filename_buffer[0], 1024 - 5);
 
     size_t key_len = strlen(key);
     if (key_len > 0) {

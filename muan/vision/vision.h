@@ -1,9 +1,9 @@
 #ifndef MUAN_VISION_VISION_H_
 #define MUAN_VISION_VISION_H_
 
-#include <opencv2/opencv.hpp>
 #include <cmath>
 #include <memory>
+#include <opencv2/opencv.hpp>
 #include <vector>
 
 #include "muan/vision/config.pb.h"
@@ -13,7 +13,8 @@ namespace muan {
 namespace vision {
 
 // Return the OpenCV conversion code for converting from `from` to `to`.
-int ConversionCode(VisionThresholds::ColorSpace from, VisionThresholds::ColorSpace to);
+int ConversionCode(VisionThresholds::ColorSpace from,
+                   VisionThresholds::ColorSpace to);
 
 struct ContourProperties {
   double x;         // -0.5 to 0.5. 0.5 is right of image.
@@ -24,10 +25,11 @@ struct ContourProperties {
 };
 
 struct VisionConstants {
-  double kFovX;              // Horizontal field of view, in radians
-  double kFovY;              // Vertical field of view, in radians
-  double kCameraAngleX;      // Angle of the camera to the left of the robot, radians
-  double kCameraAngleY;      // Angle of the camera above horizontal, in radians
+  double kFovX;  // Horizontal field of view, in radians
+  double kFovY;  // Vertical field of view, in radians
+  double
+      kCameraAngleX;  // Angle of the camera to the left of the robot, radians
+  double kCameraAngleY;  // Angle of the camera above horizontal, in radians
 
   double kMinTargetArea;  // Minumum area of a target compared with image area
   double kMaxTargetArea;
@@ -38,7 +40,8 @@ class Vision {
   Vision(VisionThresholds range, VisionConstants k);
 
   // Get all potential targets within size limits
-  std::vector<ContourProperties> Update(cv::Mat raw, cv::Mat image_canvas) const;
+  std::vector<ContourProperties> Update(cv::Mat raw,
+                                        cv::Mat image_canvas) const;
 
   // x: -0.5 is left of image, 0.5 is right
   // Returns angle of robot to the left of the target, in radians

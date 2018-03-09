@@ -3,8 +3,8 @@
 
 #include <netinet/in.h>
 #include <poll.h>
-#include <opencv2/opencv.hpp>
 #include <map>
+#include <opencv2/opencv.hpp>
 #include <string>
 #include <vector>
 #include "muan/webdash/queue_types.h"
@@ -19,7 +19,7 @@ class WebDashStreamer {
   explicit WebDashStreamer(WebDashRunner* runner);
   ~WebDashStreamer() = default;
 
-  void AddQueue(std::string name, VideoStreamQueue *queue);
+  void AddQueue(std::string name, VideoStreamQueue* queue);
 
   void operator()();
 
@@ -40,7 +40,8 @@ class WebDashStreamer {
   // Responds to event on connections_[connection_index].
   // Returns whether to keep the connection alive.
   bool HandleRequest(int connection_index);
-  // Sends the image to all connections requesting the stream with the given name
+  // Sends the image to all connections requesting the stream with the given
+  // name
   void SendImage(std::string name, cv::Mat image);
   // "GET /foo.mjpeg HTTP/1.1\r\n...." -> "/foo.mjpeg". Returns "" on error.
   std::string ParseRequest(std::string request);
@@ -48,7 +49,8 @@ class WebDashStreamer {
 
   ServerInfo info_;
   // First element is main socket, the rest are connections.
-  // Connections has file descriptors and poll info, name of requested stream in stream_requests
+  // Connections has file descriptors and poll info, name of requested stream in
+  // stream_requests
   std::vector<pollfd> connections_;
   // What resource is requested. Index corresponds to that of connections_.
   std::vector<std::string> stream_requests_;
