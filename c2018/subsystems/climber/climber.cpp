@@ -23,7 +23,6 @@ void Climber::Update() {
   ClimberGoalProto goal;
   ClimberInputProto input;
   DriverStationProto ds;
-
   if (!goal_reader_.ReadLastMessage(&goal)) {
     goal->set_climber_goal(NONE);
   }
@@ -31,7 +30,6 @@ void Climber::Update() {
   if (!input_reader_.ReadLastMessage(&input)) {
     return;
   }
-
   ds_status_.ReadLastMessage(&ds);
   outputs_enabled = ds->is_sys_active();
   // SETTING STATUS AND SHOULD_CLIMB GOAL
