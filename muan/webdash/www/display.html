@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<DOCTYPE html>
 
 <html>
   <head>
@@ -29,7 +29,7 @@
     function sendAutoData() { autosock.send(getRadioCheckedValue("auto")); }
 
     function getRadioCheckedValue(radio_name) {
-      var oRadio = document.getElementsByName("auto");
+      var oRadio = document.getElementsByName(radio_name);
       for (var i = 0; i < oRadio.length; i++) {
         if (oRadio[i].checked) {
           return oRadio[i].value;
@@ -62,23 +62,22 @@
             "px;left:" + left_shift + "px;width:" + box_width + "px;height:" +
             box_height + "px></div>";
         widget_name = widget["name"];
+        if (widget["type"] == "auto") {
+          auto_id = "auto" + coords;
+          html_string = "<div id=" + coords + "><p>Auto Mode:</p>";
+          if (!document.getElementById(auto_id)) {
+            for (var i = 0; i < widget["autos"].length; i++) {
+              html_string += "<input type=\"radio\" name=\"auto\" value=\"" +
+                             widget["autos"][i] + "\">" + widget["autos"][i] +
+                             "<br>\n";
+            }
+            html_string +=
+                "<input type=\"button\" value=\"Update Auto\" onclick=\"sendAutoData()\"></div>";
+            document.getElementById(coords).innerHTML = html_string;
+          }
+        }
         if (widget["should-title"]) {
           document.getElementById(coords).innerHTML = "<p>" + widget_name + ":</p>";
-        }
-      }
-      if (widget["type"] == "auto") {
-        auto_id = "auto" + coords;
-        html_string = "<div id=" + coords + "><p>Auto Mode:</p>";
-        if (!document.getElementById(auto_id)) {
-          for (var i = 0; i < widget["autos"].length; i++) {
-            html_string += "<input type=\"radio\" name=\"auto\" value=\"" +
-                           widget["autos"][i] + "\">" + widget["autos"][i] +
-                           "<br>\n";
-          }
-          html_string +=
-              "<input type= \"button\"value= \"Update Auto\" "
-              "onclick=\"sendAutoData()\"></div>";
-          document.getElementById(coords).innerHTML = html_string;
         }
       }
       alertData();
@@ -110,10 +109,10 @@
       var link_id = "";
       var alliance_color = "#000000";
       var other_alliance_color = "#000000";
-      if (data["driver_station_status"]["alliance"] == 0) {
+      if (data["driver_station_status"]["alliance"] == 1) {
         alliance_color = "#ff0000";
         other_alliance_color = "#0000ff";
-      } else if (data["driver_station_status"]["alliance"] == 1) {
+      } else if (data["driver_station_status"]["alliance"] == 0) {
         alliance_color = "#0000ff";
         other_alliance_color = "#ff0000";
       }
@@ -125,7 +124,6 @@
             widget["type"] != "auto" && widget["type"] != "link") {
           var source = data[widget["source"][0]][widget["source"][1]];
         }
-
         // Creates boolean widgets, colored box
         if (widget["type"] == "boolean") {
           box_id = "box" + coords;
@@ -139,8 +137,7 @@
             bool_box = "<div class=\"box\" id=\"" + box_id + "\"></div>";
             document.getElementById(coords).innerHTML += bool_box;
           }
-          var background_color = "background-color:" + color;
-          document.getElementById(box_id).setAttribute("style", background_color);
+          document.getElementById(box_id).style.backgroundColor = color;
         }
 
         // Creates enum widgets, colored box

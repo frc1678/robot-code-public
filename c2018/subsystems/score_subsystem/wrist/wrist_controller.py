@@ -22,7 +22,7 @@ def make_gains():
     # Moment of inertia constants
     # M= mass and L = length
     M = 6.0
-    L = 0.25
+    L = 0.3
 
     # Parameters
     moment_inertia = M * L * L
@@ -116,7 +116,7 @@ def make_augmented_gains():
 
     K = np.zeros((1, 3))
     K[:, :2] = unaugmented_gains.K
-    K[0, 2] = 0.
+    K[0, 2] = 1.
 
     Q_noise = np.zeros((3, 3))
     # Q_noise[:2, :2] = unaugmented_gains.Q_c

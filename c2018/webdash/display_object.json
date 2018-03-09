@@ -12,23 +12,16 @@
       ]
     },
     {
-      "name": "Video Stream",
-      "type": "image",
-      "source": "?action=stream",
-      "coordinates": [1, 1],
-      "should-title": false
-    },
-    {
       "name": "Link to Data Stream",
       "type": "link",
-      "source": "\\data",
+      "source": "\\data.html",
       "coordinates": [3, 3],
       "should-title": false
     },
     {
       "name": "Elevator Calibrated",
-      "type": "bool",
-      "source": ["score_subsystem_status_queue", "elevator_calbrated"],
+      "type": "boolean",
+      "source": ["score_subsystem_status", "elevatorCalibrated"],
       "coordinates": [3, 0],
       "should-title": true,
       "colors": {
@@ -38,8 +31,8 @@
     },
     {
       "name": "Claw Calibrated",
-      "type": "bool",
-      "source": ["score_subsystem_status_queue", "claw_calibrated"],
+      "type": "boolean",
+      "source": ["score_subsystem_status", "clawCalibrated"],
       "coordinates": [3, 1],
       "should-title": true,
       "colors": {
@@ -50,34 +43,35 @@
     {
       "name": "Game Layout",
       "type": "gss",
+      "source": ["game_specific_string", "code"],
       "coordinates": [0, 3],
       "should-title": false,
       "code": [
         "if (!document.getElementById(\"gss_box_1\")) {",
         "  for (var i = 6; i > 0; i--) {",
-        "    document.getElementById(coords).innerHTML += \"<div id=gss_box_\" + i + \" style=width:\" + \"box_width/2 + \"px;height:\" +box_height/3 + \"px></div>\";",
+        "    document.getElementById(coords).innerHTML += \"<div id=gss_box_\" + i + \" style=width:\" + box_width/2 + \"px;height:\" + box_height/3 + \"px></div>\";",
         "  }",
         "}",
         "if (source.charAt(2) == 'L') {",
-        "  document.getElementById(\"gss_box_5\").style.backgroundColor = \"alliance_color\";",
-        "  document.getElementById(\"gss_box_6\").style.backgroundColor = \"other_alliance_color\";",
+        "  document.getElementById(\"gss_box_5\").style.backgroundColor = alliance_color;",
+        "  document.getElementById(\"gss_box_6\").style.backgroundColor = other_alliance_color;",
         "} else if (source.charAt(2) == 'R') {",
-        "  document.getElementById(\"gss_box_5\").style.backgroundColor = \"other_alliance_color\";",
-        "  document.getElementById(\"gss_box_6\").style.backgroundColor = \"alliance_color\";",
+        "  document.getElementById(\"gss_box_5\").style.backgroundColor = other_alliance_color;",
+        "  document.getElementById(\"gss_box_6\").style.backgroundColor = alliance_color;",
         "}",
         "if (source.charAt(1) == 'L') {",
-        "  document.getElementById(\"gss_box_3\").style.backgroundColor = \"alliance_color\";",
-        "  document.getElementById(\"gss_box_4\").style.backgroundColor = \"other_alliance_color\";",
+        "  document.getElementById(\"gss_box_3\").style.backgroundColor = alliance_color;",
+        "  document.getElementById(\"gss_box_4\").style.backgroundColor = other_alliance_color;",
         "} else if (source.charAt(1) == 'R') {",
-        "  document.getElementById(\"gss_box_3\").style.backgroundColor = \"other_alliance_color\";",
-        "  document.getElementById(\"gss_box_4\").style.backgroundColor = \"alliance_color\";",
+        "  document.getElementById(\"gss_box_3\").style.backgroundColor = other_alliance_color;",
+        "  document.getElementById(\"gss_box_4\").style.backgroundColor = alliance_color;",
         "}",
         "if (source.charAt(0) == 'L') {",
-        "  document.getElementById(\"gss_box_1\").style.backgroundColor = \"alliance_color\";",
-        "  document.getElementById(\"gss_box_2\").style.backgroundColor = \"other_alliance_color\";",
+        "  document.getElementById(\"gss_box_1\").style.backgroundColor = alliance_color;",
+        "  document.getElementById(\"gss_box_2\").style.backgroundColor = other_alliance_color;",
         "} else if (source.charAt(0) == 'R') {",
-        "  document.getElementById(\"gss_box_1\").style.backgroundColor = \"other_alliance_color\";",
-        "  document.getElementById(\"gss_box_2\").style.backgroundColor = \"alliance_color\";",
+        "  document.getElementById(\"gss_box_1\").style.backgroundColor = other_alliance_color;",
+        "  document.getElementById(\"gss_box_2\").style.backgroundColor = alliance_color;",
         "}"
       ]
     }
