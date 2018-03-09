@@ -2,7 +2,6 @@
 #define C2018_TELEOP_MAIN_H_
 
 #include <atomic>
-#include "WPILib.h"
 #include "c2018/subsystems/climber/queue_types.h"
 #include "c2018/subsystems/score_subsystem/queue_types.h"
 #include "muan/queues/queue_manager.h"
@@ -11,6 +10,7 @@
 #include "muan/wpilib/queue_types.h"
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
+#include "WPILib.h"
 
 namespace c2018 {
 namespace teleop {
@@ -36,8 +36,7 @@ class TeleopBase {
   void SendScoreSubsystemMessage();
   void SendClimbSubsystemMessage();
 
-  muan::teleop::Joystick throttle_, wheel_;
-  muan::teleop::Joystick gamepad_;
+  muan::teleop::Joystick throttle_, wheel_, gamepad_;
 
   bool high_gear_;
   muan::teleop::Button *shifting_high_, *shifting_low_;

@@ -1,7 +1,6 @@
 #ifndef C2018_WPILIB_WPILIB_INTERFACE_H_
 #define C2018_WPILIB_WPILIB_INTERFACE_H_
 
-#include "WPILib.h"
 #include "c2018/wpilib/climber_interface.h"
 #include "c2018/wpilib/drivetrain_interface.h"
 #include "c2018/wpilib/score_interface.h"
@@ -9,6 +8,7 @@
 #include "muan/queues/queue_manager.h"
 #include "muan/wpilib/can_wrapper.h"
 #include "muan/wpilib/gyro/gyro_reader.h"
+#include "WPILib.h"
 
 namespace c2018 {
 namespace wpilib {

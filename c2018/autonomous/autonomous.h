@@ -9,7 +9,6 @@
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
 
 namespace c2018 {
-
 namespace autonomous {
 
 class AutonomousBase {
@@ -71,7 +70,6 @@ class AutonomousBase {
 };
 
 }  // namespace autonomous
-
 }  // namespace c2018
 
 #endif  // C2018_AUTONOMOUS_AUTONOMOUS_H_
