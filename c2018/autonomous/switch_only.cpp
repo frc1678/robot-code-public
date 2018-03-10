@@ -12,6 +12,11 @@ void SwitchOnly::LeftSwitch() {
 void SwitchOnly::RightSwitch() {
   // R - Switch is right
   LOG(INFO, "Running RIGHT SWITCH ONLY auto");
+  StartDrivePath(2.4, -1.2, 0);
+  WaitUntilDriveComplete();
+  StartDrivePath(1.2, 1.2, -0.7);
+  WaitUntilDriveComplete();
+
   // DoAuto();
 }
 

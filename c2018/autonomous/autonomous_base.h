@@ -65,6 +65,7 @@ class AutonomousBase {
 
   double max_forward_velocity_ = 3.0, max_forward_acceleration_ = 3.0;
   double max_angular_velocity_ = 5.0, max_angular_acceleration_ = 4.0;
+  double max_path_acceleration_ = 5.0;
 
   // Follow through storage
   bool follow_through_ = false;

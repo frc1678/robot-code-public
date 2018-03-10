@@ -54,10 +54,6 @@ namespace logging {
  * logging string is realtime.
  */
 class Logger {
-  FRIEND_TEST(Logger, LogsOneMessage);
-  FRIEND_TEST(Logger, LogsManyMessages);
-  FRIEND_TEST(Logger, LogsMultipleQueues);
-  FRIEND_TEST(Logger, LogsManyMessagesPerTick);
   FRIEND_TEST(Logger, TextLogger);
 
  public:
@@ -88,11 +84,12 @@ class Logger {
 #define LOG(level, fmt, ...) \
   muan::logging::Logger::LogText(level, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 
+  // Very much not realtime. Public only because a bunch of tests use it.
+  void Update();
+
  private:
   std::unique_ptr<FileWriter> writer_;
   std::atomic<bool> running_{false};
-
-  void Update();
 
   class GenericReader {
    public:

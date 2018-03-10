@@ -30,6 +30,19 @@ cc_library(
     restricted_to = ["//tools:roborio"],
 )
 
+# TODO(Lyra): Make this work with updated framework
+"""cc_test(
+    name = "autonomous_simulation",
+    srcs = ["autonomous_simulation.cpp"],
+    deps = [
+        ":autonomous_runner",
+        "//third_party/google/googletest:googletest",
+        "//third_party/frc971/control_loops/drivetrain:drivetrain_simulation",
+        "//c2018/subsystems/drivetrain:drivetrain_base",
+        "//c2018/subsystems/drivetrain:polydrivetrain_plants",
+    ],
+)"""
+
 cc_library(
     name = "switch_and_scale",
     srcs = ["switch_and_scale.cpp"],

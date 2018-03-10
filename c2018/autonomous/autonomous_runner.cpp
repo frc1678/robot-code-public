@@ -35,6 +35,9 @@ void AutonomousRunner::operator()() {
     loop_.SleepUntilNext();
   }
 
+  // SwitchOnly().LeftSwitch();
+  // return;
+
   // Start of autonomous. Grab the game specific string.
   auto left_right_codes = game_specific_string->code();
   LOG(INFO, "Starting autonomous with layout %s", left_right_codes.c_str());

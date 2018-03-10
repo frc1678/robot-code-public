@@ -14,6 +14,8 @@ constexpr size_t kNumSamples = 1001;
 
 double StepVelocityByAcceleration(double distance, double initial_velocity, double acceleration);
 
+double VelocityAtDirectionChange(double distance1, double distance2, double acceleration);
+
 // State is (left pos, left vel, right pos, right vel)
 using State = Eigen::Matrix<double, 4, 1>;
 
@@ -36,6 +38,7 @@ class Trajectory {
   inline void set_maximum_acceleration(double maximum_acceleration) {
     maximum_acceleration_ = maximum_acceleration;
   }
+
   inline void set_system(const Eigen::Matrix<double, 4, 4> &A_c, const Eigen::Matrix<double, 4, 2> B_c,
                          double radius) {
     A_ = A_c;
@@ -50,10 +53,11 @@ class Trajectory {
   ::std::array<double, kNumSamples - 1> segment_times_;
 
  private:
-  void ConstrainAcceleration(const State &state_begin, State *state_end, double *segment_time,
-                             bool reverse_pass, bool preserve_other_pass) const;
+  void ConstrainAcceleration(const State &state_begin, State *state_end, const State &ref_state,
+                             double *segment_time, bool reverse_pass, bool preserve_other_pass) const;
 
-  void ConstrainOneSide(double distance, double velocity_initial, double velocity_other_initial,
+  void ConstrainOneSide(double distance, double next_distance,
+                        double velocity_initial, double velocity_other_initial,
                         double velocity_final_from_other_pass, double *velocity_final,
                         bool reverse_pass, bool preserve_other_pass) const;
 
@@ -67,7 +71,7 @@ class Trajectory {
   // again.
   size_t last_index_ = 0;
   // The time already passed _on the current segment only_.
-  double time_to_go_ = 0.0;
+  double time_since_index_ = 0.0;
 
   State state_;
 };

@@ -125,12 +125,7 @@ void AutonomousBase::StartDrivePath(double x, double y, double heading,
   goal->mutable_path_command()->set_y_goal(y);
   goal->mutable_path_command()->set_theta_goal(heading);
 
-  goal->mutable_linear_constraints()->set_max_velocity(max_forward_velocity_);
-  goal->mutable_linear_constraints()->set_max_acceleration(
-      max_forward_acceleration_);
-  goal->mutable_angular_constraints()->set_max_velocity(max_angular_velocity_);
-  goal->mutable_angular_constraints()->set_max_acceleration(
-      max_angular_acceleration_);
+  goal->mutable_linear_constraints()->set_max_acceleration(max_path_acceleration_);
 
   if (direction == 1) {
     goal->mutable_path_command()->set_backwards(false);
@@ -176,9 +171,7 @@ bool AutonomousBase::IsDriveComplete() {
           std::abs(status->estimated_x_position() -
                    goal->path_command().x_goal()) < 2e-1 &&
           std::abs(status->estimated_y_position() -
-                   goal->path_command().y_goal()) < 2e-1 &&
-          std::abs(status->estimated_left_velocity()) < 1e-2 &&
-          std::abs(status->estimated_right_velocity()) < 1e-2) {
+                   goal->path_command().y_goal()) < 2e-1) {
         return true;
       }
     }

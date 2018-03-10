@@ -157,7 +157,7 @@ void DrivetrainMotorsSS::SetGoal(
     use_profile_ =
         !kf_->controller().Kff().isZero(0) &&
         (goal->has_linear_constraints() && goal->has_angular_constraints() &&
-         goal->linear_constraints().max_velocity() != 0.0 &&
+         goal->linear_constraints().max_velocity() !=0.0 &&
          goal->linear_constraints().max_acceleration() != 0.0 &&
          goal->angular_constraints().max_velocity() != 0.0 &&
          goal->angular_constraints().max_acceleration() != 0.0);
@@ -206,11 +206,11 @@ void DrivetrainMotorsSS::SetGoal(
     }
     trajectory_.set_system(A_c, B_c, dt_config_.robot_radius);
 
-    paths::Pose initial_pose(*cartesian_position_, *integrated_kf_heading_);
+    paths::Pose initial_pose(*cartesian_position_, LeftRightToAngular(kf_->R())(0));
     paths::Pose final_pose((Eigen::Vector3d() << path_goal.x_goal(), path_goal.y_goal(), path_goal.theta_goal()).finished());
     if (last_goal_pose_.Get() != final_pose.Get()) {
       bool backwards;
-      auto state = kf_->X_hat().block<4, 1>(0, 0);
+      auto state = kf_->R().block<4, 1>(0, 0);
       if (state(1) + state(3) > 0.01) {
         backwards = false;
       } else if (state(1) + state(3) < -0.01) {
@@ -222,7 +222,8 @@ void DrivetrainMotorsSS::SetGoal(
         backwards = ::std::abs(::std::atan2(delta.translational()(1), delta.translational()(0)) -
                                initial_pose.heading()) > M_PI / 2;
       }
-      paths::HermitePath path(initial_pose, final_pose, backwards);
+      paths::HermitePath path(initial_pose, final_pose,
+                              0.5 * (state(1) + state(3)), 0, backwards);
 
       trajectory_.SetPath(path, state);
 
@@ -354,6 +355,19 @@ void DrivetrainMotorsSS::Update(bool enable_control_loop) {
 
     kf_->mutable_next_R().block<4, 1>(0, 0) = kf_->X_hat().block<4, 1>(0, 0);
     kf_->mutable_R().block<4, 1>(0, 0) = kf_->X_hat().block<4, 1>(0, 0);
+
+    // Update profiles so if the robot is browned out, it doesn't expect
+    // to be further behind than it is when it gets re-enabled
+    if (use_profile_) {
+      Eigen::Matrix<double, 2, 1> unprofiled_linear =
+          LeftRightToLinear(unprofiled_goal_);
+      Eigen::Matrix<double, 2, 1> unprofiled_angular =
+          LeftRightToAngular(unprofiled_goal_);
+      linear_profile_.Update(unprofiled_linear(0, 0), unprofiled_linear(1, 0));
+      angular_profile_.Update(unprofiled_angular(0, 0), unprofiled_angular(1, 0));
+    } else if (use_path_) {
+      trajectory_.Update();
+    }
   }
   last_gyro_to_wheel_offset_ = gyro_to_wheel_offset;
 }

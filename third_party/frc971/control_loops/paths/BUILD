@@ -6,6 +6,7 @@ cc_library(
   srcs = ['path.cc'],
   hdrs = ['path.h'],
   deps = ['//third_party/eigen'],
+  linkopts = ['-lm'],
 )
 
 cc_test(

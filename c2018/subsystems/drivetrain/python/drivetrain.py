@@ -7,12 +7,11 @@ import sys
 import gflags
 import glog
 
-FLAGS = gflags.FLAGS
-
+FLAGS = gflags.FLAGS 
 gflags.DEFINE_bool('plot', False, 'If true, plot the loop response.')
 
-mass = 55.0
-distribution_radius = 0.4
+mass = 63.0
+distribution_radius = 0.45
 
 kDrivetrain = drivetrain.DrivetrainParams(J = mass * distribution_radius ** 2.0,
                                           mass = mass,
@@ -26,6 +25,8 @@ kDrivetrain = drivetrain.DrivetrainParams(J = mass * distribution_radius ** 2.0,
                                           q_pos_high = 0.24,
                                           q_vel_low = 2.0,
                                           q_vel_high = 2.0,
+                                          efficiency_high = 0.75,
+                                          efficiency_low = 0.8,
                                           )
 
 def main(argv):

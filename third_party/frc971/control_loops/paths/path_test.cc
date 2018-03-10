@@ -40,8 +40,9 @@ class HermiteSplineTest : public ::testing::Test {
 
   void Set() {}
 
-  void Run(Pose initial, Pose final, bool backwards = false) {
-    path_ = HermitePath(initial, final, backwards);
+  void Run(Pose initial, Pose final, double initial_velocity = 0,
+           double final_velocity = 0, bool backwards = false) {
+    path_ = HermitePath(initial, final, initial_velocity, final_velocity, backwards);
     path_.Populate(0.0, 1.0, &poses_[0], poses_.size());
 
     EXPECT_NEAR(poses_[0].translational()(0), initial.translational()(0), 1e-6);
@@ -85,7 +86,7 @@ class HermiteSplineTest : public ::testing::Test {
   }
 
  protected:
-  HermitePath path_{Pose(), Pose(), false};
+  HermitePath path_{Pose(), Pose(), 0, 0, false};
   ::std::array<Pose, kNumSamples> poses_;
 };
 
@@ -123,9 +124,13 @@ TEST_F(HermiteSplineTest, Wraparound) {
 TEST_F(HermiteSplineTest, DrivesBackwards) {
   Pose a = (Eigen::Vector3d() << 1.0, 1.0, 0.0).finished();
   Pose b = (Eigen::Vector3d() << 0.0, 0.0, 0.0).finished();
-  Run(a, b, true);
+  Run(a, b, 0, 0, true);
+}
 
-  Log("/tmp/reversed.csv");
+TEST_F(HermiteSplineTest, InitialVelocity) {
+  Pose a = (Eigen::Vector3d() << 0.0, 0.0, 0.0).finished();
+  Pose b = (Eigen::Vector3d() << -6.65, -1.0, M_PI * -0.3).finished();
+  Run(a, b, 0.3991, 0, true);
 }
 
 }  // namespace testing

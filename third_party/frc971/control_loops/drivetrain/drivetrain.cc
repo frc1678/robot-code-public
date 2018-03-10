@@ -94,6 +94,10 @@ void DrivetrainLoop::RunIteration(
     has_been_enabled_ = true;
   }
 
+  if (!input) {
+    return;
+  }
+
   // TODO(austin): Put gear detection logic here.
   switch (dt_config_.shifter_type) {
     case ShifterType::HALL_EFFECT_SHIFTER:
