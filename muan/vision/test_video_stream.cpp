@@ -8,7 +8,7 @@ int main() {
   cv::VideoCapture cap(0);
   muan::webdash::VideoStreamQueue vision_input_feed(5);
   muan::webdash::VideoStreamQueue vision_output_feed(5);
-  muan::webdash::WebDashRunner runner(muan::webdash::JETSON);
+  muan::webdash::WebDashRunner runner;
   muan::webdash::WebDashStreamer webdash_streamer(&runner);
   webdash_streamer.AddQueue("input", &vision_input_feed);
   webdash_streamer.AddQueue("output", &vision_output_feed);

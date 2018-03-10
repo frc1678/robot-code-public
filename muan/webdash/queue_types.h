@@ -10,7 +10,7 @@ namespace muan {
 namespace webdash {
 
 using AutoSelectionProto =
-    muan::proto::StackProto<::muan::webdash::AutoSelection, 256>;
+    muan::proto::StackProto<AutoSelection, 256>;
 
 using AutoSelectionQueue = muan::queues::MessageQueue<AutoSelectionProto>;
 

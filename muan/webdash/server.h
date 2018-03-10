@@ -19,10 +19,10 @@ namespace webdash {
 class WebDashQueueWrapper {
  public:
   static WebDashQueueWrapper &GetInstance();
-  muan::webdash::AutoSelectionQueue &auto_selection_queue();
+  AutoSelectionQueue &auto_selection_queue();
 
  private:
-  muan::webdash::AutoSelectionQueue auto_selection_queue_{100};
+  AutoSelectionQueue auto_selection_queue_{100};
 };
 
 enum WebDashMode { ROBORIO, JETSON };

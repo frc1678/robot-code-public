@@ -9,7 +9,7 @@
   <script>
     var displaysock = new WebSocket("ws://" + document.location.host + "/display");
     var datasock = new WebSocket("ws://" + document.location.host + "/data");
-    var autosock = new WebSocket("ws://" + document.location.host + "/data");
+    var autosock = new WebSocket("ws://" + document.location.host + "/auto");
     // Used for information required in UpdateDisplay from displaysock
     var display_carryover = {};
     // Used in case widgets require box size, set in MakeDisplay

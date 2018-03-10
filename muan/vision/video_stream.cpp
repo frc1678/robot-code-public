@@ -248,7 +248,7 @@ std::string WebDashStreamer::ParseRequest(std::string request) {
 
 void WebDashStreamer::CloseConnection(int connection_index) {
   if (close(connections_[connection_index].fd)) {
-    LOG(FATAl, "Couldn't close connection");
+    LOG(FATAL, "Couldn't close connection");
     aos::Die("close failed");
   }
   // Mark the connection as unused so it can be recycled

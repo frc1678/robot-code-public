@@ -140,7 +140,6 @@ def make_augmented_gains():
     ])
 
     A_d, B_d, Q_d, R_d = c2d(A_c, B_c, dt, Q_noise, R_noise)
-    print A_d, B_d
     _, _, Q_dkalman, R_dkalman = c2d(A_c, B_c, dt, Q_kalman, R_noise)
     L = dkalman(A_d, C, Q_dkalman, R_dkalman)
     Kff = feedforwards(A_d, B_d, Q_ff)

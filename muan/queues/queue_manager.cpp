@@ -1,10 +1,13 @@
 #include "muan/queues/queue_manager.h"
+#include "muan/webdash/queue_types.h"
 #include <memory>
 #include <thread>
 #include <vector>
 
 namespace muan {
 namespace queues {
+
+using muan::webdash::WebDashQueueWrapper;
 
 std::unique_ptr<logging::Logger> logger;
 std::unique_ptr<webdash::WebDashRunner> webdash;
@@ -25,6 +28,7 @@ void Start() {
   logger_thread.detach();
 
   webdash = std::make_unique<webdash::WebDashRunner>();
+  webdash->AddQueue("auto_selection", &WebDashQueueWrapper::GetInstance().auto_selection_queue());
   std::thread webdash_thread{std::ref(*webdash)};
   webdash_thread.detach();
 }

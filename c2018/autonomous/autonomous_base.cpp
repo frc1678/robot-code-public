@@ -15,6 +15,7 @@ namespace autonomous {
 using muan::units::deg;
 
 using muan::queues::QueueManager;
+using muan::webdash::WebDashQueueWrapper;
 using DrivetrainGoal = frc971::control_loops::drivetrain::GoalProto;
 using DrivetrainStatus = frc971::control_loops::drivetrain::StatusProto;
 using muan::wpilib::DriverStationProto;
@@ -34,7 +35,7 @@ AutonomousBase::AutonomousBase()
       driver_station_reader_(
           QueueManager<DriverStationProto>::Fetch()->MakeReader()),
       auto_mode_reader_(
-          QueueManager<AutoSelectionProto>::Fetch()->MakeReader()),
+          WebDashQueueWrapper::GetInstance().auto_selection_queue().MakeReader()),
       game_specific_string_reader_(
           QueueManager<GameSpecificStringProto>::Fetch()->MakeReader()) {}
 
@@ -232,7 +233,8 @@ void AutonomousBase::operator()() {
   }
 
   // Start of autonomous. Grab the game specific string.
-  std::string left_right_codes = game_specific_string->code();
+  std::string left_right_codes =
+      DriverStation::GetInstance().GetGameSpecificMessage();
   if (left_right_codes.length() >= 2) {
     if (AutoMode() == "SCALE_PLUS_SWITCH") {
       LOG(INFO, "Starting autonomous with layout %s", left_right_codes.c_str());

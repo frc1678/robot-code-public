@@ -34,7 +34,7 @@ TEST(TextLogger, LongMessage) {
   //  trims to buffer length
   ASSERT_EQ(
       stream.str(),
-      "[DEBUG]0:muan/logging/textlogger_test.cpp:29: "
+      "[DEBUG]0:muan/logging/textlogger_test.cpp:30: "
       // 64 'a's per line, 16 lines. Count them, if you hate yourself.
       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
@@ -80,6 +80,6 @@ TEST(TextLogger, StackString) {
   reader.ReadMessage()->message(stream);
   reader.ReadMessage()->message(stream);
   ASSERT_EQ(stream.str(),
-            "[DEBUG]0:muan/logging/textlogger_test.cpp:73: Stack Attack\n"
-            "[DEBUG]0:muan/logging/textlogger_test.cpp:75: Recycle Rush\n");
+            "[DEBUG]0:muan/logging/textlogger_test.cpp:74: Stack Attack\n"
+            "[DEBUG]0:muan/logging/textlogger_test.cpp:76: Recycle Rush\n");
 }

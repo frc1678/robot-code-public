@@ -150,7 +150,7 @@ TEST(Logger, TextLogger) {
   EXPECT_EQ(static_cast<MockFileWriter*>(logger.writer_.get())
                 ->mock_files["name.log"]
                 .str(),
-            "[DEBUG]1000:muan/logging/logger_test.cpp:125: test\n");
+            "[DEBUG]1000:muan/logging/logger_test.cpp:147: test\n");
 }
 
 }  // namespace logging

@@ -228,7 +228,8 @@ void TeleopBase::SendScoreSubsystemMessage() {
     if (pos_0_->is_pressed()) {
       score_subsystem_goal->set_score_goal(c2018::score_subsystem::EXCHANGE);
     } else if (pos_1_->is_pressed()) {
-      score_subsystem_goal->set_score_goal(c2018::score_subsystem::SWITCH);
+      score_subsystem_goal->set_score_goal(
+          c2018::score_subsystem::SWITCH);
     } else if (pos_2_->is_pressed()) {
       score_subsystem_goal->set_score_goal(c2018::score_subsystem::STOW);
     }

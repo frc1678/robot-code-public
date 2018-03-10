@@ -4,6 +4,7 @@
 #include "c2017/subsystems/superstructure/shooter/queue_types.h"
 #include "muan/teleop/queue_types.h"
 #include "muan/webdash/server.h"
+#include "muan/webdash/queue_types.h"
 #include "muan/wpilib/queue_types.h"
 
 int main() {
@@ -11,6 +12,10 @@ int main() {
   muan::wpilib::DriverStationQueue driver_station_queue;
   driver_station_proto->set_alliance(kRed);
   driver_station_queue.WriteMessage(driver_station_proto);
+
+  muan::webdash::AutoSelectionProto auto_selection_proto;
+  muan::webdash::AutoSelectionQueue auto_selection_queue;
+  auto_selection_queue.WriteMessage(auto_selection_proto);
 
   muan::teleop::JoystickStatusQueue joystick_status_queue;
   muan::teleop::JoystickStatusProto joystick_status_proto;
@@ -35,6 +40,7 @@ int main() {
   runner.AddQueue("gss", &gss_queue);
   runner.AddQueue("shooter_status", &shooter_status_queue);
   runner.AddQueue("driver_station_status", &driver_station_queue);
+  runner.AddQueue("auto_selection_queue", &auto_selection_queue);
   runner.AddVideoStream("?action=stream");
   std::string display_object =
       "{"
@@ -71,6 +77,17 @@ int main() {
       "         \"max\": \"#000000\","
       "         \"goal\": \"#000000\""
       "       }"
+      "     },"
+      "     {"
+      "       \"name\": \"Auto Selection\","
+      "       \"type\": \"auto\","
+      "       \"coordinates\": [1, 2],"
+      "       \"should-title\": false,"
+      "       \"autos\": ["
+      "         \"NONE\","
+      "         \"TEST\","
+      "         \"TEST2\""
+      "       ]"
       "     },"
       "     {"
       "       \"name\": \"Encouragment\","
