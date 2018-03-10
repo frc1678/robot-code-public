@@ -10,6 +10,7 @@ cc_library(
         "//muan/logging:logger",
     ],
     visibility = ["//visibility:public"],
+    restricted_to = ["//tools:roborio"],
 )
 
 cc_library(
@@ -21,10 +22,12 @@ cc_library(
         "//muan/queues:queue_manager",
         "//muan/logging:logger",
         "//muan/wpilib:wpilib_queues",
+        "//third_party/wpilibsuite:wpilib",
         "//c2018/subsystems/drivetrain:drivetrain_base",
         "//c2018/subsystems/score_subsystem:score_subsystem_queues",
     ],
     visibility = ["//visibility:public"],
+    restricted_to = ["//tools:roborio"],
 )
 
 cc_library(
@@ -35,6 +38,7 @@ cc_library(
         ":autonomous_base",
     ],
     visibility = ["//visibility:public"],
+    restricted_to = ["//tools:roborio"],
 )
 
 cc_library(
@@ -45,6 +49,7 @@ cc_library(
         ":autonomous_base",
     ],
     visibility = ["//visibility:public"],
+    restricted_to = ["//tools:roborio"],
 )
 
 cc_library(
@@ -55,4 +60,5 @@ cc_library(
         ":autonomous_base",
     ],
     visibility = ["//visibility:public"],
+    restricted_to = ["//tools:roborio"],
 )
