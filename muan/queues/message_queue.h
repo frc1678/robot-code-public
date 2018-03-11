@@ -99,8 +99,7 @@ class MessageQueue : public GenericQueue {
     // Gets the index of the next message in the queue. This number is for
     // debugging purposes only and will
     // increment by 1 for every new message read, unless the reader skips
-    // messages, in which case it will
-    // jump.
+    // messages, in which case it will jump.
     uint64_t GetNextMessageIndex() const;
 
     // Gets the number of messages skipped by this reader since the last read.

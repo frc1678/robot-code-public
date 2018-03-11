@@ -1,6 +1,7 @@
 #ifndef C2018_TELEOP_MAIN_H_
 #define C2018_TELEOP_MAIN_H_
 
+#include "WPILib.h"
 #include <atomic>
 #include "c2018/subsystems/climber/queue_types.h"
 #include "c2018/subsystems/score_subsystem/queue_types.h"
@@ -10,7 +11,6 @@
 #include "muan/wpilib/queue_types.h"
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
-#include "WPILib.h"
 
 namespace c2018 {
 namespace teleop {

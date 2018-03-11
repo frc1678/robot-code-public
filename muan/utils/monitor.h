@@ -18,7 +18,7 @@ class Monitor {
           double standing_voltage = 0., size_t size = 20);
   // threshold is the value you must either surpass or go below
   // delay_time is the amount of time before it considers itself above or below
-  // te threshold
+  // the threshold
   // reset_time is the time it takes before it resets to reading live voltages
   // dt is the rate at which the Monitor runs
   // check_above determines if you want to check if the value is above or below

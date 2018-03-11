@@ -1,3 +1,4 @@
+#include "muan/logging/logger.h"
 #include <map>
 #include <memory>
 #include <string>
@@ -6,7 +7,6 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "muan/logging/filewriter.h"
-#include "muan/logging/logger.hpp"
 #include "muan/logging/logger_test.pb.h"
 #include "muan/proto/stack_proto.h"
 #include "muan/units/units.h"

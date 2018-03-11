@@ -44,8 +44,7 @@ class FileWriter {
   // name is CVR_Quals_20, a symlink /media/sda1/logs/CVR_Quals_20 would be
   // created pointing to the current log directory. If the name is not a valid
   // POSIX filename, nothing happens. Overrwites existing file/directory with
-  // the
-  // same name.
+  // the same name.
   static void CreateReadableName(std::string name);
 
  private:
