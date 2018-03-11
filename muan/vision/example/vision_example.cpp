@@ -1,8 +1,8 @@
-#include "muan/vision/vision.h"
+#include <opencv2/opencv.hpp>
+#include <memory>
 #include <algorithm>
 #include <cmath>
-#include <memory>
-#include <opencv2/opencv.hpp>
+#include "muan/vision/vision.h"
 
 #define VIDEO_OUTPUT 0
 

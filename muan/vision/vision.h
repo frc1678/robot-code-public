@@ -1,11 +1,10 @@
 #ifndef MUAN_VISION_VISION_H_
 #define MUAN_VISION_VISION_H_
 
+#include <opencv2/opencv.hpp>
 #include <cmath>
 #include <memory>
-#include <opencv2/opencv.hpp>
 #include <vector>
-
 #include "muan/vision/config.pb.h"
 
 namespace muan {
@@ -26,10 +25,8 @@ struct ContourProperties {
 struct VisionConstants {
   double kFovX;  // Horizontal field of view, in radians
   double kFovY;  // Vertical field of view, in radians
-  double
-      kCameraAngleX;  // Angle of the camera to the left of the robot, radians
+  double kCameraAngleX;  // Angle of camera is to the left of the robot, radians
   double kCameraAngleY;  // Angle of the camera above horizontal, in radians
-
   double kMinTargetArea;  // Minumum area of a target compared with image area
   double kMaxTargetArea;  // Maximum area of a target compared with image area
 };

@@ -16,11 +16,11 @@ cc_library(
   deps = [
       ":climber_proto",
       ":climber_queues",
-      "//muan/wpilib:wpilib_queues",
-      "//muan/queues:queue_manager",
       "//c2018/subsystems/climber/batter",
       "//c2018/subsystems/climber/winch",
+      "//muan/queues:queue_manager",
       "//muan/wpilib:state_protos",
+      "//muan/wpilib:wpilib_queues",
   ],
 )
 

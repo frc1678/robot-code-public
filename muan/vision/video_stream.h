@@ -1,10 +1,10 @@
 #ifndef MUAN_VISION_VIDEO_STREAM_H_
 #define MUAN_VISION_VIDEO_STREAM_H_
 
+#include <opencv2/opencv.hpp>
 #include <netinet/in.h>
 #include <poll.h>
 #include <map>
-#include <opencv2/opencv.hpp>
 #include <string>
 #include <vector>
 

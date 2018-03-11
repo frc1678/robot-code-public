@@ -7,9 +7,8 @@ TEST(Vision, IgnoresNoise) {
   cv::randn(gaussian_noise, 100, 10);
   cv::cvtColor(gaussian_noise, gaussian_noise, CV_GRAY2BGR);
 
-  muan::vision::VisionConstants k{1,     1,
-                                  0,     0,   // Camera values can be anything
-                                  0.001, 1};  // Ignore anything less than .1%
+  muan::vision::VisionConstants k{1, 1, 0, 0, 0.001, 1};
+  // Camera values can be anything, ignore anything less than 0.1%
 
   // Colors are 110-255. About 16% of the noise is within that range.
   muan::vision::VisionThresholds range;

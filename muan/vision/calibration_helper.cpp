@@ -1,3 +1,4 @@
+#include <opencv2/opencv.hpp>
 #include <fcntl.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/text_format.h>
@@ -5,7 +6,6 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
-#include <opencv2/opencv.hpp>
 #include <string>
 #include <thread>
 #include <vector>
@@ -103,10 +103,13 @@ void Tune(const std::string& video_filename,
       break;
   }
 
-  int a_min = thresholds.a_low(), b_min = thresholds.b_low(),
-      c_min = thresholds.c_low();
-  int a_max = thresholds.a_high(), b_max = thresholds.b_high(),
-      c_max = thresholds.c_high();
+  int a_min = thresholds.a_low();
+  int b_min = thresholds.b_low();
+  int c_min = thresholds.c_low();
+  int a_max = thresholds.a_high();
+  int b_max = thresholds.b_high();
+  int c_max = thresholds.c_high();
+
   cv::namedWindow("Parameters");
   cv::createTrackbar("A min", "Parameters", &a_min, 255);
   cv::createTrackbar("B min", "Parameters", &b_min, 255);

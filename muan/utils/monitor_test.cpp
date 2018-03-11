@@ -1,5 +1,5 @@
 #include "muan/utils/monitor.h"
-#include <math.h>
+#include <cmath>
 #include <limits>
 #include "gtest/gtest.h"
 

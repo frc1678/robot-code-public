@@ -1,7 +1,7 @@
 #include "muan/control/calibration/pot_calibration.h"
+#include <cmath>
 #include "muan/logging/logger.h"
 
-#include <cmath>
 
 namespace muan {
 namespace control {
