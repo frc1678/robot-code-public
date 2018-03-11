@@ -21,9 +21,8 @@ class MotionProfileTest : public ::testing::Test {
     muan::control::TrapezoidalMotionProfile profile{constraints, goal,
                                                     initial_position};
     const Time dt = 0.005 * s;
-    const Velocity discrete_error =
-        0.0026 * m /
-        s;  // Discrete time differentiation leaves a bit of over/undershoot.
+    const Velocity discrete_error = 0.0026 * m / s;
+    // Discrete time differentiation leaves a bit of over/undershoot.
 
     EXPECT_NEAR(profile.Calculate(0 * s).position, initial_position.position,
                 1e-6 * m);

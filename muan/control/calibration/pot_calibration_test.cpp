@@ -1,7 +1,8 @@
-#include "muan/control/calibration/pot_calibration.h"
 #include <algorithm>
 #include <tuple>
+
 #include "gtest/gtest.h"
+#include "muan/control/calibration/pot_calibration.h"
 #include "muan/utils/math_utils.h"
 
 class PotCalibrationTest : public ::testing::Test {

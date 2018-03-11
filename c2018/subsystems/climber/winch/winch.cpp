@@ -6,7 +6,7 @@ namespace winch {
 
 Winch::Winch() {}
 
-double Winch::Update(double encoder_i, bool should_climb,   -
+double Winch::Update(double encoder_i, bool should_climb,
                      bool outputs_enabled) {
   double encoder = encoder_i - first_enc_pos_;
   double voltage = 0.;
