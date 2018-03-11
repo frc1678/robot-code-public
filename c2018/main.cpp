@@ -1,6 +1,6 @@
 #include "c2018/teleop/main.h"
 #include <WPILib.h>
-#include "c2018/autonomous/autonomous.h"
+#include "c2018/autonomous/autonomous_runner.h"
 #include "c2018/subsystems/subsystem_runner.h"
 #include "c2018/webdash/webdash_setup.h"
 #include "gflags/gflags.h"
@@ -27,7 +27,7 @@ class WpilibRobot : public IterativeRobot {
  private:
   c2018::SubsystemRunner subsystem_runner_;
   c2018::teleop::TeleopBase main_;
-  c2018::autonomous::AutonomousBase auto_;
+  c2018::autonomous::AutonomousRunner auto_;
 };
 
 int main(int argc, char **argv) {

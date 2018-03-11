@@ -47,11 +47,12 @@ TeleopBase::TeleopBase()
   back_ = gamepad_.MakeAxis(0, -.85);
   shoot_ = gamepad_.MakeAxis(1, -.85);
 
-  stow_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_BUMPER));
   intake_ = gamepad_.MakeAxis(3, 0.3);
-  intake_only_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::RIGHT_BUMPER));
-  outtake_fast_ = gamepad_.MakeAxis(2, 0.85);
-  outtake_slow_ = gamepad_.MakeAxis(2, 0.3);
+  intake_only_ =
+      gamepad_.MakeButton(uint32_t(muan::teleop::XBox::RIGHT_BUMPER));
+  outtake_slow_ = gamepad_.MakeAxis(2, 0.7);
+  outtake_fast_ =
+      gamepad_.MakeButton(uint32_t(muan::teleop::XBox::RIGHT_CLICK_IN));
 
   pos_0_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::A_BUTTON));
   pos_1_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::B_BUTTON));
@@ -117,6 +118,7 @@ void TeleopBase::Update() {
 }
 
 void TeleopBase::SetReadableLogName() {
+  /*
   if (DriverStation::GetInstance().GetMatchType() !=
           DriverStation::MatchType::kNone && !log_name_set_) {
     std::string name;
@@ -140,6 +142,7 @@ void TeleopBase::SetReadableLogName() {
     muan::logging::FileWriter::CreateReadableName(name);
     log_name_set_ = true;
   }
+  */
 }
 
 void TeleopBase::SendDrivetrainMessage() {
@@ -208,15 +211,13 @@ void TeleopBase::SendScoreSubsystemMessage() {
     score_subsystem_goal->set_intake_goal(c2018::score_subsystem::FORCE_STOP);
   }
 
-  if (stow_->was_clicked()) {
-    score_subsystem_goal->set_score_goal(c2018::score_subsystem::STOW);
-  }
-
   if (outtake_fast_->is_pressed()) {
     score_subsystem_goal->set_intake_goal(c2018::score_subsystem::OUTTAKE_FAST);
   } else if (outtake_slow_->is_pressed()) {
     score_subsystem_goal->set_intake_goal(c2018::score_subsystem::OUTTAKE_SLOW);
-  } else if (outtake_slow_->was_released()) {
+  }
+
+  if (outtake_slow_->was_released() || outtake_fast_->was_released()) {
     score_subsystem_goal->set_intake_goal(c2018::score_subsystem::FORCE_STOP);
   }
 
@@ -225,7 +226,10 @@ void TeleopBase::SendScoreSubsystemMessage() {
     if (pos_0_->is_pressed()) {
       score_subsystem_goal->set_score_goal(c2018::score_subsystem::EXCHANGE);
     } else if (pos_1_->is_pressed()) {
-      score_subsystem_goal->set_score_goal(c2018::score_subsystem::SWITCH);
+      score_subsystem_goal->set_score_goal(
+          c2018::score_subsystem::SWITCH);
+    } else if (pos_2_->is_pressed()) {
+      score_subsystem_goal->set_score_goal(c2018::score_subsystem::STOW);
     }
   } else if (front_->is_pressed()) {
     if (pos_0_->is_pressed()) {

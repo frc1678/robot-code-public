@@ -11,7 +11,7 @@ class DrivetrainParams(object):
   def __init__(self, J, mass, robot_radius, wheel_radius, G_high, G_low,
                q_pos_low, q_pos_high, q_vel_low, q_vel_high,
                motor_type = control_loop.CIM(), num_motors = 2, dt = 0.00500,
-               controller_poles=[0.90, 0.90], observer_poles=[0.02, 0.02]):
+               controller_poles=[0.90, 0.90], observer_poles=[0.02, 0.02], efficiency_high = 1.0, efficiency_low = 1.0):
     """Defines all constants of a drivetrain.
 
     Args:
@@ -48,6 +48,8 @@ class DrivetrainParams(object):
     self.num_motors = num_motors
     self.controller_poles = controller_poles
     self.observer_poles = observer_poles
+    self.efficiency_high = efficiency_high
+    self.efficiency_low = efficiency_low
 
 class Drivetrain(control_loop.ControlLoop):
   def __init__(self, drivetrain_params, name="Drivetrain", left_low=True,
@@ -61,6 +63,10 @@ class Drivetrain(control_loop.ControlLoop):
       right_low: bool, Whether the right is in high gear.
     """
     super(Drivetrain, self).__init__(name)
+
+    self.right_efficiency = drivetrain_params.efficiency_low if right_low else drivetrain_params.efficiency_high
+    self.left_efficiency = drivetrain_params.efficiency_low if left_low else drivetrain_params.efficiency_high
+
 
     # Moment of inertia of the drivetrain in kg m^2
     self.J = drivetrain_params.J
@@ -141,9 +147,9 @@ class Drivetrain(control_loop.ControlLoop):
          [0, -self.msn * self.tcl, 0, -self.msp * self.tcr]])
     self.B_continuous = numpy.matrix(
         [[0, 0],
-         [self.msp * self.mpl, self.msn * self.mpr],
+         [self.left_efficiency * self.msp * self.mpl, self.left_efficiency * self.msn * self.mpr],
          [0, 0],
-         [self.msn * self.mpl, self.msp * self.mpr]])
+         [self.right_efficiency * self.msn * self.mpl, self.right_efficiency * self.msp * self.mpr]])
     self.C = numpy.matrix([[1, 0, 0, 0],
                            [0, 0, 1, 0]])
     self.D = numpy.matrix([[0, 0],

@@ -43,7 +43,7 @@ class TeleopBase {
   muan::teleop::Button *quickturn_;
 
   // Gamepad Buttons
-  muan::teleop::Button *outtake_fast_, *outtake_slow_, *intake_, *intake_only_, *stow_;
+  muan::teleop::Button *outtake_fast_, *outtake_slow_, *intake_, *intake_only_;
   muan::teleop::Button *batter_down_, *hook_up_, *godmode_;
 
   // Gamepad POVs

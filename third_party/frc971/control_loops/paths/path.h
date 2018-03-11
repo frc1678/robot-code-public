@@ -47,10 +47,11 @@ class Path {
 
 class HermitePath : public Path {
  public:
-  HermitePath(Pose initial, Pose final, bool backwards);
+  HermitePath(Pose initial, Pose final, double initial_velocity,
+              double final_velocity, bool backwards);
   HermitePath(Position initial_position, Eigen::Vector2d initial_tangent,
               Position final_position, Eigen::Vector2d final_tangent,
-              bool backwards);
+              double initial_velocity, double final_velocity, bool backwards);
 
   virtual void Populate(double s_min, double s_max, Pose *pose_arr,
                         size_t arr_len) const override;

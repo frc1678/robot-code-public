@@ -1,8 +1,11 @@
-#ifndef C2018_AUTONOMOUS_AUTONOMOUS_H_
-#define C2018_AUTONOMOUS_AUTONOMOUS_H_
+#ifndef C2018_AUTONOMOUS_AUTONOMOUS_BASE_H_
+#define C2018_AUTONOMOUS_AUTONOMOUS_BASE_H_
+
+#include <string>
 
 #include "c2018/subsystems/score_subsystem/queue_types.h"
 #include "c2018/subsystems/score_subsystem/score_subsystem.pb.h"
+#include "muan/webdash/queue_types.h"
 #include "muan/wpilib/queue_types.h"
 #include "third_party/aos/common/util/phased_loop.h"
 #include "third_party/frc971/control_loops/drivetrain/drivetrain_config.h"
@@ -17,6 +20,17 @@ class AutonomousBase {
   void operator()();
 
  protected:
+  void LeftSwitchLeftScale();
+  void LeftSwitchRightScale();
+  void RightSwitchLeftScale();
+  void RightSwitchRightScale();
+
+  void LeftSwitch();
+  void RightSwitch();
+
+  void TwoLeftScale();
+  void TwoRightScale();
+
   bool IsAutonomous();
 
   void StartDriveAbsolute(double left, double right,
@@ -46,8 +60,11 @@ class AutonomousBase {
   bool HasCube();
   void WaitForCube();
 
+  std::string AutoMode();
+
   double max_forward_velocity_ = 3.0, max_forward_acceleration_ = 3.0;
   double max_angular_velocity_ = 5.0, max_angular_acceleration_ = 4.0;
+  double max_path_acceleration_ = 5.0;
 
   // Follow through storage
   bool follow_through_ = false;
@@ -63,6 +80,7 @@ class AutonomousBase {
   c2018::score_subsystem::ScoreSubsystemStatusQueue::QueueReader
       score_status_reader_;
   muan::wpilib::DriverStationQueue::QueueReader driver_station_reader_;
+  muan::webdash::AutoSelectionQueue::QueueReader auto_mode_reader_;
   muan::wpilib::GameSpecificStringQueue::QueueReader
       game_specific_string_reader_;
 
@@ -72,4 +90,4 @@ class AutonomousBase {
 }  // namespace autonomous
 }  // namespace c2018
 
-#endif  // C2018_AUTONOMOUS_AUTONOMOUS_H_
+#endif  // C2018_AUTONOMOUS_AUTONOMOUS_BASE_H_

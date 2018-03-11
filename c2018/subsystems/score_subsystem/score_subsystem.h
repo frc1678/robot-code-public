@@ -38,7 +38,7 @@ static constexpr double kWristTiltUpAngle = 30 * (M_PI / 180);
 static constexpr double kWristPortalAngle = 20 * (M_PI / 180);
 static constexpr double kWristStowAngle = 80 * (M_PI / 180);
 static constexpr double kWristBackwardAngle = 160 * (M_PI / 180);
-static constexpr double kWristSafeAngle = 105 * (M_PI / 180);
+static constexpr double kWristSafeAngle = 90 * (M_PI / 180);
 
 static constexpr double kWristShootAngle = 120 * (M_PI / 180);
 

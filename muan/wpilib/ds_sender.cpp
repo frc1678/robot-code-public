@@ -1,6 +1,6 @@
-#include "muan/wpilib/ds_sender.h"
 #include <string>
 #include "WPILib.h"
+#include "muan/wpilib/ds_sender.h"
 
 namespace muan {
 namespace wpilib {
@@ -34,31 +34,23 @@ void DriverStationSender::Send() {
   status->set_has_fms_connection(DriverStation::GetInstance().IsFMSAttached());
   status->set_is_sys_active(RobotController::IsSysActive());
 
-  switch (DriverStation::GetInstance().GetMatchType()) {
-    case frc::DriverStation::MatchType::kNone:
-      status->set_match_type(DriverStationStatus::None);
-      break;
-    case frc::DriverStation::MatchType::kPractice:
-      status->set_match_type(DriverStationStatus::Practice);
-      break;
-    case frc::DriverStation::MatchType::kQualification:
-      status->set_match_type(DriverStationStatus::Qualification);
-      break;
-    case frc::DriverStation::MatchType::kElimination:
-      status->set_match_type(DriverStationStatus::Elimination);
-      break;
+  HAL_MatchInfo match_info;
+  auto hal_call_status = HAL_GetMatchInfo(&match_info);
+  if (hal_call_status == 0) {
+    status->set_match_type(
+        static_cast<DriverStationStatus::MatchType>(match_info.matchType));
+    status->set_match_number(match_info.matchNumber);
+
+    if (match_info.gameSpecificMessage &&
+        std::strlen(match_info.gameSpecificMessage) > 0 && gss_queue_) {
+      GameSpecificStringProto gss;
+      gss->set_code(match_info.gameSpecificMessage);
+      gss_queue_->WriteMessage(gss);
+    }
   }
-  status->set_match_number(DriverStation::GetInstance().GetMatchNumber());
+  HAL_FreeMatchInfo(&match_info);
 
   ds_queue_->WriteMessage(status);
-
-  std::string game_string =
-      DriverStation::GetInstance().GetGameSpecificMessage();
-  if (!game_string.empty() && gss_queue_) {
-    GameSpecificStringProto gss;
-    gss->set_code(game_string);
-    gss_queue_->WriteMessage(gss);
-  }
 }
 
 }  // namespace wpilib
