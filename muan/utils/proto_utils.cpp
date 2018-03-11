@@ -131,8 +131,6 @@ void ProtoToCsv(const google::protobuf::Message& message,
 void FieldToCsvHeader(const google::protobuf::FieldDescriptor* descriptor,
                       std::ostream& serialize, const char* prefix) {
   if (descriptor->is_repeated()) {
-    LOG(WARNING,
-        "Attempt to log protos with repeated messages, which is not supported");
     aos::Die("Logging protos with repeated messages is not supported!");
   }
   if (descriptor->cpp_type() ==
