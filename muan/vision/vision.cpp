@@ -2,7 +2,6 @@
 #include <cmath>
 
 namespace muan {
-
 namespace vision {
 
 int ConversionCode(VisionThresholds::ColorSpace from,
@@ -86,5 +85,4 @@ void Vision::set_constants(VisionConstants constants) {
 void Vision::set_range(VisionThresholds range) { range_ = range; }
 
 }  // namespace vision
-
 }  // namespace muan

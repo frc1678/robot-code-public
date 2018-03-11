@@ -4,13 +4,13 @@
 #include <array>
 #include <cstdint>
 #include <memory>
+
 #include "muan/proto/stack_proto.h"
 #include "muan/utils/math_utils.h"
 #include "third_party/aos/common/mutex.h"
 #include "third_party/optional/optional.hpp"
 
 namespace muan {
-
 namespace queues {
 
 class GenericQueue {
@@ -156,7 +156,6 @@ class MessageQueue : public GenericQueue {
 };
 
 }  // namespace queues
-
 }  // namespace muan
 
 #include "message_queue.hpp"

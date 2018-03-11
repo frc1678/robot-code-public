@@ -47,5 +47,4 @@ DiskBrake::BrakeState DiskBrake::Update(bool locking) {
     return CHANGING;
   }
 }
-
 }  // namespace muan

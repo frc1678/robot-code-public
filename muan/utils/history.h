@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cmath>
 #include <vector>
+
 #include "muan/units/units.h"
 #include "third_party/aos/common/die.h"
 
@@ -17,11 +18,9 @@ class History {
    public:
     Iterator(const Iterator&) = default;
     Iterator& operator=(const Iterator&) = default;
-
     bool operator!=(const Iterator& other) {
       return position_ != other.position_;
     }
-
     Iterator operator++() {
       Iterator prev = *this;
       position_++;
@@ -55,14 +54,12 @@ class History {
     if (read_pos < earliest()) {
       ::aos::Die("Cannot go back to unrecorded history!");
     }
-
     return hist_arr_[read_pos % hist_arr_.size()];
   }
 
   void reset() { current_pos_ = 0; }
 
   Iterator begin() { return Iterator(earliest(), this); }
-
   Iterator end() { return Iterator(current_pos_, this); }
 
   int num_samples() { return current_pos_ - earliest(); }

@@ -53,7 +53,6 @@ void FileWriter::FlushAllFiles() {
 void FileWriter::DetermineBasePath() {
   std::vector<boost::filesystem::path> paths = {"/media/sda1", "/home/lvuser",
                                                 "/tmp"};
-
   // TODO(Wesley) Check for space
   for (auto const path : paths) {
     if (boost::filesystem::is_directory(path)) {

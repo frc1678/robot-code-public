@@ -6,7 +6,6 @@
 #include "third_party/aos/common/die.h"
 
 namespace muan {
-
 namespace util {
 
 // Writes the contents of this message, converted into CSV format, to an
@@ -42,7 +41,6 @@ void ProtoToJson(const google::protobuf::Message& message,
                  std::ostream& serialize);
 
 }  // namespace util
-
 }  // namespace muan
 
 #endif  // MUAN_UTILS_PROTO_UTILS_H_

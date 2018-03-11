@@ -4,7 +4,6 @@
 #include "muan/utils/history.h"
 
 namespace muan {
-
 namespace wpilib {
 
 class MotorSafety {
@@ -27,7 +26,6 @@ class MotorSafety {
 };
 
 }  // namespace wpilib
-
 }  // namespace muan
 
 #endif  // MUAN_WPILIB_MOTOR_SAFETY_H_

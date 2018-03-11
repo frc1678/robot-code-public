@@ -20,7 +20,6 @@ class MotionProfileTest : public ::testing::Test {
   void RunTest() {
     muan::control::TrapezoidalMotionProfile profile{constraints, goal,
                                                     initial_position};
-
     const Time dt = 0.005 * s;
     const Velocity discrete_error =
         0.0026 * m /
@@ -30,7 +29,6 @@ class MotionProfileTest : public ::testing::Test {
                 1e-6 * m);
     EXPECT_NEAR(profile.Calculate(0 * s).velocity, initial_position.velocity,
                 1e-6 * m / s);
-
     for (Time t = 0 * s; t < profile.total_time(); t += dt) {  // NOLINT
       Acceleration estimated_acceleration =
           (profile.Calculate(t).velocity - profile.Calculate(t - dt).velocity) /

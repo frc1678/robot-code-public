@@ -2,7 +2,6 @@
 #include <cmath>
 
 namespace muan {
-
 namespace control {
 
 Ramping::Ramping(double acceleration, double initial, bool deccelerate)
@@ -28,5 +27,4 @@ double Ramping::Update(double goal) {
 }
 
 }  // namespace control
-
 }  // namespace muan

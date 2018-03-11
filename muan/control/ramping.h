@@ -2,7 +2,6 @@
 #define MUAN_CONTROL_RAMPING_H_
 
 namespace muan {
-
 namespace control {
 
 class Ramping {
@@ -18,7 +17,6 @@ class Ramping {
 };
 
 }  // namespace control
-
 }  // namespace muan
 
 #endif  // MUAN_CONTROL_RAMPING_H_

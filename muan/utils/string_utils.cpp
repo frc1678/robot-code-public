@@ -1,7 +1,6 @@
 #include "muan/utils/string_utils.h"
 
 namespace muan {
-
 namespace utils {
 
 // Convert CamelCase to snake_case, returning string length
@@ -31,5 +30,4 @@ std::size_t CamelToSnake(const char* bytes_in, std::size_t num_bytes_in,
 }
 
 }  // namespace utils
-
 }  // namespace muan

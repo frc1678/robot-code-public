@@ -6,7 +6,6 @@
 #include "muan/control/state_space_plant.h"
 
 namespace muan {
-
 namespace control {
 
 /*
@@ -64,7 +63,6 @@ class StateSpaceObserver {
 };
 
 }  // namespace control
-
 }  // namespace muan
 
 #include "state_space_observer.hpp"

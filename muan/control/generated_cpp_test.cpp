@@ -2,15 +2,12 @@
 #define MUAN_CONTROL_GENERATED_CPP_TEST_
 
 #include "gtest/gtest.h"
-
 #include "muan/control/cpp_test_constants.h"
-
 #include "muan/control/state_space_controller.h"
 #include "muan/control/state_space_observer.h"
 #include "muan/control/state_space_plant.h"
 
 namespace muan {
-
 namespace control {
 
 // Make sure the python code doesn't write transposed matrices (this is a
@@ -21,7 +18,6 @@ TEST(GeneratedCppControlsTest, CorrectTransposition) {
 }
 
 }  // namespace control
-
 }  // namespace muan
 
 #endif  // ifndef MUAN_CONTROL_GENERATED_CPP_TEST_

@@ -9,7 +9,6 @@
 #include "muan/vision/config.pb.h"
 
 namespace muan {
-
 namespace vision {
 
 // Return the OpenCV conversion code for converting from `from` to `to`.
@@ -32,7 +31,7 @@ struct VisionConstants {
   double kCameraAngleY;  // Angle of the camera above horizontal, in radians
 
   double kMinTargetArea;  // Minumum area of a target compared with image area
-  double kMaxTargetArea;
+  double kMaxTargetArea;  // Maximum area of a target compared with image area
 };
 
 class Vision {
@@ -63,7 +62,6 @@ class Vision {
 };
 
 }  // namespace vision
-
 }  // namespace muan
 
 #endif  // MUAN_VISION_VISION_H_

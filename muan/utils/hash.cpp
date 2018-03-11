@@ -1,7 +1,6 @@
 #include "muan/utils/hash.h"
 
 namespace muan {
-
 namespace utils {
 
 std::size_t hash_cstr::operator()(const char* to_hash) const {
@@ -20,5 +19,4 @@ std::size_t hash_cstr::operator()(const char* to_hash) const {
 }
 
 }  // namespace utils
-
 }  // namespace muan

@@ -8,6 +8,8 @@
 namespace muan {
 namespace utils {
 
+// If value is less than the minimum, make that the new minimum
+// If value is greater than the maximum, make that the new maximum
 inline double Cap(double val, double min, double max) {
   double ret = val;
   if (val < min) {

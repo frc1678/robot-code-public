@@ -12,7 +12,6 @@ TEST(History, Sizing) {
     EXPECT_FALSE(hist.is_full());
     hist.Update(0);
   }
-
   EXPECT_EQ(hist.num_samples(), 99);
   EXPECT_FALSE(hist.is_full());
 

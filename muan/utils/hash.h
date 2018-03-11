@@ -4,7 +4,6 @@
 #include <cstdint>
 
 namespace muan {
-
 namespace utils {
 
 struct hash_cstr {
@@ -12,7 +11,6 @@ struct hash_cstr {
 };
 
 }  // namespace utils
-
 }  // namespace muan
 
 #endif  // MUAN_UTILS_HASH_H_

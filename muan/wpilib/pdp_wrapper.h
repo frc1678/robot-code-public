@@ -7,7 +7,6 @@
 #include "muan/wpilib/queue_types.h"
 
 namespace muan {
-
 namespace wpilib {
 
 class PdpWrapper {
@@ -35,7 +34,6 @@ class PdpWrapper {
 };
 
 }  // namespace wpilib
-
 }  // namespace muan
 
 #endif  // MUAN_WPILIB_PDP_WRAPPER_H_

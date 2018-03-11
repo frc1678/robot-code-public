@@ -2,7 +2,6 @@
 #include "muan/logging/logger.h"
 
 namespace muan {
-
 namespace utils {
 
 Monitor::Monitor(double threshold, double delay_time, double reset_time,
@@ -31,7 +30,6 @@ double Monitor::Update(double voltage, double value) {
     sum += i;
   }
   double moving_avg = sum / current_history_.num_samples();
-
   // Determine if the value is above/below the threshold or not
   if ((moving_avg >= threshold_) == check_above_) {
     time_above_ += dt_;

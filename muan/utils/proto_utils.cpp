@@ -9,8 +9,7 @@
 #include "google/protobuf/message.h"
 
 namespace muan {
-
-namespace util {
+namespace utils {
 
 void DefaultFieldToCsv(const google::protobuf::FieldDescriptor* descriptor,
                        std::ostream& serialize);
@@ -132,6 +131,8 @@ void ProtoToCsv(const google::protobuf::Message& message,
 void FieldToCsvHeader(const google::protobuf::FieldDescriptor* descriptor,
                       std::ostream& serialize, const char* prefix) {
   if (descriptor->is_repeated()) {
+    LOG(WARNING,
+        "Attempt to log protos with repeated messages, which is not supported");
     aos::Die("Logging protos with repeated messages is not supported!");
   }
   if (descriptor->cpp_type() ==
@@ -295,8 +296,7 @@ void ProtoToJson(const google::protobuf::Message& message,
   SubmessageToJson(message, reflection, descriptor, serialize);
 }
 
-}  // namespace util
-
+}  // namespace utils
 }  // namespace muan
 
 #endif  // MUAN_UTILS_PROTO_UTILS_HPP_

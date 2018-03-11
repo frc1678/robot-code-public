@@ -5,7 +5,6 @@
 #include "Eigen/Core"
 
 namespace muan {
-
 namespace control {
 
 /*
@@ -87,7 +86,6 @@ class StateSpacePlant {
 };
 
 }  // namespace control
-
 }  // namespace muan
 
 #include "state_space_plant.hpp"

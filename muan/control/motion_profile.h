@@ -5,7 +5,6 @@
 #include "muan/utils/math_utils.h"
 
 namespace muan {
-
 namespace control {
 
 struct MotionProfilePosition {
@@ -29,7 +28,6 @@ class MotionProfile {
 };
 
 }  // namespace control
-
 }  // namespace muan
 
 #endif  // MUAN_CONTROL_MOTION_PROFILE_H_

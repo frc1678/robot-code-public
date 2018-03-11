@@ -4,8 +4,7 @@
 #include "muan/wpilib/queue_types.h"
 
 namespace muan {
-
-namespace wpilib {
+namespace wpilip {
 
 class DriverStationSender {
  public:
@@ -19,7 +18,6 @@ class DriverStationSender {
 };
 
 }  // namespace wpilib
-
 }  // namespace muan
 
 #endif  // MUAN_WPILIB_DS_SENDER_H_

@@ -9,6 +9,7 @@
 #include <string>
 #include <thread>
 #include <vector>
+
 #include "gflags/gflags.h"
 #include "muan/vision/config.pb.h"
 #include "muan/vision/vision.h"
@@ -33,6 +34,7 @@ void Capture(const std::string& filename, int camera_index = -1) {
   cv::VideoCapture camera(camera_index);
   if (!camera.isOpened()) {
     std::cout << "Could not open camera " << camera_index << std::endl;
+    LOG(ERROR, "Couldn't open camera");
     return;
   }
 
@@ -52,6 +54,7 @@ void Capture(const std::string& filename, int camera_index = -1) {
   if (!writer.open(filename.c_str(), ex, 30, video_size, true)) {
     std::cout << "Could not open file " << filename << " for writing"
               << std::endl;
+    LOG(ERROR, "Couldn't open" << filename << " to write in");
     return;
   }
 

@@ -4,6 +4,7 @@
 #include <array>
 #include <atomic>
 #include <cstdint>
+
 #include "google/protobuf/arena.h"
 #include "third_party/aos/common/die.h"
 #include "third_party/aos/common/time.h"

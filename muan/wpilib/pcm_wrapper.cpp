@@ -2,7 +2,6 @@
 #include "third_party/aos/common/die.h"
 
 namespace muan {
-
 namespace wpilib {
 
 PcmWrapper::PcmWrapper(int32_t module) : module_(module) {}
@@ -83,5 +82,4 @@ void PcmWrapper::SetChannel(uint8_t channel, bool on) {
 }
 
 }  // namespace wpilib
-
 }  // namespace muan

@@ -1,7 +1,6 @@
 #include "muan/control/trapezoidal_motion_profile.h"
 
 namespace muan {
-
 namespace control {
 
 TrapezoidalMotionProfile::TrapezoidalMotionProfile(
@@ -22,7 +21,6 @@ TrapezoidalMotionProfile::TrapezoidalMotionProfile(
   muan::units::Time cutoff_end = goal_.velocity / constraints_.max_acceleration;
   muan::units::Length cutoff_dist_end =
       cutoff_end * cutoff_end * constraints_.max_acceleration / 2.0;
-
   // Now we can calculate the parameters as if it was a full trapezoid instead
   // of a truncated one
   {
@@ -80,5 +78,4 @@ MotionProfilePosition TrapezoidalMotionProfile::Calculate(
 }
 
 }  // namespace control
-
 }  // namespace muan

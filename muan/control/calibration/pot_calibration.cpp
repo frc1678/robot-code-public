@@ -1,9 +1,9 @@
 #include "muan/control/calibration/pot_calibration.h"
-#include <cmath>
 #include "muan/logging/logger.h"
 
-namespace muan {
+#include <cmath>
 
+namespace muan {
 namespace control {
 
 PotCalibration::PotCalibration(double units_per_index) {
@@ -19,7 +19,8 @@ PotCalibration::PotCalibration(double units_per_index) {
 
 PotCalibration::~PotCalibration() {}
 
-double PotCalibration::Update(double enc_value, double pot_value, bool index_click) {
+double PotCalibration::Update(double enc_value, double pot_value,
+                              bool index_click) {
   // Makes an average of the offset from the encoder and the potentiometer,
   // hopefully taking care of the poteniometer noise
   offset_sum_ += (pot_value - enc_value);

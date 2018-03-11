@@ -13,7 +13,6 @@
 #include "muan/webdash/server.h"
 
 namespace muan {
-
 namespace queues {
 
 void ResetAllQueues();
@@ -147,7 +146,6 @@ MessageQueue<T>* QueueManager<T>::Fetch(const char* key, int size) {
 }
 
 }  // namespace queues
-
 }  // namespace muan
 
 #endif  // MUAN_QUEUES_QUEUE_MANAGER_H_

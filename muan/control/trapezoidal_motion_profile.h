@@ -6,7 +6,6 @@
 #include "muan/control/motion_profile.h"
 
 namespace muan {
-
 namespace control {
 
 struct MotionProfileConstraints {
@@ -36,7 +35,6 @@ class TrapezoidalMotionProfile : public MotionProfile {
                            MotionProfilePosition initial);
 
   ~TrapezoidalMotionProfile() override = default;
-
   // Calculate the correct position and velocity for the profile at a time t
   // where the beginning of the profile was at time t=0
   MotionProfilePosition Calculate(muan::units::Time t) const override;
@@ -83,7 +81,6 @@ class TrapezoidalMotionProfile : public MotionProfile {
 };
 
 }  // namespace control
-
 }  // namespace muan
 
 #endif  // MUAN_CONTROL_TRAPEZOIDAL_MOTION_PROFILE_H_

@@ -5,7 +5,6 @@
 #include "muan/utils/history.h"
 
 namespace muan {
-
 namespace utils {
 
 //  This Monitor class is intended to watch a value and return a voltage that
@@ -44,7 +43,6 @@ class Monitor {
 };
 
 }  // namespace utils
-
 }  // namespace muan
 
 #endif  // MUAN_UTILS_MONITOR_H_

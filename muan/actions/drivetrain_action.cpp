@@ -1,7 +1,7 @@
 #include "muan/actions/drivetrain_action.h"
 #include "muan/logging/logger.h"
-namespace muan {
 
+namespace muan {
 namespace actions {
 
 DrivetrainTermination::DrivetrainTermination(double forward,
@@ -237,5 +237,4 @@ void DrivetrainAction::ExecuteDrive(DrivetrainActionParams params) {
 }
 
 }  // namespace actions
-
 }  // namespace muan

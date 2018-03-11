@@ -2,7 +2,6 @@
 #include "muan/logger/logging.h"
 
 namespace muan {
-
 namespace wpilib {
 
 MotorSafety::MotorSafety(double current_threshold, double stall_time,
@@ -12,7 +11,6 @@ MotorSafety::MotorSafety(double current_threshold, double stall_time,
   stall_time_ = stall_time;
   reset_time_ = reset_time;
   dt_ = dt;
-
   time_above_ = time_below_ = 0;
   is_stalled_ = false;
 }
