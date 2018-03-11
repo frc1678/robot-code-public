@@ -49,13 +49,13 @@ void Climber::Update() {
         break;
       case BATTERING:
         batter_output = true;
-        hook_output_ = true;
+        hook_output_ = false;
         should_climb_ = false;
         status->set_climber_state(BATTER);
         break;
       case CLIMBING:
         batter_output = true;
-        hook_output_ = true;
+        hook_output_ = false;
         should_climb_ = true;
         status->set_climber_state(CLIMB);
         break;

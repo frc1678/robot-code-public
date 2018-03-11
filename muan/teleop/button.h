@@ -58,12 +58,12 @@ class PovRange : public Button {
  public:
   friend class muan::teleop::Joystick;
 
-  PovRange(Joystick* joystick, uint32_t button, int minimum, int maximum);
+  PovRange(Joystick* joystick, uint32_t button, double minimum, double maximum);
 
   void Update();
 
-  int minimum;
-  int maximum;
+  int minimum_;
+  int maximum_;
 };
 
 class AxisButton : public Button {
@@ -76,6 +76,21 @@ class AxisButton : public Button {
   // below the threshold, positive
   // values when it is above.
   double trigger_threshold_;
+};
+
+class AxisRange : public Button {
+ public:
+  friend class muan::teleop::Joystick;
+
+  AxisRange(Joystick* joystick, double minimum, double maximum, double xaxis,
+            double yaxis, double threshold);
+
+  void Update();
+
+  int minimum_;
+  int maximum_;
+  int yaxis_;
+  int threshold_;
 };
 
 }  // namespace teleop

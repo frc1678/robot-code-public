@@ -1,4 +1,5 @@
 #include "muan/teleop/button.h"
+#include <cmath>
 #include "muan/teleop/joystick.h"
 
 namespace muan {
@@ -31,13 +32,13 @@ void PovButton::Update() {
                  static_cast<int>(pov_position_));
 }
 
-PovRange::PovRange(Joystick* joystick, uint32_t button, int minimum,
-                   int maximum)
-    : Button(joystick, button), minimum(minimum), maximum(maximum) {}
+PovRange::PovRange(Joystick* joystick, uint32_t button, double minimum,
+                   double maximum)
+    : Button(joystick, button), minimum_(minimum), maximum_(maximum) {}
 
 void PovRange::Update() {
   int pov_in_degrees = joystick_->wpilib_joystick()->GetPOV(id_);
-  bool pov_in_range = (pov_in_degrees > minimum && pov_in_degrees < maximum);
+  bool pov_in_range = (pov_in_degrees > minimum_ && pov_in_degrees < maximum_);
   Button::Update(pov_in_range);
 }
 
@@ -52,6 +53,31 @@ void AxisButton::Update() {
                      id_)) == muan::utils::signum(trigger_threshold_) &&
                  std::abs(joystick_->wpilib_joystick()->GetRawAxis(id_)) >=
                      trigger_threshold_);
+}
+
+AxisRange::AxisRange(Joystick* joystick, double minimum, double maximum,
+                     double xaxis, double yaxis, double threshold)
+    : Button(joystick, xaxis),
+      minimum_(minimum),
+      maximum_(maximum),
+      yaxis_(yaxis),
+      threshold_(threshold) {}
+
+void AxisRange::Update() {
+  double xaxis = joystick_->wpilib_joystick()->GetRawAxis(id_);
+  double yaxis = joystick_->wpilib_joystick()->GetRawAxis(yaxis_);
+  double magnitude = sqrt((xaxis * xaxis) + (yaxis * yaxis));
+  double axis_in_degrees = (atan2(yaxis, xaxis)) * (180 / M_PI);
+  if (axis_in_degrees > -90 && axis_in_degrees < 180) {  // conform to wpilib
+    axis_in_degrees += 90;
+  } else {
+    axis_in_degrees += 450;
+  }
+  bool axis_in_range =
+      (axis_in_degrees > minimum_ && axis_in_degrees < maximum_);
+  bool past_threshold =
+      (xaxis * xaxis) + (yaxis * yaxis) > (threshold_ * threshold_);
+  Button::Update(axis_in_range && past_threshold && (magnitude > 0.1));
 }
 
 }  // namespace teleop
