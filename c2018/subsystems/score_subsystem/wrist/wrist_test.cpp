@@ -29,8 +29,8 @@ class WristTest : public ::testing::Test {
             .finished());
   }
 
-  void SetGoal(double angle, IntakeMode intake_mode) {
-    wrist_.SetGoal(angle, intake_mode);
+  void SetGoal(double angle, IntakeMode intake_mode, bool is_open = false) {
+    wrist_.SetGoal(angle, intake_mode, is_open);
   }
 
   ScoreSubsystemInputProto wrist_input_proto_;

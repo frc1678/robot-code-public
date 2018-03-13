@@ -50,7 +50,8 @@ TeleopBase::TeleopBase()
   intake_ = gamepad_.MakeAxis(3, 0.3);
   intake_only_ =
       gamepad_.MakeButton(uint32_t(muan::teleop::XBox::RIGHT_BUMPER));
-
+  intake_open_ =
+      gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_BUMPER));
   outtake_slow_ = gamepad_.MakeAxis(2, 0.7);
   outtake_fast_ =
       gamepad_.MakeButton(uint32_t(muan::teleop::XBox::RIGHT_CLICK_IN));
@@ -206,12 +207,13 @@ void TeleopBase::SendScoreSubsystemMessage() {
     score_subsystem_goal->set_intake_goal(c2018::score_subsystem::FORCE_STOP);
   }
 
-  // Intake modes
   if (intake_only_->was_clicked()) {
     score_subsystem_goal->set_intake_goal(c2018::score_subsystem::INTAKE_ONLY);
   } else if (intake_only_->was_released()) {
     score_subsystem_goal->set_intake_goal(c2018::score_subsystem::FORCE_STOP);
   }
+
+  score_subsystem_goal->set_intake_open(intake_open_->is_pressed());
 
   if (outtake_fast_->is_pressed()) {
     score_subsystem_goal->set_intake_goal(c2018::score_subsystem::OUTTAKE_FAST);

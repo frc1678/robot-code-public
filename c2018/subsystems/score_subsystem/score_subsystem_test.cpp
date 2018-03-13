@@ -335,7 +335,8 @@ TEST_F(ScoreSubsystemTest, IntakeManual) {
 
   EXPECT_EQ(score_subsystem_output_proto_->intake_voltage(),
             wrist::kIntakeVoltage);
-  EXPECT_EQ(score_subsystem_status_proto_->state(), INTAKING);
+  EXPECT_EQ(score_subsystem_status_proto_->state(), INTAKE_RUNNING);
+  EXPECT_EQ(score_subsystem_status_proto_->intake_state(), INTAKE);
 
   SetGoal(ScoreGoal::INTAKE_0, IntakeGoal::FORCE_STOP, true);
   Update();
@@ -352,7 +353,7 @@ TEST_F(ScoreSubsystemTest, OuttakeManual) {
 
   EXPECT_EQ(score_subsystem_output_proto_->intake_voltage(),
             wrist::kFastOuttakeVoltage);
-  EXPECT_EQ(score_subsystem_status_proto_->state(), SCORING_FAST);
+  EXPECT_EQ(score_subsystem_status_proto_->state(), INTAKE_RUNNING);
 
   SetGoal(ScoreGoal::INTAKE_0, IntakeGoal::FORCE_STOP, true);
   Update();
@@ -372,25 +373,28 @@ TEST_F(ScoreSubsystemTest, IntakeToHolding) {
 
   EXPECT_EQ(score_subsystem_output_proto_->intake_voltage(),
             wrist::kIntakeVoltage);
-  EXPECT_EQ(score_subsystem_status_proto_->state(), INTAKING);
+  EXPECT_EQ(score_subsystem_status_proto_->state(), INTAKE_RUNNING);
+  EXPECT_EQ(score_subsystem_status_proto_->intake_state(), INTAKE);
 
   score_subsystem_input_proto_->set_has_cube(true);
   RunFor(600);
 
   EXPECT_EQ(score_subsystem_output_proto_->intake_voltage(),
             wrist::kHoldingVoltage);
+  EXPECT_EQ(score_subsystem_status_proto_->state(), HOLDING);
 }
 
 TEST_F(ScoreSubsystemTest, ForceIntake) {
   CalibrateDisabled();
 
   score_subsystem_input_proto_->set_has_cube(true);
-  SetGoal(ScoreGoal::INTAKE_0, IntakeGoal::INTAKE, true);
+  SetGoal(ScoreGoal::INTAKE_0, IntakeGoal::INTAKE_ONLY, true);
   RunFor(700);
 
   EXPECT_EQ(score_subsystem_output_proto_->intake_voltage(),
             wrist::kIntakeVoltage);
-  EXPECT_EQ(score_subsystem_status_proto_->state(), INTAKING);
+  EXPECT_EQ(score_subsystem_status_proto_->state(), INTAKE_RUNNING);
+  EXPECT_EQ(score_subsystem_status_proto_->intake_state(), INTAKE_ONLY);
   CheckGoal(kElevatorIntake0, kWristForwardAngle);
 }
 
