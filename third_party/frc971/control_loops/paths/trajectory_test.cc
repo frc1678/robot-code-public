@@ -36,7 +36,7 @@ class TrajectoryTest : public ::testing::Test {
 
   void Run(Pose initial, Pose final, bool backwards = false,
            double initial_velocity = 0, double initial_velocity_difference = 0) {
-    path_ = HermitePath(initial, final, initial_velocity, 0, backwards);
+    path_ = HermitePath(initial, final, initial_velocity, 0, backwards, 0, 0);
 
     initial_state_ = (State() <<
             initial.translational()(0) - 0.5 * initial.heading(),
@@ -97,7 +97,7 @@ class TrajectoryTest : public ::testing::Test {
   }
 
  protected:
-  HermitePath path_{Pose(), Pose(), 0, 0, false};
+  HermitePath path_{Pose(), Pose(), 0, 0, false, 0, 0};
   State initial_state_;
   Trajectory trajectory_;
 };
@@ -135,7 +135,7 @@ TEST_F(TrajectoryTest, InitialVelocityBackwards) {
 TEST_F(TrajectoryTest, ConflictingDirectionality) {
   Pose a = (Eigen::Vector3d() << 0.0, 0.0, 0.0).finished();
   Pose b = (Eigen::Vector3d() << 1.0, 0.0, 0.0).finished();
-  EXPECT_DEATH(Run(a, b, false, -1.0), "Conflicting path directionality");
+  Run(a, b, false, -1.0);
 }
 
 TEST_F(TrajectoryTest, SlightAngularVelocity) {

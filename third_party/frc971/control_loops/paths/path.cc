@@ -96,13 +96,11 @@ HermitePath::HermitePath(Position initial_position, Eigen::Vector2d initial_tang
     // distance is short and initial velocity is high. This formula was found
     // experimentally.
     initial_derivative_basis = initial_tangent *
-        (distance.norm() +
-        (initial_velocity * initial_velocity * 0.5 + extra_distance_initial) *
-            approx_curve * approx_curve);
+        (distance.norm() + extra_distance_initial * 5.0 +
+        initial_velocity * initial_velocity * 0.5 * approx_curve * approx_curve);
     final_derivative_basis = final_tangent *
-        (distance.norm() +
-        (final_velocity * final_velocity * 0.5 + extra_distance_final) *
-            approx_curve * approx_curve);
+        (distance.norm() + extra_distance_final * 5.0 +
+        final_velocity * final_velocity * 0.5 * approx_curve * approx_curve);
   }
 
   if (backwards_) {
