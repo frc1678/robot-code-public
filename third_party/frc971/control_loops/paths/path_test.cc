@@ -133,6 +133,14 @@ TEST_F(HermiteSplineTest, InitialVelocity) {
   Run(a, b, 0.3991, 0, true);
 }
 
+TEST_F(HermiteSplineTest, ExtraTest) {
+  Pose a = (Eigen::Vector3d() << -6.40, -0.8, 0.5).finished();
+  Pose b = (Eigen::Vector3d() << -5.0, -1.2, -0.38).finished();
+  Run(a, b, 0, 0, false);
+  Log("/tmp/extratest2.csv");
+
+}
+
 }  // namespace testing
 }  // namespace paths
 }  // namespace control_loops

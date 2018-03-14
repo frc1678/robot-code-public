@@ -60,9 +60,9 @@ void Trajectory::SetPath(const Path &path, const State &state) {
 
     if ((forward > 0 && state_(1) + state_(3) < -0.01) ||
         (forward < 0 && state_(1) + state_(3) > 0.01)) {
-      ::aos::Die("Conflicting path directionality: path %s and robot %s",
-                 forward > 0 ? "forward" : "backward",
-                 state_(1) + state_(3) > 0 ? "forward" : "backward");
+      LOG(WARNING, "Conflicting path directionality: path %s and robot %s",
+              forward > 0 ? "forward" : "backward",
+              state_(1) + state_(3) > 0 ? "forward" : "backward");
     }
 
     double angular = delta.heading() * radius_;
@@ -208,10 +208,11 @@ Trajectory::Sample Trajectory::Update() {
 
     state_ = (Eigen::Matrix<double, 4, 1>() << left_distance, left_velocity,
             right_distance, right_velocity).finished();
-    return Sample{Pose{}, state_};
+    return Sample{poses_[index], state_};
   } else {
     // Already at end of trajectory
-    return Sample{Pose{}, states_[kNumSamples - 1]};
+    // TODO(Lyra): interpolate pose
+    return Sample{poses_[index], states_[kNumSamples - 1]};
   }
 }
 

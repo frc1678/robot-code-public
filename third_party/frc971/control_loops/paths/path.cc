@@ -61,16 +61,19 @@ Pose Pose::Compose(const Pose &other) const { return other.RotateBy(heading()).T
 // TODO(Lyra): user specified velocity reference vector
 // TODO(Lyra): angular velocity at endpoints
 HermitePath::HermitePath(Pose initial, Pose final, double initial_velocity,
-                         double final_velocity, bool backwards)
+                         double final_velocity, bool backwards,
+                         double extra_distance_initial, double extra_distance_final)
     : HermitePath(initial.translational(),
                   FromMagDirection(1, initial.heading()),
                   final.translational(),
                   FromMagDirection(1, final.heading()),
-                  initial_velocity, final_velocity, backwards) {}
+                  initial_velocity, final_velocity, backwards,
+                  extra_distance_initial, extra_distance_final) {}
 
 HermitePath::HermitePath(Position initial_position, Eigen::Vector2d initial_tangent,
                          Position final_position, Eigen::Vector2d final_tangent,
-                         double initial_velocity, double final_velocity, bool backwards) {
+                         double initial_velocity, double final_velocity, bool backwards,
+                         double extra_distance_initial, double extra_distance_final) {
   backwards_ = backwards;
 
   Eigen::Vector2d initial_derivative_basis;
@@ -92,10 +95,14 @@ HermitePath::HermitePath(Position initial_position, Eigen::Vector2d initial_tang
     // should be taken into account as well, although only sigmificantly if
     // distance is short and initial velocity is high. This formula was found
     // experimentally.
-    initial_derivative_basis = initial_tangent * (distance.norm() +
-        initial_velocity * initial_velocity * 0.5 * approx_curve * approx_curve);
-    final_derivative_basis = final_tangent * (distance.norm() +
-        final_velocity * final_velocity * 0.5 * approx_curve * approx_curve);
+    initial_derivative_basis = initial_tangent *
+        (distance.norm() +
+        (initial_velocity * initial_velocity * 0.5 + extra_distance_initial) *
+            approx_curve * approx_curve);
+    final_derivative_basis = final_tangent *
+        (distance.norm() +
+        (final_velocity * final_velocity * 0.5 + extra_distance_final) *
+            approx_curve * approx_curve);
   }
 
   if (backwards_) {

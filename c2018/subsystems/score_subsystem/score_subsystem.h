@@ -40,7 +40,7 @@ static constexpr double kWristStowAngle = 80 * (M_PI / 180);
 static constexpr double kWristBackwardAngle = 160 * (M_PI / 180);
 static constexpr double kWristSafeAngle = 90 * (M_PI / 180);
 
-static constexpr double kWristShootAngle = 120 * (M_PI / 180);
+static constexpr double kWristShootAngle = 140 * (M_PI / 180);
 
 class ScoreSubsystem {
  public:

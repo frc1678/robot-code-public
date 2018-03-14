@@ -151,9 +151,9 @@ TEST_F(TrajectoryTest, ExtraTest1) {
 }
 
 TEST_F(TrajectoryTest, ExtraTest2) {
-  Pose a = (Eigen::Vector3d() << -3.524, -0.0002, -0.0002).finished();
-  Pose b = (Eigen::Vector3d() << -6.8, -1.3, 0.15).finished();
-  Run(a, b, true, -1.965);
+  Pose a = (Eigen::Vector3d() << -5.21, -1.37, -1.20).finished();
+  Pose b = (Eigen::Vector3d() << -6.8, -1.2, 0.33).finished();
+  Run(a, b, true);
   Log("/tmp/extratest2.csv");
 }
 
