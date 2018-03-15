@@ -7,31 +7,29 @@ namespace wrist {
 using muan::queues::QueueManager;
 
 WristController::WristController()
-    : trapezoidal_motion_profile_{::std::chrono::milliseconds(5)},
-      status_queue_{QueueManager<ScoreSubsystemStatusProto>::Fetch()},
-      output_queue_{QueueManager<ScoreSubsystemOutputProto>::Fetch()} {
-  auto wrist_plant = muan::control::StateSpacePlant<1, 3, 1>(
-      frc1678::wrist_controller::controller::A(),
-      frc1678::wrist_controller::controller::B(),
-      frc1678::wrist_controller::controller::C());
+    : trapezoidal_motion_profile_{::std::chrono::milliseconds(5)} {
+  auto wrist_plant_ = muan::control::StateSpacePlant<1, 3, 1>(
+      frc1678::wrist::controller::A(), frc1678::wrist::controller::B(),
+      frc1678::wrist::controller::C());
 
   wrist_controller_ = muan::control::StateSpaceController<1, 3, 1>(
-      frc1678::wrist_controller::controller::K(),
-      frc1678::wrist_controller::controller::Kff(),
-      frc1678::wrist_controller::controller::A(),
+      frc1678::wrist::controller::K(), frc1678::wrist::controller::Kff(),
+      frc1678::wrist::controller::A(),
       Eigen::Matrix<double, 1, 1>::Ones() * -12,
       Eigen::Matrix<double, 1, 1>::Ones() * 12);
 
   wrist_observer_ = muan::control::StateSpaceObserver<1, 3, 1>(
-      wrist_plant, frc1678::wrist_controller::controller::L());
+      wrist_plant_, frc1678::wrist::controller::L());
 
   trapezoidal_motion_profile_.set_maximum_acceleration(kMaxWristAcceleration);
   trapezoidal_motion_profile_.set_maximum_velocity(kMaxWristVelocity);
 }
 
 void WristController::SetGoal(double wrist_angle, IntakeMode intake_mode, bool intake_open) {
+  // Cap unprofiled goal to keep things safe
   unprofiled_goal_ =
       muan::utils::Cap(wrist_angle, kWristMinAngle, kWristMaxAngle);
+  // Set the goal intake mode
   intake_mode_ = intake_mode;
   intake_open_ = intake_open;
 }
@@ -40,14 +38,20 @@ void WristController::Update(ScoreSubsystemInputProto input,
                              ScoreSubsystemOutputProto* output,
                              ScoreSubsystemStatusProto* status,
                              bool outputs_enabled) {
+  // Was it calibrated before updating the hall calibration?
   was_calibrated_ = hall_calibration_.is_calibrated();
+
+  // Now we update the hall calibration
   double calibrated_encoder =
       hall_calibration_.Update(input->wrist_encoder(), input->wrist_hall());
+
   auto wrist_y =
       (Eigen::Matrix<double, 1, 1>() << calibrated_encoder).finished();
 
+  // Setting up that wrist voltage to start it 0.0
   double wrist_voltage = 0.0;
 
+  // Logic to make sure it actually has a cube
   if (input->has_cube() && has_cube_for_ticks_ < kNumHasCubeTicks * 2) {
     has_cube_for_ticks_++;
   } else if (!input->has_cube() && has_cube_for_ticks_ > 0) {
@@ -66,7 +70,7 @@ void WristController::Update(ScoreSubsystemInputProto input,
   bool wrist_solenoid_open = false;
 
   if (outputs_enabled) {
-    switch (intake_mode_) {
+    switch (intake_mode_) {  // OK lets set the intake mode
       case IntakeMode::IN:
         intake_voltage_ = kIntakeVoltage;
         wrist_solenoid_close = false;
@@ -115,6 +119,7 @@ void WristController::Update(ScoreSubsystemInputProto input,
 
   wrist_controller_.r() = wrist_r;
 
+  // Get voltage from the controller
   wrist_voltage = wrist_controller_.Update(wrist_observer_.x(), wrist_r)(0, 0);
 
   if (hall_calibration_.is_calibrated() && wrist_r(0) <= 1e-5) {
@@ -122,15 +127,19 @@ void WristController::Update(ScoreSubsystemInputProto input,
     wrist_voltage = 0.0;
   }
 
+  // Cap the voltage so it's realistic
   if (outputs_enabled) {
     wrist_voltage = muan::utils::Cap(wrist_voltage, -kMaxVoltage, kMaxVoltage);
   } else {
     wrist_voltage = 0;
   }
 
+  // Update the observer and the plant with the actual voltage
   wrist_observer_.Update(
       (Eigen::Matrix<double, 1, 1>() << wrist_voltage).finished(), wrist_y);
+  plant_.Update((Eigen::Matrix<double, 1, 1>() << wrist_voltage).finished());
 
+  // Write stuff to the output and status protos
   (*output)->set_intake_voltage(intake_voltage_);
   (*output)->set_wrist_voltage(wrist_voltage);
   (*output)->set_wrist_solenoid_open(wrist_solenoid_open);
@@ -145,6 +154,7 @@ void WristController::Update(ScoreSubsystemInputProto input,
 
 Eigen::Matrix<double, 2, 1> WristController::UpdateProfiledGoal(
     double unprofiled_goal_, bool outputs_enabled) {
+  // Sets profiled goal based on the motion profile
   if (outputs_enabled) {
     profiled_goal_ = trapezoidal_motion_profile_.Update(unprofiled_goal_, 0.0);
   }
@@ -153,6 +163,7 @@ Eigen::Matrix<double, 2, 1> WristController::UpdateProfiledGoal(
 }
 
 bool WristController::is_calibrated() const {
+  // Returns if calibrated so it can get used by the score subsystem
   return hall_calibration_.is_calibrated();
 }
 

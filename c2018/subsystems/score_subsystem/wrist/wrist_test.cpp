@@ -11,9 +11,9 @@ class WristTest : public ::testing::Test {
  public:
   WristTest() {
     plant_ = muan::control::StateSpacePlant<1, 3, 1>(
-        frc1678::wrist_controller::controller::A(),
-        frc1678::wrist_controller::controller::B(),
-        frc1678::wrist_controller::controller::C());
+        frc1678::wrist::controller::A(),
+        frc1678::wrist::controller::B(),
+        frc1678::wrist::controller::C());
   }
   // UPDATE
   void Update() {

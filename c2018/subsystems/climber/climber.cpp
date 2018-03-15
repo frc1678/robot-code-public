@@ -60,13 +60,6 @@ void Climber::Update() {
         status->set_climber_state(CLIMB);
         break;
     }
-    // SETTING STATUS
-    if (winch_.has_climbed()) {
-      status->set_climber_state(DONE);
-    }
-    if (status->climber_state() == BATTER || status->climber_state() == CLIMB) {
-      hook_output_ = false;
-    }
   } else {
     status->set_climber_state(IDLE);
   }

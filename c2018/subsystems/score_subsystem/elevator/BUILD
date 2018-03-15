@@ -1,9 +1,9 @@
 package(default_visibility = ["//visibility:public"])
 
 cc_library(
-    name = "elevator_controller",
-    srcs = ["elevator_controller.cpp"],
-    hdrs = ["elevator_controller.h"],
+    name = "elevator",
+    srcs = ["elevator.cpp"],
+    hdrs = ["elevator.h"],
     deps = [
         ":elevator_constants",
         "//c2018/subsystems/score_subsystem:score_subsystem_proto",
@@ -19,10 +19,10 @@ cc_library(
 )
 
 cc_test(
-    name = "elevator_controller_test",
-    srcs = ["elevator_controller_test.cpp"],
+    name = "elevator_test",
+    srcs = ["elevator_test.cpp"],
     deps = [
-        ":elevator_controller",
+        ":elevator",
         "//third_party/google/googletest",
     ],
 )
@@ -47,7 +47,7 @@ genrule(
 
 py_binary(
     name = "elevator_python",
-    srcs = ["elevator_controller.py"],
-    main = "elevator_controller.py",
+    srcs = ["elevator.py"],
+    main = "elevator.py",
     deps = ["//muan/control:python_controls"],
 )
