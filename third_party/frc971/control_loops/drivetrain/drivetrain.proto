@@ -50,6 +50,11 @@ message DrivetrainGoal {
     // Only set this if you are using a weird path where you
     // need to override the default directionality selection
     optional bool backwards = 4;
+    // Set this to fudge the shape of the path to avoid obstacles.
+    // Adds to the starting tangent of the path so the beginning or ending
+    // mostly straight section is longer by approximately the specified amount.
+    optional double extra_distance_initial = 5;
+    optional double extra_distance_final = 6;
   }
 
   required Gear gear = 2;
@@ -135,4 +140,10 @@ message DrivetrainStatus {
 
   // True if the output voltage was capped last cycle.
   required bool output_was_capped = 21;
+
+  required bool profile_complete = 22;
+
+  required double profiled_x_goal = 23;
+  required double profiled_y_goal = 24;
+  required double profiled_heading_goal = 25;
 }

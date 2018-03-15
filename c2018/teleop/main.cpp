@@ -42,14 +42,16 @@ TeleopBase::TeleopBase()
   height_2_ = gamepad_.MakePov(0, muan::teleop::Pov::kNorth);
   height_portal_ = gamepad_.MakePov(0, muan::teleop::Pov::kWest);
 
-  low_ = gamepad_.MakeAxis(1, .85);
-  front_ = gamepad_.MakeAxis(0, .85);
-  back_ = gamepad_.MakeAxis(0, -.85);
-  shoot_ = gamepad_.MakeAxis(1, -.85);
+  low_ = gamepad_.MakeAxisRange(136, 225, 0, 1, 0.7);
+  front_ = gamepad_.MakeAxisRange(15, 135, 0, 1, 0.7);
+  back_ = gamepad_.MakeAxisRange(226, 345, 0, 1, 0.7);
 
   intake_ = gamepad_.MakeAxis(3, 0.3);
   intake_only_ =
       gamepad_.MakeButton(uint32_t(muan::teleop::XBox::RIGHT_BUMPER));
+
+  intake_open_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_BUMPER));
+
   outtake_slow_ = gamepad_.MakeAxis(2, 0.7);
   outtake_fast_ =
       gamepad_.MakeButton(uint32_t(muan::teleop::XBox::RIGHT_CLICK_IN));
@@ -204,12 +206,13 @@ void TeleopBase::SendScoreSubsystemMessage() {
     score_subsystem_goal->set_intake_goal(c2018::score_subsystem::FORCE_STOP);
   }
 
-  // Intake modes
   if (intake_only_->was_clicked()) {
     score_subsystem_goal->set_intake_goal(c2018::score_subsystem::INTAKE_ONLY);
   } else if (intake_only_->was_released()) {
     score_subsystem_goal->set_intake_goal(c2018::score_subsystem::FORCE_STOP);
   }
+
+  score_subsystem_goal->set_intake_open(intake_open_->is_pressed());
 
   if (outtake_fast_->is_pressed()) {
     score_subsystem_goal->set_intake_goal(c2018::score_subsystem::OUTTAKE_FAST);
@@ -226,10 +229,11 @@ void TeleopBase::SendScoreSubsystemMessage() {
     if (pos_0_->is_pressed()) {
       score_subsystem_goal->set_score_goal(c2018::score_subsystem::EXCHANGE);
     } else if (pos_1_->is_pressed()) {
-      score_subsystem_goal->set_score_goal(
-          c2018::score_subsystem::SWITCH);
+      score_subsystem_goal->set_score_goal(c2018::score_subsystem::SWITCH);
     } else if (pos_2_->is_pressed()) {
       score_subsystem_goal->set_score_goal(c2018::score_subsystem::STOW);
+    } else if (pos_3_->is_pressed()) {
+      score_subsystem_goal->set_score_goal(c2018::score_subsystem::SCALE_SHOOT);
     }
   } else if (front_->is_pressed()) {
     if (pos_0_->is_pressed()) {
@@ -250,10 +254,6 @@ void TeleopBase::SendScoreSubsystemMessage() {
       score_subsystem_goal->set_score_goal(c2018::score_subsystem::SCALE_HIGH_REVERSE);
     } else if (pos_3_->is_pressed()) {
       score_subsystem_goal->set_score_goal(c2018::score_subsystem::SCALE_SUPER_HIGH_REVERSE);
-    }
-  } else if (shoot_->is_pressed()) {
-    if (pos_0_->is_pressed()) {
-      score_subsystem_goal->set_score_goal(c2018::score_subsystem::SCALE_SHOOT);
     }
   }
   score_subsystem_goal_queue_->WriteMessage(score_subsystem_goal);

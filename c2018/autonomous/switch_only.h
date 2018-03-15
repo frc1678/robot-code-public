@@ -9,9 +9,6 @@ namespace autonomous {
 
 class SwitchOnly : public c2018::autonomous::AutonomousBase {
  public:
-  SwitchOnly();
-
- private:
   void RightSwitch();
   void LeftSwitch();
 };

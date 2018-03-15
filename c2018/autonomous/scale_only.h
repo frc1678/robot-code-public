@@ -9,9 +9,6 @@ namespace autonomous {
 
 class ScaleOnly : public c2018::autonomous::AutonomousBase {
  public:
-  ScaleOnly();
-
- private:
   void RightScale();
   void LeftScale();
 };

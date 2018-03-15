@@ -42,13 +42,18 @@ static constexpr double kStallCurrent = 30;
 
 static constexpr int kNumHasCubeTicks = 10;
 
-enum class IntakeMode { IDLE = 0, IN = 1, OUT_FAST = 2, OUT_SLOW = 3 };
+enum class IntakeMode {
+  IDLE = 0,
+  IN = 1,
+  OUT_FAST = 2,
+  OUT_SLOW = 3,
+};
 
 class WristController {
  public:
   WristController();
 
-  void SetGoal(double angle, IntakeMode mode);
+  void SetGoal(double angle, IntakeMode mode, bool intake_open);
   Eigen::Matrix<double, 2, 1> UpdateProfiledGoal(double unprofiled_goal_,
                                                  bool outputs_enabled);
   void Update(ScoreSubsystemInputProto input, ScoreSubsystemOutputProto* output,
@@ -76,6 +81,7 @@ class WristController {
   double intake_voltage_ = 0;
 
   bool was_calibrated_ = false;
+  bool intake_open_ = false;
 
   int has_cube_for_ticks_ = 0;
 };

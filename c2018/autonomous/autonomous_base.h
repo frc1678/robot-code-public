@@ -14,23 +14,18 @@
 namespace c2018 {
 namespace autonomous {
 
+constexpr double kCubeXFromReverseWall =
+    -5.18;  // Platform zone cubes' y-value if robot starts facing the wall
+constexpr double kScaleXFromReverseWall =
+    -6.8;  // Scale y-value if robot starts facing wall
+constexpr double kSwitchFrontYFromReverseWall =
+    -2.9;  // FRONT of the switch if robot starts facing wall
+
 class AutonomousBase {
  public:
   AutonomousBase();
-  void operator()();
 
  protected:
-  void LeftSwitchLeftScale();
-  void LeftSwitchRightScale();
-  void RightSwitchLeftScale();
-  void RightSwitchRightScale();
-
-  void LeftSwitch();
-  void RightSwitch();
-
-  void TwoLeftScale();
-  void TwoRightScale();
-
   bool IsAutonomous();
 
   void StartDriveAbsolute(double left, double right,
@@ -39,12 +34,18 @@ class AutonomousBase {
                           double final_velocity = 0.0);
   // Direction: 1 => forwards, 0 => autodetect, -1 => backwards
   void StartDrivePath(double x, double y, double heading,
-                      int force_direction = 0);
+                      int force_direction = 0,
+                      frc971::control_loops::drivetrain::Gear gear =
+                          frc971::control_loops::drivetrain::Gear::kHighGear,
+                      double extra_distance_initial = 0,
+                      double extra_distance_final = 0);
   void StartDriveAtAngle(double distance, double theta_absolute,
                          double final_velocity = 0.0);
 
   bool IsDriveComplete();
+  bool IsDrivetrainNear(double x, double y, double distance);
   void WaitUntilDriveComplete();
+  void WaitUntilDrivetrainNear(double x, double y, double distance);
   void WaitUntilElevatorAtPosition();
 
   void Wait(uint32_t num_cycles);
@@ -64,7 +65,7 @@ class AutonomousBase {
 
   double max_forward_velocity_ = 3.0, max_forward_acceleration_ = 3.0;
   double max_angular_velocity_ = 5.0, max_angular_acceleration_ = 4.0;
-  double max_path_acceleration_ = 5.0;
+  double max_path_acceleration_ = 3.0;
 
   // Follow through storage
   bool follow_through_ = false;
@@ -80,7 +81,6 @@ class AutonomousBase {
   c2018::score_subsystem::ScoreSubsystemStatusQueue::QueueReader
       score_status_reader_;
   muan::wpilib::DriverStationQueue::QueueReader driver_station_reader_;
-  muan::webdash::AutoSelectionQueue::QueueReader auto_mode_reader_;
   muan::wpilib::GameSpecificStringQueue::QueueReader
       game_specific_string_reader_;
 

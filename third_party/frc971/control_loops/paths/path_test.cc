@@ -41,8 +41,10 @@ class HermiteSplineTest : public ::testing::Test {
   void Set() {}
 
   void Run(Pose initial, Pose final, double initial_velocity = 0,
-           double final_velocity = 0, bool backwards = false) {
-    path_ = HermitePath(initial, final, initial_velocity, final_velocity, backwards);
+           double final_velocity = 0, bool backwards = false,
+           double extra_distance_initial = 0, double extra_distance_final = 0) {
+    path_ = HermitePath(initial, final, initial_velocity, final_velocity,
+                        backwards, extra_distance_initial, extra_distance_final);
     path_.Populate(0.0, 1.0, &poses_[0], poses_.size());
 
     EXPECT_NEAR(poses_[0].translational()(0), initial.translational()(0), 1e-6);
@@ -86,7 +88,7 @@ class HermiteSplineTest : public ::testing::Test {
   }
 
  protected:
-  HermitePath path_{Pose(), Pose(), 0, 0, false};
+  HermitePath path_{Pose(), Pose(), 0, 0, false, 0, 0};
   ::std::array<Pose, kNumSamples> poses_;
 };
 
@@ -127,10 +129,23 @@ TEST_F(HermiteSplineTest, DrivesBackwards) {
   Run(a, b, 0, 0, true);
 }
 
+TEST_F(HermiteSplineTest, ExtraDistance) {
+  Pose a = (Eigen::Vector3d() << 0.0, 0.0, 0.0).finished();
+  Pose b = (Eigen::Vector3d() << 2.0, 2.0, 0.0).finished();
+  Run(a, b, 0, 0, false, 1.0, 0);
+  Log("/tmp/extradist.csv");
+}
+
 TEST_F(HermiteSplineTest, InitialVelocity) {
   Pose a = (Eigen::Vector3d() << 0.0, 0.0, 0.0).finished();
   Pose b = (Eigen::Vector3d() << -6.65, -1.0, M_PI * -0.3).finished();
   Run(a, b, 0.3991, 0, true);
+}
+
+TEST_F(HermiteSplineTest, ExtraTest) {
+  Pose a = (Eigen::Vector3d() << -6.40, -0.8, 0.5).finished();
+  Pose b = (Eigen::Vector3d() << -5.0, -1.2, -0.38).finished();
+  Run(a, b, 0, 0, false);
 }
 
 }  // namespace testing

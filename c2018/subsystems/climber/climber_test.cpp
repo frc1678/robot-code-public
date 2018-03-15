@@ -102,7 +102,7 @@ TEST_F(ClimberTest, Batter) {
 
   // TEST VALUES
   EXPECT_EQ(climber_output_proto_->voltage(), 0.);
-  EXPECT_TRUE(climber_output_proto_->hook_solenoid());
+  EXPECT_FALSE(climber_output_proto_->hook_solenoid());
   EXPECT_TRUE(climber_output_proto_->batter_solenoid());
   EXPECT_EQ(climber_status_proto_->climber_state(),
             c2018::climber::State::BATTER);
@@ -138,7 +138,7 @@ TEST_F(ClimberTest, Climb) {
 
   // TESTING OUTPUTS
   EXPECT_EQ(climber_output_proto_->voltage(), 12.0);
-  EXPECT_TRUE(climber_output_proto_->hook_solenoid());
+  EXPECT_FALSE(climber_output_proto_->hook_solenoid());
   EXPECT_TRUE(climber_output_proto_->batter_solenoid());
   EXPECT_EQ(climber_status_proto_->climber_state(),
             c2018::climber::State::CLIMB);
