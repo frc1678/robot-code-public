@@ -1,10 +1,15 @@
 #ifndef C2018_AUTONOMOUS_AUTONOMOUS_RUNNER_H_
 #define C2018_AUTONOMOUS_AUTONOMOUS_RUNNER_H_
 
+#include <string>
+
 #include "c2018/autonomous/autonomous_base.h"
 #include "muan/logging/logger.h"
 #include "muan/queues/queue_manager.h"
 #include "third_party/aos/common/util/phased_loop.h"
+#include "c2018/autonomous/switch_only.h"
+#include "c2018/autonomous/scale_only.h"
+#include "c2018/autonomous/switch_and_scale.h"
 
 namespace c2018 {
 namespace autonomous {
@@ -14,13 +19,16 @@ class AutonomousRunner {
   void operator()();
 
  private:
-  bool switch_only_ = true;  // TODO(Livy) use webdash sender stuff instead
+  bool switch_only_ = false;
   bool scale_only_ = false;
   bool switch_and_scale_ = false;
 
   muan::wpilib::DriverStationQueue::QueueReader driver_station_reader_;
+  muan::webdash::AutoSelectionQueue::QueueReader auto_mode_reader_;
   muan::wpilib::GameSpecificStringQueue::QueueReader
       game_specific_string_reader_;
+
+  std::string AutoMode();
 
   aos::time::PhasedLoop loop_{std::chrono::milliseconds(5)};
 };

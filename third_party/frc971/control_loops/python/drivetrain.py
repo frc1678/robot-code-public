@@ -263,11 +263,11 @@ class KFDrivetrain(Drivetrain):
     self.K[1, 5] = 1.0
 
     self.Qff = numpy.matrix(numpy.zeros((4, 4)))
-    qff_pos = 0.005
+    # qff_pos = 0.005
     qff_vel = 1.00
-    self.Qff[0, 0] = 1.0 / qff_pos ** 2.0
+    # self.Qff[0, 0] = 1.0 / qff_pos ** 2.0
     self.Qff[1, 1] = 1.0 / qff_vel ** 2.0
-    self.Qff[2, 2] = 1.0 / qff_pos ** 2.0
+    # self.Qff[2, 2] = 1.0 / qff_pos ** 2.0
     self.Qff[3, 3] = 1.0 / qff_vel ** 2.0
     self.Kff = numpy.matrix(numpy.zeros((2, 7)))
     self.Kff[0:2, 0:4] = controls.TwoStateFeedForwards(self.B[0:4,:], self.Qff)

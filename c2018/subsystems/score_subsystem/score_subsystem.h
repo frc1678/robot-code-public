@@ -40,7 +40,7 @@ static constexpr double kWristStowAngle = 80 * (M_PI / 180);
 static constexpr double kWristBackwardAngle = 160 * (M_PI / 180);
 static constexpr double kWristSafeAngle = 90 * (M_PI / 180);
 
-static constexpr double kWristShootAngle = 120 * (M_PI / 180);
+static constexpr double kWristShootAngle = 140 * (M_PI / 180);
 
 class ScoreSubsystem {
  public:
@@ -49,7 +49,7 @@ class ScoreSubsystem {
 
  private:
   void SetGoal(const ScoreSubsystemGoalProto& goal);
-  void GoToState(ScoreSubsystemState state);
+  void GoToState(ScoreSubsystemState state, IntakeGoal intake = IntakeGoal::INTAKE_NONE);
   void RunStateMachine();
 
   void BoundGoal(double* elevator_goal, double* wrist_goal) const;
@@ -69,6 +69,9 @@ class ScoreSubsystem {
   double wrist_angle_;
 
   ScoreSubsystemState state_ = ScoreSubsystemState::CALIBRATING;
+  IntakeGoal intake_goal_ = IntakeGoal::INTAKE_NONE;
+
+  bool open_intake_ = false;
 };
 
 }  // namespace score_subsystem

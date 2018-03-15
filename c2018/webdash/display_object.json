@@ -8,6 +8,7 @@
       "autos": [
         "NONE",
         "SCALE_ONLY",
+        "SWITCH_ONLY",
         "SCALE_PLUS_SWITCH"
       ]
     },

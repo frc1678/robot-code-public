@@ -56,20 +56,18 @@ message ScoreSubsystemGoal {
   required uint64 timestamp = 1;
   required ScoreGoal score_goal = 2;
   required IntakeGoal intake_goal = 3;
+  required bool intake_open = 4;
 
-  required double godmode_elevator = 4;
-  required double godmode_roller = 5;
-  required double godmode_wrist = 6;
-  required bool godmode_claw_pinch = 7;
+  required double godmode_elevator = 5;
+  required double godmode_roller = 6;
+  required double godmode_wrist = 7;
+  required bool godmode_claw_pinch = 8;
 }
 
 enum ScoreSubsystemState {
   CALIBRATING = 0;
   HOLDING = 1;
-  INTAKING = 2;
-  INTAKING_ONLY = 3;
-  SCORING_SLOW = 4;
-  SCORING_FAST = 5;
+  INTAKE_RUNNING = 2;
 }
 
 message ScoreSubsystemStatus {
@@ -93,4 +91,5 @@ message ScoreSubsystemStatus {
   required double wrist_calibration_offset = 18;
   required bool claw_pinch = 19;
   required bool has_cube = 20;
+  required IntakeGoal intake_state = 21;
 }

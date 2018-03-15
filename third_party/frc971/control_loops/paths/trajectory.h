@@ -46,6 +46,10 @@ class Trajectory {
     radius_ = radius;
   }
 
+  inline bool is_complete() {
+    return last_index_ == kNumSamples - 1;
+  }
+
   void Reset();
 
   ::std::array<Pose, kNumSamples> poses_;

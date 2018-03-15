@@ -29,10 +29,11 @@ WristController::WristController()
   trapezoidal_motion_profile_.set_maximum_velocity(kMaxWristVelocity);
 }
 
-void WristController::SetGoal(double wrist_angle, IntakeMode intake_mode) {
+void WristController::SetGoal(double wrist_angle, IntakeMode intake_mode, bool intake_open) {
   unprofiled_goal_ =
       muan::utils::Cap(wrist_angle, kWristMinAngle, kWristMaxAngle);
   intake_mode_ = intake_mode;
+  intake_open_ = intake_open;
 }
 
 void WristController::Update(ScoreSubsystemInputProto input,
@@ -93,6 +94,11 @@ void WristController::Update(ScoreSubsystemInputProto input,
     }
   } else {
     intake_voltage_ = 0;
+  }
+
+  if (intake_open_) {
+    wrist_solenoid_open = true;
+    wrist_solenoid_close = false;
   }
 
   if (!hall_calibration_.is_calibrated()) {

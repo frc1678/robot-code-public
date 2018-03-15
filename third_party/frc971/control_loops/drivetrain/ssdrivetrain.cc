@@ -170,6 +170,7 @@ void DrivetrainMotorsSS::SetGoal(
           goal->angular_constraints().max_velocity());
       angular_profile_.set_maximum_acceleration(
           goal->angular_constraints().max_acceleration());
+      profile_complete_ = false;
     }
   } else if (goal->has_path_command()) {
     use_path_ = true;
@@ -184,8 +185,7 @@ void DrivetrainMotorsSS::SetGoal(
 
     Eigen::Matrix<double, 4, 2> B_c = Eigen::Matrix<double, 4, 2>::Zero();
 
-    // If we're in high gear
-    if (kf_->index() > 0) {
+    if (is_high_gear_) {
       A_c(1, 1) = dt_config_.alpha_high;
       A_c(1, 3) = dt_config_.gamma_high;
       A_c(3, 3) = dt_config_.alpha_high;
@@ -206,16 +206,18 @@ void DrivetrainMotorsSS::SetGoal(
     }
     trajectory_.set_system(A_c, B_c, dt_config_.robot_radius);
 
-    paths::Pose initial_pose(*cartesian_position_, LeftRightToAngular(kf_->R())(0));
+    paths::Pose initial_pose(*cartesian_position_, *integrated_kf_heading_);
     paths::Pose final_pose((Eigen::Vector3d() << path_goal.x_goal(), path_goal.y_goal(), path_goal.theta_goal()).finished());
     if (last_goal_pose_.Get() != final_pose.Get()) {
       bool backwards;
-      auto state = kf_->R().block<4, 1>(0, 0);
-      if (state(1) + state(3) > 0.01) {
-        backwards = false;
-      } else if (state(1) + state(3) < -0.01) {
-        backwards = true;
-      } else if (path_goal.has_backwards()) {
+      ::frc971::control_loops::drivetrain::StatusProto status_proto;
+      PopulateStatus(&status_proto);
+      auto state = (Eigen::Matrix<double, 4, 1>() <<
+        status_proto->profiled_left_position_goal(),
+        status_proto->profiled_left_velocity_goal(),
+        status_proto->profiled_right_position_goal(),
+        status_proto->profiled_right_velocity_goal()).finished();
+      if (path_goal.has_backwards()) {
         backwards = path_goal.backwards();
       } else {
         auto delta = final_pose - initial_pose;
@@ -223,9 +225,12 @@ void DrivetrainMotorsSS::SetGoal(
                                initial_pose.heading()) > M_PI / 2;
       }
       paths::HermitePath path(initial_pose, final_pose,
-                              0.5 * (state(1) + state(3)), 0, backwards);
+                              0.5 * (state(1) + state(3)), 0, backwards,
+                              path_goal.extra_distance_initial(),
+                              path_goal.extra_distance_final());
 
       trajectory_.SetPath(path, state);
+      profile_complete_ = false;
 
       last_goal_pose_ = final_pose;
     }
@@ -284,11 +289,14 @@ void DrivetrainMotorsSS::Update(bool enable_control_loop) {
       next_angular = angular_profile_.Update(unprofiled_angular(0, 0),
                                              unprofiled_angular(1, 0));
     } else if (use_path_) {
+      // TODO(Lyra): Consider pose correction
       paths::Trajectory::Sample sample = trajectory_.Update();
       Eigen::Matrix<double, 7, 1> goal_state;
       goal_state.block<4, 1>(0, 0) = sample.drivetrain_state;
+      pose_ = sample.pose;
       next_linear = LeftRightToLinear(goal_state);
       next_angular = LeftRightToAngular(goal_state);
+      profile_complete_ = trajectory_.is_complete();
     } else {
       next_angular = unprofiled_angular;
       next_linear = unprofiled_linear;
@@ -397,6 +405,11 @@ void DrivetrainMotorsSS::PopulateStatus(
   (*status)->set_profiled_left_velocity_goal(profiled_gyro_left_right(1, 0));
   (*status)->set_profiled_right_position_goal(profiled_gyro_left_right(2, 0));
   (*status)->set_profiled_right_velocity_goal(profiled_gyro_left_right(3, 0));
+  // TODO(Lyra): Add this for trapezoidal profile as well
+  (*status)->set_profile_complete(profile_complete_);
+  (*status)->set_profiled_x_goal(pose_.Get()(0, 0));
+  (*status)->set_profiled_y_goal(pose_.Get()(1, 0));
+  (*status)->set_profiled_heading_goal(pose_.Get()(2, 0));
 }
 
 }  // namespace drivetrain
