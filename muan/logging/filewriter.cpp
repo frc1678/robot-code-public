@@ -29,14 +29,14 @@ void FileWriter::WriteBytes(const std::string &filename,
   GetBinaryFile(filename) << bytes;
 }
 
-std::ostream &FileWriter::GetTextFile(const std::string &filename) {
+std::ostream& FileWriter::GetTextFile(const std::string &filename) {
   if (open_files_.find(filename) == open_files_.end()) {
     open_files_[filename].open((base_path_ / filename).string(), std::ios::app);
   }
   return open_files_[filename];
 }
 
-std::ostream &FileWriter::GetBinaryFile(const std::string &filename) {
+std::ostream& FileWriter::GetBinaryFile(const std::string &filename) {
   if (open_files_.find(filename) == open_files_.end()) {
     open_files_[filename].open((base_path_ / filename).string(),
                                std::ios::app | std::ios::binary);
