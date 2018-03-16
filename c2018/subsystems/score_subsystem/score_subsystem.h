@@ -69,9 +69,8 @@ class ScoreSubsystem {
   double wrist_angle_;
 
   ScoreSubsystemState state_ = ScoreSubsystemState::CALIBRATING;
+  // Only valid if `state_` is INTAKE_RUNNING
   IntakeGoal intake_goal_ = IntakeGoal::INTAKE_NONE;
-
-  bool open_intake_ = false;
 };
 
 }  // namespace score_subsystem

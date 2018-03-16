@@ -243,20 +243,31 @@ void AutonomousBase::WaitUntilElevatorAtPosition() {
 void AutonomousBase::IntakeGround() {
   score_subsystem::ScoreSubsystemGoalProto score_goal;
   score_goal->set_score_goal(score_subsystem::ScoreGoal::INTAKE_0);
-  score_goal->set_intake_goal(score_subsystem::IntakeGoal::INTAKE_ONLY);
+  score_goal->set_intake_goal(score_subsystem::IntakeGoal::INTAKE);
+  score_goal_queue_->WriteMessage(score_goal);
+}
+
+void AutonomousBase::IntakeOpen() {
+  score_subsystem::ScoreSubsystemGoalProto score_goal;
+  score_goal->set_intake_goal(score_subsystem::IntakeGoal::INTAKE_OPEN);
+  score_goal_queue_->WriteMessage(score_goal);
+}
+
+void AutonomousBase::IntakeClose() {
+  score_subsystem::ScoreSubsystemGoalProto score_goal;
+  score_goal->set_intake_goal(score_subsystem::IntakeGoal::INTAKE_OPEN);
   score_goal_queue_->WriteMessage(score_goal);
 }
 
 void AutonomousBase::GoToIntake() {
   score_subsystem::ScoreSubsystemGoalProto score_goal;
   score_goal->set_score_goal(score_subsystem::ScoreGoal::INTAKE_0);
-  score_goal->set_intake_goal(score_subsystem::IntakeGoal::INTAKE_NONE);
   score_goal_queue_->WriteMessage(score_goal);
 }
 
 void AutonomousBase::StopIntakeGround() {
   score_subsystem::ScoreSubsystemGoalProto score_goal;
-  score_goal->set_intake_goal(score_subsystem::IntakeGoal::FORCE_STOP);
+  score_goal->set_intake_goal(score_subsystem::IntakeGoal::INTAKE_NONE);
   score_goal_queue_->WriteMessage(score_goal);
 }
 
@@ -292,7 +303,7 @@ void AutonomousBase::Score(bool fast) {
 
 void AutonomousBase::StopScore() {
   score_subsystem::ScoreSubsystemGoalProto score_goal;
-  score_goal->set_intake_goal(score_subsystem::IntakeGoal::FORCE_STOP);
+  score_goal->set_intake_goal(score_subsystem::IntakeGoal::INTAKE_NONE);
   score_goal_queue_->WriteMessage(score_goal);
 }
 

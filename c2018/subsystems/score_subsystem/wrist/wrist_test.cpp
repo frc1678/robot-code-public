@@ -29,8 +29,8 @@ class WristTest : public ::testing::Test {
             .finished());
   }
 
-  void SetGoal(double angle, IntakeMode intake_mode, bool is_open = false) {
-    wrist_.SetGoal(angle, intake_mode, is_open);
+  void SetGoal(double angle, IntakeGoal intake_mode) {
+    wrist_.SetGoal(angle, intake_mode);
   }
 
   ScoreSubsystemInputProto wrist_input_proto_;
@@ -53,7 +53,7 @@ TEST_F(WristTest, Calib) {
   wrist_input_proto_->set_wrist_hall(false);
   outputs_enabled_ = true;
 
-  SetGoal(M_PI / 4, IntakeMode::IDLE);
+  SetGoal(M_PI / 4, IntakeGoal::INTAKE_NONE);
 
   double offset = -M_PI / 2;
 
@@ -67,11 +67,11 @@ TEST_F(WristTest, Calib) {
   EXPECT_TRUE(wrist_status_proto_->wrist_calibrated());
 }
 
-TEST_F(WristTest, Intake) {
+TEST_F(WristTest, IntakeDefault) {
   wrist_input_proto_->set_wrist_encoder(0);
   wrist_input_proto_->set_wrist_hall(false);
   outputs_enabled_ = true;
-  SetGoal(0.0, IntakeMode::IN);
+  SetGoal(0.0, IntakeGoal::INTAKE);
   Update();
 
   EXPECT_NEAR(wrist_output_proto_->intake_voltage(), 12.0, 1e-3);
@@ -79,23 +79,65 @@ TEST_F(WristTest, Intake) {
   EXPECT_FALSE(wrist_output_proto_->wrist_solenoid_close());
 }
 
-TEST_F(WristTest, Outtake) {
+TEST_F(WristTest, IntakeModes) {
   wrist_input_proto_->set_wrist_encoder(0);
   wrist_input_proto_->set_wrist_hall(false);
   outputs_enabled_ = true;
-  SetGoal(0.0, IntakeMode::OUT_FAST);
+  SetGoal(0.0, IntakeGoal::INTAKE);
+  Update();
+
+  EXPECT_NEAR(wrist_output_proto_->intake_voltage(), 12.0, 1e-3);
+  EXPECT_FALSE(wrist_output_proto_->wrist_solenoid_open());
+  EXPECT_FALSE(wrist_output_proto_->wrist_solenoid_close());
+
+  SetGoal(0.0, IntakeGoal::INTAKE_OPEN);
+  Update();
+
+  EXPECT_NEAR(wrist_output_proto_->intake_voltage(), 12.0, 1e-3);
+  EXPECT_TRUE(wrist_output_proto_->wrist_solenoid_open());
+  EXPECT_FALSE(wrist_output_proto_->wrist_solenoid_close());
+
+  SetGoal(0.0, IntakeGoal::INTAKE_CLOSE);
+  Update();
+
+  EXPECT_NEAR(wrist_output_proto_->intake_voltage(), 12.0, 1e-3);
+  EXPECT_FALSE(wrist_output_proto_->wrist_solenoid_open());
+  EXPECT_TRUE(wrist_output_proto_->wrist_solenoid_close());
+
+  SetGoal(0.0, IntakeGoal::SETTLE);
+  Update();
+
+  EXPECT_NEAR(wrist_output_proto_->intake_voltage(), 12.0, 1e-3);
+  EXPECT_FALSE(wrist_output_proto_->wrist_solenoid_open());
+  EXPECT_TRUE(wrist_output_proto_->wrist_solenoid_close());
+
+  SetGoal(0.0, IntakeGoal::OUTTAKE_SLOW);
+  Update();
+
+  EXPECT_NEAR(wrist_output_proto_->intake_voltage(), kSlowOuttakeVoltage, 1e-3);
+  EXPECT_FALSE(wrist_output_proto_->wrist_solenoid_open());
+  EXPECT_TRUE(wrist_output_proto_->wrist_solenoid_close());
+
+  SetGoal(0.0, IntakeGoal::OUTTAKE_FAST);
   Update();
 
   EXPECT_NEAR(wrist_output_proto_->intake_voltage(), kFastOuttakeVoltage, 1e-3);
   EXPECT_FALSE(wrist_output_proto_->wrist_solenoid_open());
   EXPECT_TRUE(wrist_output_proto_->wrist_solenoid_close());
+
+  SetGoal(0.0, IntakeGoal::DROP);
+  Update();
+
+  EXPECT_NEAR(wrist_output_proto_->intake_voltage(), 0, 1e-3);
+  EXPECT_TRUE(wrist_output_proto_->wrist_solenoid_open());
+  EXPECT_FALSE(wrist_output_proto_->wrist_solenoid_close());
 }
 
 TEST_F(WristTest, Idle) {
   wrist_input_proto_->set_wrist_encoder(0);
   wrist_input_proto_->set_wrist_hall(false);
   outputs_enabled_ = true;
-  SetGoal(0.0, IntakeMode::IDLE);
+  SetGoal(0.0, IntakeGoal::INTAKE_NONE);
   Update();
 
   EXPECT_NEAR(wrist_output_proto_->intake_voltage(), 0, 1e-3);
@@ -107,7 +149,7 @@ TEST_F(WristTest, Stow) {
   wrist_input_proto_->set_wrist_encoder(0);
   wrist_input_proto_->set_wrist_hall(false);
   outputs_enabled_ = true;
-  SetGoal(kWristStowAngle, IntakeMode::IDLE);
+  SetGoal(kWristStowAngle, IntakeGoal::INTAKE_NONE);
   Update();
 
   for (int i = 0; i < 1000; i++) {
@@ -132,7 +174,7 @@ TEST_F(WristTest, Backwards) {
   wrist_input_proto_->set_wrist_encoder(0);
   wrist_input_proto_->set_wrist_hall(false);
   outputs_enabled_ = true;
-  SetGoal(kWristMaxAngle, IntakeMode::IDLE);
+  SetGoal(kWristMaxAngle, IntakeGoal::INTAKE_NONE);
   Update();
 
   for (int i = 0; i < 1000; i++) {
@@ -157,7 +199,7 @@ TEST_F(WristTest, Disabled) {
   wrist_input_proto_->set_wrist_hall(false);
   outputs_enabled_ = false;
 
-  SetGoal(kWristMaxAngle, IntakeMode::IN);
+  SetGoal(kWristMaxAngle, IntakeGoal::INTAKE);
 
   Update();
 
@@ -167,7 +209,7 @@ TEST_F(WristTest, Disabled) {
 
 TEST_F(WristTest, CanCapAngle) {
   outputs_enabled_ = true;
-  SetGoal(6e5, IntakeMode::IDLE);
+  SetGoal(6e5, IntakeGoal::INTAKE_NONE);
 
   Update();
 

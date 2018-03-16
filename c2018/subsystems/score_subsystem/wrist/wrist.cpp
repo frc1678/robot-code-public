@@ -25,13 +25,12 @@ WristController::WristController()
   trapezoidal_motion_profile_.set_maximum_velocity(kMaxWristVelocity);
 }
 
-void WristController::SetGoal(double wrist_angle, IntakeMode intake_mode, bool intake_open) {
+void WristController::SetGoal(double wrist_angle, IntakeGoal intake_mode) {
   // Cap unprofiled goal to keep things safe
   unprofiled_goal_ =
       muan::utils::Cap(wrist_angle, kWristMinAngle, kWristMaxAngle);
   // Set the goal intake mode
   intake_mode_ = intake_mode;
-  intake_open_ = intake_open;
 }
 
 void WristController::Update(ScoreSubsystemInputProto input,
@@ -70,23 +69,39 @@ void WristController::Update(ScoreSubsystemInputProto input,
   bool wrist_solenoid_open = false;
 
   if (outputs_enabled) {
-    switch (intake_mode_) {  // OK lets set the intake mode
-      case IntakeMode::IN:
+    switch (intake_mode_) {
+      case IntakeGoal::INTAKE:
         intake_voltage_ = kIntakeVoltage;
         wrist_solenoid_close = false;
         wrist_solenoid_open = false;
         break;
-      case IntakeMode::OUT_SLOW:
+      case IntakeGoal::INTAKE_OPEN:
+        intake_voltage_ = kIntakeVoltage;
+        wrist_solenoid_close = false;
+        wrist_solenoid_open = true;
+        break;
+      case IntakeGoal::INTAKE_CLOSE:
+      case IntakeGoal::SETTLE:
+        intake_voltage_ = kIntakeVoltage;
+        wrist_solenoid_close = true;
+        wrist_solenoid_open = false;
+        break;
+      case IntakeGoal::OUTTAKE_SLOW:
         intake_voltage_ = kSlowOuttakeVoltage;
         wrist_solenoid_close = true;
         wrist_solenoid_open = false;
         break;
-      case IntakeMode::OUT_FAST:
+      case IntakeGoal::OUTTAKE_FAST:
         intake_voltage_ = kFastOuttakeVoltage;
         wrist_solenoid_close = true;
         wrist_solenoid_open = false;
         break;
-      case IntakeMode::IDLE:
+      case IntakeGoal::DROP:
+        intake_voltage_ = 0;
+        wrist_solenoid_close = false;
+        wrist_solenoid_open = true;
+        break;
+      case IntakeGoal::INTAKE_NONE:
         if (has_cube) {
           intake_voltage_ = kHoldingVoltage;
         } else {
@@ -98,11 +113,6 @@ void WristController::Update(ScoreSubsystemInputProto input,
     }
   } else {
     intake_voltage_ = 0;
-  }
-
-  if (intake_open_) {
-    wrist_solenoid_open = true;
-    wrist_solenoid_close = false;
   }
 
   if (!hall_calibration_.is_calibrated()) {

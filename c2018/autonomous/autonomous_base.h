@@ -56,9 +56,13 @@ class AutonomousBase {
   void WaitUntilElevatorAtPosition();
 
   void Wait(uint32_t num_cycles);
+
   void IntakeGround();
-  void GoToIntake();
+  void IntakeOpen();
+  void IntakeClose();
   void StopIntakeGround();
+  void GoToIntake();
+
   void MoveToSwitch();
   void MoveToScale(bool front);
   void MoveTo(c2018::score_subsystem::ScoreGoal goal);

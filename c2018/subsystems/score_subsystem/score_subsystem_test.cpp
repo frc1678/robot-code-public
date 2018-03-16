@@ -335,10 +335,10 @@ TEST_F(ScoreSubsystemTest, IntakeManual) {
 
   EXPECT_EQ(score_subsystem_output_proto_->intake_voltage(),
             wrist::kIntakeVoltage);
-  EXPECT_EQ(score_subsystem_status_proto_->state(), INTAKE_RUNNING);
+  EXPECT_EQ(score_subsystem_status_proto_->state(), INTAKING_TO_STOW);
   EXPECT_EQ(score_subsystem_status_proto_->intake_state(), INTAKE);
 
-  SetGoal(ScoreGoal::INTAKE_0, IntakeGoal::FORCE_STOP, true);
+  SetGoal(ScoreGoal::INTAKE_0, IntakeGoal::INTAKE_NONE, true);
   Update();
 
   EXPECT_EQ(score_subsystem_output_proto_->intake_voltage(), 0);
@@ -353,27 +353,29 @@ TEST_F(ScoreSubsystemTest, OuttakeManual) {
 
   EXPECT_EQ(score_subsystem_output_proto_->intake_voltage(),
             wrist::kFastOuttakeVoltage);
-  EXPECT_EQ(score_subsystem_status_proto_->state(), INTAKE_RUNNING);
+  EXPECT_EQ(score_subsystem_status_proto_->state(), HOLDING);
 
-  SetGoal(ScoreGoal::INTAKE_0, IntakeGoal::FORCE_STOP, true);
+  SetGoal(ScoreGoal::INTAKE_0, IntakeGoal::INTAKE_NONE, true);
   Update();
 
   EXPECT_EQ(score_subsystem_output_proto_->intake_voltage(), 0);
   EXPECT_EQ(score_subsystem_status_proto_->state(), HOLDING);
 }
 
-TEST_F(ScoreSubsystemTest, IntakeToHolding) {
+// When we're intaking on the ground, it should go to stow afterwards
+// automatically
+TEST_F(ScoreSubsystemTest, IntakeToStow) {
   CalibrateDisabled();
 
   SetGoal(ScoreGoal::INTAKE_0, IntakeGoal::INTAKE, true);
-  Update();
+  RunFor(10);
+  SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::INTAKE, true);
 
-  SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::INTAKE_NONE, true);
   RunFor(500);
 
   EXPECT_EQ(score_subsystem_output_proto_->intake_voltage(),
             wrist::kIntakeVoltage);
-  EXPECT_EQ(score_subsystem_status_proto_->state(), INTAKE_RUNNING);
+  EXPECT_EQ(score_subsystem_status_proto_->state(), INTAKING_TO_STOW);
   EXPECT_EQ(score_subsystem_status_proto_->intake_state(), INTAKE);
 
   score_subsystem_input_proto_->set_has_cube(true);
@@ -382,8 +384,39 @@ TEST_F(ScoreSubsystemTest, IntakeToHolding) {
   EXPECT_EQ(score_subsystem_output_proto_->intake_voltage(),
             wrist::kHoldingVoltage);
   EXPECT_EQ(score_subsystem_status_proto_->state(), HOLDING);
+  EXPECT_NEAR(score_subsystem_status_proto_->wrist_unprofiled_goal(),
+              kWristStowAngle, 1e-3);
 }
 
+// When we're not intaking on the ground, it should stay in place when it gets a
+// cube but stop intaking
+TEST_F(ScoreSubsystemTest, IntakeToHolding) {
+  CalibrateDisabled();
+
+  SetGoal(ScoreGoal::INTAKE_1, IntakeGoal::INTAKE, true);
+  RunFor(10);
+  SetGoal(ScoreGoal::SCORE_NONE, IntakeGoal::INTAKE, true);
+
+  RunFor(500);
+
+  EXPECT_EQ(score_subsystem_output_proto_->intake_voltage(),
+            wrist::kIntakeVoltage);
+  EXPECT_EQ(score_subsystem_status_proto_->state(), INTAKING_ONLY);
+  EXPECT_EQ(score_subsystem_status_proto_->intake_state(), INTAKE);
+
+  score_subsystem_input_proto_->set_has_cube(true);
+  RunFor(600);
+
+  EXPECT_EQ(score_subsystem_output_proto_->intake_voltage(),
+            wrist::kHoldingVoltage);
+  EXPECT_EQ(score_subsystem_status_proto_->state(), HOLDING);
+
+  EXPECT_NEAR(score_subsystem_status_proto_->wrist_unprofiled_goal(), 0, 1e-3);
+  EXPECT_NEAR(score_subsystem_status_proto_->elevator_unprofiled_goal(),
+              kElevatorIntake1, 1e-3);
+}
+
+#if 0
 TEST_F(ScoreSubsystemTest, ForceIntake) {
   CalibrateDisabled();
 
@@ -397,6 +430,7 @@ TEST_F(ScoreSubsystemTest, ForceIntake) {
   EXPECT_EQ(score_subsystem_status_proto_->intake_state(), INTAKE_ONLY);
   CheckGoal(kElevatorIntake0, kWristForwardAngle);
 }
+#endif
 
 }  // namespace score_subsystem
 }  // namespace c2018

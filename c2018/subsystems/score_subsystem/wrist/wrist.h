@@ -47,20 +47,13 @@ static constexpr double kMaxVoltage = 12;
 // Has Cube encoder stuff
 static constexpr int kNumHasCubeTicks = 10;
 
-enum class IntakeMode {
-  IDLE = 0,
-  IN = 1,
-  OUT_FAST = 2,
-  OUT_SLOW = 3,
-};
-
 class WristController {
  public:
   // Sets up the state space stuff and motion profile
   WristController();
 
   // Sets the unprofiled goal after capping
-  void SetGoal(double angle, IntakeMode mode, bool intake_open);
+  void SetGoal(double angle, IntakeGoal mode);
   Eigen::Matrix<double, 2, 1> UpdateProfiledGoal(double unprofiled_goal_,
                                                  bool outputs_enabled);
 
@@ -86,8 +79,7 @@ class WristController {
   // Keep those V safe
   double CapU(double wrist_voltage);
 
-  // Goals (not relationships)
-  IntakeMode intake_mode_ = IntakeMode::IDLE;
+  IntakeGoal intake_mode_ = IntakeGoal::INTAKE_NONE;
   double unprofiled_goal_ = 0;
   Eigen::Matrix<double, 2, 1> profiled_goal_;
 
@@ -96,7 +88,6 @@ class WristController {
 
   // If it was calibrated
   bool was_calibrated_ = false;
-  bool intake_open_ = false;
 
   // Does it _really_ have a cube?
   int has_cube_for_ticks_ = 0;
