@@ -8,18 +8,20 @@ using muan::queues::QueueManager;
 
 WristController::WristController()
     : trapezoidal_motion_profile_{::std::chrono::milliseconds(5)} {
-  auto wrist_plant_ = muan::control::StateSpacePlant<1, 3, 1>(
-      frc1678::wrist::controller::A(), frc1678::wrist::controller::B(),
-      frc1678::wrist::controller::C());
+  auto wrist_plant = muan::control::StateSpacePlant<1, 3, 1>(
+      frc1678::wrist::controller::cube_integral::A(),
+      frc1678::wrist::controller::cube_integral::B(),
+      frc1678::wrist::controller::cube_integral::C());
 
   wrist_controller_ = muan::control::StateSpaceController<1, 3, 1>(
-      frc1678::wrist::controller::K(), frc1678::wrist::controller::Kff(),
-      frc1678::wrist::controller::A(),
+      frc1678::wrist::controller::cube_integral::K(),
+      frc1678::wrist::controller::cube_integral::Kff(),
+      frc1678::wrist::controller::cube_integral::A(),
       Eigen::Matrix<double, 1, 1>::Ones() * -12,
       Eigen::Matrix<double, 1, 1>::Ones() * 12);
 
   wrist_observer_ = muan::control::StateSpaceObserver<1, 3, 1>(
-      wrist_plant_, frc1678::wrist::controller::L());
+      wrist_plant, frc1678::wrist::controller::cube_integral::L());
 
   trapezoidal_motion_profile_.set_maximum_acceleration(kMaxWristAcceleration);
   trapezoidal_motion_profile_.set_maximum_velocity(kMaxWristVelocity);
@@ -44,6 +46,11 @@ void WristController::Update(ScoreSubsystemInputProto input,
   double calibrated_encoder =
       hall_calibration_.Update(input->wrist_encoder(), input->wrist_hall());
 
+  if (input->has_cube()) {
+    SetWeights(true);
+  } else {
+    SetWeights(false);
+  }
   auto wrist_y =
       (Eigen::Matrix<double, 1, 1>() << calibrated_encoder).finished();
 
@@ -175,6 +182,31 @@ Eigen::Matrix<double, 2, 1> WristController::UpdateProfiledGoal(
 bool WristController::is_calibrated() const {
   // Returns if calibrated so it can get used by the score subsystem
   return hall_calibration_.is_calibrated();
+}
+
+void WristController::SetWeights(bool has_cube) {
+  if (has_cube) {
+    wrist_controller_.A() = frc1678::wrist::controller::cube_integral::A();
+    wrist_controller_.K() = frc1678::wrist::controller::cube_integral::K();
+    wrist_controller_.Kff() = frc1678::wrist::controller::cube_integral::Kff();
+
+    wrist_observer_.L() = frc1678::wrist::controller::cube_integral::L();
+
+    plant_.A() = frc1678::wrist::controller::cube_integral::A();
+    plant_.B() = frc1678::wrist::controller::cube_integral::B();
+    plant_.C() = frc1678::wrist::controller::cube_integral::C();
+  } else {
+    wrist_controller_.A() = frc1678::wrist::controller::no_cube_integral::A();
+    wrist_controller_.K() = frc1678::wrist::controller::no_cube_integral::K();
+    wrist_controller_.Kff() =
+        frc1678::wrist::controller::no_cube_integral::Kff();
+
+    wrist_observer_.L() = frc1678::wrist::controller::no_cube_integral::L();
+
+    plant_.A() = frc1678::wrist::controller::no_cube_integral::A();
+    plant_.B() = frc1678::wrist::controller::no_cube_integral::B();
+    plant_.C() = frc1678::wrist::controller::no_cube_integral::C();
+  }
 }
 
 }  // namespace wrist

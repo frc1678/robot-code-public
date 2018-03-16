@@ -10,9 +10,9 @@ class ScoreSubsystemTest : public ::testing::Test {
  public:
   ScoreSubsystemTest() {
     wrist_plant_ = muan::control::StateSpacePlant<1, 3, 1>(
-        frc1678::wrist::controller::A(),
-        frc1678::wrist::controller::B(),
-        frc1678::wrist::controller::C());
+        frc1678::wrist::controller::cube_integral::A(),
+        frc1678::wrist::controller::cube_integral::B(),
+        frc1678::wrist::controller::cube_integral::C());
 
     elevator_plant_ = muan::control::StateSpacePlant<1, 3, 1>(
         frc1678::elevator::controller::first_stage_integral::A(),

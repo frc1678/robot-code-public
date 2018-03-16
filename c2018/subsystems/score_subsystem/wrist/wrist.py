@@ -11,17 +11,22 @@ from muan.control.controls import *
 
 dt = 0.005
 
-def make_gains():
+
+def make_gains(has_cube, subname='gains'):
     # x = |       Angle      |
     #     | Angular velocity |
     # u = voltage
     # y = encoder
 
-    name = 'gains'
+    name = subname
 
     # Moment of inertia constants
     # M= mass and L = length
     M = 6.0
+
+    if has_cube:
+        M += 1.59
+
     L = 0.3
 
     # Parameters
@@ -41,7 +46,8 @@ def make_gains():
     sensor_ratio = 1.0
 
     # back emf torque
-    emf = -(torque_constant * velocity_constant) / (resistance * gear_ratio ** 2.0)
+    emf = -(torque_constant * velocity_constant) / \
+        (resistance * gear_ratio ** 2.0)
 
     # motor torque
     mtq = efficiency * torque_constant / (gear_ratio * resistance)
@@ -90,15 +96,17 @@ def make_gains():
     Kff = feedforwards(A_d, B_d, Q_ff)
     L = dkalman(A_d, C, Q_d, R_d)
 
-    gains = StateSpaceGains(name, dt, A_d, B_d, C, None, Q_d, R_noise, K, Kff, L)
+    gains = StateSpaceGains(name, dt, A_d, B_d, C,
+                            None, Q_d, R_noise, K, Kff, L)
     gains.A_c = A_c
     gains.B_c = B_c
     gains.Q_c = Q_noise
 
     return gains
 
-def make_augmented_gains():
-    unaugmented_gains = make_gains()
+
+def make_augmented_gains(has_cube, subname):
+    unaugmented_gains = make_gains(has_cube, subname)
 
     dt = unaugmented_gains.dt
 
@@ -146,7 +154,8 @@ def make_augmented_gains():
 
     name = unaugmented_gains.name + '_integral'
 
-    gains = StateSpaceGains(name, dt, A_d, B_d, C, None, Q_d, R_noise, K, Kff, L)
+    gains = StateSpaceGains(name, dt, A_d, B_d, C,
+                            None, Q_d, R_noise, K, Kff, L)
 
     return gains
 
@@ -154,17 +163,20 @@ def make_augmented_gains():
 u_max = np.asmatrix([12.]).T
 x0 = np.asmatrix([0., 0., 0.]).T
 
-gains = make_augmented_gains()
+gains = [make_augmented_gains(False, 'no_cube'), make_augmented_gains(True,
+                                                                      'cube')]
 
 plant = StateSpacePlant(gains, x0)
 controller = StateSpaceController(gains, -u_max, u_max)
 observer = StateSpaceObserver(gains, x0)
 
-t_profile = TrapezoidalMotionProfile (np.pi / 2, 40, 40)
+t_profile = TrapezoidalMotionProfile(np.pi / 2, 40, 40)
+
 
 def goal(t):
     # Make goal a trapezoidal profile
     return np.asmatrix([t_profile.distance(t), t_profile.velocity(t), 0]).T
+
 
 if __name__ == '__main__':
     if len(sys.argv) == 3:

@@ -11,9 +11,9 @@ class WristTest : public ::testing::Test {
  public:
   WristTest() {
     plant_ = muan::control::StateSpacePlant<1, 3, 1>(
-        frc1678::wrist::controller::A(),
-        frc1678::wrist::controller::B(),
-        frc1678::wrist::controller::C());
+        frc1678::wrist::controller::cube_integral::A(),
+        frc1678::wrist::controller::cube_integral::B(),
+        frc1678::wrist::controller::cube_integral::C());
   }
   // UPDATE
   void Update() {
@@ -24,6 +24,8 @@ class WristTest : public ::testing::Test {
                                        plant_.x(0) <= 0.25);
     wrist_.Update(wrist_input_proto_, &wrist_output_proto_,
                   &wrist_status_proto_, outputs_enabled_);
+
+    SetWeights(wrist_input_proto_->has_cube());
     plant_.Update(
         (Eigen::Matrix<double, 1, 1>() << wrist_output_proto_->wrist_voltage())
             .finished());
@@ -46,6 +48,17 @@ class WristTest : public ::testing::Test {
 
  private:
   WristController wrist_;
+  void SetWeights(bool has_cube) {
+    if (has_cube) {
+      plant_.A() = frc1678::wrist::controller::cube_integral::A();
+      plant_.B() = frc1678::wrist::controller::cube_integral::B();
+      plant_.C() = frc1678::wrist::controller::cube_integral::C();
+    } else {
+      plant_.A() = frc1678::wrist::controller::no_cube_integral::A();
+      plant_.B() = frc1678::wrist::controller::no_cube_integral::B();
+      plant_.C() = frc1678::wrist::controller::no_cube_integral::C();
+    }
+  }
 };
 
 TEST_F(WristTest, Calib) {

@@ -61,6 +61,8 @@ class WristController {
   void Update(ScoreSubsystemInputProto input, ScoreSubsystemOutputProto* output,
               ScoreSubsystemStatusProto* status, bool outputs_enabled);
 
+  void SetWeights(bool has_cube);
+
   // Getter for hall calibration
   bool is_calibrated() const;
 
