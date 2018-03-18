@@ -113,6 +113,65 @@ TEST_F(TrapezoidProfileTest, TopSpeed) {
   EXPECT_TRUE(At(4, 0));
 }
 
+TEST_F(TrapezoidProfileTest, TimingToCurrent) {
+  for (int i = 0; i < 400; i++) {
+    RunIteration(2, 0);
+    EXPECT_NEAR(profile_.TimeLeftUntil(position()(0), 2, 0), 0, 2e-2);
+  }
+}
+
+TEST_F(TrapezoidProfileTest, TimingToGoal) {
+  RunIteration(2, 0);
+  double predicted_time_left = profile_.TimeLeftUntil(2, 2, 0);
+  bool reached_goal = false;
+  for (int i = 0; i < 400; i++) {
+    RunIteration(2, 0);
+    if (!reached_goal && At(2, 0)) {
+      EXPECT_NEAR(predicted_time_left, i / 100., 2e-2);
+      reached_goal = true;
+    }
+  }
+}
+
+TEST_F(TrapezoidProfileTest, TimingBeforeGoal) {
+  RunIteration(2, 0);
+  double predicted_time_left = profile_.TimeLeftUntil(1, 2, 0);
+  bool reached_goal = false;
+  for (int i = 0; i < 400; i++) {
+    RunIteration(2, 0);
+    if (!reached_goal && (std::abs(position()(1) - 1) < 10e-5)) {
+      EXPECT_NEAR(predicted_time_left, i / 100., 2e-2);
+      reached_goal = true;
+    }
+  }
+}
+
+TEST_F(TrapezoidProfileTest, TimingToNegativeGoal) {
+  RunIteration(-2, 0);
+  double predicted_time_left = profile_.TimeLeftUntil(-2, -2, 0);
+  bool reached_goal = false;
+  for (int i = 0; i < 400; i++) {
+    RunIteration(-2, 0);
+    if (!reached_goal && At(-2, 0)) {
+      EXPECT_NEAR(predicted_time_left, i / 100., 2e-2);
+      reached_goal = true;
+    }
+  }
+}
+
+TEST_F(TrapezoidProfileTest, TimingBeforeNegativeGoal) {
+  RunIteration(-2, 0);
+  double predicted_time_left = profile_.TimeLeftUntil(-1, -2, 0);
+  bool reached_goal = false;
+  for (int i = 0; i < 400; i++) {
+    RunIteration(-2, 0);
+    if (!reached_goal && (std::abs(position()(1) + 1) < 10e-5)) {
+      EXPECT_NEAR(predicted_time_left, i / 100., 2e-2);
+      reached_goal = true;
+    }
+  }
+}
+
 }  // namespace testing
 }  // namespace util
 }  // namespace aos

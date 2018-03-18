@@ -1,5 +1,7 @@
 #include "c2018/subsystems/score_subsystem/score_subsystem.h"
 
+#include <algorithm>
+
 namespace c2018 {
 namespace score_subsystem {
 
@@ -25,7 +27,7 @@ void ScoreSubsystem::BoundGoal(double* elevator_goal,
   }
 
   // Wrist doesn't try to go too far if the elevator can't handle it
-  if (status_->elevator_actual_height() < kElevatorWristSafeHeight) {
+  if (time_until_elevator_safe_ > time_until_wrist_safe_) {
     *wrist_goal = muan::utils::Cap(*wrist_goal, 0, kWristSafeAngle);
   }
 }
@@ -56,6 +58,12 @@ void ScoreSubsystem::Update() {
   // These are the goals before they get safety-ized
   double constrained_elevator_height = elevator_height_;
   double constrained_wrist_angle = wrist_angle_;
+
+  elevator_.SetTimerGoal(std::max(elevator_height_, kElevatorWristSafeHeight));
+  wrist_.SetTimerGoal(std::max(wrist_angle_, kWristSafeAngle));
+
+  time_until_elevator_safe_ = elevator_.TimeLeftUntil(kElevatorWristSafeHeight);
+  time_until_wrist_safe_ = wrist_.TimeLeftUntil(kWristSafeAngle);
 
   // Now we make them safe so stuff doesn't break
   BoundGoal(&constrained_elevator_height, &constrained_wrist_angle);

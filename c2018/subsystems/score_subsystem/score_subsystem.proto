@@ -98,5 +98,7 @@ message ScoreSubsystemStatus {
   required double wrist_calibration_offset = 18;
   required bool claw_pinch = 19;
   required bool has_cube = 20;
-  required IntakeGoal intake_state = 21;
+  required double wrist_time_left = 21;
+  required double elevator_time_left = 22;
+  required IntakeGoal intake_state = 23;
 }

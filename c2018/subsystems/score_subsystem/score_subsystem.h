@@ -68,6 +68,9 @@ class ScoreSubsystem {
   double elevator_height_;
   double wrist_angle_;
 
+  double time_until_elevator_safe_;
+  double time_until_wrist_safe_;
+
   ScoreSubsystemState state_ = ScoreSubsystemState::CALIBRATING;
   // Only valid if `state_` is INTAKE_RUNNING
   IntakeGoal intake_goal_ = IntakeGoal::INTAKE_NONE;

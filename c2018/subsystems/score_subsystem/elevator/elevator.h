@@ -53,7 +53,10 @@ class ElevatorController {
       bool outputs_enabled);  // Utilizes the trapezoidal motion profile
   void SetGoal(double goal);  // Setter for unprofiled_goal_ that also caps it
                               // to kElevatorMin and Max Height
+  void SetTimerGoal(double goal);
   double CapU(double elevator_u);  // Voltage capper to +/- 12
+
+  double TimeLeftUntil(double x) const;
 
   bool is_calibrated() const;  // Getter for if it's calibrated
 
@@ -72,9 +75,11 @@ class ElevatorController {
   // Goals stored inside of the class for usage in functions
   Eigen::Matrix<double, 2, 1> profiled_goal_;
   double unprofiled_goal_;
+  double timer_goal_;
 
   // Motion profiling
   aos::util::TrapezoidProfile trapezoid_profile_{std::chrono::milliseconds(5)};
+  aos::util::TrapezoidProfile timer_profile_{std::chrono::milliseconds(5)};
 
   // Encoder fault stuff
   bool encoder_fault_detected_ = false;
