@@ -30,7 +30,7 @@ cc_library(
 )
 
 # TODO(Lyra): Make this work with updated framework
-cc_test(
+"""cc_test(
     name = "autonomous_simulation",
     srcs = ["autonomous_simulation.cpp"],
     deps = [
@@ -40,7 +40,7 @@ cc_test(
         "//c2018/subsystems/drivetrain:drivetrain_base",
         "//c2018/subsystems/drivetrain:polydrivetrain_plants",
     ],
-)
+)"""
 
 cc_test(
     name = "autonomous_base_test",
