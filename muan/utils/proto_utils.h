@@ -17,13 +17,11 @@ namespace util {
 // data points for a submessage inserted into the line in the position of the
 // submessage field. Booleans will
 // be written as 1/0 and enums as numeric values.
-//
 // For example, TestProto from test_proto.proto will default to:
 // ,0,0,0,0
 // And a sample populated value might look like:
 // Citrus,1678,1,3.14,1
-void ProtoToCsv(const google::protobuf::Message& message,
-                std::ostream& serialize);
+void ProtoToCsv(const google::protobuf::Message& message, std::ostream& serialize);
 
 // Writes the header for this message, in CSV format, to an ostream. The output
 // will be ordered by field
@@ -34,11 +32,9 @@ void ProtoToCsv(const google::protobuf::Message& message,
 //
 // For example, running this on a TestProto from test_proto.proto will write:
 // test_string,test_uint,sub_message.id,sub_message.num,is_sane
-void ProtoToCsvHeader(const google::protobuf::Message& message,
-                      std::ostream& serialize);
+void ProtoToCsvHeader(const google::protobuf::Message& message, std::ostream& serialize);
 
-void ProtoToJson(const google::protobuf::Message& message,
-                 std::ostream& serialize);
+void ProtoToJson(const google::protobuf::Message& message, std::ostream& serialize);
 
 }  // namespace util
 }  // namespace muan

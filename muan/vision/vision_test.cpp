@@ -86,7 +86,7 @@ TEST(Vision, CalculatesPosition) {
   k = muan::vision::VisionConstants{0, 1, 0, 0, 0, 1};
   vision.set_constants(k);
 
-  ASSERT_NEAR(vision.CalculateDistance(std::atan(1. / 2.), 1.5), 3, 0.001);
-  ASSERT_NEAR(vision.CalculateDistance(std::atan(1. / 3.), 1), 3, 0.001);
-  ASSERT_NEAR(vision.CalculateDistance(std::atan(2. / 5.), 2), 5, 0.001);
+  ASSERT_NEAR(vision.CalculateDistance(std::atan(1./2.), 1.5), 3, 0.001);
+  ASSERT_NEAR(vision.CalculateDistance(std::atan(1./3.), 1), 3, 0.001);
+  ASSERT_NEAR(vision.CalculateDistance(std::atan(2./5.), 2), 5, 0.001);
 }

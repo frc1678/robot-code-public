@@ -9,7 +9,7 @@
 #include "google/protobuf/message.h"
 
 namespace muan {
-namespace utils {
+namespace util {
 
 void DefaultFieldToCsv(const google::protobuf::FieldDescriptor* descriptor,
                        std::ostream& serialize);
