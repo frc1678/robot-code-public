@@ -294,7 +294,7 @@ void ProtoToJson(const google::protobuf::Message& message,
   SubmessageToJson(message, reflection, descriptor, serialize);
 }
 
-}  // namespace utils
+}  // namespace util
 }  // namespace muan
 
 #endif  // MUAN_UTILS_PROTO_UTILS_HPP_
