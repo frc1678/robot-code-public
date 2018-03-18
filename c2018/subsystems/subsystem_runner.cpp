@@ -24,7 +24,6 @@ SubsystemRunner::SubsystemRunner()
 void SubsystemRunner::operator()() {
   aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(5));
 
-  // TODO(Kyle or Wesley) Come up with some actual value for this...
   aos::SetCurrentThreadRealtimePriority(50);
   muan::utils::SetCurrentThreadName("SubsystemRunner");
 

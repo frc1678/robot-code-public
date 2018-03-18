@@ -2,7 +2,7 @@
 #define C2018_SUBSYSTEMS_SCORE_SUBSYSTEM_SCORE_SUBSYSTEM_H_
 
 #include <cmath>
-#include "c2018/subsystems/score_subsystem/elevator/elevator_controller.h"
+#include "c2018/subsystems/score_subsystem/elevator/elevator.h"
 #include "c2018/subsystems/score_subsystem/queue_types.h"
 #include "c2018/subsystems/score_subsystem/wrist/wrist.h"
 #include "muan/queues/queue_manager.h"
@@ -69,9 +69,8 @@ class ScoreSubsystem {
   double wrist_angle_;
 
   ScoreSubsystemState state_ = ScoreSubsystemState::CALIBRATING;
+  // Only valid if `state_` is INTAKE_RUNNING
   IntakeGoal intake_goal_ = IntakeGoal::INTAKE_NONE;
-
-  bool open_intake_ = false;
 };
 
 }  // namespace score_subsystem

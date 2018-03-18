@@ -3,7 +3,6 @@
 #include <chrono>
 #include <string>
 
-#include "WPILib.h"
 #include "c2018/subsystems/drivetrain/drivetrain_base.h"
 #include "muan/logging/logger.h"
 #include "muan/queues/queue_manager.h"
@@ -112,21 +111,25 @@ void AutonomousBase::StartDriveAtAngle(double distance, double theta_absolute,
   StartDriveRelative(distance, delta_theta, final_velocity);
 }
 
-void AutonomousBase::StartDrivePath(double x, double y, double heading,
-                                    int direction,
-                                    frc971::control_loops::drivetrain::Gear gear,
-                                    double extra_distance_initial,
-                                    double extra_distance_final) {
+void AutonomousBase::StartDrivePath(
+    double x, double y, double heading, int direction,
+    frc971::control_loops::drivetrain::Gear gear, double extra_distance_initial,
+    double extra_distance_final) {
   follow_through_ = false;
   DrivetrainGoal goal;
 
-  goal->mutable_path_command()->set_x_goal(x);
-  goal->mutable_path_command()->set_y_goal(y);
-  goal->mutable_path_command()->set_theta_goal(heading);
-  goal->mutable_path_command()->set_extra_distance_initial(extra_distance_initial);
+  Eigen::Vector2d goal_field = (Eigen::Vector2d() << x, y).finished();
+  Eigen::Vector2d goal_local = transform_f0_.inverse() * goal_field;
+
+  goal->mutable_path_command()->set_x_goal(goal_local(0));
+  goal->mutable_path_command()->set_y_goal(goal_local(1));
+  goal->mutable_path_command()->set_theta_goal(heading + theta_offset_);
+  goal->mutable_path_command()->set_extra_distance_initial(
+      extra_distance_initial);
   goal->mutable_path_command()->set_extra_distance_final(extra_distance_final);
 
-  goal->mutable_linear_constraints()->set_max_acceleration(max_path_acceleration_);
+  goal->mutable_linear_constraints()->set_max_acceleration(
+      max_path_acceleration_);
   goal->set_gear(gear);
 
   if (direction == 1) {
@@ -166,10 +169,10 @@ bool AutonomousBase::IsDriveComplete() {
     }
 
     if (goal->has_path_command()) {
-      if (std::abs(status->profiled_x_goal() -
-                   goal->path_command().x_goal()) < 1e-1 &&
-          std::abs(status->profiled_y_goal() -
-                   goal->path_command().y_goal()) < 1e-1 &&
+      if (std::abs(status->profiled_x_goal() - goal->path_command().x_goal()) <
+              1e-1 &&
+          std::abs(status->profiled_y_goal() - goal->path_command().y_goal()) <
+              1e-1 &&
           status->profile_complete()) {
         return true;
       }
@@ -183,17 +186,22 @@ bool AutonomousBase::IsDrivetrainNear(double x, double y, double distance) {
   DrivetrainStatus status;
 
   if (drivetrain_status_reader_.ReadLastMessage(&status)) {
-    if ((status->estimated_x_position() - x) *
-        (status->estimated_x_position() - x) +
-        (status->estimated_y_position() - y) *
-        (status->estimated_y_position() - y) < distance * distance) {
+    Eigen::Vector2d field_position =
+        transform_f0_ *
+        (Eigen::Vector2d() << status->estimated_x_position(),
+         status->estimated_y_position())
+            .finished();
+    if ((field_position(0) - x) * (field_position(0) - x) +
+            (field_position(1) - y) * (field_position(1) - y) <
+        distance * distance) {
       return true;
     }
   }
   return false;
 }
 
-void AutonomousBase::WaitUntilDrivetrainNear(double x, double y, double distance) {
+void AutonomousBase::WaitUntilDrivetrainNear(double x, double y,
+                                             double distance) {
   while (!IsDrivetrainNear(x, y, distance)) {
     loop_.SleepUntilNext();
   }
@@ -235,20 +243,31 @@ void AutonomousBase::WaitUntilElevatorAtPosition() {
 void AutonomousBase::IntakeGround() {
   score_subsystem::ScoreSubsystemGoalProto score_goal;
   score_goal->set_score_goal(score_subsystem::ScoreGoal::INTAKE_0);
-  score_goal->set_intake_goal(score_subsystem::IntakeGoal::INTAKE_ONLY);
+  score_goal->set_intake_goal(score_subsystem::IntakeGoal::INTAKE);
+  score_goal_queue_->WriteMessage(score_goal);
+}
+
+void AutonomousBase::IntakeOpen() {
+  score_subsystem::ScoreSubsystemGoalProto score_goal;
+  score_goal->set_intake_goal(score_subsystem::IntakeGoal::INTAKE_OPEN);
+  score_goal_queue_->WriteMessage(score_goal);
+}
+
+void AutonomousBase::IntakeClose() {
+  score_subsystem::ScoreSubsystemGoalProto score_goal;
+  score_goal->set_intake_goal(score_subsystem::IntakeGoal::INTAKE_OPEN);
   score_goal_queue_->WriteMessage(score_goal);
 }
 
 void AutonomousBase::GoToIntake() {
   score_subsystem::ScoreSubsystemGoalProto score_goal;
   score_goal->set_score_goal(score_subsystem::ScoreGoal::INTAKE_0);
-  score_goal->set_intake_goal(score_subsystem::IntakeGoal::INTAKE_NONE);
   score_goal_queue_->WriteMessage(score_goal);
 }
 
 void AutonomousBase::StopIntakeGround() {
   score_subsystem::ScoreSubsystemGoalProto score_goal;
-  score_goal->set_intake_goal(score_subsystem::IntakeGoal::FORCE_STOP);
+  score_goal->set_intake_goal(score_subsystem::IntakeGoal::INTAKE_NONE);
   score_goal_queue_->WriteMessage(score_goal);
 }
 
@@ -284,7 +303,7 @@ void AutonomousBase::Score(bool fast) {
 
 void AutonomousBase::StopScore() {
   score_subsystem::ScoreSubsystemGoalProto score_goal;
-  score_goal->set_intake_goal(score_subsystem::IntakeGoal::FORCE_STOP);
+  score_goal->set_intake_goal(score_subsystem::IntakeGoal::INTAKE_NONE);
   score_goal_queue_->WriteMessage(score_goal);
 }
 
@@ -298,6 +317,37 @@ bool AutonomousBase::IsAtScoreHeight() {
   }
 }
 
+void AutonomousBase::SetFieldPosition(double x, double y, double theta) {
+  transform_f0_ = Eigen::Translation<double, 2>(Eigen::Vector2d(x, y)) *
+                  Eigen::Rotation2D<double>(theta);
+  DrivetrainStatus status;
+  if (!drivetrain_status_reader_.ReadLastMessage(&status)) {
+    LOG(WARNING,
+        "Can't read a drivetrain message, so field-centric positioning isn't "
+        "going to work right.");
+  }
+
+  // The current position relative to the robot's power-on position, from the
+  // Cartesian estimator in the drivetrain code.
+  Eigen::Transform<double, 2, Eigen::AffineCompact> current_to_robot;
+  // The current position relative to the field, defined by the parameters of
+  // this function.
+  Eigen::Transform<double, 2, Eigen::AffineCompact> current_to_field;
+
+  current_to_robot = Eigen::Translation<double, 2>(
+                         (Eigen::Vector2d() << status->estimated_x_position(),
+                          status->estimated_y_position())
+                             .finished()) *
+                     Eigen::Rotation2D<double>(status->estimated_heading());
+  current_to_field =
+      Eigen::Translation<double, 2>((Eigen::Vector2d() << x, y).finished()) *
+      Eigen::Rotation2D<double>(theta);
+
+  // transform_f0_ is "robot to field" = "robot to current" * "current to
+  // field"
+  transform_f0_ = current_to_field * current_to_robot.inverse();
+  theta_offset_ = status->estimated_heading() - theta;
+}
 
 }  // namespace autonomous
 

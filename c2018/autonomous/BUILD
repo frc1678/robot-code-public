@@ -18,15 +18,15 @@ cc_library(
     srcs = ["autonomous_base.cpp"],
     hdrs = ["autonomous_base.h"],
     deps = [
-        "//c2018/subsystems/drivetrain:drivetrain_base",
-        "//c2018/subsystems/score_subsystem:score_subsystem_queues",
+        "//third_party/frc971/control_loops/drivetrain:drivetrain_lib",
         "//muan/queues:queue_manager",
         "//muan/logging:logger",
         "//muan/wpilib:wpilib_queues",
-        "//third_party/wpilibsuite:wpilib",
+        "//c2018/subsystems/drivetrain:drivetrain_base",
+        "//c2018/subsystems/score_subsystem:score_subsystem_queues",
+        "//third_party/google/googletest:googletest",
     ],
     visibility = ["//visibility:public"],
-    restricted_to = ["//tools:roborio"],
 )
 
 # TODO(Lyra): Make this work with updated framework
@@ -41,6 +41,15 @@ cc_library(
         "//c2018/subsystems/drivetrain:polydrivetrain_plants",
     ],
 )"""
+
+cc_test(
+    name = "autonomous_base_test",
+    srcs = ["autonomous_base_test.cpp"],
+    deps = [
+        ":autonomous_base",
+        "//third_party/google/googletest:googletest",
+    ],
+)
 
 cc_library(
     name = "switch_and_scale",

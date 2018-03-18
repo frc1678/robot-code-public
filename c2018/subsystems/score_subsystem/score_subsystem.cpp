@@ -18,11 +18,13 @@ ScoreSubsystem::ScoreSubsystem()
 
 void ScoreSubsystem::BoundGoal(double* elevator_goal,
                                double* wrist_goal) const {
+  // Elevator goal doesn't get too low if the wrist can't handle it
   if (status_->wrist_angle() > kWristSafeAngle) {
     *elevator_goal = muan::utils::Cap(*elevator_goal, kElevatorWristSafeHeight,
                                       elevator::kElevatorMaxHeight);
   }
 
+  // Wrist doesn't try to go too far if the elevator can't handle it
   if (status_->elevator_actual_height() < kElevatorWristSafeHeight) {
     *wrist_goal = muan::utils::Cap(*wrist_goal, 0, kWristSafeAngle);
   }
@@ -40,57 +42,42 @@ void ScoreSubsystem::Update() {
   }
 
   if (!ds_status_reader_.ReadLastMessage(&driver_station)) {
+    // Even if we don't get a message, we know that it is a 12V battery
     driver_station->set_battery_voltage(12.0);
   }
 
-  RunStateMachine();
-
   while (goal_reader_.ReadMessage(&goal)) {
+    // Bridge between score goal enumerator and the individual mechanism goals
     SetGoal(goal);
+  // All the logic in the state machine is in this function
     RunStateMachine();
   }
 
+  // These are the goals before they get safety-ized
   double constrained_elevator_height = elevator_height_;
   double constrained_wrist_angle = wrist_angle_;
 
+  // Now we make them safe so stuff doesn't break
   BoundGoal(&constrained_elevator_height, &constrained_wrist_angle);
 
+  // Then we tell the controller to do it
   elevator_.SetGoal(constrained_elevator_height);
   elevator_.Update(input, &output, &status_, driver_station->is_sys_active());
 
-  wrist::IntakeMode intake_mode = wrist::IntakeMode::IDLE;
-  if (state_ == ScoreSubsystemState::INTAKE_RUNNING) {
-    switch (intake_goal_) {
-      case IntakeGoal::INTAKE_NONE:
-        LOG(WARNING, "State is INTAKE_RUNNING, but intake goal is INTAKE_NONE (invalid state)");
-        break;
-      case IntakeGoal::FORCE_STOP:
-        LOG(WARNING, "State is INTAKE_RUNNING, but intake goal is FORCE_STOP (invalid state)");
-        break;
-      case IntakeGoal::INTAKE:
-      case IntakeGoal::INTAKE_ONLY:
-        intake_mode = wrist::IntakeMode::IN;
-        break;
-      case IntakeGoal::OUTTAKE_SLOW:
-        intake_mode = wrist::IntakeMode::OUT_SLOW;
-        break;
-      case IntakeGoal::OUTTAKE_FAST:
-        intake_mode = wrist::IntakeMode::OUT_FAST;
-        break;
-    }
-  }
-
-  wrist_.SetGoal(constrained_wrist_angle, intake_mode, open_intake_);
+  wrist_.SetGoal(constrained_wrist_angle, intake_goal_);
   wrist_.Update(input, &output, &status_, driver_station->is_sys_active());
 
   status_->set_state(state_);
   status_->set_intake_state(intake_goal_);
 
+  // Write those queues after Updating the controllers
   output_queue_->WriteMessage(output);
   status_queue_->WriteMessage(status_);
 }
 
 void ScoreSubsystem::SetGoal(const ScoreSubsystemGoalProto& goal) {
+  // These set the member variable goals before they are constrained
+  // They are set based on the score goal enumerator
   switch (goal->score_goal()) {
     case SCORE_NONE:
       break;
@@ -163,18 +150,36 @@ void ScoreSubsystem::SetGoal(const ScoreSubsystemGoalProto& goal) {
       break;
   }
 
-  if (goal->intake_goal() == FORCE_STOP) {
-    GoToState(ScoreSubsystemState::HOLDING);
-  } else if (goal->intake_goal() != INTAKE_NONE) {
-    GoToState(ScoreSubsystemState::INTAKE_RUNNING, goal->intake_goal());
+  switch (goal->intake_goal()) {
+    case IntakeGoal::INTAKE_NONE:
+      GoToState(ScoreSubsystemState::HOLDING);
+      break;
+    case IntakeGoal::INTAKE:
+    case IntakeGoal::INTAKE_OPEN:
+    case IntakeGoal::INTAKE_CLOSE:
+      if (!status_->has_cube()) {
+        // If we're at the ground level, go to stow afterwards
+        if (elevator_height_ < 1e-5 && wrist_angle_ < 1e-5) {
+          GoToState(ScoreSubsystemState::INTAKING_TO_STOW, goal->intake_goal());
+        } else {
+          GoToState(ScoreSubsystemState::INTAKING_ONLY, goal->intake_goal());
+        }
+      }
+      break;
+    case IntakeGoal::SETTLE:
+    case IntakeGoal::OUTTAKE_SLOW:
+    case IntakeGoal::OUTTAKE_FAST:
+    case IntakeGoal::DROP:
+      GoToState(ScoreSubsystemState::HOLDING, goal->intake_goal());
+      break;
   }
-
-  open_intake_ = goal->intake_open();
 }
 
 void ScoreSubsystem::RunStateMachine() {
+  // This is the logic to move between 'states'
   switch (state_) {
     case ScoreSubsystemState::CALIBRATING:
+      // Stow after calibrating
       elevator_height_ = status_->elevator_actual_height();
       wrist_angle_ = status_->wrist_angle();
       if (status_->wrist_calibrated() && status_->elevator_calibrated()) {
@@ -188,8 +193,13 @@ void ScoreSubsystem::RunStateMachine() {
       break;
     case HOLDING:
       break;
-    case INTAKE_RUNNING:
-      if (intake_goal_ == IntakeGoal::INTAKE && status_->has_cube()) {
+    case INTAKING_ONLY:
+      if (status_->has_cube()) {
+        GoToState(HOLDING);
+      }
+      break;
+    case INTAKING_TO_STOW:
+      if (status_->has_cube()) {
         elevator_height_ = kElevatorStow;
         wrist_angle_ = kWristStowAngle;
         GoToState(HOLDING);
@@ -198,7 +208,8 @@ void ScoreSubsystem::RunStateMachine() {
   }
 }
 
-void ScoreSubsystem::GoToState(ScoreSubsystemState desired_state, IntakeGoal intake) {
+void ScoreSubsystem::GoToState(ScoreSubsystemState desired_state,
+                               IntakeGoal intake) {
   switch (state_) {
     case ScoreSubsystemState::CALIBRATING:
       if (wrist_.is_calibrated() && elevator_.is_calibrated()) {
@@ -208,16 +219,31 @@ void ScoreSubsystem::GoToState(ScoreSubsystemState desired_state, IntakeGoal int
             static_cast<int>(desired_state));
       }
       break;
-    case ScoreSubsystemState::INTAKE_RUNNING:
+    case ScoreSubsystemState::INTAKING_ONLY:
+    case ScoreSubsystemState::INTAKING_TO_STOW:
     case ScoreSubsystemState::HOLDING:
-      state_ = desired_state;
-
-      if (state_ == ScoreSubsystemState::INTAKE_RUNNING) {
-        intake_goal_ = intake;
+      if (desired_state == ScoreSubsystemState::INTAKING_ONLY ||
+          desired_state == ScoreSubsystemState::INTAKING_TO_STOW) {
+        if (intake == IntakeGoal::INTAKE || intake == IntakeGoal::INTAKE_OPEN ||
+            intake == IntakeGoal::INTAKE_CLOSE) {
+          intake_goal_ = intake;
+        } else {
+          LOG(ERROR,
+              "Tried to go to invalid state/intake_goal combination %d, %d",
+              static_cast<int>(desired_state), static_cast<int>(intake));
+        }
       } else {
-        intake_goal_ = IntakeGoal::INTAKE_NONE;
+        if (intake == IntakeGoal::INTAKE_NONE || intake == IntakeGoal::SETTLE ||
+            intake == IntakeGoal::OUTTAKE_SLOW ||
+            intake == IntakeGoal::OUTTAKE_FAST || intake == IntakeGoal::DROP) {
+          intake_goal_ = intake;
+        } else {
+          LOG(ERROR,
+              "Tried to go to invalid state/intake_goal combination %d, %d",
+              static_cast<int>(desired_state), static_cast<int>(intake));
+        }
       }
-
+      state_ = desired_state;
       break;
   }
 }

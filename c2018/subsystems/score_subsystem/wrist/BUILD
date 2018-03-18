@@ -4,8 +4,8 @@ package(default_visibility = ["//visibility:public"])
 
 py_binary(
     name = "wrist_python",
-    srcs = ["wrist_controller.py"],
-    main = "wrist_controller.py",
+    srcs = ["wrist.py"],
+    main = "wrist.py",
     deps = ["//muan/control:python_controls"],
 )
 
@@ -21,7 +21,7 @@ genrule(
 )
 
 cc_library(
-    name = "wrist_controller",
+    name = "wrist",
     srcs = ["wrist.cpp"],
     hdrs = ["wrist.h"],
     deps = [
@@ -51,7 +51,7 @@ cc_test(
     name = "wrist_test",
     srcs = ["wrist_test.cpp"],
     deps = [
-        ":wrist_controller",
+        ":wrist",
         "//third_party/aos/common/util:trapezoid_profile",
         "//third_party/google/googletest",
     ],

@@ -24,15 +24,6 @@ enum ScoreGoal {
   SCALE_SHOOT = 16;
 }
 
-enum IntakeGoal {
-  INTAKE_NONE = 0; // Let the state machine progress
-  INTAKE = 1;
-  INTAKE_ONLY = 2;
-  OUTTAKE_SLOW = 3;
-  OUTTAKE_FAST = 4;
-  FORCE_STOP = 5;
-}
-
 message ScoreSubsystemInput {
   required uint64 timestamp = 1;
   required double elevator_encoder = 2;
@@ -52,22 +43,38 @@ message ScoreSubsystemOutput {
   required bool wrist_solenoid_close = 6;
 }
 
+enum IntakeGoal {
+  // Doing nothing - not running the intake; just hold the cube if we have one
+  INTAKE_NONE = 0;
+  // The default intake mode
+  INTAKE = 1;
+  // Usually to be used in series - open the intake, then close it around a cube
+  // while running it
+  INTAKE_OPEN = 2;
+  INTAKE_CLOSE = 3;
+  // Intaking, but pinched and ignoring the sensor for state transitions
+  SETTLE = 4;
+  // Spit out at different speeds (for scoring)
+  OUTTAKE_SLOW = 5;
+  OUTTAKE_FAST = 6;
+  // Drop it without running the intake
+  DROP = 7;
+}
+
 message ScoreSubsystemGoal {
   required uint64 timestamp = 1;
   required ScoreGoal score_goal = 2;
-  required IntakeGoal intake_goal = 3;
-  required bool intake_open = 4;
 
-  required double godmode_elevator = 5;
-  required double godmode_roller = 6;
-  required double godmode_wrist = 7;
-  required bool godmode_claw_pinch = 8;
+  // What we _should_ be doing (if it's supposed to be intaking then it will
+  // continue through transitions if it has a cube)
+  required IntakeGoal intake_goal = 3;
 }
 
 enum ScoreSubsystemState {
   CALIBRATING = 0;
   HOLDING = 1;
-  INTAKE_RUNNING = 2;
+  INTAKING_TO_STOW = 2;
+  INTAKING_ONLY = 3;
 }
 
 message ScoreSubsystemStatus {

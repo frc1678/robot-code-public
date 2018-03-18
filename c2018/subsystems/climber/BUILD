@@ -14,6 +14,7 @@ cc_library(
   srcs = ["climber.cpp"],
   hdrs = ["climber.h"],
   deps = [
+<<<<<<< HEAD
       ":climber_proto",
       ":climber_queues",
       "//c2018/subsystems/climber/batter",
@@ -21,6 +22,14 @@ cc_library(
       "//muan/queues:queue_manager",
       "//muan/wpilib:state_protos",
       "//muan/wpilib:wpilib_queues",
+=======
+    ":climber_proto",
+    ":climber_queues",
+    "//muan/wpilib:wpilib_queues",
+    "//muan/queues:queue_manager",
+    "//c2018/subsystems/climber/batter",
+    "//muan/wpilib:state_protos",
+>>>>>>> bb4923abb33342477cf24b884a9e590e5cb364d9
   ],
 )
 

@@ -3,7 +3,6 @@
 
 #include "c2018/subsystems/climber/batter/batter.h"
 #include "c2018/subsystems/climber/queue_types.h"
-#include "c2018/subsystems/climber/winch/winch.h"
 #include "muan/queues/queue_manager.h"
 #include "muan/wpilib/queue_types.h"
 
@@ -14,7 +13,6 @@ class Climber {
  public:
   Climber();
   void Update();
-  winch::Winch winch_;
   batter::Batter batter_;
 
  private:

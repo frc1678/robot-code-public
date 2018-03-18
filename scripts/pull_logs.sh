@@ -32,7 +32,7 @@ robot_user="admin@roborio-$robot-frc.local"
 robot_log_dir="/media/sda1/logs"
 
 if [[ $log == "_" ]]; then
-  log=$(ssh $robot_user "ls $robot_log_dir | sort -n | tail -n 1")
+  log=$(ssh $robot_user "ls $robot_log_dir -t | head -n 1")
   if [[ $log == "" ]]; then
     echo "No logs found"
     exit

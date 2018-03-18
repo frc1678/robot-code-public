@@ -1,4 +1,3 @@
-import math
 import numpy as np
 import sys
 
@@ -11,59 +10,47 @@ from muan.control.controls import *
 
 dt = 0.005
 
-def make_gains():
-    # x = |       Angle      |
-    #     | Angular velocity |
+def make_gains(second_stage, has_cube, subname='gains'):
+    # x = |   Linear Height   |
+    #     |  Linear Velocity  |
     # u = voltage
     # y = encoder
 
-    name = 'gains'
+    name = subname
 
-    # Moment of inertia constants
-    # M= mass and L = length
-    M = 6.0
-    L = 0.3
+    mass_carriage = 6.0
+
+    if second_stage:
+        mass_carriage += 2.5
+
+    if has_cube:
+        mass_carriage += 1.59
 
     # Parameters
-    moment_inertia = M * L * L
-    gear_ratio = (12.0 / 100.0) * (14.0 / 72.0) * (18.0 / 60.0)
-    efficiency = .9
+    r = (1.0 + 1.0 / 16.0) * 0.0254
+    J = 0.68 * r ** 2 + mass_carriage * r ** 2
+    G = (12.0 / 100.0) * (14.0 / 30.0)
+    eff = .8
 
-    # motor characteristics
-    free_speed = 18730.0 * 2 * math.pi / 60
-    free_current = .7
-    stall_torque = .71
-    stall_current = 134.
-    resistance = 12. / stall_current
-    torque_constant = stall_torque / stall_current
-    velocity_constant = (12. - free_current * resistance) / free_speed
+    w_free = 18730. / 60. * 6.28
+    I_free = .7
+    T_stall = 0.71
+    I_stall = 134.
+    R = 12. / I_stall
+    Kt = T_stall / I_stall
+    Kv = (12. - I_free * R) / w_free
 
-    sensor_ratio = 1.0
+    num_motors = 2.
+    sensor_ratio = 1.
 
-    # back emf torque
-    emf = -(torque_constant * velocity_constant) / (resistance * gear_ratio ** 2.0)
-
-    # motor torque
-    mtq = efficiency * torque_constant / (gear_ratio * resistance)
-
-    # rotational acceleration
-    t2a = 1. / moment_inertia
-
-    # Matrix A:
-    # A = |0  1 |
-    #     |k1 k2|
     A_c = np.asmatrix([
-        [0., 1.],
-        [0., t2a * emf],
+        [0., 1.0],
+        [0., -Kt * Kv / (J * G * G * R)],
     ])
-
-    # Matrix B:
-    # B = |0 |
-    #     |k3|
 
     B_c = np.asmatrix([
         [0.],
-        [t2a * mtq]
+        [Kt * r / (J * G * R)]
     ])
 
     C = np.asmatrix([
@@ -77,7 +64,7 @@ def make_gains():
     ])
 
     R_noise = np.asmatrix([
-        [0.01]
+        [1e-5]
     ])
 
     Q_ff = np.asmatrix([
@@ -86,7 +73,7 @@ def make_gains():
     ])
 
     A_d, B_d, Q_d, R_d = c2d(A_c, B_c, dt, Q_noise, R_noise)
-    K = place(A_c, B_c, [-27.0 + 3.j, -27.0 - 3.j])
+    K = place(A_c, B_c, [-10.0, -7.0])
     Kff = feedforwards(A_d, B_d, Q_ff)
     L = dkalman(A_d, C, Q_d, R_d)
 
@@ -97,8 +84,8 @@ def make_gains():
 
     return gains
 
-def make_augmented_gains():
-    unaugmented_gains = make_gains()
+def make_augmented_gains(second_stage, has_cube, subname):
+    unaugmented_gains = make_gains(second_stage, has_cube, subname)
 
     dt = unaugmented_gains.dt
 
@@ -119,8 +106,8 @@ def make_augmented_gains():
     K[0, 2] = 1.
 
     Q_noise = np.zeros((3, 3))
-    # Q_noise[:2, :2] = unaugmented_gains.Q_c
-    # Q_noise[2, 2] = 1
+    Q_noise[:2, :2] = unaugmented_gains.Q_c
+    Q_noise[2, 2] = 10.
 
     R_noise = np.asmatrix([
         [1e-5]
@@ -128,8 +115,8 @@ def make_augmented_gains():
 
     # Kalman noise matrix
     Q_kalman = np.asmatrix([
-        [1e-1, 0.0, 0.0],
-        [0.0, 2e0, 0.0],
+        [1e-2, 0.0, 0.0],
+        [0.0, 2e-1, 0.0],
         [0.0, 0.0, 3e3]
     ])
 
@@ -154,25 +141,24 @@ def make_augmented_gains():
 u_max = np.asmatrix([12.]).T
 x0 = np.asmatrix([0., 0., 0.]).T
 
-gains = make_augmented_gains()
+gains = [make_augmented_gains(True, True, 'second_stage_cube'), make_augmented_gains(True, False, 'second_stage'), make_augmented_gains(False, True, 'first_stage_cube'), make_augmented_gains(False, False, 'first_stage')]
 
 plant = StateSpacePlant(gains, x0)
 controller = StateSpaceController(gains, -u_max, u_max)
 observer = StateSpaceObserver(gains, x0)
 
-t_profile = TrapezoidalMotionProfile (np.pi / 2, 40, 40)
+profile = TrapezoidalMotionProfile(1.0, 3.0, 3.0)
 
 def goal(t):
-    # Make goal a trapezoidal profile
-    return np.asmatrix([t_profile.distance(t), t_profile.velocity(t), 0]).T
+    return np.asmatrix([profile.distance(t), profile.velocity(t), 0.]).T
 
 if __name__ == '__main__':
     if len(sys.argv) == 3:
         from muan.control.state_space_writer import StateSpaceWriter
-        writer = StateSpaceWriter(gains, 'wrist_controller')
+        writer = StateSpaceWriter(gains, 'elevator')
         writer.write(sys.argv[1], sys.argv[2])
     else:
         from muan.control.state_space_scenario import StateSpaceScenario
 
-        scenario = StateSpaceScenario(plant, x0, controller, observer, x0, 'wrist_controller')
+        scenario = StateSpaceScenario(plant, x0, controller, observer, x0, 'elevator')
         scenario.run(goal, 4)

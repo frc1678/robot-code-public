@@ -47,10 +47,9 @@ TeleopBase::TeleopBase()
   back_ = gamepad_.MakeAxisRange(226, 345, 0, 1, 0.7);
 
   intake_ = gamepad_.MakeAxis(3, 0.3);
-  intake_only_ =
-      gamepad_.MakeButton(uint32_t(muan::teleop::XBox::RIGHT_BUMPER));
-
+  settle_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_CLICK_IN));
   intake_open_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_BUMPER));
+  intake_close_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::RIGHT_BUMPER));
 
   outtake_slow_ = gamepad_.MakeAxis(2, 0.7);
   outtake_fast_ =
@@ -200,28 +199,18 @@ void TeleopBase::SendScoreSubsystemMessage() {
   }
 
   // Intake modes
-  if (intake_->was_clicked()) {
+  if (intake_->is_pressed()) {
     score_subsystem_goal->set_intake_goal(c2018::score_subsystem::INTAKE);
-  } else if (intake_->was_released()) {
-    score_subsystem_goal->set_intake_goal(c2018::score_subsystem::FORCE_STOP);
-  }
-
-  if (intake_only_->was_clicked()) {
-    score_subsystem_goal->set_intake_goal(c2018::score_subsystem::INTAKE_ONLY);
-  } else if (intake_only_->was_released()) {
-    score_subsystem_goal->set_intake_goal(c2018::score_subsystem::FORCE_STOP);
-  }
-
-  score_subsystem_goal->set_intake_open(intake_open_->is_pressed());
-
-  if (outtake_fast_->is_pressed()) {
+  } else if (intake_open_->is_pressed()) {
+    score_subsystem_goal->set_intake_goal(c2018::score_subsystem::INTAKE_OPEN);
+  } else if (intake_close_->is_pressed()) {
+    score_subsystem_goal->set_intake_goal(c2018::score_subsystem::INTAKE_CLOSE);
+  } else if (outtake_fast_->is_pressed()) {
     score_subsystem_goal->set_intake_goal(c2018::score_subsystem::OUTTAKE_FAST);
   } else if (outtake_slow_->is_pressed()) {
     score_subsystem_goal->set_intake_goal(c2018::score_subsystem::OUTTAKE_SLOW);
-  }
-
-  if (outtake_slow_->was_released() || outtake_fast_->was_released()) {
-    score_subsystem_goal->set_intake_goal(c2018::score_subsystem::FORCE_STOP);
+  } else if (settle_->is_pressed()) {
+    score_subsystem_goal->set_intake_goal(c2018::score_subsystem::SETTLE);
   }
 
   // Scoring modes
