@@ -406,7 +406,7 @@ TEST_F(Y2016DrivetrainTest, TransitionToPath) {
     ::frc971::control_loops::drivetrain::StatusProto status = *maybe_status;
     EXPECT_NEAR(status->estimated_x_position(), 2.2, 1e-1);
     EXPECT_NEAR(status->estimated_y_position(), 3.62, 1e-1);
-    EXPECT_NEAR(status->estimated_heading(), M_PI * 2 - 0.628, 1e-2);
+    EXPECT_NEAR(status->estimated_heading(), -0.628, 1e-2);
   }
 }
 
