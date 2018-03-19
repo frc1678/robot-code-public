@@ -5,6 +5,7 @@
 #include "c2018/wpilib/climber_interface.h"
 #include "c2018/wpilib/drivetrain_interface.h"
 #include "c2018/wpilib/score_interface.h"
+#include "c2018/wpilib/lights_interface.h"
 #include "gflags/gflags.h"
 #include "muan/queues/queue_manager.h"
 #include "muan/wpilib/can_wrapper.h"
@@ -28,6 +29,7 @@ class WpilibInterface {
   DrivetrainInterface drivetrain_;
   ScoreSubsystemInterface score_;
   ClimberInterface climb_;
+  LightsInterface lights_;
 };
 
 }  // namespace wpilib

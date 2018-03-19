@@ -29,6 +29,7 @@ void WpilibInterface::WriteActuators() {
   drivetrain_.WriteActuators();
   score_.WriteActuators();
   climb_.WriteActuators();
+  lights_.WriteActuators();
 }
 
 void WpilibInterface::ReadSensors() {
