@@ -68,6 +68,9 @@ message ScoreSubsystemGoal {
   // What we _should_ be doing (if it's supposed to be intaking then it will
   // continue through transitions if it has a cube)
   required IntakeGoal intake_goal = 3;
+
+  required double elevator_god_mode_goal = 4;
+  required double wrist_god_mode_goal = 5;
 }
 
 enum ScoreSubsystemState {

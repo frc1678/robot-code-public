@@ -34,10 +34,7 @@ TeleopBase::TeleopBase()
           QueueManager<ScoreSubsystemStatusProto>::Fetch()} {
   hook_up_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::BACK));
   batter_down_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::START));
-  godmode_ = gamepad_.MakeButton(
-      uint32_t(muan::teleop::XBox::LEFT_CLICK_IN));  // TODO(hanson/gemma/ellie)
-                                                     // add godmodes for
-                                                     // intaking/outtaking
+
   height_0_ = gamepad_.MakePov(0, muan::teleop::Pov::kSouth);
   height_1_ = gamepad_.MakePov(0, muan::teleop::Pov::kEast);
   height_2_ = gamepad_.MakePov(0, muan::teleop::Pov::kNorth);
@@ -50,7 +47,8 @@ TeleopBase::TeleopBase()
   intake_ = gamepad_.MakeAxis(3, 0.3);
   settle_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_CLICK_IN));
   intake_open_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_BUMPER));
-  intake_close_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::RIGHT_BUMPER));
+  intake_close_ =
+      gamepad_.MakeButton(uint32_t(muan::teleop::XBox::RIGHT_BUMPER));
 
   outtake_slow_ = gamepad_.MakeAxis(2, 0.7);
   outtake_fast_ =
@@ -60,9 +58,6 @@ TeleopBase::TeleopBase()
   pos_1_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::B_BUTTON));
   pos_2_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::X_BUTTON));
   pos_3_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::Y_BUTTON));
-
-  godmode_up_ = gamepad_.MakeAxis(5, -.7);   // Right Joystick North
-  godmode_down_ = gamepad_.MakeAxis(5, .7);  // Right Joystick South
 
   shifting_low_ = throttle_.MakeButton(4);
   shifting_high_ = throttle_.MakeButton(5);
@@ -180,13 +175,18 @@ void TeleopBase::SendScoreSubsystemMessage() {
   score_subsystem_goal->set_intake_goal(c2018::score_subsystem::INTAKE_NONE);
 
   // Godmode
-  if (godmode_->is_pressed()) {
-    if (godmode_up_->is_pressed()) {
-      // logic
-    } else if (godmode_down_->is_pressed()) {
-      // more logic
-    }
-    // room for more godmode buttons if needed
+  double godmode_elevator = -gamepad_.wpilib_joystick()->GetRawAxis(5);
+  double godmode_wrist = gamepad_.wpilib_joystick()->GetRawAxis(4);
+
+  if (std::abs(godmode_elevator) > kGodmodeThreshold) {
+    score_subsystem_goal->set_elevator_god_mode_goal(
+        std::abs(godmode_elevator - kGodmodeThreshold) *
+        kGodmodeElevatorMultiplier * (godmode_elevator > 0 ? 1 : -1));
+  }
+  if (std::abs(godmode_wrist) > kGodmodeThreshold) {
+    score_subsystem_goal->set_wrist_god_mode_goal(
+        std::abs(godmode_wrist - kGodmodeThreshold) * kGodmodeWristMultiplier *
+        (godmode_wrist > 0 ? 1 : -1));
   }
 
   // Elevator heights + intakes
