@@ -19,16 +19,24 @@ ScoreSubsystem::ScoreSubsystem()
           QueueManager<DriverStationProto>::Fetch()->MakeReader()} {}
 
 void ScoreSubsystem::BoundGoal(double* elevator_goal,
-                               double* wrist_goal) const {
+                               double* wrist_goal) {
   // Elevator goal doesn't get too low if the wrist can't handle it
   if (status_->wrist_angle() > kWristSafeAngle) {
     *elevator_goal = muan::utils::Cap(*elevator_goal, kElevatorWristSafeHeight,
                                       elevator::kElevatorMaxHeight);
   }
 
+  double time_until_elevator_safe =
+      elevator_.TimeLeftUntil(kElevatorWristSafeHeight, *elevator_goal);
+  double time_until_wrist_safe =
+      wrist_.TimeLeftUntil(kWristSafeAngle, wrist::kWristMaxAngle);
+
   // Wrist doesn't try to go too far if the elevator can't handle it
-  if (time_until_elevator_safe_ > time_until_wrist_safe_) {
-    *wrist_goal = muan::utils::Cap(*wrist_goal, 0, kWristSafeAngle);
+  std::cout << time_until_elevator_safe << "\t" << time_until_wrist_safe
+            << "\t" << *wrist_goal << "\t" << *elevator_goal << std::endl;
+  if (*wrist_goal > kWristSafeAngle &&
+      time_until_elevator_safe > time_until_wrist_safe) {
+    *wrist_goal = 0.0;
   }
 }
 
@@ -58,12 +66,6 @@ void ScoreSubsystem::Update() {
   // These are the goals before they get safety-ized
   double constrained_elevator_height = elevator_height_;
   double constrained_wrist_angle = wrist_angle_;
-
-  elevator_.SetTimerGoal(std::max(elevator_height_, kElevatorWristSafeHeight));
-  wrist_.SetTimerGoal(std::max(wrist_angle_, kWristSafeAngle));
-
-  time_until_elevator_safe_ = elevator_.TimeLeftUntil(kElevatorWristSafeHeight);
-  time_until_wrist_safe_ = wrist_.TimeLeftUntil(kWristSafeAngle);
 
   // Now we make them safe so stuff doesn't break
   BoundGoal(&constrained_elevator_height, &constrained_wrist_angle);

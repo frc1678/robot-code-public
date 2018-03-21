@@ -52,7 +52,7 @@ class ScoreSubsystem {
   void GoToState(ScoreSubsystemState state, IntakeGoal intake = IntakeGoal::INTAKE_NONE);
   void RunStateMachine();
 
-  void BoundGoal(double* elevator_goal, double* wrist_goal) const;
+  void BoundGoal(double* elevator_goal, double* wrist_goal);
 
   elevator::ElevatorController elevator_;
   wrist::WristController wrist_;
@@ -67,9 +67,6 @@ class ScoreSubsystem {
 
   double elevator_height_;
   double wrist_angle_;
-
-  double time_until_elevator_safe_;
-  double time_until_wrist_safe_;
 
   ScoreSubsystemState state_ = ScoreSubsystemState::CALIBRATING;
   // Only valid if `state_` is INTAKE_RUNNING

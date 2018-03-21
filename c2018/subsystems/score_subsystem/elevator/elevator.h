@@ -56,7 +56,7 @@ class ElevatorController {
   void SetTimerGoal(double goal);
   double CapU(double elevator_u);  // Voltage capper to +/- 12
 
-  double TimeLeftUntil(double x) const;
+  double TimeLeftUntil(double x, double final_goal);
 
   bool is_calibrated() const;  // Getter for if it's calibrated
 

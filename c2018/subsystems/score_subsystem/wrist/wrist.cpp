@@ -38,11 +38,6 @@ void WristController::SetGoal(double wrist_angle, IntakeGoal intake_mode) {
   intake_mode_ = intake_mode;
 }
 
-void WristController::SetTimerGoal(double wrist_angle) {
-  timer_goal_ =
-      muan::utils::Cap(wrist_angle, kWristMinAngle, kWristMaxAngle);
-}
-
 void WristController::Update(ScoreSubsystemInputProto input,
                              ScoreSubsystemOutputProto* output,
                              ScoreSubsystemStatusProto* status,
@@ -177,7 +172,6 @@ void WristController::Update(ScoreSubsystemInputProto input,
   (*status)->set_wrist_profiled_goal(profiled_goal_(0, 0));
   (*status)->set_wrist_unprofiled_goal(unprofiled_goal_);
   (*status)->set_wrist_calibration_offset(hall_calibration_.offset());
-  (*status)->set_wrist_time_left(TimeLeftUntil(timer_goal_));
 }
 
 Eigen::Matrix<double, 2, 1> WristController::UpdateProfiledGoal(
@@ -185,18 +179,16 @@ Eigen::Matrix<double, 2, 1> WristController::UpdateProfiledGoal(
   // Sets profiled goal based on the motion profile
   if (outputs_enabled) {
     profiled_goal_ = trapezoidal_motion_profile_.Update(unprofiled_goal_, 0.0);
-    trapezoidal_time_estimator_.Update(timer_goal_, 0.0);
   }
+
+  trapezoidal_time_estimator_.MoveCurrentState(profiled_goal_);
 
   return profiled_goal_;
 }
 
-double WristController::TimeLeftUntil(double angle) const {
-  if (wrist_observer_.x()(0, 0) > angle) {
-    return 0;
-  }
-
-  return trapezoidal_time_estimator_.TimeLeftUntil(angle, angle, 0.0);
+double WristController::TimeLeftUntil(double angle, double final_angle) {
+  trapezoidal_time_estimator_.Update(final_angle, 0);
+  return trapezoidal_time_estimator_.TimeLeftUntil(angle, final_angle, 0.0);
 }
 
 bool WristController::is_calibrated() const {

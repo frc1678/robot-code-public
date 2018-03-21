@@ -54,7 +54,6 @@ class WristController {
 
   // Sets the unprofiled goal after capping
   void SetGoal(double angle, IntakeGoal mode);
-  void SetTimerGoal(double angle);
   Eigen::Matrix<double, 2, 1> UpdateProfiledGoal(double unprofiled_goal_,
                                                  bool outputs_enabled);
 
@@ -62,7 +61,7 @@ class WristController {
   void Update(ScoreSubsystemInputProto input, ScoreSubsystemOutputProto* output,
               ScoreSubsystemStatusProto* status, bool outputs_enabled);
 
-  double TimeLeftUntil(double angle) const;
+  double TimeLeftUntil(double angle, double final_angle);
   void SetWeights(bool has_cube);
 
   // Getter for hall calibration
@@ -86,7 +85,6 @@ class WristController {
 
   IntakeGoal intake_mode_ = IntakeGoal::INTAKE_NONE;
   double unprofiled_goal_ = 0;
-  double timer_goal_ = 0;
   Eigen::Matrix<double, 2, 1> profiled_goal_;
 
   // Voltage to give to intake
