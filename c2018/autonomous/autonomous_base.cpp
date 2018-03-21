@@ -255,7 +255,7 @@ void AutonomousBase::IntakeOpen() {
 
 void AutonomousBase::IntakeClose() {
   score_subsystem::ScoreSubsystemGoalProto score_goal;
-  score_goal->set_intake_goal(score_subsystem::IntakeGoal::INTAKE_OPEN);
+  score_goal->set_intake_goal(score_subsystem::IntakeGoal::INTAKE_CLOSE);
   score_goal_queue_->WriteMessage(score_goal);
 }
 

@@ -16,8 +16,8 @@ namespace c2018 {
 namespace autonomous {
 
 constexpr double kCubeX =
-    5.18;  // Platform zone cubes' y-value if robot starts facing the wall
-constexpr double kScaleX = 6.9;  // Scale y-value if robot starts facing wall
+    5.18;  // Platform zone cubes' x-value if robot starts facing the wall
+constexpr double kScaleX = 6.5;  // Scale x-value if robot starts facing wall
 constexpr double kSwitchFrontX =
     2.9;  // FRONT of the switch if robot starts facing wall
 
