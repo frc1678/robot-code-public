@@ -19,7 +19,7 @@ constexpr int kNumRumbleTicks = 25;
 
 constexpr double kGodmodeElevatorMultiplier = 6;  // tentative
 constexpr double kGodmodeWristMultiplier = 10;    // tentative
-constexpr double kGodmodeThreshold = .2;          // tentative
+constexpr double kGodmodeThreshold = .1;          // tentative
 
 class TeleopBase {
  public:
