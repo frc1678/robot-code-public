@@ -10,22 +10,6 @@ img {
   /* TODO(Lyra): prevent image from overflowing */
 }
 
-.dropbtn {
-  background-color: #3498DB;
-  font-size: 16px;
-  padding: 16px;
-  border: 2px solid black;
-}
-
-.dropdown-content {
-  display: none;
-  font-size: 14px;
-}
-
-.dropbtn:hover, .dropbtn:focus {
-  background-color: #2980B9;
-}
-
 .box {
   position: relative;
   top: 10px;

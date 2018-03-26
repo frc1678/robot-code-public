@@ -46,7 +46,7 @@ TEST_F(LightsTest, FlashForCorrectTime) {
   int j = 0;
   score_subsystem_status_proto_->set_has_cube(true);
 
-  for (int i = 0; i < 500; i++) {
+  for (int i = 0; i < kFlashTicks + 10; i++) {
     status_queue_->WriteMessage(score_subsystem_status_proto_);
     ReadMessages();
     Update();
@@ -55,7 +55,7 @@ TEST_F(LightsTest, FlashForCorrectTime) {
     }
   }
 
-  EXPECT_EQ(j, 169);
+  EXPECT_NEAR(j, kFlashTicks / 2, 1);
 }
 
 }  // namespace lights

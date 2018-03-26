@@ -26,13 +26,13 @@ constexpr double kElevatorMaxVelocity = 2.5;
 
 // Capping stuff so it doesn't go boom
 constexpr double kElevatorMinHeight = 0.0;
-constexpr double kElevatorMaxHeight = 1.92;
+constexpr double kElevatorMaxHeight = 1.944;
 
 // Realistic voltage (SKY)
 constexpr double kElevatorMaxVoltage = 12;
 
 // Calibration parameters so it thinks it is where it actually is
-constexpr double kHallEffectHeight = 0.92;
+constexpr double kHallEffectHeight = 0.89;
 constexpr double kCalibrationVoltage = 6;
 
 // Encoder fault stuff so it doesn't get too sad when they break

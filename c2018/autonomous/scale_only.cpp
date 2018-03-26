@@ -80,7 +80,7 @@ void ScaleOnly::RightScale() {
   SetFieldPosition(0.0, kStartY, 180 * deg);
   // XR - Scale is right
   LOG(INFO, "Running RIGHT SCALE ONLY auto");
-  double scale_y = -1.6;
+  double scale_y = -2.1;
 
   // Drive to scale
   StartDrivePath(kScaleX + 0.3, scale_y, 210 * deg, -1, kHighGear);
@@ -113,7 +113,7 @@ void ScaleOnly::RightScale() {
   IntakeGround();
   IntakeOpen();
   Wait(100);
-  StartDrivePath(kCubeX + 0.3, -0.7, 160 * deg, 1, kLowGear, 0.0, 0.3);
+  StartDrivePath(kCubeX + 0.1, -0.7, 160 * deg, 1, kLowGear, 0.0, 0.3);
   WaitUntilDriveComplete();
   IntakeClose();
   WaitForCube();

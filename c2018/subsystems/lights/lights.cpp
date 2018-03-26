@@ -9,28 +9,39 @@ Lights::Lights()
     : output_queue_{QueueManager<LightsOutputProto>::Fetch()},
       status_reader_{
           QueueManager<score_subsystem::ScoreSubsystemStatusProto>::Fetch()
-              ->MakeReader()} {}
+              ->MakeReader()},
+      goal_reader_{QueueManager<LightsGoalProto>::Fetch()->MakeReader()} {}
 
-bool Lights::FlashLights() {
-  const double cycle_period = 1 / kBlinkHz;
-  return fmod(flash_time_, cycle_period) < cycle_period / 2;
+bool Lights::FlashLights(double hz, int ticks_gone) {
+  const int cycle_period = static_cast<int>(200.0 / hz);
+  return (ticks_gone / cycle_period) % 2 == 0;
 }
 
 void Lights::Update() {
   c2018::score_subsystem::ScoreSubsystemStatusProto status_proto;
   LightsOutputProto output;
   status_reader_.ReadLastMessage(&status_proto);
+
+  LightsGoalProto goal;
+  goal_reader_.ReadLastMessage(&goal);
+
   bool on = false;
 
-  if (flash_time_ < kFlashLength) {  // stop flashing after timer is up
-    on = FlashLights();
-  }
   if (status_proto->has_cube() && !had_cube_) {
-    // if it just got a cube, start flashing
-    flash_time_ = 0.0;
+    flash_pickup_ticks_left_ = kFlashTicks;
   }
 
-  flash_time_ += 0.005;
+  if (goal->ask_for_cube()) {
+    flash_request_ticks_gone_++;
+    on = FlashLights(kBlinkHzFast, flash_request_ticks_gone_);
+  } else {
+    flash_request_ticks_gone_ = 0;
+    if (flash_pickup_ticks_left_ > 0) {
+      on = FlashLights(kBlinkHzSlow, kFlashTicks - flash_pickup_ticks_left_);
+      flash_pickup_ticks_left_--;
+    }
+  }
+
   had_cube_ = status_proto->has_cube();
 
   output->set_on(on);

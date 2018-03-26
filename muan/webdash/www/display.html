@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<DOCTYPE html>
 
 <html>
   <head>
@@ -12,8 +12,6 @@
     var autosock = new WebSocket("ws://" + document.location.host + "/auto");
     // Used for information required in UpdateDisplay from displaysock
     var display_carryover = {};
-    var autolist_object = {};
-    var pressed = false;
     // Used in case widgets require box size, set in MakeDisplay
     var box_width = 0;
     var box_height = 0;
@@ -28,6 +26,8 @@
       UpdateDisplay(data);
     }
 
+    function sendAutoData() { autosock.send(getRadioCheckedValue("auto")); }
+
     function getRadioCheckedValue(radio_name) {
       var oRadio = document.getElementsByName(radio_name);
       for (var i = 0; i < oRadio.length; i++) {
@@ -35,10 +35,8 @@
           return oRadio[i].value;
         }
       }
-      return "";
+      return '';
     }
-
-    function sendAutoData(auto) { autosock.send(auto); }
 
     // Creates framework for display, makes boxes based on number of widgets, equal
     // portions of screen alloted to each widget
@@ -54,7 +52,7 @@
       var top_shift = 0;
       var left_shift = 0;
 
-      for (var widget of display["widgets"]) {
+      for (widget of display["widgets"]) {
         left_shift = box_width * widget["coordinates"][0];
         top_shift = box_height * widget["coordinates"][1];
         coords = (widget["coordinates"][0]).toString() + "_" +
@@ -64,6 +62,20 @@
             "px;left:" + left_shift + "px;width:" + box_width + "px;height:" +
             box_height + "px></div>";
         widget_name = widget["name"];
+        if (widget["type"] == "auto") {
+          auto_id = "auto" + coords;
+          html_string = "<div id=" + coords + "><p>Auto Mode:</p>";
+          if (!document.getElementById(auto_id)) {
+            for (var i = 0; i < widget["autos"].length; i++) {
+              html_string += "<input type=\"radio\" name=\"auto\" value=\"" +
+                             widget["autos"][i] + "\">" + widget["autos"][i] +
+                             "<br>\n";
+            }
+            html_string +=
+                "<input type=\"button\" value=\"Update Auto\" onclick=\"sendAutoData()\"></div>";
+            document.getElementById(coords).innerHTML = html_string;
+          }
+        }
         if (widget["should-title"]) {
           document.getElementById(coords).innerHTML = "<p>" + widget_name + ":</p>";
         }
@@ -73,10 +85,10 @@
 
     // Starts UpdateDisplay function
     function alertData() {
-      if (datasock.readyState === 0) {
+      if (datasock.readyState == 0) {
         window.setTimeout(alertData, 100);
       } else {
-        datasock.send("ping");
+        datasock.send("ping")
       }
     }
 
@@ -87,7 +99,6 @@
       var color = "";
       var coords = "";
       var enum_box = "";
-      var enum_background_color = "";
       var number_width = 0;
       var number_percentage = "";
       var encourage_id = "";
@@ -105,44 +116,13 @@
         alliance_color = "#0000ff";
         other_alliance_color = "#ff0000";
       }
-      for (var widget of display_carryover["widgets"]) {
+      for (widget of display_carryover["widgets"]) {
         coords = (widget["coordinates"][0]).toString() + "_" +
                  (widget["coordinates"][1]).toString();
         var source = null;
-        if (widget["type"] != "image" && widget["type"] != "link" && widget["source"] && data[widget["source"][0]][widget["source"][1]]) {
+        if (widget["type"] != "image" && widget["type"] != "encouragement" &&
+            widget["type"] != "auto" && widget["type"] != "link") {
           var source = data[widget["source"][0]][widget["source"][1]];
-        }
-        if (widget["type"] == "auto") {
-          auto_id = "auto" + coords;
-          html_string = "<div id=auto" + coords + "><p>Auto Mode:</p>";
-          if (!document.getElementById(auto_id)) {
-            if (!widget["source"]) {
-              for (var i = 0; i < widget["autos"].length; i++) {
-                html_string += "<input type=\"radio\" name=\"auto\"" + widget["autos"][i] + " value=\"" +
-                               widget["autos"][i] + "\">" + widget["autos"][i] +
-                               "<br>";
-              }
-              html_string +=
-                  "<input type=\"button\" value=\"Update Auto\" onclick=\"sendAutoData(getRadioCheckedValue('auto')\"></div>";
-            } else {
-              for (var prop in widget["autos"]) {
-                html_string += "<div onclick=\"Toggle(document.getElementById('" + prop + "'))\" class=\"dropbtn\">" + prop + "</button></div><br>";
-                html_string += "<div id=\"" + prop + "\" class=\"dropdown-content\">";
-                for (var i = 0; i < widget["autos"][prop].length; i++) {
-                  html_string += "<input type=\"radio\" name=\"auto" + prop + "\" id=\"auto" + prop + "\" value=\"" + widget["autos"][prop][i] + "\" style:display=\"none\">" + widget["autos"][prop][i] + "<br>";
-                }
-                html_string += "</div>";
-              }
-              autolist_object = widget["autos"];
-              html_string += "<input type=\"button\" value=\"Update Auto\" onclick=\"UpdatePressed()\">";
-            }
-            document.getElementById(coords).innerHTML = html_string;
-          }
-          if (pressed) {
-            if (source) {
-              getAutoData(source, autolist_object);
-            }
-          }
         }
         // Creates boolean widgets, colored box
         if (widget["type"] == "boolean") {
@@ -162,14 +142,14 @@
 
         // Creates enum widgets, colored box
         if (widget["type"] == "enum") {
-          for (var widget_name of widget["names"]) {
+          for (widget_name of widget["names"]) {
             enumerator_id = "enum" + coords;
             // Yet again, hex values gotten from JSON script, but now with n
             // different colors
             if (widget_name == source) {
               color = widget["colors"][widget_name];
             }
-            enum_background_color = "background-color:" + color;
+            var enum_background_color = "background-color:" + color;
             if (!document.getElementById(enumerator_id)) {
               enum_box = "<div class=\"box\" id=\"" + enumerator_id + "\"></div>";
               document.getElementById(coords).innerHTML += enum_box;
@@ -272,27 +252,6 @@
       encouragement_time++;
     }
     displaysock.onopen = function() { displaysock.send("ping"); }
-
-    function Toggle(div) {
-      if (div.style.display === "none") {
-        div.style.display = "block";
-      } else {
-        div.style.display = "none";
-      }
-    }
-
-    function getAutoData(source, autolist) {
-      for (var i in autolist) {
-        if (source.startsWith(i)) {
-          sendAutoData(getRadioCheckedValue("auto" + i));
-      console.log(getRadioCheckedValue("auto" + i));
-        }
-      }
-    }
-
-    function UpdatePressed() {
-      pressed = true;
-    }
 
     function ReadData() { datasock.send("ping"); }
 

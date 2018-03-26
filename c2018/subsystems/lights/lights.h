@@ -9,8 +9,9 @@
 namespace c2018 {
 namespace lights {
 
-constexpr double kBlinkHz = 3;
-constexpr double kFlashLength = 1.5;
+constexpr double kBlinkHzFast = 10.0;
+constexpr double kBlinkHzSlow = 4.0;
+constexpr int kFlashTicks = 400;
 
 class Lights {
  public:
@@ -18,13 +19,16 @@ class Lights {
   void Update();
 
  private:
-  double flash_time_ = 0.0;  // light flashes if this is less than 2.0
+  int flash_pickup_ticks_left_ = 0;
+  int flash_request_ticks_gone_ = 0;
+
   // flash_time_ is how long the robot has had the cube for
   bool had_cube_ = false;
-  bool FlashLights();
+  bool FlashLights(double hz, int ticks_gone);
 
   LightsOutputQueue* output_queue_;
-  c2018::score_subsystem::ScoreSubsystemStatusQueue::QueueReader status_reader_;
+  score_subsystem::ScoreSubsystemStatusQueue::QueueReader status_reader_;
+  LightsGoalQueue::QueueReader goal_reader_;
 };
 
 }  // namespace lights

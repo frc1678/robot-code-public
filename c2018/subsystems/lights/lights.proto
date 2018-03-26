@@ -9,3 +9,6 @@ message LightsOutput {
   required bool on = 2;
 }
 
+message LightsGoal {
+  required bool ask_for_cube = 1;
+}

@@ -9,8 +9,10 @@ namespace c2018 {
 namespace lights {
 
 using LightsOutputProto = muan::proto::StackProto<LightsOutput, 1024>;
-
 using LightsOutputQueue = muan::queues::MessageQueue<LightsOutputProto>;
+
+using LightsGoalProto = muan::proto::StackProto<LightsGoal, 1024>;
+using LightsGoalQueue = muan::queues::MessageQueue<LightsGoalProto>;
 
 }  // namespace lights
 }  // namespace c2018

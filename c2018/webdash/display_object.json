@@ -3,31 +3,14 @@
     {
       "name": "Auto Select",
       "type": "auto",
-      "source": ["game_specific_string", "code"],
-      "coordinates": [0, 1],
+      "coordinates": [0, 0],
       "should-title": false,
-      "autos": {
-        "LL": [
-          "SWITCH_ONLY",
-          "SCALE_ONLY",
-          "SCALE_PLUS_SWITCH"
-        ],
-        "LR": [
-          "SWITCH_ONLY",
-          "SCALE_ONLY",
-          "SCALE_PLUS_SWITCH"
-        ],
-        "RR": [
-          "SWITCH_ONLY",
-          "SCALE_ONLY",
-          "SCALE_PLUS_SWITCH"
-        ],
-        "RL": [
-          "SWITCH_ONLY",
-          "SCALE_ONLY",
-          "SCALE_PLUS_SWITCH"
-        ]
-      }
+      "autos": [
+        "NONE",
+        "SCALE_ONLY",
+        "SWITCH_ONLY",
+        "SCALE_PLUS_SWITCH"
+      ]
     },
     {
       "name": "Link to Data Stream",

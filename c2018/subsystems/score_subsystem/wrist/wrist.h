@@ -32,7 +32,7 @@ static constexpr double kWristMaxAngle = 160 * (M_PI / 180);
 
 // Hall Calibration constants
 static constexpr double kCalibVoltage = 4;
-static constexpr double kHallEffectAngle = 0.28;
+static constexpr double kHallEffectAngle = 0.19;
 
 
 // Intake Voltage constants

@@ -5,6 +5,7 @@
 #include "WPILib.h"
 #include "c2018/subsystems/climber/queue_types.h"
 #include "c2018/subsystems/score_subsystem/queue_types.h"
+#include "c2018/subsystems/lights/queue_types.h"
 #include "muan/queues/queue_manager.h"
 #include "muan/teleop/joystick.h"
 #include "muan/wpilib/ds_sender.h"
@@ -19,7 +20,7 @@ constexpr int kNumRumbleTicks = 25;
 
 constexpr double kGodmodeElevatorMultiplier = 6;  // tentative
 constexpr double kGodmodeWristMultiplier = 10;    // tentative
-constexpr double kGodmodeThreshold = .1;          // tentative
+constexpr double kGodmodeThreshold = .25;          // tentative
 
 class TeleopBase {
  public:
@@ -53,7 +54,9 @@ class TeleopBase {
   muan::teleop::Button *batter_down_, *hook_up_, *godmode_;
 
   // Gamepad POVs
-  muan::teleop::Button *height_0_, *height_1_, *height_2_, *height_portal_;
+  muan::teleop::Button *height_0_, *height_1_, *height_2_;
+
+  muan::teleop::Button *request_cube_;
 
   // Gamepad Axes
   muan::teleop::Button *front_, *back_, *low_;
@@ -71,6 +74,7 @@ class TeleopBase {
   c2018::score_subsystem::ScoreSubsystemGoalQueue *score_subsystem_goal_queue_;
   c2018::score_subsystem::ScoreSubsystemStatusQueue
       *score_subsystem_status_queue_;
+  c2018::lights::LightsGoalQueue *lights_goal_queue_;
 
   int rumble_ticks_left_ = 0;
   bool had_cube_ = false;
