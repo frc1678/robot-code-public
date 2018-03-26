@@ -360,6 +360,7 @@ TEST_F(Y2016DrivetrainTest, PathDrive) {
   goal->mutable_path_command()->set_x_goal(1.0);
   goal->mutable_path_command()->set_y_goal(1.0);
   goal->mutable_path_command()->set_theta_goal(0.0);
+  goal->mutable_path_command()->set_max_voltage(9.0);
 
   goal->mutable_linear_constraints()->set_max_velocity(2.0);
   goal->mutable_linear_constraints()->set_max_acceleration(2.0);
@@ -393,6 +394,7 @@ TEST_F(Y2016DrivetrainTest, TransitionToPath) {
   goal->mutable_path_command()->set_x_goal(2.2);
   goal->mutable_path_command()->set_y_goal(3.62);
   goal->mutable_path_command()->set_theta_goal(-0.628);
+  goal->mutable_path_command()->set_max_voltage(9.0);
   goal->mutable_linear_constraints()->set_max_velocity(3.0);
   goal->mutable_linear_constraints()->set_max_acceleration(3.0);
   goal->mutable_angular_constraints()->set_max_velocity(3.0);

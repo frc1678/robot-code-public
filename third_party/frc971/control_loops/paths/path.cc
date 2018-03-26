@@ -4,6 +4,8 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
+#include "muan/logging/logger.h"
+
 namespace frc971 {
 namespace control_loops {
 namespace paths {
@@ -58,26 +60,31 @@ Pose Pose::operator-(const Pose &other) const {
 
 Pose Pose::Compose(const Pose &other) const { return other.RotateBy(heading()).TranslateBy(translational()); }
 
-// TODO(Lyra): user specified velocity reference vector
-// TODO(Lyra): angular velocity at endpoints
-HermitePath::HermitePath(Pose initial, Pose final, double initial_velocity,
-                         double final_velocity, bool backwards,
-                         double extra_distance_initial, double extra_distance_final)
+HermitePath::HermitePath(Pose initial, Pose final,
+                         double initial_velocity, double final_velocity, bool backwards,
+                         double extra_distance_initial, double extra_distance_final,
+                         double initial_angular_velocity,
+                         double final_angular_velocity)
     : HermitePath(initial.translational(),
                   FromMagDirection(1, initial.heading()),
                   final.translational(),
                   FromMagDirection(1, final.heading()),
                   initial_velocity, final_velocity, backwards,
-                  extra_distance_initial, extra_distance_final) {}
+                  extra_distance_initial, extra_distance_final,
+                  initial_angular_velocity, final_angular_velocity) {}
 
 HermitePath::HermitePath(Position initial_position, Eigen::Vector2d initial_tangent,
                          Position final_position, Eigen::Vector2d final_tangent,
                          double initial_velocity, double final_velocity, bool backwards,
-                         double extra_distance_initial, double extra_distance_final) {
+                         double extra_distance_initial, double extra_distance_final,
+                         double initial_angular_velocity,
+                         double final_angular_velocity) {
   backwards_ = backwards;
 
   Eigen::Vector2d initial_derivative_basis;
   Eigen::Vector2d final_derivative_basis;
+  double initial_deriv_magnitude;
+  double final_deriv_magnitude;
 
   {
     Eigen::Vector2d distance = final_position - initial_position;
@@ -95,23 +102,45 @@ HermitePath::HermitePath(Position initial_position, Eigen::Vector2d initial_tang
     // should be taken into account as well, although only sigmificantly if
     // distance is short and initial velocity is high. This formula was found
     // experimentally.
-    initial_derivative_basis = initial_tangent *
-        (distance.norm() + extra_distance_initial * 5.0 +
-        initial_velocity * initial_velocity * 0.5 * approx_curve * approx_curve);
-    final_derivative_basis = final_tangent *
-        (distance.norm() + extra_distance_final * 5.0 +
-        final_velocity * final_velocity * 0.5 * approx_curve * approx_curve);
+    initial_deriv_magnitude = distance.norm() + extra_distance_initial * 5.0 +
+        initial_velocity * initial_velocity * 0.5 * approx_curve * approx_curve;
+    final_deriv_magnitude = distance.norm() + extra_distance_final * 5.0 +
+        final_velocity * final_velocity * 0.5 * approx_curve * approx_curve;
   }
+
+  initial_derivative_basis = initial_tangent * initial_deriv_magnitude;
+  final_derivative_basis = final_tangent * final_deriv_magnitude;
 
   if (backwards_) {
     initial_derivative_basis *= -1;
     final_derivative_basis *= -1;
   }
 
-  coefficients_ = Eigen::Matrix<double, 4, 6>::Zero();
   Eigen::Vector2d initial_acceleration = Eigen::Vector2d::Zero();
-  Eigen::Vector2d final_acceleration = Eigen::Vector2d::Zero();
+  if (initial_velocity > 0.01 || initial_velocity < -0.01) {
+    initial_acceleration =
+          (Eigen::Vector2d() << -initial_tangent(1), initial_tangent(0)).finished() *
+          initial_deriv_magnitude * final_deriv_magnitude *
+          initial_angular_velocity / initial_velocity;
+  } else if (initial_angular_velocity > 0.01 || initial_angular_velocity < -0.01) {
+    LOG(WARNING, "Initial velocity required if initial angular velocity present"
+                 " (v_0 = %f, omega_0 = %f, cutoff = 0.01)",
+        initial_velocity, initial_angular_velocity);
+  }
 
+  Eigen::Vector2d final_acceleration = Eigen::Vector2d::Zero();
+  if (final_velocity > 0.01 || final_velocity < -0.01) {
+    final_acceleration =
+          (Eigen::Vector2d() << -final_tangent(1), final_tangent(0)).finished() *
+          final_deriv_magnitude * final_deriv_magnitude *
+          final_angular_velocity / final_velocity;
+  } else if (final_angular_velocity > 0.01 || final_angular_velocity < -0.01) {
+    LOG(WARNING, "Final velocity required if final angular velocity present"
+                 " (v_f = %f, omega_f = %f, cutoff = 0.01)",
+        final_velocity, final_angular_velocity);
+  }
+
+  coefficients_ = Eigen::Matrix<double, 4, 6>::Zero();
   coefficients_.block<2, 1>(0, 0) = initial_position;
   coefficients_.block<2, 1>(0, 1) = initial_derivative_basis;
   coefficients_.block<2, 1>(0, 2) = 0.5 * initial_acceleration;

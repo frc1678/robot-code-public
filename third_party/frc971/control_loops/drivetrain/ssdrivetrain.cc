@@ -178,6 +178,7 @@ void DrivetrainMotorsSS::SetGoal(
     auto path_goal = goal->path_command();
     CHECK_GT(goal->linear_constraints().max_acceleration(), 0.0);
     trajectory_.set_maximum_acceleration(goal->linear_constraints().max_acceleration());
+    trajectory_.set_maximum_voltage(path_goal.max_voltage());
 
     Eigen::Matrix<double, 4, 4> A_c = Eigen::Matrix<double, 4, 4>::Zero();
     A_c(0, 1) = 1.0;
@@ -224,12 +225,20 @@ void DrivetrainMotorsSS::SetGoal(
         backwards = ::std::abs(::std::atan2(delta.translational()(1), delta.translational()(0)) -
                                initial_pose.heading()) > M_PI / 2;
       }
+      double initial_angular_velocity = (kf_->X_hat(3, 0) - kf_->X_hat(1, 0)) /
+                                        (dt_config_.robot_radius * 2.0);
       paths::HermitePath path(initial_pose, final_pose,
-                              0.5 * (state(1) + state(3)), 0, backwards,
+                              0.5 * (state(1) + state(3)),
+                              path_goal.final_velocity(),
+                              backwards,
                               path_goal.extra_distance_initial(),
-                              path_goal.extra_distance_final());
+                              path_goal.extra_distance_final(),
+                              initial_angular_velocity,
+                              path_goal.final_angular_velocity());
 
-      trajectory_.SetPath(path, state);
+      trajectory_.SetPath(path, state, path_goal.final_velocity(),
+                          path_goal.final_angular_velocity());
+
       profile_complete_ = false;
 
       last_goal_pose_ = final_pose;

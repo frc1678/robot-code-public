@@ -124,6 +124,7 @@ void AutonomousBase::StartDrivePath(
   goal->mutable_path_command()->set_x_goal(goal_local(0));
   goal->mutable_path_command()->set_y_goal(goal_local(1));
   goal->mutable_path_command()->set_theta_goal(heading + theta_offset_);
+  goal->mutable_path_command()->set_max_voltage(9.0);
   goal->mutable_path_command()->set_extra_distance_initial(
       extra_distance_initial);
   goal->mutable_path_command()->set_extra_distance_final(extra_distance_final);

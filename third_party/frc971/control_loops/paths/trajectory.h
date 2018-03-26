@@ -28,7 +28,8 @@ class Trajectory {
   };
 
   // Pass in a nullptr for no path
-  void SetPath(const Path &path, const State &state);
+  void SetPath(const Path &path, const State &state,
+               double veloicty_final, double angular_velocity_final);
 
   // Update at 200hz, returning the new sample
   Sample Update();
@@ -37,6 +38,10 @@ class Trajectory {
 
   inline void set_maximum_acceleration(double maximum_acceleration) {
     maximum_acceleration_ = maximum_acceleration;
+  }
+
+  inline void set_maximum_voltage(double maximum_voltage) {
+    maximum_voltage_ = maximum_voltage;
   }
 
   inline void set_system(const Eigen::Matrix<double, 4, 4> &A_c, const Eigen::Matrix<double, 4, 2> B_c,
@@ -66,6 +71,7 @@ class Trajectory {
                         bool reverse_pass, bool preserve_other_pass) const;
 
   double maximum_acceleration_;
+  double maximum_voltage_;
 
   Eigen::Matrix<double, 4, 4> A_;
   Eigen::Matrix<double, 4, 2> B_;

@@ -5,7 +5,10 @@ cc_library(
   name = 'path',
   srcs = ['path.cc'],
   hdrs = ['path.h'],
-  deps = ['//third_party/eigen'],
+  deps = [
+    '//third_party/eigen',
+    '//muan/logging:logger',
+  ],
   linkopts = ['-lm'],
 )
 

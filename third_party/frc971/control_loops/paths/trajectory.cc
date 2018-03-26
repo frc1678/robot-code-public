@@ -40,7 +40,8 @@ double VelocityAtDirectionChange(double distance1, double distance2, double acce
   return (distance1 + distance2) / time;
 }
 
-void Trajectory::SetPath(const Path &path, const State &state) {
+void Trajectory::SetPath(const Path &path, const State &state,
+                         double velocity_final, double angular_velocity_final) {
   Reset();
 
   state_ = state;
@@ -50,6 +51,7 @@ void Trajectory::SetPath(const Path &path, const State &state) {
 
   states_[0] = state_;
 
+  bool is_forward;
   // Calculate drivetrain position
   for (size_t i = 0; i < kNumSamples - 1; i++) {
     Pose delta = poses_[i + 1] - poses_[i];
@@ -57,17 +59,24 @@ void Trajectory::SetPath(const Path &path, const State &state) {
     Eigen::Vector2d forward_vector;
     forward_vector << ::std::cos(poses_[i].heading()), ::std::sin(poses_[i].heading());
     double forward = delta.translational().dot(forward_vector);
-
-    if ((forward > 0 && state_(1) + state_(3) < -0.01) ||
-        (forward < 0 && state_(1) + state_(3) > 0.01)) {
-      LOG(WARNING, "Conflicting path directionality: path %s and robot %s",
-              forward > 0 ? "forward" : "backward",
-              state_(1) + state_(3) > 0 ? "forward" : "backward");
-    }
+    is_forward = forward > 0;
 
     double angular = delta.heading() * radius_;
     states_[i + 1](0) = states_[i](0) + forward - angular;
     states_[i + 1](2) = states_[i](2) + forward + angular;
+  }
+
+  if ((is_forward && state_(1) + state_(3) < -0.01) ||
+      (!is_forward && state_(1) + state_(3) > 0.01)) {
+    LOG(WARNING, "Conflicting path directionality: path %s and robot initial %s",
+        is_forward ? "forward" : "backward",
+        state_(1) + state_(3) > 0 ? "forward" : "backward");
+  }
+  if ((is_forward && velocity_final < -0.01) ||
+      (!is_forward && velocity_final > 0.01)) {
+    LOG(WARNING, "Conflicting path directionality: path %s and robot final %s",
+        is_forward ? "forward" : "backward",
+        velocity_final > 0 ? "forward" : "backward");
   }
 
   // Forward pass to calculate velocity
@@ -75,25 +84,42 @@ void Trajectory::SetPath(const Path &path, const State &state) {
     const State &state_begin = states_[i];
     State &state_end = states_[i + 1];
     const State &state_next = i + 2 < kNumSamples ? states_[i + 2] : states_[i + 1];
-    ConstrainAcceleration(state_begin, &state_end, state_next, &segment_times_[i], false, false);
+    ConstrainAcceleration(state_begin, &state_end, state_next,
+                          &segment_times_[i], false, false);
   }
 
-  states_[kNumSamples - 1](1) = states_[kNumSamples - 1](3) = 0.0;
+  double velocity_final_left = velocity_final - angular_velocity_final * radius_;
+  double velocity_final_right = velocity_final + angular_velocity_final * radius_;
+
+  if ((states_[kNumSamples - 1](1) < velocity_final_left && is_forward) ||
+      (states_[kNumSamples - 1](3) < velocity_final_right && is_forward) ||
+      (states_[kNumSamples - 1](1) > velocity_final_left && !is_forward) ||
+      (states_[kNumSamples - 1](3) > velocity_final_right && !is_forward)) {
+    LOG(WARNING, "Unable to follow path given final speed:"
+                 " final (%f, %f) and max (%f, %f)",
+        velocity_final_left, velocity_final_right,
+        states_[kNumSamples - 1](1), states_[kNumSamples - 1](3));
+  }
+
+  states_[kNumSamples - 1](1) = velocity_final_left;
+  states_[kNumSamples - 1](3) = velocity_final_right;
 
   // Backwards pass to calculate velocity
   for (int i = kNumSamples - 2; i >= 0; i--) {
     State &state_begin = states_[i];
     const State &state_end = states_[i + 1];
     const State &state_before = i > 0 ? states_[i - 1] : states_[i];
-    ConstrainAcceleration(state_end, &state_begin, state_before, &segment_times_[i], true, true);
+    ConstrainAcceleration(state_end, &state_begin, state_before,
+                          &segment_times_[i], true, true);
   }
 
   if (states_[0](1) > state_(1) + 0.01 ||
       states_[0](1) < state_(1) - 0.01 ||
       states_[0](3) > state_(3) + 0.01 ||
       states_[0](3) < state_(3) - 0.01) {
-    LOG(WARNING, "WARNING: Unable to follow path given initial speed: starting (%f, %f) and max (%f, %f)",
-          state_(1), state_(3), states_[0](1), states_[0](3));
+    LOG(WARNING, "Unable to follow path given initial speed:"
+                 " starting (%f, %f) and max (%f, %f)",
+        state_(1), state_(3), states_[0](1), states_[0](3));
   }
 }
 
@@ -101,13 +127,11 @@ void Trajectory::ConstrainOneSide(double distance, double next_distance,
                                   double input_velocity, double other_input_velocity,
                                   double output_velocity_from_other_pass, double *output_velocity,
                                   bool reverse_pass, bool preserve_other_pass) const {
-  constexpr double kMaxVoltage = 9.0;
-
   double unforced_acceleration = A_(1, 1) * input_velocity + A_(1, 3) * other_input_velocity;
   if (reverse_pass) {
     unforced_acceleration *= -1;
   }
-  double input_acceleration = (B_(1, 0) + B_(1, 1)) * kMaxVoltage;
+  double input_acceleration = (B_(1, 0) + B_(1, 1)) * maximum_voltage_;
 
   double min_acceleration = ::std::max(-maximum_acceleration_, unforced_acceleration - input_acceleration);
   double max_acceleration = ::std::min(maximum_acceleration_, unforced_acceleration + input_acceleration);
@@ -193,27 +217,37 @@ Trajectory::Sample Trajectory::Update() {
 
   last_index_ = index;
 
+  // When complete maintain speed until replaced by new path
+  double left_acceleration = 0;
+  double right_acceleration = 0;
   if (index < kNumSamples - 1) {
-    // Interpolate between the states using kinematics
-    double left_acceleration = (states_[index + 1](1) - states_[index](1)) / segment_times_[index];
-    double right_acceleration = (states_[index + 1](3) - states_[index](3)) / segment_times_[index];
-
-    double left_distance = states_[index](0) + states_[index](1) * time_since_index_ +
-                             0.5 * left_acceleration * time_since_index_ * time_since_index_;
-    double left_velocity = states_[index](1) + left_acceleration * time_since_index_;
-
-    double right_distance = states_[index](2) + states_[index](3) * time_since_index_ +
-                              0.5 * right_acceleration * time_since_index_ * time_since_index_;
-    double right_velocity = states_[index](3) + right_acceleration * time_since_index_;
-
-    state_ = (Eigen::Matrix<double, 4, 1>() << left_distance, left_velocity,
-            right_distance, right_velocity).finished();
-    return Sample{poses_[index], state_};
-  } else {
-    // Already at end of trajectory
-    // TODO(Lyra): interpolate pose
-    return Sample{poses_[index], states_[kNumSamples - 1]};
+    left_acceleration = (states_[index + 1](1) - states_[index](1)) / segment_times_[index];
+    right_acceleration = (states_[index + 1](3) - states_[index](3)) / segment_times_[index];
   }
+
+  // Interpolate between the states using kinematics
+  double left_distance = states_[index](0) + states_[index](1) * time_since_index_ +
+                           0.5 * left_acceleration * time_since_index_ * time_since_index_;
+  double left_velocity = states_[index](1) + left_acceleration * time_since_index_;
+
+  double right_distance = states_[index](2) + states_[index](3) * time_since_index_ +
+                            0.5 * right_acceleration * time_since_index_ * time_since_index_;
+  double right_velocity = states_[index](3) + right_acceleration * time_since_index_;
+
+  state_ = (Eigen::Matrix<double, 4, 1>() << left_distance, left_velocity,
+          right_distance, right_velocity).finished();
+
+  double distance_in = 0.5 *
+          (left_distance + right_distance - states_[index](0) - states_[index](2));
+  double current_angle = 0.5 * (right_distance - left_distance) / radius_;
+  double current_x = poses_[index].Get()(0) +
+          0.5 * distance_in * (::std::cos(current_angle) + ::std::cos(poses_[index].Get()(2)));
+  double current_y = poses_[index].Get()(1) +
+          0.5 * distance_in * (::std::sin(current_angle) + ::std::sin(poses_[index].Get()(2)));
+
+  Pose pose((Position() << current_x, current_y).finished(), current_angle);
+
+  return Sample{pose, state_};
 }
 
 void Trajectory::Reset() {
