@@ -47,14 +47,32 @@ message DrivetrainGoal {
     required double x_goal = 1;
     required double y_goal = 2;
     required double theta_goal = 3;
-    // Only set this if you are using a weird path where you
-    // need to override the default directionality selection
-    optional bool backwards = 4;
+
+    // How much voltage to allow trajectory to use
+    // Needlessly low => slower
+    // Too high => weak corrections, causing drift or shaking
+    required double max_voltage = 4;
+
+    // Set this to override the default directionality selection
+    optional bool backwards = 5;
+
     // Set this to fudge the shape of the path to avoid obstacles.
     // Adds to the starting tangent of the path so the beginning or ending
     // mostly straight section is longer by approximately the specified amount.
-    optional double extra_distance_initial = 5;
-    optional double extra_distance_final = 6;
+    // If there is forward velocity and not angular velocity, negative
+    // extra distance may prevent the robot from deccelerating fast enough.
+
+    // Also note that the acceleration component of a pentic hermite is
+    // very small, so if the angular velocity at either end is significant,
+    // extra distance at that end may need to be added (in the event that the
+    // angular velocity is opposite the turn it would have otherwise) or
+    // subtracted (in the event that it is in the same direction) if you get
+    // warnings about velocity being too high on one side.
+    optional double extra_distance_initial = 6;
+    optional double extra_distance_final = 7;
+
+    optional double final_velocity = 8;
+    optional double final_angular_velocity = 9;
   }
 
   required Gear gear = 2;

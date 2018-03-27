@@ -1,5 +1,7 @@
 #include "c2018/subsystems/score_subsystem/score_subsystem.h"
 
+#include <algorithm>
+
 namespace c2018 {
 namespace score_subsystem {
 
@@ -17,16 +19,22 @@ ScoreSubsystem::ScoreSubsystem()
           QueueManager<DriverStationProto>::Fetch()->MakeReader()} {}
 
 void ScoreSubsystem::BoundGoal(double* elevator_goal,
-                               double* wrist_goal) const {
+                               double* wrist_goal) {
   // Elevator goal doesn't get too low if the wrist can't handle it
   if (status_->wrist_angle() > kWristSafeAngle) {
     *elevator_goal = muan::utils::Cap(*elevator_goal, kElevatorWristSafeHeight,
                                       elevator::kElevatorMaxHeight);
   }
 
+  double time_until_elevator_safe =
+      elevator_.TimeLeftUntil(kElevatorWristSafeHeight, *elevator_goal);
+  double time_until_wrist_safe =
+      wrist_.TimeLeftUntil(kWristSafeAngle, wrist::kWristMaxAngle);
+
   // Wrist doesn't try to go too far if the elevator can't handle it
-  if (status_->elevator_actual_height() < kElevatorWristSafeHeight) {
-    *wrist_goal = muan::utils::Cap(*wrist_goal, 0, kWristSafeAngle);
+  if (*wrist_goal > kWristSafeAngle &&
+      time_until_elevator_safe > time_until_wrist_safe) {
+    *wrist_goal = 0.0;
   }
 }
 
@@ -49,7 +57,7 @@ void ScoreSubsystem::Update() {
   while (goal_reader_.ReadMessage(&goal)) {
     // Bridge between score goal enumerator and the individual mechanism goals
     SetGoal(goal);
-  // All the logic in the state machine is in this function
+    // All the logic in the state machine is in this function
     RunStateMachine();
   }
 
@@ -149,6 +157,16 @@ void ScoreSubsystem::SetGoal(const ScoreSubsystemGoalProto& goal) {
       wrist_angle_ = kWristPortalAngle;
       break;
   }
+
+  elevator_height_ += goal->elevator_god_mode_goal() * 0.005;
+  wrist_angle_ += goal->wrist_god_mode_goal() * 0.005;
+
+  elevator_height_ = muan::utils::Cap(
+      elevator_height_, c2018::score_subsystem::elevator::kElevatorMinHeight,
+      c2018::score_subsystem::elevator::kElevatorMaxHeight);
+  wrist_angle_ = muan::utils::Cap(
+      wrist_angle_, c2018::score_subsystem::wrist::kWristMinAngle,
+      c2018::score_subsystem::wrist::kWristMaxAngle);
 
   switch (goal->intake_goal()) {
     case IntakeGoal::INTAKE_NONE:

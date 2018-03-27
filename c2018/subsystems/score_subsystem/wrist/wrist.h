@@ -32,7 +32,7 @@ static constexpr double kWristMaxAngle = 160 * (M_PI / 180);
 
 // Hall Calibration constants
 static constexpr double kCalibVoltage = 4;
-static constexpr double kHallEffectAngle = 0.28;
+static constexpr double kHallEffectAngle = 0.19;
 
 
 // Intake Voltage constants
@@ -61,6 +61,7 @@ class WristController {
   void Update(ScoreSubsystemInputProto input, ScoreSubsystemOutputProto* output,
               ScoreSubsystemStatusProto* status, bool outputs_enabled);
 
+  double TimeLeftUntil(double angle, double final_angle);
   void SetWeights(bool has_cube);
 
   // Getter for hall calibration
@@ -69,6 +70,7 @@ class WristController {
  private:
   // Motion Profile
   aos::util::TrapezoidProfile trapezoidal_motion_profile_;
+  aos::util::TrapezoidProfile trapezoidal_time_estimator_;
 
   // Hall Calibration
   muan::control::HallCalibration hall_calibration_{kHallEffectAngle};

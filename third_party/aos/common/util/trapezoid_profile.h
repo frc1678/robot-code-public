@@ -32,6 +32,8 @@ class TrapezoidProfile {
 
   void SetGoal(double x) { output_(0, 0) = x; }
 
+  double TimeLeftUntil(double x, double goal_position, double goal_velocity) const;
+
   void set_maximum_acceleration(double maximum_acceleration) {
     maximum_acceleration_ = maximum_acceleration;
   }

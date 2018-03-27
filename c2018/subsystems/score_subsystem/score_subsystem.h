@@ -52,7 +52,7 @@ class ScoreSubsystem {
   void GoToState(ScoreSubsystemState state, IntakeGoal intake = IntakeGoal::INTAKE_NONE);
   void RunStateMachine();
 
-  void BoundGoal(double* elevator_goal, double* wrist_goal) const;
+  void BoundGoal(double* elevator_goal, double* wrist_goal);
 
   elevator::ElevatorController elevator_;
   wrist::WristController wrist_;

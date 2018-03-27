@@ -7,7 +7,8 @@ namespace wrist {
 using muan::queues::QueueManager;
 
 WristController::WristController()
-    : trapezoidal_motion_profile_{::std::chrono::milliseconds(5)} {
+    : trapezoidal_motion_profile_{::std::chrono::milliseconds(5)},
+      trapezoidal_time_estimator_{::std::chrono::milliseconds(5)} {
   auto wrist_plant = muan::control::StateSpacePlant<1, 3, 1>(
       frc1678::wrist::controller::cube_integral::A(),
       frc1678::wrist::controller::cube_integral::B(),
@@ -25,6 +26,8 @@ WristController::WristController()
 
   trapezoidal_motion_profile_.set_maximum_acceleration(kMaxWristAcceleration);
   trapezoidal_motion_profile_.set_maximum_velocity(kMaxWristVelocity);
+  trapezoidal_time_estimator_.set_maximum_acceleration(kMaxWristAcceleration);
+  trapezoidal_time_estimator_.set_maximum_velocity(kMaxWristVelocity);
 }
 
 void WristController::SetGoal(double wrist_angle, IntakeGoal intake_mode) {
@@ -68,6 +71,8 @@ void WristController::Update(ScoreSubsystemInputProto input,
   if (!outputs_enabled) {
     wrist_voltage = 0.0;
     trapezoidal_motion_profile_.MoveCurrentState(
+        wrist_observer_.x().block<2, 1>(0, 0));
+    trapezoidal_time_estimator_.MoveCurrentState(
         wrist_observer_.x().block<2, 1>(0, 0));
   }
 
@@ -176,7 +181,14 @@ Eigen::Matrix<double, 2, 1> WristController::UpdateProfiledGoal(
     profiled_goal_ = trapezoidal_motion_profile_.Update(unprofiled_goal_, 0.0);
   }
 
+  trapezoidal_time_estimator_.MoveCurrentState(profiled_goal_);
+
   return profiled_goal_;
+}
+
+double WristController::TimeLeftUntil(double angle, double final_angle) {
+  trapezoidal_time_estimator_.Update(final_angle, 0);
+  return trapezoidal_time_estimator_.TimeLeftUntil(angle, final_angle, 0.0);
 }
 
 bool WristController::is_calibrated() const {

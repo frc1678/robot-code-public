@@ -39,6 +39,8 @@ void SubsystemRunner::operator()() {
 
     score_subsystem_.Update();
 
+    lights_.Update();
+
     wpilib_.WriteActuators();
 
     phased_loop.SleepUntilNext();
@@ -48,3 +50,4 @@ void SubsystemRunner::operator()() {
 void SubsystemRunner::Stop() { running_ = false; }
 
 }  // namespace c2018
+

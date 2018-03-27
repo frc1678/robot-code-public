@@ -40,9 +40,9 @@ def _PadHeight(padded_array, min_height):
   if height < min_height:
     pad_array = [' ' * len(padded_array[0])]
     height_error = min_height - height
-    return (pad_array * math.floor((height_error) / 2) +
+    return (pad_array * int(math.floor((height_error) / 2)) +
             padded_array +
-            pad_array * math.floor((height_error + 1) / 2))
+            pad_array * int(math.floor((height_error + 1) / 2)))
   return padded_array
 
 

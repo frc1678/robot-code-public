@@ -25,13 +25,13 @@ constexpr double kElevatorMaxVelocity = 2.5;
 
 // Capping stuff so it doesn't go boom
 constexpr double kElevatorMinHeight = 0.0;
-constexpr double kElevatorMaxHeight = 1.92;
+constexpr double kElevatorMaxHeight = 1.944;
 
 // Realistic voltage (SKY)
 constexpr double kElevatorMaxVoltage = 12;
 
 // Calibration parameters so it thinks it is where it actually is
-constexpr double kHallEffectHeight = 0.92;
+constexpr double kHallEffectHeight = 0.89;
 constexpr double kCalibrationVoltage = 6;
 
 // Encoder fault stuff so it doesn't get too sad when they break
@@ -52,7 +52,10 @@ class ElevatorController {
       bool outputs_enabled);  // Utilizes the trapezoidal motion profile
   void SetGoal(double goal);  // Setter for unprofiled_goal_ that also caps it
                               // to kElevatorMin and Max Height
+  void SetTimerGoal(double goal);
   double CapU(double elevator_u);  // Voltage capper to +/- 12
+
+  double TimeLeftUntil(double x, double final_goal);
 
   bool is_calibrated() const;  // Getter for if it's calibrated
 
@@ -71,9 +74,11 @@ class ElevatorController {
   // Goals stored inside of the class for usage in functions
   Eigen::Matrix<double, 2, 1> profiled_goal_;
   double unprofiled_goal_;
+  double timer_goal_;
 
   // Motion profiling
   aos::util::TrapezoidProfile trapezoid_profile_{std::chrono::milliseconds(5)};
+  aos::util::TrapezoidProfile timer_profile_{std::chrono::milliseconds(5)};
 
   // Encoder fault stuff
   bool encoder_fault_detected_ = false;

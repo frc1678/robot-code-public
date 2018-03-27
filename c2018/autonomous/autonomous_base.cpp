@@ -124,6 +124,7 @@ void AutonomousBase::StartDrivePath(
   goal->mutable_path_command()->set_x_goal(goal_local(0));
   goal->mutable_path_command()->set_y_goal(goal_local(1));
   goal->mutable_path_command()->set_theta_goal(heading + theta_offset_);
+  goal->mutable_path_command()->set_max_voltage(9.0);
   goal->mutable_path_command()->set_extra_distance_initial(
       extra_distance_initial);
   goal->mutable_path_command()->set_extra_distance_final(extra_distance_final);
@@ -255,7 +256,7 @@ void AutonomousBase::IntakeOpen() {
 
 void AutonomousBase::IntakeClose() {
   score_subsystem::ScoreSubsystemGoalProto score_goal;
-  score_goal->set_intake_goal(score_subsystem::IntakeGoal::INTAKE_OPEN);
+  score_goal->set_intake_goal(score_subsystem::IntakeGoal::INTAKE_CLOSE);
   score_goal_queue_->WriteMessage(score_goal);
 }
 

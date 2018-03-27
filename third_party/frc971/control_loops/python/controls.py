@@ -131,7 +131,7 @@ def kalman(A, B, C, Q, R):
 
   P_prior = numpy.asmatrix(scipy.linalg.solve_discrete_are(A.T, C.T, Q, R))
   S = C * P_prior * C.T + R
-  L = numpy.linalg.lstsq(S.T, (P_prior * C.T).T)[0].T
+  L = numpy.linalg.lstsq(S.T, (P_prior * C.T).T, rcond=-1)[0].T
   P = (numpy.eye(Q.shape[0]) - L * C) * P_prior
 
   return L, P

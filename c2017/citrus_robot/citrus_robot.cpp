@@ -72,6 +72,7 @@ void CitrusRobot::Update() {
       dt_goal->mutable_path_command()->set_x_goal(-0.5);
       dt_goal->mutable_path_command()->set_y_goal(0.0);
       dt_goal->mutable_path_command()->set_theta_goal(-2.0);
+      dt_goal->mutable_path_command()->set_max_voltage(9.0);
       dt_goal->mutable_path_command()->set_backwards(false);
 
       dt_goal->mutable_linear_constraints()->set_max_velocity(3.0);

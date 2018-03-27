@@ -5,6 +5,7 @@
 
 #include "c2018/subsystems/climber/climber.h"
 #include "c2018/subsystems/drivetrain/drivetrain_base.h"
+#include "c2018/subsystems/lights/lights.h"
 #include "c2018/subsystems/score_subsystem/score_subsystem.h"
 #include "c2018/wpilib/wpilib_interface.h"
 #include "muan/queues/queue_manager.h"
@@ -28,8 +29,10 @@ class SubsystemRunner {
   frc971::control_loops::drivetrain::DrivetrainLoop drivetrain_;
   c2018::climber::Climber climber_;
   c2018::score_subsystem::ScoreSubsystem score_subsystem_;
+  c2018::lights::Lights lights_;
 };
 
 }  // namespace c2018
 
 #endif  // C2018_SUBSYSTEMS_SUBSYSTEM_RUNNER_H_
+

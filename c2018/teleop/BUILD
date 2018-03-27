@@ -6,6 +6,7 @@ cc_library(
     deps = [
         "//c2018/subsystems/climber:climber_queues",
         "//c2018/subsystems/score_subsystem:score_subsystem_queues",
+        "//c2018/subsystems/lights:lights_queues",
         "//muan/queues:queue_manager",
         "//muan/logging:logger",
         "//muan/teleop:joystick",

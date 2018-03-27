@@ -1,0 +1,14 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+package c2018.lights;
+
+message LightsOutput {
+  required uint64 timestamp = 1;
+  required bool on = 2;
+}
+
+message LightsGoal {
+  required bool ask_for_cube = 1;
+}

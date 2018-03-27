@@ -7,6 +7,7 @@ cc_library(
         "//c2018/subsystems/drivetrain:drivetrain_base",
         "//c2018/subsystems/climber:climber_subsystem",
         "//c2018/subsystems/score_subsystem:score_subsystem",
+        "//c2018/subsystems/lights:lights",
         "//c2018/wpilib:wpilib_interface",
         "//muan/utils:threading_utils",
         "//muan/queues:queue_manager",

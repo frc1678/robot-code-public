@@ -68,6 +68,9 @@ message ScoreSubsystemGoal {
   // What we _should_ be doing (if it's supposed to be intaking then it will
   // continue through transitions if it has a cube)
   required IntakeGoal intake_goal = 3;
+
+  required double elevator_god_mode_goal = 4;
+  required double wrist_god_mode_goal = 5;
 }
 
 enum ScoreSubsystemState {
@@ -98,5 +101,7 @@ message ScoreSubsystemStatus {
   required double wrist_calibration_offset = 18;
   required bool claw_pinch = 19;
   required bool has_cube = 20;
-  required IntakeGoal intake_state = 21;
+  required double wrist_time_left = 21;
+  required double elevator_time_left = 22;
+  required IntakeGoal intake_state = 23;
 }
