@@ -26,12 +26,6 @@ ElevatorController::ElevatorController() {
       frc1678::elevator::controller::first_stage_integral::A(),
       frc1678::elevator::controller::first_stage_integral::B(),
       frc1678::elevator::controller::first_stage_integral::C());
-
-  // Initialize the trapezoid profile
-  trapezoid_profile_.set_maximum_acceleration(kElevatorMaxAcceleration);
-  trapezoid_profile_.set_maximum_velocity(kElevatorMaxVelocity);
-  timer_profile_.set_maximum_acceleration(kElevatorMaxAcceleration);
-  timer_profile_.set_maximum_velocity(kElevatorMaxVelocity);
 }
 
 void ElevatorController::Update(const ScoreSubsystemInputProto& input,
@@ -56,25 +50,27 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
   // Keeps trapezoidal motion profile notified about all the things while
   // disabled
   if (!outputs_enabled) {
-    trapezoid_profile_.MoveCurrentState(
-        elevator_observer_.x().block<2, 1>(0, 0));
-    timer_profile_.MoveCurrentState(elevator_observer_.x().block<2, 1>(0, 0));
+    profile_time_ = 0.;
+    profile_initial_ = {
+        .position = elevator_observer_.x()(0, 0) * muan::units::m,
+        .velocity = elevator_observer_.x()(1, 0) * muan::units::mps};
   }
 
   // The first calibrate is the only one that does anything to the model
   if (hall_calib_.is_calibrated() && !was_calibrated) {
     elevator_observer_.x(0) += hall_calib_.offset();
-    trapezoid_profile_.MoveCurrentState(
-        elevator_observer_.x().block<2, 1>(0, 0));
-    timer_profile_.MoveCurrentState(elevator_observer_.x().block<2, 1>(0, 0));
+    profile_time_ = 0.;
+    profile_initial_ = {
+        .position = elevator_observer_.x()(0, 0) * muan::units::m,
+        .velocity = elevator_observer_.x()(1, 0) * muan::units::mps};
   }
 
   // Update the trapezoidal motion profile
-  UpdateProfiledGoal(unprofiled_goal_, outputs_enabled);
+  UpdateProfiledGoal(outputs_enabled);
 
   // Make an R matrix from the new profiled goal
-  elevator_r_ = (Eigen::Matrix<double, 3, 1>() << profiled_goal_(0),
-                 profiled_goal_(1), 0.0)
+  elevator_r_ = (Eigen::Matrix<double, 3, 1>() << profiled_goal_.position,
+                 profiled_goal_.velocity, 0.0)
                     .finished();
 
   // Get output in volts from the controller
@@ -90,7 +86,7 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
   } else if (encoder_fault_detected_) {
     elevator_u = 2.0;
     LOG(WARNING, "Encoder fault detected, setting voltage to 2.0");
-  } else if (profiled_goal_(0) <= 1e-5) {
+  } else if (profiled_goal_.position <= 1e-5) {
     // If we're trying to stay at 0, set 0 voltage automatically
     elevator_u = 0.0;
   }
@@ -128,10 +124,10 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
   (*output)->set_elevator_voltage(elevator_u);
   (*status)->set_elevator_actual_height(elevator_observer_.x()(0, 0));
   (*status)->set_elevator_voltage_error(elevator_observer_.x()(2, 0));
-  (*status)->set_estimated_velocity(elevator_observer_.x()(1, 0));
+  (*status)->set_estimated_velocity(elevator_observer_.x()(2, 0));
   (*status)->set_elevator_calibrated(hall_calib_.is_calibrated());
-  (*status)->set_elevator_profiled_goal(profiled_goal_(0, 0));
-  (*status)->set_elevator_unprofiled_goal(unprofiled_goal_);
+  (*status)->set_elevator_profiled_goal(profiled_goal_.position);
+  (*status)->set_elevator_unprofiled_goal(unprofiled_goal_.position);
   (*status)->set_elevator_at_top((*status)->elevator_actual_height() >=
                                  kElevatorMaxHeight - 0.01);
   (*status)->set_elevator_encoder_fault_detected(encoder_fault_detected_);
@@ -139,22 +135,43 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
 }
 
 void ElevatorController::SetGoal(double goal) {
+  if (std::abs(goal - unprofiled_goal_.position) > 1e-10) {
+    profile_time_ = 0.;
+    profile_initial_ = {
+        .position = elevator_observer_.x()(0, 0) * muan::units::m,
+        .velocity = elevator_observer_.x()(1, 0) * muan::units::mps};
+  }
   // Cap goal to actual possible height so things don't break
-  unprofiled_goal_ = muan::utils::Cap(goal, 0, kElevatorMaxHeight);
+  unprofiled_goal_ = {
+      .position =
+          muan::utils::Cap(goal, 0., kElevatorMaxHeight) * muan::units::m,
+      .velocity = 0.};
 }
 
-Eigen::Matrix<double, 2, 1> ElevatorController::UpdateProfiledGoal(
-    double unprofiled_goal_, bool outputs_enabled) {
-  timer_profile_.MoveCurrentState(elevator_observer_.x().block<2, 1>(0, 0));
+muan::control::MotionProfilePosition ElevatorController::UpdateProfiledGoal(
+    bool outputs_enabled) {
+  muan::control::TrapezoidalMotionProfile profile =
+      muan::control::TrapezoidalMotionProfile(
+          kElevatorConstraints, unprofiled_goal_, profile_initial_);
   if (outputs_enabled) {
     // Figure out what the trapezoid profile wants
-    profiled_goal_ = trapezoid_profile_.Update(unprofiled_goal_, 0);
+    profiled_goal_ = profile.Calculate(profile_time_ += 5 * muan::units::ms);
   } else {
     // Keep the trapezoid profile updated on the (sadly) disabled robot
-    profiled_goal_ = trapezoid_profile_.Update(elevator_observer_.x()(0, 0), 0);
+    profiled_goal_ = profile.Calculate(0.);
   }
-  timer_profile_.MoveCurrentState(profiled_goal_);
   return profiled_goal_;
+}
+
+muan::units::Time ElevatorController::TimeLeftUntil(double target,
+                                                    double final_goal) {
+  if (profiled_goal_.position > target) {
+    return 0.;
+  }
+  muan::control::TrapezoidalMotionProfile profile =
+      muan::control::TrapezoidalMotionProfile(kElevatorConstraints,
+                                              {final_goal, 0}, profiled_goal_);
+  return profile.TimeLeftUntil(target);
 }
 
 double ElevatorController::CapU(double elevator_u) {
@@ -162,11 +179,6 @@ double ElevatorController::CapU(double elevator_u) {
   // SKY = +/- 12
   return muan::utils::Cap(elevator_u, -kElevatorMaxVoltage,
                           kElevatorMaxVoltage);
-}
-
-double ElevatorController::TimeLeftUntil(double x, double final_goal) {
-  timer_profile_.Update(final_goal, 0);
-  return timer_profile_.TimeLeftUntil(x, final_goal, 0);
 }
 
 void ElevatorController::SetWeights(bool second_stage, bool has_cube) {

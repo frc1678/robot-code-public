@@ -22,7 +22,7 @@ def make_gains(has_cube, subname='gains'):
 
     # Moment of inertia constants
     # M= mass and L = length
-    M = 5.0
+    M = 6.0
 
     if has_cube:
         M += 1.59
@@ -32,7 +32,7 @@ def make_gains(has_cube, subname='gains'):
     # Parameters
     moment_inertia = M * L * L
     gear_ratio = (12.0 / 100.0) * (14.0 / 72.0) * (18.0 / 60.0)
-    efficiency = .7
+    efficiency = .9
 
     # motor characteristics
     free_speed = 18730.0 * 2 * math.pi / 60
@@ -92,7 +92,7 @@ def make_gains(has_cube, subname='gains'):
     ])
 
     A_d, B_d, Q_d, R_d = c2d(A_c, B_c, dt, Q_noise, R_noise)
-    K = place(A_c, B_c, [-37.0, -27.0])
+    K = place(A_c, B_c, [-27.0 + 3.j, -27.0 - 3.j])
     Kff = feedforwards(A_d, B_d, Q_ff)
     L = dkalman(A_d, C, Q_d, R_d)
 

@@ -6,9 +6,7 @@ namespace wrist {
 
 using muan::queues::QueueManager;
 
-WristController::WristController()
-    : trapezoidal_motion_profile_{::std::chrono::milliseconds(5)},
-      trapezoidal_time_estimator_{::std::chrono::milliseconds(5)} {
+WristController::WristController() {
   auto wrist_plant = muan::control::StateSpacePlant<1, 3, 1>(
       frc1678::wrist::controller::cube_integral::A(),
       frc1678::wrist::controller::cube_integral::B(),
@@ -23,17 +21,16 @@ WristController::WristController()
 
   wrist_observer_ = muan::control::StateSpaceObserver<1, 3, 1>(
       wrist_plant, frc1678::wrist::controller::cube_integral::L());
-
-  trapezoidal_motion_profile_.set_maximum_acceleration(kMaxWristAcceleration);
-  trapezoidal_motion_profile_.set_maximum_velocity(kMaxWristVelocity);
-  trapezoidal_time_estimator_.set_maximum_acceleration(kMaxWristAcceleration);
-  trapezoidal_time_estimator_.set_maximum_velocity(kMaxWristVelocity);
 }
 
 void WristController::SetGoal(double wrist_angle, IntakeGoal intake_mode) {
+  if (std::abs(wrist_angle - unprofiled_goal_.position) > 1e-10) {
+    profile_time_ = 0.;
+    profile_initial_ = {wrist_observer_.x()(0, 0), wrist_observer_.x()(1, 0)};
+  }
   // Cap unprofiled goal to keep things safe
-  unprofiled_goal_ =
-      muan::utils::Cap(wrist_angle, kWristMinAngle, kWristMaxAngle);
+  unprofiled_goal_ = {
+      muan::utils::Cap(wrist_angle, kWristMinAngle, kWristMaxAngle), 0.};
   // Set the goal intake mode
   intake_mode_ = intake_mode;
 }
@@ -70,10 +67,7 @@ void WristController::Update(ScoreSubsystemInputProto input,
 
   if (!outputs_enabled) {
     wrist_voltage = 0.0;
-    trapezoidal_motion_profile_.MoveCurrentState(
-        wrist_observer_.x().block<2, 1>(0, 0));
-    trapezoidal_time_estimator_.MoveCurrentState(
-        wrist_observer_.x().block<2, 1>(0, 0));
+    profile_initial_ = {wrist_observer_.x()(0, 0), wrist_observer_.x()(1, 0)};
   }
 
   // Start of intake
@@ -133,10 +127,9 @@ void WristController::Update(ScoreSubsystemInputProto input,
     plant_.x()(0, 0) += hall_calibration_.offset();
   }
 
+  UpdateProfiledGoal(outputs_enabled);
   Eigen::Matrix<double, 3, 1> wrist_r =
-      (Eigen::Matrix<double, 3, 1>()
-           << UpdateProfiledGoal(unprofiled_goal_, outputs_enabled)(0, 0),
-       0.0, 0.0)
+      (Eigen::Matrix<double, 3, 1>() << profiled_goal_.position, 0.0, 0.0)
           .finished();
 
   wrist_controller_.r() = wrist_r;
@@ -169,26 +162,36 @@ void WristController::Update(ScoreSubsystemInputProto input,
   (*status)->set_wrist_calibrated(hall_calibration_.is_calibrated());
   (*status)->set_wrist_angle(wrist_observer_.x()(0, 0));
   (*status)->set_has_cube(has_cube);
-  (*status)->set_wrist_profiled_goal(profiled_goal_(0, 0));
-  (*status)->set_wrist_unprofiled_goal(unprofiled_goal_);
+  (*status)->set_wrist_profiled_goal(profiled_goal_.position);
+  (*status)->set_wrist_unprofiled_goal(unprofiled_goal_.position);
   (*status)->set_wrist_calibration_offset(hall_calibration_.offset());
 }
 
-Eigen::Matrix<double, 2, 1> WristController::UpdateProfiledGoal(
-    double unprofiled_goal_, bool outputs_enabled) {
+muan::control::MotionProfilePosition WristController::UpdateProfiledGoal(
+    bool outputs_enabled) {
   // Sets profiled goal based on the motion profile
+  muan::control::TrapezoidalMotionProfile profile =
+      muan::control::TrapezoidalMotionProfile(
+          kWristConstraints, unprofiled_goal_, profile_initial_);
   if (outputs_enabled) {
-    profiled_goal_ = trapezoidal_motion_profile_.Update(unprofiled_goal_, 0.0);
+    // Figure out what the trapezoid profile wants
+    profiled_goal_ = profile.Calculate(profile_time_ += 5 * muan::units::ms);
+  } else {
+    // Keep the trapezoid profile updated on the (sadly) disabled robot
+    profiled_goal_ = profile.Calculate(0.);
   }
-
-  trapezoidal_time_estimator_.MoveCurrentState(profiled_goal_);
-
   return profiled_goal_;
 }
 
 double WristController::TimeLeftUntil(double angle, double final_angle) {
-  trapezoidal_time_estimator_.Update(final_angle, 0);
-  return trapezoidal_time_estimator_.TimeLeftUntil(angle, final_angle, 0.0);
+  if (profiled_goal_.position > angle) {
+    return 0.;
+  }
+
+  muan::control::TrapezoidalMotionProfile profile =
+      muan::control::TrapezoidalMotionProfile(kWristConstraints,
+                                              {final_angle, 0}, profiled_goal_);
+  return profile.TimeLeftUntil(angle);
 }
 
 bool WristController::is_calibrated() const {

@@ -21,6 +21,7 @@ TrapezoidalMotionProfile::TrapezoidalMotionProfile(
   muan::units::Time cutoff_end = goal_.velocity / constraints_.max_acceleration;
   muan::units::Length cutoff_dist_end =
       cutoff_end * cutoff_end * constraints_.max_acceleration / 2.0;
+
   // Now we can calculate the parameters as if it was a full trapezoid instead
   // of a truncated one
   {
@@ -75,6 +76,81 @@ MotionProfilePosition TrapezoidalMotionProfile::Calculate(
   }
 
   return Direct(result);
+}
+
+muan::units::Time TrapezoidalMotionProfile::TimeLeftUntil(
+    muan::units::Length target) const {
+  muan::units::Length position = initial_.position * direction_;
+  muan::units::Velocity velocity = initial_.velocity * direction_;
+
+  muan::units::Time end_accel = end_accel_ * direction_;
+  muan::units::Time end_full_speed = end_full_speed_ * direction_ - end_accel;
+
+  if (target < position) {
+    end_accel *= -1.;
+    end_full_speed *= -1.;
+    velocity *= -1.;
+  }
+
+  end_accel = std::max(end_accel, 0.);
+  end_full_speed = std::max(end_full_speed, 0.);
+  muan::units::Time end_deccel = end_deccel_ - end_accel - end_full_speed;
+  end_deccel = std::max(end_deccel, 0.);
+
+  muan::units::Acceleration acceleration = constraints_.max_acceleration;
+  muan::units::Acceleration decceleration = -constraints_.max_acceleration;
+
+  muan::units::Length dist_to_target = std::abs(target - position);
+
+  if (dist_to_target < 1e-6) {
+    return 0.;
+  }
+
+  muan::units::Length accel_dist =
+      velocity * end_accel + 0.5 * acceleration * end_accel * end_accel;
+
+  muan::units::Velocity deccel_velocity;
+  if (end_accel > 0) {
+    deccel_velocity =
+        sqrt(std::abs(velocity * velocity + 2 * acceleration * accel_dist));
+  } else {
+    deccel_velocity = velocity;
+  }
+
+  muan::units::Length deccel_dist =
+      deccel_velocity * end_deccel +
+      0.5 * decceleration * end_deccel * end_deccel;
+
+  deccel_dist = std::max(deccel_dist, 0.);
+
+  muan::units::Length full_speed_dist =
+      constraints_.max_velocity * end_full_speed;
+
+  if (accel_dist > dist_to_target) {
+    accel_dist = dist_to_target;
+    full_speed_dist = 0.;
+    deccel_dist = 0.;
+  } else if (accel_dist + end_full_speed > dist_to_target) {
+    full_speed_dist = dist_to_target - accel_dist;
+    deccel_dist = 0.;
+  } else {
+    deccel_dist = dist_to_target - full_speed_dist - accel_dist;
+  }
+
+  muan::units::Time accel_time =
+      (-velocity +
+       sqrt(std::abs(velocity * velocity + 2 * acceleration * accel_dist))) /
+      acceleration;
+
+  muan::units::Time deccel_time =
+      (-deccel_velocity + sqrt(std::abs(deccel_velocity * deccel_velocity +
+                                        2 * decceleration * deccel_dist))) /
+      decceleration;
+
+  muan::units::Time full_speed_time =
+      full_speed_dist / constraints_.max_velocity;
+
+  return accel_time + full_speed_time + deccel_time;
 }
 
 }  // namespace control

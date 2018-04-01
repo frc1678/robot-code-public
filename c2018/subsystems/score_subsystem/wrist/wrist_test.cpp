@@ -2,7 +2,9 @@
 #include "gtest/gtest.h"
 
 namespace c2018 {
+
 namespace score_subsystem {
+
 namespace wrist {
 
 class WristTest : public ::testing::Test {
@@ -43,9 +45,9 @@ class WristTest : public ::testing::Test {
 
  protected:
   muan::control::StateSpacePlant<1, 3, 1> plant_;
+  WristController wrist_;
 
  private:
-  WristController wrist_;
   void SetWeights(bool has_cube) {
     if (has_cube) {
       plant_.A() = frc1678::wrist::controller::cube_integral::A();
@@ -231,5 +233,7 @@ TEST_F(WristTest, CanCapAngle) {
 }
 
 }  // namespace wrist
+
 }  // namespace score_subsystem
+
 }  // namespace c2018

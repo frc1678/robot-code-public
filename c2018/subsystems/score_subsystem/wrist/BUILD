@@ -30,12 +30,12 @@ cc_library(
         "//c2018/subsystems/score_subsystem:score_subsystem_queues",
         "//muan/control:state_space",
         "//muan/control/calibration:hall_calibration",
+        "//muan/control:motion_profiles",
         "//muan/queues:queue_manager",
         "//muan/units",
         "//muan/utils:math_utils",
         "//muan/utils:monitor",
         "//muan/wpilib:wpilib_queues",
-        "//third_party/aos/common/util:trapezoid_profile",
         "//third_party/google/googletest",
     ],
 )

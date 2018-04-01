@@ -51,39 +51,32 @@ class ElevatorControllerTest : public ::testing::Test {
 
  protected:
   muan::control::StateSpacePlant<1, 3, 1> plant_;
-
- private:
   c2018::score_subsystem::elevator::ElevatorController elevator_;
 
+ private:
   void SetWeights(bool second_stage, bool has_cube) {
     if (second_stage && has_cube) {
-      plant_.A() = frc1678::elevator::controller::
-          second_stage_cube_integral::A();
-      plant_.B() = frc1678::elevator::controller::
-          second_stage_cube_integral::B();
-      plant_.C() = frc1678::elevator::controller::
-          second_stage_cube_integral::C();
+      plant_.A() =
+          frc1678::elevator::controller::second_stage_cube_integral::A();
+      plant_.B() =
+          frc1678::elevator::controller::second_stage_cube_integral::B();
+      plant_.C() =
+          frc1678::elevator::controller::second_stage_cube_integral::C();
     } else if (second_stage && !has_cube) {
-      plant_.A() =
-          frc1678::elevator::controller::second_stage_integral::A();
-      plant_.B() =
-          frc1678::elevator::controller::second_stage_integral::B();
-      plant_.C() =
-          frc1678::elevator::controller::second_stage_integral::C();
+      plant_.A() = frc1678::elevator::controller::second_stage_integral::A();
+      plant_.B() = frc1678::elevator::controller::second_stage_integral::B();
+      plant_.C() = frc1678::elevator::controller::second_stage_integral::C();
     } else if (!second_stage && has_cube) {
-      plant_.A() = frc1678::elevator::controller::
-          first_stage_cube_integral::A();
-      plant_.B() = frc1678::elevator::controller::
-          first_stage_cube_integral::B();
-      plant_.C() = frc1678::elevator::controller::
-          first_stage_cube_integral::C();
-    } else if (!second_stage && !has_cube) {
       plant_.A() =
-          frc1678::elevator::controller::first_stage_integral::A();
+          frc1678::elevator::controller::first_stage_cube_integral::A();
       plant_.B() =
-          frc1678::elevator::controller::first_stage_integral::B();
+          frc1678::elevator::controller::first_stage_cube_integral::B();
       plant_.C() =
-          frc1678::elevator::controller::first_stage_integral::C();
+          frc1678::elevator::controller::first_stage_cube_integral::C();
+    } else if (!second_stage && !has_cube) {
+      plant_.A() = frc1678::elevator::controller::first_stage_integral::A();
+      plant_.B() = frc1678::elevator::controller::first_stage_integral::B();
+      plant_.C() = frc1678::elevator::controller::first_stage_integral::C();
     }
   }
 };
@@ -126,27 +119,12 @@ TEST_F(ElevatorControllerTest, Calibration) {
 
 TEST_F(ElevatorControllerTest, AllHeights) {
   CalibrateDisabled();
+  EXPECT_TRUE(elevator_status_proto_->elevator_calibrated());
 
   elevator_input_proto_->set_elevator_encoder(0);
   elevator_input_proto_->set_elevator_hall(false);
   outputs_enabled_ = true;
 
-  SetGoal(c2018::score_subsystem::elevator::kElevatorMaxHeight);
-
-  for (int i = 0; i < 1000; i++) {
-    elevator_input_proto_->set_elevator_encoder(plant_.y(0));
-    Update();
-    EXPECT_NEAR(elevator_output_proto_->elevator_voltage(), 0, 12);
-  }
-
-  EXPECT_TRUE(elevator_status_proto_->elevator_calibrated());
-  EXPECT_TRUE(elevator_status_proto_->elevator_at_top());
-  EXPECT_NEAR(elevator_status_proto_->elevator_actual_height(),
-              c2018::score_subsystem::elevator::kElevatorMaxHeight, 1e-3);
-  EXPECT_NEAR(elevator_status_proto_->elevator_unprofiled_goal(),
-              c2018::score_subsystem::elevator::kElevatorMaxHeight, 1e-3);
-  EXPECT_NEAR(elevator_status_proto_->elevator_profiled_goal(),
-              c2018::score_subsystem::elevator::kElevatorMaxHeight, 1e-3);
   SetGoal(0.6);
 
   for (int i = 0; i < 1000; i++) {
@@ -158,6 +136,22 @@ TEST_F(ElevatorControllerTest, AllHeights) {
   EXPECT_NEAR(elevator_status_proto_->elevator_actual_height(), 0.6, 1e-3);
   EXPECT_NEAR(elevator_status_proto_->elevator_unprofiled_goal(), 0.6, 1e-3);
   EXPECT_NEAR(elevator_status_proto_->elevator_profiled_goal(), 0.6, 1e-3);
+
+  SetGoal(c2018::score_subsystem::elevator::kElevatorMaxHeight);
+
+  for (int i = 0; i < 1000; i++) {
+    elevator_input_proto_->set_elevator_encoder(plant_.y(0));
+    Update();
+    EXPECT_NEAR(elevator_output_proto_->elevator_voltage(), 0, 12);
+  }
+
+  EXPECT_TRUE(elevator_status_proto_->elevator_at_top());
+  EXPECT_NEAR(elevator_status_proto_->elevator_actual_height(),
+              c2018::score_subsystem::elevator::kElevatorMaxHeight, 1e-3);
+  EXPECT_NEAR(elevator_status_proto_->elevator_unprofiled_goal(),
+              c2018::score_subsystem::elevator::kElevatorMaxHeight, 1e-3);
+  EXPECT_NEAR(elevator_status_proto_->elevator_profiled_goal(),
+              c2018::score_subsystem::elevator::kElevatorMaxHeight, 1e-3);
   SetGoal(0);
 
   for (int i = 0; i < 1000; i++) {
