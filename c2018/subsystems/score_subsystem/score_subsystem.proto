@@ -61,6 +61,12 @@ enum IntakeGoal {
   DROP = 7;
 }
 
+enum PinchState {
+  IDLE_WITH_CUBE = 0;
+  IDLE_NO_CUBE = 1;
+  MOVING = 2;
+}
+
 message ScoreSubsystemGoal {
   required uint64 timestamp = 1;
   required ScoreGoal score_goal = 2;
@@ -104,4 +110,5 @@ message ScoreSubsystemStatus {
   required double wrist_time_left = 21;
   required double elevator_time_left = 22;
   required IntakeGoal intake_state = 23;
+  required PinchState pinch_state = 24;
 }

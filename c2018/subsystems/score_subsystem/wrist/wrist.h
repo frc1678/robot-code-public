@@ -46,7 +46,7 @@ static constexpr double kHoldingVoltage = 1.5;
 static constexpr double kMaxVoltage = 12;
 
 // Has Cube encoder stuff
-static constexpr int kNumHasCubeTicks = 10;
+static constexpr int kNumHasCubeTicks = 100;
 
 class WristController {
  public:
@@ -85,6 +85,7 @@ class WristController {
   double CapU(double wrist_voltage);
 
   IntakeGoal intake_mode_ = IntakeGoal::INTAKE_NONE;
+  PinchState pinch_state_ = PinchState::IDLE_WITH_CUBE;
 
   // Voltage to give to intake
   double intake_voltage_ = 0;

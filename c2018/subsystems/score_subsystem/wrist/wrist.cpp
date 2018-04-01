@@ -58,12 +58,30 @@ void WristController::Update(ScoreSubsystemInputProto input,
   double wrist_voltage = 0.0;
 
   // Logic to make sure it actually has a cube
-  if (input->has_cube() && has_cube_for_ticks_ < kNumHasCubeTicks * 2) {
-    has_cube_for_ticks_++;
-  } else if (!input->has_cube() && has_cube_for_ticks_ > 0) {
-    has_cube_for_ticks_--;
+  switch (pinch_state_) {
+    case MOVING:
+      if (input->has_cube()) {
+        has_cube_for_ticks_--;
+      } else {
+        has_cube_for_ticks_ = kNumHasCubeTicks;
+      }
+      if (has_cube_for_ticks_ < 0) {
+        pinch_state_ = IDLE_WITH_CUBE;
+      }
+      break;
+    case IDLE_WITH_CUBE:
+      if (!input->has_cube()) {
+        pinch_state_ = IDLE_NO_CUBE;
+      }
+      break;
+    case IDLE_NO_CUBE:
+      if (input->has_cube()) {
+        pinch_state_ = MOVING;
+      }
+      break;
   }
-  bool has_cube = has_cube_for_ticks_ > kNumHasCubeTicks;
+
+  bool has_cube = pinch_state_ == IDLE_WITH_CUBE;
 
   if (!outputs_enabled) {
     wrist_voltage = 0.0;
