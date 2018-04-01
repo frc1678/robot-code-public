@@ -13,7 +13,8 @@ TEST(ProtoUtils, ProtoToCsv) {
   {
     std::ostringstream ss;
     muan::util::ProtoToCsvHeader(p, ss);
-    ASSERT_EQ(ss.str(), "test_string,test_uint,sub_message.id,sub_message.num,is_sane");
+    ASSERT_EQ(ss.str(),
+              "test_string,test_uint,sub_message.id,sub_message.num,is_sane");
   }
 
   {
@@ -29,7 +30,8 @@ TEST(ProtoUtils, OptionalFields) {
   {
     std::ostringstream ss;
     muan::util::ProtoToCsvHeader(p, ss);
-    ASSERT_EQ(ss.str(), "test_string,test_uint,sub_message.id,sub_message.num,is_sane");
+    ASSERT_EQ(ss.str(),
+              "test_string,test_uint,sub_message.id,sub_message.num,is_sane");
   }
 
   {
@@ -108,6 +110,9 @@ TEST(ProtoUtils, ProtoToJson) {
   {
     std::ostringstream ss;
     muan::util::ProtoToJson(p, ss);
-    ASSERT_EQ(ss.str(), "{\"testString\":\"Citrus Circuits\",\"testUint\":1678,\"subMessage\":{\"id\":100,\"num\":3.14159},\"isSane\":0}");  //NOLINT
+    ASSERT_EQ(ss.str(),
+              "{\"testString\":\"Citrus "
+              "Circuits\",\"testUint\":1678,\"subMessage\":{\"id\":100,\"num\":"
+              "3.14159},\"isSane\":0}");  // NOLINT
   }
 }

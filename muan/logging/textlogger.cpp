@@ -1,7 +1,9 @@
 #ifndef __STDC_FORMAT_MACROS
 #define __STDC_FORMAT_MACROS
 #endif
+
 #include "muan/logging/textlogger.h"
+
 #include <inttypes.h>
 #include <iostream>
 #include <iterator>

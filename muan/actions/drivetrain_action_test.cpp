@@ -9,7 +9,8 @@ class DrivetrainActionTest : public ::testing::Test {
   frc971::control_loops::drivetrain::GoalQueue goal_queue{100};
   frc971::control_loops::drivetrain::StatusQueue status_queue{100};
 
-  void WriteStatus(double left, double right, double left_profile = 0.0, double right_profile = 0.0) {
+  void WriteStatus(double left, double right, double left_profile = 0.0,
+                   double right_profile = 0.0) {
     frc971::control_loops::drivetrain::StatusProto status;
     status->set_forward_velocity(0);
     status->set_estimated_left_position(left);
@@ -21,16 +22,18 @@ class DrivetrainActionTest : public ::testing::Test {
     status_queue.WriteMessage(status);
   }
 
-  void CheckGoal(double left, double right, double left_velocity = 0.0, double right_velocity = 0.0,
-                 double left_acceleration = 1.0, double right_acceleration = 1.0) {
+  void CheckGoal(double left, double right, double left_velocity = 0.0,
+                 double right_velocity = 0.0, double left_acceleration = 1.0,
+                 double right_acceleration = 1.0) {
     auto maybe_goal = goal_queue.MakeReader().ReadLastMessage();
     EXPECT_TRUE(maybe_goal);
     auto goal = maybe_goal.value();
     EXPECT_TRUE(goal->has_distance_command());
     EXPECT_EQ(goal->distance_command().left_goal(),
               left + left_velocity * left_velocity / left_acceleration / 2.0);
-    EXPECT_EQ(goal->distance_command().right_goal(),
-              right + right_velocity * right_velocity / right_acceleration / 2.0);
+    EXPECT_EQ(
+        goal->distance_command().right_goal(),
+        right + right_velocity * right_velocity / right_acceleration / 2.0);
     EXPECT_EQ(goal->distance_command().left_velocity_goal(), 0);
     EXPECT_EQ(goal->distance_command().right_velocity_goal(), 0);
   }
@@ -136,7 +139,8 @@ TEST_F(DrivetrainActionTest, SwoopTurn) {
 
     EXPECT_TRUE(goal->has_distance_command());
 
-    EXPECT_EQ(goal->angular_constraints().max_velocity() * 2, goal->linear_constraints().max_velocity());
+    EXPECT_EQ(goal->angular_constraints().max_velocity() * 2,
+              goal->linear_constraints().max_velocity());
     EXPECT_EQ(goal->angular_constraints().max_acceleration() * 2,
               goal->linear_constraints().max_acceleration());
   }
@@ -165,7 +169,8 @@ TEST_F(DrivetrainActionTest, SwoopTurnBackwards) {
 
     EXPECT_TRUE(goal->has_distance_command());
 
-    EXPECT_EQ(goal->angular_constraints().max_velocity() * 2, goal->linear_constraints().max_velocity());
+    EXPECT_EQ(goal->angular_constraints().max_velocity() * 2,
+              goal->linear_constraints().max_velocity());
     EXPECT_EQ(goal->angular_constraints().max_acceleration() * 2,
               goal->linear_constraints().max_acceleration());
   }
@@ -194,7 +199,8 @@ TEST_F(DrivetrainActionTest, SwoopTurnClockwise) {
 
     EXPECT_TRUE(goal->has_distance_command());
 
-    EXPECT_EQ(goal->angular_constraints().max_velocity() * 2, goal->linear_constraints().max_velocity());
+    EXPECT_EQ(goal->angular_constraints().max_velocity() * 2,
+              goal->linear_constraints().max_velocity());
     EXPECT_EQ(goal->angular_constraints().max_acceleration() * 2,
               goal->linear_constraints().max_acceleration());
   }

@@ -257,8 +257,8 @@ void WebDashStreamer::CloseConnection(int connection_index) {
   connections_[connection_index].events = 0;
   // Stop requesting the stream to be serialized
   stream_requests_[connection_index] = "";
-  LOG(
-      ERROR, "Connection unused, stopped receiving input and serializing stream");
+  LOG(ERROR,
+      "Connection unused, stopped receiving input and serializing stream");
 }
 
 }  // namespace webdash

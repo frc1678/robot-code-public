@@ -7,8 +7,8 @@ TEST(Vision, IgnoresNoise) {
   cv::randn(gaussian_noise, 100, 10);
   cv::cvtColor(gaussian_noise, gaussian_noise, CV_GRAY2BGR);
 
-  muan::vision::VisionConstants k{1, 1, 0, 0,  // Camera values can be anything
-                                  0.001, 1};   // Ignore anything less than .1%
+  muan::vision::VisionConstants k{1, 1, 0, 0, 0.001, 1};
+  // Camera values can be anything, ignore anything less than 0.1%
 
   // Colors are 110-255. About 16% of the noise is within that range.
   muan::vision::VisionThresholds range;
@@ -37,13 +37,19 @@ TEST(Vision, DetectsTargets) {
 
   cv::Mat image(100, 600, CV_8UC3, cv::Scalar(0, 0, 0));
   // Things that aren't targets
-  cv::rectangle(image, cv::Point(0, 0), cv::Point(50, 50), cv::Scalar(255, 255, 255), -1);
-  cv::rectangle(image, cv::Point(100, 0), cv::Point(150, 50), cv::Scalar(0, 0, 0), -1);
-  cv::rectangle(image, cv::Point(200, 0), cv::Point(250, 50), cv::Scalar(127, 160, 160), -1);
+  cv::rectangle(image, cv::Point(0, 0), cv::Point(50, 50),
+                cv::Scalar(255, 255, 255), -1);
+  cv::rectangle(image, cv::Point(100, 0), cv::Point(150, 50),
+                cv::Scalar(0, 0, 0), -1);
+  cv::rectangle(image, cv::Point(200, 0), cv::Point(250, 50),
+                cv::Scalar(127, 160, 160), -1);
   // Things that are targets
-  cv::rectangle(image, cv::Point(300, 0), cv::Point(350, 50), cv::Scalar(128, 128, 128), -1);
-  cv::rectangle(image, cv::Point(400, 0), cv::Point(450, 50), cv::Scalar(170, 255, 255), -1);
-  cv::rectangle(image, cv::Point(500, 0), cv::Point(550, 50), cv::Scalar(160, 200, 200), -1);
+  cv::rectangle(image, cv::Point(300, 0), cv::Point(350, 50),
+                cv::Scalar(128, 128, 128), -1);
+  cv::rectangle(image, cv::Point(400, 0), cv::Point(450, 50),
+                cv::Scalar(170, 255, 255), -1);
+  cv::rectangle(image, cv::Point(500, 0), cv::Point(550, 50),
+                cv::Scalar(160, 200, 200), -1);
 
   muan::vision::VisionConstants k{1, 1, 0, 0, 0, 1};
   muan::vision::Vision vision{range, k};
@@ -57,7 +63,7 @@ TEST(Vision, DetectsTargets) {
     ASSERT_NEAR((int)(target.x * 600) % 100, 25, 1);
     // Error can be 1 pixel plus floating point error
     ASSERT_NEAR(target.y, 0.25, 0.011);
-    ASSERT_NEAR(target.width, 1./12., 1./599.);
+    ASSERT_NEAR(target.width, 1. / 12., 1. / 599.);
     // Rectangle has fullness 1
     ASSERT_NEAR(target.fullness, 1, 0.01);
   }
@@ -65,7 +71,7 @@ TEST(Vision, DetectsTargets) {
 
 TEST(Vision, CalculatesPosition) {
   // FovX=1, FovY=0, CameraAngleX=0.5, CameraAngleY=atan(1/2)
-  muan::vision::VisionConstants k{1, 0, 0.5, std::atan(1./2.), 0, 1};
+  muan::vision::VisionConstants k{1, 0, 0.5, std::atan(1. / 2.), 0, 1};
   muan::vision::Vision vision{muan::vision::VisionThresholds(), k};
 
   ASSERT_NEAR(vision.CalculateAngle(-0.5), 0, 0.001);

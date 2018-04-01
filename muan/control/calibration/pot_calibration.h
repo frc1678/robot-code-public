@@ -2,7 +2,6 @@
 #define MUAN_CONTROL_CALIBRATION_POT_CALIBRATION_H_
 
 namespace muan {
-
 namespace control {
 
 class PotCalibration {
@@ -35,7 +34,6 @@ class PotCalibration {
 };
 
 }  // namespace control
-
 }  // namespace muan
 
 #endif  // MUAN_CONTROL_CALIBRATION_POT_CALIBRATION_H_

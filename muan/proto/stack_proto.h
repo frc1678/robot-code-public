@@ -4,9 +4,10 @@
 #include <array>
 #include <atomic>
 #include <cstdint>
+
 #include "google/protobuf/arena.h"
-#include "third_party/aos/common/time.h"
 #include "third_party/aos/common/die.h"
+#include "third_party/aos/common/time.h"
 
 namespace muan {
 namespace proto {
@@ -42,7 +43,9 @@ class StackProto {
  public:
   using ProtoType = T;
 
-  StackProto() : arena_(GetOptions()) { proto_message_ = google::protobuf::Arena::CreateMessage<T>(&arena_); }
+  StackProto() : arena_(GetOptions()) {
+    proto_message_ = google::protobuf::Arena::CreateMessage<T>(&arena_);
+  }
   virtual ~StackProto() = default;
 
   // Allocate from a StackProto of a different size.
@@ -113,30 +116,40 @@ class StackProto {
 };
 
 static const std::atomic<int64_t> start_time{
-    std::chrono::duration_cast<std::chrono::milliseconds>(aos::monotonic_clock::now() -
-                                                          aos::monotonic_clock::epoch()).count()};
+    std::chrono::duration_cast<std::chrono::milliseconds>(
+        aos::monotonic_clock::now() - aos::monotonic_clock::epoch())
+        .count()};
 
-// This is a catch-all function overload, essentially if the other WriteTimestamp function doesn't compile the
+// This is a catch-all function overload, essentially if the other
+// WriteTimestamp function doesn't compile the
 // compiler will select this function which does nothing.
 inline void WriteTimestamp(...) {}
 
-// If the timestamp exists in the message that we're writing to a queue, this function is called. If it fails
-// to compile, then the compiler will fall back to the other WriteTimestamp function. The decltype is there to
+// If the timestamp exists in the message that we're writing to a queue, this
+// function is called. If it fails
+// to compile, then the compiler will fall back to the other WriteTimestamp
+// function. The decltype is there to
 // check if the timestamp exists, and if it doesn't it fails to compile.
 template <typename T>
-auto WriteTimestamp(T* message) -> decltype((*message)->set_timestamp(0), void()) {
-  (*message)->set_timestamp(std::chrono::duration_cast<std::chrono::milliseconds>(
-                                aos::monotonic_clock::now() - aos::monotonic_clock::epoch()).count() -
-                            start_time);
+auto WriteTimestamp(T* message)
+    -> decltype((*message)->set_timestamp(0), void()) {
+  (*message)->set_timestamp(
+      std::chrono::duration_cast<std::chrono::milliseconds>(
+          aos::monotonic_clock::now() - aos::monotonic_clock::epoch())
+          .count() -
+      start_time);
 }
 
-// This secondary WriteTimestamp function makes it work if the message getting passed in is a pointer to a
+// This secondary WriteTimestamp function makes it work if the message getting
+// passed in is a pointer to a
 // normal proto instead of a stack proto
 template <typename T>
 auto WriteTimestamp(T* message) -> decltype(message->set_timestamp(0), void()) {
-  message->set_timestamp(std::chrono::duration_cast<std::chrono::milliseconds>(
-                             aos::monotonic_clock::now() - aos::monotonic_clock::epoch()).count() -
-                         start_time);
+  message->set_timestamp(
+      std::chrono::duration_cast<std::chrono::milliseconds>(
+          aos::monotonic_clock::now() - aos::monotonic_clock::epoch())
+          .count() -
+      start_time);
 }
 
 }  // namespace proto

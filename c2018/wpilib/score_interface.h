@@ -4,13 +4,13 @@
 #include <algorithm>
 #include <cmath>
 
-#include "WPILib.h"
 #include "c2018/subsystems/score_subsystem/queue_types.h"
 #include "muan/logging/logger.h"
 #include "muan/queues/queue_manager.h"
 #include "muan/utils/math_utils.h"
 #include "muan/wpilib/can_wrapper.h"
 #include "muan/wpilib/pcm_wrapper.h"
+#include "WPILib.h"
 
 namespace c2018 {
 namespace wpilib {

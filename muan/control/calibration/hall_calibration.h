@@ -2,7 +2,6 @@
 #define MUAN_CONTROL_CALIBRATION_HALL_CALIBRATION_H_
 
 namespace muan {
-
 namespace control {
 
 /*
@@ -49,7 +48,6 @@ class HallCalibration {
 };
 
 }  // namespace control
-
 }  // namespace muan
 
 #endif  // MUAN_CONTROL_CALIBRATION_HALL_CALIBRATION_H_

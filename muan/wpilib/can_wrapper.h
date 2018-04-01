@@ -5,7 +5,6 @@
 #include "muan/wpilib/pdp_wrapper.h"
 
 namespace muan {
-
 namespace wpilib {
 
 /*
@@ -40,7 +39,6 @@ class CanWrapper {
 };
 
 }  // namespace wpilib
-
 }  // namespace muan
 
 #endif  // MUAN_WPILIB_CAN_WRAPPER_H_

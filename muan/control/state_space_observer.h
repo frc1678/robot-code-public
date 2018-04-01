@@ -6,7 +6,6 @@
 #include "muan/control/state_space_plant.h"
 
 namespace muan {
-
 namespace control {
 
 /*
@@ -31,7 +30,8 @@ class StateSpaceObserver {
 
   // Initializes the observer from a plant and discrete-time observer gains.
   explicit StateSpaceObserver(
-      const muan::control::StateSpacePlant<kNumInputs, kNumStates, kNumOutputs>& plant,
+      const muan::control::StateSpacePlant<kNumInputs, kNumStates, kNumOutputs>&
+          plant,
       Eigen::Matrix<double, kNumStates, kNumOutputs> L =
           Eigen::Matrix<double, kNumStates, kNumOutputs>::Zero());
   virtual ~StateSpaceObserver() = default;
@@ -40,14 +40,16 @@ class StateSpaceObserver {
   // data with a difference equation as follows:
   // xhat_post(n) = xhat(n) + L * (y(n) - C*xhat(n))
   // xhat(n+1) = A*xhat_post(n) + B*u(n)
-  void Update(const Eigen::Matrix<double, kNumInputs, 1>& u, const Eigen::Matrix<double, kNumOutputs, 1>& y);
+  void Update(const Eigen::Matrix<double, kNumInputs, 1>& u,
+              const Eigen::Matrix<double, kNumOutputs, 1>& y);
 
   const Eigen::Matrix<double, kNumStates, 1>& x() const;
   Eigen::Matrix<double, kNumStates, 1>& x();
   double x(uint32_t i) const;
   double& x(uint32_t i);
 
-  const muan::control::StateSpacePlant<kNumInputs, kNumStates, kNumOutputs>& plant() const;
+  const muan::control::StateSpacePlant<kNumInputs, kNumStates, kNumOutputs>&
+  plant() const;
   muan::control::StateSpacePlant<kNumInputs, kNumStates, kNumOutputs>& plant();
 
   const Eigen::Matrix<double, kNumStates, kNumOutputs>& L() const;
@@ -61,7 +63,6 @@ class StateSpaceObserver {
 };
 
 }  // namespace control
-
 }  // namespace muan
 
 #include "state_space_observer.hpp"

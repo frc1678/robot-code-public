@@ -6,7 +6,6 @@
 #include "muan/webdash/webdash.pb.h"
 
 namespace muan {
-
 namespace webdash {
 
 using AutoSelectionProto =
@@ -15,7 +14,6 @@ using AutoSelectionProto =
 using AutoSelectionQueue = muan::queues::MessageQueue<AutoSelectionProto>;
 
 }  // namespace webdash
-
 }  // namespace muan
 
 #endif  // MUAN_WEBDASH_QUEUE_TYPES_H_

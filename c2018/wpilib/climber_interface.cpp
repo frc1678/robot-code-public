@@ -47,8 +47,7 @@ void ClimberInterface::ReadSensors() {
 void ClimberInterface::WriteActuators() {
   ClimberOutputProto outputs;
   if (output_reader_.ReadLastMessage(&outputs)) {
-    winch_.Set(muan::utils::Cap(outputs->voltage(), -kMaxVoltage, kMaxVoltage) /
-               12.0);
+    winch_.Set(muan::utils::Cap(outputs->voltage(), -kMaxVoltage, kMaxVoltage) / 12.0);
     pcm_->WriteSolenoid(kBatterSolenoid, outputs->batter_solenoid());
     pcm_->WriteSolenoid(kHookSolenoid, outputs->hook_solenoid());
   } else {

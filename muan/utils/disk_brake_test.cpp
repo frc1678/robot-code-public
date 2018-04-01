@@ -1,5 +1,5 @@
-#include "gtest/gtest.h"
 #include "muan/utils/disk_brake.h"
+#include "gtest/gtest.h"
 
 using muan::DiskBrake;
 using muan::units::s;

@@ -2,7 +2,6 @@
 #define MUAN_UNITS_UNITS_H_
 
 namespace muan {
-
 namespace units {
 
 using Time = double;
@@ -56,7 +55,6 @@ constexpr Voltage pwm = 12 * V;
 constexpr double convert(double val, double unit) { return val / unit; }
 
 }  // namespace units
-
 }  // namespace muan
 
 #endif  // MUAN_UNITS_UNITS_H_

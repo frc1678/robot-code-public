@@ -3,7 +3,6 @@
 #include "muan/queues/queue_manager.h"
 
 namespace c2018 {
-
 namespace score_subsystem {
 
 class ScoreSubsystemTest : public ::testing::Test {

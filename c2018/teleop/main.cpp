@@ -124,8 +124,7 @@ void TeleopBase::Update() {
 void TeleopBase::SetReadableLogName() {
   /*
   if (DriverStation::GetInstance().GetMatchType() !=
-          DriverStation::MatchType::kNone &&
-      !log_name_set_) {
+          DriverStation::MatchType::kNone && !log_name_set_) {
     std::string name;
     int match_num = DriverStation::GetInstance().GetMatchNumber();
     std::string match_number = std::to_string(match_num);
@@ -244,31 +243,23 @@ void TeleopBase::SendScoreSubsystemMessage() {
     }
   } else if (front_->is_pressed()) {
     if (pos_0_->is_pressed()) {
-      score_subsystem_goal->set_score_goal(
-          c2018::score_subsystem::SCALE_LOW_FORWARD);
+      score_subsystem_goal->set_score_goal(c2018::score_subsystem::SCALE_LOW_FORWARD);
     } else if (pos_1_->is_pressed()) {
-      score_subsystem_goal->set_score_goal(
-          c2018::score_subsystem::SCALE_MID_FORWARD);
+      score_subsystem_goal->set_score_goal(c2018::score_subsystem::SCALE_MID_FORWARD);
     } else if (pos_2_->is_pressed()) {
-      score_subsystem_goal->set_score_goal(
-          c2018::score_subsystem::SCALE_HIGH_FORWARD);
+      score_subsystem_goal->set_score_goal(c2018::score_subsystem::SCALE_HIGH_FORWARD);
     } else if (pos_3_->is_pressed()) {
-      score_subsystem_goal->set_score_goal(
-          c2018::score_subsystem::SCALE_SUPER_HIGH_FORWARD);
+      score_subsystem_goal->set_score_goal(c2018::score_subsystem::SCALE_SUPER_HIGH_FORWARD);
     }
   } else if (back_->is_pressed()) {
     if (pos_0_->is_pressed()) {
-      score_subsystem_goal->set_score_goal(
-          c2018::score_subsystem::SCALE_LOW_REVERSE);
+      score_subsystem_goal->set_score_goal(c2018::score_subsystem::SCALE_LOW_REVERSE);
     } else if (pos_1_->is_pressed()) {
-      score_subsystem_goal->set_score_goal(
-          c2018::score_subsystem::SCALE_MID_REVERSE);
+      score_subsystem_goal->set_score_goal(c2018::score_subsystem::SCALE_MID_REVERSE);
     } else if (pos_2_->is_pressed()) {
-      score_subsystem_goal->set_score_goal(
-          c2018::score_subsystem::SCALE_HIGH_REVERSE);
+      score_subsystem_goal->set_score_goal(c2018::score_subsystem::SCALE_HIGH_REVERSE);
     } else if (pos_3_->is_pressed()) {
-      score_subsystem_goal->set_score_goal(
-          c2018::score_subsystem::SCALE_SUPER_HIGH_REVERSE);
+      score_subsystem_goal->set_score_goal(c2018::score_subsystem::SCALE_SUPER_HIGH_REVERSE);
     }
   }
   score_subsystem_goal_queue_->WriteMessage(score_subsystem_goal);

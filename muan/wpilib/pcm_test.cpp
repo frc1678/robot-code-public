@@ -15,7 +15,8 @@ class BuildTestRobot : public RobotBase {
     can.pcm()->CreateSolenoid(6);
 
     HAL_ObserveUserProgramStarting();
-
+    // Don't write to solenoid if disabled.
+    // If in autonmous, write to solenoid
     while (true) {
       if (IsDisabled()) {
         can.pcm()->WriteSolenoid(6, false);

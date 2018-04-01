@@ -7,7 +7,11 @@ cc_library(
     linkopts = [
         "-lopencv_imgproc",
         "-lopencv_core",
+        "-lopencv_videoio",
+        "-lopencv_highgui",
+        "-lopencv_imgcodecs",
     ],
+    data = ["//c2017/vision/coprocessor:v4l_params_file"],
     deps = [
         "@opencv//:opencv",
         ":config_proto",

@@ -1,8 +1,8 @@
 #ifndef C2018_TELEOP_MAIN_H_
 #define C2018_TELEOP_MAIN_H_
 
-#include <atomic>
 #include "WPILib.h"
+#include <atomic>
 #include "c2018/subsystems/climber/queue_types.h"
 #include "c2018/subsystems/score_subsystem/queue_types.h"
 #include "c2018/subsystems/lights/queue_types.h"
@@ -41,8 +41,7 @@ class TeleopBase {
   void SendScoreSubsystemMessage();
   void SendClimbSubsystemMessage();
 
-  muan::teleop::Joystick throttle_, wheel_;
-  muan::teleop::Joystick gamepad_;
+  muan::teleop::Joystick throttle_, wheel_, gamepad_;
 
   bool high_gear_;
   muan::teleop::Button *shifting_high_, *shifting_low_;

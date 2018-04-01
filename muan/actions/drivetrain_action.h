@@ -4,7 +4,6 @@
 #include "third_party/frc971/control_loops/drivetrain/queue_types.h"
 
 namespace muan {
-
 namespace actions {
 
 // Drivetrain properties we use in actions
@@ -101,7 +100,6 @@ class DrivetrainAction {
 };
 
 }  // namespace actions
-
 }  // namespace muan
 
 #endif  // MUAN_ACTIONS_DRIVETRAIN_ACTION_H_

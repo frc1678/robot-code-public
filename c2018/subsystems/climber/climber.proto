@@ -21,7 +21,7 @@ enum State {
 
 message ClimberInput {
   required uint64 timestamp = 1;
-  required double position = 2; // encoder position of the winch in meters, positive is up
+  required double position = 2; // winch encoder position in meters, > 0 is up
   required double current = 3;
 }
 

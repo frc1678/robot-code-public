@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
+#include "muan/control/trapezoidal_motion_profile.h"
 #include "muan/units/units.h"
 #include "muan/utils/math_utils.h"
-#include "muan/control/trapezoidal_motion_profile.h"
 
 using muan::control::MotionProfile;
 using muan::control::MotionProfilePosition;
@@ -18,30 +18,38 @@ class MotionProfileTest : public ::testing::Test {
   }
 
   void RunTest() {
-    muan::control::TrapezoidalMotionProfile profile{constraints, goal, initial_position};
-
+    muan::control::TrapezoidalMotionProfile profile{constraints, goal,
+                                                    initial_position};
     const Time dt = 0.005 * s;
-    const Velocity discrete_error =
-        0.0026 * m / s;  // Discrete time differentiation leaves a bit of over/undershoot.
+    const Velocity discrete_error = 0.0026 * m / s;
+    // Discrete time differentiation leaves a bit of over/undershoot.
 
-    EXPECT_NEAR(profile.Calculate(0 * s).position, initial_position.position, 1e-6 * m);
-    EXPECT_NEAR(profile.Calculate(0 * s).velocity, initial_position.velocity, 1e-6 * m / s);
-
+    EXPECT_NEAR(profile.Calculate(0 * s).position, initial_position.position,
+                1e-6 * m);
+    EXPECT_NEAR(profile.Calculate(0 * s).velocity, initial_position.velocity,
+                1e-6 * m / s);
     for (Time t = 0 * s; t < profile.total_time(); t += dt) {  // NOLINT
       Acceleration estimated_acceleration =
-          (profile.Calculate(t).velocity - profile.Calculate(t - dt).velocity) / (dt);
+          (profile.Calculate(t).velocity - profile.Calculate(t - dt).velocity) /
+          (dt);
       Velocity estimated_velocity =
-          (profile.Calculate(t).position - profile.Calculate(t - dt).position) / (dt);
+          (profile.Calculate(t).position - profile.Calculate(t - dt).position) /
+          (dt);
 
-      EXPECT_GE(constraints.max_velocity, std::abs(profile.Calculate(t).velocity));
-      EXPECT_GE(constraints.max_acceleration + (discrete_error / s), std::abs(estimated_acceleration));
-      EXPECT_NEAR(profile.Calculate(t).velocity, estimated_velocity, discrete_error);
+      EXPECT_GE(constraints.max_velocity,
+                std::abs(profile.Calculate(t).velocity));
+      EXPECT_GE(constraints.max_acceleration + (discrete_error / s),
+                std::abs(estimated_acceleration));
+      EXPECT_NEAR(profile.Calculate(t).velocity, estimated_velocity,
+                  discrete_error);
 
       t += dt;
     }
 
-    EXPECT_NEAR(profile.Calculate(profile.total_time()).position, goal.position, 1e-5 * m);
-    EXPECT_NEAR(profile.Calculate(profile.total_time()).velocity, goal.velocity, 1e-5 * m / s);
+    EXPECT_NEAR(profile.Calculate(profile.total_time()).position, goal.position,
+                1e-5 * m);
+    EXPECT_NEAR(profile.Calculate(profile.total_time()).velocity, goal.velocity,
+                1e-5 * m / s);
   }
 
   muan::control::MotionProfilePosition initial_position, result, goal;

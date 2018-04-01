@@ -4,13 +4,13 @@
 #include <array>
 #include <cstdint>
 #include <memory>
+
 #include "muan/proto/stack_proto.h"
 #include "muan/utils/math_utils.h"
 #include "third_party/aos/common/mutex.h"
 #include "third_party/optional/optional.hpp"
 
 namespace muan {
-
 namespace queues {
 
 class GenericQueue {
@@ -82,7 +82,8 @@ class MessageQueue : public GenericQueue {
     // Populates `*out` and returns true/false
     bool ReadLastMessage(T* out);
 
-    // Same as above, but populating `*out` and returning true if message exists.
+    // Same as above, but populating `*out` and returning true if message
+    // exists.
 
     // Allows move construction but not move assignment - it doesn't really make
     // sense to assign a queue to another queue.
@@ -95,13 +96,16 @@ class MessageQueue : public GenericQueue {
 
     virtual ~QueueReader() = default;
 
-    // Gets the index of the next message in the queue. This number is for debugging purposes only and will
-    // increment by 1 for every new message read, unless the reader skips messages, in which case it will
-    // jump.
+    // Gets the index of the next message in the queue. This number is for
+    // debugging purposes only and will
+    // increment by 1 for every new message read, unless the reader skips
+    // messages, in which case it will jump.
     uint64_t GetNextMessageIndex() const;
 
-    // Gets the number of messages skipped by this reader since the last read. In normal operation, this will
-    // be zero - it will only be a greater value when values have been written to the queue at a faster rate
+    // Gets the number of messages skipped by this reader since the last read.
+    // In normal operation, this will
+    // be zero - it will only be a greater value when values have been written
+    // to the queue at a faster rate
     // than the reader is reading.
     uint64_t GetNumMessagesSkipped() const;
 
@@ -125,8 +129,10 @@ class MessageQueue : public GenericQueue {
   // of the next valid message.
   bool NextMessage(T* out, uint64_t* next) const;
 
-  // Gets the index of the next message that is currently in memory. When current_message is in memory, this
-  // function will return current_message. Otherwise, it will return the oldest message currently kept.
+  // Gets the index of the next message that is currently in memory. When
+  // current_message is in memory, this
+  // function will return current_message. Otherwise, it will return the oldest
+  // message currently kept.
   uint64_t coerce_valid_message_index(uint64_t current_message) const;
 
   // Gets the "front" (the oldest messages still kept) of the circular buffer,
@@ -149,7 +155,6 @@ class MessageQueue : public GenericQueue {
 };
 
 }  // namespace queues
-
 }  // namespace muan
 
 #include "message_queue.hpp"

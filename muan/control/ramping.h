@@ -2,12 +2,12 @@
 #define MUAN_CONTROL_RAMPING_H_
 
 namespace muan {
-
 namespace control {
 
 class Ramping {
  public:
-  explicit Ramping(double acceleration, double initial = 0.0, bool deccelerate = false);
+  explicit Ramping(double acceleration, double initial = 0.0,
+                   bool deccelerate = false);
   double Update(double goal);
 
  private:
@@ -17,7 +17,6 @@ class Ramping {
 };
 
 }  // namespace control
-
 }  // namespace muan
 
 #endif  // MUAN_CONTROL_RAMPING_H_

@@ -3,7 +3,6 @@
 #include "muan/wpilib/ds_sender.h"
 
 namespace muan {
-
 namespace wpilib {
 
 DriverStationSender::DriverStationSender(DriverStationQueue* ds_queue,
@@ -55,5 +54,4 @@ void DriverStationSender::Send() {
 }
 
 }  // namespace wpilib
-
 }  // namespace muan

@@ -15,7 +15,8 @@ DiskBrake::DiskBrake(bool locked) {
 }
 
 DiskBrake::DiskBrake(bool locked, units::Time change_state_time) {
-  change_state_time_ = aos::time::Time::InMS(units::convert(change_state_time, units::ms));
+  change_state_time_ =
+      aos::time::Time::InMS(units::convert(change_state_time, units::ms));
   if (locked) {
     position_ = 1;
   } else {
@@ -46,5 +47,4 @@ DiskBrake::BrakeState DiskBrake::Update(bool locking) {
     return CHANGING;
   }
 }
-
 }  // namespace muan

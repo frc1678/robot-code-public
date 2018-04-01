@@ -1,6 +1,6 @@
 #include <opencv2/opencv.hpp>
-#include <algorithm>
 #include <memory>
+#include <algorithm>
 #include <cmath>
 #include "muan/vision/vision.h"
 
@@ -11,7 +11,8 @@ int main() {
   cap.open("muan/vision/example/captured.avi");
 
 #if VIDEO_OUTPUT
-  cv::VideoWriter output{"output.avi", CV_FOURCC('M', 'J', 'P', 'G'), 30, cv::Size(640 * 2, 480)};
+  cv::VideoWriter output{"output.avi", CV_FOURCC('M', 'J', 'P', 'G'), 30,
+                         cv::Size(640 * 2, 480)};
 #else
   cv::namedWindow("vision", cv::WINDOW_AUTOSIZE);
 #endif
@@ -43,8 +44,10 @@ int main() {
 
 #if VIDEO_OUTPUT
     cv::Mat splitscreen(image_canvas.rows, image_canvas.cols * 2, CV_8UC3);
-    image_canvas.copyTo(splitscreen(cv::Rect(0, 0, image_canvas.cols, image_canvas.rows)));
-    raw.copyTo(splitscreen(cv::Rect(image_canvas.cols, 0, image_canvas.cols, image_canvas.rows)));
+    image_canvas.copyTo(
+        splitscreen(cv::Rect(0, 0, image_canvas.cols, image_canvas.rows)));
+    raw.copyTo(splitscreen(
+        cv::Rect(image_canvas.cols, 0, image_canvas.cols, image_canvas.rows)));
     output.write(splitscreen);
 #else
     cv::imshow("vision", image_canvas);

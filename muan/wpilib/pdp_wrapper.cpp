@@ -3,7 +3,6 @@
 #include "third_party/aos/common/die.h"
 
 namespace muan {
-
 namespace wpilib {
 
 PdpWrapper::PdpWrapper(int module) : module_{module} {
@@ -63,5 +62,4 @@ void PdpWrapper::SendValues() {
 void PdpWrapper::SetQueue(Queue* pdp_queue) { queue_ = pdp_queue; }
 
 }  // namespace wpilib
-
 }  // namespace muan

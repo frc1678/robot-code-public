@@ -1,8 +1,8 @@
 #include <opencv2/opencv.hpp>
 #include <string>
 #include <thread>
-#include "muan/webdash/server.h"
 #include "muan/vision/video_stream.h"
+#include "muan/webdash/server.h"
 
 int main() {
   cv::VideoCapture cap(0);

@@ -1,5 +1,5 @@
-#include "gtest/gtest.h"
 #include "muan/utils/history.h"
+#include "gtest/gtest.h"
 
 using muan::utils::History;
 
@@ -12,7 +12,6 @@ TEST(History, Sizing) {
     EXPECT_FALSE(hist.is_full());
     hist.Update(0);
   }
-
   EXPECT_EQ(hist.num_samples(), 99);
   EXPECT_FALSE(hist.is_full());
 

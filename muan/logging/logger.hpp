@@ -39,7 +39,6 @@ std::experimental::optional<std::string> Logger::Reader<R>::GetMessageAsCSV(
       muan::util::ProtoToCsvHeader(*message.value().get(), ss);
       ss << ",queue_index\n";
     }
-
     // TODO(Kyle) Refactor Reader's interface to have GetMessageAsCSV write
     // directly to an ostream.
     muan::util::ProtoToCsv(*message.value().get(), ss);
