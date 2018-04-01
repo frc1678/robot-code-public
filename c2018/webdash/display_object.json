@@ -59,6 +59,28 @@
       }
     },
     {
+      "name": "Drivetrain Left Encoder",
+      "type": "boolean",
+      "source": ["drivetrain_input", "leftEncoder"],
+      "coordinates": [2, 1],
+      "should-title": true,
+      "colors": {
+        "if_true": "#00ff00",
+        "if_false": "#ff0000"
+      }
+    },
+    {
+      "name": "Drivetrain Right Encoder",
+      "type": "boolean",
+      "source": ["drivetrain_input", "rightEncoder"],
+      "coordinates": [2, 0],
+      "should-title": true,
+      "colors": {
+        "if_true": "#00ff00",
+        "if_false": "#ff0000"
+      }
+    },
+    {
       "name": "Game Layout",
       "type": "gss",
       "source": ["game_specific_string", "code"],
