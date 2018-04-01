@@ -48,9 +48,9 @@
       }
     },
     {
-      "name": "Claw Calibrated",
+      "name": "Wrist Calibrated",
       "type": "boolean",
-      "source": ["score_subsystem_status", "clawCalibrated"],
+      "source": ["score_subsystem_status", "wristCalibrated"],
       "coordinates": [3, 1],
       "should-title": true,
       "colors": {
@@ -62,7 +62,7 @@
       "name": "Game Layout",
       "type": "gss",
       "source": ["game_specific_string", "code"],
-      "coordinates": [0, 3],
+      "coordinates": [0, 1],
       "should-title": false,
       "code": [
         "if (!document.getElementById(\"gss_box_1\")) {",
