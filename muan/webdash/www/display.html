@@ -26,8 +26,6 @@
       UpdateDisplay(data);
     }
 
-    function sendAutoData() { autosock.send(getRadioCheckedValue("auto")); }
-
     function getRadioCheckedValue(radio_name) {
       var oRadio = document.getElementsByName(radio_name);
       for (var i = 0; i < oRadio.length; i++) {
@@ -62,20 +60,6 @@
             "px;left:" + left_shift + "px;width:" + box_width + "px;height:" +
             box_height + "px></div>";
         widget_name = widget["name"];
-        if (widget["type"] == "auto") {
-          auto_id = "auto" + coords;
-          html_string = "<div id=" + coords + "><p>Auto Mode:</p>";
-          if (!document.getElementById(auto_id)) {
-            for (var i = 0; i < widget["autos"].length; i++) {
-              html_string += "<input type=\"radio\" name=\"auto\" value=\"" +
-                             widget["autos"][i] + "\">" + widget["autos"][i] +
-                             "<br>\n";
-            }
-            html_string +=
-                "<input type=\"button\" value=\"Update Auto\" onclick=\"sendAutoData()\"></div>";
-            document.getElementById(coords).innerHTML = html_string;
-          }
-        }
         if (widget["should-title"]) {
           document.getElementById(coords).innerHTML = "<p>" + widget_name + ":</p>";
         }
@@ -123,6 +107,34 @@
         if (widget["type"] != "image" && widget["type"] != "encouragement" &&
             widget["type"] != "auto" && widget["type"] != "link") {
           var source = data[widget["source"][0]][widget["source"][1]];
+        }
+        if (widget["type"] == "auto") {
+          auto_id = "auto" + coords;
+          html_string = "<div id=auto" + coords + "><p>Auto Mode:</p>";
+          if (!document.getElementById(auto_id)) {
+            if (!widget["source"]) {
+              for (var i = 0; i < widget["autos"].length; i++) {
+                html_string += "<input type=\"radio\" name=\"auto\"" + widget["autos"][i] + " value=\"" +
+                               widget["autos"][i] + "\">" + widget["autos"][i] +
+                               "<br>";
+              }
+              html_string +=
+                  "<input type=\"button\" value=\"Update Auto\" onclick=\"autosock.send(getRadioCheckedValue('auto'))\"></div>";
+            } else {
+              for (var prop in widget["autos"]) {
+                html_string += "<div style=\"background-color:gray;border:2px solid black\">"
+                html_string += "<div onclick=\"Toggle(document.getElementById('" + prop + "'))\" class=\"dropbtn\">" + prop + "</button></div><br>";
+                html_string += "<div id=\"" + prop + "\" class=\"dropdown-content\">";
+                for (var i = 0; i < widget["autos"][prop].length; i++) {
+                  html_string += "<input type=\"radio\" name=\"auto" + prop + "\" id=\"auto" + prop + "\" value=\"" + widget["autos"][prop][i] + "\" style:display=\"none\">" + widget["autos"][prop][i] + "<br>";
+                }
+                html_string += "</div></div>";
+              }
+              autolist_object = widget["autos"];
+              html_string += "<input type=\"button\" value=\"Update Auto\" onclick=\"getAutoData(autolist_object)\">";
+            }
+            document.getElementById(coords).innerHTML = html_string;
+          }
         }
         // Creates boolean widgets, colored box
         if (widget["type"] == "boolean") {
@@ -252,6 +264,24 @@
       encouragement_time++;
     }
     displaysock.onopen = function() { displaysock.send("ping"); }
+
+    function Toggle(div) {
+      if (div.style.display === "none") {
+        div.style.display = "block";
+      } else {
+        div.style.display = "none";
+      }
+    }
+
+    function getAutoData(autolist) {
+      var autos = "";
+      for (var i in autolist) {
+        autos += i + ":";
+        autos += getRadioCheckedValue("auto" + i);
+        autos += ";";
+      }
+      autosock.send(autos);
+    }
 
     function ReadData() { datasock.send("ping"); }
 

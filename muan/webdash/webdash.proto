@@ -6,5 +6,5 @@ package muan.webdash;
 
 message AutoSelection {
   required uint64 timestamp = 1;
-  required string auto_mode = 2;
+  required string auto_modes = 2;
 }

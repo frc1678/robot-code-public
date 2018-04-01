@@ -25,12 +25,11 @@ struct AutoChangeHandler : seasocks::WebSocket::Handler {
   void onData(seasocks::WebSocket* /*socket*/, const char* data) override {
     AutoSelectionProto output_proto;
 
-    output_proto->set_auto_mode(data);
+    output_proto->set_auto_modes(data);
 
     WebDashQueueWrapper::GetInstance().auto_selection_queue().WriteMessage(
         output_proto);
   }
-
   void onDisconnect(seasocks::WebSocket* /*socket*/) override {}
 };
 

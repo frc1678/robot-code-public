@@ -1,3 +1,7 @@
+#include <string>
+#include <vector>
+#include <sstream>
+
 #include "c2018/autonomous/autonomous_runner.h"
 
 namespace c2018 {
@@ -87,8 +91,22 @@ void AutonomousRunner::operator()() {
 
 std::string AutonomousRunner::AutoMode() {
   AutoSelectionProto auto_mode;
+  std::string final_auto_mode;
+  muan::wpilib::GameSpecificStringProto game_specific_string;
+  game_specific_string_reader_.ReadLastMessage(&game_specific_string);
   if (auto_mode_reader_.ReadLastMessage(&auto_mode)) {
-    return auto_mode->auto_mode();
+    std::vector<std::string> autos;
+    std::string each_auto;
+    std::istringstream auto_stream(auto_mode->auto_modes());
+    while (std::getline(auto_stream, each_auto, ';')) {
+      autos.push_back(each_auto);
+    }
+    for (std::string &autonomous_mode : autos) {
+      if (game_specific_string->code().substr(0, 2) == autonomous_mode.substr(0, 2)) {
+        final_auto_mode = autonomous_mode.substr(3, autonomous_mode.size() - 3);
+      }
+    }
+    return final_auto_mode;
   } else {
     return "SCALE_PLUS_SWITCH";
   }
