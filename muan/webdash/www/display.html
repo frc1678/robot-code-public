@@ -140,7 +140,6 @@
         if (widget["type"] == "boolean") {
           box_id = "box" + coords;
           // Uses hex values from JSON script
-          console.log(eval(widget["condition"]));
           if (eval(widget["condition"]) == true) {
             color = widget["colors"]["if_true"];
           } else {
