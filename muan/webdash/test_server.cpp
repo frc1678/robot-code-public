@@ -50,6 +50,7 @@ int main() {
       "       \"name\": \"Button 1\","
       "       \"type\": \"boolean\","
       "       \"source\": [\"joystick_status\", \"button1\"],"
+      "       \"condition\": \"source\","
       "       \"coordinates\": [3, 0],"
       "       \"should-title\": true,"
       "       \"colors\": {"

@@ -40,6 +40,7 @@
       "name": "Elevator Calibrated",
       "type": "boolean",
       "source": ["score_subsystem_status", "elevatorCalibrated"],
+      "condition": "source",
       "coordinates": [3, 0],
       "should-title": true,
       "colors": {
@@ -51,6 +52,7 @@
       "name": "Wrist Calibrated",
       "type": "boolean",
       "source": ["score_subsystem_status", "wristCalibrated"],
+      "condition": "source",
       "coordinates": [3, 1],
       "should-title": true,
       "colors": {
@@ -62,6 +64,7 @@
       "name": "Drivetrain Left Encoder",
       "type": "boolean",
       "source": ["drivetrain_input", "leftEncoder"],
+      "condition": "Math.abs(source) < .01",
       "coordinates": [2, 1],
       "should-title": true,
       "colors": {
@@ -73,6 +76,7 @@
       "name": "Drivetrain Right Encoder",
       "type": "boolean",
       "source": ["drivetrain_input", "rightEncoder"],
+      "condition": "Math.abs(source) < .01",
       "coordinates": [2, 0],
       "should-title": true,
       "colors": {
