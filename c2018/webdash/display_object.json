@@ -61,7 +61,7 @@
       }
     },
     {
-      "name": "Drivetrain Left Encoder",
+      "name": "Drivetrain Left Encoder > .01",
       "type": "boolean",
       "source": ["drivetrain_input", "leftEncoder"],
       "condition": "Math.abs(source) > .01",
@@ -73,11 +73,35 @@
       }
     },
     {
-      "name": "Drivetrain Right Encoder",
+      "name": "Drivetrain Right Encoder > .01",
       "type": "boolean",
       "source": ["drivetrain_input", "rightEncoder"],
       "condition": "Math.abs(source) > .01",
       "coordinates": [2, 0],
+      "should-title": true,
+      "colors": {
+        "if_true": "#00ff00",
+        "if_false": "#ff0000"
+      }
+    },
+    {
+      "name": "Drivetrain Left Encoder Not 0",
+      "type": "boolean",
+      "source": ["drivetrain_input", "leftEncoder"],
+      "condition": "source != 0",
+      "coordinates": [2, 2],
+      "should-title": true,
+      "colors": {
+        "if_true": "#00ff00",
+        "if_false": "#ff0000"
+      }
+    },
+    {
+      "name": "Drivetrain Right Encoder Not 0",
+      "type": "boolean",
+      "source": ["drivetrain_input", "rightEncoder"],
+      "condition": "source != 0",
+      "coordinates": [3, 2],
       "should-title": true,
       "colors": {
         "if_true": "#00ff00",
