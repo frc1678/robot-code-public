@@ -34,7 +34,7 @@ static constexpr double kWristMaxAngle = 160 * (M_PI / 180);
 
 // Hall Calibration constants
 static constexpr double kCalibVoltage = 4;
-static constexpr double kHallEffectAngle = 0.28;
+static constexpr double kHallEffectAngle = 0.23;
 
 // Intake Voltage constants
 static constexpr double kSlowOuttakeVoltage = -5;
@@ -46,7 +46,7 @@ static constexpr double kHoldingVoltage = 1.5;
 static constexpr double kMaxVoltage = 12;
 
 // Has Cube encoder stuff
-static constexpr int kNumHasCubeTicks = 100;
+static constexpr int kNumHasCubeTicks = 150;
 
 class WristController {
  public:

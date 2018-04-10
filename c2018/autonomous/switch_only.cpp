@@ -18,8 +18,11 @@ void SwitchOnly::LeftSwitch() {
   WaitUntilDriveComplete();
 
   IntakeGround();
+  IntakeOpen();
 
   StartDrivePath(1.6, -0.15, 0.0, 1, Gear::kLowGear);
+  WaitUntilDriveComplete();
+  IntakeClose();
   WaitForCube();
 
   StopIntakeGround();
@@ -47,8 +50,11 @@ void SwitchOnly::RightSwitch() {
   WaitUntilDriveComplete();
 
   IntakeGround();
+  IntakeOpen();
 
   StartDrivePath(1.6, 0.0, 0.0, 1, Gear::kLowGear);
+  WaitUntilDriveComplete();
+  IntakeClose();
   WaitForCube();
 
   StopIntakeGround();

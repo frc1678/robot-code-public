@@ -10,171 +10,140 @@ using frc971::control_loops::drivetrain::Gear::kLowGear;
 using frc971::control_loops::drivetrain::Gear::kHighGear;
 
 void SwitchAndScale::LeftSwitchLeftScale() {
-  SetFieldPosition(0.0, -0.3, M_PI);
-  // Switch is left, scale is left
+  SetFieldPosition(0.0, -0.3, 0.0);
+  // LL - Left Switch Left Scale
   LOG(INFO, "Running LEFT SWITCH LEFT SCALE auto");
-
-  // Drive to backside of switch
+  // To switch
+  StartDrivePath(2.55, 1.2, 0, 1, kHighGear);
   MoveTo(c2018::score_subsystem::ScoreGoal::SWITCH);
-  StartDrivePath(kCubeX + 0.8, 3.0, M_PI, -1, kHighGear, 0.0, 2.0);
   WaitUntilDriveComplete();
-
-  // Drive into cube
-  StartDrivePath(kCubeX + 0.4, 2.1, 230 * deg, 1, kLowGear);
-  WaitUntilDriveComplete();
-  // Score here
   Score();
-  Wait(100);
-
-  // Drive back & lower intake
-  StartDriveRelative(-0.7, 0.0);
-  Wait(100);
-  IntakeOpen();
+  // Align to pyramid
+  StartDrivePath(1.2, 0.7, -45 * deg, -1, kHighGear);
+  Wait(175);
   IntakeGround();
   WaitUntilDriveComplete();
-  Wait(100);
-
-  // Get the cube
-  StartDriveRelative(0.7, 0.0);
+  // Drive into cube
+  StartDrivePath(1.9, 0.2, -45 * deg, 1, kHighGear);
   WaitForCube();
-  IntakeClose();
-  StopIntakeGround();
-  // Drive to scale
-  StartDriveRelative(-2.0, -40 * deg);
-  MoveTo(c2018::score_subsystem::ScoreGoal::SCALE_HIGH_REVERSE);
   WaitUntilDriveComplete();
-
+  MoveTo(c2018::score_subsystem::ScoreGoal::STOW);
+  // Back off and go away
+  StartDrivePath(8.0, 3.5, -180 * deg, -1, kHighGear, 0.2);
+  WaitUntilDrivetrainNear(5.0, 3.3, 1.0);
+  StartDrivePath(8.3, 3.3, -150 * deg, -1, kHighGear, 0.5);
+  WaitUntilDriveComplete();
+  // Go up
+  MoveTo(c2018::score_subsystem::ScoreGoal::SCALE_HIGH_FORWARD);
+  // Turn in place
+  StartDriveAtAngle(0.0, -90 * deg);
+  WaitUntilDriveComplete();
   Score(false);
   Wait(100);
-
+  // Turn in place
+  StartDriveRelative(-0.5, 60 * deg);
+  Wait(100);
+  // Go to intake
   IntakeGround();
+  WaitUntilDriveComplete();
 }
 
 void SwitchAndScale::RightSwitchRightScale() {
-  SetFieldPosition(0.0, -0.3, M_PI);
-  // LL - Switch is left, scale is left
-  LOG(INFO, "Running RIGHT SWITCH RIGHT SCALE auto");
-
-  // Drive to backside of switch
+  SetFieldPosition(0.0, -0.3, 0.0);
+  // LL - Left Switch Left Scale
+  LOG(INFO, "Running LEFT SWITCH LEFT SCALE auto");
+  // To switch
+  StartDrivePath(2.55, -1.2, 0, 1, kHighGear);
   MoveTo(c2018::score_subsystem::ScoreGoal::SWITCH);
-  StartDrivePath(4.0, -3.75, M_PI, -1, kHighGear, 0.0, 1.0);
   WaitUntilDriveComplete();
-  StartDriveRelative(0.0, -1.1);
-  WaitUntilDriveComplete();
-
-  // Score here
   Score();
-  Wait(100);
-
-  // Drive to cubes in PZ
+  // Align to pyramid
+  StartDrivePath(1.2, -0.7, 45 * deg, -1, kHighGear);
+  Wait(175);
   IntakeGround();
-  StartDrivePath(kCubeX + 1.3, -2.6, 160 * deg, -1);
   WaitUntilDriveComplete();
-
-  // Get the cube
-  StartDrivePath(kCubeX + 0.2, -2.28, 175 * deg, 1);
+  // Drive into cube
+  StartDrivePath(1.9, -0.2, 45 * deg, 1, kHighGear);
   WaitForCube();
-  StopIntakeGround();
-
-  // Drive to scale
-  StartDrivePath(kScaleX + 0.2, -2.1, 190 * deg, -1);
-  MoveTo(c2018::score_subsystem::ScoreGoal::SCALE_SHOOT);
-  while (!IsDrivetrainNear(kScaleX + 0.2, -2.5, 0.5) && !IsDriveComplete()) {
-    loop_.SleepUntilNext();
-  }
-
+  WaitUntilDriveComplete();
+  MoveTo(c2018::score_subsystem::ScoreGoal::STOW);
+  // Back off and go away
+  StartDrivePath(8.0, -3.5, 180 * deg, -1, kHighGear, 0.2);
+  WaitUntilDrivetrainNear(5.0, -3.5, 1.0);
+  StartDrivePath(8.3, -3.5, 150 * deg, -1, kHighGear, 0.5);
+  WaitUntilDriveComplete();
+  // Go up
+  MoveTo(c2018::score_subsystem::ScoreGoal::SCALE_HIGH_FORWARD);
+  // Turn in place
+  StartDriveAtAngle(0.0, 90 * deg);
+  WaitUntilDriveComplete();
   Score(false);
   Wait(100);
+  // Turn in place
+  StartDriveRelative(-0.5, -60 * deg);
+  Wait(100);
+  // Go to intake
+  IntakeGround();
+  WaitUntilDriveComplete();
 }
 
 void SwitchAndScale::RightSwitchLeftScale() {
-  SetFieldPosition(0.0, -0.3, M_PI);
-  // LL - Switch is left, scale is left
-  LOG(INFO, "Running RIGHT SWITCH LEFT SCALE auto");
-
-  // Drive to backside of switch
+  SetFieldPosition(0.0, -0.3, 0.0);
+  // LL - Left Switch Left Scale
+  LOG(INFO, "Running LEFT SWITCH LEFT SCALE auto");
+  // To switch
+  StartDrivePath(2.55, -1.2, 0, 1, kHighGear);
   MoveTo(c2018::score_subsystem::ScoreGoal::SWITCH);
-  StartDrivePath(kCubeX + 1.3, -3.3, M_PI, -1, kHighGear, 0.0, 2.0);
   WaitUntilDriveComplete();
-
+  Score();
+  // Align to pyramid
+  StartDrivePath(1.2, -0.7, 45 * deg, -1, kHighGear);
+  Wait(175);
+  IntakeGround();
+  WaitUntilDriveComplete();
   // Drive into cube
-  StartDrivePath(kCubeX + 0.35, -2.2, 150 * deg, 1, kHighGear);
-  WaitUntilDriveComplete();
-  // Score here
-  Score();
-  Wait(100);
-
-  // Drive back & lower intake
-  StartDriveRelative(-0.7, 0.0);
-  Wait(150);
-  IntakeOpen();
-  IntakeGround();
-  WaitUntilDriveComplete();
-  Wait(100);
-
-  // Get the cube
-  StartDriveRelative(0.6, 0.0);
-  Wait(150);
-  IntakeClose();
+  StartDrivePath(1.9, -0.2, 45 * deg, 1, kHighGear);
   WaitForCube();
-
-  // Drive to scale
-  StartDrivePath(kScaleX - 0.3, 2.7, 160 * deg, -1, kHighGear, -3.0, 0.3);
-  WaitUntilDrivetrainNear(kCubeX + 0.5, 2.7, 2.0);
-  MoveTo(c2018::score_subsystem::ScoreGoal::SCALE_SHOOT);
   WaitUntilDriveComplete();
-
+  StartDrivePath(1.7, -0.5, 100 * deg, -1, kHighGear);
+  WaitUntilDriveComplete();
+  MoveTo(c2018::score_subsystem::ScoreGoal::STOW);
+  // Back off and go away
+  StartDrivePath(8.0, 3.5, 0 * deg, 1, kHighGear);
+  WaitUntilDrivetrainNear(5.0, 2.5, 1.0);
+  StartDrivePath(8.3, 3.3, -30 * deg, 1, kHighGear);
+  WaitUntilDriveComplete();
+  // Go up
+  MoveTo(c2018::score_subsystem::ScoreGoal::SCALE_HIGH_FORWARD);
+  // Turn in place
+  StartDriveAtAngle(0.0, -90 * deg);
+  WaitUntilDriveComplete();
+  Score(false);
   Wait(100);
-  Score();
+  // Turn in place
+  StartDriveRelative(-0.5, 60 * deg);
   Wait(100);
-
+  // Go to intake
   IntakeGround();
+  WaitUntilDriveComplete();
 }
 
 void SwitchAndScale::LeftSwitchRightScale() {
-  SetFieldPosition(0.0, -0.3, M_PI);
-  // Switch is left, scale is right
+  SetFieldPosition(0.0, -0.3, 0.0);
+  // LL - Left Switch Right Scale
   LOG(INFO, "Running LEFT SWITCH RIGHT SCALE auto");
-
-  // Drive to backside of switch
+  StartDrivePath(2.55, 1.2, 0, 1, kHighGear);
   MoveTo(c2018::score_subsystem::ScoreGoal::SWITCH);
-  StartDrivePath(kCubeX + 0.8, 3.0, M_PI, -1, kHighGear, 0.0, 2.0);
   WaitUntilDriveComplete();
-
-  // Drive into cube
-  StartDrivePath(kCubeX + 0.7, 1.8, 215 * deg, 1, kHighGear);
-  WaitUntilDriveComplete();
-  // Score here
   Score();
   Wait(100);
-
-  // Drive back & lower intake
-  StartDrivePath(kCubeX + 0.7, 2.0, 180 * deg, -1);
-  Wait(150);
-  IntakeOpen();
-  IntakeGround();
+  StartDrivePath(0.9, -0.15, -0.2, -1, kHighGear);
   WaitUntilDriveComplete();
-  Wait(100);
-
-  // Get the cube
-  StartDrivePath(kCubeX, 2.0, 180 * deg, 1);
-  Wait(150);
-  IntakeClose();
+  IntakeGround();
+  StartDrivePath(1.6, -0.15, 0.0, 1, kHighGear);
   WaitForCube();
-
-  // Drive to scale on right side
-  StartDrivePath(kCubeX - 1.5, -2.5, 90 * deg, -1);
   StopIntakeGround();
-  WaitUntilDrivetrainNear(5.75, -1.5, 1.0);
-  MoveTo(c2018::score_subsystem::ScoreGoal::SCALE_SHOOT);
-  StartDrivePath(kScaleX + 1.7, -2.0, 200 * deg, -1);
-  WaitUntilDriveComplete();
-
-  // Score on scale here
-  Score();
-  Wait(100);
-
-  IntakeGround();
+  // Drive to scale and score here
 }
 
 }  // namespace autonomous

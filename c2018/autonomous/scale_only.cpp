@@ -9,72 +9,7 @@ using muan::units::deg;
 using frc971::control_loops::drivetrain::Gear::kLowGear;
 using frc971::control_loops::drivetrain::Gear::kHighGear;
 
-constexpr double kStartY = -3.0;
-
-void ScaleOnly::LeftScale() {
-  SetFieldPosition(0.0, kStartY, 180 * deg);
-  // XL - Scale is left
-  LOG(INFO, "Running LEFT SCALE ONLY auto");
-  double scale_y = 2.1;
-
-  // Start drive to left scale
-  StartDriveAtAngle(-4.0, 0.0, -2.0);
-  Wait(50);
-  MoveTo(c2018::score_subsystem::ScoreGoal::STOW);
-  WaitUntilDriveComplete();
-
-  StartDrivePath(5.5, 0.0, 270 * deg, -1);
-  WaitUntilDrivetrainNear(5.0, 0.0, 2.0);
-
-  StartDriveAtAngle(-3.0, 90 * deg, -2.0);
-  Wait(150);
-  MoveTo(c2018::score_subsystem::ScoreGoal::SCALE_SHOOT);
-  WaitUntilDriveComplete();
-
-  StartDrivePath(kScaleX + 0.8, scale_y, 160 * deg, -1);
-  WaitUntilDriveComplete();
-  Score();
-
-  // Score reverse here
-  Wait(100);
-
-  // Drive to next cube
-  IntakeGround();
-  IntakeOpen();
-  Wait(50);
-  StartDrivePath(kCubeX + 0.5, 1.93, 180 * deg, 1, kLowGear, 0.0, 0.3);
-  WaitUntilDriveComplete();
-
-  // Intake cube
-  IntakeClose();
-  WaitForCube();
-  MoveTo(c2018::score_subsystem::ScoreGoal::SCALE_SHOOT);
-
-  // Drive back to scale
-  StartDrivePath(kScaleX + 0.8, scale_y, 160 * deg, -1, kLowGear);
-  WaitUntilDriveComplete();
-
-  // Score backwards on the scale
-  Score();
-  Wait(100);
-  IntakeGround();
-  IntakeOpen();
-
-  // Drive to 2nd cube
-  StartDrivePath(kCubeX + 0.5, 1.18, 180 * deg, 1, kLowGear, 0.3, 0.3);
-  WaitUntilDriveComplete();
-  IntakeClose();
-  WaitForCube();
-
-  MoveTo(c2018::score_subsystem::ScoreGoal::SCALE_SHOOT);
-
-  // Drive back to scale
-  StartDrivePath(kScaleX + 0.8, scale_y, 160 * deg, -1, kLowGear);
-  WaitUntilDriveComplete();
-  Score();
-  Wait(100);
-  IntakeGround();
-}
+constexpr double kStartY = 3.0;
 
 void ScaleOnly::RightScale() {
   SetFieldPosition(0.0, kStartY, 180 * deg);
@@ -82,52 +17,121 @@ void ScaleOnly::RightScale() {
   LOG(INFO, "Running RIGHT SCALE ONLY auto");
   double scale_y = -2.1;
 
-  // Drive to scale
-  StartDrivePath(kScaleX + 0.3, scale_y, 210 * deg, -1, kHighGear);
+  // Start drive to left scale
+  StartDriveAtAngle(-4.2, 0.0, -2.0);
+  Wait(50);
+  MoveTo(c2018::score_subsystem::ScoreGoal::STOW);
+  WaitUntilDriveComplete();
+
+  StartDrivePath(5.5, 0.0, 90 * deg, -1);
+  WaitUntilDrivetrainNear(5.5, 0.0, 2.0);
+
+  StartDriveAtAngle(-3.0, -90 * deg, -2.0);
+  Wait(250);
   MoveTo(c2018::score_subsystem::ScoreGoal::SCALE_SHOOT);
   WaitUntilDriveComplete();
-  Wait(50);
-  Score();
+
+  StartDrivePath(kScaleX + 0.2, scale_y, 200 * deg, -1);
+  WaitUntilDrivetrainNear(kScaleX + 0.2, scale_y, 0.1);
+  Score(true);
+  WaitUntilDriveComplete();
+
+  // Drive to next cube
+  IntakeGround();
   Wait(100);
+  IntakeOpen();
+  Wait(50);
+  StartDrivePath(kCubeX + 0.2, -2.05, 150 * deg, 1, kLowGear);
+  WaitUntilDrivetrainNear(kCubeX + 0.2, -2.05, 0.2);
+
+  // Intake cube
+  IntakeClose();
+  WaitForCube();
+  WaitUntilDriveComplete();
+  MoveTo(c2018::score_subsystem::ScoreGoal::SCALE_SHOOT);
+
+  // Drive back to scale
+  StartDrivePath(kScaleX + 0.6, scale_y, 220 * deg, -1, kLowGear);
+  WaitUntilDrivetrainNear(kScaleX + 0.6, scale_y, 0.2);
+  // Score backwards on the scale
+  Score(false);
+
+  WaitUntilDriveComplete();
+  IntakeGround();
+
+  // Drive to 2nd cube
+  StartDrivePath(kCubeX + 0.1, -1.4, 135 * deg, 1, kLowGear);
+  WaitUntilDrivetrainNear(kCubeX + 0.1, -1.4, 0.2);
+  WaitForCube();
+  WaitUntilDriveComplete();
+
+  MoveTo(c2018::score_subsystem::ScoreGoal::SCALE_SHOOT);
+
+  // Drive back to scale
+  StartDrivePath(kScaleX + 0.1, scale_y + 0.1, 220 * deg, -1, kLowGear);
+  WaitUntilDrivetrainNear(kScaleX + 0.1, scale_y + 0.1, 0.2);
+  Score(false);
+  WaitUntilDriveComplete();
+  IntakeGround();
+  StartDrivePath(kCubeX + 0.1, -0.3, 135 * deg, 1, kLowGear);
+  WaitUntilDrivetrainNear(kCubeX + 0.1, -0.3, 0.2);
+  WaitForCube();
+}
+
+void ScaleOnly::LeftScale() {
+  SetFieldPosition(0.0, kStartY, 180 * deg);
+  // XL - Scale is right
+  LOG(INFO, "Running LEFT SCALE ONLY auto");
+  double scale_y = 2.1;
+
+  // Drive to scale
+  MoveTo(c2018::score_subsystem::ScoreGoal::SCALE_MID_REVERSE);
+  StartDrivePath(kScaleX + 0.5, scale_y, 150 * deg, -1, kHighGear);
+  WaitUntilDrivetrainNear(kScaleX + 0.5, scale_y, 0.2);
+  Score();
+  Wait(50);
+  WaitUntilDriveComplete();
 
   // Intake next cube
   IntakeGround();
   IntakeOpen();
   Wait(50);
-  StartDrivePath(kCubeX + 0.2, -1.8, 165 * deg, 1, kLowGear);
-  WaitUntilDriveComplete();
+  StartDrivePath(kCubeX + 0.1, 1.85, 195 * deg, 1, kLowGear);
+  WaitUntilDrivetrainNear(kCubeX + 0.1, 1.85, 0.2);
   IntakeClose();
-  WaitForCube();
+  WaitUntilDriveComplete();
+  if (!WaitForCubeOrTimeout(300)) {
+    LOG(WARNING, "Stuck on a cube! Backing up anyway!");
+  }
 
   // Drive back to scale
-  StartDrivePath(kScaleX + 0.15, scale_y, 210 * deg, -1, kLowGear);
-  Wait(50);
-  StopIntakeGround();
+  StartDrivePath(kScaleX + 0.2, scale_y, 150 * deg, -1, kLowGear);
   MoveTo(c2018::score_subsystem::ScoreGoal::SCALE_SHOOT);
-  Wait(100);
   WaitUntilDriveComplete();
-  Score();
+  Score(true);
   Wait(50);
 
   // Intake 2nd cube
   IntakeGround();
-  IntakeOpen();
   Wait(100);
-  StartDrivePath(kCubeX + 0.1, -0.7, 160 * deg, 1, kLowGear, 0.0, 0.3);
-  WaitUntilDriveComplete();
-  IntakeClose();
+  StartDrivePath(kCubeX - 0.05, 1.3, 225 * deg, 1, kLowGear, 0.0, 0.3);
   WaitForCube();
+  WaitUntilDriveComplete();
 
   // Drive back to scale
-  StartDrivePath(kScaleX + 0.3, scale_y, 225 * deg, -1, kLowGear);
+  StartDrivePath(kScaleX + 0.5, scale_y, 135 * deg, -1, kLowGear);
   Wait(50);
   MoveTo(c2018::score_subsystem::ScoreGoal::SCALE_SHOOT);
   WaitUntilDriveComplete();
 
   // Scale score reverse here
-  Score();
+  Score(true);
   Wait(100);
-  MoveTo(c2018::score_subsystem::ScoreGoal::STOW);
+
+  IntakeGround();
+  Wait(100);
+  StartDrivePath(kCubeX - 0.15, 0.6, 225 * deg, 1, kLowGear, 0.6);
+  WaitForCube();
 }
 
 }  // namespace autonomous

@@ -19,7 +19,7 @@ constexpr double kCubeX =
     5.18;  // Platform zone cubes' x-value if robot starts facing the wall
 constexpr double kScaleX = 6.5;  // Scale x-value if robot starts facing wall
 constexpr double kSwitchFrontX =
-    2.9;  // FRONT of the switch if robot starts facing wall
+    2.55;  // FRONT of the switch if robot starts facing wall
 
 class AutonomousBase {
  public:
@@ -45,7 +45,8 @@ class AutonomousBase {
                       frc971::control_loops::drivetrain::Gear gear =
                           frc971::control_loops::drivetrain::Gear::kHighGear,
                       double extra_distance_initial = 0,
-                      double extra_distance_final = 0);
+                      double extra_distance_final = 0,
+                      double path_voltage = 9.0);
   void StartDriveAtAngle(double distance, double theta_absolute,
                          double final_velocity = 0.0);
 
@@ -57,6 +58,7 @@ class AutonomousBase {
 
   void Wait(uint32_t num_cycles);
 
+  void ForceIntake();
   void IntakeGround();
   void IntakeOpen();
   void IntakeClose();
@@ -71,6 +73,9 @@ class AutonomousBase {
   bool IsAtScoreHeight();
   bool HasCube();
   void WaitForCube();
+
+  // Wait until we have a cube or `ticks` has elapsed, return if we have a cube
+  bool WaitForCubeOrTimeout(int ticks);
 
   // Set the robot-space (robot poweron position) transformation. The parameters
   // are the position of the robot (right now) in field coordinates (F).
