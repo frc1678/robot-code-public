@@ -170,10 +170,10 @@ bool AutonomousBase::IsDriveComplete() {
     }
 
     if (goal->has_path_command()) {
-      if (std::abs(status->path_status().profiled_x_goal() - goal->path_command().x_goal()) <
-              1e-1 &&
-          std::abs(status->path_status().profiled_y_goal() - goal->path_command().y_goal()) <
-              1e-1 &&
+      if (std::abs(status->path_status().profiled_x_goal() -
+                   goal->path_command().x_goal()) < 1e-1 &&
+          std::abs(status->path_status().profiled_y_goal() -
+                   goal->path_command().y_goal()) < 1e-1 &&
           status->path_status().profile_complete()) {
         return true;
       }
@@ -189,8 +189,8 @@ bool AutonomousBase::IsDrivetrainNear(double x, double y, double distance) {
   if (drivetrain_status_reader_.ReadLastMessage(&status)) {
     Eigen::Vector2d field_position =
         transform_f0_ *
-        (Eigen::Vector2d() << status->profiled_x_goal(),
-         status->profiled_y_goal())
+        (Eigen::Vector2d() << status->path_status().profiled_x_goal(),
+         status->path_status().profiled_y_goal())
             .finished();
     if ((field_position(0) - x) * (field_position(0) - x) +
             (field_position(1) - y) * (field_position(1) - y) <
