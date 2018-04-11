@@ -170,11 +170,11 @@ bool AutonomousBase::IsDriveComplete() {
     }
 
     if (goal->has_path_command()) {
-      if (std::abs(status->profiled_x_goal() - goal->path_command().x_goal()) <
+      if (std::abs(status->path_status().profiled_x_goal() - goal->path_command().x_goal()) <
               1e-1 &&
-          std::abs(status->profiled_y_goal() - goal->path_command().y_goal()) <
+          std::abs(status->path_status().profiled_y_goal() - goal->path_command().y_goal()) <
               1e-1 &&
-          status->profile_complete()) {
+          status->path_status().profile_complete()) {
         return true;
       }
     }
@@ -201,9 +201,28 @@ bool AutonomousBase::IsDrivetrainNear(double x, double y, double distance) {
   return false;
 }
 
+bool AutonomousBase::IsDrivetrainNear(double distance) {
+  DrivetrainStatus status;
+  if (drivetrain_status_reader_.ReadLastMessage(&status)) {
+    return std::abs(status->path_status().distance_remaining()) < distance;
+  }
+  return false;
+}
+
 void AutonomousBase::WaitUntilDrivetrainNear(double x, double y,
                                              double distance) {
   while (!IsDrivetrainNear(x, y, distance)) {
+    loop_.SleepUntilNext();
+  }
+}
+
+void AutonomousBase::WaitUntilDrivetrainNear(double distance) {
+  // Need to wait for status to come so we don't use a status
+  // from a nonexistant or already complete path
+  loop_.SleepUntilNext();
+  // Sleep two iterations because generating trajectory is very slow
+  loop_.SleepUntilNext();
+  while (!IsDrivetrainNear(distance)) {
     loop_.SleepUntilNext();
   }
 }

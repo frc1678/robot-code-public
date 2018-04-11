@@ -159,9 +159,14 @@ message DrivetrainStatus {
   // True if the output voltage was capped last cycle.
   required bool output_was_capped = 21;
 
-  required bool profile_complete = 22;
+  message PathStatus {
+    required double profiled_x_goal = 1;
+    required double profiled_y_goal = 2;
+    required double profiled_heading_goal = 3;
+    required double distance_remaining = 4;
+    required double time_remaining = 5;
+    required bool profile_complete = 6;
+  }
 
-  required double profiled_x_goal = 23;
-  required double profiled_y_goal = 24;
-  required double profiled_heading_goal = 25;
+  optional PathStatus path_status = 22;
 }

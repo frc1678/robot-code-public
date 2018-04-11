@@ -52,8 +52,10 @@ class AutonomousBase {
 
   bool IsDriveComplete();
   bool IsDrivetrainNear(double x, double y, double distance);
+  bool IsDrivetrainNear(double distance);
   void WaitUntilDriveComplete();
   void WaitUntilDrivetrainNear(double x, double y, double distance);
+  void WaitUntilDrivetrainNear(double distance);
   void WaitUntilElevatorAtPosition();
 
   void Wait(uint32_t num_cycles);

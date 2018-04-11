@@ -23,8 +23,10 @@ class Trajectory {
  public:
   struct Sample {
     Pose pose;
-
     State drivetrain_state;
+    double distance_remaining;
+    double time_remaining;
+    bool profile_complete;
   };
 
   // Pass in a nullptr for no path
@@ -44,15 +46,12 @@ class Trajectory {
     maximum_voltage_ = maximum_voltage;
   }
 
-  inline void set_system(const Eigen::Matrix<double, 4, 4> &A_c, const Eigen::Matrix<double, 4, 2> B_c,
+  inline void set_system(const Eigen::Matrix<double, 4, 4> &A_c,
+                         const Eigen::Matrix<double, 4, 2> &B_c,
                          double radius) {
     A_ = A_c;
     B_ = B_c;
     radius_ = radius;
-  }
-
-  inline bool is_complete() {
-    return last_index_ == kNumSamples - 1;
   }
 
   void Reset();
@@ -82,6 +81,8 @@ class Trajectory {
   size_t last_index_ = 0;
   // The time already passed _on the current segment only_.
   double time_since_index_ = 0.0;
+
+  double time_remaining_ = 0.0;
 
   State state_;
 };

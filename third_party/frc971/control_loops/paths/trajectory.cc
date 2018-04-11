@@ -121,6 +121,10 @@ void Trajectory::SetPath(const Path &path, const State &state,
                  " starting (%f, %f) and max (%f, %f)",
         state_(1), state_(3), states_[0](1), states_[0](3));
   }
+
+  for (size_t i = 0; i < kNumSamples - 1; i++) {
+    time_remaining_ += segment_times_[i];
+  }
 }
 
 void Trajectory::ConstrainOneSide(double distance, double next_distance,
@@ -208,6 +212,7 @@ void Trajectory::ConstrainAcceleration(const State &input_state, State *output_s
 
 Trajectory::Sample Trajectory::Update() {
   time_since_index_ += 0.005;
+  time_remaining_ = ::std::max(time_remaining_ - 0.005, 0.0);
   size_t index = last_index_;
 
   while (index < kNumSamples - 1 && time_since_index_ > segment_times_[index]) {
@@ -247,7 +252,10 @@ Trajectory::Sample Trajectory::Update() {
 
   Pose pose((Position() << current_x, current_y).finished(), current_angle);
 
-  return Sample{pose, state_};
+  bool profile_complete = index == kNumSamples - 1;
+  double distance_remaining = 0.5 * (states_[kNumSamples - 1](0) - left_distance +
+                                     states_[kNumSamples - 1](2) - right_distance);
+  return Sample{pose, state_, distance_remaining, time_remaining_, profile_complete};
 }
 
 void Trajectory::Reset() {
@@ -264,6 +272,7 @@ void Trajectory::Reset() {
 
   last_index_ = 0;
   time_since_index_ = 0.0;
+  time_remaining_ = 0.0;
 }
 
 }  // namespace paths

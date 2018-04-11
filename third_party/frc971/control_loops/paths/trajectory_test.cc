@@ -86,7 +86,7 @@ class TrajectoryTest : public ::testing::Test {
 
     for (size_t i = 0; i < 2000; i++) {
       Trajectory::Sample s = trajectory_.Update();
-      if (trajectory_.is_complete()) {
+      if (s.profile_complete) {
         s_last = s;
         break;
       }
@@ -145,12 +145,14 @@ class TrajectoryTest : public ::testing::Test {
 
       s_last = s;
     }
-    EXPECT_TRUE(trajectory_.is_complete());
+    EXPECT_TRUE(s_last.profile_complete);
     EXPECT_NEAR((s_last.drivetrain_state(1) + s_last.drivetrain_state(3)) * 0.5,
                 final_velocity, 1e-3);
     EXPECT_NEAR((s_last.drivetrain_state(3) - s_last.drivetrain_state(1)) /
                     (kRadius * 2.0),
                 final_angular_velocity, 1e-3);
+    EXPECT_NEAR(s_last.distance_remaining, 0, 5e-3);
+    EXPECT_NEAR(s_last.time_remaining, 0, 1e-3);
   }
 
   void Log(const char* filename) {
@@ -162,8 +164,9 @@ class TrajectoryTest : public ::testing::Test {
       Trajectory::Sample s = trajectory_.Update();
       file << s.drivetrain_state(0) << ',' << s.drivetrain_state(1) << ',' <<
               s.drivetrain_state(2) << ',' << s.drivetrain_state(3) << ',' <<
-              s.pose.Get()(0) << ',' << s.pose.Get()(1) << ',' <<
-              s.pose.Get()(2) << std::endl;
+              s.pose.Get()(0) << ',' << s.pose.Get()(1) << ',' << s.pose.Get()(2) <<
+              ',' << s.distance_remaining << ',' << s.time_remaining << ',' <<
+              s.profile_complete << std::endl;
     }
   }
 

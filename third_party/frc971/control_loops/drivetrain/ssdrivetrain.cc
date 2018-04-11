@@ -170,7 +170,6 @@ void DrivetrainMotorsSS::SetGoal(
           goal->angular_constraints().max_velocity());
       angular_profile_.set_maximum_acceleration(
           goal->angular_constraints().max_acceleration());
-      profile_complete_ = false;
     }
   } else if (goal->has_path_command()) {
     use_path_ = true;
@@ -239,8 +238,6 @@ void DrivetrainMotorsSS::SetGoal(
       trajectory_.SetPath(path, state, path_goal.final_velocity(),
                           path_goal.final_angular_velocity());
 
-      profile_complete_ = false;
-
       last_goal_pose_ = final_pose;
     }
   }
@@ -299,13 +296,11 @@ void DrivetrainMotorsSS::Update(bool enable_control_loop) {
                                              unprofiled_angular(1, 0));
     } else if (use_path_) {
       // TODO(Lyra): Consider pose correction
-      paths::Trajectory::Sample sample = trajectory_.Update();
+      sample_ = trajectory_.Update();
       Eigen::Matrix<double, 7, 1> goal_state;
-      goal_state.block<4, 1>(0, 0) = sample.drivetrain_state;
-      pose_ = sample.pose;
+      goal_state.block<4, 1>(0, 0) = sample_.drivetrain_state;
       next_linear = LeftRightToLinear(goal_state);
       next_angular = LeftRightToAngular(goal_state);
-      profile_complete_ = trajectory_.is_complete();
     } else {
       next_angular = unprofiled_angular;
       next_linear = unprofiled_linear;
@@ -414,11 +409,15 @@ void DrivetrainMotorsSS::PopulateStatus(
   (*status)->set_profiled_left_velocity_goal(profiled_gyro_left_right(1, 0));
   (*status)->set_profiled_right_position_goal(profiled_gyro_left_right(2, 0));
   (*status)->set_profiled_right_velocity_goal(profiled_gyro_left_right(3, 0));
-  // TODO(Lyra): Add this for trapezoidal profile as well
-  (*status)->set_profile_complete(profile_complete_);
-  (*status)->set_profiled_x_goal(pose_.Get()(0, 0));
-  (*status)->set_profiled_y_goal(pose_.Get()(1, 0));
-  (*status)->set_profiled_heading_goal(pose_.Get()(2, 0));
+  if (use_path_) {
+    auto path_status = (*status)->mutable_path_status();
+    path_status->set_profiled_x_goal(sample_.pose.Get()(0, 0));
+    path_status->set_profiled_y_goal(sample_.pose.Get()(1, 0));
+    path_status->set_profiled_heading_goal(sample_.pose.Get()(2, 0));
+    path_status->set_distance_remaining(sample_.distance_remaining);
+    path_status->set_time_remaining(sample_.time_remaining);
+    path_status->set_profile_complete(sample_.profile_complete);
+  }
 }
 
 }  // namespace drivetrain

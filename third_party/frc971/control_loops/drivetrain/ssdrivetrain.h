@@ -73,14 +73,12 @@ class DrivetrainMotorsSS {
 
   paths::Trajectory trajectory_;
 
-  paths::Pose pose_;
+  paths::Trajectory::Sample sample_;
 
   double *integrated_kf_heading_;
   Eigen::Matrix<double, 2, 1> *cartesian_position_;
 
   paths::Pose last_goal_pose_;
-
-  bool profile_complete_ = false;
 };
 
 }  // namespace drivetrain
