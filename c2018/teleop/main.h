@@ -1,11 +1,11 @@
 #ifndef C2018_TELEOP_MAIN_H_
 #define C2018_TELEOP_MAIN_H_
 
-#include "WPILib.h"
 #include <atomic>
+#include "WPILib.h"
 #include "c2018/subsystems/climber/queue_types.h"
-#include "c2018/subsystems/score_subsystem/queue_types.h"
 #include "c2018/subsystems/lights/queue_types.h"
+#include "c2018/subsystems/score_subsystem/queue_types.h"
 #include "muan/queues/queue_manager.h"
 #include "muan/teleop/joystick.h"
 #include "muan/wpilib/ds_sender.h"
@@ -20,7 +20,7 @@ constexpr int kNumRumbleTicks = 25;
 
 constexpr double kGodmodeElevatorMultiplier = 6;  // tentative
 constexpr double kGodmodeWristMultiplier = 10;    // tentative
-constexpr double kGodmodeThreshold = .25;          // tentative
+constexpr double kGodmodeThreshold = .25;         // tentative
 
 class TeleopBase {
  public:
@@ -58,7 +58,7 @@ class TeleopBase {
   muan::teleop::Button *request_cube_;
 
   // Gamepad Axes
-  muan::teleop::Button *front_, *back_, *low_;
+  muan::teleop::Button *front_, *back_;
   muan::teleop::Button *pos_0_, *pos_1_, *pos_2_, *pos_3_;
 
   bool god_mode_ = false;
