@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 #include "muan/utils/proto_utils.h"
+#include "third_party/google/protobuf/src/google/protobuf/util/json_util.h"
 
 namespace muan {
 namespace webdash {
@@ -28,11 +29,11 @@ void WebDashRunner::AddQueue(const std::string& name, T* queue) {
 template <class R>
 std::experimental::optional<std::string>
 WebDashRunner::Reader<R>::GetMessageAsJSON() {
-  auto message = reader_.ReadLastMessage();
-  if (message) {
-    std::stringstream output;
-    muan::util::ProtoToJson(*message.value().get(), output);
-    return output.str();
+  typename R::MessageType message;
+  if (reader_.ReadLastMessage(&message)) {
+    std::string output;
+    google::protobuf::util::MessageToJsonString(*message.get(), &output);
+    return output;
   } else {
     return std::experimental::nullopt;
   }

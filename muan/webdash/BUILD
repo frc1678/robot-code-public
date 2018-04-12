@@ -29,6 +29,7 @@ cc_library(
         "//muan/utils:proto_utils",
         "//third_party/optional:optional",
         "//third_party/aos/common:die",
+        "//third_party/google/protobuf:protobuf",
         ":webdash_queues",
     ],
     data = [":webdash_html"],
