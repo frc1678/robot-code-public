@@ -1,6 +1,6 @@
+#include <sstream>
 #include <string>
 #include <vector>
-#include <sstream>
 
 #include "c2018/autonomous/autonomous_runner.h"
 
@@ -15,8 +15,9 @@ using muan::webdash::WebDashQueueWrapper;
 AutonomousRunner::AutonomousRunner()
     : driver_station_reader_(
           QueueManager<DriverStationProto>::Fetch()->MakeReader()),
-      auto_mode_reader_(
-          WebDashQueueWrapper::GetInstance().auto_selection_queue().MakeReader()),
+      auto_mode_reader_(WebDashQueueWrapper::GetInstance()
+                            .auto_selection_queue()
+                            .MakeReader()),
       game_specific_string_reader_(
           QueueManager<muan::wpilib::GameSpecificStringProto>::Fetch()
               ->MakeReader()) {}
@@ -47,6 +48,8 @@ void AutonomousRunner::operator()() {
     switch_only_ = true;
   } else if (AutonomousRunner::AutoMode() == "SCALE_ONLY") {
     scale_only_ = true;
+  } else if (AutonomousRunner::AutoMode() == "BACKSIDE_SWITCH") {
+    backside_switch_ = true;
   } else {
     switch_and_scale_ = true;
   }
@@ -72,16 +75,23 @@ void AutonomousRunner::operator()() {
     c2018::autonomous::SwitchAndScale switch_and_scale;
     if (left_right_codes[0] == 'L') {
       if (left_right_codes[1] == 'L') {
-        switch_and_scale.LeftSwitchLeftScale();
+        switch_and_scale.LeftLeftSwitch();
       } else if (left_right_codes[1] == 'R') {
-        switch_and_scale.LeftSwitchRightScale();
+        switch_and_scale.LeftRightSwitch();
       }
     } else if (left_right_codes[0] == 'R') {
       if (left_right_codes[1] == 'L') {
-        switch_and_scale.RightSwitchLeftScale();
+        switch_and_scale.RightLeftSwitch();
       } else if (left_right_codes[1] == 'R') {
-        switch_and_scale.RightSwitchRightScale();
+        switch_and_scale.RightRightSwitch();
       }
+    }
+  } else if (backside_switch_) {  // TODO(Livy) add none and drive
+    c2018::autonomous::BacksideSwitch backside_switch;
+    if (left_right_codes[0] == 'L') {
+      backside_switch.SwitchBack();
+    } else {
+      // none
     }
   } else {
     LOG(WARNING, "No auto mode found!");
@@ -102,7 +112,8 @@ std::string AutonomousRunner::AutoMode() {
       autos.push_back(each_auto);
     }
     for (std::string &autonomous_mode : autos) {
-      if (game_specific_string->code().substr(0, 2) == autonomous_mode.substr(0, 2)) {
+      if (game_specific_string->code().substr(0, 2) ==
+          autonomous_mode.substr(0, 2)) {
         final_auto_mode = autonomous_mode.substr(3, autonomous_mode.size() - 3);
       }
     }

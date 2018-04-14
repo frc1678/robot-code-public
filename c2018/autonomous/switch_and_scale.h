@@ -9,10 +9,10 @@ namespace autonomous {
 
 class SwitchAndScale : public c2018::autonomous::AutonomousBase {
  public:
-  void LeftSwitchLeftScale();
-  void RightSwitchRightScale();
-  void RightSwitchLeftScale();
-  void LeftSwitchRightScale();
+  void RightRightSwitch();
+  void RightLeftSwitch();
+  void LeftRightSwitch();
+  void LeftLeftSwitch();
 };
 
 }  // namespace autonomous

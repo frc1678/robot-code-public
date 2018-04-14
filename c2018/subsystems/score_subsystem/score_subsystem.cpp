@@ -144,7 +144,7 @@ void ScoreSubsystem::SetGoal(const ScoreSubsystemGoalProto& goal) {
       wrist_angle_ = kWristBackwardAngle;
       break;
     case SCALE_SHOOT:
-      elevator_height_ = kElevatorBaseHeight + kCubeHeight + kElevatorReversedOffset;
+      elevator_height_ = kElevatorBaseHeight + kCubeHeight + kElevatorReversedOffset + 0.3;
       wrist_angle_ = kWristShootAngle;
       break;
     case EXCHANGE:

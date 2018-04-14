@@ -37,7 +37,7 @@ static constexpr double kCalibVoltage = 4;
 static constexpr double kHallEffectAngle = 0.23;
 
 // Intake Voltage constants
-static constexpr double kSlowOuttakeVoltage = -5;
+static constexpr double kSlowOuttakeVoltage = -6;
 static constexpr double kFastOuttakeVoltage = -9;
 static constexpr double kIntakeVoltage = 12;
 
