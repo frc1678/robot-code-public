@@ -73,7 +73,8 @@ def main():
     ssh_command = get_ssh_command(options.port)
 
     # mjpg_streamer command
-    mjpg_streamer = "./mjpg_streamer -i './input_uvc.so -n -y -f 25 -q 25 -r 320x240 -d /dev/video0' -o './output_http.so -w ./www/ -p 5802'"
+    mjpg_streamer = "./mjpg_streamer -i './input_uvc.so -n -y -f 15 -q 30 -r 160x120 -d /dev/video0' -o './output_http.so -w ./www/ -p 5802'"
+
 
     # rsync all of the runfiles over. This will also copy this script over, which isn't the cleanest way to
     # do it, but it works and this file is small enough that it doesn't matter. Also, if this file doesn't change (which it shouldn't) there will be no problem.
