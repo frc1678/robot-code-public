@@ -30,6 +30,9 @@ void ScoreSubsystem::BoundGoal(double* elevator_goal, double* wrist_goal) {
   double time_until_wrist_safe =
       wrist_.TimeLeftUntil(kWristSafeAngle, wrist::kWristMaxAngle);
 
+  status_->set_elevator_time_left(time_until_elevator_safe);
+  status_->set_wrist_time_left(time_until_wrist_safe);
+
   // Wrist doesn't try to go too far if the elevator can't handle it
   if (*wrist_goal > kWristSafeAngle &&
       time_until_elevator_safe > time_until_wrist_safe) {
