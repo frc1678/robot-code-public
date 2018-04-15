@@ -124,7 +124,7 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
   (*output)->set_elevator_voltage(elevator_u);
   (*status)->set_elevator_actual_height(elevator_observer_.x()(0, 0));
   (*status)->set_elevator_voltage_error(elevator_observer_.x()(2, 0));
-  (*status)->set_estimated_velocity(elevator_observer_.x()(2, 0));
+  (*status)->set_estimated_velocity(elevator_observer_.x()(1, 0));
   (*status)->set_elevator_calibrated(hall_calib_.is_calibrated());
   (*status)->set_elevator_profiled_goal(profiled_goal_.position);
   (*status)->set_elevator_unprofiled_goal(unprofiled_goal_.position);
