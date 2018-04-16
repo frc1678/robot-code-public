@@ -5,8 +5,9 @@ namespace autonomous {
 
 using frc971::control_loops::drivetrain::Gear;
 
-void None::None() {
+void None::NoneAuto() {
   SetFieldPosition(1678.1678, 1678.1678, 0.0);
+  LOG(INFO, "Running NONE auto");
 
   Wait(1678);  // :)
 }

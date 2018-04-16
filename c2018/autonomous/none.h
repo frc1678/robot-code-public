@@ -9,7 +9,7 @@ namespace autonomous {
 
 class None : public c2018::autonomous::AutonomousBase {
  public:
-  void None();
+  void NoneAuto();
 };
 
 }  // namespace autonomous

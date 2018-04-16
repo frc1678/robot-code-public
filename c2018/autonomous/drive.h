@@ -9,7 +9,7 @@ namespace autonomous {
 
 class Drive : public c2018::autonomous::AutonomousBase {
  public:
-  void Drive();
+  void DriveBackwards();
 };
 
 }  // namespace autonomous

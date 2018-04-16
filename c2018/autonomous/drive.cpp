@@ -5,10 +5,11 @@ namespace autonomous {
 
 using frc971::control_loops::drivetrain::Gear;
 
-void Drive::Drive() {
+void Drive::DriveBackwards() {
   SetFieldPosition(0.0, 0.0, 0.0);
+  LOG(INFO, "Running DRIVE BACKWARDS auto");
 
-  StartDriveAtAngle(3.0, 0 * deg);  // Drive forwards
+  StartDriveAtAngle(-4.0, 0);  // Drive backwards
   WaitUntilDriveComplete();
 }
 

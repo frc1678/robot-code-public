@@ -7,6 +7,8 @@ cc_library(
         ":switch_only",
         ":scale_only",
         ":backside_switch",
+        ":drive",
+        ":none",
         "//muan/queues:queue_manager",
         "//muan/logging:logger",
     ],
@@ -89,6 +91,28 @@ cc_library(
     name = "backside_switch",
     srcs = ["backside_switch.cpp"],
     hdrs = ["backside_switch.h"],
+    deps = [
+        ":autonomous_base",
+    ],
+    visibility = ["//visibility:public"],
+    restricted_to = ["//tools:roborio"],
+)
+
+cc_library(
+    name = "drive",
+    srcs = ["drive.cpp"],
+    hdrs = ["drive.h"],
+    deps = [
+        ":autonomous_base",
+    ],
+    visibility = ["//visibility:public"],
+    restricted_to = ["//tools:roborio"],
+)
+
+cc_library(
+    name = "none",
+    srcs = ["none.cpp"],
+    hdrs = ["none.h"],
     deps = [
         ":autonomous_base",
     ],

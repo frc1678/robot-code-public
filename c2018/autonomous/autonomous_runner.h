@@ -11,6 +11,8 @@
 #include "c2018/autonomous/scale_only.h"
 #include "c2018/autonomous/switch_and_scale.h"
 #include "c2018/autonomous/backside_switch.h"
+#include "c2018/autonomous/drive.h"
+#include "c2018/autonomous/none.h"
 
 namespace c2018 {
 namespace autonomous {
@@ -24,6 +26,8 @@ class AutonomousRunner {
   bool scale_only_ = false;
   bool switch_and_scale_ = false;
   bool backside_switch_ = false;
+  bool drive_ = false;
+  bool none_ = false;
 
   muan::wpilib::DriverStationQueue::QueueReader driver_station_reader_;
   muan::webdash::AutoSelectionQueue::QueueReader auto_mode_reader_;

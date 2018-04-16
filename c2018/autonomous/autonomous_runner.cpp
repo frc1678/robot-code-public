@@ -48,10 +48,14 @@ void AutonomousRunner::operator()() {
     switch_only_ = true;
   } else if (AutonomousRunner::AutoMode() == "SCALE_ONLY") {
     scale_only_ = true;
+  } else if (AutonomousRunner::AutoMode() == "SWITCH_AND_SCALE") {
+    switch_and_scale_ = true;
   } else if (AutonomousRunner::AutoMode() == "BACKSIDE_SWITCH") {
     backside_switch_ = true;
+  } else if (AutonomousRunner::AutoMode() == "DRIVE") {
+    drive_ = true;
   } else {
-    switch_and_scale_ = true;
+    none_ = true;
   }
 
   // Start of autonomous. Grab the game specific string.
@@ -86,15 +90,24 @@ void AutonomousRunner::operator()() {
         switch_and_scale.RightRightSwitch();
       }
     }
-  } else if (backside_switch_) {  // TODO(Livy) add none and drive
-    c2018::autonomous::BacksideSwitch backside_switch;
+  } else if (backside_switch_) {
     if (left_right_codes[0] == 'L') {
+      c2018::autonomous::BacksideSwitch backside_switch;
       backside_switch.SwitchBack();
     } else {
-      // none
+      c2018::autonomous::Drive drive;
+      drive.DriveBackwards();
     }
-  } else {
-    LOG(WARNING, "No auto mode found!");
+  } else if (drive_) {
+    c2018::autonomous::Drive drive;
+    drive.DriveBackwards();
+  } else if (none_) {
+    c2018::autonomous::None none;
+    none.NoneAuto();
+  } else {  // Keeping this so we know if webdash selector somehow broke itself
+    LOG(WARNING, "No auto mode selected, running none auto!");
+    c2018::autonomous::None none;
+    none.NoneAuto();
   }
   LOG(INFO, "Finished with auto!");
 }
