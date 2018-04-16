@@ -43,8 +43,8 @@ TeleopBase::TeleopBase()
 
   request_cube_ = gamepad_.MakePov(0, muan::teleop::Pov::kWest);
 
-  front_ = gamepad_.MakeAxisRange(15, 165, 0, 1, 0.8);
-  back_ = gamepad_.MakeAxisRange(195, 345, 0, 1, 0.8);
+  front_ = gamepad_.MakeAxisRange(30, 150, 0, 1, 0.8);
+  back_ = gamepad_.MakeAxisRange(210, 330, 0, 1, 0.8);
 
   intake_ = gamepad_.MakeAxis(3, 0.3);
   settle_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_CLICK_IN));

@@ -36,6 +36,8 @@ constexpr uint32_t kCubeProxy = 1;
 
 constexpr double kMaxVoltage = 12;
 
+constexpr uint32_t kWhiskerSolenoid = 6;
+
 ScoreSubsystemInterface::ScoreSubsystemInterface(
     muan::wpilib::CanWrapper* can_wrapper)
     : input_queue_(QueueManager<ScoreSubsystemInputProto>::Fetch()),
@@ -55,6 +57,7 @@ ScoreSubsystemInterface::ScoreSubsystemInterface(
       pcm_{can_wrapper->pcm()} {
   pcm_->CreateSolenoid(kIntakeSolenoidOpen);
   pcm_->CreateSolenoid(kIntakeSolenoidClose);
+  pcm_->CreateSolenoid(kWhiskerSolenoid);
 }
 
 void ScoreSubsystemInterface::ReadSensors() {
@@ -91,6 +94,7 @@ void ScoreSubsystemInterface::WriteActuators() {
                                      kMaxVoltage) / 12.0);
     pcm_->WriteSolenoid(kIntakeSolenoidOpen, outputs->wrist_solenoid_open());
     pcm_->WriteSolenoid(kIntakeSolenoidClose, !outputs->wrist_solenoid_close());
+    pcm_->WriteSolenoid(kWhiskerSolenoid, outputs->whisker());
   } else {
     elevator_.Set(0.0);
     wrist_.Set(0);

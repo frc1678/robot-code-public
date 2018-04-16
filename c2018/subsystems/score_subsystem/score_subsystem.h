@@ -20,7 +20,7 @@ static constexpr double kElevatorIntake1 = 0.3;
 static constexpr double kElevatorIntake2 = 0.6;
 
 static constexpr double kElevatorExchange = 0.07;
-static constexpr double kElevatorSwitch = 0.6;
+static constexpr double kElevatorSwitch = 0.7;
 static constexpr double kElevatorPortal = 0.37;
 
 static constexpr double kElevatorBaseHeight = 1.47;
@@ -67,6 +67,8 @@ class ScoreSubsystem {
 
   double elevator_height_;
   double wrist_angle_;
+
+  bool whisker_ = false;
 
   ScoreSubsystemState state_ = ScoreSubsystemState::CALIBRATING;
   // Only valid if `state_` is INTAKE_RUNNING

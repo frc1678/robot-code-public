@@ -24,10 +24,6 @@ WristController::WristController() {
 }
 
 void WristController::SetGoal(double wrist_angle, IntakeGoal intake_mode) {
-  if (std::abs(wrist_angle - unprofiled_goal_.position) > 1e-10) {
-    profile_time_ = 0.;
-    profile_initial_ = {wrist_observer_.x()(0, 0), wrist_observer_.x()(1, 0)};
-  }
   // Cap unprofiled goal to keep things safe
   unprofiled_goal_ = {
       muan::utils::Cap(wrist_angle, kWristMinAngle, kWristMaxAngle), 0.};
@@ -61,7 +57,6 @@ void WristController::Update(ScoreSubsystemInputProto input,
 
   if (!outputs_enabled) {
     wrist_voltage = 0.0;
-    profile_initial_ = {wrist_observer_.x()(0, 0), wrist_observer_.x()(1, 0)};
   }
 
   // Start of intake
@@ -190,13 +185,15 @@ muan::control::MotionProfilePosition WristController::UpdateProfiledGoal(
   // Sets profiled goal based on the motion profile
   muan::control::TrapezoidalMotionProfile profile =
       muan::control::TrapezoidalMotionProfile(
-          kWristConstraints, unprofiled_goal_, profile_initial_);
+          kWristConstraints, unprofiled_goal_, profiled_goal_);
+
   if (outputs_enabled) {
     // Figure out what the trapezoid profile wants
-    profiled_goal_ = profile.Calculate(profile_time_ += 5 * muan::units::ms);
+    profiled_goal_ = profile.Calculate(5 * muan::units::ms);
   } else {
     // Keep the trapezoid profile updated on the (sadly) disabled robot
-    profiled_goal_ = profile.Calculate(0.);
+    profiled_goal_.position = wrist_observer_.x(0);
+    profiled_goal_.velocity = wrist_observer_.x(1);
   }
   return profiled_goal_;
 }

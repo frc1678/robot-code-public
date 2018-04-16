@@ -41,6 +41,7 @@ message ScoreSubsystemOutput {
   required double wrist_voltage = 4;
   required bool wrist_solenoid_open = 5;
   required bool wrist_solenoid_close = 6;
+  required bool whisker = 7;
 }
 
 enum IntakeGoal {

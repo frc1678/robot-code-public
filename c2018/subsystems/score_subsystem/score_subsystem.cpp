@@ -77,6 +77,8 @@ void ScoreSubsystem::Update() {
   wrist_.SetGoal(constrained_wrist_angle, intake_goal_);
   wrist_.Update(input, &output, &status_, driver_station->is_sys_active());
 
+  output->set_whisker(whisker_);
+
   status_->set_state(state_);
   status_->set_intake_state(intake_goal_);
 
@@ -94,69 +96,85 @@ void ScoreSubsystem::SetGoal(const ScoreSubsystemGoalProto& goal) {
     case INTAKE_0:
       elevator_height_ = kElevatorIntake0;
       wrist_angle_ = kWristForwardAngle;
+      whisker_ = false;
       break;
     case INTAKE_1:
       elevator_height_ = kElevatorIntake1;
       wrist_angle_ = kWristForwardAngle;
+      whisker_ = false;
       break;
     case INTAKE_2:
       elevator_height_ = kElevatorIntake2;
       wrist_angle_ = kWristForwardAngle;
+      whisker_ = false;
       break;
     case STOW:
       elevator_height_ = kElevatorStow;
       wrist_angle_ = kWristStowAngle;
+      whisker_ = false;
       break;
     case SWITCH:
       elevator_height_ = kElevatorSwitch;
       wrist_angle_ = kWristForwardAngle;
+      whisker_ = false;
       break;
     case SCALE_LOW_FORWARD:
       elevator_height_ = kElevatorBaseHeight;
       wrist_angle_ = kWristForwardAngle;
+      whisker_ = false;
       break;
     case SCALE_LOW_REVERSE:
       elevator_height_ = kElevatorBaseHeight + kElevatorReversedOffset;
       wrist_angle_ = kWristBackwardAngle;
+      whisker_ = true;
       break;
     case SCALE_MID_FORWARD:
       elevator_height_ = kElevatorBaseHeight + kCubeHeight;
       wrist_angle_ = kWristForwardAngle;
+      whisker_ = false;
       break;
     case SCALE_MID_REVERSE:
       elevator_height_ =
           kElevatorBaseHeight + kCubeHeight + kElevatorReversedOffset;
       wrist_angle_ = kWristBackwardAngle;
+      whisker_ = false;
       break;
     case SCALE_HIGH_FORWARD:
       elevator_height_ = kElevatorBaseHeight + 2 * kCubeHeight;
       wrist_angle_ = kWristForwardAngle;
+      whisker_ = false;
       break;
     case SCALE_HIGH_REVERSE:
       elevator_height_ =
           kElevatorBaseHeight + 2 * kCubeHeight + kElevatorReversedOffset;
       wrist_angle_ = kWristBackwardAngle;
+      whisker_ = false;
       break;
     case SCALE_SUPER_HIGH_FORWARD:
       elevator_height_ = elevator::kElevatorMaxHeight - 0.02;
       wrist_angle_ = kWristTiltUpAngle;
+      whisker_ = false;
       break;
     case SCALE_SUPER_HIGH_REVERSE:
       elevator_height_ =
           kElevatorBaseHeight + 3 * kCubeHeight + kElevatorReversedOffset;
       wrist_angle_ = kWristBackwardAngle;
+      whisker_ = false;
       break;
     case SCALE_SHOOT:
       elevator_height_ = kElevatorBaseHeight + kCubeHeight + kElevatorReversedOffset + 0.3;
       wrist_angle_ = kWristShootAngle;
+      whisker_ = false;
       break;
     case EXCHANGE:
       elevator_height_ = kElevatorExchange;
       wrist_angle_ = kWristForwardAngle;
+      whisker_ = false;
       break;
     case PORTAL:
       elevator_height_ = kElevatorPortal;
       wrist_angle_ = kWristPortalAngle;
+      whisker_ = false;
       break;
   }
 
