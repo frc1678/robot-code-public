@@ -31,10 +31,14 @@ class AutonomousBase {
 
   bool IsAutonomous();
 
-  void StartDriveAbsolute(double left, double right,
-                          bool follow_through = false);
-  void StartDriveRelative(double forward, double theta,
-                          double final_velocity = 0.0);
+  void StartDriveAbsolute(
+      double left, double right, bool follow_through = false,
+      frc971::control_loops::drivetrain::Gear gear =
+          frc971::control_loops::drivetrain::Gear::kHighGear);
+  void StartDriveRelative(
+      double forward, double theta, double final_velocity = 0.0,
+      frc971::control_loops::drivetrain::Gear gear =
+          frc971::control_loops::drivetrain::Gear::kHighGear);
   // Direction: 1 => forwards, 0 => autodetect, -1 => backwards
   // x, y, and heading are given in _field_ space. x is forwards, away from the
   // driver station wall. y is to the left looking out of the driver station
@@ -47,8 +51,10 @@ class AutonomousBase {
                       double extra_distance_initial = 0,
                       double extra_distance_final = 0,
                       double path_voltage = 9.0);
-  void StartDriveAtAngle(double distance, double theta_absolute,
-                         double final_velocity = 0.0);
+  void StartDriveAtAngle(
+      double distance, double theta_absolute, double final_velocity = 0.0,
+      frc971::control_loops::drivetrain::Gear gear =
+          frc971::control_loops::drivetrain::Gear::kHighGear);
 
   bool IsDriveComplete();
   bool IsDrivetrainNear(double x, double y, double distance);
@@ -71,6 +77,7 @@ class AutonomousBase {
   void MoveToScale(bool front);
   void MoveTo(c2018::score_subsystem::ScoreGoal goal);
   void Score(bool fast = true);
+  void DropScore();
   void StopScore();
   bool IsAtScoreHeight();
   bool HasCube();

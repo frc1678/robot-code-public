@@ -54,6 +54,8 @@ void AutonomousRunner::operator()() {
     backside_switch_ = true;
   } else if (AutonomousRunner::AutoMode() == "DRIVE") {
     drive_ = true;
+  } else if (AutonomousRunner::AutoMode() == "SNEAK") {
+    sneak_ = true;
   } else {
     none_ = true;
   }
@@ -101,6 +103,13 @@ void AutonomousRunner::operator()() {
   } else if (drive_) {
     c2018::autonomous::Drive drive;
     drive.DriveBackwards();
+  } else if (sneak_) {
+    c2018::autonomous::Sneak sneak;
+    if (left_right_codes[1] == 'L') {
+      sneak.SneakLeft();
+    } else {
+      sneak.SneakRight();
+    }
   } else if (none_) {
     c2018::autonomous::None none;
     none.NoneAuto();

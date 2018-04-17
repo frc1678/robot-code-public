@@ -50,19 +50,15 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
   // Keeps trapezoidal motion profile notified about all the things while
   // disabled
   if (!outputs_enabled) {
-    profile_time_ = 0.;
-    profile_initial_ = {
-        .position = elevator_observer_.x()(0, 0) * muan::units::m,
-        .velocity = elevator_observer_.x()(1, 0) * muan::units::mps};
+    profiled_goal_ = {.position = elevator_observer_.x()(0, 0),
+                      .velocity = elevator_observer_.x()(1, 0)};
   }
 
   // The first calibrate is the only one that does anything to the model
   if (hall_calib_.is_calibrated() && !was_calibrated) {
     elevator_observer_.x(0) += hall_calib_.offset();
-    profile_time_ = 0.;
-    profile_initial_ = {
-        .position = elevator_observer_.x()(0, 0) * muan::units::m,
-        .velocity = elevator_observer_.x()(1, 0) * muan::units::mps};
+    profiled_goal_ = {.position = elevator_observer_.x()(0, 0),
+                      .velocity = elevator_observer_.x()(1, 0)};
   }
 
   // Update the trapezoidal motion profile
@@ -135,12 +131,6 @@ void ElevatorController::Update(const ScoreSubsystemInputProto& input,
 }
 
 void ElevatorController::SetGoal(double goal) {
-  if (std::abs(goal - unprofiled_goal_.position) > 1e-10) {
-    profile_time_ = 0.;
-    profile_initial_ = {
-        .position = elevator_observer_.x()(0, 0) * muan::units::m,
-        .velocity = elevator_observer_.x()(1, 0) * muan::units::mps};
-  }
   // Cap goal to actual possible height so things don't break
   unprofiled_goal_ = {
       .position =
@@ -151,11 +141,11 @@ void ElevatorController::SetGoal(double goal) {
 muan::control::MotionProfilePosition ElevatorController::UpdateProfiledGoal(
     bool outputs_enabled) {
   muan::control::TrapezoidalMotionProfile profile =
-      muan::control::TrapezoidalMotionProfile(
-          kElevatorConstraints, unprofiled_goal_, profile_initial_);
+      muan::control::TrapezoidalMotionProfile(kElevatorConstraints,
+                                              unprofiled_goal_, profiled_goal_);
   if (outputs_enabled) {
     // Figure out what the trapezoid profile wants
-    profiled_goal_ = profile.Calculate(profile_time_ += 5 * muan::units::ms);
+    profiled_goal_ = profile.Calculate(5 * muan::units::ms);
   } else {
     // Keep the trapezoid profile updated on the (sadly) disabled robot
     profiled_goal_ = profile.Calculate(0.);

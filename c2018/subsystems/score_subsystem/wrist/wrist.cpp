@@ -142,7 +142,7 @@ void WristController::Update(ScoreSubsystemInputProto input,
 
   UpdateProfiledGoal(outputs_enabled);
   Eigen::Matrix<double, 3, 1> wrist_r =
-      (Eigen::Matrix<double, 3, 1>() << profiled_goal_.position, 0.0, 0.0)
+      (Eigen::Matrix<double, 3, 1>() << profiled_goal_.position, profiled_goal_.velocity, 0.0)
           .finished();
 
   wrist_controller_.r() = wrist_r;

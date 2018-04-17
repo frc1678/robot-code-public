@@ -60,8 +60,8 @@ class ElevatorController {
   bool is_calibrated() const;  // Getter for if it's calibrated
 
  private:
-  muan::control::MotionProfilePosition profile_initial_;
   muan::control::MotionProfilePosition unprofiled_goal_;
+  muan::control::MotionProfilePosition profiled_goal_;
 
   muan::control::MotionProfilePosition UpdateProfiledGoal(
       bool outputs_enabled);       // Utilizes the trapezoidal motion profile
@@ -77,10 +77,6 @@ class ElevatorController {
 
   // Gain scheduling magic (even less magical)
   void SetWeights(bool second_stage, bool has_cube);
-
-  // Goals stored inside of the class for usage in functions
-  muan::control::MotionProfilePosition profiled_goal_;
-  muan::units::Time profile_time_;
 
   // Encoder fault stuff
   bool encoder_fault_detected_ = false;

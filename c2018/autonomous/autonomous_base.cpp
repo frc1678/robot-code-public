@@ -44,8 +44,9 @@ bool AutonomousBase::IsAutonomous() {
   }
 }
 
-void AutonomousBase::StartDriveAbsolute(double left, double right,
-                                        bool follow_through) {
+void AutonomousBase::StartDriveAbsolute(
+    double left, double right, bool follow_through,
+    frc971::control_loops::drivetrain::Gear gear) {
   DrivetrainGoal goal;
   follow_through_ = follow_through;
 
@@ -58,12 +59,14 @@ void AutonomousBase::StartDriveAbsolute(double left, double right,
   goal->mutable_angular_constraints()->set_max_velocity(max_angular_velocity_);
   goal->mutable_angular_constraints()->set_max_acceleration(
       max_angular_acceleration_);
+  goal->set_gear(gear);
 
   drivetrain_goal_queue_->WriteMessage(goal);
 }
 
-void AutonomousBase::StartDriveRelative(double forward, double theta,
-                                        double final_velocity) {
+void AutonomousBase::StartDriveRelative(
+    double forward, double theta, double final_velocity,
+    frc971::control_loops::drivetrain::Gear gear) {
   DrivetrainStatus status;
   if (!drivetrain_status_reader_.ReadLastMessage(&status)) {
     LOG(WARNING, "No drivetrain status message provided.");
@@ -95,11 +98,12 @@ void AutonomousBase::StartDriveRelative(double forward, double theta,
     }
   }
 
-  StartDriveAbsolute(left_goal, right_goal, follow_through_);
+  StartDriveAbsolute(left_goal, right_goal, follow_through_, gear);
 }
 
-void AutonomousBase::StartDriveAtAngle(double distance, double theta_absolute,
-                                       double final_velocity) {
+void AutonomousBase::StartDriveAtAngle(
+    double distance, double theta_absolute, double final_velocity,
+    frc971::control_loops::drivetrain::Gear gear) {
   DrivetrainStatus status;
   if (!drivetrain_status_reader_.ReadLastMessage(&status)) {
     LOG(ERROR, "No drivetrain status found.");
@@ -108,7 +112,7 @@ void AutonomousBase::StartDriveAtAngle(double distance, double theta_absolute,
 
   double delta_theta = theta_absolute - status->estimated_heading();
 
-  StartDriveRelative(distance, delta_theta, final_velocity);
+  StartDriveRelative(distance, delta_theta, final_velocity, gear);
 }
 
 void AutonomousBase::StartDrivePath(
@@ -332,6 +336,12 @@ void AutonomousBase::Score(bool fast) {
   score_subsystem::ScoreSubsystemGoalProto score_goal;
   score_goal->set_intake_goal(fast ? score_subsystem::IntakeGoal::OUTTAKE_FAST
                                    : score_subsystem::IntakeGoal::OUTTAKE_SLOW);
+  score_goal_queue_->WriteMessage(score_goal);
+}
+
+void AutonomousBase::DropScore() {
+  score_subsystem::ScoreSubsystemGoalProto score_goal;
+  score_goal->set_intake_goal(score_subsystem::IntakeGoal::DROP);
   score_goal_queue_->WriteMessage(score_goal);
 }
 

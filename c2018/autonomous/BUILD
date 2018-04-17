@@ -9,6 +9,7 @@ cc_library(
         ":backside_switch",
         ":drive",
         ":none",
+        ":sneak",
         "//muan/queues:queue_manager",
         "//muan/logging:logger",
     ],
@@ -113,6 +114,17 @@ cc_library(
     name = "none",
     srcs = ["none.cpp"],
     hdrs = ["none.h"],
+    deps = [
+        ":autonomous_base",
+    ],
+    visibility = ["//visibility:public"],
+    restricted_to = ["//tools:roborio"],
+)
+
+cc_library(
+    name = "sneak",
+    srcs = ["sneak.cpp"],
+    hdrs = ["sneak.h"],
     deps = [
         ":autonomous_base",
     ],
