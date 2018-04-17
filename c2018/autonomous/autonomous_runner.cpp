@@ -141,7 +141,7 @@ std::string AutonomousRunner::AutoMode() {
     }
     return final_auto_mode;
   } else {
-    return "SCALE_PLUS_SWITCH";
+    return "DRIVE";
   }
 }
 

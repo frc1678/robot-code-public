@@ -3,6 +3,7 @@
 
 #include "c2018/autonomous/autonomous_base.h"
 #include "muan/logging/logger.h"
+#include "muan/units/units.h"
 
 namespace c2018 {
 namespace autonomous {
