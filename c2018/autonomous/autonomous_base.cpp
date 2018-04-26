@@ -355,7 +355,7 @@ bool AutonomousBase::IsAtScoreHeight() {
   score_subsystem::ScoreSubsystemStatusProto score_status;
   if (score_status_reader_.ReadLastMessage(&score_status)) {
     return (std::abs(score_status->elevator_unprofiled_goal() -
-                     score_status->elevator_actual_height()) < 1e-2);
+                     score_status->elevator_height()) < 1e-2);
   } else {
     return false;
   }

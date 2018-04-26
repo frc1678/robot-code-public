@@ -89,8 +89,8 @@ enum ScoreSubsystemState {
 
 message ScoreSubsystemStatus {
   required uint64 timestamp = 1;
-  required double elevator_actual_height = 2;
-  required double estimated_velocity = 3;
+  required double elevator_height = 2;
+  required double elevator_velocity = 3;
   required bool elevator_at_top = 4;
   required double elevator_voltage_error = 5;
   required double elevator_uncapped_voltage = 6;

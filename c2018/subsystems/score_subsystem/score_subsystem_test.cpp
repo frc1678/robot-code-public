@@ -74,7 +74,7 @@ class ScoreSubsystemTest : public ::testing::Test {
 
     score_subsystem_.Update();
 
-    SetWeights(elevator_plant_.x()(0, 0) >= 1.0,
+    SetWeights(elevator_plant_.x(0) >= 1.0,
                score_subsystem_input_proto_->has_cube());
 
     elevator_plant_.Update(
@@ -96,7 +96,7 @@ class ScoreSubsystemTest : public ::testing::Test {
   }
 
   void LogicCheck() {
-    if (score_subsystem_status_proto_->elevator_actual_height() < 0.89 ||
+    if (score_subsystem_status_proto_->elevator_height() < 0.89 ||
         score_subsystem_status_proto_->elevator_unprofiled_goal() < 0.89) {
       EXPECT_LE(score_subsystem_status_proto_->wrist_unprofiled_goal(),
                 kWristSafeAngle);
@@ -179,7 +179,7 @@ class ScoreSubsystemTest : public ::testing::Test {
     EXPECT_NEAR(score_subsystem_status_proto_->wrist_unprofiled_goal(), wrist,
                 1e-3);
 
-    EXPECT_NEAR(score_subsystem_status_proto_->elevator_actual_height(),
+    EXPECT_NEAR(score_subsystem_status_proto_->elevator_height(),
                 elevator, 1e-3);
     EXPECT_NEAR(score_subsystem_status_proto_->wrist_angle(), wrist, 1e-3);
   }
@@ -240,7 +240,7 @@ TEST_F(ScoreSubsystemTest, DisabledCalibrates) {
   RunFor(100);
   EXPECT_NEAR(score_subsystem_status_proto_->wrist_angle(), wrist_plant_.x(0),
               1e-2);
-  EXPECT_NEAR(score_subsystem_status_proto_->elevator_actual_height(),
+  EXPECT_NEAR(score_subsystem_status_proto_->elevator_height(),
               elevator_plant_.x(0), 1e-2);
 }
 

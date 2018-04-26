@@ -1,5 +1,5 @@
-#ifndef C2018_AUTONOMOUS_SWITCH_H_
-#define C2018_AUTONOMOUS_SWITCH_H_
+#ifndef C2018_AUTONOMOUS_SNEAK_H_
+#define C2018_AUTONOMOUS_SNEAK_H_
 
 #include "c2018/autonomous/autonomous_base.h"
 #include "muan/logging/logger.h"
@@ -16,4 +16,4 @@ class Sneak : public c2018::autonomous::AutonomousBase {
 }  // namespace autonomous
 }  // namespace c2018
 
-#endif  // C2018_AUTONOMOUS_SWITCH_H_
+#endif  // C2018_AUTONOMOUS_SNEAK_H_

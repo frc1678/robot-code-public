@@ -12,14 +12,14 @@ WristController::WristController() {
       frc1678::wrist::controller::cube_integral::B(),
       frc1678::wrist::controller::cube_integral::C());
 
-  wrist_controller_ = muan::control::StateSpaceController<1, 3, 1>(
+  controller_ = muan::control::StateSpaceController<1, 3, 1>(
       frc1678::wrist::controller::cube_integral::K(),
       frc1678::wrist::controller::cube_integral::Kff(),
       frc1678::wrist::controller::cube_integral::A(),
       Eigen::Matrix<double, 1, 1>::Ones() * -12,
       Eigen::Matrix<double, 1, 1>::Ones() * 12);
 
-  wrist_observer_ = muan::control::StateSpaceObserver<1, 3, 1>(
+  observer_ = muan::control::StateSpaceObserver<1, 3, 1>(
       wrist_plant, frc1678::wrist::controller::cube_integral::L());
 }
 
@@ -36,28 +36,18 @@ void WristController::Update(ScoreSubsystemInputProto input,
                              ScoreSubsystemStatusProto* status,
                              bool outputs_enabled) {
   // Was it calibrated before updating the hall calibration?
-  was_calibrated_ = hall_calibration_.is_calibrated();
+  bool was_calibrated = hall_calibration_.is_calibrated();
 
-  // Now we update the hall calibration
-  double calibrated_encoder =
-      hall_calibration_.Update(input->wrist_encoder(), input->wrist_hall());
+  // Gain Scheduling for cube
+  SetWeights(input->has_cube());
 
-  if (input->has_cube()) {
-    SetWeights(true);
-  } else {
-    SetWeights(false);
-  }
-  auto wrist_y =
-      (Eigen::Matrix<double, 1, 1>() << calibrated_encoder).finished();
-
-  // Setting up that wrist voltage to start it 0.0
-  double wrist_voltage = 0.0;
+  // Update the Hall Calibration, and make a y matrix from it
+  Eigen::Matrix<double, 1, 1> y =
+      (Eigen::Matrix<double, 1, 1>()
+       << hall_calibration_.Update(input->wrist_encoder(), input->wrist_hall()))
+          .finished();
 
   bool has_cube = pinch_state_ == IDLE_WITH_CUBE && input->has_cube();
-
-  if (!outputs_enabled) {
-    wrist_voltage = 0.0;
-  }
 
   // Start of intake
   bool wrist_solenoid_close = false;
@@ -134,37 +124,37 @@ void WristController::Update(ScoreSubsystemInputProto input,
       break;
   }
 
-  if (!hall_calibration_.is_calibrated()) {
-    wrist_voltage = kCalibVoltage;
-  } else if (!was_calibrated_) {
-    plant_.x()(0, 0) += hall_calibration_.offset();
+
+  if (!was_calibrated && is_calibrated()) {
+    observer_.x(0) += hall_calibration_.offset();
+    profiled_goal_ = {observer_.x(0), observer_.x(1)};
   }
 
   UpdateProfiledGoal(outputs_enabled);
-  Eigen::Matrix<double, 3, 1> wrist_r =
-      (Eigen::Matrix<double, 3, 1>() << profiled_goal_.position, profiled_goal_.velocity, 0.0)
-          .finished();
 
-  wrist_controller_.r() = wrist_r;
+  controller_.r() = (Eigen::Matrix<double, 3, 1>() << profiled_goal_.position,
+                     profiled_goal_.velocity, 0.)
+                        .finished();
 
   // Get voltage from the controller
-  wrist_voltage = wrist_controller_.Update(wrist_observer_.x(), wrist_r)(0, 0);
+  double wrist_voltage = controller_.Update(observer_.x(), controller_.r())(0, 0);
 
-  if (hall_calibration_.is_calibrated() && wrist_r(0) <= 1e-5) {
+  if (hall_calibration_.is_calibrated() && controller_.r(0) <= 1e-5) {
     // If we're trying to stay at 0, set 0 voltage automatically
-    wrist_voltage = 0.0;
+    wrist_voltage = 0.;
   }
 
-  // Cap the voltage so it's realistic
   if (outputs_enabled) {
+    // Cap the voltage so it's realistic
     wrist_voltage = muan::utils::Cap(wrist_voltage, -kMaxVoltage, kMaxVoltage);
   } else {
-    wrist_voltage = 0;
+    wrist_voltage = 0.;
+    profiled_goal_ = {observer_.x(0), observer_.x(1)};
   }
 
   // Update the observer and the plant with the actual voltage
-  wrist_observer_.Update(
-      (Eigen::Matrix<double, 1, 1>() << wrist_voltage).finished(), wrist_y);
+  observer_.Update((Eigen::Matrix<double, 1, 1>() << wrist_voltage).finished(),
+                   y);
   plant_.Update((Eigen::Matrix<double, 1, 1>() << wrist_voltage).finished());
 
   // Write stuff to the output and status protos
@@ -173,7 +163,7 @@ void WristController::Update(ScoreSubsystemInputProto input,
   (*output)->set_wrist_solenoid_open(wrist_solenoid_open);
   (*output)->set_wrist_solenoid_close(wrist_solenoid_close);
   (*status)->set_wrist_calibrated(hall_calibration_.is_calibrated());
-  (*status)->set_wrist_angle(wrist_observer_.x()(0, 0));
+  (*status)->set_wrist_angle(observer_.x(0));
   (*status)->set_has_cube(has_cube);
   (*status)->set_wrist_profiled_goal(profiled_goal_.position);
   (*status)->set_wrist_unprofiled_goal(unprofiled_goal_.position);
@@ -184,16 +174,15 @@ muan::control::MotionProfilePosition WristController::UpdateProfiledGoal(
     bool outputs_enabled) {
   // Sets profiled goal based on the motion profile
   muan::control::TrapezoidalMotionProfile profile =
-      muan::control::TrapezoidalMotionProfile(
-          kWristConstraints, unprofiled_goal_, profiled_goal_);
+      muan::control::TrapezoidalMotionProfile(kWristConstraints,
+                                              unprofiled_goal_, profiled_goal_);
 
   if (outputs_enabled) {
     // Figure out what the trapezoid profile wants
     profiled_goal_ = profile.Calculate(5 * muan::units::ms);
   } else {
     // Keep the trapezoid profile updated on the (sadly) disabled robot
-    profiled_goal_.position = wrist_observer_.x(0);
-    profiled_goal_.velocity = wrist_observer_.x(1);
+    profiled_goal_ = profile.Calculate(0);
   }
   return profiled_goal_;
 }
@@ -216,22 +205,21 @@ bool WristController::is_calibrated() const {
 
 void WristController::SetWeights(bool has_cube) {
   if (has_cube) {
-    wrist_controller_.A() = frc1678::wrist::controller::cube_integral::A();
-    wrist_controller_.K() = frc1678::wrist::controller::cube_integral::K();
-    wrist_controller_.Kff() = frc1678::wrist::controller::cube_integral::Kff();
+    controller_.A() = frc1678::wrist::controller::cube_integral::A();
+    controller_.K() = frc1678::wrist::controller::cube_integral::K();
+    controller_.Kff() = frc1678::wrist::controller::cube_integral::Kff();
 
-    wrist_observer_.L() = frc1678::wrist::controller::cube_integral::L();
+    observer_.L() = frc1678::wrist::controller::cube_integral::L();
 
     plant_.A() = frc1678::wrist::controller::cube_integral::A();
     plant_.B() = frc1678::wrist::controller::cube_integral::B();
     plant_.C() = frc1678::wrist::controller::cube_integral::C();
   } else {
-    wrist_controller_.A() = frc1678::wrist::controller::no_cube_integral::A();
-    wrist_controller_.K() = frc1678::wrist::controller::no_cube_integral::K();
-    wrist_controller_.Kff() =
-        frc1678::wrist::controller::no_cube_integral::Kff();
+    controller_.A() = frc1678::wrist::controller::no_cube_integral::A();
+    controller_.K() = frc1678::wrist::controller::no_cube_integral::K();
+    controller_.Kff() = frc1678::wrist::controller::no_cube_integral::Kff();
 
-    wrist_observer_.L() = frc1678::wrist::controller::no_cube_integral::L();
+    observer_.L() = frc1678::wrist::controller::no_cube_integral::L();
 
     plant_.A() = frc1678::wrist::controller::no_cube_integral::A();
     plant_.B() = frc1678::wrist::controller::no_cube_integral::B();

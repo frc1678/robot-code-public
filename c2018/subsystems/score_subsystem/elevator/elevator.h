@@ -51,8 +51,8 @@ class ElevatorController {
               bool outputs_enabled);  // Figures out what the elevator should do
                                       // and what it's doing based on the
                                       // outside data
-  void SetGoal(double goal);  // Setter for unprofiled_goal_ that also caps it
-                              // to kElevatorMin and Max Height
+  void SetGoal(double height);  // Setter for unprofiled_goal_ that also caps it
+                                // to kElevatorMin and Max Height
 
   muan::units::Time TimeLeftUntil(muan::units::Length target,
                                   muan::units::Length final_goal);
@@ -69,11 +69,11 @@ class ElevatorController {
 
   // State Space magic lol
   muan::control::StateSpacePlant<1, 3, 1> plant_;
-  muan::control::StateSpaceController<1, 3, 1> elevator_controller_;
-  muan::control::StateSpaceObserver<1, 3, 1> elevator_observer_;
+  muan::control::StateSpaceController<1, 3, 1> controller_;
+  muan::control::StateSpaceObserver<1, 3, 1> observer_;
 
   // Hall Calibration magic (less magical)
-  muan::control::HallCalibration hall_calib_{kHallEffectHeight};
+  muan::control::HallCalibration hall_calibration_{kHallEffectHeight};
 
   // Gain scheduling magic (even less magical)
   void SetWeights(bool second_stage, bool has_cube);

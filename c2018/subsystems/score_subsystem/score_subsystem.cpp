@@ -218,7 +218,7 @@ void ScoreSubsystem::RunStateMachine() {
   switch (state_) {
     case ScoreSubsystemState::CALIBRATING:
       // Stow after calibrating
-      elevator_height_ = status_->elevator_actual_height();
+      elevator_height_ = status_->elevator_height();
       wrist_angle_ = status_->wrist_angle();
       if (status_->wrist_calibrated() && status_->elevator_calibrated()) {
         // These need to be set right away because calibration moves the

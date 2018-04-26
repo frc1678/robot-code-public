@@ -33,7 +33,7 @@ static constexpr double kWristStowAngle = 80 * (M_PI / 180);
 static constexpr double kWristMaxAngle = 160 * (M_PI / 180);
 
 // Hall Calibration constants
-static constexpr double kCalibVoltage = 4;
+static constexpr double kCalibVoltage = 0;
 static constexpr double kHallEffectAngle = 0.23;
 
 // Intake Voltage constants
@@ -76,8 +76,8 @@ class WristController {
 
   // Statespace stuff
   muan::control::StateSpacePlant<1, 3, 1> plant_;
-  muan::control::StateSpaceController<1, 3, 1> wrist_controller_;
-  muan::control::StateSpaceObserver<1, 3, 1> wrist_observer_;
+  muan::control::StateSpaceController<1, 3, 1> controller_;
+  muan::control::StateSpaceObserver<1, 3, 1> observer_;
 
   // Keep those V safe
   double CapU(double wrist_voltage);
@@ -87,9 +87,6 @@ class WristController {
 
   // Voltage to give to intake
   double intake_voltage_ = 0;
-
-  // If it was calibrated
-  bool was_calibrated_ = false;
 
   // Does it _really_ have a cube?
   int has_cube_for_ticks_ = 0;

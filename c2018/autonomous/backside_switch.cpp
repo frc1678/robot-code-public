@@ -3,9 +3,9 @@
 namespace c2018 {
 namespace autonomous {
 
-using muan::units::deg;
-using frc971::control_loops::drivetrain::Gear::kLowGear;
 using frc971::control_loops::drivetrain::Gear::kHighGear;
+using frc971::control_loops::drivetrain::Gear::kLowGear;
+using muan::units::deg;
 
 constexpr double kStartY = 3.0;
 
@@ -39,7 +39,7 @@ void BacksideSwitch::SwitchBack() {
   // Back off
   StartDriveRelative(-0.3, 0.0, 1.0);
   MoveTo(c2018::score_subsystem::ScoreGoal::SWITCH);
-  //Score second cube
+  // Score second cube
   WaitUntilDriveComplete();
   StartDriveRelative(0.4, 0.0);
   WaitUntilDriveComplete();

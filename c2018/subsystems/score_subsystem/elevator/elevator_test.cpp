@@ -19,7 +19,7 @@ class ElevatorControllerTest : public ::testing::Test {
                  c2018::score_subsystem::elevator::kHallEffectHeight) < 2e-2);
     elevator_.Update(elevator_input_proto_, &elevator_output_proto_,
                      &elevator_status_proto_, outputs_enabled_);
-    SetWeights(plant_.x()(0, 0) >= 1.0, elevator_input_proto_->has_cube());
+    SetWeights(plant_.x(0) >= 1.0, elevator_input_proto_->has_cube());
     plant_.Update((Eigen::Matrix<double, 1, 1>()
                    << elevator_output_proto_->elevator_voltage())
                       .finished());
@@ -88,7 +88,7 @@ TEST_F(ElevatorControllerTest, NotEnabled) {
 
   Update();
 
-  EXPECT_EQ(elevator_status_proto_->elevator_actual_height(), 0.);
+  EXPECT_EQ(elevator_status_proto_->elevator_height(), 0.);
   EXPECT_NEAR(elevator_output_proto_->elevator_voltage(), 0., 1e-3);
 }
 
@@ -109,7 +109,7 @@ TEST_F(ElevatorControllerTest, Calibration) {
 
   EXPECT_TRUE(elevator_status_proto_->elevator_calibrated());
   EXPECT_TRUE(elevator_status_proto_->elevator_at_top());
-  EXPECT_NEAR(elevator_status_proto_->elevator_actual_height(),
+  EXPECT_NEAR(elevator_status_proto_->elevator_height(),
               c2018::score_subsystem::elevator::kElevatorMaxHeight, 1e-3);
   EXPECT_NEAR(elevator_status_proto_->elevator_unprofiled_goal(),
               c2018::score_subsystem::elevator::kElevatorMaxHeight, 1e-3);
@@ -133,7 +133,7 @@ TEST_F(ElevatorControllerTest, AllHeights) {
     EXPECT_NEAR(elevator_output_proto_->elevator_voltage(), 0, 12);
   }
 
-  EXPECT_NEAR(elevator_status_proto_->elevator_actual_height(), 0.6, 1e-3);
+  EXPECT_NEAR(elevator_status_proto_->elevator_height(), 0.6, 1e-3);
   EXPECT_NEAR(elevator_status_proto_->elevator_unprofiled_goal(), 0.6, 1e-3);
   EXPECT_NEAR(elevator_status_proto_->elevator_profiled_goal(), 0.6, 1e-3);
 
@@ -146,7 +146,7 @@ TEST_F(ElevatorControllerTest, AllHeights) {
   }
 
   EXPECT_TRUE(elevator_status_proto_->elevator_at_top());
-  EXPECT_NEAR(elevator_status_proto_->elevator_actual_height(),
+  EXPECT_NEAR(elevator_status_proto_->elevator_height(),
               c2018::score_subsystem::elevator::kElevatorMaxHeight, 1e-3);
   EXPECT_NEAR(elevator_status_proto_->elevator_unprofiled_goal(),
               c2018::score_subsystem::elevator::kElevatorMaxHeight, 1e-3);
@@ -160,7 +160,7 @@ TEST_F(ElevatorControllerTest, AllHeights) {
     EXPECT_NEAR(elevator_output_proto_->elevator_voltage(), 0, 12);
   }
 
-  EXPECT_NEAR(elevator_status_proto_->elevator_actual_height(), 0, 1e-3);
+  EXPECT_NEAR(elevator_status_proto_->elevator_height(), 0, 1e-3);
   EXPECT_NEAR(elevator_status_proto_->elevator_unprofiled_goal(), 0, 1e-3);
   EXPECT_NEAR(elevator_status_proto_->elevator_profiled_goal(), 0, 1e-3);
   SetGoal(0.3);
@@ -171,7 +171,7 @@ TEST_F(ElevatorControllerTest, AllHeights) {
     EXPECT_NEAR(elevator_output_proto_->elevator_voltage(), 0, 12);
   }
 
-  EXPECT_NEAR(elevator_status_proto_->elevator_actual_height(), 0.3, 1e-3);
+  EXPECT_NEAR(elevator_status_proto_->elevator_height(), 0.3, 1e-3);
   EXPECT_NEAR(elevator_status_proto_->elevator_unprofiled_goal(), 0.3, 1e-3);
   EXPECT_NEAR(elevator_status_proto_->elevator_profiled_goal(), 0.3, 1e-3);
 }
@@ -192,7 +192,7 @@ TEST_F(ElevatorControllerTest, EncoderFault) {
   }
 
   EXPECT_TRUE(elevator_status_proto_->elevator_encoder_fault_detected());
-  EXPECT_NEAR(elevator_status_proto_->elevator_actual_height(), 0, 1e-3);
+  EXPECT_NEAR(elevator_status_proto_->elevator_height(), 0, 1e-3);
 }
 
 TEST_F(ElevatorControllerTest, HeightTooHigh) {
@@ -210,7 +210,7 @@ TEST_F(ElevatorControllerTest, HeightTooHigh) {
     EXPECT_NEAR(elevator_output_proto_->elevator_voltage(), 0, 12);
   }
 
-  EXPECT_NEAR(elevator_status_proto_->elevator_actual_height(),
+  EXPECT_NEAR(elevator_status_proto_->elevator_height(),
               c2018::score_subsystem::elevator::kElevatorMaxHeight, 1e-3);
   EXPECT_NEAR(elevator_status_proto_->elevator_unprofiled_goal(),
               c2018::score_subsystem::elevator::kElevatorMaxHeight, 1e-3);
