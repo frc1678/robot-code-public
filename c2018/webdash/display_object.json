@@ -44,6 +44,12 @@
       }
     },
     {
+      "name": "Encouragement!",
+      "type": "encouragement",
+      "coordinates": [0, 0],
+      "should-title": false
+    },
+    {
       "name": "Link to Data Stream",
       "type": "link",
       "source": "\\data.html",

@@ -14,6 +14,7 @@
 
     var has_made_list = false;
 
+    // Creates a list of all queues with dropdown for messages
     function MakeList(data) {
       var text = "Click on any item to show all fields:<br/><ul id=\"lists\">";
       for (var key in data) {
@@ -27,16 +28,18 @@
 
     var video_streams = [];
 
+    // Updates list with new values
     function UpdateList(data) {
       for (var key in data) {
-	var keytext = "";
+	      var keytext = "";
         for (var element in data[key]) {
-	  keytext += "<li>" + element + " = " + data[key][element] + "</li>";
+	        keytext += "<li>" + element + " = " + data[key][element] + "</li>";
         }
-	document.getElementById(key).innerHTML = keytext;
+	    document.getElementById(key).innerHTML = keytext;
       }
     }
 
+    // Parses all queues
     datasock.onmessage = function(data) {
       var json_data = JSON.parse(data.data);
       if (!has_made_list) {
@@ -47,6 +50,7 @@
       }
     };
 
+    // Video list generated seperately
     videolistsock.onmessage = function(data) {
       var streams = JSON.parse(data.data);
       if (streams.length == 0) {
@@ -69,15 +73,17 @@
       videolistsock.send("ping");
     }
 
+    // Toggles whether something is shown, used for dropdowns
     function Toggle(node) {
-	var panel = document.getElementById(node);
-	if (panel.style.display == "block") {
-	  panel.style.display = "none";
-        } else {
-	  panel.style.display = "block";
-	}
+      var panel = document.getElementById(node);
+      if (panel.style.display == "block") {
+        panel.style.display = "none";
+      } else {
+        panel.style.display = "block";
+      }
     }
 
+    // Automatically reads from queues
     function ReadData() {
       datasock.send("ping");
     }

@@ -93,6 +93,8 @@
       var link_id = "";
       var alliance_color = "#000000";
       var other_alliance_color = "#000000";
+
+      // Get alliance color from driver station
       if (data["driver_station_status"]["alliance"] == 1) {
         alliance_color = "#ff0000";
         other_alliance_color = "#0000ff";
@@ -104,10 +106,14 @@
         coords = (widget["coordinates"][0]).toString() + "_" +
                  (widget["coordinates"][1]).toString();
         var source = null;
+
+        // Make reference to source, but only with widgets that need it
         if (widget["type"] != "image" && widget["type"] != "encouragement" &&
             widget["type"] != "auto" && widget["type"] != "link") {
           var source = data[widget["source"][0]][widget["source"][1]];
         }
+
+        // Create selectable auto list from JSON
         if (widget["type"] == "auto") {
           auto_id = "auto" + coords;
           html_string = "<div id=auto" + coords + "><p>Auto Mode:</p>";
@@ -136,6 +142,7 @@
             document.getElementById(coords).innerHTML = html_string;
           }
         }
+
         // Creates boolean widgets, colored box
         if (widget["type"] == "boolean") {
           box_id = "box" + coords;
@@ -211,6 +218,7 @@
               ".7;left:0px></div>";
         }
 
+        // Image (like camera stream)
         if (widget["type"] == "image") {
           image_id = "image" + coords;
           if (!document.getElementById(image_id)) {
@@ -222,11 +230,13 @@
               widget["source"] + "\"" + "alt=\"Unable to read stream\">";
         }
 
+        // Game specific string, depends on game and can't be generic
         if (widget["type"] == "gss") {
           gss_id = "gss" + coords;
           eval(widget["code"].join("\n"));
         }
 
+        // Link to other page
         if (widget["type"] == "link") {
           link_id = "link" + coords;
           if (!document.getElementById(link_id)) {
@@ -235,6 +245,7 @@
           }
         }
 
+        // Encouraging colorful messages for driver/operator
         if (widget["type"] == "encouragement") {
           encouragement_id = "encouragement" + coords;
           var encouragement_list = [
@@ -265,6 +276,7 @@
     }
     displaysock.onopen = function() { displaysock.send("ping"); }
 
+    // Toggles whether something is shown, used for dropdowns
     function Toggle(div) {
       if (div.style.display === "none") {
         div.style.display = "block";
