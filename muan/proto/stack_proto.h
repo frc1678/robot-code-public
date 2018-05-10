@@ -137,7 +137,7 @@ auto WriteTimestamp(T* message)
       std::chrono::duration_cast<std::chrono::milliseconds>(
           aos::monotonic_clock::now() - aos::monotonic_clock::epoch())
           .count() -
-      start_time);
+      (aos::time::UsingMockTime() ? 0 : start_time.load()));
 }
 
 // This secondary WriteTimestamp function makes it work if the message getting
@@ -149,7 +149,7 @@ auto WriteTimestamp(T* message) -> decltype(message->set_timestamp(0), void()) {
       std::chrono::duration_cast<std::chrono::milliseconds>(
           aos::monotonic_clock::now() - aos::monotonic_clock::epoch())
           .count() -
-      start_time);
+      (aos::time::UsingMockTime() ? 0 : start_time.load()));
 }
 
 }  // namespace proto

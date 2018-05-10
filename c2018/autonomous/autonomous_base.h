@@ -24,6 +24,8 @@ constexpr double kSwitchFrontX =
 class AutonomousBase {
  public:
   AutonomousBase();
+  inline static void set_simulation() { simulated_ = true; }
+  inline static bool is_simulated() { return simulated_; }
 
  protected:
   FRIEND_TEST(C2018AutonomousTest, PathDriveTransformsZeroInit);
@@ -117,6 +119,8 @@ class AutonomousBase {
   // origin (at time of power-on. i.e. "robot to field").
   Eigen::Transform<double, 2, Eigen::AffineCompact> transform_f0_;
   double theta_offset_ = 0.0;
+
+  static bool simulated_;
 };
 
 }  // namespace autonomous

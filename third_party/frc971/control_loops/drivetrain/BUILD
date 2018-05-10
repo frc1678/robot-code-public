@@ -112,7 +112,6 @@ cc_library(
     '//muan/logging:logger',
     '//muan/queues:queue_manager',
   ],
-  testonly = True,
 )
 
 cc_test(

@@ -247,6 +247,9 @@ bool AutonomousBase::HasCube() {
 }
 
 void AutonomousBase::WaitForCube() {
+  if (is_simulated()) {
+    return;
+  }
   while (!HasCube() && IsAutonomous()) {
     loop_.SleepUntilNext();
   }
@@ -392,6 +395,8 @@ void AutonomousBase::SetFieldPosition(double x, double y, double theta) {
   transform_f0_ = current_to_field * current_to_robot.inverse();
   theta_offset_ = status->estimated_heading() - theta;
 }
+
+bool AutonomousBase::simulated_ = false;
 
 }  // namespace autonomous
 

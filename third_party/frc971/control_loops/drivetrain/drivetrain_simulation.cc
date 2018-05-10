@@ -98,13 +98,13 @@ void DrivetrainSimulation::Simulate() {
   last_U_ = U;
 }
 
-void DrivetrainTest::SetUp()  {
+void SimulationRunner::StartMocktime()  {
   current_time_ = ::aos::monotonic_clock::epoch();
   ::aos::time::EnableMockTime(current_time_);
   ::aos::time::SetMockTime(current_time_);
 }
 
- DrivetrainTest::DrivetrainTest(DrivetrainConfig drivetrain_config,
+ SimulationRunner::SimulationRunner(DrivetrainConfig drivetrain_config,
                                 StateFeedbackPlant<4, 2, 2>&& drivetrain_plant)
       : goal_queue_(QueueManager<GoalProto>::Fetch()),
         input_queue_(QueueManager<InputProto>::Fetch()),
@@ -120,7 +120,7 @@ void DrivetrainTest::SetUp()  {
   muan::queues::ResetAllQueues();
 }
 
-void DrivetrainTest::BeginLogging(std::string dirname) {
+void SimulationRunner::BeginLogging(std::string dirname) {
   system(("mkdir -p " + dirname).c_str());
   system(("rm " + dirname + "/*.csv").c_str());
   logger_ = std::make_unique<muan::logging::Logger>(
@@ -133,7 +133,7 @@ void DrivetrainTest::BeginLogging(std::string dirname) {
   logger_->AddQueue("driver_station", driver_station_queue_);
 }
 
-void DrivetrainTest::RunIteration() {
+void SimulationRunner::RunIteration() {
   drivetrain_motor_plant_.SendPositionMessage();
   drivetrain_motor_.Update();
   drivetrain_motor_plant_.Simulate();
@@ -143,7 +143,7 @@ void DrivetrainTest::RunIteration() {
   }
 }
 
-void DrivetrainTest::RunForTime(const aos::monotonic_clock::duration run_for) {
+void SimulationRunner::RunForTime(const aos::monotonic_clock::duration run_for) {
   ::aos::time::SetMockTime(current_time_);
   const auto end_time = aos::monotonic_clock::now() + run_for;
   while (::aos::monotonic_clock::now() < end_time) {
@@ -151,7 +151,7 @@ void DrivetrainTest::RunForTime(const aos::monotonic_clock::duration run_for) {
   }
 }
 
-void DrivetrainTest::SimulateTimestep(bool enabled) {
+void SimulationRunner::SimulateTimestep(bool enabled) {
   {
     DriverStationProto ds_state;
     auto mode = enabled ? enable_mode_ : RobotMode::DISABLED;
@@ -179,6 +179,16 @@ void DrivetrainTest::VerifyNearGoal() {
   EXPECT_NEAR((*goal)->distance_command().right_goal(),
               drivetrain_motor_plant_.GetRightPosition(), 5e-3);
 }
+
+// Change these values to simulate a really awful drivetrain or one inconsistent
+// with the model. Theoretical values are currently uncommented,
+// sample "bad" values are in comments.
+double kSensorNoise = 0;  // 0.001;
+double kPositionNoise = 0;  // 0.001;
+double kVelocityNoise = 0;  // 0.001;
+double kVoltageScale = 1;  // 0.8;
+double kVelocityScale = 1;  // 1.1;
+double kVoltageLag = 0;  // 0.5;
 
 }  // namespace testing
 }  // namespace drivetrain

@@ -50,6 +50,8 @@ void SetMockTime(monotonic_clock::time_point now);
 void IncrementMockTime(monotonic_clock::duration amount);
 // Disables mocking time.
 void DisableMockTime();
+// Returns whether mocking time is enabled.
+bool UsingMockTime();
 
 // A nice structure for representing times.
 // 0 <= nsec_ < kNSecInSec should always be true. All functions here will make

@@ -14,14 +14,12 @@ namespace control_loops {
 namespace drivetrain {
 namespace testing {
 
-// Change these values to simuate a really awful drivetrain or one inconsistent
-// with the model
-double kSensorNoise = 0;  // 0.001;
-double kPositionNoise = 0;  // 0.001;
-double kVelocityNoise = 0;  // 0.001;
-double kVoltageScale = 1;  // 0.8;
-double kVelocityScale = 1;  // 1.1;
-double kVoltageLag = 0;  // 0.5;
+extern double kSensorNoise;
+extern double kPositionNoise;
+extern double kVelocityNoise;
+extern double kVoltageScale;
+extern double kVelocityScale;
+extern double kVoltageLag;
 
 class DrivetrainPlant : public StateFeedbackPlant<4, 2, 2> {
  public:
@@ -111,12 +109,20 @@ class DrivetrainSimulation {
   bool right_gear_high_ = false;
 };
 
-class DrivetrainTest : public ::testing::Test {
+class SimulationRunner {
  public:
-  DrivetrainTest(::frc971::control_loops::drivetrain::DrivetrainConfig drivetrain_config,
-                 StateFeedbackPlant<4, 2, 2>&& drivetrain_plant);
+  SimulationRunner(::frc971::control_loops::drivetrain::DrivetrainConfig drivetrain_config,
+                   StateFeedbackPlant<4, 2, 2>&& drivetrain_plant);
 
   void BeginLogging(::std::string dirname);
+
+  void StartMocktime();
+
+  void RunIteration();
+
+  void RunForTime(const aos::monotonic_clock::duration run_for);
+
+  void SimulateTimestep(bool enabled);
 
  protected:
   ::frc971::control_loops::drivetrain::GoalQueue* goal_queue_;
@@ -137,17 +143,19 @@ class DrivetrainTest : public ::testing::Test {
 
   RobotMode enable_mode_ = RobotMode::TELEOP;
 
-  void SetUp() override;
+  virtual ~SimulationRunner() {}
+};
 
-  void RunIteration();
+class DrivetrainTest : public ::testing::Test, public SimulationRunner {
+ public:
+  DrivetrainTest(::frc971::control_loops::drivetrain::DrivetrainConfig drivetrain_config,
+                 StateFeedbackPlant<4, 2, 2>&& drivetrain_plant)
+    : SimulationRunner(drivetrain_config, ::std::move(drivetrain_plant)) {}
 
-  void RunForTime(const aos::monotonic_clock::duration run_for);
-
-  void SimulateTimestep(bool enabled);
-
+ protected:
   void VerifyNearGoal();
 
-  virtual ~DrivetrainTest() {}
+  void SetUp() override { StartMocktime(); }
 };
 
 }  // namespace testing

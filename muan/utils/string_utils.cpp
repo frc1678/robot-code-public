@@ -1,3 +1,4 @@
+#include <sstream>
 #include "muan/utils/string_utils.h"
 
 namespace muan {
@@ -27,6 +28,21 @@ std::size_t CamelToSnake(const char* bytes_in, std::size_t num_bytes_in,
   }
   bytes_out[writer_idx] = '\0';
   return writer_idx;
+}
+
+template<typename Out>
+void split(const std::string &s, char delim, Out result) {
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        *(result++) = item;
+    }
+}
+
+std::vector<std::string> split(const std::string &s, char delim) {
+    std::vector<std::string> elems;
+    split(s, delim, std::back_inserter(elems));
+    return elems;
 }
 
 }  // namespace utils

@@ -81,6 +81,10 @@ const int32_t Time::kUSecInSec;
 
 const Time Time::kZero{0, 0};
 
+bool UsingMockTime() {
+  return mock_time_enabled;
+}
+
 void EnableMockTime(monotonic_clock::time_point now) {
   MutexLocker time_mutex_locker(&time_mutex);
   mock_time_enabled = true;

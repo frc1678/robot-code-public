@@ -14,7 +14,6 @@ cc_library(
         "//muan/logging:logger",
     ],
     visibility = ["//visibility:public"],
-    restricted_to = ["//tools:roborio"],
 )
 
 cc_library(
@@ -33,18 +32,17 @@ cc_library(
     visibility = ["//visibility:public"],
 )
 
-# TODO(Lyra): Make this work with updated framework
-"""cc_test(
+cc_binary(
     name = "autonomous_simulation",
     srcs = ["autonomous_simulation.cpp"],
     deps = [
         ":autonomous_runner",
-        "//third_party/google/googletest:googletest",
         "//third_party/frc971/control_loops/drivetrain:drivetrain_simulation",
+        "//muan/utils:string_utils",
         "//c2018/subsystems/drivetrain:drivetrain_base",
         "//c2018/subsystems/drivetrain:polydrivetrain_plants",
     ],
-)"""
+)
 
 cc_test(
     name = "autonomous_base_test",
@@ -63,7 +61,6 @@ cc_library(
         ":autonomous_base",
     ],
     visibility = ["//visibility:public"],
-    restricted_to = ["//tools:roborio"],
 )
 
 cc_library(
@@ -74,7 +71,6 @@ cc_library(
         ":autonomous_base",
     ],
     visibility = ["//visibility:public"],
-    restricted_to = ["//tools:roborio"],
 )
 
 cc_library(
@@ -85,7 +81,6 @@ cc_library(
         ":autonomous_base",
     ],
     visibility = ["//visibility:public"],
-    restricted_to = ["//tools:roborio"],
 )
 
 cc_library(
@@ -96,7 +91,6 @@ cc_library(
         ":autonomous_base",
     ],
     visibility = ["//visibility:public"],
-    restricted_to = ["//tools:roborio"],
 )
 
 cc_library(
