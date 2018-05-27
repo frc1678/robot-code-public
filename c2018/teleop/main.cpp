@@ -34,40 +34,45 @@ TeleopBase::TeleopBase()
       score_subsystem_status_queue_{
           QueueManager<ScoreSubsystemStatusProto>::Fetch()},
       lights_goal_queue_{QueueManager<LightsGoalProto>::Fetch()} {
+  // Climbing buttons - back and start
   hook_up_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::BACK));
   batter_down_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::START));
 
+  // Intake heights - D-pad
   height_0_ = gamepad_.MakePov(0, muan::teleop::Pov::kSouth);
   height_1_ = gamepad_.MakePov(0, muan::teleop::Pov::kEast);
   height_2_ = gamepad_.MakePov(0, muan::teleop::Pov::kNorth);
 
   request_cube_ = gamepad_.MakePov(0, muan::teleop::Pov::kWest);
 
-  front_ = gamepad_.MakeAxisRange(30, 150, 0, 1, 0.8);
-  back_ = gamepad_.MakeAxisRange(210, 330, 0, 1, 0.8);
+  // Scoring modes - left joystick
+  front_ = gamepad_.MakeAxisRange(15, 165, 0, 1, 0.8);
+  back_ = gamepad_.MakeAxisRange(195, 345, 0, 1, 0.8);
 
+  // Various intake type buttons
   intake_ = gamepad_.MakeAxis(3, 0.3);
   settle_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_CLICK_IN));
   intake_open_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_BUMPER));
   intake_close_ =
       gamepad_.MakeButton(uint32_t(muan::teleop::XBox::RIGHT_BUMPER));
 
+  // Outtake buttons
   outtake_slow_ = gamepad_.MakeAxis(2, 0.7);
   outtake_fast_ =
       gamepad_.MakeButton(uint32_t(muan::teleop::XBox::RIGHT_CLICK_IN));
 
+  // Scoring positions - A B X Y
   pos_0_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::A_BUTTON));
   pos_1_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::B_BUTTON));
   pos_2_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::X_BUTTON));
   pos_3_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::Y_BUTTON));
 
+  // Gear shifting - throttle buttons
   shifting_low_ = throttle_.MakeButton(4);
   shifting_high_ = throttle_.MakeButton(5);
 
+  // Quickturn - lever behind wheel on the left
   quickturn_ = wheel_.MakeButton(5);
-
-  // Default values
-  climber_goal_->set_climber_goal(c2018::climber::NONE);
 }
 
 void TeleopBase::operator()() {
@@ -95,7 +100,6 @@ void TeleopBase::Update() {
     SendScoreSubsystemMessage();
     SendClimbSubsystemMessage();
   }
-  SetReadableLogName();
 
   ScoreSubsystemStatusProto score_status;
   score_subsystem_status_queue_->ReadLastMessage(&score_status);
@@ -120,42 +124,16 @@ void TeleopBase::Update() {
   ds_sender_.Send();
 }
 
-void TeleopBase::SetReadableLogName() {
-  /*
-  if (DriverStation::GetInstance().GetMatchType() !=
-          DriverStation::MatchType::kNone && !log_name_set_) {
-    std::string name;
-    int match_num = DriverStation::GetInstance().GetMatchNumber();
-    std::string match_number = std::to_string(match_num);
-    // Figure out name for log file
-    switch (DriverStation::GetInstance().GetMatchType()) {
-      case DriverStation::MatchType::kNone:
-        name = "N" + match_number;
-        break;
-      case DriverStation::MatchType::kPractice:
-        name = "P" + match_number;
-        break;
-      case DriverStation::MatchType::kQualification:
-        name = "Q" + match_number;
-        break;
-      case DriverStation::MatchType::kElimination:
-        name = "E" + match_number;
-        break;
-    }
-    muan::logging::FileWriter::CreateReadableName(name);
-    log_name_set_ = true;
-  }
-  */
-}
-
 void TeleopBase::SendDrivetrainMessage() {
   using DrivetrainGoal = frc971::control_loops::drivetrain::GoalProto;
+
   DrivetrainGoal drivetrain_goal;
 
   double throttle = -throttle_.wpilib_joystick()->GetRawAxis(1);
   double wheel = -wheel_.wpilib_joystick()->GetRawAxis(0);
   bool quickturn = quickturn_->is_pressed();
 
+  // Shifting gears
   if (shifting_high_->was_clicked()) {
     high_gear_ = true;
   }
@@ -167,6 +145,7 @@ void TeleopBase::SendDrivetrainMessage() {
       high_gear_ ? frc971::control_loops::drivetrain::Gear::kHighGear
                  : frc971::control_loops::drivetrain::Gear::kLowGear);
 
+  // Drive controls
   drivetrain_goal->mutable_teleop_command()->set_steering(wheel);
   drivetrain_goal->mutable_teleop_command()->set_throttle(throttle);
   drivetrain_goal->mutable_teleop_command()->set_quick_turn(quickturn);
@@ -176,29 +155,28 @@ void TeleopBase::SendDrivetrainMessage() {
 
 void TeleopBase::SendScoreSubsystemMessage() {
   ScoreSubsystemGoalProto score_subsystem_goal;
+
+  // Default elevator/wrist and intake goals
   score_subsystem_goal->set_score_goal(c2018::score_subsystem::SCORE_NONE);
   score_subsystem_goal->set_intake_goal(c2018::score_subsystem::INTAKE_NONE);
 
-  // Godmode
+  // Godmode - enables operator to freely move elevator and wrist on command by
+  // adding values directly to the goal
   double godmode_elevator = -gamepad_.wpilib_joystick()->GetRawAxis(5);
   double godmode_wrist = gamepad_.wpilib_joystick()->GetRawAxis(4);
 
-  if (std::abs(godmode_elevator) > kGodmodeThreshold) {
+  if (std::abs(godmode_elevator) > kGodmodeButtonThreshold) {
     score_subsystem_goal->set_elevator_god_mode_goal(
-        (std::pow((std::abs(godmode_elevator) - kGodmodeThreshold) /
-                      (1 - kGodmodeThreshold),
-                  2) *
+        (std::pow((std::abs(godmode_elevator) - kGodmodeButtonThreshold), 2) *
          kGodmodeElevatorMultiplier * (godmode_elevator > 0 ? 1 : -1)));
   }
-  if (std::abs(godmode_wrist) > kGodmodeThreshold) {
+  if (std::abs(godmode_wrist) > kGodmodeButtonThreshold) {
     score_subsystem_goal->set_wrist_god_mode_goal(
-        (std::pow((std::abs(godmode_wrist) - kGodmodeThreshold) /
-                      (1 - kGodmodeThreshold),
-                  2) *
+        (std::pow((std::abs(godmode_wrist) - kGodmodeButtonThreshold), 2) *
          kGodmodeWristMultiplier * (godmode_wrist > 0 ? 1 : -1)));
   }
 
-  // Elevator heights + intakes
+  // Intake heights for ground and pyramid
   if (height_0_->is_pressed()) {
     score_subsystem_goal->set_score_goal(c2018::score_subsystem::INTAKE_0);
   } else if (height_1_->is_pressed()) {
@@ -273,14 +251,14 @@ void TeleopBase::SendScoreSubsystemMessage() {
   score_subsystem_goal_queue_->WriteMessage(score_subsystem_goal);
 }
 
-void TeleopBase::SendClimbSubsystemMessage() {
+void TeleopBase::SendClimbSubsystemMessage() {  // Climbing procedure
   if (hook_up_->is_pressed() && !batter_down_->is_pressed()) {
     climber_goal_->set_climber_goal(c2018::climber::APPROACHING);
   } else if (!hook_up_->is_pressed() && batter_down_->is_pressed()) {
     climber_goal_->set_climber_goal(c2018::climber::BATTERING);
   } else if (hook_up_->is_pressed() && batter_down_->is_pressed()) {
     climber_goal_->set_climber_goal(c2018::climber::CLIMBING);
-  } else {
+  } else {  // During teleop or after successful climb
     climber_goal_->set_climber_goal(c2018::climber::NONE);
   }
 

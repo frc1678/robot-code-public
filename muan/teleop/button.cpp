@@ -32,6 +32,7 @@ void PovButton::Update() {
                  static_cast<int>(pov_position_));
 }
 
+// Custom button bounded to a range defined by a minimum and maximum
 PovRange::PovRange(Joystick* joystick, uint32_t button, double minimum,
                    double maximum)
     : Button(joystick, button), minimum_(minimum), maximum_(maximum) {}
@@ -55,28 +56,41 @@ void AxisButton::Update() {
                      trigger_threshold_);
 }
 
+// Custom button bounded to a range defined by a minimum and maximum
 AxisRange::AxisRange(Joystick* joystick, double minimum, double maximum,
-                     double xaxis, double yaxis, double threshold)
-    : Button(joystick, xaxis),
+                     double x_axis, double y_axis, double threshold)
+    : Button(joystick, x_axis),
       minimum_(minimum),
       maximum_(maximum),
-      yaxis_(yaxis),
+      y_axis_(y_axis),
       threshold_(threshold) {}
 
 void AxisRange::Update() {
-  double xaxis = joystick_->wpilib_joystick()->GetRawAxis(id_);
-  double yaxis = joystick_->wpilib_joystick()->GetRawAxis(yaxis_);
-  double axis_in_degrees = (atan2(yaxis, xaxis)) * (180 / M_PI);
-  if (axis_in_degrees > -90 && axis_in_degrees < 180) {  // conform to wpilib
+  // Get x and y position of button
+  double x_axis = joystick_->wpilib_joystick()->GetRawAxis(id_);
+  double y_axis = joystick_->wpilib_joystick()->GetRawAxis(y_axis_);
+
+  // Pythagorean theorem to determine button magnitude
+  double magnitude = sqrt((x_axis * x_axis) + (y_axis * y_axis));
+
+  // Simple trig to determine button angle
+  double axis_in_degrees = (atan2(y_axis, x_axis)) * (180 / M_PI);
+
+  // Conform to wpilib's angle system
+  if (axis_in_degrees > -90 && axis_in_degrees < 180) {
     axis_in_degrees += 90;
   } else {
     axis_in_degrees += 450;
   }
+
   bool axis_in_range =
       (axis_in_degrees > minimum_ && axis_in_degrees < maximum_);
   bool past_threshold =
-      (xaxis * xaxis) + (yaxis * yaxis) > (threshold_ * threshold_);
-  Button::Update(axis_in_range && past_threshold);
+      (x_axis * x_axis) + (y_axis * y_axis) > (threshold_ * threshold_);
+
+  // If button is in the angle range and above threshold then it is pressed
+  // It needs (magnitude > 0.1) as a condition because sketchy Xbox controller
+  Button::Update(axis_in_range && past_threshold && (magnitude > 0.1));
 }
 
 }  // namespace teleop

@@ -40,7 +40,7 @@ class Joystick {
                                      double maximum);
   muan::teleop::Button* MakeAxis(uint32_t button, double threshold);
   muan::teleop::Button* MakeAxisRange(double minimum, double maximum,
-                                      double xaxis, double yaxis,
+                                      double x_axis, double y_axis,
                                       double threshold);
 
   ::Joystick* wpilib_joystick();

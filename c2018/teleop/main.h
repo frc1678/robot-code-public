@@ -18,10 +18,6 @@ namespace teleop {
 
 constexpr int kNumRumbleTicks = 25;
 
-constexpr double kGodmodeElevatorMultiplier = 6;  // tentative
-constexpr double kGodmodeWristMultiplier = 10;    // tentative
-constexpr double kGodmodeThreshold = .25;         // tentative
-
 class TeleopBase {
  public:
   TeleopBase();
@@ -35,13 +31,15 @@ class TeleopBase {
   // Runs at ~200hz
   void Update();
 
-  void SetReadableLogName();
-
   void SendDrivetrainMessage();
   void SendScoreSubsystemMessage();
   void SendClimbSubsystemMessage();
 
-  muan::teleop::Joystick throttle_, wheel_, gamepad_;
+  // Driving controls
+  muan::teleop::Joystick throttle_, wheel_;
+
+  // Operator controls
+  muan::teleop::Joystick gamepad_;
 
   bool high_gear_;
   muan::teleop::Button *shifting_high_, *shifting_low_;
@@ -61,22 +59,27 @@ class TeleopBase {
   muan::teleop::Button *front_, *back_;
   muan::teleop::Button *pos_0_, *pos_1_, *pos_2_, *pos_3_;
 
-  bool god_mode_ = false;
-
+  // Self-explanatory
   muan::wpilib::DriverStationSender ds_sender_;
-
-  bool log_name_set_ = false;
 
   c2018::climber::ClimberGoalProto climber_goal_;
 
   c2018::climber::ClimberGoalQueue *climber_goal_queue_;
   c2018::score_subsystem::ScoreSubsystemGoalQueue *score_subsystem_goal_queue_;
+
   c2018::score_subsystem::ScoreSubsystemStatusQueue
       *score_subsystem_status_queue_;
+
   c2018::lights::LightsGoalQueue *lights_goal_queue_;
 
   int rumble_ticks_left_ = 0;
+
   bool had_cube_ = false;
+
+  // Godmode constants
+  double kGodmodeElevatorMultiplier = 6;
+  double kGodmodeWristMultiplier = 10;
+  double kGodmodeButtonThreshold = .25;
 };
 
 }  // namespace teleop

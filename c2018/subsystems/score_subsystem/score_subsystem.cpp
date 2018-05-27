@@ -178,6 +178,7 @@ void ScoreSubsystem::SetGoal(const ScoreSubsystemGoalProto& goal) {
       break;
   }
 
+  // Godmode
   elevator_height_ += goal->elevator_god_mode_goal() * 0.005;
   wrist_angle_ += goal->wrist_god_mode_goal() * 0.005;
 
