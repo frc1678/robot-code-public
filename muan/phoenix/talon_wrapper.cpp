@@ -107,7 +107,7 @@ void TalonWrapper::LoadConfig(Config config) {
 }
 
 void TalonWrapper::SetOpenloopGoal(double setpoint) {  // Voltage
-  talon_.Set(ControlMode::PercentOutput, setpoint / 12.);
+  talon_.Set(ControlMode::PercentOutput, setpoint / config_.max_voltage);
 }
 
 void TalonWrapper::SetPositionGoal(double setpoint,
@@ -118,20 +118,21 @@ void TalonWrapper::SetPositionGoal(double setpoint,
 
 void TalonWrapper::SetVelocityGoal(double setpoint,
                                    double setpoint_ff) {  // Velocity, Voltage
-  talon_.Set(ControlMode::Velocity, setpoint * conversion_factor_,
+  talon_.Set(ControlMode::Velocity, setpoint * conversion_factor_ * 100 * ms,
              DemandType_ArbitraryFeedForward, setpoint_ff * kTalonOutput);
 }
 
 void TalonWrapper::SetGains(Gains gains, int slot) {
-  talon_.Config_kP(slot, gains.p * kTalonOutput / conversion_factor_,
+  talon_.Config_kP(slot, gains.p * kTalonOutput * conversion_factor_,
                    kTalonSetupTimeout);
-  talon_.Config_kI(
-      slot, gains.i * kTalonOutput / conversion_factor_ * muan::units::ms,
-      kTalonSetupTimeout);
-  talon_.Config_kD(
-      slot, gains.d * kTalonOutput / conversion_factor_ / muan::units::ms,
-      kTalonSetupTimeout);
-  talon_.Config_kF(slot, gains.f * kTalonOutput / conversion_factor_,
+
+  talon_.Config_kI(slot, gains.i * kTalonOutput * conversion_factor_ / ms,
+                   kTalonSetupTimeout);
+
+  talon_.Config_kD(slot, gains.d * kTalonOutput * conversion_factor_ * ms,
+                   kTalonSetupTimeout);
+
+  talon_.Config_kF(slot, gains.f * kTalonOutput * conversion_factor_,
                    kTalonSetupTimeout);
 
   talon_.ConfigMaxIntegralAccumulator(slot, gains.max_integral,

@@ -2,6 +2,7 @@
 #define MUAN_PHOENIX_TALON_WRAPPER_H_
 
 #include "ctre/Phoenix.h"
+#include "muan/units/units.h"
 
 namespace muan {
 namespace phoenix {
@@ -9,6 +10,8 @@ namespace phoenix {
 constexpr int kTalonSetupTimeout = 100;
 constexpr int kTalonRegularTimeout = 10;
 constexpr int kTalonOutput = 1023. / 12.;  // Per volt
+
+using muan::units::ms;
 
 enum class FeedbackSensor {
   kMagEncoderRelative,
@@ -88,8 +91,14 @@ class TalonWrapper {
   // Getters
   inline int id() { return talon_.GetDeviceID(); }
   inline Config config() { return config_; }
-  inline double position() { return talon_.GetSelectedSensorPosition(0); }
-  inline double velocity() { return talon_.GetSelectedSensorVelocity(0); }
+  inline double position() {
+    return talon_.GetSelectedSensorPosition(0) / conversion_factor_;
+  }
+  inline double velocity() {
+    return talon_.GetSelectedSensorVelocity(0) /
+           (conversion_factor_ * 100 * ms);
+  }
+
   inline double voltage() { return talon_.GetMotorOutputVoltage(); }
   inline double percent() { return talon_.GetMotorOutputPercent(); }
   inline double current() { return talon_.GetOutputCurrent(); }
