@@ -128,39 +128,85 @@ void Trajectory::SetPath(const Path &path, const State &state,
 }
 
 void Trajectory::ConstrainOneSide(double distance, double next_distance,
-                                  double input_velocity, double other_input_velocity,
-                                  double output_velocity_from_other_pass, double *output_velocity,
-                                  bool reverse_pass, bool preserve_other_pass) const {
-  double unforced_acceleration = A_(1, 1) * input_velocity + A_(1, 3) * other_input_velocity;
-  if (reverse_pass) {
-    unforced_acceleration *= -1;
-  }
-  double input_acceleration = (B_(1, 0) + B_(1, 1)) * maximum_voltage_;
-
-  double min_acceleration = ::std::max(-maximum_acceleration_, unforced_acceleration - input_acceleration);
-  double max_acceleration = ::std::min(maximum_acceleration_, unforced_acceleration + input_acceleration);
-
+                                  double input_velocity,
+                                  double max_accel_voltage_same,
+                                  double max_accel_voltage_other,
+                                  double min_accel_voltage_same,
+                                  double min_accel_voltage_other,
+                                  double output_velocity_from_other_pass,
+                                  double *output_velocity,
+                                  bool preserve_other_pass,
+                                  double opposite_accel_ratio) const {
   // Going in one direction, calculate things normally
   if ((distance >= 0 && next_distance >= 0) ||
       (distance <= 0 && next_distance <= 0)) {
-    double min_output_velocity = StepVelocityByAcceleration(distance, input_velocity, min_acceleration);
 
-    double max_output_velocity = StepVelocityByAcceleration(distance, input_velocity, max_acceleration);
-
-    if (preserve_other_pass) {
-      min_output_velocity = ::std::max(min_output_velocity, output_velocity_from_other_pass);
-      max_output_velocity = ::std::min(max_output_velocity, output_velocity_from_other_pass);
+    if (::std::abs(opposite_accel_ratio) > 3.0) {
+      // Accel ratio is basically just to prevent both sides from ignoring
+      // the other. If one side is much slower, though, it doesn't do any
+      // good to limit that side further, since the time comparison will
+      // fix it. If the difference is large enough, it actually slows down
+      // both sides way more than necessary.
+      opposite_accel_ratio = opposite_accel_ratio > 0 ? 3.0 : -3.0;
     }
 
+    // a_opposite = k * a_same
+    // a = c*B*u = c*[b d; d b]*u, assumming segment is an arc
+    // u = c*invB*a = c*[b -d; -d b]*[a_same; k*a_same]
+    //   = c*[b*a_same-d*k*a_same; -d*a_same+b*k*a_same]
+    //   = c*[b-d*k; -d+b*k]
+    // u_opposite = (b*k-d)/(b-d*k) * u_same
+    double accel_voltage_ratio = (B_(1, 0) * opposite_accel_ratio - B_(1, 1)) /
+                                 (B_(1, 0) - B_(1, 1) * opposite_accel_ratio);
+
     if (distance < 0) {
+      min_accel_voltage_same =
+            ::std::min(min_accel_voltage_same,
+                       ::std::abs(min_accel_voltage_other / accel_voltage_ratio));
+
+      double min_acceleration = (B_(1, 0) + B_(1, 1) * accel_voltage_ratio) *
+            min_accel_voltage_same;
+      if (min_acceleration > 0) {
+        min_acceleration = -min_acceleration;
+      }
+      min_acceleration =
+            ::std::min(maximum_acceleration_,
+                       ::std::max(-maximum_acceleration_, min_acceleration));
+
+      double min_output_velocity =
+            StepVelocityByAcceleration(distance, input_velocity, min_acceleration);
+      if (preserve_other_pass) {
+        min_output_velocity = ::std::max(min_output_velocity,
+                                         output_velocity_from_other_pass);
+      }
       *output_velocity = min_output_velocity;
     } else {
+      max_accel_voltage_same =
+            ::std::min(max_accel_voltage_same,
+                       ::std::abs(max_accel_voltage_other / accel_voltage_ratio));
+
+      double max_acceleration = (B_(1, 0) + B_(1, 1) * accel_voltage_ratio) *
+            max_accel_voltage_same;
+      if (max_acceleration < 0) {
+        max_acceleration = -max_acceleration;
+      }
+      max_acceleration =
+            ::std::min(maximum_acceleration_,
+                       ::std::max(-maximum_acceleration_, max_acceleration));
+
+      double max_output_velocity =
+            StepVelocityByAcceleration(distance, input_velocity, max_acceleration);
+      if (preserve_other_pass) {
+        max_output_velocity = ::std::min(max_output_velocity,
+                                         output_velocity_from_other_pass);
+      }
       *output_velocity = max_output_velocity;
     }
   } else {
     // On the first pass this will cause an abrupt drop in speed of one
     // side. This is fine since the second pass will fix it.
-    *output_velocity = VelocityAtDirectionChange(distance, next_distance, maximum_acceleration_);
+    *output_velocity = VelocityAtDirectionChange(distance, next_distance,
+                                                 maximum_acceleration_);
   }
 }
 
@@ -179,10 +225,45 @@ void Trajectory::ConstrainAcceleration(const State &input_state, State *output_s
     distance_right *= -1;
     distance_next_right *= -1;
   }
-  ConstrainOneSide(distance_left, distance_next_left, input_state(1), input_state(3),
-                   (*output_state)(1), &(*output_state)(1), reverse_pass, preserve_other_pass);
-  ConstrainOneSide(distance_right, distance_next_right, input_state(3), input_state(1),
-                   (*output_state)(3), &(*output_state)(3), reverse_pass, preserve_other_pass);
+
+  double max_accel_voltage_left;
+  double max_accel_voltage_right;
+  double min_accel_voltage_left;
+  double min_accel_voltage_right;
+  {
+    double unforced_acceleration_left =
+          A_(1, 1) * input_state(1) + A_(1, 3) * input_state(3);
+    double unforced_acceleration_right =
+          A_(1, 1) * input_state(3) + A_(1, 3) * input_state(1);
+
+    // Bu = -Ax
+    // u = invB*(-unforced) = [b -d; -d b]/(b^2-b^2)*(-unforced)
+    double holding_left = (unforced_acceleration_right * B_(1, 1) -
+                           unforced_acceleration_left * B_(1, 0)) * invB_scale_;
+    double holding_right = (unforced_acceleration_left * B_(1, 1) -
+                            unforced_acceleration_right * B_(1, 0)) * invB_scale_;
+    if (reverse_pass) {
+      holding_left = -holding_left;
+      holding_right = -holding_right;
+    }
+
+    max_accel_voltage_left = maximum_voltage_ - holding_left;
+    max_accel_voltage_right = maximum_voltage_ - holding_right;
+    min_accel_voltage_left = -maximum_voltage_ - holding_left;
+    min_accel_voltage_right = -maximum_voltage_ - holding_right;
+  }
+
+  // Assume segment is an arc, so aL/aR = xL/xR
+  ConstrainOneSide(distance_left, distance_next_left, input_state(1),
+                   max_accel_voltage_left, max_accel_voltage_right,
+                   min_accel_voltage_left, min_accel_voltage_right,
+                   (*output_state)(1), &(*output_state)(1), preserve_other_pass,
+                   distance_right / distance_left);
+  ConstrainOneSide(distance_right, distance_next_right, input_state(3),
+                   max_accel_voltage_right, max_accel_voltage_left,
+                   min_accel_voltage_right, min_accel_voltage_left,
+                   (*output_state)(3), &(*output_state)(3), preserve_other_pass,
+                   distance_left / distance_right);
 
   double time_left = distance_left * 2 / (input_state(1) + (*output_state)(1));
   double time_right = distance_right * 2 / (input_state(3) + (*output_state)(3));

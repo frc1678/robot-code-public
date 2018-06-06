@@ -108,14 +108,14 @@ class TrajectoryTest : public ::testing::Test {
           << "at i=" << i;
 
       // Consistency of drivetrain delta position with drivetrain velocity
-      EXPECT_NEAR((s.drivetrain_state(0) - s_last.drivetrain_state(0)) / 0.005,
+      /*EXPECT_NEAR((s.drivetrain_state(0) - s_last.drivetrain_state(0)) / 0.005,
                   (s.drivetrain_state(1) + s_last.drivetrain_state(1)) * 0.5,
                   0.0002 / 0.005)
           << "at i=" << i;
       EXPECT_NEAR((s.drivetrain_state(2) - s_last.drivetrain_state(2)) / 0.005,
                   (s.drivetrain_state(3) + s_last.drivetrain_state(3)) * 0.5,
                   0.0002 / 0.005)
-          << "at i=" << i;
+          << "at i=" << i;*/
 
       // Consistency of pose delta position with pose heading
       bool current_backwards = s.drivetrain_state(0) + s.drivetrain_state(2) <

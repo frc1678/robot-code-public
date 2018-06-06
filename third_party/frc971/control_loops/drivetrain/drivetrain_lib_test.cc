@@ -373,8 +373,8 @@ TEST_F(Y2016DrivetrainTest, PathDrive) {
     auto maybe_status = status_queue_->ReadLastMessage();
     ASSERT_TRUE(maybe_status);
     ::frc971::control_loops::drivetrain::StatusProto status = *maybe_status;
-    EXPECT_NEAR(status->estimated_x_position(), 1.0, 1e-1);
-    EXPECT_NEAR(status->estimated_y_position(), 1.0, 1e-1);
+    EXPECT_NEAR(status->estimated_x_position(), 1.0, 1e-2);
+    EXPECT_NEAR(status->estimated_y_position(), 1.0, 1e-2);
     EXPECT_NEAR(status->estimated_heading(), 0.0, 1e-2);
   }
 }
@@ -406,9 +406,9 @@ TEST_F(Y2016DrivetrainTest, TransitionToPath) {
     auto maybe_status = status_queue_->ReadLastMessage();
     ASSERT_TRUE(maybe_status);
     ::frc971::control_loops::drivetrain::StatusProto status = *maybe_status;
-    EXPECT_NEAR(status->estimated_x_position(), 2.2, 1e-1);
-    EXPECT_NEAR(status->estimated_y_position(), 3.62, 1e-1);
-    EXPECT_NEAR(status->estimated_heading(), -0.628, 1e-2);
+    EXPECT_NEAR(status->estimated_x_position(), 2.2, 5e-2);
+    EXPECT_NEAR(status->estimated_y_position(), 3.62, 5e-2);
+    EXPECT_NEAR(status->estimated_heading(), -0.628, 1.5e-2);
   }
 }
 

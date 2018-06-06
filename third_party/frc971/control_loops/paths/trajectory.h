@@ -51,6 +51,7 @@ class Trajectory {
                          double radius) {
     A_ = A_c;
     B_ = B_c;
+    invB_scale_ = 1 / (B_(1, 0) * B_(1, 0) - B_(1, 1) * B_(1, 1));
     radius_ = radius;
   }
 
@@ -65,15 +66,22 @@ class Trajectory {
                              double *segment_time, bool reverse_pass, bool preserve_other_pass) const;
 
   void ConstrainOneSide(double distance, double next_distance,
-                        double velocity_initial, double velocity_other_initial,
-                        double velocity_final_from_other_pass, double *velocity_final,
-                        bool reverse_pass, bool preserve_other_pass) const;
+                        double velocity_initial,
+                        double max_accel_voltage_same,
+                        double max_accel_voltage_other,
+                        double min_accel_voltage_same,
+                        double min_accel_voltage_other,
+                        double velocity_final_from_other_pass,
+                        double *velocity_final,
+                        bool preserve_other_pass,
+                        double opposite_accel_ratio) const;
 
   double maximum_acceleration_;
   double maximum_voltage_;
 
   Eigen::Matrix<double, 4, 4> A_;
   Eigen::Matrix<double, 4, 2> B_;
+  double invB_scale_;
   double radius_;
 
   // The index of the last _segment_ that was used. This segment might be used
