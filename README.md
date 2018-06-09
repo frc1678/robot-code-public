@@ -18,7 +18,7 @@ The code for specific robots is in a directory starting with either the letter "
 We use [bazel](https://bazel.io) to build our code. You must be running linux to use bazel. A typical bazel build command would look like this:
 
 ```
-bazel build //o2016 --cpu=roborio
+bazel build //o2016:frc1678 --cpu=roborio
 ```
 
 You should also test anything that you change:
