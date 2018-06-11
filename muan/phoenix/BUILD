@@ -12,3 +12,16 @@ cc_library(
         "//third_party/phoenixsuite:phoenix",
     ],
 )
+
+cc_library(
+    name = "victor_wrapper",
+    srcs = [
+        "victor_wrapper.cpp",
+    ],
+    hdrs = ["victor_wrapper.h"],
+    restricted_to = ["//tools:roborio"],
+    deps = [
+        "//muan/units",
+        "//third_party/phoenixsuite:phoenix",
+    ]
+)
