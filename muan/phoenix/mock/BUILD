@@ -6,12 +6,10 @@ cc_library(
         "talon_wrapper.cpp",
     ],
     hdrs = ["talon_wrapper.h"],
-    includes = ["."],
-    restricted_to = ["//tools:roborio"],
     deps = [
         "//muan/units",
-        "//third_party/phoenixsuite:phoenix",
     ],
+    includes = ["."],
 )
 
 cc_library(
@@ -20,10 +18,26 @@ cc_library(
         "victor_wrapper.cpp",
     ],
     hdrs = ["victor_wrapper.h"],
-    includes = ["."],
-    restricted_to = ["//tools:roborio"],
     deps = [
         "//muan/units",
-        "//third_party/phoenixsuite:phoenix",
+    ],
+    includes = ["."],
+)
+
+cc_test(
+    name = "talon_wrapper_test",
+    srcs = ["talon_wrapper_test.cpp"],
+    deps = [
+        ":talon_wrapper",
+        "//third_party/google/googletest",
+    ],
+)
+
+cc_test(
+    name = "victor_wrapper_test",
+    srcs = ["victor_wrapper_test.cpp"],
+    deps = [
+        ":victor_wrapper",
+        "//third_party/google/googletest",
     ],
 )
