@@ -1,5 +1,4 @@
 # 1678 Robot Code
-[![Jenkins](http://1678.ucdavis.edu:8080/buildStatus/icon?job=robot-code)](http://1678.ucdavis.edu:8080/job/robot-code)
 [![Buildkite](https://badge.buildkite.com/f8ab8cc73e5ea894cabdbf5d53b97cbaee3665dc043dbc2231.svg)](https://buildkite.com/citrus-circuits/robot-code)
 
 This repository holds all of our robot code, starting from the 2016 offseason.
