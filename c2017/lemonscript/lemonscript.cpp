@@ -58,33 +58,33 @@ void Lemonscript::UpdateAutoRoutine() {
   auto_list = c2017::QueueManager::GetInstance()->auto_list_;
   std::string filename = "none.auto";
   if (message) {
-    if (message.value()->auto_mode() == auto_list[0]) {
+    if (message.value()->auto_modes() == auto_list[0]) {
       filename = "none.auto";
-    } else if (message.value()->auto_mode() == auto_list[1]) {
+    } else if (message.value()->auto_modes() == auto_list[1]) {
       filename = "blue_hella_kpa.auto";
-    } else if (message.value()->auto_mode() == auto_list[2]) {
+    } else if (message.value()->auto_modes() == auto_list[2]) {
       filename = "blue_hella_kpa_new.auto";
-    } else if (message.value()->auto_mode() == auto_list[3]) {
+    } else if (message.value()->auto_modes() == auto_list[3]) {
       filename = "blue_hella_kpa_plus_gear.auto";
-    } else if (message.value()->auto_mode() == auto_list[4]) {
+    } else if (message.value()->auto_modes() == auto_list[4]) {
       filename = "blue_center_peg_plus_kpa.auto";
-    } else if (message.value()->auto_mode() == auto_list[5]) {
+    } else if (message.value()->auto_modes() == auto_list[5]) {
       filename = "blue_center_peg_plus_kpa_and_drive.auto";
-    } else if (message.value()->auto_mode() == auto_list[6]) {
+    } else if (message.value()->auto_modes() == auto_list[6]) {
       filename = "blue_far_peg_plus_kpa_and_drive.auto";
-    } else if (message.value()->auto_mode() == auto_list[7]) {
+    } else if (message.value()->auto_modes() == auto_list[7]) {
       filename = "red_hella_kpa.auto";
-    } else if (message.value()->auto_mode() == auto_list[8]) {
+    } else if (message.value()->auto_modes() == auto_list[8]) {
       filename = "red_hella_kpa_new.auto";
-    } else if (message.value()->auto_mode() == auto_list[9]) {
+    } else if (message.value()->auto_modes() == auto_list[9]) {
       filename = "red_hella_kpa_plus_gear.auto";
-    } else if (message.value()->auto_mode() == auto_list[10]) {
+    } else if (message.value()->auto_modes() == auto_list[10]) {
       filename = "red_center_peg_plus_kpa.auto";
-    } else if (message.value()->auto_mode() == auto_list[11]) {
+    } else if (message.value()->auto_modes() == auto_list[11]) {
       filename = "red_center_peg_plus_kpa_and_drive.auto";
-    } else if (message.value()->auto_mode() == auto_list[12]) {
+    } else if (message.value()->auto_modes() == auto_list[12]) {
       filename = "red_far_peg_plus_kpa_and_drive.auto";
-    } else if (message.value()->auto_mode() == auto_list[13]) {
+    } else if (message.value()->auto_modes() == auto_list[13]) {
       filename = "two_gear.auto";
     } else {
       filename = "none.auto";

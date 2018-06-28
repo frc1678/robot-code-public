@@ -93,6 +93,7 @@ class Logger {
 
   class GenericReader {
    public:
+    virtual ~GenericReader() = default;
     virtual std::experimental::optional<std::string> GetMessageAsCSV(
         bool header) = 0;
   };

@@ -16,7 +16,8 @@ then
 fi
 
 bazel test //... --test_output=errors -- $no_third_party $no_wpilib $no_tools $host_extra_excludes
-bazel build //... --cpu=roborio -c opt -- $no_third_party $no_vision $no_tests $no_tools
+bazel build //... -- $no_third_party $no_vision $no_tests $no_tools
+bazel build //... --cpu=roborio -- $no_third_party $no_vision $no_tests $no_tools
 ./cpplint/run-cpplint.sh
 
 # If "--show-formatting" is present in any arguments

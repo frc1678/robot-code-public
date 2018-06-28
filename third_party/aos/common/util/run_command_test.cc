@@ -29,13 +29,6 @@ TEST(RunCommandTest, CommandNotFound) {
   EXPECT_EQ(127, WEXITSTATUS(result));
 }
 
-TEST(RunCommandTest, KilledBySignal) {
-  int result = RunCommand("kill -QUIT $$");
-  ASSERT_NE(-1, result);
-  ASSERT_TRUE(WIFSIGNALED(result));
-  EXPECT_EQ(SIGQUIT, WTERMSIG(result));
-}
-
 TEST(RunCommandTest, MultipleThreads) {
   int result1, result2;
   util::FunctionThread t1([&result1](util::Thread *) {

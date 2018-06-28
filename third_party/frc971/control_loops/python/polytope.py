@@ -21,7 +21,7 @@ def _PiecewiseConcat(*args):
 
   Given ['a', 's'] and ['d', 'f'], returns ['ad', 'sf']
   """
-  return map(''.join, zip(*args))
+  return list(map(''.join, zip(*args)))
 
 
 def _SplitAndPad(s):
@@ -217,7 +217,7 @@ class HPolytope(object):
     """Builds an array of strings with the comparison in it for printing."""
     cmp_strings = []
     for index in range(height):
-      if index == (height - 1) / 2:
+      if index == math.floor((height - 1) / 2):
         cmp_strings.append("<= ")
       else:
         cmp_strings.append("   ")

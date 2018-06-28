@@ -41,6 +41,7 @@ class WebDashRunner {
 
   class GenericReader {
    public:
+    virtual ~GenericReader() = default;
     virtual std::experimental::optional<std::string> GetMessageAsJSON() = 0;
   };
 
