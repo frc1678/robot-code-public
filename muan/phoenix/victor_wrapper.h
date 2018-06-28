@@ -102,9 +102,12 @@ class VictorWrapper {
   inline double voltage() { return victor_.GetMotorOutputVoltage(); }
   inline double percent() { return victor_.GetMotorOutputPercent(); }
   inline double current() { return victor_.GetOutputCurrent(); }
+  inline VictorSPX* victor() { return &victor_; }
+
+ protected:
+  VictorSPX victor_;
 
  private:
-  VictorSPX victor_;
   Config config_;
 
   double conversion_factor_;  // native / actual

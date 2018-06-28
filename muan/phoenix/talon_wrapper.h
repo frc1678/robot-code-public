@@ -102,9 +102,12 @@ class TalonWrapper {
   inline double voltage() { return talon_.GetMotorOutputVoltage(); }
   inline double percent() { return talon_.GetMotorOutputPercent(); }
   inline double current() { return talon_.GetOutputCurrent(); }
+  inline TalonSRX* talon() { return &talon_; }
+
+ protected:
+  TalonSRX talon_;
 
  private:
-  TalonSRX talon_;
   Config config_;
 
   double conversion_factor_;  // native / actual
