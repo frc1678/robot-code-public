@@ -62,6 +62,7 @@ class DrivetrainAction {
       DrivetrainProperties properties,
       frc971::control_loops::drivetrain::GoalQueue* goal_queue,
       frc971::control_loops::drivetrain::StatusQueue* status_queue);
+  virtual ~DrivetrainAction() = default;
 
   // Execute the specified profile
   void ExecuteDrive(DrivetrainActionParams params);

@@ -14,6 +14,7 @@
 namespace lemonscript {
     class BaseAutoFunction {
     public:
+        virtual ~BaseAutoFunction() = default;
         virtual bool Init(std::vector<void *>) = 0;
         virtual bool Periodic(std::vector<void *>) = 0;
         
