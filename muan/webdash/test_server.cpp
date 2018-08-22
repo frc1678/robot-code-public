@@ -12,11 +12,8 @@ int main() {
   muan::wpilib::DriverStationProto driver_station_proto;
   muan::wpilib::DriverStationQueue driver_station_queue;
   driver_station_proto->set_alliance(kRed);
+  driver_station_proto->set_mode(TELEOP);
   driver_station_queue.WriteMessage(driver_station_proto);
-
-  muan::webdash::AutoSelectionProto auto_selection_proto;
-  muan::webdash::AutoSelectionQueue auto_selection_queue;
-  auto_selection_queue.WriteMessage(auto_selection_proto);
 
   muan::teleop::JoystickStatusQueue joystick_status_queue;
   muan::teleop::JoystickStatusProto joystick_status_proto;
@@ -41,7 +38,6 @@ int main() {
   runner.AddQueue("gss", &gss_queue);
   runner.AddQueue("shooter_status", &shooter_status_queue);
   runner.AddQueue("driver_station_status", &driver_station_queue);
-  runner.AddQueue("auto_selection_queue", &auto_selection_queue);
   runner.AddVideoStream("?action=stream");
   std::string display_object =
       "{"
@@ -120,61 +116,25 @@ int main() {
       "          \"  }\","
       "          \"}\","
       "          \"if (source.charAt(2) == 'L') {\","
-      "          \"  "
-      "document.getElementById(\\\"gss_box_5\\\").style.backgroundColor = \","
-      "          \"                                                            "
-      "        alliance_color;\","
-      "          \"  "
-      "document.getElementById(\\\"gss_box_6\\\").style.backgroundColor = \","
-      "          \"                                                            "
-      "        other_alliance_color;\","
+      "\"document.getElementById(\\\"gss_box_5\\\").style.backgroundColor = alliance_color;\","
+      "\"document.getElementById(\\\"gss_box_6\\\").style.backgroundColor = other_alliance_color;\","
       "          \"} else if (source.charAt(2) == 'R') {\","
-      "          \"  "
-      "document.getElementById(\\\"gss_box_5\\\").style.backgroundColor = \","
-      "          \"                                                            "
-      "        other_alliance_color;\","
-      "          \"  "
-      "document.getElementById(\\\"gss_box_6\\\").style.backgroundColor = \","
-      "          \"                                                            "
-      "        alliance_color;\","
+      "\"document.getElementById(\\\"gss_box_5\\\").style.backgroundColor = other_alliance_color;\","
+      "\"document.getElementById(\\\"gss_box_6\\\").style.backgroundColor = alliance_color;\","
       "          \"}\","
       "          \"if (source.charAt(1) == 'L') {\","
-      "          \"  "
-      "document.getElementById(\\\"gss_box_3\\\").style.backgroundColor = \","
-      "          \"                                                            "
-      "        alliance_color;\","
-      "          \"  "
-      "document.getElementById(\\\"gss_box_4\\\").style.backgroundColor = \","
-      "          \"                                                            "
-      "        other_alliance_color;\","
+      "\"document.getElementById(\\\"gss_box_3\\\").style.backgroundColor = alliance_color;\","
+      "\"document.getElementById(\\\"gss_box_4\\\").style.backgroundColor = other_alliance_color;\","
       "          \"} else if (source.charAt(1) == 'R') {\","
-      "          \"  "
-      "document.getElementById(\\\"gss_box_3\\\").style.backgroundColor = \","
-      "          \"                                                            "
-      "        other_alliance_color;\","
-      "          \"  "
-      "document.getElementById(\\\"gss_box_4\\\").style.backgroundColor = \","
-      "          \"                                                            "
-      "        alliance_color;\","
+      "\"document.getElementById(\\\"gss_box_3\\\").style.backgroundColor = other_alliance_color;\","
+      "\"document.getElementById(\\\"gss_box_4\\\").style.backgroundColor = alliance_color;\","
       "          \"}\","
       "          \"if (source.charAt(0) == 'L') {\","
-      "          \"  "
-      "document.getElementById(\\\"gss_box_1\\\").style.backgroundColor = \","
-      "          \"                                                            "
-      "        alliance_color;\","
-      "          \"  "
-      "document.getElementById(\\\"gss_box_2\\\").style.backgroundColor = \","
-      "          \"                                                            "
-      "        other_alliance_color;\","
+      "\"document.getElementById(\\\"gss_box_1\\\").style.backgroundColor = alliance_color;\","
+      "\"document.getElementById(\\\"gss_box_2\\\").style.backgroundColor = other_alliance_color;\","
       "          \"} else if (source.charAt(0) == 'R') {\","
-      "          \"  "
-      "document.getElementById(\\\"gss_box_1\\\").style.backgroundColor = \","
-      "          \"                                                            "
-      "        other_alliance_color;\","
-      "          \"  "
-      "document.getElementById(\\\"gss_box_2\\\").style.backgroundColor = \","
-      "          \"                                                            "
-      "        alliance_color;\","
+      "\"document.getElementById(\\\"gss_box_1\\\").style.backgroundColor = other_alliance_color;\","
+      "\"document.getElementById(\\\"gss_box_2\\\").style.backgroundColor = alliance_color;\","
       "          \"}\""
       "       ]"
       "     }"
@@ -186,9 +146,36 @@ int main() {
   runner.DisplayObjectMaker(display_object);
 
   shooter_status_proto->set_observed_velocity(100);
+  shooter_status_proto->set_accelerator_observed_velocity(0);
+  shooter_status_proto->set_voltage(0);
+  shooter_status_proto->set_state(c2017::shooter::IDLE);
+  shooter_status_proto->set_currently_running(true);
+  shooter_status_proto->set_unprofiled_goal_velocity(0);
+  shooter_status_proto->set_profiled_goal_velocity(0);
+  shooter_status_proto->set_voltage_error(0);
+  shooter_status_proto->set_uncapped_u(0);
+  shooter_status_proto->set_encoder_fault_detected(false);
   shooter_status_queue.WriteMessage(shooter_status_proto);
 
   joystick_status_proto->set_button1(true);
+  joystick_status_proto->set_button2(false);
+  joystick_status_proto->set_button3(false);
+  joystick_status_proto->set_button4(false);
+  joystick_status_proto->set_button5(false);
+  joystick_status_proto->set_button6(false);
+  joystick_status_proto->set_button7(false);
+  joystick_status_proto->set_button8(false);
+  joystick_status_proto->set_button9(false);
+  joystick_status_proto->set_button10(false);
+  joystick_status_proto->set_button11(false);
+  joystick_status_proto->set_button12(false);
+  joystick_status_proto->set_button13(false);
+  joystick_status_proto->set_axis1(0);
+  joystick_status_proto->set_axis2(0);
+  joystick_status_proto->set_axis3(0);
+  joystick_status_proto->set_axis4(0);
+  joystick_status_proto->set_axis5(0);
+  joystick_status_proto->set_axis6(0);
   joystick_status_queue.WriteMessage(joystick_status_proto);
 
   std::thread webdash_thread{std::ref(runner)};
@@ -196,7 +183,6 @@ int main() {
 
   int t = 0;
   while (true) {
-    muan::teleop::JoystickStatusProto joystick_status_proto;
     joystick_status_proto->set_button1(t % 2);
     shooter_status_proto->set_observed_velocity(t * 5);
     sleep(1);

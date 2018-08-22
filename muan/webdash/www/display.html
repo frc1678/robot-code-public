@@ -95,10 +95,10 @@
       var other_alliance_color = "#000000";
 
       // Get alliance color from driver station
-      if (data["driver_station_status"]["alliance"] == 1) {
+      if (data["driver_station_status"]["alliance"] == "kRed") {
         alliance_color = "#ff0000";
         other_alliance_color = "#0000ff";
-      } else if (data["driver_station_status"]["alliance"] == 0) {
+      } else if (data["driver_station_status"]["alliance"] == "kBlue") {
         alliance_color = "#0000ff";
         other_alliance_color = "#ff0000";
       }
