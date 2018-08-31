@@ -1,0 +1,85 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+package o2018.subsytems.score_subsytem;
+
+enum Punch {
+    OPEN = 0;
+    CLOSE = 1;
+    NEUTRAL = 2;
+};
+
+enum IntakeMode {
+    INTAKE_NONE = 0;
+    INTAKE = 1;
+    INTAKE_OPEN = 2;
+    INTAKE_CLOSE = 3;
+    SETTLE = 4;
+    OUTTAKE_SLOW = 5;
+    OUTTAKE_FAST = 6;
+    DROP = 7;
+}
+
+enum ScoreState {
+    CALIBRATING = 0;
+}
+
+enum PinchState {
+    IDLE_WITH_CUBE = 0;
+    IDLE_NO_CUBE = 1;
+    MOVING = 2;
+}
+
+enum ScoreGoal {
+    
+}
+
+message ScoreSubsystemInput {
+    required uint64 timestamp = 1;
+
+    required double arm_encoder = 2;
+    required double arm_velocity = 3;
+    required double arm_voltage = 4;
+    required bool arm_hall_effect = 5;    
+	required double intake_proxy = 6    
+}
+
+enum TalonOutput {
+    OPEN_LOOP = 0;
+    POSITION = 1;
+}
+
+message ScoreSubsystemOutput {
+    required TalonOutput arm_output_type = 1;
+    required PunchState punch_state = 2;
+    required double arm_setpoint = 3;
+    required double arm_setpoint_ff = 4;
+    required double intake_voltgae = 5;
+    required bool intake_solenoid_open = 6;
+    required bool intake_solenoid_close = 7;
+}
+
+message ScoreSubsystemStatus {
+    required uint64 timestamp = 1;
+
+    required double arm_profiled_goal = 2;
+    required double arm_unprofiled_goal = 3;
+    required double arm_calibrated_angle = 4;
+    required bool arm_is_calibrated = 5;
+    required bool arm_encoder_fault = 6;
+
+    required bool has_cube = 7;
+    required bool punching = 8;
+
+    required IntakeState intake_state = 9;
+    required PinchState pinch_state = 10;
+}
+
+message ScoreSubsystemGoal {
+    required uint64 timestamp = 1;
+
+    required Punch should_punch = 2;
+    required IntakeMode intake_goal = 3;
+    required ScoreGoal score_goal = 4;
+}
