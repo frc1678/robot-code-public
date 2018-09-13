@@ -32,7 +32,7 @@ enum PinchState {
 }
 
 enum ScoreGoal {
-    
+    IDLE = 0;
 }
 
 message ScoreSubsystemInput {
@@ -42,7 +42,7 @@ message ScoreSubsystemInput {
     required double arm_velocity = 3;
     required double arm_voltage = 4;
     required bool arm_hall_effect = 5;    
-	required double intake_proxy = 6    
+	required double intake_proxy = 6;  
 }
 
 enum TalonOutput {
@@ -52,7 +52,7 @@ enum TalonOutput {
 
 message ScoreSubsystemOutput {
     required TalonOutput arm_output_type = 1;
-    required PunchState punch_state = 2;
+    required Punch punch_state = 2;
     required double arm_setpoint = 3;
     required double arm_setpoint_ff = 4;
     required double intake_voltgae = 5;
@@ -72,7 +72,7 @@ message ScoreSubsystemStatus {
     required bool has_cube = 7;
     required bool punching = 8;
 
-    required IntakeState intake_state = 9;
+    required IntakeMode intake_state = 9;
     required PinchState pinch_state = 10;
 }
 
