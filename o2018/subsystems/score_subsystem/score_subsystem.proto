@@ -2,7 +2,7 @@ syntax = "proto2";
 
 option cc_enable_arenas = true;
 
-package o2018.subsytems.score_subsystem;
+package o2018.subsystems.score_subsystem;
 
 enum Punch {
     OPEN = 0;
