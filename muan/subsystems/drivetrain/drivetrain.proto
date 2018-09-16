@@ -1,0 +1,101 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+package muan.subsystems.drivetrain;
+
+message Constraints {
+  required double max_velocity = 1;
+  required double max_acceleration = 2;
+}
+
+message DrivetrainInput {
+  required uint64 timestamp = 1;
+  
+  required double left_encoder = 2;
+  required double right_encoder = 3;
+
+  required double left_velocity = 4;
+  required double right_velocity = 5;
+
+  required double gyro = 6;
+}
+
+enum TalonOutput {
+  OPEN_LOOP = 0;
+  POSITION = 1;
+  VELOCITY = 2;
+}
+
+message DrivetrainOutput {
+  required uint64 timestamp = 1;
+
+  required TalonOutput output_type = 2;
+  
+  required double left_setpoint = 3;
+  required double right_setpoint = 4;
+  
+  optional double left_setpoint_ff = 5;
+  optional double right_setpoint_ff = 6;
+
+  required bool high_gear = 7;
+}
+
+message DrivetrainStatus {
+  required uint64 timestamp = 1;
+
+  required double estimated_x_position = 2;
+  required double estimated_y_position = 3;
+  required double estimated_heading = 4;
+
+  required double linear_velocity = 5;
+  required double angular_velocity = 6;
+
+  optional double x_error = 7;
+  optional double y_error = 8;
+  optional double heading_error = 9;
+
+  optional double profiled_x_goal = 10;
+  optional double profiled_y_goal = 11;
+  optional double profiled_heading_goal = 12;
+
+  optional double profiled_velocity_goal = 13;
+  optional double adjusted_velocity_goal = 14;
+
+  optional double pred_lv = 15;
+  optional double pred_rv = 16;
+}
+
+message DrivetrainGoal {
+  required uint64 timestamp = 1;
+
+  message TeleopGoal {
+    required double throttle = 1;
+    required double steering = 2;
+    
+    required bool quick_turn = 3;
+  }
+
+  message PathGoal {
+    required double x = 1;
+    required double y = 2;
+    required double heading = 3;
+    required double max_voltage = 4;
+
+    optional bool backwards = 5;
+    optional double extra_distance_initial = 6;
+    optional double extra_distance_final = 7;
+    optional double final_velocity = 8;
+    optional double final_angular_velocity = 9;
+
+    optional Constraints linear_constraints = 10;
+    optional Constraints angular_constraints = 11;
+  }
+
+  required bool high_gear = 2;
+
+  oneof goal {
+    TeleopGoal teleop_goal = 3;
+    PathGoal path_goal = 4;
+  }
+}

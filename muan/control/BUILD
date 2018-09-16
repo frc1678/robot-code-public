@@ -22,6 +22,40 @@ py_binary(
 )
 
 cc_library(
+    name = "pose",
+    srcs = [
+        "pose.cpp",
+    ],
+    hdrs = ["pose.h"],
+    linkopts = ["-lm"],
+    deps = [
+        "//third_party/eigen",
+    ],
+)
+
+cc_library(
+    name = "spline",
+    srcs = ["spline.cpp"],
+    hdrs = ["spline.h"],
+    linkopts = ["-lm"],
+    deps = [
+        ":pose",
+        "//muan/utils:math_utils",
+        "//third_party/eigen",
+    ],
+)
+
+cc_library(
+    name = "drivetrain_model",
+    srcs = ["drivetrain_model.cpp"],
+    hdrs = ["drivetrain_model.h"],
+    deps = [
+        "//muan/utils:math_utils",
+        "//third_party/eigen",
+    ],
+)
+
+cc_library(
     name = "pid_controller",
     srcs = [
         "pid_controller.cpp",
@@ -55,6 +89,21 @@ cc_library(
 )
 
 cc_library(
+    name = "nonlinear_feedback",
+    srcs = [
+        "nonlinear_feedback_controller.cpp",
+    ],
+    hdrs = [
+        "nonlinear_feedback_controller.h",
+    ],
+    deps = [
+        ":drivetrain_model",
+        ":pose",
+        "//third_party/eigen",
+    ],
+)
+
+cc_library(
     name = "state_space",
     srcs = [
         "state_space_controller.hpp",
@@ -75,6 +124,38 @@ cc_library(
     ],
 )
 
+cc_library(
+    name = "trajectory",
+    srcs = [
+        "trajectory.cpp",
+    ],
+    hdrs = [
+        "trajectory.h",
+    ],
+    deps = [
+        ":drivetrain_model",
+        ":spline",
+    ],
+)
+
+cc_test(
+    name = "pose_test",
+    srcs = ["pose_test.cpp"],
+    deps = [
+        ":pose",
+        "//third_party/google/googletest",
+    ],
+)
+
+cc_test(
+    name = "drivetrain_model_test",
+    srcs = ["drivetrain_model_test.cpp"],
+    deps = [
+        ":drivetrain_model",
+        "//third_party/google/googletest",
+    ],
+)
+
 cc_test(
     name = "motion_profile_test",
     srcs = ["motion_profile_test.cpp"],
@@ -86,10 +167,38 @@ cc_test(
 )
 
 cc_test(
+    name = "nonlinear_feedback_test",
+    srcs = ["nonlinear_feedback_controller_test.cpp"],
+    deps = [
+        ":nonlinear_feedback",
+        ":trajectory",
+        "//third_party/google/googletest",
+    ],
+)
+
+cc_test(
     name = "state_space_test",
     srcs = ["state_space_test.cpp"],
     deps = [
         ":state_space",
+        "//third_party/google/googletest",
+    ],
+)
+
+cc_test(
+    name = "spline_test",
+    srcs = ["spline_test.cpp"],
+    deps = [
+        ":spline",
+        "//third_party/google/googletest",
+    ],
+)
+
+cc_test(
+    name = "trajectory_test",
+    srcs = ["trajectory_test.cpp"],
+    deps = [
+        ":trajectory",
         "//third_party/google/googletest",
     ],
 )
