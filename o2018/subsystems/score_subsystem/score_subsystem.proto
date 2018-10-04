@@ -21,6 +21,13 @@ enum IntakeMode {
     DROP = 7;
 }
 
+enum ScoreGoal {
+    IDLE = 0;
+    EXCHANGE = 1;
+    SWITCH = 2;
+    SCALE = 3;
+}
+
 enum ScoreState {
     CALIBRATING = 0;
 }
@@ -29,10 +36,6 @@ enum PinchState {
     IDLE_WITH_CUBE = 0;
     IDLE_NO_CUBE = 1;
     MOVING = 2;
-}
-
-enum ScoreGoal {
-    IDLE = 0;
 }
 
 message ScoreSubsystemInput {
