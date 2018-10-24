@@ -46,8 +46,8 @@ TeleopBase::TeleopBase()
   request_cube_ = gamepad_.MakePov(0, muan::teleop::Pov::kWest);
 
   // Scoring modes - left joystick
-  front_ = gamepad_.MakeAxisRange(15, 165, 0, 1, 0.8);
-  back_ = gamepad_.MakeAxisRange(195, 345, 0, 1, 0.8);
+  front_ = gamepad_.MakeAxisRange(0, 45, 0, 1, 0.8);
+  back_ = gamepad_.MakeAxisRange(135, 180, 0, 1, 0.8);
 
   // Various intake type buttons
   intake_ = gamepad_.MakeAxis(3, 0.3);

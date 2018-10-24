@@ -74,17 +74,11 @@ void AxisRange::Update() {
   double magnitude = sqrt((x_axis * x_axis) + (y_axis * y_axis));
 
   // Simple trig to determine button angle
-  double axis_in_degrees = (atan2(y_axis, x_axis)) * (180 / M_PI);
+  double axis_in_degrees = std::abs((atan2(y_axis, x_axis)) * (180 / M_PI));
 
   // Conform to wpilib's angle system
-  if (axis_in_degrees > -90 && axis_in_degrees < 180) {
-    axis_in_degrees += 90;
-  } else {
-    axis_in_degrees += 450;
-  }
-
   bool axis_in_range =
-      (axis_in_degrees > minimum_ && axis_in_degrees < maximum_);
+      (axis_in_degrees >= minimum_ && axis_in_degrees <= maximum_);
   bool past_threshold =
       (x_axis * x_axis) + (y_axis * y_axis) > (threshold_ * threshold_);
 
