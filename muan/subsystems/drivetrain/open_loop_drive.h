@@ -11,18 +11,12 @@ namespace drivetrain {
 constexpr double kThrottleDeadband = 0.02;
 constexpr double kWheelDeadband = 0.02;
 
-constexpr double kHighWheelNonLinearity = 0.4;
-constexpr double kLowWheelNonLinearity = 0.5;
-
 constexpr double kHighNegInertiaScalar = 4.;
 
 constexpr double kLowNegInertiaThreshold = 0.65;
 constexpr double kLowNegInertiaTurnScalar = 3.5;
 constexpr double kLowNegInertiaCloseScalar = 4.0;
 constexpr double kLowNegInertiaFarScalar = 5.0;
-
-constexpr double kHighSensitivity = 0.95;
-constexpr double kLowSensitivity = 0.65;
 
 constexpr double kQuickStopDeadband = 0.5;
 constexpr double kQuickStopWeight = 0.1;

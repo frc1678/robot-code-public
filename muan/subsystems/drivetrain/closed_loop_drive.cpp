@@ -82,11 +82,19 @@ void ClosedLoopDrive::Update(OutputProto* output, StatusProto* status) {
   goal_velocity(0) = goal.v;
   goal_velocity(1) = goal.pose.curvature() * goal.v;
 
-  auto setpoint = controller_.Update(goal_velocity, current, error, high_gear_);
+  Eigen::Vector2d goal_accel;
+  goal_accel(0) = goal.a;
+  goal_accel(1) = goal.pose.curvature() * goal.a;
+
+  auto setpoint = controller_.Update(goal_velocity, goal_accel, current, error, high_gear_);
 
   (*status)->set_x_error(error.Get()(0));
   (*status)->set_y_error(error.Get()(1));
   (*status)->set_heading_error(error.Get()(2));
+
+  (*status)->set_x_goal(last_goal_pose_.Get()(0));
+  (*status)->set_y_goal(last_goal_pose_.Get()(1));
+  (*status)->set_heading_goal(last_goal_pose_.Get()(2));
 
   (*status)->set_profiled_x_goal(goal.pose.Get()(0));
   (*status)->set_profiled_y_goal(goal.pose.Get()(1));
@@ -94,12 +102,13 @@ void ClosedLoopDrive::Update(OutputProto* output, StatusProto* status) {
   (*status)->set_profiled_velocity_goal(goal.v);
   (*status)->set_adjusted_velocity_goal(
       model_.ForwardKinematics(setpoint.velocity)(0));
+  (*status)->set_profile_complete(trajectory_.done());
 
   (*output)->set_output_type(VELOCITY);
   (*output)->set_left_setpoint(setpoint.velocity(0));
   (*output)->set_right_setpoint(setpoint.velocity(1));
-  (*output)->set_left_setpoint_ff(setpoint.feedforwards(0));
-  (*output)->set_right_setpoint_ff(setpoint.feedforwards(1));
+  (*output)->set_left_setpoint_ff(trajectory_.done() ? 0 : setpoint.feedforwards(0));
+  (*output)->set_right_setpoint_ff(trajectory_.done() ? 0 : setpoint.feedforwards(1));
 }
 
 }  // namespace drivetrain

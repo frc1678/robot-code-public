@@ -21,12 +21,12 @@ void OpenLoopDrive::Update(OutputProto* output) {
 
   double wheel_non_linearity;
   if (high_gear_) {
-    wheel_non_linearity = kHighWheelNonLinearity;
+    wheel_non_linearity = dt_config_.high_gear_wheel_non_linearity;
     const double denominator = std::sin(M_PI / 2. * wheel_non_linearity);
     wheel_ = std::sin(M_PI / 2. * wheel_non_linearity * wheel_) / denominator;
     wheel_ = std::sin(M_PI / 2. * wheel_non_linearity * wheel_) / denominator;
   } else {
-    wheel_non_linearity = kLowWheelNonLinearity;
+    wheel_non_linearity = dt_config_.low_gear_wheel_non_linearity;
     const double denominator = std::sin(M_PI / 2. * wheel_non_linearity);
     wheel_ = std::sin(M_PI / 2. * wheel_non_linearity * wheel_) / denominator;
     wheel_ = std::sin(M_PI / 2. * wheel_non_linearity * wheel_) / denominator;
@@ -42,7 +42,7 @@ void OpenLoopDrive::Update(OutputProto* output) {
   double neg_inertia_scalar;
   if (high_gear_) {
     neg_inertia_scalar = kHighNegInertiaScalar;
-    sensitivity = kHighSensitivity;
+    sensitivity = dt_config_.high_gear_sensitivity;
   } else {
     if (wheel_ * neg_inertia > 0) {
       neg_inertia_scalar = kLowNegInertiaTurnScalar;
@@ -53,7 +53,7 @@ void OpenLoopDrive::Update(OutputProto* output) {
         neg_inertia_scalar = kLowNegInertiaCloseScalar;
       }
     }
-    sensitivity = kLowSensitivity;
+    sensitivity = dt_config_.low_gear_sensitivity;
   }
 
   double neg_inertia_power = neg_inertia * neg_inertia_scalar;

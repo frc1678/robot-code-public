@@ -9,7 +9,7 @@ NonLinearFeedbackController::NonLinearFeedbackController(DrivetrainModel model,
     : model_(model), beta_(beta), zeta_(zeta) {}
 
 NonLinearFeedbackController::Output NonLinearFeedbackController::Update(
-    Eigen::Vector2d velocity, Pose current, Pose error, bool high_gear) {
+    Eigen::Vector2d velocity, Eigen::Vector2d acceleration, Pose current, Pose error, bool high_gear) {
   double k1 =
       2. * zeta_ *
       std::sqrt(beta_ * velocity(0) * velocity(0) + velocity(1) * velocity(1));
@@ -34,11 +34,8 @@ NonLinearFeedbackController::Output NonLinearFeedbackController::Update(
   Eigen::Vector2d left_right_velocity =
       model_.InverseKinematics(adjusted_velocity);
 
-  Eigen::Vector2d accel = (adjusted_velocity - prev_velocity_) / 0.01;
-  prev_velocity_ = adjusted_velocity;
-
   Eigen::Vector2d left_right_ff =
-      model_.InverseDynamics(adjusted_velocity, accel, high_gear);
+      model_.InverseDynamics(velocity, acceleration, high_gear);
 
   return {left_right_velocity, left_right_ff};
 }

@@ -198,7 +198,7 @@ Bounds DrivetrainModel::CalculateMinMaxAcceleration(Eigen::Vector2d velocity,
   // There are four possible cases that we want to encapsulate:
   //  - Left voltage is at full negative, |v_right| < |v_left|
   //  - Left voltage is at full positive, |v_right| < |v_left|
-  //  - Right voltage is at full positive, |v_left| < |v_right|
+  //  - Right voltage is at full negative, |v_left| < |v_right|
   //  - Right voltage is at full positive, |v_left| < |v_right|
   //  Loop through all of the cases.
   for (int i = 0; i < 4; i++) {

@@ -195,6 +195,7 @@ TEST(DrivetrainModelDynamics, AccelerationBounds) {
                               properties.wheelbase_radius *
                               properties.wheelbase_radius;
   properties.force_stiction = 20.0;
+  properties.force_friction = 10.0;
   properties.wheel_radius = 3.25 / 2 * 0.0254;
 
   DriveTransmission::Properties trans_properties;

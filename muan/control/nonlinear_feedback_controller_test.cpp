@@ -63,9 +63,11 @@ class TestFixture : public ::testing::Test {
 
       double omega = sample.v * sample.pose.curvature();
 
-      goal =
-          controller_.Update((Eigen::Vector2d() << sample.v, omega).finished(),
-                             current_pose, error, high_gear);
+      goal = controller_.Update(
+          (Eigen::Vector2d() << sample.v, omega).finished(),
+          (Eigen::Vector2d() << sample.a, sample.a * sample.pose.curvature())
+              .finished(),
+          current_pose, error, high_gear);
 
       Eigen::Vector2d velocity = model_.ForwardKinematics(goal.velocity) * 0.9;
 

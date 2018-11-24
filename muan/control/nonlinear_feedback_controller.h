@@ -16,15 +16,13 @@ class NonLinearFeedbackController {
   };
 
   NonLinearFeedbackController(DrivetrainModel model, double beta, double zeta);
-  Output Update(Eigen::Vector2d velocity, Pose current, Pose error,
+  Output Update(Eigen::Vector2d velocity, Eigen::Vector2d acceleration, Pose current, Pose error,
                 bool high_gear);
 
  private:
   DrivetrainModel model_;
   double beta_;
   double zeta_;
-
-  Eigen::Vector2d prev_velocity_;
 };
 
 }  // namespace control
