@@ -10,6 +10,7 @@ cc_binary(
         "//o2018/subsystems:subsystem_runner",
         "//o2018/autonomous:autonomous_runner",
         "//o2018/teleop:teleop",
+        "//o2018/webdash",
         "//third_party/gflags",
         "//third_party/wpilibsuite:wpilib",
     ],

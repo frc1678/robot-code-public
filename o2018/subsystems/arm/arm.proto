@@ -1,0 +1,69 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+package o2018.subsystems.arm;
+
+message ArmInput {
+  required uint64 timestamp = 1;
+  required double arm_encoder = 2;
+  required double arm_velocity = 3;
+  required bool arm_hall = 4;
+  required bool intake_proxy = 5;
+  required double arm_voltage = 6;
+  required bool zeroed = 7;
+}
+
+enum TalonOutput {
+  OPEN_LOOP = 0;
+  POSITION = 1;
+}
+
+message ArmOutput {
+  required TalonOutput arm_output_type = 1;
+  required double intake_voltage = 2;
+  required double arm_setpoint = 3;
+
+  optional double arm_setpoint_ff = 4;
+
+  required bool intake_open = 8;
+  required bool intake_close = 9;
+}
+
+message ArmStatus {
+  required double arm_angle = 1;
+  required bool arm_calibrated = 2;
+  required bool arm_at_max = 3;
+  required double arm_velocity = 4;
+
+  required double arm_unprofiled_goal = 5;
+  required double arm_profiled_goal = 6;
+
+  required bool has_cube = 7;
+  required bool arm_encoder_fault = 8;
+}
+
+enum IntakeMode {
+  // Doing nothing - not running the intake; just hold the cube if we have one
+  INTAKE_NONE = 0;
+  // The default intake mode
+  INTAKE = 1;
+  // Usually to be used in series - open the intake, then close it around a cube
+  // while running it
+  INTAKE_OPEN = 2;
+  INTAKE_CLOSE = 3;
+  // Intaking, but pinched and ignoring the sensor for state transitions
+  SETTLE = 4;
+  // Spit out at different speeds (for scoring)
+  OUTTAKE_SLOW = 5;
+  OUTTAKE_FAST = 6;
+  // Drop it without running the intake
+  DROP = 7;
+}
+
+message ArmGoal {
+  required double arm_angle = 1;
+  required IntakeMode intake_mode = 2;
+
+  required double arm_god_mode_goal = 3;
+}

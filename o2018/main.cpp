@@ -4,6 +4,7 @@
 #include "o2018/autonomous/autonomous_runner.h"
 #include "o2018/subsystems/subsystem_runner.h"
 #include "o2018/teleop/teleop.h"
+#include "o2018/webdash/webdash_setup.h"
 
 class WpilibRobot : public IterativeRobot {
  public:
@@ -32,6 +33,7 @@ class WpilibRobot : public IterativeRobot {
 int main(int argc, char **argv) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   muan::queues::Start();
+  o2018::StartWebdash();
   if (!HAL_Initialize(500, 0)) {
     std::printf("FATAL ERROR: HAL could not be initialized\n");
     return -1;
