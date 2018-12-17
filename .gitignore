@@ -5,3 +5,5 @@ bazel-*
 compile_commands.json
 *.pyc
 /logs
+*.log
+*.aux
