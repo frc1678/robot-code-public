@@ -11,36 +11,48 @@ constexpr double kDriveConversionFactor = 4096 / (2. * M_PI * kWheelRadius);
 
 constexpr uint32_t kShifter = 0;
 
-constexpr int kLowGearSlot = 1;
-constexpr int kHighGearSlot = 0;
+constexpr int kPositionSlot = 1;
+constexpr int kVelocitySlot = 0;
 constexpr int kSetupTimeout = 100;
 
-constexpr double kLowGearP = 0.9;
-constexpr double kLowGearI = 0;
-constexpr double kLowGearD = 10.;
-constexpr double kLowGearF = 0;
+constexpr double kHighGearPositionP = 1.2;
+constexpr double kHighGearPositionI = 0;
+constexpr double kHighGearPositionD = 6.;
+constexpr double kHighGearPositionF = .15;
 
-constexpr double kHighGearP = 0.9;
-constexpr double kHighGearI = 0;
-constexpr double kHighGearD = 10.;
-constexpr double kHighGearF = 0;
+constexpr double kHighGearVelocityP = 0.9;
+constexpr double kHighGearVelocityI = 0;
+constexpr double kHighGearVelocityD = 10.;
+constexpr double kHighGearVelocityF = 0;
 
 constexpr double kIZone = 0;
 
 constexpr double kRampRate = 0;
 
 void DrivetrainInterface::LoadGains() {
-  left_master_.Config_kP(kHighGearSlot, kHighGearP, kSetupTimeout);
-  left_master_.Config_kI(kHighGearSlot, kHighGearI, kSetupTimeout);
-  left_master_.Config_kD(kHighGearSlot, kHighGearD, kSetupTimeout);
-  left_master_.Config_kF(kHighGearSlot, kHighGearF, kSetupTimeout);
-  left_master_.Config_IntegralZone(kHighGearSlot, kIZone, kSetupTimeout);
+  left_master_.Config_kP(kPositionSlot, kHighGearPositionP, kSetupTimeout);
+  left_master_.Config_kI(kPositionSlot, kHighGearPositionI, kSetupTimeout);
+  left_master_.Config_kD(kPositionSlot, kHighGearPositionD, kSetupTimeout);
+  left_master_.Config_kF(kPositionSlot, kHighGearPositionF, kSetupTimeout);
+  left_master_.Config_IntegralZone(kPositionSlot, kIZone, kSetupTimeout);
 
-  right_master_.Config_kP(kHighGearSlot, kHighGearP, kSetupTimeout);
-  right_master_.Config_kI(kHighGearSlot, kHighGearI, kSetupTimeout);
-  right_master_.Config_kD(kHighGearSlot, kHighGearD, kSetupTimeout);
-  right_master_.Config_kF(kHighGearSlot, kHighGearF, kSetupTimeout);
-  right_master_.Config_IntegralZone(kHighGearSlot, kIZone, kSetupTimeout);
+  right_master_.Config_kP(kPositionSlot, kHighGearPositionP, kSetupTimeout);
+  right_master_.Config_kI(kPositionSlot, kHighGearPositionI, kSetupTimeout);
+  right_master_.Config_kD(kPositionSlot, kHighGearPositionD, kSetupTimeout);
+  right_master_.Config_kF(kPositionSlot, kHighGearPositionF, kSetupTimeout);
+  right_master_.Config_IntegralZone(kPositionSlot, kIZone, kSetupTimeout);
+
+  left_master_.Config_kP(kVelocitySlot, kHighGearVelocityP, kSetupTimeout);
+  left_master_.Config_kI(kVelocitySlot, kHighGearVelocityI, kSetupTimeout);
+  left_master_.Config_kD(kVelocitySlot, kHighGearVelocityD, kSetupTimeout);
+  left_master_.Config_kF(kVelocitySlot, kHighGearVelocityF, kSetupTimeout);
+  left_master_.Config_IntegralZone(kVelocitySlot, kIZone, kSetupTimeout);
+
+  right_master_.Config_kP(kVelocitySlot, kHighGearVelocityP, kSetupTimeout);
+  right_master_.Config_kI(kVelocitySlot, kHighGearVelocityI, kSetupTimeout);
+  right_master_.Config_kD(kVelocitySlot, kHighGearVelocityD, kSetupTimeout);
+  right_master_.Config_kF(kVelocitySlot, kHighGearVelocityF, kSetupTimeout);
+  right_master_.Config_IntegralZone(kVelocitySlot, kIZone, kSetupTimeout);
 }
 
 void DrivetrainInterface::SetBrakeMode(bool mode) {
@@ -61,16 +73,22 @@ DrivetrainInterface::DrivetrainInterface()
       ds_status_reader_{QueueManager<muan::wpilib::DriverStationProto>::Fetch()
                             ->MakeReader()} {
   left_master_.ConfigSelectedFeedbackSensor(
-      FeedbackDevice::CTRE_MagEncoder_Relative, kHighGearSlot, kSetupTimeout);
+      FeedbackDevice::CTRE_MagEncoder_Relative, kPositionSlot, kSetupTimeout);
   right_master_.ConfigSelectedFeedbackSensor(
-      FeedbackDevice::CTRE_MagEncoder_Relative, kHighGearSlot, kSetupTimeout);
+      FeedbackDevice::CTRE_MagEncoder_Relative, kPositionSlot, kSetupTimeout);
+  left_master_.ConfigSelectedFeedbackSensor(
+      FeedbackDevice::CTRE_MagEncoder_Relative, kVelocitySlot, kSetupTimeout);
+  right_master_.ConfigSelectedFeedbackSensor(
+      FeedbackDevice::CTRE_MagEncoder_Relative, kVelocitySlot, kSetupTimeout);
 
   left_master_.EnableVoltageCompensation(true);
   left_master_.ConfigVoltageCompSaturation(12.0, 100);
   left_master_.ConfigVoltageMeasurementFilter(32, 100);
 
-  left_master_.SetSelectedSensorPosition(0, kHighGearSlot, kSetupTimeout);
-  right_master_.SetSelectedSensorPosition(0, kHighGearSlot, kSetupTimeout);
+  left_master_.SetSelectedSensorPosition(0, kPositionSlot, kSetupTimeout);
+  right_master_.SetSelectedSensorPosition(0, kPositionSlot, kSetupTimeout);
+  left_master_.SetSelectedSensorPosition(0, kVelocitySlot, kSetupTimeout);
+  right_master_.SetSelectedSensorPosition(0, kVelocitySlot, kSetupTimeout);
 
   left_master_.SetSensorPhase(true);
 
@@ -134,15 +152,15 @@ void DrivetrainInterface::WriteActuators() {
       right_master_.Set(ControlMode::PercentOutput, outputs->right_setpoint());
       break;
     case TalonOutput::POSITION:
+      left_master_.SelectProfileSlot(kPositionSlot, 0);
+      right_master_.SelectProfileSlot(kPositionSlot, 0);
+      left_master_.Set(ControlMode::Position, outputs->left_setpoint() * kDriveConversionFactor);
+      right_master_.Set(ControlMode::Position, outputs->right_setpoint() * kDriveConversionFactor);
       break;
     case TalonOutput::VELOCITY:
       SetBrakeMode(true);
-      left_master_.SelectProfileSlot(
-          outputs->high_gear() ? kHighGearSlot : kHighGearSlot,
-          outputs->high_gear() ? kHighGearSlot : kHighGearSlot);
-      right_master_.SelectProfileSlot(
-          outputs->high_gear() ? kHighGearSlot : kHighGearSlot,
-          outputs->high_gear() ? kHighGearSlot : kHighGearSlot);
+      left_master_.SelectProfileSlot(kVelocitySlot, 0);
+      right_master_.SelectProfileSlot(kVelocitySlot, 0);
       left_master_.Set(ControlMode::Velocity,
                        outputs->left_setpoint() * kDriveConversionFactor * 0.1,
                        DemandType_ArbitraryFeedForward,

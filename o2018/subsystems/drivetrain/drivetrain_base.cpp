@@ -17,7 +17,7 @@ constexpr double kForceStiction = 32.65;
 constexpr double kForceFriction = 20;
 constexpr double kAngularDrag = -12;
 
-constexpr double kRobotRadius = 12.0225 * 0.0254 / 2.0;
+constexpr double kRobotRadius = 0.338;
 constexpr double kWheelRadius = 4.0 * 0.0254 / 2.0;
 
 constexpr double kHighGearRatio = (12.0 / 50.0) * (18.0 / 46.0) * (50.0 / 34.0);
