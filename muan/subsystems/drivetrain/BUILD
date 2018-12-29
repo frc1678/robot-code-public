@@ -50,3 +50,14 @@ cc_library(
         "//muan/wpilib:wpilib_queues",
     ],
 )
+
+cc_test(
+    name = "closed_loop_drive_test",
+    srcs = [
+        "closed_loop_drive_test.cpp",
+    ],
+    deps = [
+        ":drivetrain",
+        "//third_party/google/googletest",
+    ],
+)

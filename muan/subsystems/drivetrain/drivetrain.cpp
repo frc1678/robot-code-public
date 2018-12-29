@@ -22,7 +22,7 @@ Drivetrain::Drivetrain(DrivetrainConfig dt_config)
       dt_config_{dt_config},
       open_loop_{dt_config},
       closed_loop_{dt_config, &cartesian_position_, &integrated_heading_,
-                   &linear_angular_velocity_} {}
+                   &linear_angular_velocity_, &left_right_position_} {}
 
 void Drivetrain::Update() {
   InputProto input;
@@ -46,15 +46,24 @@ void Drivetrain::Update() {
   const double delta_right = input->right_encoder() - prev_right_;
   const double delta_heading = input->gyro() - prev_heading_;
 
+  left_right_position_ =
+      Eigen::Vector2d(input->left_encoder(), input->right_encoder());
+
   prev_left_ = input->left_encoder();
   prev_right_ = input->right_encoder();
   prev_heading_ = input->gyro();
 
-  double delta_linear = drive_model_.ForwardKinematics(
+  const double delta_linear = drive_model_.ForwardKinematics(
       Eigen::Vector2d(delta_left, delta_right))(0);
 
-  linear_angular_velocity_ = drive_model_.ForwardKinematics(
-      Eigen::Vector2d(input->left_velocity(), input->right_velocity()));
+  const Eigen::Vector2d temp_linear_angular_velocity =
+      drive_model_.ForwardKinematics(
+          Eigen::Vector2d(input->left_velocity(), input->right_velocity()));
+
+  const Eigen::Vector2d linear_angular_accel =
+      (temp_linear_angular_velocity - linear_angular_velocity_) / 0.01;
+
+  linear_angular_velocity_ = temp_linear_angular_velocity;
 
   integrated_heading_ += delta_heading;
   cartesian_position_(0) += std::cos(integrated_heading_) * delta_linear;
@@ -65,7 +74,10 @@ void Drivetrain::Update() {
     return;
   }
 
-  bool in_closed_loop = goal->has_path_goal() && driver_station->is_sys_active();
+  bool in_closed_loop =
+      (goal->has_path_goal() || goal->has_point_turn_goal() ||
+       goal->has_distance_goal() || goal->has_left_right_goal()) &&
+      driver_station->is_sys_active();
   if (in_closed_loop) {
     closed_loop_.SetGoal(goal);
     closed_loop_.Update(&output, &status);
@@ -79,13 +91,13 @@ void Drivetrain::Update() {
   status->set_estimated_heading(integrated_heading_);
   status->set_linear_velocity(linear_angular_velocity_(0));
   status->set_angular_velocity(linear_angular_velocity_(1));
-  Eigen::Vector2d predicted_v = drive_model_.ForwardDynamics(
+  Eigen::Vector2d predicted_a = drive_model_.ForwardDynamics(
       linear_angular_velocity_,
-      Eigen::Vector2d(output->left_setpoint() * 12,
-                      output->right_setpoint() * 12),
-      true);
-  status->set_pred_lv(predicted_v(0));
-  status->set_pred_rv(predicted_v(0));
+      Eigen::Vector2d(input->left_voltage(), input->right_voltage()), true);
+  status->set_pred_lin_accel(predicted_a(0));
+  status->set_pred_ang_accel(predicted_a(1));
+  status->set_estimated_lin_accel(linear_angular_accel(0));
+  status->set_estimated_ang_accel(linear_angular_accel(1));
 
   output->set_high_gear(goal->high_gear());
 

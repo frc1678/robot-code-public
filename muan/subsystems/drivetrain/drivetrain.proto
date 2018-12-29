@@ -4,11 +4,6 @@ option cc_enable_arenas = true;
 
 package muan.subsystems.drivetrain;
 
-message Constraints {
-  required double max_velocity = 1;
-  required double max_acceleration = 2;
-}
-
 message DrivetrainInput {
   required uint64 timestamp = 1;
   
@@ -18,7 +13,10 @@ message DrivetrainInput {
   required double left_velocity = 4;
   required double right_velocity = 5;
 
-  required double gyro = 6;
+  required double left_voltage = 6;
+  required double right_voltage = 7;
+
+  required double gyro = 8;
 }
 
 enum TalonOutput {
@@ -39,6 +37,13 @@ message DrivetrainOutput {
   optional double right_setpoint_ff = 6;
 
   required bool high_gear = 7;
+}
+
+enum ControlMode {
+    PATH_FOLLOWING = 0;
+    POINT_TURN = 1;
+    DISTANCE = 2;
+    LEFT_RIGHT = 3;
 }
 
 message DrivetrainStatus {
@@ -66,10 +71,15 @@ message DrivetrainStatus {
   optional double profiled_velocity_goal = 16;
   optional double adjusted_velocity_goal = 17;
 
-  optional double pred_lv = 18;
-  optional double pred_rv = 19;
+  optional double pred_lin_accel = 18;
+  optional double pred_ang_accel = 19;
 
-  optional bool profile_complete = 20;
+  optional double estimated_lin_accel = 20;
+  optional double estimated_ang_accel = 21;
+
+  optional bool profile_complete = 22;
+
+  optional ControlMode closed_loop_control_mode = 23;
 }
 
 message DrivetrainGoal {
@@ -94,8 +104,14 @@ message DrivetrainGoal {
     optional double final_velocity = 8;
     optional double final_angular_velocity = 9;
 
-    optional Constraints linear_constraints = 10;
-    optional Constraints angular_constraints = 11;
+    optional double max_linear_velocity = 10;
+    optional double max_linear_accel = 11;
+    optional double max_centripetal_accel = 12;
+  }
+
+  message LeftRightGoal {
+    required double left_goal = 1;
+    required double right_goal = 2;
   }
 
   required bool high_gear = 2;
@@ -103,5 +119,8 @@ message DrivetrainGoal {
   oneof goal {
     TeleopGoal teleop_goal = 3;
     PathGoal path_goal = 4;
+    double point_turn_goal = 5;
+    double distance_goal = 6;
+    LeftRightGoal left_right_goal = 7;
   }
 }

@@ -34,6 +34,8 @@ class Drivetrain {
 
   Eigen::Vector2d linear_angular_velocity_;
 
+  Eigen::Vector2d left_right_position_;
+
   bool high_gear_;
 
   DrivetrainModel drive_model_;

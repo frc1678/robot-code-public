@@ -10,7 +10,8 @@ using muan::control::HermiteSpline;
 ClosedLoopDrive::ClosedLoopDrive(DrivetrainConfig dt_config,
                                  Eigen::Vector2d* cartesian_position,
                                  double* integrated_heading,
-                                 Eigen::Vector2d* linear_angular_velocity)
+                                 Eigen::Vector2d* linear_angular_velocity,
+                                 Eigen::Vector2d* left_right_position)
     : model_{dt_config.drive_properties,
              DriveTransmission(dt_config.low_gear_properties),
              DriveTransmission(dt_config.high_gear_properties)},
@@ -18,9 +19,42 @@ ClosedLoopDrive::ClosedLoopDrive(DrivetrainConfig dt_config,
       dt_config_{dt_config},
       cartesian_position_{cartesian_position},
       integrated_heading_{integrated_heading},
-      linear_angular_velocity_{linear_angular_velocity} {}
+      linear_angular_velocity_{linear_angular_velocity},
+      left_right_position_{left_right_position} {}
 
 void ClosedLoopDrive::SetGoal(const GoalProto& goal) {
+  if (goal->has_point_turn_goal()) {
+    if (goal->point_turn_goal() != point_turn_goal_) {
+      point_turn_goal_ = goal->point_turn_goal();
+      prev_heading_ = *integrated_heading_;
+      prev_left_right_ = *left_right_position_;
+    }
+    control_mode_ = ControlMode::POINT_TURN;
+    high_gear_ = false;
+    return;
+  }
+
+  if (goal->has_distance_goal()) {
+    if (goal->distance_goal() != distance_goal_) {
+      distance_goal_ = goal->distance_goal();
+      prev_heading_ = *integrated_heading_;
+      prev_left_right_ = *left_right_position_;
+    }
+    control_mode_ = ControlMode::DISTANCE;
+    high_gear_ = false;
+    return;
+  }
+
+  if (goal->has_left_right_goal()) {
+    left_pos_goal_ = goal->left_right_goal().left_goal();
+    right_pos_goal_ = goal->left_right_goal().right_goal();
+
+    control_mode_ = ControlMode::LEFT_RIGHT;
+    high_gear_ = false;
+    return;
+  }
+
+  control_mode_ = ControlMode::PATH_FOLLOWING;
   const auto path_goal = goal->path_goal();
   const Pose goal_pose{
       Eigen::Vector3d(path_goal.x(), path_goal.y(), path_goal.heading())};
@@ -44,17 +78,17 @@ void ClosedLoopDrive::SetGoal(const GoalProto& goal) {
                            path_goal.final_angular_velocity()};
 
   const double max_velocity =
-      path_goal.has_linear_constraints()
-          ? path_goal.linear_constraints().max_velocity()
+      path_goal.has_max_linear_velocity()
+          ? path_goal.max_linear_velocity()
           : dt_config_.max_velocity;
   const double max_voltage = path_goal.max_voltage();
   const double max_acceleration =
-      path_goal.has_linear_constraints()
-          ? path_goal.linear_constraints().max_acceleration()
+      path_goal.has_max_linear_accel()
+          ? path_goal.max_linear_accel()
           : dt_config_.max_acceleration;
   const double max_centripetal_acceleration =
-      path_goal.has_angular_constraints()
-          ? path_goal.angular_constraints().max_acceleration()
+      path_goal.has_max_centripetal_accel()
+          ? path_goal.max_centripetal_accel()
           : dt_config_.max_centripetal_acceleration;
 
   const double initial_velocity = (*linear_angular_velocity_)(0);
@@ -74,6 +108,51 @@ void ClosedLoopDrive::SetGoal(const GoalProto& goal) {
 }
 
 void ClosedLoopDrive::Update(OutputProto* output, StatusProto* status) {
+  if (control_mode_ == ControlMode::POINT_TURN) {
+    UpdatePointTurn(output, status);
+  } else if (control_mode_ == ControlMode::DISTANCE) {
+    UpdateDistance(output, status);
+  } else if (control_mode_ == ControlMode::LEFT_RIGHT) {
+    UpdateLeftRightManual(output, status);
+  } else if (control_mode_ == ControlMode::PATH_FOLLOWING) {
+    UpdatePathFollower(output, status);
+  }
+}
+
+void ClosedLoopDrive::UpdatePointTurn(OutputProto* output,
+                                      StatusProto* status) {
+  Eigen::Vector2d delta = model_.InverseKinematics(
+      Eigen::Vector2d(0, point_turn_goal_ - prev_heading_));
+
+  (*status)->set_heading_error(point_turn_goal_ - *integrated_heading_);
+  (*status)->set_closed_loop_control_mode(control_mode_);
+
+  (*output)->set_output_type(POSITION);
+  (*output)->set_left_setpoint(delta(0) + prev_left_right_(0));
+  (*output)->set_right_setpoint(delta(1) + prev_left_right_(1));
+}
+
+void ClosedLoopDrive::UpdateDistance(OutputProto* output, StatusProto* status) {
+  Eigen::Vector2d delta = model_.InverseKinematics(Eigen::Vector2d(distance_goal_, 0));
+
+  (*status)->set_closed_loop_control_mode(control_mode_);
+
+  (*output)->set_output_type(POSITION);
+  (*output)->set_left_setpoint(delta(0) + prev_left_right_(0));
+  (*output)->set_right_setpoint(delta(1) + prev_left_right_(1));
+}
+
+void ClosedLoopDrive::UpdateLeftRightManual(OutputProto* output,
+                                            StatusProto* status) {
+  (*status)->set_closed_loop_control_mode(control_mode_);
+
+  (*output)->set_output_type(POSITION);
+  (*output)->set_left_setpoint(left_pos_goal_);
+  (*output)->set_right_setpoint(right_pos_goal_);
+}
+
+void ClosedLoopDrive::UpdatePathFollower(OutputProto* output,
+                                         StatusProto* status) {
   const Pose current{*cartesian_position_, *integrated_heading_};
   const Trajectory::TimedPose goal = trajectory_.Advance(dt_config_.dt);
   const Pose error = goal.pose.pose() - current;
@@ -86,7 +165,8 @@ void ClosedLoopDrive::Update(OutputProto* output, StatusProto* status) {
   goal_accel(0) = goal.a;
   goal_accel(1) = goal.pose.curvature() * goal.a;
 
-  auto setpoint = controller_.Update(goal_velocity, goal_accel, current, error, high_gear_);
+  auto setpoint =
+      controller_.Update(goal_velocity, goal_accel, current, error, high_gear_);
 
   (*status)->set_x_error(error.Get()(0));
   (*status)->set_y_error(error.Get()(1));
@@ -107,8 +187,10 @@ void ClosedLoopDrive::Update(OutputProto* output, StatusProto* status) {
   (*output)->set_output_type(VELOCITY);
   (*output)->set_left_setpoint(setpoint.velocity(0));
   (*output)->set_right_setpoint(setpoint.velocity(1));
-  (*output)->set_left_setpoint_ff(trajectory_.done() ? 0 : setpoint.feedforwards(0));
-  (*output)->set_right_setpoint_ff(trajectory_.done() ? 0 : setpoint.feedforwards(1));
+  (*output)->set_left_setpoint_ff(
+      trajectory_.done() ? 0 : setpoint.feedforwards(0));
+  (*output)->set_right_setpoint_ff(
+      trajectory_.done() ? 0 : setpoint.feedforwards(1));
 }
 
 }  // namespace drivetrain
