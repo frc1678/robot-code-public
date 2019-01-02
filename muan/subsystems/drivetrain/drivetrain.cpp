@@ -69,21 +69,21 @@ void Drivetrain::Update() {
   cartesian_position_(0) += std::cos(integrated_heading_) * delta_linear;
   cartesian_position_(1) += std::sin(integrated_heading_) * delta_linear;
 
-  if (!goal_reader_.ReadLastMessage(&goal)) {
-    // If there isn't a goal, we're done -- all we need is odometry
-    return;
-  }
+  if (goal_reader_.ReadLastMessage(&goal)) {
+    bool in_closed_loop =
+        (goal->has_path_goal() || goal->has_point_turn_goal() ||
+         goal->has_distance_goal() || goal->has_left_right_goal()) &&
+        driver_station->is_sys_active();
+    if (in_closed_loop) {
+      closed_loop_.SetGoal(goal);
+      closed_loop_.Update(&output, &status);
+    } else {
+      open_loop_.SetGoal(goal);
+      open_loop_.Update(&output);
+    }
 
-  bool in_closed_loop =
-      (goal->has_path_goal() || goal->has_point_turn_goal() ||
-       goal->has_distance_goal() || goal->has_left_right_goal()) &&
-      driver_station->is_sys_active();
-  if (in_closed_loop) {
-    closed_loop_.SetGoal(goal);
-    closed_loop_.Update(&output, &status);
-  } else {
-    open_loop_.SetGoal(goal);
-    open_loop_.Update(&output);
+    output->set_high_gear(goal->high_gear());
+    output_queue_->WriteMessage(output);
   }
 
   status->set_estimated_x_position(cartesian_position_(0));
@@ -99,10 +99,8 @@ void Drivetrain::Update() {
   status->set_estimated_lin_accel(linear_angular_accel(0));
   status->set_estimated_ang_accel(linear_angular_accel(1));
 
-  output->set_high_gear(goal->high_gear());
 
   status_queue_->WriteMessage(status);
-  output_queue_->WriteMessage(output);
 }
 
 }  // namespace drivetrain

@@ -162,13 +162,13 @@ void DrivetrainInterface::WriteActuators() {
       left_master_.SelectProfileSlot(kVelocitySlot, 0);
       right_master_.SelectProfileSlot(kVelocitySlot, 0);
       left_master_.Set(ControlMode::Velocity,
-                       outputs->left_setpoint() * kDriveConversionFactor * 0.1,
-                       DemandType_ArbitraryFeedForward,
-                       outputs->left_setpoint_ff() / 12.);
+                       outputs->left_setpoint() * kDriveConversionFactor * 0.1);
+                       /* DemandType_ArbitraryFeedForward, */
+                       /* outputs->left_setpoint_ff() / 12.); */
       right_master_.Set(
           ControlMode::Velocity,
-          outputs->right_setpoint() * kDriveConversionFactor * 0.1,
-          DemandType_ArbitraryFeedForward, outputs->right_setpoint_ff() / 12.);
+          outputs->right_setpoint() * kDriveConversionFactor * 0.1);
+          /* DemandType_ArbitraryFeedForward, outputs->right_setpoint_ff() / 12.); */
       break;
   }
 
