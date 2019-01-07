@@ -141,6 +141,7 @@ extern "C" {
 	int EXPORT_FUNC setNewDataOccurRef(uint32_t refnum);
 
 	int EXPORT_FUNC FRC_NetworkCommunication_getControlWord(struct ControlWord_t *controlWord);
+	int EXPORT_FUNC FRC_NetworkCommunication_getWatchdogActive(void);
 	int EXPORT_FUNC FRC_NetworkCommunication_getAllianceStation(enum AllianceStationID_t *allianceStation);
 	int EXPORT_FUNC FRC_NetworkCommunication_getMatchInfo(char *eventName, enum MatchType_t *matchType, uint16_t *matchNumber, uint8_t *replayNumber,
 		uint8_t *gameSpecificMessage, uint16_t *gameSpecificMessageSize);

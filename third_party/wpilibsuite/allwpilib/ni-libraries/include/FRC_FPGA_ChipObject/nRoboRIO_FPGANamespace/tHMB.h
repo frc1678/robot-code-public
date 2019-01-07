@@ -1,15 +1,15 @@
 // Copyright (c) National Instruments 2008.  All Rights Reserved.
 // Do Not Edit... this file is generated!
 
-#ifndef __nFRC_2018_18_0_8_HMB_h__
-#define __nFRC_2018_18_0_8_HMB_h__
+#ifndef __nFRC_2019_19_0_2_HMB_h__
+#define __nFRC_2019_19_0_2_HMB_h__
 
 #include "../tSystem.h"
 #include "../tSystemInterface.h"
 
 namespace nFPGA
 {
-namespace nFRC_2018_18_0_8
+namespace nFRC_2019_19_0_2
 {
 
 class tHMB
@@ -50,7 +50,15 @@ public:
          unsigned Enables_Encoders_High : 1;
          unsigned Enables_EncoderTimers_Low : 1;
          unsigned Enables_EncoderTimers_High : 1;
+         unsigned Enables_Interrupts : 1;
+         unsigned Enables_PWM : 1;
+         unsigned Enables_PWM_MXP : 1;
+         unsigned Enables_Relay_DO_AO : 1;
 #else
+         unsigned Enables_Relay_DO_AO : 1;
+         unsigned Enables_PWM_MXP : 1;
+         unsigned Enables_PWM : 1;
+         unsigned Enables_Interrupts : 1;
          unsigned Enables_EncoderTimers_High : 1;
          unsigned Enables_EncoderTimers_Low : 1;
          unsigned Enables_Encoders_High : 1;
@@ -74,7 +82,7 @@ public:
 #endif
       };
       struct{
-         unsigned value : 20;
+         unsigned value : 24;
       };
    } tConfig;
 
@@ -113,6 +121,10 @@ public:
    virtual void writeConfig_Enables_Encoders_High(bool value, tRioStatusCode *status) = 0;
    virtual void writeConfig_Enables_EncoderTimers_Low(bool value, tRioStatusCode *status) = 0;
    virtual void writeConfig_Enables_EncoderTimers_High(bool value, tRioStatusCode *status) = 0;
+   virtual void writeConfig_Enables_Interrupts(bool value, tRioStatusCode *status) = 0;
+   virtual void writeConfig_Enables_PWM(bool value, tRioStatusCode *status) = 0;
+   virtual void writeConfig_Enables_PWM_MXP(bool value, tRioStatusCode *status) = 0;
+   virtual void writeConfig_Enables_Relay_DO_AO(bool value, tRioStatusCode *status) = 0;
    virtual tConfig readConfig(tRioStatusCode *status) = 0;
    virtual bool readConfig_Enables_AI0_Low(tRioStatusCode *status) = 0;
    virtual bool readConfig_Enables_AI0_High(tRioStatusCode *status) = 0;
@@ -134,6 +146,10 @@ public:
    virtual bool readConfig_Enables_Encoders_High(tRioStatusCode *status) = 0;
    virtual bool readConfig_Enables_EncoderTimers_Low(tRioStatusCode *status) = 0;
    virtual bool readConfig_Enables_EncoderTimers_High(tRioStatusCode *status) = 0;
+   virtual bool readConfig_Enables_Interrupts(tRioStatusCode *status) = 0;
+   virtual bool readConfig_Enables_PWM(tRioStatusCode *status) = 0;
+   virtual bool readConfig_Enables_PWM_MXP(tRioStatusCode *status) = 0;
+   virtual bool readConfig_Enables_Relay_DO_AO(tRioStatusCode *status) = 0;
 
 
 
@@ -146,4 +162,4 @@ private:
 }
 }
 
-#endif // __nFRC_2018_18_0_8_HMB_h__
+#endif // __nFRC_2019_19_0_2_HMB_h__

@@ -5,6 +5,7 @@
 #include <atomic>
 #include <cstdint>
 #include "WPILib.h"
+#include "hal/HAL.h"
 
 namespace muan {
 

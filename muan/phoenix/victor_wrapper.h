@@ -101,7 +101,7 @@ class VictorWrapper {
 
   inline double voltage() { return victor_.GetMotorOutputVoltage(); }
   inline double percent() { return victor_.GetMotorOutputPercent(); }
-  inline double current() { return victor_.GetOutputCurrent(); }
+  /* inline double current() { return victor_.GetOutputCurrent(); } */
   inline VictorSPX* victor() { return &victor_; }
 
  protected:

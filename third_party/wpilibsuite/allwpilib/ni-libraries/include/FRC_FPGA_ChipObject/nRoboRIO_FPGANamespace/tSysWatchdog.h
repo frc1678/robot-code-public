@@ -1,15 +1,15 @@
 // Copyright (c) National Instruments 2008.  All Rights Reserved.
 // Do Not Edit... this file is generated!
 
-#ifndef __nFRC_2018_18_0_8_SysWatchdog_h__
-#define __nFRC_2018_18_0_8_SysWatchdog_h__
+#ifndef __nFRC_2019_19_0_2_SysWatchdog_h__
+#define __nFRC_2019_19_0_2_SysWatchdog_h__
 
 #include "../tSystem.h"
 #include "../tSystemInterface.h"
 
 namespace nFPGA
 {
-namespace nFRC_2018_18_0_8
+namespace nFRC_2019_19_0_2
 {
 
 class tSysWatchdog
@@ -63,15 +63,15 @@ public:
    {
    } tCommand_IfaceConstants;
 
-   virtual void writeCommand(unsigned short value, tRioStatusCode *status) = 0;
-   virtual unsigned short readCommand(tRioStatusCode *status) = 0;
+   virtual void writeCommand(unsigned int value, tRioStatusCode *status) = 0;
+   virtual unsigned int readCommand(tRioStatusCode *status) = 0;
 
 
    typedef enum
    {
    } tChallenge_IfaceConstants;
 
-   virtual unsigned char readChallenge(tRioStatusCode *status) = 0;
+   virtual unsigned int readChallenge(tRioStatusCode *status) = 0;
 
 
    typedef enum
@@ -106,4 +106,4 @@ private:
 }
 }
 
-#endif // __nFRC_2018_18_0_8_SysWatchdog_h__
+#endif // __nFRC_2019_19_0_2_SysWatchdog_h__

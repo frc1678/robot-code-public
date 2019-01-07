@@ -5,11 +5,12 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include "HAL/Relay.h"
+#include "hal/Relay.h"
 
 #include "DigitalInternal.h"
-#include "HAL/handles/IndexedHandleResource.h"
+#include "HALInitializer.h"
 #include "PortsInternal.h"
+#include "hal/handles/IndexedHandleResource.h"
 
 using namespace hal;
 
@@ -43,6 +44,7 @@ extern "C" {
 
 HAL_RelayHandle HAL_InitializeRelayPort(HAL_PortHandle portHandle, HAL_Bool fwd,
                                         int32_t* status) {
+  hal::init::CheckInit();
   initializeDigital(status);
 
   if (*status != 0) return HAL_kInvalidHandle;
@@ -91,10 +93,6 @@ HAL_Bool HAL_CheckRelayChannel(int32_t channel) {
   return channel < kNumRelayHeaders && channel >= 0;
 }
 
-/**
- * Set the state of a relay.
- * Set the state of a relay output.
- */
 void HAL_SetRelay(HAL_RelayHandle relayPortHandle, HAL_Bool on,
                   int32_t* status) {
   auto port = relayHandles->Get(relayPortHandle);
@@ -125,9 +123,6 @@ void HAL_SetRelay(HAL_RelayHandle relayPortHandle, HAL_Bool on,
   }
 }
 
-/**
- * Get the current state of the relay channel
- */
 HAL_Bool HAL_GetRelay(HAL_RelayHandle relayPortHandle, int32_t* status) {
   auto port = relayHandles->Get(relayPortHandle);
   if (port == nullptr) {

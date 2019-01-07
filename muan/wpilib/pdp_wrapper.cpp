@@ -1,6 +1,7 @@
 #include "muan/wpilib/pdp_wrapper.h"
 #include "muan/logging/logger.h"
 #include "third_party/aos/common/die.h"
+#include "hal/HAL.h"
 
 namespace muan {
 namespace wpilib {

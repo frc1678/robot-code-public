@@ -97,11 +97,11 @@ toolchain {
   target_system_name: "roborio"
   toolchain_identifier: "roborio_linux"
 
-  tool_path { name: "ar" path: "/usr/bin/arm-frc-linux-gnueabi-ar" }
-  tool_path { name: "compat-ld" path: "/usr/bin/arm-frc-linux-gnueabi-ld" }
-  tool_path { name: "cpp" path: "/usr/bin/arm-frc-linux-gnueabi-cpp" }
-  tool_path { name: "dwp" path: "/usr/bin/arm-frc-linux-gnueabi-dwp" }
-  tool_path { name: "gcc" path: "/usr/bin/arm-frc-linux-gnueabi-gcc" }
+  tool_path { name: "ar" path: "/usr/roborio/bin/arm-frc2019-linux-gnueabi-ar" }
+  tool_path { name: "compat-ld" path: "/usr/roborio/bin/arm-frc2019-linux-gnueabi-ld" }
+  tool_path { name: "cpp" path: "/usr/roborio/bin/arm-frc2019-linux-gnueabi-cpp" }
+  tool_path { name: "dwp" path: "/usr/roborio/bin/arm-frc2019-linux-gnueabi-dwp" }
+  tool_path { name: "gcc" path: "/usr/roborio/bin/arm-frc2019-linux-gnueabi-gcc" }
   cxx_flag: "-std=c++1y"
   linker_flag: "-lstdc++"
 
@@ -109,24 +109,25 @@ toolchain {
   # used by gcc. That works because bazel currently doesn't track files at
   # absolute locations and has no remote execution, yet. However, this will need
   # to be fixed, maybe with auto-detection?
-  cxx_builtin_include_directory: "/usr/arm-frc-linux-gnueabi/usr/include"
+  cxx_builtin_include_directory: "/usr/roborio/arm-frc2019-linux-gnueabi/usr/include"
 
-  cxx_builtin_include_directory: "/usr/arm-frc-linux-gnueabi/include/c++"
-  cxx_builtin_include_directory: "/usr/lib/gcc/arm-frc-linux-gnueabi"
-  cxx_builtin_include_directory: "/usr/lib/x86_64-linux-gnu/gcc/arm-frc-linux-gnueabi"
+  cxx_builtin_include_directory: "/usr/roborio/arm-frc2019-linux-gnueabi/include/c++"
+  cxx_builtin_include_directory: "/usr/roborio/libexec/gcc/arm-frc2019-linux-gnueabi"
+  cxx_builtin_include_directory: "/usr/roborio/arm-frc2019-linux-gnueabi/usr/lib/gcc/arm-frc2019-linux-gnueabi/6.3.0/include"
+  cxx_builtin_include_directory: "/usr/roborio/arm-frc2019-linux-gnueabi/usr/lib/gcc/arm-frc2019-linux-gnueabi/6.3.0/include-fixed"
 
   tool_path { name: "gcov" path: "/usr/bin/gcov" }
 
   # C(++) compiles invoke the compiler (as that is the one knowing where
   # to find libraries), but we provide LD so other rules can invoke the linker.
-  tool_path { name: "ld" path: "/usr/bin/arm-frc-linux-gnueabi-ld" }
+  tool_path { name: "ld" path: "/usr/roborio/bin/arm-frc2019-linux-gnueabi-ld" }
 
-  tool_path { name: "nm" path: "/usr/bin/arm-frc-linux-gnueabi-nm" }
-  tool_path { name: "objcopy" path: "/usr/bin/arm-frc-linux-gnueabi-objcopy" }
+  tool_path { name: "nm" path: "/usr/bin/arm-frc2019-linux-gnueabi-nm" }
+  tool_path { name: "objcopy" path: "/usr/roborio/bin/arm-frc2019-linux-gnueabi-objcopy" }
   objcopy_embed_flag: "-I"
   objcopy_embed_flag: "binary"
-  tool_path { name: "objdump" path: "/usr/bin/arm-frc-linux-gnueabi-objdump" }
-  tool_path { name: "strip" path: "/usr/bin/arm-frc-linux-gnueabi-strip" }
+  tool_path { name: "objdump" path: "/usr/roborio/bin/arm-frc2019-linux-gnueabi-objdump" }
+  tool_path { name: "strip" path: "/usr/roborio/bin/arm-frc2019-linux-gnueabi-strip" }
 
   # Anticipated future default.
   unfiltered_cxx_flag: "-no-canonical-prefixes"

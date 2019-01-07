@@ -1,5 +1,6 @@
 #include <string>
 #include "WPILib.h"
+#include "hal/HAL.h"
 #include "muan/wpilib/ds_sender.h"
 
 namespace muan {
@@ -41,14 +42,14 @@ void DriverStationSender::Send() {
         static_cast<DriverStationStatus::MatchType>(match_info.matchType));
     status->set_match_number(match_info.matchNumber);
 
+    auto game_specific_message = reinterpret_cast<char*>(match_info.gameSpecificMessage);
     if (match_info.gameSpecificMessage &&
-        std::strlen(match_info.gameSpecificMessage) > 0 && gss_queue_) {
+        std::strlen(game_specific_message) > 0 && gss_queue_) {
       GameSpecificStringProto gss;
-      gss->set_code(match_info.gameSpecificMessage);
+      gss->set_code(game_specific_message);
       gss_queue_->WriteMessage(gss);
     }
   }
-  HAL_FreeMatchInfo(&match_info);
 
   ds_queue_->WriteMessage(status);
 }

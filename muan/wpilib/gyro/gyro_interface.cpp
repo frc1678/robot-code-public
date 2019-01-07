@@ -14,7 +14,7 @@ GyroInterface::GyroInterface() : gyro_(new SPI(SPI::kOnboardCS0)) {
   gyro_->SetClockRate(4e6);
   gyro_->SetChipSelectActiveLow();
   gyro_->SetClockActiveHigh();
-  gyro_->SetSampleDataOnRising();
+  gyro_->SetSampleDataOnLeadingEdge();
   gyro_->SetMSBFirst();
 }
 

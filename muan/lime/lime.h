@@ -6,9 +6,9 @@
 #include "muan/logging/logger.h"
 #include "muan/queues/queue_manager.h"
 #include "muan/wpilib/queue_types.h"
-#include "third_party/wpilibsuite/ntcore/src/main/native/include/networktables/NetworkTable.h"
-#include "third_party/wpilibsuite/ntcore/src/main/native/include/networktables/NetworkTableEntry.h"
-#include "third_party/wpilibsuite/ntcore/src/main/native/include/networktables/NetworkTableInstance.h"
+#include "networktables/NetworkTable.h"
+#include "networktables/NetworkTableEntry.h"
+#include "networktables/NetworkTableInstance.h"
 
 namespace muan {
 namespace lime {

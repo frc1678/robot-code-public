@@ -6,7 +6,7 @@ namespace wpilib {
 
 PcmWrapper::PcmWrapper(int32_t module) : module_(module) {}
 
-PcmWrapper::PcmWrapper() : PcmWrapper(SensorBase::GetDefaultSolenoidModule()) {}
+PcmWrapper::PcmWrapper() : PcmWrapper(SensorUtil::GetDefaultSolenoidModule()) {}
 
 PcmWrapper::~PcmWrapper() {
   for (size_t i = 0; i < 8; i++) {
@@ -18,11 +18,11 @@ PcmWrapper::~PcmWrapper() {
 
 bool PcmWrapper::CreateSolenoid(uint8_t port) {
   // Mark this channel as initialized
-  if (!SensorBase::CheckSolenoidModule(module_)) {
+  if (!SensorUtil::CheckSolenoidModule(module_)) {
     return false;
   }
 
-  if (!SensorBase::CheckSolenoidChannel(port)) {
+  if (!SensorUtil::CheckSolenoidChannel(port)) {
     return false;
   }
 

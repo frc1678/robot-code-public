@@ -5,18 +5,18 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include "HAL/Notifier.h"
+#include "hal/Notifier.h"
 
 #include <chrono>
 
-#include <support/condition_variable.h>
-#include <support/mutex.h>
-#include <support/timestamp.h>
+#include <wpi/condition_variable.h>
+#include <wpi/mutex.h>
+#include <wpi/timestamp.h>
 
-#include "HAL/HAL.h"
-#include "HAL/cpp/fpga_clock.h"
-#include "HAL/cpp/make_unique.h"
-#include "HAL/handles/UnlimitedHandleResource.h"
+#include "HALInitializer.h"
+#include "hal/HAL.h"
+#include "hal/cpp/fpga_clock.h"
+#include "hal/handles/UnlimitedHandleResource.h"
 
 namespace {
 struct Notifier {
@@ -61,6 +61,7 @@ void InitializeNotifier() {
 extern "C" {
 
 HAL_NotifierHandle HAL_InitializeNotifier(int32_t* status) {
+  hal::init::CheckInit();
   std::shared_ptr<Notifier> notifier = std::make_shared<Notifier>();
   HAL_NotifierHandle handle = notifierHandles->Allocate(notifier);
   if (handle == HAL_kInvalidHandle) {
@@ -136,6 +137,9 @@ uint64_t HAL_WaitForNotifierAlarm(HAL_NotifierHandle notifierHandle,
     } else {
       waitTime = notifier->waitTime * 1e-6;
     }
+
+    // Don't wait twice
+    notifier->updatedAlarm = false;
 
     auto timeoutTime =
         hal::fpga_clock::epoch() + std::chrono::duration<double>(waitTime);
