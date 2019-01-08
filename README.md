@@ -1,5 +1,5 @@
 # 1678 Robot Code
-[![Buildkite](https://badge.buildkite.com/f8ab8cc73e5ea894cabdbf5d53b97cbaee3665dc043dbc2231.svg)](https://buildkite.com/citrus-circuits/robot-code)
+[![Buildkite](https://badge.buildkite.com/f8ab8cc73e5ea894cabdbf5d53b97cbaee3665dc043dbc2231.svg?branch=master)](https://buildkite.com/citrus-circuits/robot-code)
 
 This repository holds all of our robot code, starting from the 2016 offseason.
 
