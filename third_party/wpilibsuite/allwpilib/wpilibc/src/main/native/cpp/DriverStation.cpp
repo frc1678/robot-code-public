@@ -119,8 +119,8 @@ bool DriverStation::GetStickButton(int stick, int button) {
   HAL_GetJoystickButtons(stick, &buttons);
 
   if (button > buttons.count) {
-    ReportJoystickUnpluggedWarning(
-        "Joystick Button missing, check if all controllers are plugged in");
+    /* ReportJoystickUnpluggedWarning( */
+    /*     "Joystick Button missing, check if all controllers are plugged in"); */
     return false;
   }
 
@@ -142,8 +142,8 @@ bool DriverStation::GetStickButtonPressed(int stick, int button) {
   HAL_GetJoystickButtons(stick, &buttons);
 
   if (button > buttons.count) {
-    ReportJoystickUnpluggedWarning(
-        "Joystick Button missing, check if all controllers are plugged in");
+    /* ReportJoystickUnpluggedWarning( */
+    /*     "Joystick Button missing, check if all controllers are plugged in"); */
     return false;
   }
   std::unique_lock<wpi::mutex> lock(m_buttonEdgeMutex);
@@ -171,8 +171,8 @@ bool DriverStation::GetStickButtonReleased(int stick, int button) {
   HAL_GetJoystickButtons(stick, &buttons);
 
   if (button > buttons.count) {
-    ReportJoystickUnpluggedWarning(
-        "Joystick Button missing, check if all controllers are plugged in");
+    /* ReportJoystickUnpluggedWarning( */
+    /*     "Joystick Button missing, check if all controllers are plugged in"); */
     return false;
   }
   std::unique_lock<wpi::mutex> lock(m_buttonEdgeMutex);
@@ -199,8 +199,8 @@ double DriverStation::GetStickAxis(int stick, int axis) {
   HAL_GetJoystickAxes(stick, &axes);
 
   if (axis >= axes.count) {
-    ReportJoystickUnpluggedWarning(
-        "Joystick Axis missing, check if all controllers are plugged in");
+    /* ReportJoystickUnpluggedWarning( */
+    /*     "Joystick Axis missing, check if all controllers are plugged in"); */
     return 0.0;
   }
 
@@ -221,8 +221,8 @@ int DriverStation::GetStickPOV(int stick, int pov) {
   HAL_GetJoystickPOVs(stick, &povs);
 
   if (pov >= povs.count) {
-    ReportJoystickUnpluggedWarning(
-        "Joystick POV missing, check if all controllers are plugged in");
+    /* ReportJoystickUnpluggedWarning( */
+    /*     "Joystick POV missing, check if all controllers are plugged in"); */
     return -1;
   }
 

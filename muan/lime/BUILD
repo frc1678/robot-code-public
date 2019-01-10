@@ -25,7 +25,6 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":lime_queues",
-        "//c2018/subsystems/score_subsystem:score_subsystem_queues",
         "//muan/queues:queue_manager",
         "//muan/wpilib:wpilib_queues",
         "//third_party/wpilibsuite:ntcore",
