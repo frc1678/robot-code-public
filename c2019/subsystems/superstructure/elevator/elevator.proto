@@ -1,0 +1,36 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+package c2019.elevator;
+
+enum State {
+  IDLE = 0;
+  CALIBRATING = 1;
+  AT_GOAL = 2;
+  MOVING = 3;
+  CLIMBING = 4;
+  BUDDY_CLIMBING = 5;
+  BRAKE = 6;
+}
+
+message ElevatorStatus {
+  required uint64 timestamp = 1;
+  required double elevator_height = 2;
+  required bool is_calibrated = 3;
+  required State state = 4;
+}
+
+enum TalonOutput {
+  OPEN_LOOP = 0;
+  POSITION = 1;
+}
+
+message ElevatorOutput {
+  required uint64 timestamp = 1;
+  required double elevator_setpoint = 2;
+  optional double elevator_ff = 3;
+  required bool crawler_solenoid = 4;
+  required double crawler_voltage = 5;
+  required TalonOutput output_type = 6;
+}

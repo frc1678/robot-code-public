@@ -1,0 +1,22 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+package c2019.cargo_intake;
+
+enum State {
+  IDLE = 0;
+  INTAKING = 1;
+  CARRYING = 2;
+  OUTTAKING = 3;
+}
+
+message CargoIntakeStatus {
+  required uint64 timestamp = 1;
+  required State state = 2;
+}
+
+message CargoIntakeOutput {
+  required uint64 timestamp = 1;
+  required double roller_voltage = 2;
+}

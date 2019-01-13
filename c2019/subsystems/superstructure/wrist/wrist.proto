@@ -1,0 +1,31 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+package c2019.wrist;
+
+enum State {
+  IDLE = 0;
+  CALIBRATING = 1;
+  MOVING = 2;
+  AT_GOAL = 3;
+}
+
+message WristStatus {
+  required uint64 timestamp = 1;
+  required double wrist_angle = 2;
+  required bool is_calibrated = 3;
+  required State state = 4;
+}
+
+enum TalonOutput {
+  OPEN_LOOP = 0;
+  POSITION = 1;
+}
+
+message WristOutput {
+  required uint64 timestamp = 1;
+  required double wrist_setpoint = 2;
+  optional double wrist_ff = 3;
+  required TalonOutput output_type = 4;
+}

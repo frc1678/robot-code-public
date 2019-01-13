@@ -1,0 +1,22 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+package c2019.winch;
+
+enum State {
+  IDLE = 0;
+  WINCHING = 1;
+  HOLDING = 2;
+}
+
+message WinchStatus {
+  required uint64 timestamp = 1;
+  required State state = 2;
+}
+
+message WinchOutput {
+  required uint64 timestamp = 1;
+  required double winch_voltage = 2;
+  required bool fork_solenoid = 3	; // For the forks
+}

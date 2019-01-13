@@ -1,0 +1,82 @@
+syntax = "proto2";
+
+package c2019.superstructure;
+
+option cc_enable_arenas = true;
+
+enum State {
+  IDLE = 0;
+  HUMAN_PLAYER_HATCH = 1;
+  HUMAN_PLAYER_CARGO = 2;
+  GROUND_HATCH = 3;
+  GROUND_CARGO = 4;
+  SCORE_HATCH = 5;
+  SCORE_CARGO = 6;
+  HANDOFF = 7;
+  CLIMBING = 8;
+  BUDDY_CLIMBING = 9;
+}
+
+enum CargoScoreState {
+  CARGO_NONE = 0;
+  CARGO_ROCKET_FIRST = 1;
+  cARGO_ROCKET_FIRST_BACKWARDS = 2;
+  CARGO_ROCKET_SECOND = 3;
+  CARGO_ROCKET_THIRD = 4;
+  CARGO_SHIP = 5;
+}
+
+enum HatchScoreState {
+  HATCH_NONE = 0;
+  HATCH_ROCKET_FIRST = 1;
+  HATCH_ROCKET_FIRST_BACKWARDS = 2;
+  HATCH_ROCKET_SECOND = 3;
+  HATCH_ROCKET_THIRD = 4;
+  HATCH_SHIP = 5;
+}
+
+message SuperstructureStatus {
+  required uint64 timestamp = 1;
+  required State superstructure_state = 2;
+  required CargoScoreState cargo_score_state = 3;
+  required HatchScoreState hatch_score_state = 4;
+}
+
+message SuperstructureInput {
+  required bool hatch_intake_proxy = 1;
+  required bool hatch_holding_proxy = 2;
+  required bool cargo_proxy = 3;
+  required double hatch_ground_current = 4;
+  required double elevator_encoder = 5;
+  required double wrist_encoder = 6;
+  required bool elevator_hall = 7;
+  required bool wrist_hall = 8;
+}
+
+message SuperstructureGoal {
+  required uint64 timestamp = 1;
+  required State superstructure_goal = 2;
+  required CargoScoreState cargo_score_goal = 3;
+  required HatchScoreState hatch_score_goal = 4;
+}
+
+enum TalonOutput {
+  OPEN_LOOP = 0;
+  POSITION = 1;
+}
+
+message SuperstructureOutput {
+  required bool arrow_solenoid = 1;
+  required bool arrow_pinch_solenoid = 2;
+  required double ground_hatch_voltage = 3;
+  required bool ground_snap_down = 4;
+  required TalonOutput elevator_setpoint_type = 5;
+  required TalonOutput wrist_setpoint_type = 6;
+  required double wrist_setpoint = 7;
+  required double elevator_setpoint = 8;
+  required double elevator_setpoint_ff = 9;
+  required double wrist_setpoint_ff = 10;
+  required bool roller_solenoid = 11;
+  required double roller_voltage = 12;
+  required double winch_voltage = 13;
+}

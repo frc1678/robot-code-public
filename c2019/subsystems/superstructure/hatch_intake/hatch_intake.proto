@@ -1,0 +1,22 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+package c2019.hatch_intake;
+
+enum State {
+  IDLE = 0;
+  INTAKING = 1;
+  CARRYING = 2;
+  OUTTAKING = 3;
+}
+
+message HatchIntakeStatus {
+  required uint64 timestamp = 1;
+  required State state = 2;
+}
+
+message HatchIntakeOutput {
+  required uint64 timestamp = 1;
+  required bool arrow_solenoid = 2;
+}
