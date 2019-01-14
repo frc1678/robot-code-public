@@ -18,7 +18,12 @@ message ElevatorStatus {
   required uint64 timestamp = 1;
   required double elevator_height = 2;
   required bool is_calibrated = 3;
-  required State state = 4;
+  required double elevator_velocity = 4;
+  required bool elevator_at_top = 5;
+  required double elevator_goal = 6;
+  required bool elevator_encoder_fault_detected = 7;
+  required bool elevator_calibrated = 8;
+  required State state = 9;
 }
 
 enum TalonOutput {
@@ -34,3 +39,15 @@ message ElevatorOutput {
   required double crawler_voltage = 5;
   required TalonOutput output_type = 6;
 }
+
+message ElevatorInput {
+  required uint64 timestamp = 1;
+  required double elevator_encoder = 2;
+  required double elevator_hall = 3;
+}
+
+message ElevatorGoal {
+  required uint64 timestamp = 1;
+  required double elevator_height = 2;
+}
+
