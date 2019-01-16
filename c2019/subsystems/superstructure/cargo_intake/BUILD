@@ -1,5 +1,5 @@
 load("//third_party/google/protobuf:protobuf.bzl", "cc_proto_library")
-
+   
 cc_library(
     name = "cargo_intake_queues",
     hdrs = ["queue_types.h"],

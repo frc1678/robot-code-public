@@ -20,3 +20,20 @@ message HatchIntakeOutput {
   required uint64 timestamp = 1;
   required bool arrow_solenoid = 2;
 }
+
+enum Goal {
+  NONE = 0;
+  INTAKE = 1;
+  HOLD = 2;
+  SCORE = 3;
+}
+
+message HatchIntakeGoal {
+  required uint64 timestamp = 1;
+  required Goal goal = 2;
+}
+
+message HatchIntakeInput {
+  required uint64 timestamp = 1;
+  required bool hatch_proxy = 2;
+}

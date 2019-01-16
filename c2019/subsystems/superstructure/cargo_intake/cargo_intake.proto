@@ -20,3 +20,20 @@ message CargoIntakeOutput {
   required uint64 timestamp = 1;
   required double roller_voltage = 2;
 }
+
+enum Goal {
+  NONE = 0;
+  INTAKE = 1;
+  HOLD = 2;
+  OUTTAKE = 3;
+}
+
+message CargoIntakeGoal {
+  required uint64 timestamp = 1;
+  required Goal goal = 2;
+}
+
+message CargoIntakeInput {
+  required uint64 timestamp = 1;
+  required bool cargo_proxy = 2;
+}

@@ -21,3 +21,21 @@ message GroundHatchIntakeOutput {
   required double roller_voltage = 2;
   required bool snap_down = 3;
 }
+
+enum Goal {
+  NONE = 0; 
+  INTAKE = 1; 
+  HOLD = 2;
+  OUTTAKE = 3;
+  LOOSE = 4;
+}
+
+message GroundHatchIntakeGoal {
+  required uint64 timestamp = 1;
+  required Goal goal = 2;
+}
+
+message GroundHatchIntakeInput {
+  required uint64 timestamp = 1;
+  required double current = 2;  
+}
