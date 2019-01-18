@@ -4,26 +4,15 @@ option cc_enable_arenas = true;
 
 package c2019.elevator;
 
-enum State {
-  IDLE = 0;
-  CALIBRATING = 1;
-  AT_GOAL = 2;
-  MOVING = 3;
-  CLIMBING = 4;
-  BUDDY_CLIMBING = 5;
-  BRAKE = 6;
-}
-
 message ElevatorStatus {
   required uint64 timestamp = 1;
-  required double elevator_height = 2;
+  required double height = 2;
   required bool is_calibrated = 3;
   required double elevator_velocity = 4;
   required bool elevator_at_top = 5;
   required double elevator_goal = 6;
   required bool elevator_encoder_fault_detected = 7;
-  required bool elevator_calibrated = 8;
-  required State state = 9;
+  required bool braked = 8;
 }
 
 enum TalonOutput {
@@ -37,17 +26,29 @@ message ElevatorOutput {
   optional double elevator_ff = 3;
   required bool crawler_solenoid = 4;
   required double crawler_voltage = 5;
-  required TalonOutput output_type = 6;
+  required TalonOutput elevator_output_type = 6;
+  required bool high_gear = 7;
+  required bool brake = 8;
 }
 
 message ElevatorInput {
   required uint64 timestamp = 1;
   required double elevator_encoder = 2;
-  required double elevator_hall = 3;
+  required double elevator_velocity = 3;
+  required double elevator_hall = 4;
+  required bool zeroed = 5;
+  required bool has_hatch = 6;
+  required bool has_cargo = 7;
+  required double elevator_voltage = 8;
+  required double elevator_current = 9;
 }
 
 message ElevatorGoal {
   required uint64 timestamp = 1;
-  required double elevator_height = 2;
+  required double height = 2;
+  required bool crawling = 3;
+  required bool high_gear = 4;
+  required bool crawler_down = 5;
+  required bool brake = 6;
 }
 
