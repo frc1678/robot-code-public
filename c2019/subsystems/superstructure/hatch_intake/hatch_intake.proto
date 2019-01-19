@@ -5,20 +5,21 @@ option cc_enable_arenas = true;
 package c2019.hatch_intake;
 
 enum State {
-  IDLE = 0;
-  INTAKING = 1;
-  CARRYING = 2;
-  OUTTAKING = 3;
+  INTAKING = 0;
+  CARRYING = 1;
+  OUTTAKING = 2;
 }
 
 message HatchIntakeStatus {
   required uint64 timestamp = 1;
   required State state = 2;
+  required bool has_hatch = 3;
 }
 
 message HatchIntakeOutput {
   required uint64 timestamp = 1;
-  required bool arrow_solenoid = 2;
+  required bool flute_solenoid = 2;
+  required bool backplate_solenoid = 3;
 }
 
 enum Goal {
