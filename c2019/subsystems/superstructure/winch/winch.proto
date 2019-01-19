@@ -4,17 +4,10 @@ option cc_enable_arenas = true;
 
 package c2019.winch;
 
-enum ClimbState {
-  IDLE = 0;
-  INITIALIZING = 1;
-  CLIMBING = 2;
-  DONE = 3;
-}
-
 enum ClimbType {
-  NONE = 1;
-  SOLO = 2;
-  BUDDY = 3;
+  NONE = 0;
+  SOLO = 1;
+  BUDDY = 2;
 }
 
 message WinchInput {
@@ -31,11 +24,12 @@ message WinchOutput {
 message WinchGoal {
   required uint64 timestamp = 1;
   required ClimbType climb_goal = 2;
-  required bool start_winching = 3;
+  required bool winch = 3;
 }
 
 message WinchStatus {
   required uint64 timestamp = 1;
-  required ClimbType climb_state = 2;
-  required ClimbState winch_state = 3;
+  required ClimbType climb_type = 2;
+  required bool climb = 3; // False is IDLE, true is climbing 
+  required double winch_current = 4;
 }
