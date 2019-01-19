@@ -27,3 +27,12 @@ cc_proto_library(
     protoc = "//third_party/google/protobuf:protoc",
     visibility = ["//visibility:public"],
 )
+
+cc_test(
+    name = "ground_hatch_intake_test",
+    srcs = ["ground_hatch_intake_test.cpp"],
+    deps = [
+        ":ground_hatch_intake",
+        "//third_party/google/googletest",
+    ],
+)

@@ -8,12 +8,12 @@ namespace ground_hatch_intake {
 
 constexpr double kIntakeVoltage = 12.0;
 constexpr double kOuttakeVoltage = -4.0;
-constexpr double kHoldVoltage = 2.0;
+constexpr double kHoldingVoltage = 2.0;
 constexpr double kCurrentThreshold = 10;
+constexpr double kPickupTicks = 30;  // .3 seconds
 
 class GroundHatchIntake {
  public:
-  GroundHatchIntake();
   void Update(bool outputs_enabled, const GroundHatchIntakeInputProto& input,
               GroundHatchIntakeOutputProto* output,
               GroundHatchIntakeStatusProto* status);
@@ -21,6 +21,7 @@ class GroundHatchIntake {
 
  private:
   State current_state_ = IDLE;
+  int counter_ = 0;
 };
 
 }  // namespace ground_hatch_intake
