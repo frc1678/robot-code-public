@@ -6,17 +6,16 @@ namespace elevator {
 Elevator::Elevator() {}
 
 void Elevator::SetGoal(const ElevatorGoalProto& goal) {
-  height_goal_ =
-      muan::utils::Cap(goal->height(), kMinHeight, kMaxHeight);
+  height_goal_ = muan::utils::Cap(goal->height(), kMinHeight, kMaxHeight);
   high_gear_ = goal->high_gear();
   wants_brake_ = goal->brake();
   crawling_ = goal->crawling();
   crawler_down_ = goal->crawler_down();
 }
 
-void Elevator::Update(bool outputs_enabled, const ElevatorInputProto& input,
-                      ElevatorOutputProto* output,
-                      ElevatorStatusProto* status) {
+void Elevator::Update(const ElevatorInputProto& input,
+                      ElevatorOutputProto* output, ElevatorStatusProto* status,
+                      bool outputs_enabled) {
   auto braked = disk_brake_.Update(wants_brake_ && outputs_enabled);
 
   if (prev_encoder_ == input->elevator_encoder() &&
@@ -60,7 +59,7 @@ void Elevator::Update(bool outputs_enabled, const ElevatorInputProto& input,
   }
 
   (*status)->set_braked(braked == muan::DiskBrake::LOCKED);
-  (*status)->set_height(input->elevator_encoder());
+  (*status)->set_elevator_height(input->elevator_encoder());
   (*status)->set_is_calibrated(input->zeroed());
   (*status)->set_elevator_velocity(input->elevator_velocity());
   (*status)->set_elevator_at_top(input->elevator_encoder() == kMaxHeight);

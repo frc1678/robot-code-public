@@ -29,8 +29,8 @@ constexpr double kFFSecondStage = 1.;
 class Elevator {
  public:
   Elevator();
-  void Update(bool outputs_enabled, const ElevatorInputProto& input,
-              ElevatorOutputProto* output, ElevatorStatusProto* status);
+  void Update(const ElevatorInputProto& input, ElevatorOutputProto* output,
+              ElevatorStatusProto* status, bool outputs_enabled);
   void SetGoal(const ElevatorGoalProto& goal);
 
  private:

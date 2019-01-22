@@ -4,60 +4,125 @@ package c2019.superstructure;
 
 option cc_enable_arenas = true;
 
-enum State {
+enum SuperstructureState {
   IDLE = 0;
-  HUMAN_PLAYER_HATCH = 1;
-  HUMAN_PLAYER_CARGO = 2;
-  GROUND_HATCH = 3;
-  GROUND_CARGO = 4;
-  SCORE_HATCH = 5;
-  SCORE_CARGO = 6;
-  HANDOFF = 7;
-  CLIMBING = 8;
-  BUDDY_CLIMBING = 9;
+  CALIBRATING = 1;
+  INTAKING_GROUND_HATCH = 2;
+  INTAKING_HATCH = 3;
+  INTAKING_CARGO = 4;
+  HANDING_OFF = 5;
+  CLIMBING = 6;
+  BUDDY_CLIMBING = 7;
 }
 
-enum CargoScoreState {
-  CARGO_NONE = 0;
+enum IntakeGoal {
+  INTAKE_NONE = 0;
+  INTAKE_IDLE = 1;
+  INTAKE_HATCH = 2;
+  INTAKE_GROUND_HATCH = 3;
+  INTAKE_CARGO = 4;
+  OUTTAKE_HATCH = 5;
+  OUTTAKE_GROUND_HATCH = 6;
+  OUTTAKE_CARGO = 7;
+  POP = 8;
+  SPIT = 9;
+}
+
+enum ScoreGoal {
+  NONE = 0;
   CARGO_ROCKET_FIRST = 1;
-  CARGO_ROCKET_FIRST_BACKWARDS = 2;
+  CARGO_ROCKET_BACKWARDS = 2;
   CARGO_ROCKET_SECOND = 3;
   CARGO_ROCKET_THIRD = 4;
-  CARGO_SHIP = 5;
+  CARGO_SHIP_FORWARDS = 5;
+  CARGO_SHIP_BACKWARDS = 6;
+  HATCH_ROCKET_FIRST = 7;
+  HATCH_ROCKET_BACKWARDS = 8;
+  HATCH_ROCKET_SECOND = 9;
+  HATCH_ROCKET_THIRD = 10;
+  HATCH_SHIP_FORWARDS = 12;
+  HATCH_SHIP_BACKWARDS = 13;
+  HANDOFF = 14;
+  STOW = 15;
+  CARGO_GROUND = 16;
+  CLIMB = 17;
+  BUDDY_CLIMB = 18;
+  CRAWL = 19;
+  CRAWL_BRAKED = 20;
+  BRAKE = 21;
 }
 
-enum HatchScoreState {
-  HATCH_NONE = 0;
-  HATCH_ROCKET_FIRST = 1;
-  HATCH_ROCKET_FIRST_BACKWARDS = 2;
-  HATCH_ROCKET_SECOND = 3;
-  HATCH_ROCKET_THIRD = 4;
-  HATCH_SHIP = 5;
+enum GroundHatchIntakeState {
+  GROUND_HATCH_IDLE = 0;
+  GROUND_HATCH_INTAKING = 1;
+  GROUND_HATCH_PICKING_UP = 2;
+  GROUND_HATCH_CARRYING = 3;
+  GROUND_HATCH_OUTTAKING = 4;
+}
+
+enum HatchIntakeState {
+  HATCH_IDLE = 0;
+  HATCH_INTAKING = 1;
+  HATCH_CARRYING = 2;
+  HATCH_OUTTAKING = 3;
+}
+
+enum CargoIntakeState {
+  CARGO_IDLE = 0;
+  CARGO_INTAKING = 1;
+  CARGO_OUTTAKING = 2;
+}
+
+enum ClimbType {
+  CLIMB_NONE = 0;
+  SOLO = 1;
+  BUDDY = 2;
 }
 
 message SuperstructureStatus {
   required uint64 timestamp = 1;
-  required State superstructure_state = 2;
-  required CargoScoreState cargo_score_state = 3;
-  required HatchScoreState hatch_score_state = 4;
+  required SuperstructureState state = 2;
+  required double elevator_height = 3;
+  required bool elevator_is_calibrated = 4;
+  required double elevator_velocity = 5;
+  required bool elevator_at_top = 6;
+  required double elevator_goal = 7;
+  required bool elevator_encoder_fault_detected = 8;
+  required bool braked = 9;
+  required double wrist_angle = 10;
+  required bool wrist_is_calibrated = 11;
+  required double wrist_voltage = 12;
+  required double wrist_goal = 13;
+  required bool wrist_encoder_fault = 14;
+  required double wrist_velocity = 15;
+  required GroundHatchIntakeState ground_hatch_intake_state = 16;
+  required bool has_ground_hatch = 18;
+  required HatchIntakeState hatch_intake_state = 19;
+  required bool has_hp_hatch = 20;
+  required CargoIntakeState cargo_intake_state = 21;
+  required bool has_cargo = 22;
+  required ClimbType climb_type = 23;
+  required bool climb = 24;
+  required double winch_current = 25;
 }
 
 message SuperstructureInput {
   required bool hatch_intake_proxy = 1;
-  required bool hatch_holding_proxy = 2;
-  required bool cargo_proxy = 3;
-  required double hatch_ground_current = 4;
-  required double elevator_encoder = 5;
-  required double wrist_encoder = 6;
-  required bool elevator_hall = 7;
-  required bool wrist_hall = 8;
+  required bool cargo_proxy = 2;
+  required double hatch_ground_current = 3;
+  required double elevator_encoder = 4;
+  required double wrist_encoder = 5;
+  required bool elevator_zeroed = 6;
+  required bool wrist_hall = 7;
 }
 
 message SuperstructureGoal {
   required uint64 timestamp = 1;
-  required State superstructure_goal = 2;
-  required CargoScoreState cargo_score_goal = 3;
-  required HatchScoreState hatch_score_goal = 4;
+  required ScoreGoal score_goal = 2;
+  required IntakeGoal intake_goal = 3;
+  required double elevator_god_mode_goal = 4;
+  required double wrist_god_mode_goal = 5;
+  required bool elevator_brake = 6;
 }
 
 enum TalonOutput {
@@ -66,17 +131,21 @@ enum TalonOutput {
 }
 
 message SuperstructureOutput {
-  required bool arrow_solenoid = 1;
-  required bool arrow_pinch_solenoid = 2;
-  required double ground_hatch_voltage = 3;
-  required bool ground_snap_down = 4;
-  required TalonOutput elevator_setpoint_type = 5;
-  required TalonOutput wrist_setpoint_type = 6;
-  required double wrist_setpoint = 7;
-  required double elevator_setpoint = 8;
-  required double elevator_setpoint_ff = 9;
-  required double wrist_setpoint_ff = 10;
-  required bool roller_solenoid = 11;
-  required double roller_voltage = 12;
-  required double winch_voltage = 13;
+  required TalonOutput elevator_setpoint_type = 1;
+  required TalonOutput wrist_setpoint_type = 2;
+  required double elevator_setpoint = 3;
+  required double wrist_setpoint = 4;
+  required double elevator_setpoint_ff = 5;
+  required double wrist_setpoint_ff = 6;
+  required bool arrow_solenoid = 7;
+  required bool backplate_solenoid = 8;
+  required double cargo_roller_voltage = 9;
+  required double hatch_roller_voltage = 10;
+  required bool snap_down = 11;
+  required double winch_voltage = 12;
+  required bool drop_forks = 13;
+  required bool elevator_high_gear = 14;
+  required bool crawler_solenoid = 15;
+  required double crawler_voltage = 16;
+  required bool brake = 17;
 }

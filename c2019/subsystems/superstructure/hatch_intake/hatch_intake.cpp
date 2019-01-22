@@ -15,17 +15,22 @@ void HatchIntake::SetGoal(const HatchIntakeGoalProto& goal) {
       state_ = (CARRYING);
       break;
     case SCORE:
+      counter_ = 0;
       state_ = (OUTTAKING);
       break;
   }
 }
 
-void HatchIntake::Update(bool outputs_enabled, const HatchIntakeInputProto& input,
-                         HatchIntakeStatusProto* status,
-                         HatchIntakeOutputProto* output) {
+void HatchIntake::Update(const HatchIntakeInputProto& input,
+                         HatchIntakeOutputProto* output,
+                         HatchIntakeStatusProto* status, bool outputs_enabled) {
   bool backplate, flutes;
 
   switch (state_) {
+    case IDLE:
+      flutes = false;
+      backplate = false;
+      break;
     case INTAKING:
       flutes = true;
       backplate = false;
@@ -41,6 +46,13 @@ void HatchIntake::Update(bool outputs_enabled, const HatchIntakeInputProto& inpu
     case OUTTAKING:
       flutes = false;
       backplate = true;
+      counter_++;
+      if (!input->hatch_proxy() && counter_ > kScoreTicks) {
+        counter_ = 0;
+        flutes = false;
+        backplate = false;
+        state_ = (IDLE);
+      }
       break;
   }
   if (outputs_enabled) {

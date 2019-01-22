@@ -1,5 +1,7 @@
 load("//third_party/google/protobuf:protobuf.bzl", "cc_proto_library")
 
+package(default_visibility = ["//visibility:public"])
+
 cc_library(
     name = "wrist",
     srcs = ["wrist.cpp"],

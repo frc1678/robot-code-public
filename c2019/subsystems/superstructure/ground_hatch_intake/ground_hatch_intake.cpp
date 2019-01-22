@@ -3,10 +3,10 @@
 namespace c2019 {
 namespace ground_hatch_intake {
 
-void GroundHatchIntake::Update(bool outputs_enabled,
-                               const GroundHatchIntakeInputProto& input,
+void GroundHatchIntake::Update(const GroundHatchIntakeInputProto& input,
                                GroundHatchIntakeOutputProto* output,
-                               GroundHatchIntakeStatusProto* status) {
+                               GroundHatchIntakeStatusProto* status,
+                               bool outputs_enabled) {
   double voltage = 0;
   bool snap_down = false;
 
@@ -21,15 +21,16 @@ void GroundHatchIntake::Update(bool outputs_enabled,
         snap_down = true;
         if (input->current() > kCurrentThreshold) {
           current_state_ = PICKING_UP;
+          pickup_counter_ = 0;
         }
         break;
       case PICKING_UP:
         voltage = kIntakeVoltage;
         snap_down = true;
-        counter_++;
-        if (counter_ > kPickupTicks) {
+        pickup_counter_ += 1;
+        if (pickup_counter_ > kPickupTicks) {
           current_state_ = CARRYING;
-          counter_ = 0;
+          pickup_counter_ = 0;
         }
         break;
       case CARRYING:
@@ -39,9 +40,15 @@ void GroundHatchIntake::Update(bool outputs_enabled,
       case OUTTAKING:
         voltage = kOuttakeVoltage;
         snap_down = false;
+        outtake_counter_ += 1;
+        if (outtake_counter_ > kOuttakeTicks) {
+          current_state_ = IDLE;
+          outtake_counter_ = 0;
+        }
         break;
     }
   }
+
 
   (*output)->set_roller_voltage(voltage);
   (*output)->set_snap_down(snap_down);
@@ -57,6 +64,7 @@ void GroundHatchIntake::SetGoal(GroundHatchIntakeGoalProto goal) {
       current_state_ = INTAKING;
       break;
     case EJECT:
+      outtake_counter_ = 0;
       current_state_ = OUTTAKING;
       break;
     case RISE:

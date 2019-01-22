@@ -30,6 +30,9 @@ void Wrist::Update(const WristInputProto& input, WristOutputProto* output,
   (*status)->set_wrist_angle(calibrated_encoder);
 
   (*status)->set_is_calibrated(is_calibrated());
+  (*status)->set_wrist_goal(goal_);
+  (*status)->set_wrist_encoder_fault(false);
+  (*status)->set_wrist_velocity(input->wrist_velocity());
 
   (*output)->set_wrist_setpoint_ff(CalculateFeedForwards(
       input->has_panel(), input->has_cargo(), calibrated_encoder));

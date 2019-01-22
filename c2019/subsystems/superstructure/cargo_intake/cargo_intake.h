@@ -10,8 +10,9 @@ namespace cargo_intake {
 class CargoIntake {
  public:
   CargoIntake();
-  void Update(bool outputs_enabled, const CargoIntakeInputProto& input,
-              CargoIntakeOutputProto* output, CargoIntakeStatusProto* status);
+  void Update(const CargoIntakeInputProto& input,
+              CargoIntakeOutputProto* output, CargoIntakeStatusProto* status,
+              bool outputs_enabled);
   void SetGoal(const CargoIntakeGoalProto& goal);
 
  private:

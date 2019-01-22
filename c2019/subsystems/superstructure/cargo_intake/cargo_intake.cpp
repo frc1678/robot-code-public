@@ -5,10 +5,9 @@ namespace cargo_intake {
 
 CargoIntake::CargoIntake() {}
 
-void CargoIntake::Update(bool outputs_enabled,
-                         const CargoIntakeInputProto& input,
+void CargoIntake::Update(const CargoIntakeInputProto& input,
                          CargoIntakeOutputProto* output,
-                         CargoIntakeStatusProto* status) {
+                         CargoIntakeStatusProto* status, bool outputs_enabled) {
   double roller_voltage = 0;
 
   if (outputs_enabled) {
@@ -34,7 +33,9 @@ void CargoIntake::Update(bool outputs_enabled,
   (*status)->set_has_cargo(input->has_cargo());
 }
 
-void CargoIntake::SetGoal(const CargoIntakeGoalProto& goal) { run_intake_ = goal->goal(); }
+void CargoIntake::SetGoal(const CargoIntakeGoalProto& goal) {
+  run_intake_ = goal->goal();
+}
 
 }  // namespace cargo_intake
 }  // namespace c2019

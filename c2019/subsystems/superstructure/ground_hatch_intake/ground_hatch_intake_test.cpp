@@ -15,7 +15,7 @@ TEST(GroundHatchIntake, DropAndPickup) {
   goal->set_goal(REQUEST_HATCH);
 
   ground_hatch_intake.SetGoal(goal);
-  ground_hatch_intake.Update(true, input, &output, &status);
+  ground_hatch_intake.Update(input, &output, &status, true);
 
   EXPECT_EQ(status->state(), INTAKING);
 
@@ -25,13 +25,13 @@ TEST(GroundHatchIntake, DropAndPickup) {
 
   for (int i = 0; i < kPickupTicks + 1; i++) {
     ground_hatch_intake.SetGoal(goal);
-    ground_hatch_intake.Update(true, input, &output, &status);
+    ground_hatch_intake.Update(input, &output, &status, true);
 
     EXPECT_EQ(status->state(), PICKING_UP);
   }
 
   ground_hatch_intake.SetGoal(goal);
-  ground_hatch_intake.Update(true, input, &output, &status);
+  ground_hatch_intake.Update(input, &output, &status, true);
 
   EXPECT_EQ(status->state(), CARRYING);
 }

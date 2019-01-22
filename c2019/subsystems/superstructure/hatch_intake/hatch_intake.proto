@@ -5,9 +5,10 @@ option cc_enable_arenas = true;
 package c2019.hatch_intake;
 
 enum State {
-  INTAKING = 0;
-  CARRYING = 1;
-  OUTTAKING = 2;
+  IDLE = 0;
+  INTAKING = 1;
+  CARRYING = 2;
+  OUTTAKING = 3;
 }
 
 message HatchIntakeStatus {

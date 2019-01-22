@@ -5,15 +5,16 @@ option cc_enable_arenas = true;
 package c2019.cargo_intake;
 
 enum Goal {
-  INTAKE = 0;
-  OUTTAKE = 1;
-  IDLE = 2;
+  IDLE = 0;
+  INTAKE = 1;
+  OUTTAKE = 2;
 }
 
 message CargoIntakeGoal{
   required uint64 timestamp = 1;
   required Goal goal = 2;
 }
+
 message CargoIntakeStatus {
   required uint64 timestamp = 1;
   required Goal state = 2;

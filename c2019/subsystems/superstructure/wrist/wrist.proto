@@ -6,8 +6,9 @@ message WristStatus {
   required uint64 timestamp = 1;
   required double wrist_angle = 2;
   required bool is_calibrated = 3;
-  required bool wrist_encoder_fault = 4;
-  required double wrist_velocity = 5;
+  required double wrist_goal = 4;
+  required bool wrist_encoder_fault = 5;
+  required double wrist_velocity = 6;
 }
 
 enum TalonOutput {

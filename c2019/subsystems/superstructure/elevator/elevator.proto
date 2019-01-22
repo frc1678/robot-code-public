@@ -6,7 +6,7 @@ package c2019.elevator;
 
 message ElevatorStatus {
   required uint64 timestamp = 1;
-  required double height = 2;
+  required double elevator_height = 2;
   required bool is_calibrated = 3;
   required double elevator_velocity = 4;
   required bool elevator_at_top = 5;
@@ -51,4 +51,3 @@ message ElevatorGoal {
   required bool crawler_down = 5;
   required bool brake = 6;
 }
-

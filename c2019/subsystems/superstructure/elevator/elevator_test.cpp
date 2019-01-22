@@ -32,7 +32,7 @@ class ElevatorFixture : public ::testing::Test {
       input_->set_elevator_current(0);
     }
 
-    elevator_.Update(outputs_enabled, input_, &output_, &status_);
+    elevator_.Update(input_, &output_, &status_, outputs_enabled);
   }
 
  private:
