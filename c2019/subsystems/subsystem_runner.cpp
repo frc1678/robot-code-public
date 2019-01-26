@@ -17,6 +17,7 @@ void SubsystemRunner::operator()() {
     // Subsystems go here
     interface_runner_.ReadSensors();
     drivetrain_.Update();
+    superstructure_.Update();
     interface_runner_.WriteActuators();
     phased_loop.SleepUntilNext();
   }

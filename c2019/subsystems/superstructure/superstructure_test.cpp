@@ -46,7 +46,7 @@ class SuperstructureTest : public ::testing::Test {
 
     EXPECT_TRUE(superstructure_status_proto_->elevator_is_calibrated());
     EXPECT_TRUE(superstructure_status_proto_->wrist_is_calibrated());
-    EXPECT_EQ(superstructure_status_proto_->state(), SuperstructureState::IDLE);
+    EXPECT_EQ(superstructure_status_proto_->state(), SuperstructureState::HOLDING);
   }
 
   void Update() {
@@ -320,152 +320,73 @@ TEST_F(SuperstructureTest, IntakeGoals) {
   CalibrateDisabled();
 
   SetIntakeInputs(false, false, false);
-  SetGoal(ScoreGoal::NONE, IntakeGoal::INTAKE_IDLE, true);
+  SetGoal(ScoreGoal::NONE, IntakeGoal::INTAKE_NONE, true);
 
   // INTAKE_HATCH
   SetIntakeInputs(false, false, false);
 
   SetGoal(ScoreGoal::HATCH_SHIP_FORWARDS, IntakeGoal::INTAKE_HATCH, true);
-  RunFor(3);
+  RunFor(2);
+  EXPECT_EQ(superstructure_status_proto_->state(), INTAKING_WRIST);
   SetGoal(ScoreGoal::NONE, IntakeGoal::INTAKE_NONE, true);
-  RunFor(1000);
+  RunFor(2);
   CheckGoal(kHatchLoadingStationHeight, kHatchForwardsAngle);
-  EXPECT_EQ(superstructure_status_proto_->state(), INTAKING_HATCH);
+  EXPECT_EQ(superstructure_status_proto_->state(), INTAKING_WRIST);
 
   SetIntakeInputs(false, true, false);
-  RunFor(3);
-
-  EXPECT_EQ(superstructure_status_proto_->state(), IDLE);
-  CheckIntake(false, true, false, true, true, false);
-
-  // INTAKE_GROUND_HATCH
-  SetIntakeInputs(false, false, false);
-
-  SetGoal(ScoreGoal::NONE, IntakeGoal::INTAKE_GROUND_HATCH, true);
-  RunFor(3);
-  SetGoal(ScoreGoal::NONE, IntakeGoal::INTAKE_NONE, true);
-  RunFor(1000);
-  EXPECT_EQ(superstructure_status_proto_->state(), INTAKING_GROUND_HATCH);
-
-  SetIntakeInputs(true, false, false);
-
-  SetGoal(ScoreGoal::NONE, IntakeGoal::OUTTAKE_HATCH, true);
-  RunFor(3);
-  SetGoal(ScoreGoal::NONE, IntakeGoal::INTAKE_NONE, true);
-  RunFor(500);
-
-  EXPECT_EQ(superstructure_status_proto_->state(), IDLE);
-  CheckIntake(true, false, false, false, false, false);
-
-  SetGoal(ScoreGoal::NONE, IntakeGoal::OUTTAKE_GROUND_HATCH, true);
-  RunFor(3);
-  SetGoal(ScoreGoal::NONE, IntakeGoal::INTAKE_NONE, true);
-  RunFor(50);
-  CheckIntake(false, false, false, false, false, false);
+  RunFor(2);
+  EXPECT_EQ(superstructure_status_proto_->state(), HOLDING);
+  EXPECT_TRUE(superstructure_status_proto_->has_hp_hatch());
 
   // INTAKE_CARGO
+  // Get Rid of Hatch First
   SetIntakeInputs(false, false, false);
 
-  SetGoal(ScoreGoal::CARGO_GROUND, IntakeGoal::INTAKE_CARGO, true);
-  RunFor(3);
+  SetGoal(ScoreGoal::NONE, IntakeGoal::INTAKE_CARGO, true);
+  RunFor(2);
+  EXPECT_EQ(superstructure_status_proto_->state(), INTAKING_WRIST);
+  // Moment goal isn't intake cargo (button not held down) roller's stop running
   SetGoal(ScoreGoal::NONE, IntakeGoal::INTAKE_NONE, true);
-  RunFor(1000);
-  CheckGoal(kCargoGroundHeight, kCargoGroundAngle);
-  EXPECT_EQ(superstructure_status_proto_->state(), INTAKING_CARGO);
-
+  RunFor(2);
+  EXPECT_EQ(superstructure_output_proto_->cargo_roller_voltage(), 0);
+  // OK Back to running rollers
+  SetGoal(ScoreGoal::NONE, IntakeGoal::INTAKE_CARGO, true);
+  RunFor(2);
+  EXPECT_EQ(superstructure_status_proto_->state(), INTAKING_WRIST);
   SetIntakeInputs(false, false, true);
-  RunFor(3);
+  RunFor(2);
+  EXPECT_EQ(superstructure_status_proto_->state(), HOLDING);
+  EXPECT_TRUE(superstructure_status_proto_->has_cargo());
+  EXPECT_EQ(superstructure_output_proto_->cargo_roller_voltage(), -2);
 
-  EXPECT_EQ(superstructure_status_proto_->state(), IDLE);
-  CheckIntake(false, false, true, false, false, false);
-
-  // OUTTAKE_HATCH
-  SetIntakeInputs(false, true, false);
-
-  SetGoal(ScoreGoal::NONE, IntakeGoal::OUTTAKE_HATCH, true);
-  RunFor(3);
-
-  SetGoal(ScoreGoal::NONE, IntakeGoal::INTAKE_NONE, true);
-  SetIntakeInputs(false, false, false);
-  RunFor(200);
-
-  EXPECT_EQ(superstructure_status_proto_->state(), IDLE);
-  CheckIntake(false, false, false, false, false, false);
-
-  // OUTTAKE_GROUND_HATCH
-  SetIntakeInputs(false, false, false);
-
-  SetGoal(ScoreGoal::NONE, IntakeGoal::OUTTAKE_GROUND_HATCH, true);
-  RunFor(3);
-  SetGoal(ScoreGoal::NONE, IntakeGoal::INTAKE_NONE, true);
-  RunFor(200);
-
-  SetIntakeInputs(false, false, false);
-  RunFor(3);
-
-  EXPECT_EQ(superstructure_status_proto_->state(), IDLE);
-  CheckIntake(false, false, false, false, false, false);
-
-  // OUTTAKE_CARGO
-  SetIntakeInputs(false, false, true);
-
-  SetGoal(ScoreGoal::NONE, IntakeGoal::OUTTAKE_CARGO, true);
-  RunFor(100);
-
-  SetIntakeInputs(false, false, false);
-  RunFor(3);
-
-  EXPECT_EQ(superstructure_status_proto_->state(), IDLE);
-  CheckIntake(false, false, false, false, false, false);
-
-  // POP
-  SetIntakeInputs(true, false, false);
-
-  SetGoal(ScoreGoal::NONE, IntakeGoal::POP, true);
-  RunFor(100);
-
-  SetIntakeInputs(false, true, false);
-  RunFor(100);
-
-  EXPECT_EQ(superstructure_status_proto_->state(), IDLE);
-  CheckIntake(false, true, false, false, false, false);
-}
-
-TEST_F(SuperstructureTest, Handoff) {
-  CalibrateDisabled();
+  // INTAKE_GROUND
+  // Get Rid of Cargo
   SetIntakeInputs(false, false, false);
   SetGoal(ScoreGoal::NONE, IntakeGoal::INTAKE_GROUND_HATCH, true);
-  RunFor(3);
-  SetIntakeInputs(true, false, false);
+  RunFor(2);
+  EXPECT_EQ(superstructure_status_proto_->state(), INTAKING_GROUND);
   SetGoal(ScoreGoal::NONE, IntakeGoal::INTAKE_NONE, true);
-  RunFor(50);
-  CheckIntake(true, false, false, false, false, false);
-
-  SetGoal(ScoreGoal::HANDOFF, IntakeGoal::POP, true);
-  RunFor(3);
-  SetGoal(ScoreGoal::NONE, IntakeGoal::INTAKE_NONE, true);
-  RunFor(50);
-  CheckGoal(kHandoffHeight, kHandoffAngle);
-
+  RunFor(2);
+  EXPECT_EQ(superstructure_status_proto_->state(), INTAKING_GROUND);
+  EXPECT_EQ(superstructure_output_proto_->hatch_roller_voltage(), 12);
   SetIntakeInputs(true, false, false);
-  SetInput(kHandoffHeight, true, kHandoffAngle);
-  RunFor(50);
+  RunFor(10);
+  EXPECT_EQ(superstructure_status_proto_->state(), HOLDING);
+  EXPECT_EQ(superstructure_output_proto_->hatch_roller_voltage(), ground_hatch_intake::kHoldingVoltage);
 
-  SetGoal(ScoreGoal::HANDOFF, IntakeGoal::SPIT, true);
-  SetIntakeInputs(true, false, false);
-  RunFor(55);
-
-  EXPECT_EQ(superstructure_status_proto_->state(), HANDING_OFF);
-  CheckIntake(false, false, false, true, false, false);
-
-  SetIntakeInputs(false, true, false);
-  RunFor(55);
-  EXPECT_EQ(superstructure_status_proto_->state(), IDLE);
-  CheckIntake(false, true, false, true, true, false);
+  // Spit the ground hatch to get rid of everything
+  SetIntakeInputs(false, false, false);
+  SetGoal(ScoreGoal::NONE, IntakeGoal::OUTTAKE_GROUND_HATCH, true);
+  RunFor(100);
+  EXPECT_EQ(superstructure_status_proto_->state(), HOLDING);
+  EXPECT_FALSE(superstructure_status_proto_->has_ground_hatch());
+  EXPECT_FALSE(superstructure_status_proto_->has_hp_hatch());
+  EXPECT_FALSE(superstructure_status_proto_->has_cargo());
 }
 
 TEST_F(SuperstructureTest, GodmodeElevator) {
   CalibrateDisabled();
+  SetIntakeInputs(false, false, false);
   SetGoal(ScoreGoal::HATCH_SHIP_FORWARDS, IntakeGoal::INTAKE_NONE, true);
   RunFor(3);
   SetGoal(ScoreGoal::NONE, IntakeGoal::INTAKE_NONE, true);
@@ -493,7 +414,6 @@ TEST_F(SuperstructureTest, Climb) {
   RunFor(1000);
 
   CheckGoal(kClimbHeight, kClimbAngle);
-  EXPECT_EQ(superstructure_status_proto_->state(), CLIMBING);
   EXPECT_FALSE(superstructure_output_proto_->elevator_high_gear());
 }
 
@@ -505,7 +425,6 @@ TEST_F(SuperstructureTest, BuddyClimb) {
   RunFor(1000);
 
   CheckGoal(kClimbHeight, kClimbAngle);
-  EXPECT_EQ(superstructure_status_proto_->state(), BUDDY_CLIMBING);
   EXPECT_EQ(superstructure_output_proto_->winch_voltage(), 12);
   EXPECT_FALSE(superstructure_output_proto_->elevator_high_gear());
 }
@@ -519,7 +438,6 @@ TEST_F(SuperstructureTest, Crawl) {
   RunFor(1000);
 
   CheckGoal(kClimbHeight, kClimbAngle);
-  EXPECT_EQ(superstructure_status_proto_->state(), CLIMBING);
   EXPECT_FALSE(superstructure_output_proto_->elevator_high_gear());
 
   SetGoal(ScoreGoal::CRAWL, IntakeGoal::INTAKE_NONE, true);
@@ -528,7 +446,6 @@ TEST_F(SuperstructureTest, Crawl) {
   RunFor(1000);
 
   CheckGoal(kClimbHeight, kClimbAngle);
-  EXPECT_EQ(superstructure_status_proto_->state(), CLIMBING);
   EXPECT_FALSE(superstructure_output_proto_->elevator_high_gear());
   EXPECT_EQ(superstructure_output_proto_->crawler_voltage(), 12);
   EXPECT_TRUE(superstructure_output_proto_->crawler_solenoid());
@@ -543,7 +460,6 @@ TEST_F(SuperstructureTest, CrawlBraked) {
   RunFor(1000);
 
   CheckGoal(kClimbHeight, kClimbAngle);
-  EXPECT_EQ(superstructure_status_proto_->state(), CLIMBING);
   EXPECT_FALSE(superstructure_output_proto_->elevator_high_gear());
 
   SetGoal(ScoreGoal::CRAWL_BRAKED, IntakeGoal::INTAKE_NONE, true);
@@ -552,7 +468,6 @@ TEST_F(SuperstructureTest, CrawlBraked) {
   RunFor(1000);
 
   CheckGoal(kClimbHeight, kClimbAngle);
-  EXPECT_EQ(superstructure_status_proto_->state(), CLIMBING);
   EXPECT_FALSE(superstructure_output_proto_->elevator_high_gear());
   EXPECT_TRUE(superstructure_output_proto_->crawler_solenoid());
   EXPECT_EQ(superstructure_output_proto_->crawler_voltage(), 12);
@@ -568,7 +483,6 @@ TEST_F(SuperstructureTest, Brake) {
   RunFor(1000);
 
   CheckGoal(kClimbHeight, kClimbAngle);
-  EXPECT_EQ(superstructure_status_proto_->state(), CLIMBING);
   EXPECT_FALSE(superstructure_output_proto_->elevator_high_gear());
 
   SetGoal(ScoreGoal::BRAKE, IntakeGoal::INTAKE_NONE, true);
@@ -577,9 +491,29 @@ TEST_F(SuperstructureTest, Brake) {
   RunFor(1000);
 
   CheckGoal(kClimbHeight, kClimbAngle);
-  EXPECT_EQ(superstructure_status_proto_->state(), CLIMBING);
   EXPECT_FALSE(superstructure_output_proto_->elevator_high_gear());
   EXPECT_TRUE(superstructure_output_proto_->brake());
+}
+
+TEST_F(SuperstructureTest, Handoff) {
+  CalibrateDisabled();
+  SetIntakeInputs(false, false, false);
+  SetGoal(ScoreGoal::HANDOFF, IntakeGoal::PREP_HANDOFF, true);
+  RunFor(3);
+  SetGoal(ScoreGoal::NONE, IntakeGoal::INTAKE_GROUND_HATCH, true);
+  RunFor(2);
+  SetGoal(ScoreGoal::NONE, IntakeGoal::INTAKE_NONE, true);
+  SetIntakeInputs(true, false, false);
+  EXPECT_EQ(superstructure_status_proto_->hatch_intake_state(), HATCH_INTAKING);
+  RunFor(10);
+  SetIntakeInputs(true, true, false);
+  RunFor(1);
+  EXPECT_EQ(superstructure_status_proto_->state(), INTAKING_TO_STOW);
+  RunFor(10);
+  EXPECT_EQ(superstructure_status_proto_->hatch_intake_state(), HATCH_CARRYING);
+  EXPECT_EQ(superstructure_status_proto_->state(), HOLDING);
+  EXPECT_EQ(superstructure_status_proto_->elevator_height(), kStowHeight);
+  EXPECT_EQ(superstructure_status_proto_->wrist_angle(), kStowAngle);
 }
 
 }  // namespace superstructure

@@ -7,10 +7,10 @@ namespace c2019 {
 namespace ground_hatch_intake {
 
 constexpr double kIntakeVoltage = 12.0;
-constexpr double kOuttakeVoltage = -4.0;
+constexpr double kOuttakeVoltage = -12.0;
 constexpr double kHoldingVoltage = 2.0;
-constexpr double kCurrentThreshold = 10;
-constexpr double kPickupTicks = 30;  // .3 seconds
+constexpr double kCurrentThreshold = 50.;
+constexpr double kPickupTicks = 1;  // 1 ms, the current limit is very lax
 constexpr double kOuttakeTicks = 50;
 
 class GroundHatchIntake {

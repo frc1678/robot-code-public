@@ -72,7 +72,7 @@ class Superstructure {
 
  private:
   void SetGoal(const SuperstructureGoalProto& goal);
-  void GoToState(SuperstructureState state = SuperstructureState::IDLE,
+  void GoToState(SuperstructureState state,
                  IntakeGoal intake = IntakeGoal::INTAKE_NONE);
   void RunStateMachine();
   void BoundGoal(double* elevator_goal, double* wrist_goal);

@@ -49,7 +49,6 @@ void GroundHatchIntake::Update(const GroundHatchIntakeInputProto& input,
     }
   }
 
-
   (*output)->set_roller_voltage(voltage);
   (*output)->set_snap_down(snap_down);
   (*status)->set_state(current_state_);

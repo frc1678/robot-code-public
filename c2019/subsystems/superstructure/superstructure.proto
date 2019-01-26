@@ -5,27 +5,23 @@ package c2019.superstructure;
 option cc_enable_arenas = true;
 
 enum SuperstructureState {
-  IDLE = 0;
-  CALIBRATING = 1;
-  INTAKING_GROUND_HATCH = 2;
-  INTAKING_HATCH = 3;
-  INTAKING_CARGO = 4;
-  HANDING_OFF = 5;
-  CLIMBING = 6;
-  BUDDY_CLIMBING = 7;
+  CALIBRATING = 0;
+  HOLDING = 1;
+  INTAKING_WRIST = 2;
+  INTAKING_GROUND = 3;
+  INTAKING_TO_STOW = 4;
 }
 
 enum IntakeGoal {
   INTAKE_NONE = 0;
-  INTAKE_IDLE = 1;
-  INTAKE_HATCH = 2;
-  INTAKE_GROUND_HATCH = 3;
-  INTAKE_CARGO = 4;
-  OUTTAKE_HATCH = 5;
-  OUTTAKE_GROUND_HATCH = 6;
-  OUTTAKE_CARGO = 7;
-  POP = 8;
-  SPIT = 9;
+  INTAKE_HATCH = 1;
+  INTAKE_GROUND_HATCH = 2;
+  INTAKE_CARGO = 3;
+  OUTTAKE_HATCH = 4;
+  OUTTAKE_GROUND_HATCH = 5;
+  OUTTAKE_CARGO = 6;
+  POP = 7;
+  PREP_HANDOFF = 8;
 }
 
 enum ScoreGoal {
@@ -107,13 +103,14 @@ message SuperstructureStatus {
 }
 
 message SuperstructureInput {
-  required bool hatch_intake_proxy = 1;
-  required bool cargo_proxy = 2;
-  required double hatch_ground_current = 3;
-  required double elevator_encoder = 4;
-  required double wrist_encoder = 5;
-  required bool elevator_zeroed = 6;
-  required bool wrist_hall = 7;
+  required uint64 timestamp = 1;
+  required bool hatch_intake_proxy = 2;
+  required bool cargo_proxy = 3;
+  required double hatch_ground_current = 4;
+  required double elevator_encoder = 5;
+  required double wrist_encoder = 6;
+  required bool elevator_zeroed = 7;
+  required bool wrist_hall = 8;
 }
 
 message SuperstructureGoal {
@@ -131,21 +128,22 @@ enum TalonOutput {
 }
 
 message SuperstructureOutput {
-  required TalonOutput elevator_setpoint_type = 1;
-  required TalonOutput wrist_setpoint_type = 2;
-  required double elevator_setpoint = 3;
-  required double wrist_setpoint = 4;
-  required double elevator_setpoint_ff = 5;
-  required double wrist_setpoint_ff = 6;
-  required bool arrow_solenoid = 7;
-  required bool backplate_solenoid = 8;
-  required double cargo_roller_voltage = 9;
-  required double hatch_roller_voltage = 10;
-  required bool snap_down = 11;
-  required double winch_voltage = 12;
-  required bool drop_forks = 13;
-  required bool elevator_high_gear = 14;
-  required bool crawler_solenoid = 15;
-  required double crawler_voltage = 16;
-  required bool brake = 17;
+  required uint64 timestamp = 1;
+  required TalonOutput elevator_setpoint_type = 2;
+  required TalonOutput wrist_setpoint_type = 3;
+  required double elevator_setpoint = 4;
+  required double wrist_setpoint = 5;
+  required double elevator_setpoint_ff = 6;
+  required double wrist_setpoint_ff = 7;
+  required bool arrow_solenoid = 8;
+  required bool backplate_solenoid = 9;
+  required double cargo_roller_voltage = 10;
+  required double hatch_roller_voltage = 11;
+  required bool snap_down = 12;
+  required double winch_voltage = 13;
+  required bool drop_forks = 14;
+  required bool elevator_high_gear = 15;
+  required bool crawler_solenoid = 16;
+  required double crawler_voltage = 17;
+  required bool brake = 18;
 }
