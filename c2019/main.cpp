@@ -1,7 +1,6 @@
 #include "c2019/teleop/teleop.h"
 #include <WPILib.h>
 #include "hal/HAL.h"
-#include "c2019/autonomous/autonomous_runner.h"
 #include "c2019/subsystems/subsystem_runner.h"
 #include "c2019/webdash/webdash_setup.h"
 #include "gflags/gflags.h"
@@ -20,15 +19,11 @@ class WpilibRobot : public IterativeRobot {
 
     std::thread teleop_thread(std::ref(main_));
     teleop_thread.detach();
-
-    std::thread autonomous_thread(std::ref(auto_));
-    autonomous_thread.detach();
   }
 
  private:
   c2019::subsystems::SubsystemRunner subsystem_runner_;
   c2019::teleop::TeleopBase main_;
-  c2019::autonomous::AutonomousRunner auto_;
 };
 
 int main(int argc, char **argv) {

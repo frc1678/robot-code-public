@@ -8,7 +8,6 @@ cc_binary(
     restricted_to = ["//tools:roborio"],
     deps = [
         "//c2019/subsystems:subsystem_runner",
-        "//c2019/autonomous:autonomous_runner",
         "//c2019/teleop:teleop",
         "//c2019/webdash",
         "//third_party/gflags",

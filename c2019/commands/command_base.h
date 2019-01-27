@@ -1,5 +1,5 @@
-#ifndef C2019_AUTONOMOUS_AUTONOMOUS_BASE_H_
-#define C2019_AUTONOMOUS_AUTONOMOUS_BASE_H_
+#ifndef C2019_COMMANDS_COMMAND_BASE_H_
+#define C2019_COMMANDS_COMMAND_BASE_H_
 
 #include <string>
 
@@ -9,22 +9,23 @@
 #include "muan/webdash/queue_types.h"
 #include "muan/wpilib/queue_types.h"
 #include "third_party/aos/common/util/phased_loop.h"
-#include "c2019/autonomous/queue_types.h"
+#include "c2019/commands/queue_types.h"
 
 namespace c2019 {
-namespace autonomous {
+namespace commands {
 
 using DrivetrainGoal = muan::subsystems::drivetrain::GoalProto;
 using DrivetrainStatus = muan::subsystems::drivetrain::StatusProto;
 
-class AutonomousBase {
+class CommandBase {
  public:
-  AutonomousBase();
+  CommandBase();
 
  protected:
   FRIEND_TEST(C2019AutonomousTest, PathDriveTransformsZeroInit);
   FRIEND_TEST(C2019AutonomousTest, PathDriveTransformsNonzeroInit);
-  bool IsAutonomous();
+  virtual bool IsAutonomous();
+  void EnterAutonomous();
   void ExitAutonomous();
 
   void Wait(uint32_t num_cycles);
@@ -52,7 +53,8 @@ class AutonomousBase {
   muan::subsystems::drivetrain::GoalQueue* drivetrain_goal_queue_;
   muan::subsystems::drivetrain::StatusQueue::QueueReader
       drivetrain_status_reader_;
-  c2019::autonomous::AutoStatusQueue* auto_status_queue_;
+  c2019::commands::AutoStatusQueue* auto_status_queue_;
+  c2019::commands::AutoGoalQueue::QueueReader auto_goal_reader_;
 
   Eigen::Transform<double, 2, Eigen::AffineCompact> transform_f0_;
   double theta_offset_ = 0.0;
@@ -63,7 +65,7 @@ class AutonomousBase {
   aos::time::PhasedLoop loop_{std::chrono::milliseconds(10)};
 };
 
-}  // namespace autonomous
+}  // namespace commands
 }  // namespace c2019
 
-#endif  // C2019_AUTONOMOUS_AUTONOMOUS_BASE_H_
+#endif  // C2019_COMMANDS_COMMAND_BASE_H_

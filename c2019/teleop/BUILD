@@ -5,7 +5,7 @@ cc_library(
     restricted_to = ["//tools:roborio"],
     visibility = ["//visibility:public"],
     deps = [
-        "//c2019/autonomous:autonomous_queues",
+        "//c2019/commands",
         "//muan/logging:logger",
         "//muan/queues:queue_manager",
         "//muan/subsystems/drivetrain:drivetrain_queues",

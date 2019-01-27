@@ -1,47 +1,41 @@
 load("//third_party/google/protobuf:protobuf.bzl", "cc_proto_library")
 
 cc_proto_library(
-    name = "autonomous_proto",
-    srcs = ["autonomous.proto"],
+    name = "commands_proto",
+    srcs = ["commands.proto"],
     default_runtime = "//third_party/google/protobuf",
     protoc = "//third_party/google/protobuf:protoc",
 )
 
 cc_library(
-    name = "autonomous_queues",
+    name = "command_queues",
     hdrs = ["queue_types.h"],
     visibility = ["//visibility:public"],
     deps = [
-        ":autonomous_proto",
+        ":commands_proto",
         "//muan/proto:stack_proto",
         "//muan/queues:queue_manager",
     ],
 )
 
 cc_library(
-    name = "autonomous_runner",
-    srcs = ["autonomous_runner.cpp"],
-    hdrs = ["autonomous_runner.h"],
-    # restricted_to = ["//tools:roborio"],
-    visibility = ["//visibility:public"],
+    name = "commands",
     deps = [
-        ":autonomous_base",
-        ":autonomous_queues",
-        ":test_auto",
-        ":none",
+        ":command_base",
+        ":command_queues",
         ":drive_straight",
-        "//muan/logging:logger",
-        "//muan/queues:queue_manager",
+        ":test_auto",
     ],
+    visibility = ["//visibility:public"],
 )
 
 cc_library(
-    name = "autonomous_base",
-    srcs = ["autonomous_base.cpp"],
-    hdrs = ["autonomous_base.h"],
+    name = "command_base",
+    srcs = ["command_base.cpp"],
+    hdrs = ["command_base.h"],
     visibility = ["//visibility:public"],
     deps = [
-        ":autonomous_queues",
+        ":command_queues",
         "//muan/logging:logger",
         "//muan/queues:queue_manager",
         "//muan/subsystems/drivetrain:drivetrain_queues",
@@ -50,10 +44,12 @@ cc_library(
 )
 
 cc_test(
-    name = "autonomous_base_test",
-    srcs = ["autonomous_base_test.cpp"],
+    name = "command_base_test",
+    srcs = ["command_base_test.cpp"],
+    linkopts = ["-lpthread"],
     deps = [
-        ":autonomous_base",
+        ":command_base",
+        ":test_auto",
         "//third_party/google/googletest",
     ],
 )
@@ -64,17 +60,7 @@ cc_library(
     hdrs = ["test_auto.h"],
     visibility = ["//visibility:public"],
     deps = [
-        ":autonomous_base",
-    ],
-)
-
-cc_library(
-    name = "none",
-    srcs = ["none.cpp"],
-    hdrs = ["none.h"],
-    visibility = ["//visibility:public"],
-    deps = [
-        ":autonomous_base",
+        ":command_base",
     ],
 )
 
@@ -84,6 +70,6 @@ cc_library(
     hdrs = ["drive_straight.h"],
     visibility = ["//visibility:public"],
     deps = [
-        ":autonomous_base",
+        ":command_base",
     ],
 )

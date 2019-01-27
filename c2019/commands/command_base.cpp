@@ -1,4 +1,4 @@
-#include "c2019/autonomous/autonomous_base.h"
+#include "c2019/commands/command_base.h"
 
 #include <chrono>
 
@@ -6,13 +6,13 @@
 #include "muan/queues/queue_manager.h"
 
 namespace c2019 {
-namespace autonomous {
+namespace commands {
 
 using muan::queues::QueueManager;
 using muan::wpilib::DriverStationProto;
 using muan::wpilib::GameSpecificStringProto;
 
-AutonomousBase::AutonomousBase()
+CommandBase::CommandBase()
     : driver_station_reader_(
           QueueManager<DriverStationProto>::Fetch()->MakeReader()),
       game_specific_string_reader_(
@@ -20,42 +20,45 @@ AutonomousBase::AutonomousBase()
       drivetrain_goal_queue_(QueueManager<DrivetrainGoal>::Fetch()),
       drivetrain_status_reader_(
           QueueManager<DrivetrainStatus>::Fetch()->MakeReader()),
-      auto_status_queue_(QueueManager<AutoStatusProto>::Fetch()) {}
+      auto_status_queue_(QueueManager<AutoStatusProto>::Fetch()),
+      auto_goal_reader_(QueueManager<AutoGoalProto>::Fetch()->MakeReader()) {}
 
-bool AutonomousBase::IsAutonomous() {
+bool CommandBase::IsAutonomous() {
   DriverStationProto driver_station;
-  AutoStatusProto auto_status;
-  if (driver_station_reader_.ReadLastMessage(&driver_station)) {
-    if (driver_station->mode() == RobotMode::AUTONOMOUS) {
-      if (auto_status_queue_->ReadLastMessage(&auto_status)) {
-        return auto_status->in_auto();
-      } else {
-        LOG(WARNING, "No autonomous status found.");
-        ExitAutonomous();
-        return false;
-      }
-    } else {
-      ExitAutonomous();
-      return false;
-    }
-  } else {
+  if (!driver_station_reader_.ReadLastMessage(&driver_station)) {
     LOG(WARNING, "No driver station status found.");
-    ExitAutonomous();
     return false;
   }
+
+  if (driver_station->is_sys_active()) {
+    return true;
+  }
+
+  return false;
 }
 
-void AutonomousBase::ExitAutonomous() {
+void CommandBase::EnterAutonomous() {
   AutoStatusProto auto_status;
-  auto_status->set_in_auto(false);
+  LOG(INFO, "Started running command");
+  auto_status->set_running_command(true);
   auto_status_queue_->WriteMessage(auto_status);
 }
 
-void AutonomousBase::StartDrivePath(double x, double y, double heading,
-                                    int direction, bool gear,
-                                    double extra_distance_initial,
-                                    double extra_distance_final,
-                                    double path_voltage) {
+void CommandBase::ExitAutonomous() {
+  AutoStatusProto auto_status;
+  auto_status->set_running_command(false);
+  auto_status_queue_->WriteMessage(auto_status);
+}
+
+void CommandBase::StartDrivePath(double x, double y, double heading,
+                                 int direction, bool gear,
+                                 double extra_distance_initial,
+                                 double extra_distance_final,
+                                 double path_voltage) {
+  if (!IsAutonomous()) {
+    return;
+  }
+
   DrivetrainGoal goal;
 
   Eigen::Vector2d goal_field = (Eigen::Vector2d() << x, y).finished();
@@ -79,7 +82,7 @@ void AutonomousBase::StartDrivePath(double x, double y, double heading,
   drivetrain_goal_queue_->WriteMessage(goal);
 }
 
-bool AutonomousBase::IsDriveComplete() {
+bool CommandBase::IsDriveComplete() {
   DrivetrainGoal goal;
   DrivetrainStatus status;
 
@@ -97,13 +100,13 @@ bool AutonomousBase::IsDriveComplete() {
   return false;
 }
 
-void AutonomousBase::WaitUntilDriveComplete() {
+void CommandBase::WaitUntilDriveComplete() {
   while (!IsDriveComplete() && IsAutonomous()) {
     loop_.SleepUntilNext();
   }
 }
 
-bool AutonomousBase::IsDrivetrainNear(double x, double y, double distance) {
+bool CommandBase::IsDrivetrainNear(double x, double y, double distance) {
   DrivetrainStatus status;
 
   if (drivetrain_status_reader_.ReadLastMessage(&status)) {
@@ -120,20 +123,19 @@ bool AutonomousBase::IsDrivetrainNear(double x, double y, double distance) {
   return false;
 }
 
-void AutonomousBase::WaitUntilDrivetrainNear(double x, double y,
-                                             double distance) {
+void CommandBase::WaitUntilDrivetrainNear(double x, double y, double distance) {
   while (!IsDrivetrainNear(x, y, distance)) {
     loop_.SleepUntilNext();
   }
 }
 
-void AutonomousBase::Wait(uint32_t num_cycles) {
+void CommandBase::Wait(uint32_t num_cycles) {
   for (uint32_t i = 0; IsAutonomous() && i < num_cycles; i++) {
     loop_.SleepUntilNext();
   }
 }
 
-void AutonomousBase::SetFieldPosition(double x, double y, double theta) {
+void CommandBase::SetFieldPosition(double x, double y, double theta) {
   transform_f0_ = Eigen::Translation<double, 2>(Eigen::Vector2d(x, y)) *
                   Eigen::Rotation2D<double>(theta);
   DrivetrainStatus status;
@@ -165,5 +167,5 @@ void AutonomousBase::SetFieldPosition(double x, double y, double theta) {
   theta_offset_ = status->estimated_heading() - theta;
 }
 
-}  // namespace autonomous
+}  // namespace commands
 }  // namespace c2019

@@ -1,0 +1,23 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+package c2019.commands;
+
+enum Command {
+  NONE = 0;
+  DRIVE_STRAIGHT = 1;
+  TEST_AUTO = 2;
+}
+
+message AutonomousGoal {
+  required uint64 timestamp = 1;
+  required Command command = 2;
+  required bool run_command = 3;
+}
+
+message AutonomousStatus {
+  required uint64 timestamp = 1;
+  required bool running_command = 2;
+}
+

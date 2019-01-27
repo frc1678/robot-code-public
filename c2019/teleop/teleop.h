@@ -3,12 +3,12 @@
 
 #include <atomic>
 #include "WPILib.h"
+#include "c2019/commands/queue_types.h"
 #include "muan/queues/queue_manager.h"
 #include "muan/subsystems/drivetrain/queue_types.h"
 #include "muan/teleop/joystick.h"
 #include "muan/utils/threading_utils.h"
 #include "muan/wpilib/ds_sender.h"
-#include "c2019/autonomous/queue_types.h"
 
 namespace c2019 {
 namespace teleop {
@@ -31,11 +31,15 @@ class TeleopBase {
   muan::teleop::Joystick throttle_, wheel_;
   muan::teleop::Joystick gamepad_;
 
-  autonomous::AutoStatusQueue::QueueReader auto_status_reader_;
+  commands::AutoStatusQueue::QueueReader auto_status_reader_;
+  commands::AutoGoalQueue *auto_goal_queue_;
 
-  muan::teleop::Button *shifting_high_, *shifting_low_, *quickturn_;
+  muan::teleop::Button *shifting_high_, *shifting_low_, *quickturn_,
+      *exit_auto_;
+  muan::teleop::Button *test_auto_, *drive_straight_;
 
   bool high_gear_;
+  bool running_command_;
 };
 
 }  // namespace teleop
