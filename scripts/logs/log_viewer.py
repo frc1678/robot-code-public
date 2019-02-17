@@ -1,10 +1,16 @@
 #!/usr/bin/python
+
 from collections import OrderedDict
 from Tkinter import Tk, BOTH, N, S, E, W, Toplevel, StringVar, IntVar, Frame, HORIZONTAL, VERTICAL
 from ttk import Button, Style, Treeview, Scrollbar, Radiobutton, Checkbutton
 import tkFileDialog, tkMessageBox
 from hackplotlib import HackPlot
 import sys, csv, os.path
+import argparse
+import re
+
+# global default
+log_dir = "/tmp" # Defult value, overriden by first command line argument
 
 # "foo.bar.biz" -> ["foo", "foo.bar", "foo.bar.biz"], etc.
 def ancestor_names(name):
@@ -90,18 +96,23 @@ class Example(Frame):
         Checkbutton(self, text="Directories", variable=show_path, command=self.plot.show_textlogs).grid(row=0, column=11, sticky=E)
 
     # Open Directory button clicked
-    def loaddir(self):
-        dirname = tkFileDialog.askdirectory(initialdir=log_dir)
+    def loaddir(self, dirname = None, delete_old_nodes = True):
+        if not dirname:
+            dirname = tkFileDialog.askdirectory(initialdir=log_dir)
         if dirname != "" and dirname != (): # Cancel and (x) not pressed
-            # Empty the data
-            self.used = []
-            self.series = {}
-            self.names = []
-            self.queues = []
-            self.logs = {}
-            self.plot.reset()
+            if delete_old_nodes:
+                # Empty the data
+                self.used = []
+                self.series = {}
+                self.names = []
+                self.queues = []
+                self.logs = {}
+                self.plot.reset()
+
+            # always delete the nodes since they'll be recreated based on all data
             for node in self.series_ui.get_children():
                 self.series_ui.delete(node)
+                
             # For every csv file in the directory, checking recursively and alphabetically
             for subdirname, subsubdirnames, filenames in os.walk(dirname):
                 subsubdirnames.sort()
@@ -124,20 +135,33 @@ class Example(Frame):
                         text=name.split(".")[-1], tags=["graphnone"])
 
     # Open File button clicked
-    def loadfile(self):
-        filename = tkFileDialog.askopenfilename(filetypes=[("CSV Files", "*.csv"), ("Text log file", "*.log")], initialdir=log_dir)
+    def loadfile(self, filename = None, initialdir = None, delete_old_nodes = True):
+        # get the filename if we weren't passed one
+        if not filename:
+            if not initialdir:
+                initialdir = log_dir
+            filename = tkFileDialog.askopenfilename(filetypes=[("CSV Files", "*.csv"), ("Text log file", "*.log")], initialdir=initialdir)
+
         if filename != "" and filename != (): # Cancel and (x) not pressed
-            # Empty the data
-            self.used = []
-            self.series = {}
-            self.names = []
-            self.queues = []
-            self.logs = {}
-            self.plot.reset()
+            if delete_old_nodes:
+                # Empty the data
+                self.used = []
+                self.series = {}
+                self.names = []
+                self.queues = []
+                self.logs = {}
+                self.plot.reset()
+
+            # always delete the nodes since they'll be recreated based on all data
             for node in self.series_ui.get_children():
                 self.series_ui.delete(node)
+
             # Add the file's data
-            self.readfile(filename, "")
+            parts = re.match(".*/(.*).csv", filename)
+            nodename = parts.group(1)
+            self.readfile(filename, nodename)
+
+            # add the nodes to the graph
             for name in self.names:
                 # Add name to (name with everything after last dot removed), as the last child,
                 # with text (everything after last dot of name) and tags graphnone and (whether name represents data)
@@ -242,12 +266,46 @@ class Example(Frame):
         # Now that the status of this node is known, check the parent
         self.checkgraphed(self.series_ui.parent(node))
 
-log_dir = "/tmp" # Defult value, overriden by first command line argument
+def parse_args():
+    parser = argparse.ArgumentParser(epilog = """Example: log_viewer.py -p velocity current -- LOGDIR""")
 
-if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        log_dir = sys.argv[1]
+    parser.add_argument("-p", "--plot-items", type=str, nargs="*",
+                        help="List of items to start off plotting (regexp matches)")
+
+    parser.add_argument("starting_data", type=str, nargs='*',
+                        help="Files or directories to read")
+
+    args = parser.parse_args()
+    return args
+
+def main():
+    args = parse_args()
+
+    # bootstrap Tk and our Tk app
     root = Tk()
     root.geometry("1200x500+300+300")
     app = Example()
+    
+    # process all the requested starting data
+    for data_item in args.starting_data:
+        if os.path.isdir(data_item):
+            app.loaddir(data_item, delete_old_nodes = False)
+        else:
+            app.loadfile(data_item, delete_old_nodes = False)
+
+    # turn on the variables pre-selected with -p
+    if args.plot_items:
+        for node in args.plot_items:
+            matcher = re.compile(".*" + node + ".*")
+            for name in app.names:
+                if matcher.match(name):
+                    app.setgraphed(name, True)
+                    app.checkgraphed(name)
+
+    # go go go
     root.mainloop()
+
+if __name__ == "__main__":
+    main()
+
+
