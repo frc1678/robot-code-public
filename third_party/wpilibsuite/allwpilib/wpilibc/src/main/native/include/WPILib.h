@@ -7,7 +7,7 @@
 
 #pragma once
 
-/* // clang-format off */
+// clang-format off
 /* #ifdef _MSC_VER */
 /* #pragma message "warning: WPILib.h is deprecated; include frc/WPILib.h instead" */
 /* #else */

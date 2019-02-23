@@ -8,11 +8,11 @@
 #pragma once
 
 // clang-format off
-#ifdef _MSC_VER
-#pragma message "warning: IterativeRobot.h is deprecated; include frc/IterativeRobot.h instead"
-#else
-#warning "IterativeRobot.h is deprecated; include frc/IterativeRobot.h instead"
-#endif
+/* #ifdef _MSC_VER */
+/* #pragma message "warning: IterativeRobot.h is deprecated; include frc/IterativeRobot.h instead" */
+/* #else */
+/* #warning "IterativeRobot.h is deprecated; include frc/IterativeRobot.h instead" */
+/* #endif */
 
 // clang-format on
 

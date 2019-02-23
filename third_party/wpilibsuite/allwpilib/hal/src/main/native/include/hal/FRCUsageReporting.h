@@ -139,4 +139,3 @@ namespace HALUsageReporting {
     kSmartDashboard_Instance = 1,
   } tInstances;
 }
-

@@ -37,7 +37,7 @@ int frc::RunHALInitialization() {
 
 std::thread::id RobotBase::m_threadId;
 
-namespace {
+/* namespace { */
 /* class WPILibCameraServerShared : public frc::CameraServerShared { */
 /*  public: */
 /*   void ReportUsbCamera(int id) override { */
@@ -62,7 +62,7 @@ namespace {
 /*     return std::make_pair(RobotBase::GetThreadId(), true); */
 /*   } */
 /* }; */
-}  // namespace
+/* }  // namespace */
 
 /* static void SetupCameraServerShared() { */
 /*   SetCameraServerShared(std::make_unique<WPILibCameraServerShared>()); */

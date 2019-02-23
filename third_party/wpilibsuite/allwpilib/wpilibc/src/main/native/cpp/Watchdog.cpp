@@ -18,7 +18,7 @@ constexpr std::chrono::milliseconds Watchdog::kMinPrintPeriod;
 class Watchdog::Thread : public wpi::SafeThread {
  public:
   template <typename T>
-  struct DerefGreater : public std::binary_function<T, T, bool> {
+  struct DerefGreater {
     constexpr bool operator()(const T& lhs, const T& rhs) const {
       return *lhs > *rhs;
     }
@@ -58,10 +58,15 @@ void Watchdog::Thread::Main() {
                         << "s\n";
           }
         }
+
+        // Set expiration flag before calling the callback so any manipulation
+        // of the flag in the callback (e.g., calling Disable()) isn't
+        // clobbered.
+        watchdog->m_isExpired = true;
+
         lock.unlock();
         watchdog->m_callback();
         lock.lock();
-        watchdog->m_isExpired = true;
       }
       // Otherwise, a Watchdog removed itself from the queue (it notifies the
       // scheduler of this) or a spurious wakeup occurred, so just rewait with
@@ -154,8 +159,6 @@ void Watchdog::Disable() {
   // Locks mutex
   auto thr = m_owner->GetThread();
   if (!thr) return;
-
-  m_isExpired = false;
 
   thr->m_watchdogs.remove(this);
   thr->m_cond.notify_all();
