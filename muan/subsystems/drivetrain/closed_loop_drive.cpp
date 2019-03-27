@@ -28,9 +28,19 @@ void ClosedLoopDrive::SetGoal(const GoalProto& goal) {
       point_turn_goal_ = goal->point_turn_goal();
       prev_heading_ = *integrated_heading_;
       prev_left_right_ = *left_right_position_;
+      distance_goal_ = 0;
     }
     control_mode_ = ControlMode::POINT_TURN;
     high_gear_ = false;
+    return;
+  }
+
+  if (goal->has_arc_goal()) {
+    point_turn_goal_ = goal->arc_goal().angular();
+    prev_heading_ = *integrated_heading_;
+    prev_left_right_ = *left_right_position_;
+    distance_goal_ = goal->arc_goal().linear();
+    control_mode_ = ControlMode::VISION_ARC;
     return;
   }
 
@@ -54,57 +64,68 @@ void ClosedLoopDrive::SetGoal(const GoalProto& goal) {
     return;
   }
 
-  control_mode_ = ControlMode::PATH_FOLLOWING;
-  const auto path_goal = goal->path_goal();
-  const Pose goal_pose{
-      Eigen::Vector3d(path_goal.x(), path_goal.y(), path_goal.heading())};
-
-  if (goal_pose.Get() == last_goal_pose_.Get()) {
+  if (goal->has_linear_angular_velocity_goal()) {
+    lin_vel_goal_ = goal->linear_angular_velocity_goal().linear_velocity();
+    ang_vel_goal_ = goal->linear_angular_velocity_goal().angular_velocity();
+    control_mode_ = ControlMode::LINEAR_ANGULAR_VEL;
     return;
-  } else {
-    last_goal_pose_ = goal_pose;
   }
 
-  const Pose inital_pose{*cartesian_position_, *integrated_heading_};
+  if (goal->has_path_goal()) {
+    control_mode_ = ControlMode::PATH_FOLLOWING;
+    const auto path_goal = goal->path_goal();
+    const Pose goal_pose{
+        Eigen::Vector3d(path_goal.x(), path_goal.y(), path_goal.heading())};
 
-  const HermiteSpline path{inital_pose,
-                           goal_pose,
-                           (*linear_angular_velocity_)(0),
-                           path_goal.final_velocity(),
-                           path_goal.backwards(),
-                           path_goal.extra_distance_initial(),
-                           path_goal.extra_distance_final(),
-                           (*linear_angular_velocity_)(1),
-                           path_goal.final_angular_velocity()};
+    if (goal_pose.Get() == last_goal_pose_.Get()) {
+      return;
+    } else {
+      last_goal_pose_ = goal_pose;
+    }
 
-  const double max_velocity =
-      path_goal.has_max_linear_velocity()
-          ? path_goal.max_linear_velocity()
-          : dt_config_.max_velocity;
-  const double max_voltage = path_goal.max_voltage();
-  const double max_acceleration =
-      path_goal.has_max_linear_accel()
-          ? path_goal.max_linear_accel()
-          : dt_config_.max_acceleration;
-  const double max_centripetal_acceleration =
-      path_goal.has_max_centripetal_accel()
-          ? path_goal.max_centripetal_accel()
-          : dt_config_.max_centripetal_acceleration;
+    const Pose inital_pose{*cartesian_position_, *integrated_heading_};
 
-  const double initial_velocity = (*linear_angular_velocity_)(0);
-  const double final_velocity = path_goal.final_velocity();
+    Eigen::Vector2d linear_angular_velocity = *linear_angular_velocity_;
+    if (path_goal.full_send()) {
+      linear_angular_velocity = Eigen::Vector2d(0, 0);
+    }
+    const HermiteSpline path{inital_pose,
+                             goal_pose,
+                             (linear_angular_velocity)(0),
+                             path_goal.final_velocity(),
+                             path_goal.backwards(),
+                             path_goal.extra_distance_initial(),
+                             path_goal.extra_distance_final(),
+                             (linear_angular_velocity)(1),
+                             path_goal.final_angular_velocity()};
 
-  const Trajectory::Constraints constraints{
-      max_velocity,                  //  NOLINT
-      max_voltage,                   //  NOLINT
-      max_acceleration,              //  NOLINT
-      max_centripetal_acceleration,  //  NOLINT
-      initial_velocity,              //  NOLINT
-      final_velocity,                //  NOLINT
-  };
+    const double max_velocity = path_goal.has_max_linear_velocity()
+                                    ? path_goal.max_linear_velocity()
+                                    : dt_config_.max_velocity;
+    const double max_voltage = path_goal.max_voltage();
+    const double max_acceleration = path_goal.has_max_linear_accel()
+                                        ? path_goal.max_linear_accel()
+                                        : dt_config_.max_acceleration;
+    const double max_centripetal_acceleration =
+        path_goal.has_max_centripetal_accel()
+            ? path_goal.max_centripetal_accel()
+            : dt_config_.max_centripetal_acceleration;
 
-  trajectory_ = Trajectory(path, constraints, goal->high_gear(), model_);
-  high_gear_ = goal->high_gear();
+    const double initial_velocity = (*linear_angular_velocity_)(0);
+    const double final_velocity = path_goal.final_velocity();
+
+    const Trajectory::Constraints constraints{
+        max_velocity,                  //  NOLINT
+        max_voltage,                   //  NOLINT
+        max_acceleration,              //  NOLINT
+        max_centripetal_acceleration,  //  NOLINT
+        initial_velocity,              //  NOLINT
+        final_velocity,                //  NOLINT
+    };
+
+    trajectory_ = Trajectory(path, constraints, goal->high_gear(), model_);
+    high_gear_ = goal->high_gear();
+  }
 }
 
 void ClosedLoopDrive::Update(OutputProto* output, StatusProto* status) {
@@ -116,24 +137,41 @@ void ClosedLoopDrive::Update(OutputProto* output, StatusProto* status) {
     UpdateLeftRightManual(output, status);
   } else if (control_mode_ == ControlMode::PATH_FOLLOWING) {
     UpdatePathFollower(output, status);
+  } else if (control_mode_ == ControlMode::LINEAR_ANGULAR_VEL) {
+    UpdateLinearAngularVelocity(output);
+  } else if (control_mode_ == ControlMode::VISION_ARC) {
+    UpdateVisionArc(output, status);
   }
 }
 
 void ClosedLoopDrive::UpdatePointTurn(OutputProto* output,
                                       StatusProto* status) {
   Eigen::Vector2d delta = model_.InverseKinematics(
-      Eigen::Vector2d(0, point_turn_goal_ - prev_heading_));
+      Eigen::Vector2d(0., point_turn_goal_));
+  (*output)->set_output_type(POSITION);
+  (*output)->set_left_setpoint(delta(0) + prev_left_right_(0));
+  (*output)->set_right_setpoint(delta(1) + prev_left_right_(1));
+  (*status)->set_heading_error((prev_heading_ + point_turn_goal_) - *integrated_heading_);
+}
+
+void ClosedLoopDrive::UpdateVisionArc(OutputProto* output,
+                                      StatusProto* status) {
+  Eigen::Vector2d delta = model_.InverseKinematics(
+      Eigen::Vector2d(distance_goal_, point_turn_goal_));
 
   (*status)->set_heading_error(point_turn_goal_ - *integrated_heading_);
   (*status)->set_closed_loop_control_mode(control_mode_);
 
-  (*output)->set_output_type(POSITION);
+  (*output)->set_output_type(ARC);
   (*output)->set_left_setpoint(delta(0) + prev_left_right_(0));
   (*output)->set_right_setpoint(delta(1) + prev_left_right_(1));
+  (*output)->set_yaw(point_turn_goal_ - ((*linear_angular_velocity_)(1) * 0.01));
+  (*output)->set_arc_vel(distance_goal_);
 }
 
 void ClosedLoopDrive::UpdateDistance(OutputProto* output, StatusProto* status) {
-  Eigen::Vector2d delta = model_.InverseKinematics(Eigen::Vector2d(distance_goal_, 0));
+  Eigen::Vector2d delta =
+      model_.InverseKinematics(Eigen::Vector2d(distance_goal_, 0));
 
   (*status)->set_closed_loop_control_mode(control_mode_);
 
@@ -149,6 +187,14 @@ void ClosedLoopDrive::UpdateLeftRightManual(OutputProto* output,
   (*output)->set_output_type(POSITION);
   (*output)->set_left_setpoint(left_pos_goal_);
   (*output)->set_right_setpoint(right_pos_goal_);
+}
+
+void ClosedLoopDrive::UpdateLinearAngularVelocity(OutputProto* output) {
+  auto left_right =
+      model_.InverseKinematics(Eigen::Vector2d(lin_vel_goal_, ang_vel_goal_));
+  (*output)->set_output_type(VELOCITY);
+  (*output)->set_left_setpoint(left_right(0));
+  (*output)->set_right_setpoint(left_right(1));
 }
 
 void ClosedLoopDrive::UpdatePathFollower(OutputProto* output,

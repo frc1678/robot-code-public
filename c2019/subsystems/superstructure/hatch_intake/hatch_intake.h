@@ -8,7 +8,7 @@
 namespace c2019 {
 namespace hatch_intake {
 
-constexpr int kScoreTicks = 50;
+constexpr int kScoreTicks = 80;
 
 class HatchIntake {
  public:
@@ -18,9 +18,11 @@ class HatchIntake {
               bool outputs_enabled);
 
  private:
-  State state_;
+  State state_ = IDLE;
   HatchIntakeGoalProto goal_;
   int counter_ = 0;
+  bool force_backplate_ = false;
+  bool has_hatch_ = false;
 };
 
 }  // namespace hatch_intake

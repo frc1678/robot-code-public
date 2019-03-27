@@ -170,6 +170,8 @@ void DrivetrainInterface::WriteActuators() {
           outputs->right_setpoint() * kDriveConversionFactor * 0.1);
           /* DemandType_ArbitraryFeedForward, outputs->right_setpoint_ff() / 12.); */
       break;
+    case TalonOutput::ARC:
+      break;
   }
 
   shifter_.Set(outputs->high_gear());

@@ -11,7 +11,7 @@ namespace o2018 {
 namespace autonomous {
 
 using muan::queues::QueueManager;
-using muan::webdash::AutoSelectionProto;
+using muan::webdash::AutoProto;
 using muan::webdash::WebDashQueueWrapper;
 using muan::wpilib::DriverStationProto;
 
@@ -19,7 +19,7 @@ AutonomousRunner::AutonomousRunner()
     : driver_station_reader_(
           QueueManager<DriverStationProto>::Fetch()->MakeReader()),
       auto_mode_reader_(WebDashQueueWrapper::GetInstance()
-                            .auto_selection_queue()
+                            .auto_queue()
                             .MakeReader()),
       game_specific_string_reader_(
           QueueManager<muan::wpilib::GameSpecificStringProto>::Fetch()
@@ -66,7 +66,7 @@ void AutonomousRunner::operator()() {
 }
 
 std::string AutonomousRunner::AutoMode() {
-  AutoSelectionProto auto_mode;
+  AutoProto auto_mode;
   std::string final_auto_mode;
   muan::wpilib::GameSpecificStringProto game_specific_string;
   game_specific_string_reader_.ReadLastMessage(&game_specific_string);

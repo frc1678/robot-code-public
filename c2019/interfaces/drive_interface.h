@@ -6,6 +6,9 @@
 #include "muan/queues/queue_manager.h"
 #include "muan/subsystems/drivetrain/queue_types.h"
 #include "muan/wpilib/queue_types.h"
+#include "networktables/NetworkTable.h"
+#include "networktables/NetworkTableEntry.h"
+#include "networktables/NetworkTableInstance.h"
 
 namespace c2019 {
 namespace interfaces {
@@ -15,14 +18,14 @@ using muan::subsystems::drivetrain::InputQueue;
 using muan::subsystems::drivetrain::OutputProto;
 using muan::subsystems::drivetrain::OutputQueue;
 
-constexpr uint32_t kLeftMaster = 1;
-constexpr uint32_t kRightMaster = 2;
+constexpr uint32_t kLeftMaster = 2;
+constexpr uint32_t kRightMaster = 1;
 
-constexpr uint32_t kLeftSlaveA = 3;
-constexpr uint32_t kLeftSlaveB = 4;
+constexpr uint32_t kLeftSlaveA = 5;
+constexpr uint32_t kLeftSlaveB = 6;
 
-constexpr uint32_t kRightSlaveA = 5;
-constexpr uint32_t kRightSlaveB = 6;
+constexpr uint32_t kRightSlaveA = 3;
+constexpr uint32_t kRightSlaveB = 4;
 
 class DrivetrainInterface {
  public:
@@ -41,16 +44,17 @@ class DrivetrainInterface {
   TalonSRX left_master_{kLeftMaster};
   TalonSRX right_master_{kRightMaster};
 
-  VictorSPX left_slave_a_{kLeftSlaveA};
+  TalonSRX left_slave_a_{kLeftSlaveA};
   VictorSPX left_slave_b_{kLeftSlaveB};
 
-  TalonSRX right_slave_a_{kRightSlaveA};
-  TalonSRX right_slave_b_{kRightSlaveB};
+  VictorSPX right_slave_a_{kRightSlaveA};
+  VictorSPX right_slave_b_{kRightSlaveB};
 
   PigeonIMU pigeon_;
   double pigeon_offset_ = 0;
+  Compressor compressor_;
 
-  Solenoid shifter_{0};
+  // Solenoid shifter_{0};
 
   muan::wpilib::DriverStationQueue::QueueReader ds_status_reader_;
 };

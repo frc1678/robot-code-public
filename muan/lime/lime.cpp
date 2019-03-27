@@ -38,26 +38,26 @@ double Lime::ObjectDistance(double vertical_angle) {
 }
 
 void Lime::Update() {
-  LimeStatusProto status;
-  LimeGoalProto goal;
+  /* LimeStatusProto status; */
+  /* LimeGoalProto goal; */
 
-  if (goal_reader_.ReadLastMessage(&goal)) {
-    auto inst = nt::NetworkTableInstance::GetDefault();
-    std::shared_ptr<nt::NetworkTable> table = inst.GetTable("limelight");
-    table->PutNumber("ledMode", static_cast<int>(goal->light_state()));
-  }
+  /* if (goal_reader_.ReadLastMessage(&goal)) { */
+  /*   auto inst = nt::NetworkTableInstance::GetDefault(); */
+  /*   std::shared_ptr<nt::NetworkTable> table = inst.GetTable("limelight"); */
+  /*   table->PutNumber("ledMode", static_cast<int>(goal->light_state())); */
+  /* } */
 
-  status->set_has_target(target_present_);
-  if (target_present_) {
-    status->set_dist((ObjectDistance(target_vertical_angle_) * dist_factor_) -
-                     dist_offset_);
-    status->set_theta(target_horizontal_angle_);
-    status->set_relative_x(std::cos(status->theta() * (M_PI / 180.)) *
-                           status->dist());
-    status->set_relative_y(std::sin(status->theta() * (M_PI / 180.)) *
-                           status->dist());
-  }
-  status_queue_->WriteMessage(status);
+  /* status->set_has_target(target_present_); */
+  /* if (target_present_) { */
+  /*   status->set_dist((ObjectDistance(target_vertical_angle_) * dist_factor_) - */
+  /*                    dist_offset_); */
+  /*   status->set_theta(target_horizontal_angle_); */
+  /*   status->set_relative_x(std::cos(status->theta() * (M_PI / 180.)) * */
+  /*                          status->dist()); */
+  /*   status->set_relative_y(std::sin(status->theta() * (M_PI / 180.)) * */
+  /*                          status->dist()); */
+  /* } */
+  /* status_queue_->WriteMessage(status); */
 }
 
 }  // namespace lime

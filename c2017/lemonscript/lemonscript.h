@@ -36,9 +36,9 @@ class Lemonscript {
 
  private:
   void UpdateAutoRoutine();
-  muan::webdash::AutoSelectionQueue::QueueReader auto_selection_reader_ =
+  muan::webdash::AutoQueue::QueueReader auto_selection_reader_ =
       muan::webdash::WebDashQueueWrapper::GetInstance()
-          .auto_selection_queue()
+          .auto_queue()
           .MakeReader();
   ::lemonscript::LemonScriptState *state_;
   ::lemonscript::LemonScriptCompiler *compiler_;

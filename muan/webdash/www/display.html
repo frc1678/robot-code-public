@@ -108,7 +108,7 @@
         var source = null;
 
         // Make reference to source, but only with widgets that need it
-        if (widget["type"] != "image" && widget["type"] != "encouragement" &&
+        if (widget["type"] != "encouragement" &&
             widget["type"] != "auto" && widget["type"] != "link") {
           var source = data[widget["source"][0]][widget["source"][1]];
         }
@@ -226,8 +226,7 @@
                 "<div id=" + image_id + " style=width:" + box_width*4 + ";heigth:" + box_height*4 + "></div>";
           }
           document.getElementById(image_id).innerHTML =
-              "<img src=\"http://" + document.location.hostname + ":5802/" +
-              widget["source"] + "\"" + "alt=\"Unable to read stream\">";
+              "<img src=\"http://" + source + "\" alt=\"Unable to read stream\">";
         }
 
         // Game specific string, depends on game and can't be generic

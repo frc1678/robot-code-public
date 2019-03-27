@@ -1,0 +1,37 @@
+
+
+<DOCTYPE html>
+
+<html>
+  <head>
+    <link href = "/display.css" type = "text/css" rel ="stylesheet" />
+  </head>
+  <body>
+  </body>
+  <script>
+    var datasock = new WebSocket("ws://" + document.location.host + "/data");
+    var prev_url = "";
+    datasock.onmessage = function(data) {
+      var data = JSON.parse(data.data);
+      UpdateStream(data);
+    }
+    function UpdateStream(data) {
+      if (!(prev_url === data["webdash"]["streamUrl"])) {
+        document.body.innerHTML = "<img style=\"display:block;margin:auto;text-align:center; height:100%; transform:rotate(180deg);\" src=\"http://" + data["webdash"]["streamUrl"] + "\" alt=\"Unable to read stream\">";
+      }
+      prev_url = data["webdash"]["streamUrl"];
+    }
+    // Starts UpdateDisplay function
+    function alertData() {
+      if (datasock.readyState == 0) {
+        window.setTimeout(alertData, 100);
+      } else {
+        datasock.send("ping")
+      }
+    }
+    datasock.onopen = function() { datasock.send("ping"); }
+    function ReadData() { datasock.send("ping"); }
+    // Updates data every 100 milliseconds
+    var intervalID = setInterval(ReadData, 100);
+  </script>
+</html>

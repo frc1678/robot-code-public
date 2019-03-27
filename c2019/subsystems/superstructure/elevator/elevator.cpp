@@ -34,6 +34,10 @@ void Elevator::Update(const ElevatorInputProto& input,
     if (braked != muan::DiskBrake::LOCKED) {
       (*output)->set_elevator_output_type(POSITION);
       (*output)->set_elevator_setpoint(height_goal_);
+      if (height_goal_ < 1e-6 && input->elevator_encoder() < 1e-2) {
+        (*output)->set_elevator_output_type(OPEN_LOOP);
+        (*output)->set_elevator_setpoint(0.);
+      }
       (*output)->set_elevator_ff(CalculateFeedForwards(
           input->has_cargo(), input->has_hatch(),
           input->elevator_encoder() > kSecondStageHeight));
@@ -45,15 +49,26 @@ void Elevator::Update(const ElevatorInputProto& input,
     (*output)->set_brake(wants_brake_);
     (*output)->set_high_gear(high_gear_);
 
-    (*output)->set_crawler_solenoid(crawler_down_);
+    if (crawler_down_) {
+      (*output)->set_crawler_one_solenoid(crawler_down_);
+      counter_++;
+      if (counter_ > 100) {
+        (*output)->set_crawler_two_solenoid(crawler_down_);
+      } else {
+        (*output)->set_crawler_two_solenoid(false);
+      }
+    } else {
+      (*output)->set_crawler_one_solenoid(crawler_down_);
+      (*output)->set_crawler_two_solenoid(crawler_down_);
+    }
     (*output)->set_crawler_voltage(crawling_ ? 12. : 0.);
   } else {
     (*output)->set_elevator_output_type(OPEN_LOOP);
     (*output)->set_elevator_setpoint(0.);
     (*output)->set_elevator_ff(0.);
-    (*output)->set_high_gear(false);
-
-    (*output)->set_crawler_solenoid(false);
+    (*output)->set_high_gear(high_gear_);
+    (*output)->set_crawler_one_solenoid(false);
+    (*output)->set_crawler_two_solenoid(false);
     (*output)->set_crawler_voltage(0);
     (*output)->set_brake(false);
   }

@@ -1,17 +1,17 @@
 {
-    "widgets": [{
-            "name": "Auto Select",
+    "widgets": [
+        {
+            "name": "Auto Selection",
             "type": "auto",
-            "source": ["game_specific_string", "code"],
-            "coordinates": [1, 1],
+            "coordinates": [0, 3],
             "should-title": false,
-            "autos": {
-                "DEFAULT": [
-                    "TEST_AUTO",
-                    "DRIVE_STRAIGHT",
-                    "NONE"
-                ]
-            }
+            "autos": [
+                "LEFT_ROCKET",
+                "RIGHT_ROCKET",
+                "LEFT_CARGO_ROCKET",
+                "RIGHT_CARGO_ROCKET",
+                "TELEOP"
+            ]
         },
         {
             "name": "Encouragement!",
@@ -27,39 +27,64 @@
             "should-title": false
         },
         {
-            "name": "Game Layout",
-            "type": "gss",
-            "source": ["game_specific_string", "code"],
+            "name": "Elevator Calibrated",
+            "type": "boolean",
+            "condition": "source",
+            "source": ["superstructure_status", "elevatorIsCalibrated"],
             "coordinates": [0, 1],
-            "should-title": false,
-            "code": [
-                "if (!document.getElementById(\"gss_box_1\")) {",
-                "  for (var i = 6; i > 0; i--) {",
-                "    document.getElementById(coords).innerHTML += \"<div id=gss_box_\" + i + \" style=width:\" + box_width/2 + \"px;height:\" + box_height/3 + \"px></div>\";",
-                "  }",
-                "}",
-                "if (source.charAt(2) == 'L') {",
-                "  document.getElementById(\"gss_box_5\").style.backgroundColor = alliance_color;",
-                "  document.getElementById(\"gss_box_6\").style.backgroundColor = other_alliance_color;",
-                "} else if (source.charAt(2) == 'R') {",
-                "  document.getElementById(\"gss_box_5\").style.backgroundColor = other_alliance_color;",
-                "  document.getElementById(\"gss_box_6\").style.backgroundColor = alliance_color;",
-                "}",
-                "if (source.charAt(1) == 'L') {",
-                "  document.getElementById(\"gss_box_3\").style.backgroundColor = alliance_color;",
-                "  document.getElementById(\"gss_box_4\").style.backgroundColor = other_alliance_color;",
-                "} else if (source.charAt(1) == 'R') {",
-                "  document.getElementById(\"gss_box_3\").style.backgroundColor = other_alliance_color;",
-                "  document.getElementById(\"gss_box_4\").style.backgroundColor = alliance_color;",
-                "}",
-                "if (source.charAt(0) == 'L') {",
-                "  document.getElementById(\"gss_box_1\").style.backgroundColor = alliance_color;",
-                "  document.getElementById(\"gss_box_2\").style.backgroundColor = other_alliance_color;",
-                "} else if (source.charAt(0) == 'R') {",
-                "  document.getElementById(\"gss_box_1\").style.backgroundColor = other_alliance_color;",
-                "  document.getElementById(\"gss_box_2\").style.backgroundColor = alliance_color;",
-                "}"
-            ]
+            "should-title": true,
+            "colors": {
+              "if_true": "#00ff00",
+              "if_false": "#ff0000"
+            }
+        },
+        {
+            "name": "Wrist Calibrated",
+            "type": "boolean",
+            "condition": "source",
+            "source": ["superstructure_status", "wristIsCalibrated"],
+            "coordinates": [0,2],
+            "should-title": true,
+            "colors": {
+              "if_true": "#00ff00",
+              "if_false": "#ff0000"
+            }
+        },
+        {
+            "name": "Front Limelight OK",
+            "type": "boolean",
+            "source": ["limelight_status", "limelightOk"],
+            "condition": "source",
+            "coordinates": [2, 1],
+            "should-title": true,
+            "colors": {
+              "if_true": "#00ff00",
+              "if_false": "#ff0000"
+            }
+        },
+        {
+            "name": "Bottom Limelight OK",
+            "type": "boolean",
+            "source": ["limelight_status", "bottomLimelightOk"],
+            "condition": "source",
+            "coordinates": [2, 0],
+            "should-title": true,
+            "colors": {
+              "if_true": "#00ff00",
+              "if_false": "#ff0000"
+            }
+        },
+        {
+            "name": "Back Limelight OK",
+            "type": "boolean",
+            "source": ["limelight_status", "backLimelightOk"],
+            "condition": "source",
+            "coordinates": [2, 2],
+            "should-title": true,
+            "colors": {
+              "if_true": "#00ff00",
+              "if_false": "#ff0000"
+            }
         }
     ],
     "settings": {

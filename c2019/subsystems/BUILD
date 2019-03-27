@@ -7,6 +7,7 @@ cc_library(
     deps = [
         "//c2019/interfaces:interface_runner",
         "//c2019/subsystems/drivetrain:drivetrain_base",
+        "//c2019/subsystems/limelight",
         "//c2019/subsystems/superstructure",
         "//muan/subsystems/drivetrain",
         "//muan/utils:threading_utils",

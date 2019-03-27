@@ -20,48 +20,50 @@
 namespace c2019 {
 namespace superstructure {
 
-// TODO(hanson) test these numbers
 // elevator constants
-constexpr double kHatchShipForwardsHeight = .4;
-constexpr double kHatchShipBackwardsHeight = 0.;
-constexpr double kHatchRocketFirstHeight = .4;
-constexpr double kHatchRocketBackwardsHeight = 0.;
-constexpr double kHatchRocketSecondHeight = 1.2;
-constexpr double kHatchRocketThirdHeight = 2.;
-constexpr double kHatchLoadingStationHeight = .4;
+constexpr double kHatchShipForwardsHeight = 0.1;
+constexpr double kHatchShipBackwardsHeight = 0.2;
+constexpr double kHatchRocketFirstHeight = 0.1;
+constexpr double kHatchRocketBackwardsHeight = 0.2;
+constexpr double kHatchRocketSecondHeight = 0.987;
+constexpr double kHatchRocketThirdHeight = 1.74;
+constexpr double kHatchLoadingStationHeight = 0.089;
 constexpr double kHatchGroundHeight = 0.;
-constexpr double kCargoShipForwardsHeight = 1.;
-constexpr double kCargoShipBackwardsHeight = 0;
-constexpr double kCargoRocketFirstHeight = .6;
-constexpr double kCargoRocketBackwardsHeight = 0.;
-constexpr double kCargoRocketSecondHeight = 1.4;
-constexpr double kCargoRocketThirdHeight = 2.;
+constexpr double kCargoShipForwardsHeight = 1.103;
+constexpr double kCargoShipBackwardsHeight = 0.643;
+constexpr double kCargoRocketFirstHeight = 0.093;
+constexpr double kCargoRocketBackwardsHeight = 0.116;
+constexpr double kCargoRocketSecondHeight = 0.928;
+constexpr double kCargoRocketThirdHeight = 1.74;
 constexpr double kCargoGroundHeight = 0.;
-constexpr double kHandoffHeight = 0.;
+constexpr double kHandoffHeight = 0.257;
 constexpr double kSpitHeight = 0.;
 constexpr double kStowHeight = 0.;
-constexpr double kClimbHeight = 0.;
-constexpr double kElevatorSafeHeight = 0.05;
-constexpr double kElevatorMinHeight = 0.;
-constexpr double kElevatorMaxHeight = 2.;
+constexpr double kKissHeight = 1.39;
+constexpr double kClimbHeight = 0.05;
+constexpr double kCrawlerHeight = 1.66;
+constexpr double kLandHeight = 0.312;
+constexpr double kElevatorSafeHeight = 0.71;
+constexpr double kElevatorPassThroughHeight = 0.025;
 constexpr double kElevatorHandoffTolerance = 2e-3;
+constexpr double kElevatorWristHorizHeight = 0.05;
+constexpr double kElevatorBoardHeight = 1.42;
 
 // wrist constants
-constexpr double kHatchForwardsAngle = 0.;
-constexpr double kHatchBackwardsAngle = 3.1;
-constexpr double kCargoRocketFirstAngle = 0.;
-constexpr double kCargoRocketSecondAngle = 0.;
-constexpr double kCargoRocketThirdAngle = M_PI / 12.;
-constexpr double kCargoRocketBackwardsAngle = M_PI * (5. / 6.);
-constexpr double kCargoShipForwardsAngle = 0.;
-constexpr double kCargoShipBackwardsAngle = M_PI * (5. / 6.);
-constexpr double kCargoGroundAngle = 0.;
-constexpr double kHandoffAngle = 3.1;
-constexpr double kStowAngle = M_PI / 2.;
-constexpr double kClimbAngle = 0.;
-constexpr double kWristSafeAngle = 1.4;
-constexpr double kWristMinAngle = 0.;
-constexpr double kWristMaxAngle = M_PI;
+constexpr double kHatchForwardsAngle = 0.0;
+constexpr double kHatchBackwardsAngle = 3.05;
+constexpr double kCargoRocketFirstAngle = .87;
+constexpr double kCargoRocketSecondAngle = .87;
+constexpr double kCargoRocketThirdAngle = .87;
+constexpr double kCargoRocketBackwardsAngle = M_PI;
+constexpr double kCargoShipForwardsAngle = 0.0;
+constexpr double kCargoShipBackwardsAngle = 3.23;
+constexpr double kCargoGroundAngle = 0.0;
+constexpr double kHandoffAngle = 3.414;
+constexpr double kStowAngle = 1.2;
+constexpr double kClimbAngle = 0.3;
+constexpr double kWristSafeForwardsAngle = 1.3;
+constexpr double kWristSafeBackwardsAngle = 2.65;
 constexpr double kWristHandoffTolerance = 3. * (M_PI / 180.);
 
 class Superstructure {
@@ -115,9 +117,19 @@ class Superstructure {
   bool high_gear_ = true;
   bool crawler_down_ = false;
   bool brake_ = false;
+  bool request_climb_ = false;
+  bool request_crawlers_ = false;
 
   bool should_climb_ = false;
   bool buddy_ = false;
+
+  int counter_ = 0;
+
+  bool force_backplate_ = false;
+  bool cargo_out_ = false;
+  bool climbing_ = false;
+  bool request_crawl_ = false;
+  bool pins_ = false;
 
   SuperstructureState state_ = SuperstructureState::CALIBRATING;
   IntakeGoal intake_goal_ = IntakeGoal::INTAKE_NONE;

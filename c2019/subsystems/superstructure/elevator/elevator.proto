@@ -24,11 +24,12 @@ message ElevatorOutput {
   required uint64 timestamp = 1;
   required double elevator_setpoint = 2;
   optional double elevator_ff = 3;
-  required bool crawler_solenoid = 4;
-  required double crawler_voltage = 5;
-  required TalonOutput elevator_output_type = 6;
-  required bool high_gear = 7;
-  required bool brake = 8;
+  required bool crawler_one_solenoid = 4;
+  required bool crawler_two_solenoid = 5;
+  required double crawler_voltage = 6;
+  required TalonOutput elevator_output_type = 7;
+  required bool high_gear = 8;
+  required bool brake = 9;
 }
 
 message ElevatorInput {

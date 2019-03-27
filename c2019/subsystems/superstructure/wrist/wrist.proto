@@ -25,7 +25,7 @@ message WristOutput {
 
 message WristInput {
   required uint64 timestamp = 1;
-  required bool wrist_hall = 2;
+  required bool wrist_zeroed = 2;
   required double wrist_encoder = 3;
   required bool has_panel = 4;
   required bool has_cargo = 5;

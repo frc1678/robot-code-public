@@ -10,8 +10,8 @@ namespace c2019 {
 namespace elevator {
 
 // Height constraints
-constexpr double kMinHeight = 0.;
-constexpr double kMaxHeight = 2.;
+constexpr double kMinHeight = 0;
+constexpr double kMaxHeight = 1.78;
 constexpr double kSecondStageHeight = 1.;
 
 // Setting max voltage so that people don't die
@@ -48,6 +48,8 @@ class Elevator {
   double prev_encoder_ = 0.;
   int num_encoder_fault_ticks_ = 0;
   bool encoder_fault_ = false;
+
+  int counter_ = 0;
 };
 
 }  // namespace elevator

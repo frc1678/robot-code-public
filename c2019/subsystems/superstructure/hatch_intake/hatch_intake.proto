@@ -9,6 +9,8 @@ enum State {
   INTAKING = 1;
   CARRYING = 2;
   OUTTAKING = 3;
+  PREPPING_SCORE = 4;
+  HANDOFF_INTAKING = 5;
 }
 
 message HatchIntakeStatus {
@@ -28,11 +30,14 @@ enum Goal {
   INTAKE = 1;
   HOLD = 2;
   SCORE = 3;
+  PREP_SCORE = 4;
+  HANDOFF = 5;
 }
 
 message HatchIntakeGoal {
   required uint64 timestamp = 1;
   required Goal goal = 2;
+  required bool force_backplate = 3;
 }
 
 message HatchIntakeInput {

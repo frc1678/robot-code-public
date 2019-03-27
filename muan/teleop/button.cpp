@@ -68,13 +68,16 @@ AxisRange::AxisRange(Joystick* joystick, double minimum, double maximum,
 void AxisRange::Update() {
   // Get x and y position of button
   double x_axis = joystick_->wpilib_joystick()->GetRawAxis(id_);
-  double y_axis = joystick_->wpilib_joystick()->GetRawAxis(y_axis_);
+  double y_axis = -joystick_->wpilib_joystick()->GetRawAxis(y_axis_);
 
   // Pythagorean theorem to determine button magnitude
   double magnitude = sqrt((x_axis * x_axis) + (y_axis * y_axis));
 
   // Simple trig to determine button angle
-  double axis_in_degrees = std::abs((atan2(y_axis, x_axis)) * (180 / M_PI));
+  double axis_in_degrees = (atan2(y_axis, x_axis)) * (180 / M_PI);
+  if (axis_in_degrees < -135) {
+    axis_in_degrees = std::abs(axis_in_degrees);
+  }
 
   // Conform to wpilib's angle system
   bool axis_in_range =

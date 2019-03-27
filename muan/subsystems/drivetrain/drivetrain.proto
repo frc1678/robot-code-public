@@ -16,13 +16,19 @@ message DrivetrainInput {
   required double left_voltage = 6;
   required double right_voltage = 7;
 
-  required double gyro = 8;
+  required double left_current = 8;
+  required double right_current = 9;
+
+  required double gyro = 10;
+
+  required double right_bus = 11;
 }
 
 enum TalonOutput {
   OPEN_LOOP = 0;
   POSITION = 1;
   VELOCITY = 2;
+  ARC = 3;
 }
 
 message DrivetrainOutput {
@@ -37,6 +43,9 @@ message DrivetrainOutput {
   optional double right_setpoint_ff = 6;
 
   required bool high_gear = 7;
+
+  required double yaw = 8;
+  required double arc_vel = 9;
 }
 
 enum ControlMode {
@@ -44,6 +53,8 @@ enum ControlMode {
     POINT_TURN = 1;
     DISTANCE = 2;
     LEFT_RIGHT = 3;
+    LINEAR_ANGULAR_VEL = 4;
+    VISION_ARC = 5;
 }
 
 message DrivetrainStatus {
@@ -80,6 +91,7 @@ message DrivetrainStatus {
   optional bool profile_complete = 22;
 
   optional ControlMode closed_loop_control_mode = 23;
+  optional double encoder_heading = 24;
 }
 
 message DrivetrainGoal {
@@ -107,11 +119,23 @@ message DrivetrainGoal {
     optional double max_linear_velocity = 10;
     optional double max_linear_accel = 11;
     optional double max_centripetal_accel = 12;
+
+    optional bool full_send = 13;
   }
 
   message LeftRightGoal {
     required double left_goal = 1;
     required double right_goal = 2;
+  }
+
+  message LinearAngularVelocityGoal {
+    required double linear_velocity = 1;
+    required double angular_velocity = 2;
+  }
+
+  message ArcGoal {
+    required double linear = 1;
+    required double angular = 2;
   }
 
   required bool high_gear = 2;
@@ -122,5 +146,7 @@ message DrivetrainGoal {
     double point_turn_goal = 5;
     double distance_goal = 6;
     LeftRightGoal left_right_goal = 7;
+    LinearAngularVelocityGoal linear_angular_velocity_goal = 8;
+    ArcGoal arc_goal = 9;
   }
 }

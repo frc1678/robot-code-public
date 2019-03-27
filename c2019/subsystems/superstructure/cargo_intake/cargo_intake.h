@@ -7,6 +7,10 @@ namespace c2019 {
 
 namespace cargo_intake {
 
+constexpr int kPickupTicks = 2;
+constexpr int kOuttakeTicks = 10;
+constexpr double kCurrentThreshold = 25;
+
 class CargoIntake {
  public:
   CargoIntake();
@@ -16,7 +20,10 @@ class CargoIntake {
   void SetGoal(const CargoIntakeGoalProto& goal);
 
  private:
-  Goal run_intake_;
+  State state_ = IDLE;
+  State prev_state_ = IDLE;
+  double pickup_counter_ = 0;
+  double outtake_counter_ = 0;
 };
 
 }  // namespace cargo_intake

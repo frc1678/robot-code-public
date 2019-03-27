@@ -179,7 +179,7 @@ TEST_F(DrivetrainTest, PathFollow) {
   RunFor(500);
   EXPECT_NEAR(cartesian_position_(0), 1, 1e-2);
   EXPECT_NEAR(cartesian_position_(1), 1, 1e-2);
-  EXPECT_NEAR(integrated_heading_, 0, 1e-2);
+  EXPECT_NEAR(integrated_heading_, 0, 1.5e-2);
 }
 
 TEST_F(DrivetrainTest, PathFollowBackwards) {

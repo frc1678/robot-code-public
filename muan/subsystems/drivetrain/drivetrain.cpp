@@ -72,7 +72,8 @@ void Drivetrain::Update() {
   if (goal_reader_.ReadLastMessage(&goal)) {
     bool in_closed_loop =
         (goal->has_path_goal() || goal->has_point_turn_goal() ||
-         goal->has_distance_goal() || goal->has_left_right_goal()) &&
+         goal->has_distance_goal() || goal->has_left_right_goal() ||
+         goal->has_linear_angular_velocity_goal() || goal->has_arc_goal()) &&
         driver_station->is_sys_active();
     if (in_closed_loop) {
       closed_loop_.SetGoal(goal);
@@ -98,7 +99,8 @@ void Drivetrain::Update() {
   status->set_pred_ang_accel(predicted_a(1));
   status->set_estimated_lin_accel(linear_angular_accel(0));
   status->set_estimated_ang_accel(linear_angular_accel(1));
-
+  status->set_encoder_heading(drive_model_.ForwardKinematics(
+      Eigen::Vector2d(input->left_encoder(), input->right_encoder()))(1));
 
   status_queue_->WriteMessage(status);
 }

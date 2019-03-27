@@ -11,16 +11,41 @@ void CargoIntake::Update(const CargoIntakeInputProto& input,
   double roller_voltage = 0;
 
   if (outputs_enabled) {
-    switch (run_intake_) {
-      case Goal::INTAKE:
+    switch (state_) {
+      case IDLE:
+        if (input->cargo_proxy()) {
+          roller_voltage = 4;
+        } else {
+          roller_voltage = 0;
+        }
+        break;
+      case INTAKING:
         roller_voltage = 12;
+        if (input->cargo_proxy()) {
+          state_ = HOLDING;
+          pickup_counter_ = 0;
+        }
         break;
-      case Goal::OUTTAKE:
-        roller_voltage = -4;
+      case PICKING_UP:
+        roller_voltage = 12;
+        pickup_counter_++;
+        if (pickup_counter_ > kPickupTicks) {
+          state_ = HOLDING;
+          pickup_counter_ = 0;
+        }
+      case HOLDING:
+        if (input->cargo_proxy()) {
+          roller_voltage = 4;
+        } else {
+          roller_voltage = 0;
+        }
         break;
-      case Goal::IDLE:
-        if (input->has_cargo()) {
-          roller_voltage = -2;
+      case OUTTAKING:
+        roller_voltage = -10;
+        outtake_counter_++;
+        if (outtake_counter_ > kOuttakeTicks) {
+          state_ = IDLE;
+          outtake_counter_ = 0;
         }
         break;
     }
@@ -29,12 +54,27 @@ void CargoIntake::Update(const CargoIntakeInputProto& input,
   }
 
   (*output)->set_roller_voltage(roller_voltage);
-  (*status)->set_state(run_intake_);
-  (*status)->set_has_cargo(input->has_cargo());
+  (*status)->set_state(state_);
+  prev_state_ = state_;
+  (*status)->set_has_cargo(input->cargo_proxy());
 }
 
 void CargoIntake::SetGoal(const CargoIntakeGoalProto& goal) {
-  run_intake_ = goal->goal();
+  switch (goal->goal()) {
+    case NONE:
+      state_ = IDLE;
+      break;
+    case INTAKE:
+      state_ = INTAKING;
+      break;
+    case STOP_INTAKE:
+      state_ = HOLDING;
+      break;
+    case OUTTAKE:
+      outtake_counter_ = 0;
+      state_ = OUTTAKING;
+      break;
+  }
 }
 
 }  // namespace cargo_intake

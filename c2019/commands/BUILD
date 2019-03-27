@@ -15,6 +15,7 @@ cc_library(
         ":commands_proto",
         "//muan/proto:stack_proto",
         "//muan/queues:queue_manager",
+	"//c2019/subsystems/limelight:limelight_queues",
     ],
 )
 
@@ -23,8 +24,7 @@ cc_library(
     deps = [
         ":command_base",
         ":command_queues",
-        ":drive_straight",
-        ":test_auto",
+        ":rocket",
     ],
     visibility = ["//visibility:public"],
 )
@@ -40,6 +40,9 @@ cc_library(
         "//muan/queues:queue_manager",
         "//muan/subsystems/drivetrain:drivetrain_queues",
         "//muan/wpilib:wpilib_queues",
+        "//c2019/subsystems/limelight:limelight_queues",
+        "//c2019/subsystems/superstructure:superstructure_queues",
+        "//c2019/subsystems/superstructure/cargo_intake:cargo_intake_queues",
     ],
 )
 
@@ -49,25 +52,14 @@ cc_test(
     linkopts = ["-lpthread"],
     deps = [
         ":command_base",
-        ":test_auto",
         "//third_party/google/googletest",
     ],
 )
 
 cc_library(
-    name = "test_auto",
-    srcs = ["test_auto.cpp"],
-    hdrs = ["test_auto.h"],
-    visibility = ["//visibility:public"],
-    deps = [
-        ":command_base",
-    ],
-)
-
-cc_library(
-    name = "drive_straight",
-    srcs = ["drive_straight.cpp"],
-    hdrs = ["drive_straight.h"],
+    name = "rocket",
+    srcs = ["rocket.cpp"],
+    hdrs = ["rocket.h"],
     visibility = ["//visibility:public"],
     deps = [
         ":command_base",

@@ -61,14 +61,15 @@ void Trajectory::TimeReparametrize(const HermiteSpline& spline,
     Bounds min_max_accel = model.CalculateMinMaxAcceleration(
         linear_angular_velocity, constrained_pose.pose.curvature(),
         constraints.max_voltage, high_gear);
+    (void)min_max_accel;
 
-    constrained_pose.min_acceleration =
-        std::max(constrained_pose.min_acceleration,
-                 backwards ? -min_max_accel.max : min_max_accel.min);
+    /* constrained_pose.min_acceleration = */
+    /*     std::max(constrained_pose.min_acceleration, */
+    /*              backwards ? -min_max_accel.max : min_max_accel.min); */
 
-    constrained_pose.max_acceleration =
-        std::min(constrained_pose.max_acceleration,
-                 backwards ? -min_max_accel.min : min_max_accel.max);
+    /* constrained_pose.max_acceleration = */
+    /*     std::min(constrained_pose.max_acceleration, */
+    /*              backwards ? -min_max_accel.min : min_max_accel.max); */
 
     predecessor = constrained_pose;
   }
@@ -99,17 +100,17 @@ void Trajectory::TimeReparametrize(const HermiteSpline& spline,
                                    constrained_pose.pose.curvature() *
                                    (backwards ? -1. : 1.);
 
-      Bounds min_max_accel = model.CalculateMinMaxAcceleration(
-          linear_angular_velocity, constrained_pose.pose.curvature(),
-          constraints.max_voltage, high_gear);
+      /* Bounds min_max_accel = model.CalculateMinMaxAcceleration( */
+      /*     linear_angular_velocity, constrained_pose.pose.curvature(), */
+      /*     constraints.max_voltage, high_gear); */
 
-      constrained_pose.min_acceleration =
-          std::max(constrained_pose.min_acceleration,
-                   backwards ? -min_max_accel.max : min_max_accel.min);
+      /* constrained_pose.min_acceleration = */
+      /*     std::max(constrained_pose.min_acceleration, */
+      /*              backwards ? -min_max_accel.max : min_max_accel.min); */
 
-      constrained_pose.max_acceleration =
-          std::min(constrained_pose.max_acceleration,
-                   backwards ? -min_max_accel.min : min_max_accel.max);
+      /* constrained_pose.max_acceleration = */
+      /*     std::min(constrained_pose.max_acceleration, */
+      /*              backwards ? -min_max_accel.min : min_max_accel.max); */
     }
 
     successor = constrained_pose;

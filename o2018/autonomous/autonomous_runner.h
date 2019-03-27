@@ -18,7 +18,7 @@ class AutonomousRunner {
 
  private:
   muan::wpilib::DriverStationQueue::QueueReader driver_station_reader_;
-  muan::webdash::AutoSelectionQueue::QueueReader auto_mode_reader_;
+  muan::webdash::AutoQueue::QueueReader auto_mode_reader_;
   muan::wpilib::GameSpecificStringQueue::QueueReader
       game_specific_string_reader_;
 

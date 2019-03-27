@@ -1,0 +1,51 @@
+syntax = "proto2";
+
+option cc_enable_arenas = true;
+
+package c2019.limelight;
+
+message LimelightStatus {
+  required uint64 timestamp = 1;
+
+  optional double target_dist  = 2;
+  optional double target_x = 3;
+  optional double target_y = 4;
+  optional double skew = 5;
+  optional double target_1_horizontal_angle = 6;
+  optional double target_2_horizontal_angle = 7;
+  optional double target_3_horizontal_angle = 8;
+  optional double heading = 9;
+  optional double horiz_angle = 10;
+  optional bool to_the_left = 11;
+  optional double difference = 12;
+  optional double heading_model = 13;
+  optional bool has_target =14;
+  optional double unfiltered_horiz_angle_1 = 15;
+  optional double unfiltered_horiz_angle_2 = 16;
+  optional double unfiltered_horiz_angle_3 = 17;
+  optional double overall_tx = 18;
+  optional double back_target_dist = 20;
+  optional double back_horiz_angle = 21;
+  optional bool back_has_target = 22;
+  optional bool pricey_has_target = 23;
+  optional double pricey_horiz_angle = 24;
+  optional double pricey_target_dist = 25;
+  required bool limelight_ok = 26;
+  required double latency = 27;
+  required bool back_limelight_ok = 28;
+  required bool bottom_limelight_ok = 29;
+}
+
+enum LimelightState {
+  ON = 0;
+  OFF = 1;
+  BACK_ON = 2;
+  BACK_OFF = 3;
+  BLINK = 4;
+  BACK_BLINK = 5;
+}
+
+message LimelightGoal {
+  required LimelightState limelight_state = 1;
+  optional LimelightState back_limelight_state = 2;
+}

@@ -21,7 +21,7 @@ void Lights::Update() {
                                 ->ground_gear_status_queue()
                                 ->ReadLastMessage();
   auto auto_selection_queue = muan::webdash::WebDashQueueWrapper::GetInstance()
-                                  .auto_selection_queue()
+                                  .auto_queue()
                                   .ReadLastMessage();
 
   if (!calibrated_ && gyro_status_queue) {

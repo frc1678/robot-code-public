@@ -13,7 +13,7 @@ enum Command {
 message AutonomousGoal {
   required uint64 timestamp = 1;
   required Command command = 2;
-  required bool run_command = 3;
+  required bool cancel_command = 3;
 }
 
 message AutonomousStatus {

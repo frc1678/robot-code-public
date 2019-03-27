@@ -3,19 +3,20 @@
 
 #include "c2019/subsystems/superstructure/superstructure.pb.h"
 #include "muan/proto/stack_proto.h"
+#include "muan/queues/queue_manager.h"
 
 namespace c2019 {
 
 namespace superstructure {
 
 using SuperstructureOutputProto =
-    muan::proto::StackProto<SuperstructureOutput, 256>;
+    muan::proto::StackProto<SuperstructureOutput, 1024>;
 using SuperstructureInputProto =
-    muan::proto::StackProto<SuperstructureInput, 256>;
+    muan::proto::StackProto<SuperstructureInput, 1024>;
 using SuperstructureStatusProto =
-    muan::proto::StackProto<SuperstructureStatus, 256>;
+    muan::proto::StackProto<SuperstructureStatus, 1024>;
 using SuperstructureGoalProto =
-    muan::proto::StackProto<SuperstructureGoal, 256>;
+    muan::proto::StackProto<SuperstructureGoal, 1024>;
 
 using SuperstructureInputQueue =
     muan::queues::MessageQueue<SuperstructureInputProto>;

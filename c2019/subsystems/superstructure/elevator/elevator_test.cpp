@@ -52,7 +52,7 @@ TEST_F(ElevatorFixture, Sanity) {
 
   EXPECT_EQ(0, output_->elevator_setpoint());
   EXPECT_EQ(output_->elevator_ff(), kFF);
-  EXPECT_EQ(output_->elevator_output_type(), POSITION);
+  EXPECT_EQ(output_->elevator_output_type(), OPEN_LOOP);
 }
 
 TEST_F(ElevatorFixture, Disabled) {
@@ -83,7 +83,7 @@ TEST_F(ElevatorFixture, Heights) {
 
   EXPECT_EQ(elevator_goal, output_->elevator_setpoint());
   EXPECT_EQ(output_->elevator_ff(), kFF);
-  EXPECT_EQ(output_->elevator_output_type(), POSITION);
+  EXPECT_EQ(output_->elevator_output_type(), OPEN_LOOP);
 
   elevator_goal = 1;
   SetGoal(elevator_goal, false, false, false, false);

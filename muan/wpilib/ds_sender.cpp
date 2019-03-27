@@ -35,21 +35,21 @@ void DriverStationSender::Send() {
   status->set_has_fms_connection(DriverStation::GetInstance().IsFMSAttached());
   status->set_is_sys_active(RobotController::IsSysActive());
 
-  HAL_MatchInfo match_info;
-  auto hal_call_status = HAL_GetMatchInfo(&match_info);
-  if (hal_call_status == 0) {
-    status->set_match_type(
-        static_cast<DriverStationStatus::MatchType>(match_info.matchType));
-    status->set_match_number(match_info.matchNumber);
+  /* HAL_MatchInfo match_info; */
+  /* auto hal_call_status = HAL_GetMatchInfo(&match_info); */
+  /* if (hal_call_status == 0) { */
+  /*   status->set_match_type( */
+  /*       static_cast<DriverStationStatus::MatchType>(match_info.matchType)); */
+  /*   status->set_match_number(match_info.matchNumber); */
 
-    auto game_specific_message = reinterpret_cast<char*>(match_info.gameSpecificMessage);
-    if (match_info.gameSpecificMessage &&
-        std::strlen(game_specific_message) > 0 && gss_queue_) {
-      GameSpecificStringProto gss;
-      gss->set_code(game_specific_message);
-      gss_queue_->WriteMessage(gss);
-    }
-  }
+  /*   auto game_specific_message = reinterpret_cast<char*>(match_info.gameSpecificMessage); */
+  /*   if (match_info.gameSpecificMessage && */
+  /*       std::strlen(game_specific_message) > 0 && gss_queue_) { */
+  /*     GameSpecificStringProto gss; */
+  /*     gss->set_code(game_specific_message); */
+  /*     gss_queue_->WriteMessage(gss); */
+  /*   } */
+  /* } */
 
   ds_queue_->WriteMessage(status);
 }

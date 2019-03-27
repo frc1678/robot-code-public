@@ -25,21 +25,19 @@ double Wrist::CalculateFeedForwards(bool has_cargo, bool has_panel,
 
 void Wrist::Update(const WristInputProto& input, WristOutputProto* output,
                    WristStatusProto* status, bool outputs_enabled) {
-  const double calibrated_encoder =
-      hall_calibration_.Update(input->wrist_encoder(), input->wrist_hall());
+  const double calibrated_encoder = input->wrist_encoder();
   (*status)->set_wrist_angle(calibrated_encoder);
 
-  (*status)->set_is_calibrated(is_calibrated());
+  (*status)->set_is_calibrated(input->wrist_zeroed());
   (*status)->set_wrist_goal(goal_);
   (*status)->set_wrist_encoder_fault(false);
   (*status)->set_wrist_velocity(input->wrist_velocity());
 
-  (*output)->set_wrist_setpoint_ff(CalculateFeedForwards(
-      input->has_panel(), input->has_cargo(), calibrated_encoder));
+  (*output)->set_wrist_setpoint_ff(1.53 * std::cos(calibrated_encoder));
   if (outputs_enabled) {
-    if (is_calibrated()) {
+    if (input->wrist_zeroed()) {
       (*output)->set_output_type(POSITION);
-      (*output)->set_wrist_setpoint(goal_ - hall_calibration_.offset());
+      (*output)->set_wrist_setpoint(goal_);
       if (calibrated_encoder <= goal_ + 1e-2 && goal_ < 1e-2) {
         (*output)->set_output_type(OPEN_LOOP);
         (*output)->set_wrist_setpoint(0);
