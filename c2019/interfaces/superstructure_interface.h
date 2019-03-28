@@ -3,6 +3,7 @@
 
 #include <WPILib.h>
 #include "c2019/subsystems/superstructure/queue_types.h"
+#include "muan/wpilib/can_wrapper.h"
 #include "ctre/Phoenix.h"
 #include "muan/queues/queue_manager.h"
 #include "muan/wpilib/queue_types.h"
@@ -26,6 +27,7 @@ constexpr uint32_t kCrawler = 14;
 constexpr uint32_t kWinch = 15;
 
 constexpr uint32_t kShifter = 0;
+constexpr uint32_t kPins = 0;
 constexpr uint32_t kBackplate = 2;
 constexpr uint32_t kArrow = 3;
 constexpr uint32_t kCrawlerOne = 4;
@@ -35,9 +37,9 @@ constexpr uint32_t kBrake = 7;
 
 class SuperstructureInterface {
  public:
-  SuperstructureInterface();
-  void ReadSensors();
+  explicit SuperstructureInterface(muan::wpilib::CanWrapper* can_wrapper);
   void WriteActuators();
+  void ReadSensors();
 
  private:
   void SetBrakeMode(bool mode);
@@ -46,16 +48,6 @@ class SuperstructureInterface {
   SuperstructureInputQueue* input_queue_;
   SuperstructureOutputQueue::QueueReader output_reader_;
 
-  VictorSPX winch_two_{kWinchTwo};
-  /* PowerDistributionPanel pdp_{0}; */
-  Solenoid arrow_solenoid_{kArrow};
-  Solenoid backplate_solenoid_{kBackplate};
-  Solenoid crawler_one_solenoid_{kCrawlerOne};
-  Solenoid fork_drop_{kForkDrop};
-  Solenoid shifter_{kShifter};
-  Solenoid cargo_{kCargo};
-  Solenoid pins_{1};
-
   TalonSRX elevator_master_{kElevatorMaster};
   VictorSPX elevator_slave_a_{kElevatorSlaveA};
   VictorSPX elevator_slave_b_{kElevatorSlaveB};
@@ -63,14 +55,18 @@ class SuperstructureInterface {
 
   VictorSPX crawler_{kCrawler};
   VictorSPX winch_{kWinch};
+  VictorSPX winch_two_{kWinchTwo};
 
   TalonSRX wrist_{kWrist};
   VictorSPX cargo_intake_{kCargoIntake};
 
   CANifier canifier_{0};
 
+  muan::wpilib::PcmWrapper* pcm_;
+
   bool elevator_zeroed_ = false;
   bool wrist_zeroed_ = false;
+  double wrist_offset_ = 0.0;
 };
 
 }  // namespace interfaces

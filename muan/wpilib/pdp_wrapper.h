@@ -20,7 +20,7 @@ class PdpWrapper {
  private:
   friend class CanWrapper;
 
-  int module_;
+  PowerDistributionPanel pdp_;
 
   // Read values from the PDP. This is not realtime and should only be called
   // from the CAN thread. It's private so it can only be called by friend
@@ -30,7 +30,6 @@ class PdpWrapper {
   Queue* queue_{nullptr};
 
   int status_;
-  uint64_t num_failures_ = 0;
 };
 
 }  // namespace wpilib

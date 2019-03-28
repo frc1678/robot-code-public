@@ -54,8 +54,6 @@ class DrivetrainInterface {
   double pigeon_offset_ = 0;
   Compressor compressor_;
 
-  // Solenoid shifter_{0};
-
   muan::wpilib::DriverStationQueue::QueueReader ds_status_reader_;
 };
 

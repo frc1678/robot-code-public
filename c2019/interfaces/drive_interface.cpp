@@ -193,8 +193,6 @@ void DrivetrainInterface::ReadSensors() {
   sensors->set_left_voltage(left_master_.GetMotorOutputVoltage());
   sensors->set_right_voltage(right_master_.GetMotorOutputVoltage());
 
-  sensors->set_right_bus(right_master_.GetBusVoltage());
-
   input_queue_->WriteMessage(sensors);
 }
 

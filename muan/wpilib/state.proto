@@ -62,7 +62,7 @@ message PdpStatus {
   required double voltage_in = 18;
   required double temperature = 19;
 
-  required uint64 num_failures = 20;
+  required double power = 20;
 }
 
 message GameSpecificString {

@@ -20,8 +20,6 @@ message DrivetrainInput {
   required double right_current = 9;
 
   required double gyro = 10;
-
-  required double right_bus = 11;
 }
 
 enum TalonOutput {
