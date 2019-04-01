@@ -26,6 +26,8 @@ constexpr uint32_t kCargoIntake = 13;
 constexpr uint32_t kCrawler = 14;
 constexpr uint32_t kWinch = 15;
 
+constexpr uint32_t kCANifier = 0;
+
 constexpr uint32_t kShifter = 0;
 constexpr uint32_t kPins = 1;
 constexpr uint32_t kBackplate = 2;
@@ -60,13 +62,12 @@ class SuperstructureInterface {
   TalonSRX wrist_{kWrist};
   VictorSPX cargo_intake_{kCargoIntake};
 
-  CANifier canifier_{0};
+  CANifier canifier_{kCANifier};
 
   muan::wpilib::PcmWrapper* pcm_;
 
   bool elevator_zeroed_ = false;
   bool wrist_zeroed_ = false;
-  double wrist_offset_ = 0.0;
 };
 
 }  // namespace interfaces

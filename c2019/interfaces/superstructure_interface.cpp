@@ -63,11 +63,7 @@ void SuperstructureInterface::ReadSensors() {
   }
 
   inputs->set_wrist_encoder(wrist_.GetSelectedSensorPosition() /
-                            kWristConversionFactor - wrist_offset_);
-  /* if (!canifier_.GetGeneralInput(CANifier::GeneralPin::LIMR) && */
-  /*     std::abs(inputs->wrist_encoder()) > 0.1) { */
-  /*   wrist_zeroed_ = false; */
-  /* } */
+                            kWristConversionFactor);
 
   inputs->set_elevator_hall(
       elevator_master_.GetSensorCollection().IsRevLimitSwitchClosed());
@@ -76,9 +72,10 @@ void SuperstructureInterface::ReadSensors() {
 
   inputs->set_wrist_hall(!canifier_.GetGeneralInput(CANifier::GeneralPin::LIMR));
 
-  if (!canifier_.GetGeneralInput(CANifier::GeneralPin::LIMR) && !wrist_zeroed_) {
+  if (inputs->wrist_hall() && !wrist_zeroed_) {
     wrist_zeroed_ = true;
-    wrist_offset_ = inputs->wrist_encoder();
+    wrist_.SetSelectedSensorPosition(0, 0, 100);
+    canifier_.SetQuadraturePosition(0, 0);
   }
 
   inputs->set_wrist_zeroed(wrist_zeroed_);
@@ -105,15 +102,15 @@ void SuperstructureInterface::LoadGains() {
   wrist_.Config_kF(0, kWristF, 100);
   wrist_.Config_IntegralZone(0, kWristIZone, 100);
 
-  wrist_.ConfigReverseLimitSwitchSource(LimitSwitchSource_FeedbackConnector,
-                                        LimitSwitchNormal_NormallyOpen, 100);
+  wrist_.ConfigReverseLimitSwitchSource(RemoteLimitSwitchSource_RemoteCANifier,
+                                        LimitSwitchNormal_NormallyOpen, kCANifier, 100);
   wrist_.ConfigForwardLimitSwitchSource(LimitSwitchSource_FeedbackConnector,
                                         LimitSwitchNormal_NormallyOpen, 100);
 
   elevator_master_.ConfigSelectedFeedbackSensor(
       FeedbackDevice::CTRE_MagEncoder_Relative, 0, 100);
 
-  wrist_.ConfigRemoteFeedbackFilter(0, RemoteSensorSource::RemoteSensorSource_CANifier_Quadrature, 0, 100);
+  wrist_.ConfigRemoteFeedbackFilter(0, RemoteSensorSource::RemoteSensorSource_CANifier_Quadrature, kCANifier, 100);
 
   wrist_.ConfigSelectedFeedbackSensor(RemoteFeedbackDevice_RemoteSensor0,
                                       0, 100);
@@ -206,7 +203,7 @@ void SuperstructureInterface::WriteActuators() {
       break;
     case TalonOutput::POSITION:
       wrist_.Set(ControlMode::MotionMagic,
-                 outputs->wrist_setpoint() * kWristConversionFactor + wrist_offset_,
+                 outputs->wrist_setpoint() * kWristConversionFactor,
                  DemandType_ArbitraryFeedForward,
                  outputs->wrist_setpoint_ff() / 12.);
       break;
