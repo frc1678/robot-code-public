@@ -70,7 +70,8 @@ void SuperstructureInterface::ReadSensors() {
 
   inputs->set_elevator_zeroed(elevator_zeroed_);
 
-  inputs->set_wrist_hall(!canifier_.GetGeneralInput(CANifier::GeneralPin::LIMR));
+  inputs->set_wrist_hall(
+      !canifier_.GetGeneralInput(CANifier::GeneralPin::LIMR));
 
   if (inputs->wrist_hall() && !wrist_zeroed_) {
     wrist_zeroed_ = true;
@@ -103,17 +104,20 @@ void SuperstructureInterface::LoadGains() {
   wrist_.Config_IntegralZone(0, kWristIZone, 100);
 
   wrist_.ConfigReverseLimitSwitchSource(RemoteLimitSwitchSource_RemoteCANifier,
-                                        LimitSwitchNormal_NormallyOpen, kCANifier, 100);
+                                        LimitSwitchNormal_NormallyOpen,
+                                        kCANifier, 100);
   wrist_.ConfigForwardLimitSwitchSource(LimitSwitchSource_FeedbackConnector,
                                         LimitSwitchNormal_NormallyOpen, 100);
 
   elevator_master_.ConfigSelectedFeedbackSensor(
       FeedbackDevice::CTRE_MagEncoder_Relative, 0, 100);
 
-  wrist_.ConfigRemoteFeedbackFilter(0, RemoteSensorSource::RemoteSensorSource_CANifier_Quadrature, kCANifier, 100);
+  wrist_.ConfigRemoteFeedbackFilter(
+      0, RemoteSensorSource::RemoteSensorSource_CANifier_Quadrature, kCANifier,
+      100);
 
-  wrist_.ConfigSelectedFeedbackSensor(RemoteFeedbackDevice_RemoteSensor0,
-                                      0, 100);
+  wrist_.ConfigSelectedFeedbackSensor(RemoteFeedbackDevice_RemoteSensor0, 0,
+                                      100);
 
   elevator_master_.SetSensorPhase(false);
 
