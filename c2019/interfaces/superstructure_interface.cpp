@@ -215,9 +215,9 @@ void SuperstructureInterface::WriteActuators() {
   cargo_intake_.Set(ControlMode::PercentOutput,
                     -outputs->cargo_roller_voltage() / 12.);
   crawler_.Set(ControlMode::PercentOutput, -outputs->crawler_voltage() / 12.);
-  winch_.Set(ControlMode::PercentOutput, -outputs->left_winch_voltage() / 12.);
+  winch_.Set(ControlMode::PercentOutput, outputs->left_winch_voltage() / 12.);
   winch_two_.Set(ControlMode::PercentOutput,
-                 -outputs->right_winch_voltage() / 12.);
+                 outputs->right_winch_voltage() / 12.);
 
   pcm_->WriteSolenoid(kArrow, !outputs->arrow_solenoid());
   pcm_->WriteSolenoid(kBackplate, outputs->backplate_solenoid());

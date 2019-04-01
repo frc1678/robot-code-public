@@ -27,7 +27,7 @@ constexpr uint32_t kCrawler = 14;
 constexpr uint32_t kWinch = 15;
 
 constexpr uint32_t kShifter = 0;
-constexpr uint32_t kPins = 0;
+constexpr uint32_t kPins = 1;
 constexpr uint32_t kBackplate = 2;
 constexpr uint32_t kArrow = 3;
 constexpr uint32_t kCrawlerOne = 4;
