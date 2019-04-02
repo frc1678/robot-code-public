@@ -141,10 +141,12 @@ void TeleopBase::Update() {
       expensive_table->PutNumber("ledMode", 0);
       /* back_table->PutNumber("ledMode", 0); */
     } else if (superstructure_status->wrist_goal() < (M_PI / 2.)) {
-      table->PutNumber("ledMode",
-                       static_cast<int>(superstructure_status->elevator_goal() > 0.6));
+      table->PutNumber(
+          "ledMode",
+          static_cast<int>(superstructure_status->elevator_goal() > 0.6));
       expensive_table->PutNumber(
-          "ledMode", static_cast<int>(superstructure_status->elevator_goal() < 0.6));
+          "ledMode",
+          static_cast<int>(superstructure_status->elevator_goal() < 0.6));
       /* back_table->PutNumber("ledMode", flash_ ? 2 : 1); */
     } else {
       table->PutNumber("ledMode", flash_ ? 2 : 1);
@@ -342,9 +344,6 @@ void TeleopBase::SendSuperstructureMessage() {
   // Intake buttons
   if (cargo_intake_->is_pressed()) {
     superstructure_goal->set_intake_goal(c2019::superstructure::INTAKE_CARGO);
-    if (has_cargo_) {
-      superstructure_goal->set_score_goal(c2019::superstructure::STOW);
-    }
   } else if (cargo_outtake_->is_pressed()) {
     if (!has_ground_hatch_) {
       superstructure_goal->set_intake_goal(
@@ -486,8 +485,7 @@ void TeleopBase::SendSuperstructureMessage() {
 
   // Climbing buttons
   // drop forks and drop crawlers require safety button to prevent an oops
-  if (drop_forks_->is_pressed() &&
-      (safety_->is_pressed() || safety2_->is_pressed())) {
+  if (drop_forks_->is_pressed() && climb_mode_) {
     superstructure_goal->set_score_goal(c2019::superstructure::DROP_FORKS);
   }
   /*if (winch_->is_pressed() &&

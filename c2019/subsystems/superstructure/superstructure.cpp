@@ -57,7 +57,8 @@ void Superstructure::BoundGoal(double* elevator_goal, double* wrist_goal) {
     force_backplate_ = true;
   }
 
-  if (elevator_status_->elevator_height() > kElevatorBoardHeight && *elevator_goal < kElevatorBoardHeight) {
+  if (elevator_status_->elevator_height() > kElevatorBoardHeight &&
+      *elevator_goal < kElevatorBoardHeight) {
     *wrist_goal = 0;
   }
 }
@@ -272,7 +273,7 @@ void Superstructure::Update() {
   output->set_wrist_setpoint_type(
       static_cast<TalonOutput>(wrist_output->output_type()));
   output->set_cargo_out(cargo_out_);
-  output->set_elevator_setpoint_ff(climbing_ ? (high_gear_ ? -2.7: -4) : 1.5);
+  output->set_elevator_setpoint_ff(climbing_ ? (high_gear_ ? -2.7 : -4) : 1.5);
   output->set_pins(pins_);
 
   if (request_crawl_) {
@@ -486,8 +487,8 @@ void Superstructure::SetGoal(const SuperstructureGoalProto& goal) {
       break;
     case INTAKE_CARGO:
       if (!cargo_intake_status_->has_cargo()) {
-        if (elevator_height_ < kCargoGroundHeight + 1e-5 &&
-            wrist_angle_ < kCargoGroundAngle + 1e-5) {
+        if (elevator_height_ < kCargoGroundHeight + 2e-3 &&
+            wrist_angle_ < kCargoGroundAngle + 2e-3) {
           GoToState(INTAKING_TO_STOW, goal->intake_goal());
         } else {
           GoToState(INTAKING_WRIST, goal->intake_goal());
@@ -555,18 +556,15 @@ void Superstructure::RunStateMachine() {
       break;
     case INTAKING_TO_STOW:
       if (cargo_intake_status_->has_cargo()) {
-        elevator_height_ = kStowHeight;
-        wrist_angle_ = kStowAngle;
-        GoToState(HOLDING);
-      }
-      if (hatch_intake_status_->has_hatch()) {
         counter_++;
-        if (counter_ > 25) {
+        if (counter_ > 7) {
           elevator_height_ = kStowHeight;
           wrist_angle_ = kStowAngle;
           GoToState(HOLDING);
           counter_ = 0;
         }
+      } else if (hatch_intake_status_->has_hatch()) {
+        GoToState(HOLDING);
       }
       break;
   }
