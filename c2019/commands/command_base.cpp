@@ -239,7 +239,7 @@ bool CommandBase::StartDriveVisionBackwards() {
     drivetrain_goal->mutable_arc_goal()->set_angular(
         lime_status->back_horiz_angle());
     drivetrain_goal->mutable_arc_goal()->set_linear(
-        (lime_status->back_target_dist() + 0.3) * -4.0);
+        (lime_status->back_target_dist() + 0.25) * -4.0);
 
     QueueManager<DrivetrainGoal>::Fetch()->WriteMessage(drivetrain_goal);
     Wait(1);
@@ -345,9 +345,10 @@ bool CommandBase::IsDrivetrainNear(double x, double y, double distance) {
 
   if (drivetrain_status_reader_.ReadLastMessage(&status)) {
     Eigen::Vector2d field_position =
-        transform_f0_ * (Eigen::Vector2d() << status->profiled_x_goal(),
-                         status->profiled_y_goal())
-                            .finished();
+        transform_f0_ *
+        (Eigen::Vector2d() << status->profiled_x_goal(),
+         status->profiled_y_goal())
+            .finished();
     if ((field_position(0) - x) * (field_position(0) - x) +
             (field_position(1) - y) * (field_position(1) - y) <
         distance * distance) {

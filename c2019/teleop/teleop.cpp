@@ -125,8 +125,8 @@ void TeleopBase::Update() {
 
   nt::NetworkTableInstance inst = nt::NetworkTableInstance::GetDefault();
   std::shared_ptr<nt::NetworkTable> table = inst.GetTable("limelight-front");
-  /* std::shared_ptr<nt::NetworkTable> back_table = */
-  /*     inst.GetTable("limelight-back"); */
+  std::shared_ptr<nt::NetworkTable> back_table =
+      inst.GetTable("limelight-back");
   std::shared_ptr<nt::NetworkTable> expensive_table =
       inst.GetTable("limelight-pricey");
 
@@ -139,7 +139,7 @@ void TeleopBase::Update() {
     if (climb_mode_) {
       table->PutNumber("ledMode", 0);
       expensive_table->PutNumber("ledMode", 0);
-      /* back_table->PutNumber("ledMode", 0); */
+      back_table->PutNumber("ledMode", 0);
     } else if (superstructure_status->wrist_goal() < (M_PI / 2.)) {
       table->PutNumber(
           "ledMode",
@@ -147,15 +147,15 @@ void TeleopBase::Update() {
       expensive_table->PutNumber(
           "ledMode",
           static_cast<int>(superstructure_status->elevator_goal() < 0.6));
-      /* back_table->PutNumber("ledMode", flash_ ? 2 : 1); */
+      back_table->PutNumber("ledMode", flash_ ? 2 : 1);
     } else {
       table->PutNumber("ledMode", flash_ ? 2 : 1);
       expensive_table->PutNumber("ledMode", 1);
-      /* back_table->PutNumber("ledMode", 0); */
+      back_table->PutNumber("ledMode", 0);
     }
   } else {
     table->PutNumber("ledMode", flash_ ? 2 : 1);
-    /* back_table->PutNumber("ledMode", flash_ ? 2 : 1); */
+    back_table->PutNumber("ledMode", flash_ ? 2 : 1);
     expensive_table->PutNumber("ledMode", 1);
   }
 
@@ -253,14 +253,21 @@ void TeleopBase::SendDrivetrainMessage() {
         y_int = -0;
       } else if (!vision_intake_->is_pressed()) {
         distance_factor_ = 1;
-        y_int = 0.35;
+        y_int = 0.4;
         if (super_status->elevator_height() > 0.8) {
           horiz_angle_ = lime_status->pricey_horiz_angle();
           target_dist_ = lime_status->pricey_target_dist();
-          distance_factor_ = 4.0 / 4.5;
-          y_int = 0.4;
+          distance_factor_ = 2.0 / 4.5;
+          y_int = 0.25;
           vision = lime_status->bottom_limelight_ok() &&
                    lime_status->pricey_has_target();
+        } else if (super_status->wrist_angle() > 1.5) {
+          horiz_angle_ = lime_status->back_horiz_angle();
+          target_dist_ = lime_status->back_target_dist();
+          distance_factor_ = -4.0 / 4.5;
+          y_int = 0.25;
+          vision = lime_status->back_limelight_ok() &&
+                   lime_status->back_has_target();
         } else {
           horiz_angle_ = lime_status->horiz_angle();
           target_dist_ = lime_status->target_dist();
@@ -309,8 +316,15 @@ void TeleopBase::SendDrivetrainMessage() {
     /* drivetrain_goal->mutable_linear_angular_velocity_goal() */
     /*     ->set_angular_velocity(-16.0 * horiz_angle_); */
     drivetrain_goal->mutable_arc_goal()->set_angular(horiz_angle_);
-    drivetrain_goal->mutable_arc_goal()->set_linear((target_dist_ - y_int) *
-                                                    distance_factor_ * 4.5);
+    double voltage = (target_dist_ - y_int) * distance_factor_ * 4.5;
+    if (voltage < 0) {
+      if (voltage > -1.6) {
+        voltage = -1.6;
+      }
+    } else if (voltage < 1.6) {
+      voltage = 1.6;
+    }
+    drivetrain_goal->mutable_arc_goal()->set_linear(voltage);
   }
 
   QueueManager<DrivetrainGoal>::Fetch()->WriteMessage(drivetrain_goal);
