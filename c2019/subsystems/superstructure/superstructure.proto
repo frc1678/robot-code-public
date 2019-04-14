@@ -52,6 +52,7 @@ enum ScoreGoal {
   WINCH = 24;
   LIMELIGHT_OVERRIDE = 25;
   LAND = 26;
+  REZERO = 27;
 }
 
 enum GroundHatchIntakeState {

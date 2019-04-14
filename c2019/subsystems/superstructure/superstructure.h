@@ -44,10 +44,11 @@ constexpr double kClimbHeight = 0.05;
 constexpr double kCrawlerHeight = 1.66;
 constexpr double kLandHeight = 0.312;
 constexpr double kElevatorSafeHeight = 0.71;
-constexpr double kElevatorPassThroughHeight = 0.025;
+constexpr double kElevatorPassThroughHeight = 0.05;
 constexpr double kElevatorHandoffTolerance = 2e-3;
 constexpr double kElevatorWristHorizHeight = 0.05;
 constexpr double kElevatorBoardHeight = 1.42;
+constexpr double kElevatorRezeroCurrentThreshold = 3;  // tune
 
 // wrist constants
 constexpr double kHatchForwardsAngle = 0.0;
@@ -65,6 +66,7 @@ constexpr double kClimbAngle = 0.3;
 constexpr double kWristSafeForwardsAngle = 1.3;
 constexpr double kWristSafeBackwardsAngle = 2.65;
 constexpr double kWristHandoffTolerance = 3. * (M_PI / 180.);
+constexpr double kWristRezeroCurrentThreshold = 10;  // tune
 
 class Superstructure {
  public:
@@ -130,6 +132,14 @@ class Superstructure {
   bool climbing_ = false;
   bool request_crawl_ = false;
   bool pins_ = false;
+
+  bool rezero_mode_ = false;
+  bool elevator_rezeroed_;
+  bool wrist_rezeroed_;
+  double elevator_offset_ = 0.;
+  double wrist_offset_ = 0.;
+  double elevator_current_;
+  double wrist_current_;
 
   SuperstructureState state_ = SuperstructureState::CALIBRATING;
   IntakeGoal intake_goal_ = IntakeGoal::INTAKE_NONE;

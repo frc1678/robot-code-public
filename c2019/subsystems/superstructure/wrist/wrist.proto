@@ -30,6 +30,7 @@ message WristInput {
   required bool has_panel = 4;
   required bool has_cargo = 5;
   required double wrist_velocity = 6;
+  required double wrist_current = 7;
 }
 
 message WristGoal {

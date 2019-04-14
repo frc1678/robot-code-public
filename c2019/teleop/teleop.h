@@ -61,6 +61,8 @@ class TeleopBase {
   muan::teleop::Button *backwards_;
   // handoff and pop goals
   muan::teleop::Button *handoff_, *pop_;
+  // rezero
+  muan::teleop::Button *rezero_;
 
   int kRumbleTicks = 25;
   int rumble_ticks_left_;

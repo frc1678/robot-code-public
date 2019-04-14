@@ -40,7 +40,6 @@ TeleopBase::TeleopBase()
       gamepad_{2, QueueManager<JoystickStatusProto>::Fetch("gamepad")},
       auto_status_reader_{QueueManager<AutoStatusProto>::Fetch()->MakeReader()},
       auto_goal_queue_{QueueManager<AutoGoalProto>::Fetch()} {
-  // winch_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::START));
   winch_left_ = throttle_.MakeButton(10);
   winch_right_ = throttle_.MakeButton(7);
   // brake_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_CLICK_IN));
@@ -50,6 +49,9 @@ TeleopBase::TeleopBase()
   // Safety button for various functions
   safety_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::RIGHT_CLICK_IN));
   safety2_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::LEFT_CLICK_IN));
+
+  // rezero
+  rezero_ = gamepad_.MakeButton(uint32_t(muan::teleop::XBox::START));
 
   // scoring positions
   stow_ = gamepad_.MakePov(0, muan::teleop::Pov::kNorth);
@@ -79,8 +81,7 @@ TeleopBase::TeleopBase()
   // quickturn
   quickturn_ = wheel_.MakeButton(5);
 
-  // vision buttons?
-  // TODO(jishnu) change these buttons to whatever Nathan wants
+  // vision buttons
   exit_auto_ = throttle_.MakeButton(6);
   test_auto_ = throttle_.MakeButton(8);
   vision_intake_ = throttle_.MakeButton(2);
@@ -497,21 +498,22 @@ void TeleopBase::SendSuperstructureMessage() {
     }
   }
 
+  // rezero mode
+  if (rezero_->is_pressed() && drop_forks_->is_pressed()) {
+    superstructure_goal->set_score_goal(c2019::superstructure::REZERO);
+  }
+
   // Climbing buttons
-  // drop forks and drop crawlers require safety button to prevent an oops
   if (drop_forks_->is_pressed() && climb_mode_) {
     superstructure_goal->set_score_goal(c2019::superstructure::DROP_FORKS);
   }
-  /*if (winch_->is_pressed() &&
-      (safety_->is_pressed() || safety2_->is_pressed())) {
-    superstructure_goal->set_score_goal(c2019::superstructure::WINCH);
-  */
   if (winch_left_->is_pressed()) {
     superstructure_goal->set_manual_left_winch(true);
   }
   if (winch_right_->is_pressed()) {
     superstructure_goal->set_manual_right_winch(true);
   }
+
   /*if (brake_->is_pressed() &&
       (safety_->is_pressed() || safety2_->is_pressed())) {
     superstructure_goal->set_score_goal(c2019::superstructure::BRAKE);
