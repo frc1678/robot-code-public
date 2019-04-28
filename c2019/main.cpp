@@ -7,7 +7,7 @@
 #include "hal/HAL.h"
 #include "muan/queues/queue_manager.h"
 
-class WpilibRobot : public IterativeRobot {
+class WpilibRobot : public TimedRobot {
  public:
   WpilibRobot() {}
 

@@ -45,11 +45,7 @@ class TeleopBase {
   void SendSuperstructureMessage();
 
   // climbing buttons
-  muan::teleop::Button *crawl_, *drop_forks_, *drop_crawlers_, *brake_;
-
-  // safety button
-  muan::teleop::Button *safety_, *safety2_;
-
+  muan::teleop::Button *crawl_, *drop_forks_, *drop_crawlers_;
   // intake/outtake buttons
   muan::teleop::Button *cargo_intake_, *cargo_outtake_, *hp_hatch_intake_,
       *hp_hatch_outtake_;
@@ -59,8 +55,6 @@ class TeleopBase {
   muan::teleop::Button *stow_;
   // backwards scoring mode
   muan::teleop::Button *backwards_;
-  // handoff and pop goals
-  muan::teleop::Button *handoff_, *pop_;
   // rezero
   muan::teleop::Button *rezero_;
 
@@ -89,7 +83,6 @@ class TeleopBase {
       *winch_, *winch_left_, *winch_right_;
 
   bool high_gear_;
-  /* bool running_command_; */
   double distance_factor_;
   double last_horiz_angle_;
   bool wants_override_;
@@ -102,8 +95,6 @@ class TeleopBase {
   double horiz_angle_;
   int velocity_counter_;
   double height_distance_factor_ = 0.0;
-  superstructure::ScoreGoal override_goal_;
-  superstructure::ScoreGoal cached_goal_;
   bool this_run_off_;
   int flash_ticks_left_ = 0;
   bool flash_ = false;

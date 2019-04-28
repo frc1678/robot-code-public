@@ -16,6 +16,16 @@ namespace ctre {
 namespace phoenix {
 namespace motorcontrol {
 
+/**
+  * Collection of sensors available to a motor controller.
+  *
+  * For best performance and update-rate,
+  * we recommend using the configSelectedFeedbackSensor() and getSelectedSensor*() routines.
+  * However there are occasions where accessing raw sensor values may be useful or convenient.
+  * Particularly if you are seeding one sensor based on another, or need to circumvent sensor-phase.
+  *
+  * Use the getSensorCollection() routine inside your motor controller to create a sensor collection.
+  */
 class SensorCollection {
 public:
 
@@ -35,9 +45,9 @@ public:
 	 *
 	 * @param   newPosition The new position.
 	 * @param   timeoutMs   
- *            Timeout value in ms. If nonzero, function will wait for
- *            config success and report an error if it times out.
- *            If zero, no blocking or checking is performed.
+	 *            Timeout value in ms. If nonzero, function will wait for
+	 *            config success and report an error if it times out.
+	 *            If zero, no blocking or checking is performed.
 	 *
 	 * @return  an ErrorCode.
 	 */
@@ -78,9 +88,9 @@ public:
 	 *
 	 * @param   newPosition The position value to apply to the sensor.
 	 * @param   timeoutMs
- *            Timeout value in ms. If nonzero, function will wait for
- *            config success and report an error if it times out.
- *            If zero, no blocking or checking is performed.
+	 *            Timeout value in ms. If nonzero, function will wait for
+	 *            config success and report an error if it times out.
+	 *            If zero, no blocking or checking is performed.
 	 *
 	 * @return  error code.
 	 */
@@ -132,9 +142,9 @@ public:
 	 *
 	 * @param   newPosition The position value to apply to the sensor.
 	 * @param   timeoutMs
- *            Timeout value in ms. If nonzero, function will wait for
- *            config success and report an error if it times out.
- *            If zero, no blocking or checking is performed.
+	 *            Timeout value in ms. If nonzero, function will wait for
+	 *            config success and report an error if it times out.
+	 *            If zero, no blocking or checking is performed.
 	 *
 	 * @return  an ErrErrorCode
 	 */

@@ -9,10 +9,10 @@ namespace commands {
 
 class Rocket : public c2019::commands::CommandBase {
  public:
-  void LeftRocket();
-  void LeftCargoRocket();
-  void RightRocket();
-  void RightCargoRocket();
+  void LeftBackRocket();
+  void LeftDoubleRocket();
+  void RightBackRocket();
+  void RightDoubleRocket();
 };
 
 }  // namespace commands

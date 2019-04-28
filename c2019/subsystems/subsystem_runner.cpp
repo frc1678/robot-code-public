@@ -7,8 +7,8 @@ namespace subsystems {
 SubsystemRunner::SubsystemRunner() {}
 
 void SubsystemRunner::operator()() {
-  aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(10));
-  aos::SetCurrentThreadRealtimePriority(50);
+  aos::time::PhasedLoop phased_loop(std::chrono::milliseconds(20));
+  /* aos::SetCurrentThreadRealtimePriority(10); */
   muan::utils::SetCurrentThreadName("SubsystemRunner");
 
   running_ = true;

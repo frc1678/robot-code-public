@@ -109,7 +109,7 @@
 
         // Make reference to source, but only with widgets that need it
         if (widget["type"] != "encouragement" &&
-            widget["type"] != "auto" && widget["type"] != "link") {
+            widget["type"] != "auto" && widget["type"] != "link" && widget["type"] != "image") {
           var source = data[widget["source"][0]][widget["source"][1]];
         }
 
@@ -119,9 +119,9 @@
           html_string = "<div id=auto" + coords + "><p>Auto Mode:</p>";
           if (!document.getElementById(auto_id)) {
             if (!widget["source"]) {
-              for (var i = 0; i < widget["autos"].length; i++) {
-                html_string += "<input type=\"radio\" name=\"auto\"" + widget["autos"][i] + " value=\"" +
-                               widget["autos"][i] + "\">" + widget["autos"][i] +
+              for (var key in widget["autos"]) {
+                html_string += "<label for=\"" + key + "\" style=\"background-color:" + widget["autos"][key] + ";\">" + key + "</label><input type=\"radio\" name=\"auto\" value=\"" +
+                               key + "\" id=\"" + key + "\">" +
                                "<br>";
               }
               html_string +=

@@ -76,18 +76,20 @@ class Example(Frame):
         Button(self, text="Load File", command=self.loadfile).grid(row=0, column=1)
         Button(self, text="Fit X", command=self.plot.fit_x).grid(row=0, column=3, sticky=W)
         Button(self, text="Fit Y", command=self.plot.fit_y).grid(row=0, column=4, sticky=W)
+        Button(self, text="Fit Auto", command=self.plot.fit_auto).grid(row=0, column=5, sticky=W)
+        Button(self, text="Fit Tele", command=self.plot.fit_tele).grid(row=0, column=6, sticky=W)
         # Plot controls in a subframe to manage padding so it doesn't look awful
         move_mode_control = Frame(self, padx=10)
         Radiobutton(move_mode_control, text="Pan", value="pan", variable=move_mode).grid(row=0, column=0, sticky=W)
         Radiobutton(move_mode_control, text="Zoom In", value="zoomin", variable=move_mode).grid(row=0, column=1, sticky=W)
         Radiobutton(move_mode_control, text="Zoom Out", value="zoomout", variable=move_mode).grid(row=0, column=2, sticky=W)
-        move_mode_control.grid(row=0, column=5, sticky=W)
-        Checkbutton(self, text="Event Bars", variable=event_bars, command=self.plot.show_textlogs).grid(row=0, column=6, sticky=W)
-        Checkbutton(self, text="Debug", variable=show_debug, command=self.plot.show_textlogs).grid(row=0, column=7, sticky=W)
-        Checkbutton(self, text="Error", variable=show_error, command=self.plot.show_textlogs).grid(row=0, column=8, sticky=W)
-        Checkbutton(self, text="Warning", variable=show_warning, command=self.plot.show_textlogs).grid(row=0, column=9, sticky=W)
-        Checkbutton(self, text="Info", variable=show_info, command=self.plot.show_textlogs).grid(row=0, column=10, sticky=W)
-        Checkbutton(self, text="Directories", variable=show_path, command=self.plot.show_textlogs).grid(row=0, column=11, sticky=E)
+        move_mode_control.grid(row=0, column=7, sticky=W)
+        Checkbutton(self, text="Event Bars", variable=event_bars, command=self.plot.show_textlogs).grid(row=0, column=8, sticky=W)
+        Checkbutton(self, text="Debug", variable=show_debug, command=self.plot.show_textlogs).grid(row=0, column=9, sticky=W)
+        Checkbutton(self, text="Error", variable=show_error, command=self.plot.show_textlogs).grid(row=0, column=10, sticky=W)
+        Checkbutton(self, text="Warning", variable=show_warning, command=self.plot.show_textlogs).grid(row=0, column=11, sticky=W)
+        Checkbutton(self, text="Info", variable=show_info, command=self.plot.show_textlogs).grid(row=0, column=12, sticky=W)
+        Checkbutton(self, text="Directories", variable=show_path, command=self.plot.show_textlogs).grid(row=0, column=13, sticky=E)
 
     # Open Directory button clicked
     def loaddir(self):

@@ -48,6 +48,10 @@ class WPI_TalonSRX : public virtual TalonSRX,
 					 public frc::SendableBase
 {
 public:
+	/**
+	 * Constructor for a WPI_TalonSRX
+	 * @param deviceNumber Device ID of TalonSRX
+	 */
 	WPI_TalonSRX(int deviceNumber);
 	virtual ~WPI_TalonSRX();
 
@@ -63,6 +67,10 @@ public:
 	 * 									Value is also saved for Get().
 	 */
 	virtual void Set(double speed);
+	/**
+	 * Special write for PID, same functionality as calling set
+	 * @param output Output to send to motor
+	 */
 	virtual void PIDWrite(double output);
 
 	/**
@@ -175,6 +183,9 @@ public:
 	 */
 	virtual void StopMotor();
 
+	/**
+	 * @return description of controller
+	 */
 	void GetDescription(wpi::raw_ostream &desc) const;
 
 	//----------------------- Motor Safety comparable interface ----------//
@@ -230,6 +241,10 @@ public:
 	frc::MotorSafety &GetMotorSafety();
 
 protected:
+	/**
+	 * Initialize sendable
+	 * @param builder Base sendable to build on
+	 */
 	virtual void InitSendable(frc::SendableBuilder &builder);
 private:
 	double _speed = 0;

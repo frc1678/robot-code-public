@@ -20,9 +20,13 @@
 #include <string>
 
 /* forward proto's */
+/** namespace ctre */
 namespace ctre {
+/** namespace phoenix */
 namespace phoenix {
+/** namespace motorcontrol */
 namespace motorcontrol {
+/** namespace lowlevel */
 namespace lowlevel {
 class MotControllerWithBuffer_LowLevel;
 class MotController_LowLevel;
@@ -34,10 +38,17 @@ class MotController_LowLevel;
 namespace ctre {
 namespace phoenix {
 namespace motorcontrol {
+/** namespace can */
 namespace can {
 
+/**
+ * Base set of configurables related to PID
+ */
 struct BasePIDSetConfiguration {
 
+    /**
+     *  Feedback coefficient of selected sensor
+     */
 	double selectedFeedbackCoefficient;
 
 	BasePIDSetConfiguration() :
@@ -45,18 +56,36 @@ struct BasePIDSetConfiguration {
 	{
 	}
 
+    /**
+     * @return String representation of configs
+     */
 	std::string toString() {
 		return toString("");
 	}
 
+    /**
+     * @param prependString
+     *              String to prepend to configs
+     * @return String representation of configs
+     */
     std::string toString(const std::string &prependString) {
         return prependString + ".selectedFeedbackCoefficient = " + std::to_string(selectedFeedbackCoefficient) + ";\n";
     
     }
 };// struct BasePIDSetConfiguration
+
+/**
+ * Configurations for filters
+ */
 struct FilterConfiguration {
 
+    /**
+     * Remote Sensor's device ID
+     */
 	int remoteSensorDeviceID; 
+    /**
+	 * The remote sensor device and signal type to bind.
+     */
 	RemoteSensorSource remoteSensorSource;  
 
     FilterConfiguration() :
@@ -65,10 +94,17 @@ struct FilterConfiguration {
     {
     }
 
+    /**
+     * @return string representation of currently selected configs
+     */
 	std::string toString() {
 		return toString("");
 	}
 
+    /**
+     * @param prependString String to prepend to all the configs
+     * @return string representation fo currently selected configs
+     */
     std::string toString(std::string prependString) {
         std::string retstr = prependString + ".remoteSensorDeviceID = " + std::to_string(remoteSensorDeviceID) + ";\n";
         retstr += prependString + ".remoteSensorSource = " + RemoteSensorSourceRoutines::toString(remoteSensorSource) + ";\n";
@@ -77,24 +113,89 @@ struct FilterConfiguration {
 	
 
 }; // struct FilterConfiguration
+
+/**
+ * Util class to help with filter configs
+ */
 struct FilterConfigUtil {
 	private:
 		static FilterConfiguration _default;
 	public:
+		/**
+		 * Determine if specified value is different from default
+		 * @param settings settings to compare against
+		 * @return if specified value is different from default
+		 * @{
+		 */
 		static bool RemoteSensorDeviceIDDifferent (const FilterConfiguration & settings) { return (!(settings.remoteSensorDeviceID == _default.remoteSensorDeviceID)); }
 		static bool RemoteSensorSourceDifferent (const FilterConfiguration & settings) { return (!(settings.remoteSensorSource == _default.remoteSensorSource)); }
 		static bool FilterConfigurationDifferent (const FilterConfiguration & settings) { return RemoteSensorDeviceIDDifferent(settings) || RemoteSensorSourceDifferent(settings); }
+		/** @} */
 };
+
+/**
+ * Configurables available to a slot
+ */
 struct SlotConfiguration{
 
+	/**
+	 * P Gain
+	 *
+	 * This is multiplied by closed loop error in sensor units.
+	 * Note the closed loop output interprets a final value of 1023 as full output.
+	 * So use a gain of '0.25' to get full output if err is 4096u (Mag Encoder 1 rotation)
+	 */
 	double kP; 
+	/**
+	 * I Gain
+	 *
+	 * This is multiplied by accumulated closed loop error in sensor units every PID Loop.
+	 * Note the closed loop output interprets a final value of 1023 as full output.
+	 * So use a gain of '0.00025' to get full output if err is 4096u for 1000 loops (accumulater holds 4,096,000),
+	 * [which is equivalent to one CTRE mag encoder rotation for 1000 milliseconds].
+	 */
 	double kI; 
+	/**
+	 * D Gain
+	 *
+	 * This is multiplied by derivative error (sensor units per PID loop, typically 1ms).
+	 * Note the closed loop output interprets a final value of 1023 as full output.
+	 * So use a gain of '250' to get full output if derr is 4096u (Mag Encoder 1 rotation) per 1000 loops (typ 1 sec)
+	 */
 	double kD; 
+	/**
+	 * F Gain
+ 	 *
+	 * See documentation for calculation details.
+	 * If using velocity, motion magic, or motion profile,
+	 * use (1023 * duty-cycle / sensor-velocity-sensor-units-per-100ms).
+	 *
+	 */
 	double kF; 
+    /**
+     * Integral zone (in native units)
+	 *
+	 * If the (absolute) closed-loop error is outside of this zone, integral
+	 * accumulator is automatically cleared. This ensures than integral wind up
+	 * events will stop after the sensor gets far enough from its target.
+     */
 	int integralZone; 
+	/**
+	 * Allowable closed loop error to neutral (in native units)
+	 *
+	 */
 	int allowableClosedloopError; 
+    /**
+     * Max integral accumulator (in native units)
+     */
 	double maxIntegralAccumulator; 
+    /**
+     * Peak output from closed loop [0,1]
+     */
 	double closedLoopPeakOutput;
+    /**
+     * Desired period of closed loop [1,64]ms
+     */
 	int closedLoopPeriod;
 		
 	SlotConfiguration() : 
@@ -110,10 +211,18 @@ struct SlotConfiguration{
 	{
 	}
 
+    /**
+     * @return String representation of configs
+     */
 	std::string toString() {
 		return toString("");
 	}
 
+    /**
+     * @param prependString
+     *              String to prepend to configs
+     * @return String representation of configs
+     */
     std::string toString(std::string prependString) {
 
         std::string retstr = prependString + ".kP = " + std::to_string(kP) + ";\n"; 
@@ -132,10 +241,19 @@ struct SlotConfiguration{
     
 };// struct BaseSlotConfiguration
 
+/**
+ * Util Class to help with slot configs
+ */
 class SlotConfigUtil {
 	private:
 		static struct SlotConfiguration _default;
 	public:
+		/**
+		 * Determine if specified value is different from default
+		 * @param settings settings to compare against
+		 * @return if specified value is different from default
+		 * @{
+		 */
 		static bool KPDifferent (const SlotConfiguration & settings) { return (!(settings.kP == _default.kP)); }
 		static bool KIDifferent (const SlotConfiguration & settings) { return (!(settings.kI == _default.kI)); }
 		static bool KDDifferent (const SlotConfiguration & settings) { return (!(settings.kD == _default.kD)); }
@@ -145,44 +263,171 @@ class SlotConfigUtil {
 		static bool MaxIntegralAccumulatorDifferent (const SlotConfiguration & settings) { return (!(settings.maxIntegralAccumulator == _default.maxIntegralAccumulator)); }
 		static bool ClosedLoopPeakOutputDifferent (const SlotConfiguration & settings) { return (!(settings.closedLoopPeakOutput == _default.closedLoopPeakOutput)); }
 		static bool ClosedLoopPeriodDifferent (const SlotConfiguration & settings) { return (!(settings.closedLoopPeriod == _default.closedLoopPeriod)); }
+		/** @} */
 };
 
 
+/**
+ * Configurables available to base motor controllers
+ */
 struct BaseMotorControllerConfiguration : ctre::phoenix::CustomParamConfiguration {
+	/**
+     * Seconds to go from 0 to full in open loop
+     */
 	double openloopRamp;
+    /**
+     * Seconds to go from 0 to full in closed loop
+     */
 	double closedloopRamp; 
+    /**
+     * Peak output in forward direction [0,1]
+     */
 	double peakOutputForward;
+    /**
+     * Peak output in reverse direction [-1,0]
+     */
 	double peakOutputReverse;
+    /**
+     * Nominal/Minimum output in forward direction [0,1]
+     */
 	double nominalOutputForward; 
+    /**
+     * Nominal/Minimum output in reverse direction [-1,0]
+     */
 	double nominalOutputReverse; 
+    /**
+     * Neutral deadband [0.001, 0.25]
+     */
 	double neutralDeadband;
+    /**
+	 * This is the max voltage to apply to the hbridge when voltage
+	 * compensation is enabled.  For example, if 10 (volts) is specified
+	 * and a TalonSRX is commanded to 0.5 (PercentOutput, closed-loop, etc)
+	 * then the TalonSRX will attempt to apply a duty-cycle to produce 5V.
+     */
 	double voltageCompSaturation; 
+    /**
+     * Number of samples in rolling average for voltage
+     */
 	int voltageMeasurementFilter;
+    /**
+     * Desired period for velocity measurement
+     */
     VelocityMeasPeriod velocityMeasurementPeriod; 
+    /**
+     * Desired window for velocity measurement
+     */
 	int velocityMeasurementWindow; 
+    /**
+     * Threshold for soft limits in forward direction (in raw sensor units)
+     */
 	int forwardSoftLimitThreshold; 
+    /**
+     * Threshold for soft limits in reverse direction (in raw sensor units)
+     */
 	int reverseSoftLimitThreshold; 
+    /**
+     * Enable forward soft limit
+     */
 	bool forwardSoftLimitEnable; 
+    /**
+     * Enable reverse soft limit
+     */
 	bool reverseSoftLimitEnable; 
+    /**
+     * Configuration for slot 0
+     */
 	SlotConfiguration slot0;
+    /**
+     * Configuration for slot 1
+     */
 	SlotConfiguration slot1;
+    /**
+     * Configuration for slot 2
+     */
 	SlotConfiguration slot2;
+    /**
+     * Configuration for slot 3
+     */
 	SlotConfiguration slot3;
+    /**
+     * PID polarity inversion
+     * 
+	 * Standard Polarity:
+	 *    Primary Output = PID0 + PID1,
+	 *    Auxiliary Output = PID0 - PID1,
+	 *
+	 * Inverted Polarity:
+	 *    Primary Output = PID0 - PID1,
+	 *    Auxiliary Output = PID0 + PID1,
+     */
 	bool auxPIDPolarity; 
+    /**
+     * Configuration for RemoteFilter 0
+     */
 	FilterConfiguration remoteFilter0;
+    /**
+     * Configuration for RemoteFilter 1
+     */
 	FilterConfiguration remoteFilter1;
+    /**
+     * Motion Magic cruise velocity in raw sensor units per 100 ms.
+     */
     int motionCruiseVelocity; 
+    /**
+     * Motion Magic acceleration in (raw sensor units per 100 ms) per second.
+     */
 	int motionAcceleration; 
+	/**
+	 * Zero to use trapezoidal motion during motion magic.  [1,8] for S-Curve, higher value for greater smoothing.
+	 */
+	int motionCurveStrength;
+    /**
+     * Motion profile base trajectory period in milliseconds.
+     * 
+     * The period specified in a trajectory point will be
+     * added on to this value
+     */
 	int motionProfileTrajectoryPeriod; 
+    /**
+     * Determine whether feedback sensor is continuous or not
+     */
     bool feedbackNotContinuous;
+    /**
+     * Disable neutral'ing the motor when remote sensor is lost on CAN bus
+     */
     bool remoteSensorClosedLoopDisableNeutralOnLOS;
+    /**
+     * Clear the position on forward limit
+     */
     bool clearPositionOnLimitF;
+    /**
+     * Clear the position on reverse limit
+     */
     bool clearPositionOnLimitR;
+    /**
+     * Clear the position on index
+     */
     bool clearPositionOnQuadIdx;
+    /**
+     * Disable neutral'ing the motor when remote limit switch is lost on CAN bus
+     */
     bool limitSwitchDisableNeutralOnLOS;
+    /**
+     * Disable neutral'ing the motor when remote soft limit is lost on CAN bus
+     */
     bool softLimitDisableNeutralOnLOS;
+    /**
+     * Number of edges per rotation for a tachometer sensor
+     */
     int pulseWidthPeriod_EdgesPerRot;
+    /**
+     * Desired window size for a tachometer sensor
+     */
     int pulseWidthPeriod_FilterWindowSz;
+	/**
+	* Enable motion profile trajectory point interpolation (defaults to true).
+	*/
 	bool trajectoryInterpolationEnable;
 
     BaseMotorControllerConfiguration() :
@@ -204,6 +449,7 @@ struct BaseMotorControllerConfiguration : ctre::phoenix::CustomParamConfiguratio
         auxPIDPolarity(false), 
         motionCruiseVelocity(0),
         motionAcceleration(0),
+		motionCurveStrength(0),
         motionProfileTrajectoryPeriod(0),
         feedbackNotContinuous(false),
         remoteSensorClosedLoopDisableNeutralOnLOS(false),
@@ -219,10 +465,18 @@ struct BaseMotorControllerConfiguration : ctre::phoenix::CustomParamConfiguratio
 	{
 	}
 
+    /**
+     * @return String representation of configs
+     */
 	std::string toString() {
 		return toString("");
 	}
 
+    /**
+     * @param prependString
+     *              String to prepend to configs
+     * @return String representation of configs
+     */
     std::string toString(std::string prependString) {
 
         std::string retstr = prependString + ".openloopRamp = " + std::to_string(openloopRamp) + ";\n";
@@ -247,8 +501,9 @@ struct BaseMotorControllerConfiguration : ctre::phoenix::CustomParamConfiguratio
         retstr += prependString + ".auxPIDPolarity = " + std::to_string(auxPIDPolarity) + ";\n"; 
         retstr += remoteFilter0.toString(prependString + ".remoteFilter0");
         retstr += remoteFilter1.toString(prependString + ".remoteFilter1");
-        retstr += prependString + ".motionCruiseVelocity = " + std::to_string(motionCruiseVelocity) + ";\n"; 
-        retstr += prependString + ".motionAcceleration = " + std::to_string(motionAcceleration) + ";\n"; 
+        retstr += prependString + ".motionCruiseVelocity = " + std::to_string(motionCruiseVelocity) + ";\n";
+		retstr += prependString + ".motionAcceleration = " + std::to_string(motionAcceleration) + ";\n";
+		retstr += prependString + ".motionCurveStrength = " + std::to_string(motionCurveStrength) + ";\n";
         retstr += prependString + ".motionProfileTrajectoryPeriod = " + std::to_string(motionProfileTrajectoryPeriod) + ";\n"; 
         retstr += prependString + ".feedbackNotContinuous = " + std::to_string(feedbackNotContinuous) + ";\n";
         retstr += prependString + ".remoteSensorClosedLoopDisableNeutralOnLOS = " + std::to_string(remoteSensorClosedLoopDisableNeutralOnLOS) + ";\n";
@@ -269,10 +524,19 @@ struct BaseMotorControllerConfiguration : ctre::phoenix::CustomParamConfiguratio
     
 };// struct BaseMotorControllerConfiguration
 
+/**
+ * Util class to help with Base Motor Controller configs
+ */ 
 class BaseMotorControllerUtil : public ctre::phoenix::CustomParamConfigUtil {
     private :
         static struct BaseMotorControllerConfiguration _default;
     public:
+		/**
+		 * Determine if specified value is different from default
+		 * @param settings settings to compare against
+		 * @return if specified value is different from default
+		 * @{
+		 */
         static bool OpenloopRampDifferent (const BaseMotorControllerConfiguration & settings) { return (!(settings.openloopRamp == _default.openloopRamp)) || !settings.enableOptimizations; }
         static bool ClosedloopRampDifferent (const BaseMotorControllerConfiguration & settings) { return (!(settings.closedloopRamp == _default.closedloopRamp)) || !settings.enableOptimizations; }
         static bool PeakOutputForwardDifferent (const BaseMotorControllerConfiguration & settings) { return (!(settings.peakOutputForward == _default.peakOutputForward)) || !settings.enableOptimizations; }
@@ -291,6 +555,7 @@ class BaseMotorControllerUtil : public ctre::phoenix::CustomParamConfigUtil {
         static bool AuxPIDPolarityDifferent (const BaseMotorControllerConfiguration & settings) { return (!(settings.auxPIDPolarity == _default.auxPIDPolarity)) || !settings.enableOptimizations; }
         static bool MotionCruiseVelocityDifferent (const BaseMotorControllerConfiguration & settings) { return (!(settings.motionCruiseVelocity == _default.motionCruiseVelocity)) || !settings.enableOptimizations; }
         static bool MotionAccelerationDifferent (const BaseMotorControllerConfiguration & settings) { return (!(settings.motionAcceleration == _default.motionAcceleration)) || !settings.enableOptimizations; }
+		static bool MotionSCurveStrength(const BaseMotorControllerConfiguration & settings) { return (!(settings.motionCurveStrength == _default.motionCurveStrength)) || !settings.enableOptimizations; }		
         static bool MotionProfileTrajectoryPeriodDifferent (const BaseMotorControllerConfiguration & settings) { return (!(settings.motionProfileTrajectoryPeriod == _default.motionProfileTrajectoryPeriod)) || !settings.enableOptimizations; }
         static bool FeedbackNotContinuousDifferent (const BaseMotorControllerConfiguration & settings) { return (!(settings.feedbackNotContinuous == _default.feedbackNotContinuous)) || !settings.enableOptimizations; }
         static bool RemoteSensorClosedLoopDisableNeutralOnLOSDifferent (const BaseMotorControllerConfiguration & settings) { return (!(settings.remoteSensorClosedLoopDisableNeutralOnLOS == _default.remoteSensorClosedLoopDisableNeutralOnLOS)) || !settings.enableOptimizations; }
@@ -302,6 +567,7 @@ class BaseMotorControllerUtil : public ctre::phoenix::CustomParamConfigUtil {
         static bool PulseWidthPeriod_EdgesPerRotDifferent (const BaseMotorControllerConfiguration & settings) { return (!(settings.pulseWidthPeriod_EdgesPerRot == _default.pulseWidthPeriod_EdgesPerRot)) || !settings.enableOptimizations; }
         static bool PulseWidthPeriod_FilterWindowSzDifferent (const BaseMotorControllerConfiguration & settings) { return (!(settings.pulseWidthPeriod_FilterWindowSz == _default.pulseWidthPeriod_FilterWindowSz)) || !settings.enableOptimizations; }
 		static bool TrajectoryInterpolationEnableDifferent (const BaseMotorControllerConfiguration & settings) {return (!(settings.trajectoryInterpolationEnable == _default.trajectoryInterpolationEnable)) || !settings.enableOptimizations; }
+		/** @} */
 };
 /**
  * Base motor controller features for all CTRE CAN motor controllers.
@@ -319,6 +585,9 @@ private:
 	ctre::phoenix::ErrorCode ConfigureFilter(const FilterConfiguration &filter, int ordinal, int timeoutMs, bool enableOptimizations);
 
 protected:
+	/**
+	 * Handle of device
+	 */
 	void* m_handle;
 	/**
 	 * @return CCI handle for child classes.
@@ -377,6 +646,9 @@ public:
 	BaseMotorController(BaseMotorController const&) = delete;
 	BaseMotorController& operator=(BaseMotorController const&) = delete;
 
+	/**
+	 * Destructs all motor controller objects
+	 */
     static void DestroyAllMotControllers();
 
 	/**
@@ -420,6 +692,7 @@ public:
 	 *
 	 * @param demand1 Supplemental value.  This will also be control mode specific for future features.
 	 */
+	[[deprecated("Use 4-paremeter Set() instead.")]]
 	virtual void Set(ControlMode mode, double demand0, double demand1);
 	/**
 	 * @param mode Sets the appropriate output on the talon, depending on the mode.
@@ -435,11 +708,14 @@ public:
 	 *
 	 * @param demand1Type The demand type for demand1.
 	 * Neutral: Ignore demand1 and apply no change to the demand0 output.
-	 * AuxPID: Use demand1 to set the target for the auxiliary PID 1.
+	 * AuxPID: Use demand1 to set the target for the auxiliary PID 1.  Auxiliary 
+	 *   PID is always executed as standard Position PID control.
 	 * ArbitraryFeedForward: Use demand1 as an arbitrary additive value to the
 	 *	 demand0 output.  In PercentOutput the demand0 output is the motor output,
 	 *   and in closed-loop modes the demand0 output is the output of PID0.
-	 * @param demand1 Supplmental output value.  Units match the set mode.
+	 * @param demand1 Supplmental output value.  
+	 * AuxPID: Target position in Sensor Units
+	 * ArbitraryFeedForward: Percent Output between -1.0 and 1.0
 	 *
 	 *
 	 *  Arcade Drive Example:
@@ -475,6 +751,7 @@ public:
 	 * Future firmware updates will use this.
 	 *
 	 *	@param enable true/false enable
+	 * @deprecated This has been replaced with the 4 param Set.
 	 */
 	void EnableHeadingHold(bool enable);
 	/**
@@ -482,6 +759,7 @@ public:
 	 * Future firmware updates will use this to control advanced auxiliary loop behavior.
 	 *
 	 *	@param value
+	 * @deprecated This has been replaced with the 4 param Set.
 	 */
 	void SelectDemandType(bool value);
 	//------ Invert behavior ----------//
@@ -531,7 +809,10 @@ public:
 	virtual bool GetInverted() const;
 	//----- Factory Default Configuration -----//
 	/**
-	 * Configure all configurations to factory default values
+	* Revert all configurations to factory default values.
+	* Use this before your individual config* calls to avoid having to config every single param.
+	*
+	* Alternatively you can use the configAllSettings routine.
 	 * 
 	 * @param timeoutMs
 	 *            Timeout value in ms. Function will generate error if config is
@@ -666,6 +947,8 @@ public:
 	 * Enables voltage compensation. If enabled, voltage compensation works in
 	 * all control modes.
 	 *
+	 * Be sure to configure the saturation voltage before enabling this.
+	 *
 	 * @param enable
 	 *            Enable state of voltage compensation.
 	 **/
@@ -752,11 +1035,11 @@ public:
 	 * as a PID source for closed-loop features.
 	 *
 	 * @param deviceID
- 	 *            The CAN ID of the remote sensor device.
+ 	 *            The device ID of the remote sensor device.
 	 * @param remoteSensorSource
 	 *            The remote sensor device and signal type to bind.
 	 * @param remoteOrdinal
-	 *            0 for configuring Remote Sensor 0
+	 *            0 for configuring Remote Sensor 0,
 	 *            1 for configuring Remote Sensor 1
 	 * @param timeoutMs
 	 *            Timeout value in ms. If nonzero, function will wait for
@@ -853,7 +1136,7 @@ public:
 	 * User ensure CAN Bus utilization is not high.
 	 *
 	 * This setting is not persistent and is lost when device is reset. If this
-	 * is a concern, calling application can use HasReset() to determine if the
+	 * is a concern, calling application can use HasResetOccurred() to determine if the
 	 * status frame needs to be reconfigured.
 	 *
 	 * @param frame
@@ -874,7 +1157,7 @@ public:
 	 * User ensure CAN Bus utilization is not high.
 	 *
 	 * This setting is not persistent and is lost when device is reset. If this
-	 * is a concern, calling application can use HasReset() to determine if the
+	 * is a concern, calling application can use HasResetOccurred() to determine if the
 	 * status frame needs to be reconfigured.
 	 *
 	 * @param frame
@@ -1112,6 +1395,9 @@ public:
 	//------ General Close loop ----------//
 	/**
 	 * Sets the 'P' constant in the given parameter slot.
+	 * This is multiplied by closed loop error in sensor units.  
+	 * Note the closed loop output interprets a final value of 1023 as full output.  
+	 * So use a gain of '0.25' to get full output if err is 4096u (Mag Encoder 1 rotation)
 	 *
 	 * @param slotIdx
 	 *            Parameter slot for the constant.
@@ -1126,6 +1412,10 @@ public:
 	virtual ctre::phoenix::ErrorCode Config_kP(int slotIdx, double value, int timeoutMs = 0);
 	/**
 	 * Sets the 'I' constant in the given parameter slot.
+	 * This is multiplied by accumulated closed loop error in sensor units every PID Loop.
+	 * Note the closed loop output interprets a final value of 1023 as full output.
+	 * So use a gain of '0.00025' to get full output if err is 4096u for 1000 loops (accumulater holds 4,096,000),
+	 * [which is equivalent to one CTRE mag encoder rotation for 1000 milliseconds].
 	 *
 	 * @param slotIdx
 	 *            Parameter slot for the constant.
@@ -1141,6 +1431,10 @@ public:
 	/**
 	 * Sets the 'D' constant in the given parameter slot.
 	 *
+	 * This is multiplied by derivative error (sensor units per PID loop, typically 1ms).
+	 * Note the closed loop output interprets a final value of 1023 as full output.
+	 * So use a gain of '250' to get full output if derr is 4096u (Mag Encoder 1 rotation) per 1000 loops (typ 1 sec)
+	 *
 	 * @param slotIdx
 	 *            Parameter slot for the constant.
 	 * @param value
@@ -1154,6 +1448,10 @@ public:
 	virtual ctre::phoenix::ErrorCode Config_kD(int slotIdx, double value, int timeoutMs = 0);
 	/**
 	 * Sets the 'F' constant in the given parameter slot.
+	 *
+	 * See documentation for calculation details.
+	 * If using velocity, motion magic, or motion profile,
+	 * use (1023 * duty-cycle / sensor-velocity-sensor-units-per-100ms).
 	 *
 	 * @param slotIdx
 	 *            Parameter slot for the constant.
@@ -1191,7 +1489,7 @@ public:
 	 * @param slotIdx
 	 *            Parameter slot for the constant.
 	 * @param allowableCloseLoopError
-	 *            Value of the allowable closed-loop error.
+	 *            Value of the allowable closed-loop error in sensor units (or sensor units per 100ms for velocity).
 	 * @param timeoutMs
 	 *            Timeout value in ms. If nonzero, function will wait for
 	 *            config success and report an error if it times out.
@@ -1254,12 +1552,12 @@ public:
 	 * Configures the Polarity of the Auxiliary PID (PID1).
 	 *
 	 * Standard Polarity:
-	 *    Primary Output = PID0 + PID1
-	 *    Auxiliary Output = PID0 - PID1
+	 *    Primary Output = PID0 + PID1,
+	 *    Auxiliary Output = PID0 - PID1,
 	 *
 	 * Inverted Polarity:
-	 *    Primary Output = PID0 - PID1
-	 *    Auxiliary Output = PID0 + PID1
+	 *    Primary Output = PID0 - PID1,
+	 *    Auxiliary Output = PID0 + PID1,
 	 *
 	 * @param invert
 	 *            If true, use inverted PID1 output polarity.
@@ -1291,7 +1589,18 @@ public:
 	virtual ctre::phoenix::ErrorCode SetIntegralAccumulator(double iaccum, int pidIdx = 0,int timeoutMs = 0);
 	/**
 	 * Gets the closed-loop error. The units depend on which control mode is in
-	 * use. See Phoenix-Documentation information on units.
+	 * use.
+	 *
+	 * If closed-loop is seeking a target sensor position, closed-loop error is the difference between target
+	 * and current sensor value (in sensor units.  Example 4096 units per rotation for CTRE Mag Encoder).
+	 *
+	 * If closed-loop is seeking a target sensor velocity, closed-loop error is the difference between target
+	 * and current sensor value (in sensor units per 100ms).
+	 *
+	 * If using motion profiling or Motion Magic, closed loop error is calculated against the current target,
+ 	 * and not the "final" target at the end of the profile/movement.
+	 *
+	 * See Phoenix-Documentation information on units.
 	 *
 	 * @param pidIdx
 	 *            0 for Primary closed-loop. 1 for auxiliary closed-loop.
@@ -1359,7 +1668,7 @@ public:
 	 *
 	 * @return The Active Trajectory Heading in degreees.
 	 */
-[[deprecated("Replaced by GetActiveTrajectoryPosition(1)")]]
+	[[deprecated("Replaced by GetActiveTrajectoryPosition(1)")]]
 	virtual double GetActiveTrajectoryHeading();
 
 	//------ Motion Profile Settings used in Motion Magic  ----------//
@@ -1392,6 +1701,20 @@ public:
 	 */
 	virtual ctre::phoenix::ErrorCode ConfigMotionAcceleration(int sensorUnitsPer100msPerSec,
 			int timeoutMs = 0);
+	/**
+	 * Sets the Motion Magic S Curve Strength. 
+	 * Call this before using Motion Magic.
+	 * Modifying this during a Motion Magic action should be avoided.
+	 *
+	 * @param curveStrength
+	 *            0 to use Trapezoidal Motion Profile. [1,8] for S-Curve (greater value yields greater smoothing).
+	 * @param timeoutMs
+	 *            Timeout value in ms. If nonzero, function will wait for config
+	 *            success and report an error if it times out. If zero, no
+	 *            blocking or checking is performed.
+	 * @return Error Code generated by function. 0 indicates no error.
+	 */
+	virtual ctre::phoenix::ErrorCode ConfigMotionSCurveStrength(int curveStrength, int timeoutMs = 0);
 	//------ Motion Profile Buffer ----------//
 	/**
 	 * Clear the buffered motion profile in both controller's RAM (bottom), and in the
@@ -1521,14 +1844,14 @@ public:
 	 *	btmBufferCnt: The number of points in the low level controller buffer.
 	 *
 	 *	hasUnderrun: 	Set if isUnderrun ever gets set.
-	 * 	 	 	 	 	Only is cleared by clearMotionProfileHasUnderrun() to ensure
+	 * 	 	 	 	 	Can be manually cleared by ClearMotionProfileHasUnderrun() or automatically cleared by StartMotionProfile().
 	 *
 	 *	isUnderrun:		This is set if controller needs to shift a point from its buffer into
 	 *					the active trajectory point however
 	 *					the buffer is empty.
 	 *					This gets cleared automatically when is resolved.
 	 *
-	 *	activePointValid:	True if the active trajectory point has not empty, false otherwise. The members in activePoint are only valid if this signal is set.
+	 *	activePointValid:	True if the active trajectory point is not empty, false otherwise. The members in activePoint are only valid if this signal is set.
 	 *
 	 *	isLast:	is set/cleared based on the MP executer's current
 	 *                trajectory point's IsLast value.  This assumes
@@ -1603,11 +1926,15 @@ public:
 
     //------Feedback Device Interaction Settings---------//
     /**
-     * Disables wrapping the position. If the signal goes from 1023 to 0 a motor 
-     * controller will by default go to 1024. If wrapping the position is disabled,
-     * it will go to 0;
-     *
-     * @param feedbackNotContinuous     disable wrapping the position. 
+  	 * Disables continuous tracking of the position for analog and pulse-width.
+	 * If the signal goes from 4095 to 0 (pulse-width) a motor controller will continue to read 4096 by default.
+ 	 * If overflow tracking is disabled, it will wrap to 0 (not continuous)
+	 *
+ 	 * If using pulse-width on CTRE Mag Encoder (within one rotation) or absolute analog sensor (within one rotation),
+	 * setting feedbackNotContinuous to true is recommended, to prevent intermittent
+ 	 * connections from causing sensor "jumps" of 4096 (or 1024 for analog) units.
+	 *
+ 	 * @param feedbackNotContinuous     True to disable the overflow tracking.
      *
      * @param timeoutMs
      *            Timeout value in ms. If nonzero, function will wait for
@@ -1835,6 +2162,25 @@ public:
 	 * @return Value of parameter.
 	 */
 	virtual double ConfigGetParameter(ctre::phoenix::ParamEnum param, int ordinal, int timeoutMs = 0);
+    /**
+	 * Gets a parameter by passing an int by reference
+	 * 
+	 * @param param
+	 * 			  Parameter enumeration
+	 * @param valueToSend
+	 * 			  Value to send to parameter
+	 * @param valueReceived
+	 * 			  Reference to integer to receive
+	 * @param subValue
+	 * 			  SubValue of parameter
+	 * @param ordinal
+	 * 			  Ordinal of parameter
+	 * @param timeoutMs
+	 *            Timeout value in ms. If nonzero, function will wait for
+	 *            config success and report an error if it times out.
+	 *            If zero, no blocking or checking is performed.
+	 * @return Error Code generated by function. 0 indicates no error.
+	 */
     virtual ErrorCode ConfigGetParameter(ParamEnum param, int32_t valueToSend,
             int32_t & valueReceived, uint8_t & subValue, int32_t ordinal,
             int32_t timeoutMs);
@@ -1885,7 +2231,7 @@ public:
     /**
      * Gets all filter persistant settings.
      *
-	 * @param filter        Object with all of the filter persistant settings
+	 * @param Filter        Object with all of the filter persistant settings
      * @param ordinal       0 for remote sensor 0 and 1 for remote sensor 1.
      * @param timeoutMs
      *              Timeout value in ms. If nonzero, function will wait for

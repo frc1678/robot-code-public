@@ -51,6 +51,11 @@ void Trajectory::TimeReparametrize(const HermiteSpline& spline,
                  std::sqrt(std::abs(constraints.max_centripetal_acceleration /
                                     constrained_pose.pose.curvature())));
 
+    constrained_pose.max_velocity = std::min(
+        constrained_pose.max_velocity,
+        model.CalculateMaxVelocity(constrained_pose.pose.curvature(),
+                                   constraints.max_voltage, high_gear)(0));
+
     Eigen::Vector2d linear_angular_velocity;
     linear_angular_velocity(0) =
         constrained_pose.max_velocity * (backwards ? -1. : 1.);
@@ -58,10 +63,9 @@ void Trajectory::TimeReparametrize(const HermiteSpline& spline,
                                  constrained_pose.pose.curvature() *
                                  (backwards ? -1. : 1.);
 
-    Bounds min_max_accel = model.CalculateMinMaxAcceleration(
-        linear_angular_velocity, constrained_pose.pose.curvature(),
-        constraints.max_voltage, high_gear);
-    (void)min_max_accel;
+    /* Bounds min_max_accel = model.CalculateMinMaxAcceleration( */
+    /*     linear_angular_velocity, constrained_pose.pose.curvature(), */
+    /*     constraints.max_voltage, high_gear); */
 
     /* constrained_pose.min_acceleration = */
     /*     std::max(constrained_pose.min_acceleration, */
@@ -100,17 +104,21 @@ void Trajectory::TimeReparametrize(const HermiteSpline& spline,
                                    constrained_pose.pose.curvature() *
                                    (backwards ? -1. : 1.);
 
-      /* Bounds min_max_accel = model.CalculateMinMaxAcceleration( */
-      /*     linear_angular_velocity, constrained_pose.pose.curvature(), */
-      /*     constraints.max_voltage, high_gear); */
+      Bounds min_max_accel = model.CalculateMinMaxAcceleration(
+          linear_angular_velocity, constrained_pose.pose.curvature(),
+          constraints.max_voltage, high_gear);
 
-      /* constrained_pose.min_acceleration = */
-      /*     std::max(constrained_pose.min_acceleration, */
-      /*              backwards ? -min_max_accel.max : min_max_accel.min); */
+      if (min_max_accel.min < 1e9) {
+        constrained_pose.min_acceleration =
+            std::max(constrained_pose.min_acceleration,
+                     backwards ? -min_max_accel.max : min_max_accel.min);
+      }
 
-      /* constrained_pose.max_acceleration = */
-      /*     std::min(constrained_pose.max_acceleration, */
-      /*              backwards ? -min_max_accel.min : min_max_accel.max); */
+      if (min_max_accel.max > -1e9) {
+        constrained_pose.max_acceleration =
+            std::min(constrained_pose.max_acceleration,
+                     backwards ? -min_max_accel.min : min_max_accel.max);
+      }
     }
 
     successor = constrained_pose;

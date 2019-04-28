@@ -5,13 +5,19 @@
             "type": "auto",
             "coordinates": [0, 3],
             "should-title": false,
-            "autos": [
-                "LEFT_ROCKET",
-                "RIGHT_ROCKET",
-                "LEFT_CARGO_ROCKET",
-                "RIGHT_CARGO_ROCKET",
-                "TELEOP"
-            ]
+            "autos": {
+                "LEFT_BACK_ROCKET": "#ea6056",
+                "LEFT_SIDE_CARGO_SHIP": "#9ce266",
+                "LEFT_DOUBLE_ROCKET": "#ea6056",
+                "LEFT_FRONT_CARGO_SHIP": "#9ce266",
+                "LEFT_CARGO_ROCKET": "#9ce266",
+                "RIGHT_BACK_ROCKET": "#ea6056",
+                "RIGHT_SIDE_CARGO_SHIP": "#9ce266",
+                "RIGHT_DOUBLE_ROCKET": "#ea6056",
+                "RIGHT_FRONT_CARGO_SHIP": "#9ce266",
+                "RIGHT_CARGO_ROCKET": "#9ce266",
+                "TELEOP": "#ffffff"
+            }
         },
         {
             "name": "Encouragement!",
@@ -44,6 +50,18 @@
             "condition": "source",
             "source": ["superstructure_status", "wristIsCalibrated"],
             "coordinates": [0,2],
+            "should-title": true,
+            "colors": {
+              "if_true": "#00ff00",
+              "if_false": "#ff0000"
+            }
+        },
+        {
+            "name": "Gyro Calibrated",
+            "type": "boolean",
+            "condition": "source",
+            "source": ["drivetrain_input", "pigeonReady"],
+            "coordinates": [2,3],
             "should-title": true,
             "colors": {
               "if_true": "#00ff00",

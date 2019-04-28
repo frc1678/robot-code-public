@@ -13,13 +13,13 @@ InterfaceRunner::InterfaceRunner()
 }
 
 void InterfaceRunner::ReadSensors() {
-  drive_.ReadSensors();
   superstructure_.ReadSensors();
+  drive_.ReadSensors();
 }
 
 void InterfaceRunner::WriteActuators() {
-  drive_.WriteActuators();
   superstructure_.WriteActuators();
+  drive_.WriteActuators();
 }
 
 }  // namespace interfaces

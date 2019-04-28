@@ -32,7 +32,7 @@ bool TestAuto::IsAutonomous() {
 
 void TestAuto::operator()() {
   EnterAutonomous();
-  SetFieldPosition(0.0, -0.3, 0.0);
+  SetFieldPosition(0.0, 0.0, 0.0);
   LOG(INFO, "Running TEST auto");
 
   StartDrivePath(2.55, 1.2, 0, 1, false);

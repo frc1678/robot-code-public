@@ -26,13 +26,13 @@ class CanWrapper {
   // Call this to run the loop forever (or until Stop() is called)
   void operator()();
 
-  PdpWrapper* pdp();
+  /* PdpWrapper* pdp(); */
   PcmWrapper* pcm();
 
   void Stop();
 
  private:
-  PdpWrapper pdp_;
+  /* PdpWrapper pdp_; */
   PcmWrapper pcm_;
 
   std::atomic<bool> running_{false};

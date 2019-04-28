@@ -4,55 +4,38 @@ namespace o2018 {
 namespace subsystems {
 namespace drivetrain {
 
-constexpr double kStallTorque = 1.41;
-constexpr double kStallCurrent = 89;
-constexpr double kFreeSpeed = 5840 * 2 * M_PI / 60;
-constexpr double kFreeCurrent = 3;
+constexpr double kRobotRadius = 0.3489513;
+constexpr double kWheelRadius = 0.0508;
 
-constexpr double kMass = 45.;
-constexpr double kDistRadius = 0.45;
-constexpr double kMoment = kMass * kDistRadius * kDistRadius;
+constexpr double kMaxVoltage = 12.0;
+constexpr double kFreeSpeed = 4.34 / kWheelRadius;  // rad / s
 
-constexpr double kForceStiction = 32.65;
-constexpr double kForceFriction = 20;
-constexpr double kAngularDrag = -12;
+constexpr double kDriveKv = kMaxVoltage / kFreeSpeed;  // V / (rad / s)
+constexpr double kDriveKa = 0.012;                     // V / (rad / s^2)
+constexpr double kDriveKs = 1.3;                       // V
 
-constexpr double kRobotRadius = 0.2875;
-constexpr double kWheelRadius = 4.0 * 0.0254 / 2.0;
+constexpr double kMass = 63.;                                  // kg
+constexpr double kDistRadius = 0.46;                            // m
+constexpr double kMoment = kMass * kDistRadius * kDistRadius;  // kg * m^2
 
-constexpr double kHighGearRatio = (12.0 / 50.0) * (18.0 / 46.0) * (50.0 / 34.0);
-constexpr double kLowGearRatio = (12.0 / 50.0) * (18.0 / 46.0) * (34.0 / 50.0);
-
-constexpr double kHighGearEfficiency = 0.75;
-constexpr double kLowGearEfficiency = 0.8;
+constexpr double kAngularDrag = 12.0;  // N*m / (rad / s)
 
 muan::subsystems::drivetrain::DrivetrainConfig GetDrivetrainConfig() {
   muan::control::DriveTransmission::Properties high_gear{
-      .num_motors = 3,
-      .motor_kt = kStallTorque / kStallCurrent,
-      .motor_kv = (12 - kFreeCurrent * (12 / kStallCurrent)) / kFreeSpeed,
-      .motor_resistance = 12 / kStallCurrent,
-      .gear_ratio = kHighGearRatio,
-      .efficiency = kHighGearEfficiency,
+      .speed_per_volt = 1.0 / kDriveKv,
+      .torque_per_volt = kWheelRadius * kWheelRadius * kMass / (2.0 * kDriveKa),
+      .friction_voltage = kDriveKs,
   };
 
-  muan::control::DriveTransmission::Properties low_gear{
-      .num_motors = 3,
-      .motor_kt = kStallTorque / kStallCurrent,
-      .motor_kv = (12 - kFreeCurrent * (12 / kStallCurrent)) / kFreeSpeed,
-      .motor_resistance = 12 / kStallCurrent,
-      .gear_ratio = kLowGearRatio,
-      .efficiency = kLowGearEfficiency,
-  };
+  muan::control::DriveTransmission::Properties low_gear =
+      high_gear;  // One-speed :D
 
   muan::control::DrivetrainModel::Properties model{
-      .wheelbase_radius = kRobotRadius,
-      .angular_drag = kAngularDrag,  // TUNE ME
       .mass = kMass,
       .moment_inertia = kMoment,
-      .force_stiction = kForceStiction,  // TUNE ME
-      .force_friction = kForceFriction,  // TUNE ME
+      .angular_drag = kAngularDrag,  // TUNE ME
       .wheel_radius = kWheelRadius,
+      .wheelbase_radius = kRobotRadius,
   };
 
   return {
@@ -62,11 +45,11 @@ muan::subsystems::drivetrain::DrivetrainConfig GetDrivetrainConfig() {
       .low_gear_sensitivity = 0.65,
       .beta = 2.0,
       .zeta = 0.7,
-      .dt = 0.01,
+      .dt = 0.02,
 
-      .max_velocity = 3.4,
-      .max_acceleration = 6.0,
-      .max_centripetal_acceleration = M_PI / 2.0,
+      .max_velocity = 3.5,
+      .max_acceleration = 4.0,
+      .max_centripetal_acceleration = 2.2,
 
       .high_gear_properties = high_gear,
       .low_gear_properties = low_gear,

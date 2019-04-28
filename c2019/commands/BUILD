@@ -15,7 +15,7 @@ cc_library(
         ":commands_proto",
         "//muan/proto:stack_proto",
         "//muan/queues:queue_manager",
-	"//c2019/subsystems/limelight:limelight_queues",
+	      "//c2019/subsystems/limelight:limelight_queues",
     ],
 )
 
@@ -25,6 +25,8 @@ cc_library(
         ":command_base",
         ":command_queues",
         ":rocket",
+        ":cargo_ship",
+        ":cargo_rocket",
     ],
     visibility = ["//visibility:public"],
 )
@@ -60,6 +62,24 @@ cc_library(
     name = "rocket",
     srcs = ["rocket.cpp"],
     hdrs = ["rocket.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":command_base",
+    ],
+)
+cc_library(
+    name = "cargo_rocket",
+    srcs = ["cargo_rocket.cpp"],
+    hdrs = ["cargo_rocket.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":command_base",
+    ],
+)
+cc_library(
+    name = "cargo_ship",
+    srcs = ["cargo_ship.cpp"],
+    hdrs = ["cargo_ship.h"],
     visibility = ["//visibility:public"],
     deps = [
         ":command_base",

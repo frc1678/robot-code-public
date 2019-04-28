@@ -20,6 +20,10 @@ message DrivetrainInput {
   required double right_current = 9;
 
   required double gyro = 10;
+
+  required double right_bus = 11;
+
+  required bool pigeon_ready = 12;
 }
 
 enum TalonOutput {
@@ -78,18 +82,23 @@ message DrivetrainStatus {
   optional double profiled_heading_goal = 15;
 
   optional double profiled_velocity_goal = 16;
-  optional double adjusted_velocity_goal = 17;
+  optional double profiled_acceleration_goal = 17;
+  optional double profiled_curvature_goal = 18;
+  optional double adjusted_velocity_goal = 19;
 
-  optional double pred_lin_accel = 18;
-  optional double pred_ang_accel = 19;
+  optional double pred_lin_accel = 20;
+  optional double pred_ang_accel = 21;
 
-  optional double estimated_lin_accel = 20;
-  optional double estimated_ang_accel = 21;
+  optional double estimated_lin_accel = 22;
+  optional double estimated_ang_accel = 23;
 
-  optional bool profile_complete = 22;
+  optional bool profile_complete = 24;
 
-  optional ControlMode closed_loop_control_mode = 23;
-  optional double encoder_heading = 24;
+  optional ControlMode closed_loop_control_mode = 25;
+  optional double encoder_heading = 26;
+
+  optional double dt = 27;
+  optional bool point_turn_complete = 28;
 }
 
 message DrivetrainGoal {

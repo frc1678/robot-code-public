@@ -71,11 +71,6 @@ void CommandBase::StartDrivePath(double x, double y, double heading,
                                  double extra_distance_initial,
                                  double extra_distance_final,
                                  double path_voltage) {
-  if (!IsAutonomous()) {
-    ExitAutonomous();
-    return;
-  }
-
   DrivetrainGoal goal;
 
   Eigen::Vector2d goal_field = (Eigen::Vector2d() << x, y).finished();
@@ -89,6 +84,8 @@ void CommandBase::StartDrivePath(double x, double y, double heading,
   goal->mutable_path_goal()->set_extra_distance_final(extra_distance_final);
   goal->mutable_path_goal()->set_full_send(full_send);
   goal->mutable_path_goal()->set_max_linear_velocity(max_lin_);
+
+  goal->mutable_path_goal()->set_final_velocity(final_vel_);
   goal->mutable_path_goal()->set_max_linear_accel(max_acc_);
 
   goal->set_high_gear(gear);
@@ -103,10 +100,6 @@ void CommandBase::StartDrivePath(double x, double y, double heading,
 }
 
 void CommandBase::StartPointTurn(double theta) {
-  if (!IsAutonomous()) {
-    ExitAutonomous();
-    return;
-  }
   DrivetrainGoal goal;
   goal->set_point_turn_goal(theta);
   goal->set_high_gear(false);
@@ -114,10 +107,6 @@ void CommandBase::StartPointTurn(double theta) {
 }
 
 bool CommandBase::StartDriveVision(double target_dist) {
-  if (!IsAutonomous()) {
-    ExitAutonomous();
-    return false;
-  }
   // run vision align stuff
   DrivetrainGoal drivetrain_goal;
   LimelightStatusProto lime_status;
@@ -125,7 +114,7 @@ bool CommandBase::StartDriveVision(double target_dist) {
 
   int no_target = 0;
   while (!lime_status->has_target() && IsAutonomous()) {
-    Wait(1);
+    loop_.SleepUntilNext();
     QueueManager<LimelightStatusProto>::Fetch()->ReadLastMessage(&lime_status);
     no_target++;
     if (no_target > 70) {
@@ -135,6 +124,7 @@ bool CommandBase::StartDriveVision(double target_dist) {
   }
 
   no_target = 0;
+  double offset = 0;
   while (lime_status->target_dist() > target_dist && IsAutonomous()) {
     if (!lime_status->has_target()) {
       no_target++;
@@ -145,13 +135,24 @@ bool CommandBase::StartDriveVision(double target_dist) {
       LOG(WARNING, "Didn't get target while tracking");
       return false;
     }
+  double skew = lime_status->skew();
+  if (lime_status->skew() > -45) {
+    skew = std::abs(lime_status->skew());
+  } else {
+    skew += 90;
+  }
+
+    if (skew > 5) {
+        offset =
+              0.05 * (lime_status->to_the_left() ? 1 : -1) * (skew / 13);
+    }
     drivetrain_goal->mutable_arc_goal()->set_angular(
-        lime_status->horiz_angle());
+        lime_status->horiz_angle() - offset);
     drivetrain_goal->mutable_arc_goal()->set_linear(
         (lime_status->target_dist() - 0.35) * 5.5);
 
     QueueManager<DrivetrainGoal>::Fetch()->WriteMessage(drivetrain_goal);
-    Wait(1);
+    loop_.SleepUntilNext();
     QueueManager<LimelightStatusProto>::Fetch()->ReadLastMessage(&lime_status);
   }
 
@@ -164,10 +165,6 @@ bool CommandBase::StartDriveVision(double target_dist) {
 }
 
 bool CommandBase::StartDriveVisionBottom() {
-  if (!IsAutonomous()) {
-    ExitAutonomous();
-    return false;
-  }
   // run vision align stuff
   DrivetrainGoal drivetrain_goal;
   LimelightStatusProto lime_status;
@@ -175,7 +172,7 @@ bool CommandBase::StartDriveVisionBottom() {
 
   int no_target = 0;
   while (!lime_status->pricey_has_target() && IsAutonomous()) {
-    Wait(1);
+    loop_.SleepUntilNext();
     QueueManager<LimelightStatusProto>::Fetch()->ReadLastMessage(&lime_status);
     no_target++;
     if (no_target > 70) {
@@ -185,7 +182,7 @@ bool CommandBase::StartDriveVisionBottom() {
   }
 
   no_target = 0;
-  while (lime_status->pricey_target_dist() > 0.52 && IsAutonomous()) {
+  while (lime_status->pricey_target_dist() > 0.36 && IsAutonomous()) {
     if (!lime_status->pricey_has_target()) {
       no_target++;
     } else {
@@ -198,15 +195,15 @@ bool CommandBase::StartDriveVisionBottom() {
     drivetrain_goal->mutable_arc_goal()->set_angular(
         lime_status->pricey_horiz_angle());
     drivetrain_goal->mutable_arc_goal()->set_linear(
-        (lime_status->pricey_target_dist() - 0.2) * 4.0);
+        (lime_status->pricey_target_dist() + 0.1) * 3.3);
 
     QueueManager<DrivetrainGoal>::Fetch()->WriteMessage(drivetrain_goal);
-    Wait(1);
+    loop_.SleepUntilNext();
     QueueManager<LimelightStatusProto>::Fetch()->ReadLastMessage(&lime_status);
   }
 
-  if (lime_status->pricey_target_dist() > 0.52 ||
-      !lime_status->pricey_has_target()) {
+  if (lime_status->pricey_target_dist() > 0.38 ||
+      !lime_status->pricey_has_target() || !lime_status->bottom_limelight_ok()) {
     LOG(WARNING, "Couldn't converge");
     return false;
   }
@@ -225,7 +222,7 @@ bool CommandBase::StartDriveVisionBackwards() {
 
   int no_target = 0;
   while (!lime_status->back_has_target() && IsAutonomous()) {
-    Wait(1);
+    loop_.SleepUntilNext();
     QueueManager<LimelightStatusProto>::Fetch()->ReadLastMessage(&lime_status);
     no_target++;
     if (no_target > 70) {
@@ -233,8 +230,18 @@ bool CommandBase::StartDriveVisionBackwards() {
     }
   }
 
-  while (lime_status->back_target_dist() > 0.28 &&
+  no_target = 0;
+  while (lime_status->back_target_dist() > 0.41 &&
          lime_status->back_has_target() && IsAutonomous()) {
+    if (!lime_status->back_has_target()) {
+      no_target++;
+    } else {
+      no_target = 0;
+    }
+    if (no_target > 5) {
+      return false;
+    }
+
     QueueManager<LimelightStatusProto>::Fetch()->ReadLastMessage(&lime_status);
     drivetrain_goal->mutable_arc_goal()->set_angular(
         lime_status->back_horiz_angle());
@@ -242,10 +249,10 @@ bool CommandBase::StartDriveVisionBackwards() {
         (lime_status->back_target_dist() + 0.25) * -4.0);
 
     QueueManager<DrivetrainGoal>::Fetch()->WriteMessage(drivetrain_goal);
-    Wait(1);
+    loop_.SleepUntilNext();
   }
 
-  if (lime_status->back_target_dist() > 0.28) {
+  if (lime_status->back_target_dist() > 0.41) {
     return false;
   }
   return true;
@@ -268,10 +275,6 @@ void CommandBase::HoldPosition() {
 
 void CommandBase::GoTo(superstructure::ScoreGoal score_goal,
                        superstructure::IntakeGoal intake_goal) {
-  if (!IsAutonomous()) {
-    ExitAutonomous();
-    return;
-  }
   SuperstructureGoalProto super_goal;
   super_goal->set_score_goal(score_goal);
   super_goal->set_intake_goal(intake_goal);
@@ -284,7 +287,7 @@ void CommandBase::WaitForElevatorAndLL() {
   LimelightStatusProto lime_status;
   while (!lime_status->pricey_has_target() &&
          super_status->elevator_height() < 0.6 && IsAutonomous()) {
-    Wait(1);
+    loop_.SleepUntilNext();
     QueueManager<SuperstructureStatusProto>::Fetch()->ReadLastMessage(
         &super_status);
     QueueManager<LimelightStatusProto>::Fetch()->ReadLastMessage(&lime_status);
@@ -296,7 +299,7 @@ void CommandBase::ScoreHatch(int num_ticks) {
     SuperstructureGoalProto super_goal;
     super_goal->set_score_goal(superstructure::NONE);
     super_goal->set_intake_goal(superstructure::OUTTAKE_HATCH);
-    Wait(1);
+    loop_.SleepUntilNext();
 
     QueueManager<SuperstructureGoalProto>::Fetch()->WriteMessage(super_goal);
   }
@@ -315,8 +318,7 @@ bool CommandBase::IsDriveComplete() {
         return true;
       }
     } else if (goal->has_point_turn_goal()) {
-      if (std::abs(goal->point_turn_goal() - status->estimated_heading()) <
-          1e-1) {
+      if (status->point_turn_complete()) {
         return true;
       }
     }
@@ -334,7 +336,17 @@ void CommandBase::WaitUntilDriveComplete() {
 void CommandBase::WaitForHatch() {
   SuperstructureStatusProto super_status;
   while (!super_status->has_hp_hatch() && IsAutonomous()) {
-    Wait(1);
+    loop_.SleepUntilNext();
+    QueueManager<SuperstructureStatusProto>::Fetch()->ReadLastMessage(
+        &super_status);
+  }
+}
+
+
+void CommandBase::WaitForCargo() {
+  SuperstructureStatusProto super_status;
+  while (!super_status->has_cargo() && IsAutonomous()) {
+    loop_.SleepUntilNext();
     QueueManager<SuperstructureStatusProto>::Fetch()->ReadLastMessage(
         &super_status);
   }
@@ -345,10 +357,9 @@ bool CommandBase::IsDrivetrainNear(double x, double y, double distance) {
 
   if (drivetrain_status_reader_.ReadLastMessage(&status)) {
     Eigen::Vector2d field_position =
-        transform_f0_ *
-        (Eigen::Vector2d() << status->profiled_x_goal(),
-         status->profiled_y_goal())
-            .finished();
+        transform_f0_ * (Eigen::Vector2d() << status->profiled_x_goal(),
+                         status->profiled_y_goal())
+                            .finished();
     if ((field_position(0) - x) * (field_position(0) - x) +
             (field_position(1) - y) * (field_position(1) - y) <
         distance * distance) {
@@ -360,7 +371,7 @@ bool CommandBase::IsDrivetrainNear(double x, double y, double distance) {
 
 void CommandBase::WaitUntilDrivetrainNear(double x, double y, double distance) {
   while (!IsDrivetrainNear(x, y, distance)) {
-    Wait(1);
+    loop_.SleepUntilNext();
   }
 }
 

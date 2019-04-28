@@ -14,6 +14,7 @@ class InterfaceRunner {
   InterfaceRunner();
   void ReadSensors();
   void WriteActuators();
+  void operator()();
 
  private:
   muan::wpilib::CanWrapper can_;

@@ -7,28 +7,22 @@ namespace control {
 
 DrivetrainModel GenerateModel() {
   DrivetrainModel::Properties properties;
-  properties.wheelbase_radius = 0.42;
-  properties.angular_drag = -35;
-  properties.mass = 50.0;
-  properties.moment_inertia = 0.5 * properties.mass *
-                              properties.wheelbase_radius *
-                              properties.wheelbase_radius;
-  properties.force_stiction = 20.0;
-  properties.force_friction = 5.0;
-  properties.wheel_radius = 3.25 / 2 * 0.0254;
+  {
+    properties.mass = 60.0;
+    properties.angular_drag = 12.0;
+    properties.wheel_radius = 0.0508;
+    properties.wheelbase_radius = 0.36;
+    properties.moment_inertia = properties.mass * properties.wheelbase_radius *
+                                properties.wheelbase_radius;
+  }
 
   DriveTransmission::Properties trans_properties;
-  const double i_stall = 131;
-  const double t_stall = 2.41;
-  const double i_free = 0;
-  const double w_free = 5330 * (2 * M_PI / 60.0);
   {
-    trans_properties.motor_kt = t_stall / i_stall;
-    trans_properties.motor_resistance = 12.0 / i_stall;
-    trans_properties.motor_kv =
-        (12.0 - i_free * trans_properties.motor_resistance) / w_free;
-    trans_properties.gear_ratio = 1 / 4.16;
-    trans_properties.num_motors = 2;
+    trans_properties.speed_per_volt = 1 / 0.14;
+    trans_properties.torque_per_volt =
+        (properties.wheel_radius * properties.wheel_radius * properties.mass) /
+        (2.0 * 0.012);
+    trans_properties.friction_voltage = 1.01;
   }
 
   return DrivetrainModel(properties, DriveTransmission(trans_properties),
@@ -49,15 +43,17 @@ class TestFixture : public ::testing::Test {
 
     Trajectory trajectory(spline, constraints_, high_gear, model_);
 
-    Trajectory::TimedPose sample = trajectory.Advance(0.01);
+    Trajectory::TimedPose sample = trajectory.Advance(0.04);
     Pose current_pose = sample.pose.pose();
     NonLinearFeedbackController::Output goal;
 
     Pose error;
 
+    double t = 0.0;
     while (!trajectory.done()) {
+      t += 0.04;
       Trajectory::TimedPose prev_sample = sample;
-      sample = trajectory.Advance(0.01);
+      sample = trajectory.Advance(0.04);
 
       error = sample.pose.pose() - current_pose;
 
@@ -72,15 +68,24 @@ class TestFixture : public ::testing::Test {
       Eigen::Vector2d velocity = model_.ForwardKinematics(goal.velocity) * 0.9;
 
       Eigen::Vector3d delta;
-      delta(0) = velocity(0) * 0.01 *
-                 std::cos(current_pose.heading() + velocity(1) * 0.01);
-      delta(1) = velocity(0) * 0.01 *
-                 std::sin(current_pose.heading() + velocity(1) * 0.01);
-      delta(2) = velocity(1) * 0.01;
+      delta(0) = velocity(0) * 0.04 *
+                 std::cos(current_pose.heading() + velocity(1) * 0.04);
+      delta(1) = velocity(0) * 0.04 *
+                 std::sin(current_pose.heading() + velocity(1) * 0.04);
+      delta(2) = velocity(1) * 0.04;
 
       current_pose = Pose(current_pose.Get() + delta);
 
       EXPECT_LT(std::abs(delta(0)), constraints_.max_velocity + 1e-9);
+      EXPECT_LT(std::abs(goal.feedforwards(0)), 12.1);
+      EXPECT_LT(std::abs(goal.feedforwards(1)), 12.1);
+
+      Eigen::Vector2d estimated_response = model_.ForwardDynamics(
+          (Eigen::Vector2d() << sample.v, omega).finished(), goal.feedforwards,
+          high_gear);
+      EXPECT_NEAR(sample.a, estimated_response(0), 1e-2);
+      EXPECT_NEAR(sample.a * sample.pose.curvature(), estimated_response(1),
+                  1e-2);
     }
 
     EXPECT_LT(error.translational().norm(), 3e-2);  // ~3cm within the goal
@@ -89,13 +94,12 @@ class TestFixture : public ::testing::Test {
 
  private:
   DrivetrainModel model_ = GenerateModel();
-  NonLinearFeedbackController controller_{GenerateModel(), 3.0,
-                                          1.5};
+  NonLinearFeedbackController controller_{GenerateModel(), 3.0, 1.5};
   Trajectory::Constraints constraints_{
-      .max_velocity = 3.,
+      .max_velocity = 4.,
       .max_voltage = 12.,
       .max_acceleration = 3.,
-      .max_centripetal_acceleration = M_PI / 2,
+      .max_centripetal_acceleration = 1.,
 
       .initial_velocity = 0.,
       .final_velocity = 0.,

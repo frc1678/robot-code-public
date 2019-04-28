@@ -6,28 +6,22 @@ namespace control {
 
 DrivetrainModel GenerateModel() {
   DrivetrainModel::Properties properties;
-  properties.wheelbase_radius = 0.42;
-  properties.angular_drag = -35;
-  properties.mass = 50.0;
-  properties.moment_inertia = 0.5 * properties.mass *
-                              properties.wheelbase_radius *
-                              properties.wheelbase_radius;
-  properties.force_stiction = 20.0;
-  properties.force_friction = 5.0;
-  properties.wheel_radius = 3.25 / 2 * 0.0254;
+  {
+    properties.mass = 60.0;
+    properties.angular_drag = 12.0;
+    properties.wheel_radius = 0.0508;
+    properties.wheelbase_radius = 0.36;
+    properties.moment_inertia = properties.mass * properties.wheelbase_radius *
+                                properties.wheelbase_radius;
+  }
 
   DriveTransmission::Properties trans_properties;
-  const double i_stall = 131;
-  const double t_stall = 2.41;
-  const double i_free = 0;
-  const double w_free = 5330 * (2 * M_PI / 60.0);
   {
-    trans_properties.motor_kt = t_stall / i_stall;
-    trans_properties.motor_resistance = 12.0 / i_stall;
-    trans_properties.motor_kv =
-        (12.0 - i_free * trans_properties.motor_resistance) / w_free;
-    trans_properties.gear_ratio = 1 / 4.16;
-    trans_properties.num_motors = 2;
+    trans_properties.speed_per_volt = 1 / 0.135;
+    trans_properties.torque_per_volt =
+        (properties.wheel_radius * properties.wheel_radius * properties.mass) /
+        (2.0 * 0.012);
+    trans_properties.friction_voltage = 1.0;
   }
 
   return DrivetrainModel(properties, DriveTransmission(trans_properties),
@@ -58,7 +52,7 @@ class TrajectoryTest : public ::testing::Test {
 
     while (!trajectory.done()) {
       auto prev_sample = sample;
-      sample = trajectory.Advance(0.01);
+      sample = trajectory.Advance(0.02);
 
       EXPECT_LT(std::abs(sample.v), constraints_.max_velocity + 1e-9);
       EXPECT_LT(std::abs(sample.a), constraints_.max_acceleration + 1e-9);
@@ -72,6 +66,23 @@ class TrajectoryTest : public ::testing::Test {
                       prev_sample.pose.translational()(1),
                   sample.pose.translational()(1), 1e-2);
 
+      Eigen::Vector2d velocity =
+          Eigen::Vector2d(sample.v, sample.v * sample.pose.curvature());
+
+      Eigen::Vector2d acceleration =
+          Eigen::Vector2d(sample.a, sample.a * sample.pose.curvature());
+
+      Eigen::Vector2d left_right = model_.InverseKinematics(velocity);
+
+      EXPECT_LT(left_right(0) * 2.0 * 0.0254, 4.34);
+      EXPECT_LT(left_right(1) * 2.0 * 0.0254, 4.34);
+
+      Eigen::Vector2d voltage =
+          model_.InverseDynamics(velocity, acceleration, high_gear);
+
+      EXPECT_LT(voltage(0), 12.0);
+      EXPECT_LT(voltage(1), 12.0);
+
       if (backwards) {
         EXPECT_LT(sample.v, 1e-9);
       } else {
@@ -79,17 +90,17 @@ class TrajectoryTest : public ::testing::Test {
       }
     }
 
-    EXPECT_NEAR(sample.pose.pose().Get()(0), final.Get()(0), 1e-9);
-    EXPECT_NEAR(sample.pose.pose().Get()(1), final.Get()(1), 1e-9);
-    EXPECT_NEAR(sample.pose.pose().Get()(2), final.Get()(2), 1e-9);
+    EXPECT_NEAR(sample.pose.pose().Get()(0), final.Get()(0), 1e-3);
+    EXPECT_NEAR(sample.pose.pose().Get()(1), final.Get()(1), 1e-3);
+    EXPECT_NEAR(sample.pose.pose().Get()(2), final.Get()(2), 1e-3);
   }
 
  private:
   Trajectory::Constraints constraints_{
-      .max_velocity = 1.,
+      .max_velocity = 4.0,
       .max_voltage = 12.,
-      .max_acceleration = 1.,
-      .max_centripetal_acceleration = M_PI / 2,
+      .max_acceleration = 3.0,
+      .max_centripetal_acceleration = 1.,
 
       .initial_velocity = 0.,
       .final_velocity = 0.,
@@ -135,17 +146,17 @@ TEST_F(TrajectoryTest, DrivesBackwards) {
   Run(a, b, 0, 0, true);
 }
 
-TEST_F(TrajectoryTest, ExtraDistance) {
-  Pose a((Eigen::Vector3d() << 0.0, 0.0, 0.0).finished());
-  Pose b((Eigen::Vector3d() << 2.0, 2.0, 0.0).finished());
-  Run(a, b, 0, 0, false, 1.0, 0);
-}
+/* TEST_F(TrajectoryTest, ExtraDistance) { */
+/*   Pose a((Eigen::Vector3d() << 0.0, 0.0, 0.0).finished()); */
+/*   Pose b((Eigen::Vector3d() << 2.0, 2.0, 0.0).finished()); */
+/*   Run(a, b, 0, 0, false, 1.0, 0); */
+/* } */
 
-TEST_F(TrajectoryTest, InitialVelocity) {
-  Pose a((Eigen::Vector3d() << 0.0, 0.0, 0.0).finished());
-  Pose b((Eigen::Vector3d() << -6.65, -1.0, M_PI * -0.3).finished());
-  Run(a, b, 0.3991, 0, true);
-}
+/* TEST_F(TrajectoryTest, InitialVelocity) { */
+/*   Pose a((Eigen::Vector3d() << 0.0, 0.0, 0.0).finished()); */
+/*   Pose b((Eigen::Vector3d() << -6.65, -1.0, M_PI * -0.3).finished()); */
+/*   Run(a, b, 0.3991, 0, true); */
+/* } */
 
 TEST_F(TrajectoryTest, AngularVelocity) {
   Pose a((Eigen::Vector3d() << 0.0, 0.0, 0.0).finished());

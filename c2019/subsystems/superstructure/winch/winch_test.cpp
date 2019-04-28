@@ -25,32 +25,38 @@ class WinchTest : public ::testing::Test {
 
 TEST_F(WinchTest, Disabled) {
   winch_goal_proto_->set_climb_goal(BUDDY);
-  winch_goal_proto_->set_winch(true);
+  winch_goal_proto_->set_winch_right(true);
+  winch_goal_proto_->set_winch_left(true);
 
   Update(false);
 
   EXPECT_FALSE(winch_output_proto_->drop_forks());
-  EXPECT_EQ(winch_output_proto_->winch_voltage(), 0);
+  EXPECT_EQ(winch_output_proto_->right_winch_voltage(), 0);
+  EXPECT_EQ(winch_output_proto_->left_winch_voltage(), 0);
 }
 
 TEST_F(WinchTest, SoloClimb) {
   winch_goal_proto_->set_climb_goal(SOLO);
-  winch_goal_proto_->set_winch(true);
+  winch_goal_proto_->set_winch_right(true);
+  winch_goal_proto_->set_winch_left(true);
 
   Update(true);
 
   EXPECT_FALSE(winch_output_proto_->drop_forks());
-  EXPECT_EQ(winch_output_proto_->winch_voltage(), 0);
+  EXPECT_EQ(winch_output_proto_->right_winch_voltage(), 0);
+  EXPECT_EQ(winch_output_proto_->left_winch_voltage(), 0);
 }
 
 TEST_F(WinchTest, BuddyClimb) {
   winch_goal_proto_->set_climb_goal(BUDDY);
-  winch_goal_proto_->set_winch(true);
+  winch_goal_proto_->set_winch_right(true);
+  winch_goal_proto_->set_winch_left(true);
 
   Update(true);
 
   EXPECT_TRUE(winch_output_proto_->drop_forks());
-  EXPECT_EQ(winch_output_proto_->winch_voltage(), 12);
+  EXPECT_EQ(winch_output_proto_->right_winch_voltage(), 12);
+  EXPECT_EQ(winch_output_proto_->left_winch_voltage(), 12);
 }
 
 }  // namespace winch

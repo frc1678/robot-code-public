@@ -22,27 +22,26 @@ namespace superstructure {
 
 // elevator constants
 constexpr double kHatchShipForwardsHeight = 0.1;
-constexpr double kHatchShipBackwardsHeight = 0.2;
+constexpr double kHatchShipBackwardsHeight = 0.13;
 constexpr double kHatchRocketFirstHeight = 0.1;
-constexpr double kHatchRocketBackwardsHeight = 0.2;
+constexpr double kHatchRocketBackwardsHeight = 0.13;
 constexpr double kHatchRocketSecondHeight = 0.987;
 constexpr double kHatchRocketThirdHeight = 1.74;
 constexpr double kHatchLoadingStationHeight = 0.089;
-constexpr double kHatchGroundHeight = 0.;
 constexpr double kCargoShipForwardsHeight = 1.103;
-constexpr double kCargoShipBackwardsHeight = 0.643;
+constexpr double kCargoShipBackwardsHeight = 0.13;
 constexpr double kCargoRocketFirstHeight = 0.093;
-constexpr double kCargoRocketBackwardsHeight = 0.116;
+constexpr double kCargoRocketBackwardsHeight = 0.13;
 constexpr double kCargoRocketSecondHeight = 0.928;
 constexpr double kCargoRocketThirdHeight = 1.74;
-constexpr double kCargoGroundHeight = 0.;
+constexpr double kGroundHeight = 0.;
 constexpr double kHandoffHeight = 0.257;
 constexpr double kSpitHeight = 0.;
 constexpr double kStowHeight = 0.;
 constexpr double kKissHeight = 1.39;
 constexpr double kClimbHeight = 0.05;
-constexpr double kCrawlerHeight = 1.66;
-constexpr double kLandHeight = 0.312;
+constexpr double kCrawlerHeight = 1.6;
+constexpr double kBustDown = 0.312;
 constexpr double kElevatorSafeHeight = 0.71;
 constexpr double kElevatorPassThroughHeight = 0.05;
 constexpr double kElevatorHandoffTolerance = 2e-3;
@@ -52,17 +51,17 @@ constexpr double kElevatorRezeroCurrentThreshold = 3;  // tune
 
 // wrist constants
 constexpr double kHatchForwardsAngle = 0.0;
-constexpr double kHatchBackwardsAngle = 3.05;
+constexpr double kHatchBackwardsAngle = 2.98;
 constexpr double kCargoRocketFirstAngle = .87;
 constexpr double kCargoRocketSecondAngle = .87;
 constexpr double kCargoRocketThirdAngle = .87;
 constexpr double kCargoRocketBackwardsAngle = M_PI;
 constexpr double kCargoShipForwardsAngle = 0.0;
-constexpr double kCargoShipBackwardsAngle = 3.23;
-constexpr double kCargoGroundAngle = 0.0;
-constexpr double kHandoffAngle = 3.414;
+constexpr double kCargoShipBackwardsAngle = 2.98;
+constexpr double kGroundAngle = 0.0;
+constexpr double kHandoffAngle = 2.98;
 constexpr double kStowAngle = 1.2;
-constexpr double kClimbAngle = 0.3;
+constexpr double kBustDownAngle = 0.3;
 constexpr double kWristSafeForwardsAngle = 1.3;
 constexpr double kWristSafeBackwardsAngle = 2.65;
 constexpr double kWristHandoffTolerance = 3. * (M_PI / 180.);
@@ -80,6 +79,9 @@ class Superstructure {
                  IntakeGoal intake = IntakeGoal::INTAKE_NONE);
   void RunStateMachine();
   void BoundGoal(double* elevator_goal, double* wrist_goal);
+
+  void Rezero();
+  void Autocrawl();
 
   elevator::ElevatorGoalProto PopulateElevatorGoal();
   wrist::WristGoalProto PopulateWristGoal();
@@ -104,6 +106,7 @@ class Superstructure {
   winch::WinchStatusProto winch_status_;
 
   SuperstructureStatusProto status_;
+  SuperstructureOutputProto output_;
 
   SuperstructureGoalQueue::QueueReader goal_reader_;
   SuperstructureInputQueue::QueueReader input_reader_;
@@ -121,6 +124,8 @@ class Superstructure {
   bool brake_ = false;
   bool request_climb_ = false;
   bool request_crawlers_ = false;
+  bool winch_right_ = false;
+  bool winch_left_ = false;
 
   bool should_climb_ = false;
   bool buddy_ = false;

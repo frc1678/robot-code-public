@@ -28,6 +28,7 @@ enum ErrorCode
 	FirmwareTooOld = -8,
 	CouldNotChangePeriod = -9,
 	BufferFailure = -10,
+	FirwmwareNonFRC = -11,
 
 
 	//General
@@ -66,6 +67,7 @@ enum ErrorCode
     MotorControllerFeatureRequiresHigherFirm = -701,
     TalonFeatureRequiresHigherFirm = MotorControllerFeatureRequiresHigherFirm,
     ConfigFactoryDefaultRequiresHigherFirm = -702,
+	ConfigMotionSCurveRequiresHigherFirm = -703,
 
 	//Operating system centric
 	LibraryCouldNotBeLoaded = -800,

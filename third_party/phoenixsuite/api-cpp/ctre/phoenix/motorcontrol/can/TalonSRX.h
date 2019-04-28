@@ -23,10 +23,12 @@ namespace motorcontrol {
 namespace can {
 
 /**
- * CTRE Talon SRX Motor Configuration settings.
+ * Configurables available to TalonSRX's PID
  */
-
 struct TalonSRXPIDSetConfiguration : BasePIDSetConfiguration {
+    /**
+     * Feedback device for a particular PID loop.
+     */
     FeedbackDevice selectedFeedbackSensor;
 
     TalonSRXPIDSetConfiguration() :
@@ -34,10 +36,18 @@ struct TalonSRXPIDSetConfiguration : BasePIDSetConfiguration {
     {
     }
 
+    /**
+     * @return string representation of configs
+     */
 	std::string toString() {
 		return toString("");
 	}
 
+    /**
+     * @param prependString
+     *              String to prepend to configs
+     * @return String representation of configs
+     */
     std::string toString(std::string prependString) {
 
         std::string retstr = prependString + ".selectedFeedbackSensor = " + FeedbackDeviceRoutines::toString(selectedFeedbackSensor) + ";\n";
@@ -46,30 +56,111 @@ struct TalonSRXPIDSetConfiguration : BasePIDSetConfiguration {
     }
 };
 
+/**
+ * Util class to help with TalonSRX's PID configs
+ */
 struct TalonSRXPIDSetConfigUtil {
 	private:
 		static TalonSRXPIDSetConfiguration _default;
 	public:
+		/**
+		 * Determine if specified value is different from default
+		 * @param settings settings to compare against
+		 * @return if specified value is different from default
+		 * @{
+		 */
 		static bool SelectedFeedbackSensorDifferent (const TalonSRXPIDSetConfiguration & settings) { return (!(settings.selectedFeedbackSensor == _default.selectedFeedbackSensor)); }
 		static bool SelectedFeedbackCoefficientDifferent (const TalonSRXPIDSetConfiguration & settings) { return (!(settings.selectedFeedbackCoefficient == _default.selectedFeedbackCoefficient)); }
+		/** @} */
 };
 
 
+/**
+ * Configurables available to TalonSRX
+ */
 struct TalonSRXConfiguration : BaseMotorControllerConfiguration{
+    /**
+     * Primary PID configuration
+     */
 	TalonSRXPIDSetConfiguration primaryPID;
+    /**
+     * Auxiliary PID configuration
+     */
 	TalonSRXPIDSetConfiguration auxiliaryPID;
+    /**
+     * Forward Limit Switch Source
+     * 
+     * User can choose between the feedback connector, remote Talon SRX, CANifier, or deactivate the feature
+     */
 	LimitSwitchSource forwardLimitSwitchSource;
+    /**
+     * Reverse Limit Switch Source
+     * 
+     * User can choose between the feedback connector, remote Talon SRX, CANifier, or deactivate the feature
+     */
 	LimitSwitchSource reverseLimitSwitchSource;
-	int forwardLimitSwitchDeviceID; //Limit Switch device id isn't used unless device is a remote
+    /**
+     * Forward limit switch device ID
+     * 
+     * Limit Switch device id isn't used unless device is a remote
+     */
+	int forwardLimitSwitchDeviceID;
+    /**
+     * Reverse limit switch device ID
+     * 
+     * Limit Switch device id isn't used unless device is a remote
+     */
 	int reverseLimitSwitchDeviceID;
+    /**
+     * Forward limit switch normally open/closed
+     */
 	LimitSwitchNormal forwardLimitSwitchNormal;
+    /**
+     * Reverse limit switch normally open/closed
+     */
 	LimitSwitchNormal reverseLimitSwitchNormal;
+    /**
+     * Feedback Device for Sum 0 Term
+     */
     FeedbackDevice sum0Term;
+    /**
+     * Feedback Device for Sum 1 Term
+     */
 	FeedbackDevice sum1Term;
+    /**
+     * Feedback Device for Diff 0 Term
+     */
 	FeedbackDevice diff0Term;
+    /**
+     * Feedback Device for Diff 1 Term
+     */
 	FeedbackDevice diff1Term;
+    /**
+     * Peak current in amps
+     * 
+	 * Current limit is activated when current exceeds the peak limit for longer
+	 * than the peak duration. Then software will limit to the continuous limit.
+	 * This ensures current limiting while allowing for momentary excess current
+	 * events.
+     */
 	int peakCurrentLimit; 
+    /**
+     * Peak Current duration in milliseconds
+     * 
+	 * Current limit is activated when current exceeds the peak limit for longer
+	 * than the peak duration. Then software will limit to the continuous limit.
+	 * This ensures current limiting while allowing for momentary excess current
+	 * events.
+     */
     int peakCurrentDuration;
+    /**
+     * Continuous current in amps
+     * 
+	 * Current limit is activated when current exceeds the peak limit for longer
+	 * than the peak duration. Then software will limit to the continuous limit.
+	 * This ensures current limiting while allowing for momentary excess current
+	 * events.
+     */
     int continuousCurrentLimit; 
     TalonSRXConfiguration() :
 		forwardLimitSwitchSource(LimitSwitchSource_FeedbackConnector),
@@ -88,10 +179,18 @@ struct TalonSRXConfiguration : BaseMotorControllerConfiguration{
 	{
 	}
 
+    /**
+     * @return String representation of all the configs
+     */
 	std::string toString() {
 		return toString("");
 	}
 
+    /**
+     * @param prependString
+     *              String to prepend to all the configs
+     * @return String representation of all the configs
+     */
     std::string toString(std::string prependString) {
 
 
@@ -116,10 +215,19 @@ struct TalonSRXConfiguration : BaseMotorControllerConfiguration{
     }
 };// struct TalonSRXConfiguration
 
+/**
+ * Util class to help with talon configs
+ */
 class TalonConfigUtil {
 	private:
 		static struct TalonSRXConfiguration _default;
 	public:
+		/**
+		 * Determine if specified value is different from default
+		 * @param settings settings to compare against
+		 * @return if specified value is different from default
+		 * @{
+		 */
 		static bool ForwardLimitSwitchSourceDifferent (const TalonSRXConfiguration & settings) { return (!(settings.forwardLimitSwitchSource == _default.forwardLimitSwitchSource)) || !settings.enableOptimizations; }
 		static bool ReverseLimitSwitchSourceDifferent (const TalonSRXConfiguration & settings) { return (!(settings.reverseLimitSwitchSource == _default.reverseLimitSwitchSource)) || !settings.enableOptimizations; }
 		static bool ForwardLimitSwitchDeviceIDDifferent (const TalonSRXConfiguration & settings) { return (!(settings.forwardLimitSwitchDeviceID == _default.forwardLimitSwitchDeviceID)) || !settings.enableOptimizations; }
@@ -140,6 +248,7 @@ class TalonConfigUtil {
 		static bool ReverseLimitSwitchDifferent (const TalonSRXConfiguration & settings) {
 			return ReverseLimitSwitchDeviceIDDifferent(settings) || ReverseLimitSwitchNormalDifferent(settings) || ReverseLimitSwitchSourceDifferent(settings);
 		}
+		/** @} */
 };
 
 /**
@@ -153,13 +262,45 @@ private:
 
 	ctre::phoenix::ErrorCode ConfigurePID(const TalonSRXPIDSetConfiguration &pid, int pidIdx, int timeoutMs, bool enableOptimizations);
 public:
+	/**
+	 * Constructor for a Talon
+	 * @param deviceNumber CAN Device ID of TalonSRX
+	 */
 	TalonSRX(int deviceNumber);
 	~TalonSRX();
 	TalonSRX() = delete;
 	TalonSRX(TalonSRX const&) = delete;
 	TalonSRX& operator=(TalonSRX const&) = delete;
 
+	/**
+	 * Select the remote feedback device for the motor controller.
+	 * Most CTRE CAN motor controllers will support remote sensors over CAN.
+	 *
+	 * @param feedbackDevice
+	 *            Remote Feedback Device to select.
+	 * @param pidIdx
+	 *            0 for Primary closed-loop. 1 for auxiliary closed-loop.
+	 * @param timeoutMs
+	 *            Timeout value in ms. If nonzero, function will wait for
+	 *            config success and report an error if it times out.
+	 *            If zero, no blocking or checking is performed.
+	 * @return Error Code generated by function. 0 indicates no error.
+	 */
 	virtual ctre::phoenix::ErrorCode ConfigSelectedFeedbackSensor(FeedbackDevice feedbackDevice, int pidIdx = 0, int timeoutMs = 0);
+	/**
+	 * Select the remote feedback device for the motor controller.
+	 * Most CTRE CAN motor controllers will support remote sensors over CAN.
+	 *
+	 * @param feedbackDevice
+	 *            Remote Feedback Device to select.
+	 * @param pidIdx
+	 *            0 for Primary closed-loop. 1 for auxiliary closed-loop.
+	 * @param timeoutMs
+	 *            Timeout value in ms. If nonzero, function will wait for
+	 *            config success and report an error if it times out.
+	 *            If zero, no blocking or checking is performed.
+	 * @return Error Code generated by function. 0 indicates no error.
+	 */
 	virtual ctre::phoenix::ErrorCode ConfigSelectedFeedbackSensor(RemoteFeedbackDevice feedbackDevice, int pidIdx = 0, int timeoutMs = 0);
 
 	/**
@@ -168,7 +309,7 @@ public:
 	 * User ensure CAN Bus utilization is not high.
 	 *
 	 * This setting is not persistent and is lost when device is reset.
-	 * If this is a concern, calling application can use HasReset()
+	 * If this is a concern, calling application can use HasResetOccurred()
 	 * to determine if the status frame needs to be reconfigured.
 	 *
 	 * @param frame
@@ -182,6 +323,25 @@ public:
 	 * @return Error Code generated by function. 0 indicates no error.
 	 */
 	virtual ctre::phoenix::ErrorCode SetStatusFramePeriod(StatusFrameEnhanced frame,uint8_t periodMs, int timeoutMs = 0);
+	/**
+	 * Sets the period of the given status frame.
+	 *
+	 * User ensure CAN Bus utilization is not high.
+	 *
+	 * This setting is not persistent and is lost when device is reset.
+	 * If this is a concern, calling application can use HasResetOccurred()
+	 * to determine if the status frame needs to be reconfigured.
+	 *
+	 * @param frame
+	 *            Frame whose period is to be changed.
+	 * @param periodMs
+	 *            Period in ms for the given frame.
+	 * @param timeoutMs
+	 *            Timeout value in ms. If nonzero, function will wait for
+	 *            config success and report an error if it times out.
+	 *            If zero, no blocking or checking is performed.
+	 * @return Error Code generated by function. 0 indicates no error.
+	 */
 	virtual ctre::phoenix::ErrorCode SetStatusFramePeriod(StatusFrame frame,uint8_t periodMs, int timeoutMs = 0);
 
 	/**
@@ -196,6 +356,17 @@ public:
 	 * @return Period of the given status frame.
 	 */
 	virtual int GetStatusFramePeriod(StatusFrameEnhanced frame, int timeoutMs = 0);
+	/**
+	 * Gets the period of the given status frame.
+	 *
+	 * @param frame
+	 *            Frame to get the period of.
+	 * @param timeoutMs
+	 *            Timeout value in ms. If nonzero, function will wait for
+	 *            config success and report an error if it times out.
+	 *            If zero, no blocking or checking is performed.
+	 * @return Period of the given status frame.
+	 */
 	virtual int GetStatusFramePeriod(StatusFrame frame, int timeoutMs = 0);
 	
 	//------ General Status ----------//

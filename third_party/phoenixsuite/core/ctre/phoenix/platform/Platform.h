@@ -30,6 +30,11 @@ namespace can {
 	/* assumed blocking */
 	int32_t CANbus_ReceiveFrame(canframe_t * toFill, uint32_t frameCap, uint32_t *numFilled);
     
+	/**
+	 * Set the CAN interface to use, for example on Linux you may select "can0".
+	 * @param CANInterface CAN interface string.
+	 * @return errorcode, zero if successful.
+	 */
     int32_t SetCANInterface(const char * CANInterface);
 
 	//-------------- Mid Level CANBus interface, this is required if NOT using phoenix-canutil, --------------------------//

@@ -69,6 +69,14 @@ void Drivetrain::Update() {
   cartesian_position_(0) += std::cos(integrated_heading_) * delta_linear;
   cartesian_position_(1) += std::sin(integrated_heading_) * delta_linear;
 
+  uint32_t prev_timestamp = timestamp_;
+  timestamp_ = std::chrono::duration_cast<std::chrono::milliseconds>(
+                   aos::monotonic_clock::now() - aos::monotonic_clock::epoch())
+                   .count();
+  double dt = (timestamp_ - prev_timestamp) / 1000.;
+
+  status->set_dt(dt);
+
   if (goal_reader_.ReadLastMessage(&goal)) {
     bool in_closed_loop =
         (goal->has_path_goal() || goal->has_point_turn_goal() ||

@@ -136,7 +136,7 @@ void ClosedLoopDrive::Update(OutputProto* output, StatusProto* status) {
   } else if (control_mode_ == ControlMode::LEFT_RIGHT) {
     UpdateLeftRightManual(output, status);
   } else if (control_mode_ == ControlMode::PATH_FOLLOWING) {
-    UpdatePathFollower(output, status);
+    UpdatePathFollower(output, status, (*status)->dt());
   } else if (control_mode_ == ControlMode::LINEAR_ANGULAR_VEL) {
     UpdateLinearAngularVelocity(output);
   } else if (control_mode_ == ControlMode::VISION_ARC) {
@@ -146,12 +146,17 @@ void ClosedLoopDrive::Update(OutputProto* output, StatusProto* status) {
 
 void ClosedLoopDrive::UpdatePointTurn(OutputProto* output,
                                       StatusProto* status) {
-  Eigen::Vector2d delta = model_.InverseKinematics(
-      Eigen::Vector2d(0., point_turn_goal_));
+  Eigen::Vector2d delta =
+      model_.InverseKinematics(Eigen::Vector2d(0., point_turn_goal_));
   (*output)->set_output_type(POSITION);
   (*output)->set_left_setpoint(delta(0) + prev_left_right_(0));
   (*output)->set_right_setpoint(delta(1) + prev_left_right_(1));
-  (*status)->set_heading_error((prev_heading_ + point_turn_goal_) - *integrated_heading_);
+
+  bool left_complete = std::abs((*left_right_position_)(0) - (*output)->left_setpoint()) < .3;
+  bool right_complete = std::abs((*left_right_position_)(1) - (*output)->right_setpoint()) < .3;
+  (*status)->set_point_turn_complete(left_complete && right_complete && (*linear_angular_velocity_)(1) < 0.1);
+  (*status)->set_heading_error((prev_heading_ + point_turn_goal_) -
+                               *integrated_heading_);
 }
 
 void ClosedLoopDrive::UpdateVisionArc(OutputProto* output,
@@ -165,7 +170,8 @@ void ClosedLoopDrive::UpdateVisionArc(OutputProto* output,
   (*output)->set_output_type(ARC);
   (*output)->set_left_setpoint(delta(0) + prev_left_right_(0));
   (*output)->set_right_setpoint(delta(1) + prev_left_right_(1));
-  (*output)->set_yaw(point_turn_goal_ - ((*linear_angular_velocity_)(1) * 0.01));
+  (*output)->set_yaw(point_turn_goal_ -
+                     ((*linear_angular_velocity_)(1) * 0.01));
   (*output)->set_arc_vel(distance_goal_);
 }
 
@@ -198,9 +204,9 @@ void ClosedLoopDrive::UpdateLinearAngularVelocity(OutputProto* output) {
 }
 
 void ClosedLoopDrive::UpdatePathFollower(OutputProto* output,
-                                         StatusProto* status) {
+                                         StatusProto* status, double dt) {
   const Pose current{*cartesian_position_, *integrated_heading_};
-  const Trajectory::TimedPose goal = trajectory_.Advance(dt_config_.dt);
+  const Trajectory::TimedPose goal = trajectory_.Advance(dt);
   const Pose error = goal.pose.pose() - current;
 
   Eigen::Vector2d goal_velocity;
@@ -226,6 +232,8 @@ void ClosedLoopDrive::UpdatePathFollower(OutputProto* output,
   (*status)->set_profiled_y_goal(goal.pose.Get()(1));
   (*status)->set_profiled_heading_goal(goal.pose.Get()(2));
   (*status)->set_profiled_velocity_goal(goal.v);
+  (*status)->set_profiled_acceleration_goal(goal.a);
+  (*status)->set_profiled_curvature_goal(goal.pose.curvature());
   (*status)->set_adjusted_velocity_goal(
       model_.ForwardKinematics(setpoint.velocity)(0));
   (*status)->set_profile_complete(trajectory_.done());

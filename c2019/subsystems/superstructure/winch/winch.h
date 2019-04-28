@@ -17,9 +17,11 @@ class Winch {
 
  private:
   ClimbType climb_type_;
-  double winch_voltage_;
+  double right_winch_voltage_;
+  double left_winch_voltage_;
   bool drop_forks_;
-  bool winch_;
+  bool winch_right_;
+  bool winch_left_;
 };
 
 }  // namespace winch

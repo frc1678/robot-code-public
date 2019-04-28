@@ -75,6 +75,7 @@ extern "C"{
 	CCIEXPORT ctre::phoenix::ErrorCode c_MotController_GetActiveTrajectoryAll_5(void *handle, int * vel, int * pos, double *arbFeedFwd, int pidIdx);
 	CCIEXPORT ctre::phoenix::ErrorCode c_MotController_ConfigMotionCruiseVelocity(void *handle, int sensorUnitsPer100ms, int timeoutMs);
 	CCIEXPORT ctre::phoenix::ErrorCode c_MotController_ConfigMotionAcceleration(void *handle, int sensorUnitsPer100msPerSec, int timeoutMs);
+	CCIEXPORT ctre::phoenix::ErrorCode c_MotController_ConfigMotionSCurveStrength(void *handle, int curveStrength, int timeoutMs);
 	CCIEXPORT ctre::phoenix::ErrorCode c_MotController_ClearMotionProfileTrajectories(void *handle);
 	CCIEXPORT ctre::phoenix::ErrorCode c_MotController_GetMotionProfileTopLevelBufferCount(void *handle, int * value);
 	CCIEXPORT ctre::phoenix::ErrorCode c_MotController_PushMotionProfileTrajectory(void *handle, double position,

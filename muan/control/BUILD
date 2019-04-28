@@ -148,15 +148,6 @@ cc_test(
 )
 
 cc_test(
-    name = "drivetrain_model_test",
-    srcs = ["drivetrain_model_test.cpp"],
-    deps = [
-        ":drivetrain_model",
-        "//third_party/google/googletest",
-    ],
-)
-
-cc_test(
     name = "motion_profile_test",
     srcs = ["motion_profile_test.cpp"],
     deps = [

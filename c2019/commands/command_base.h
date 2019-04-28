@@ -59,6 +59,8 @@ class CommandBase {
 
   void WaitForElevatorAndLL();
   void WaitForHatch();
+  void WaitForCargo();
+
 
   // Set the robot-space (robot poweron position) transformation. The parameters
   // are the position of the robot (right now) in field coordinates (F).
@@ -74,8 +76,9 @@ class CommandBase {
   Eigen::Transform<double, 2, Eigen::AffineCompact> transform_f0_;
   double theta_offset_ = 0.0;
 
-  double max_lin_ = 7.0;
-  double max_acc_ = 9.5;
+  double max_lin_ = 2.0;
+  double max_acc_ = 2.0;
+  double final_vel_ = 0.0;
 
   aos::time::PhasedLoop loop_{std::chrono::milliseconds(10)};
 };

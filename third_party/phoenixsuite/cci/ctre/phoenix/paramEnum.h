@@ -91,6 +91,7 @@ enum ParamEnum
 
 	eMotMag_Accel = 410,
 	eMotMag_VelCruise = 411,
+	eMotMag_SCurveLevel = 412,
 
 	eLimitSwitchSource = 421, // ordinal (fwd=0,reverse=1), @see LimitSwitchSource_t
 	eLimitSwitchNormClosedAndDis = 422, // ordinal (fwd=0,reverse=1). @see LimitSwitchNormClosedAndDis_t

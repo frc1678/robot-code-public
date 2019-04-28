@@ -12,19 +12,32 @@
 #include "ctre/phoenix/CANifierVelocityMeasPeriod.h"
 
 namespace ctre {namespace phoenix {
-	
-	/**
-	 * CTRE CANifier
-	 *
-	 * Device for interfacing common devices to the CAN bus.
-	 */
 
+/**
+ * Configurables available to CANifier
+ */
 struct CANifierConfiguration : CustomParamConfiguration{
+    /** 
+     * Velocity measurement period to use
+     */
     CANifierVelocityMeasPeriod velocityMeasurementPeriod;
+    /**
+     * Velocity measurement window to use
+     */
 	int velocityMeasurementWindow;
+    /**
+     * Whether to clear sensor position on forward limit
+     */
     bool clearPositionOnLimitF;
+    /**
+     * Whether to clear sensor position on reverse limit
+     */
     bool clearPositionOnLimitR;
+    /**
+     * Whether to clear sensor position on index
+     */
     bool clearPositionOnQuadIdx;
+
 	CANifierConfiguration() : 
 		velocityMeasurementPeriod(Period_100Ms), 
 		velocityMeasurementWindow(64), 	
@@ -34,10 +47,18 @@ struct CANifierConfiguration : CustomParamConfiguration{
     {
 	}
 
+    /**
+     * @return String representation of configs
+     */
 	std::string toString() {
 		return toString("");
 	}
 
+    /**
+     * @param prependString
+     *              String to prepend to configs
+     * @return String representation of configs
+     */
     std::string toString(std::string prependString) {
 
         std::string retstr = prependString + ".velocityMeasurementPeriod = " + CANifierVelocityMeasPeriodRoutines::toString(velocityMeasurementPeriod) + ";\n";
@@ -53,10 +74,19 @@ struct CANifierConfiguration : CustomParamConfiguration{
 
 };// struct CANifierConfiguration
 
+/**
+ * Util class to help with configuring CANifier
+ */
 struct CANifierConfigUtils {
 private:
 	static CANifierConfiguration _default;
 public:
+	/**
+	 * Determine if specified value is different from default
+	 * @param settings settings to compare against
+	 * @return if specified value is different from default
+	 * @{
+	 */
 	static bool VelocityMeasurementPeriodDifferent (const CANifierConfiguration & settings) { return (!(settings.velocityMeasurementPeriod == _default.velocityMeasurementPeriod)) || !settings.enableOptimizations; }
 	static bool VelocityMeasurementWindowDifferent (const CANifierConfiguration & settings) { return (!(settings.velocityMeasurementWindow == _default.velocityMeasurementWindow)) || !settings.enableOptimizations; }
 	static bool ClearPositionOnLimitFDifferent (const CANifierConfiguration & settings) { return (!(settings.clearPositionOnLimitF == _default.clearPositionOnLimitF)) || !settings.enableOptimizations; }
@@ -64,40 +94,109 @@ public:
 	static bool ClearPositionOnQuadIdxDifferent (const CANifierConfiguration & settings) { return (!(settings.clearPositionOnQuadIdx == _default.clearPositionOnQuadIdx)) || !settings.enableOptimizations; }
 	static bool CustomParam0Different (const CANifierConfiguration & settings) { return (!(settings.customParam0 == _default.customParam0)) || !settings.enableOptimizations; }
 	static bool CustomParam1Different (const CANifierConfiguration & settings) { return (!(settings.customParam1 == _default.customParam1)) || !settings.enableOptimizations; }
+	/** @} */
 };
 
 
+/**
+ * CTRE CANifier
+ *
+ * Device for interfacing common devices to the CAN bus.
+ */
 class CANifier: public CANBusAddressable {
 public:
 	/**
 	 * Enum for the LED Output Channels
 	 */
 	enum LEDChannel {
-		LEDChannelA = 0, LEDChannelB = 1, LEDChannelC = 2,
+		/**
+		 * LED Channel A
+		 */
+		LEDChannelA = 0, 
+		/**
+		 * LED Channel B
+		 */
+		LEDChannelB = 1, 
+		/**
+		 * LED Channel C
+		 */
+		LEDChannelC = 2,
 	};
 
 	/**
 	 * Enum for the PWM Input Channels
 	 */
 	enum PWMChannel {
-		PWMChannel0 = 0, PWMChannel1 = 1, PWMChannel2 = 2, PWMChannel3 = 3,
+		/**
+		 * PWM Channel 0
+		 */
+		PWMChannel0 = 0, 
+		/**
+		 * PWM Channel 1
+		 */
+		PWMChannel1 = 1, 
+		/**
+		 * PWM Channel 2
+		 */
+		PWMChannel2 = 2, 
+		/** 
+		 * PWM Channel 3
+		 */
+		PWMChannel3 = 3,
 	};
+
+	/**
+	 * Number of PWM channels available to CANifier
+	 */
 	const int PWMChannelCount = 4;
 
 	/**
 	 * General IO Pins on the CANifier
 	 */
-	enum GeneralPin {
-		QUAD_IDX = 0,	//----- Must match CANifier_CCI enums -----//
+	enum GeneralPin { //----- Must match CANifier_CCI enums -----//
+		/**
+		 * Quadrature Idx pin
+		 */
+		QUAD_IDX = 0,
+		/**
+		 * Quadrature B pin
+		 */
 		QUAD_B = 1,
+		/**
+		 * Quadrature A pin
+		 */
 		QUAD_A = 2,
+		/**
+		 * Reverse limit pin
+		 */
 		LIMR = 3,
+		/**
+		 * Forward limit pin
+		 */
 		LIMF = 4,
+		/**
+		 * SDA pin
+		 */
 		SDA = 5,
+		/**
+		 * SCL pin
+		 */
 		SCL = 6,
+		/**
+		 * SPI_CS pin
+		 */
 		SPI_CS = 7,
+		/**
+		 * SPI_MISO_PWM2 pin
+		 */
 		SPI_MISO_PWM2P = 8,
+		/**
+		 * SPI_MOSI_PWM1 pin
+		 */
 		SPI_MOSI_PWM1P = 9,
+		/**
+		 * SPI_CLK_PWM0 pin
+		 */
 		SPI_CLK_PWM0P = 10,
 	};
 
@@ -105,16 +204,49 @@ public:
 	 * Structure to hold the pin values.
 	 */
 	struct PinValues {
+		/**
+		 * Quadrature Idx pin
+		 */
 		bool QUAD_IDX;
+		/**
+		 * Quadrature B pin
+		 */
 		bool QUAD_B;
+		/**
+		 * Quadrature A pin
+		 */
 		bool QUAD_A;
+		/**
+		 * Reverse limit pin
+		 */
 		bool LIMR;
+		/**
+		 * Forward limit pin
+		 */
 		bool LIMF;
+		/**
+		 * SDA pin
+		 */
 		bool SDA;
+		/**
+		 * SCL pin
+		 */
 		bool SCL;
+		/**
+		 * SPI_CS_PWM3 pin
+		 */
 		bool SPI_CS_PWM3;
+		/**
+		 * SPI_MISO_PWM2 pin
+		 */
 		bool SPI_MISO_PWM2;
+		/**
+		 * SPI_MOSI_PWM1 pin
+		 */
 		bool SPI_MOSI_PWM1;
+		/**
+		 * SPI_CLK_PWM0 pin
+		 */
 		bool SPI_CLK_PWM0;
 	};
 
@@ -126,6 +258,9 @@ public:
     
     ~CANifier();
 
+	/**
+	 * Destructs all CANifier objects
+	 */
     static void DestroyAllCANifiers();
 	
 	/**
@@ -278,31 +413,31 @@ public:
 	//------ Custom Persistent Params ----------//
 	/**
 	 * Sets the value of a custom parameter. This is for arbitrary use.
-   *
-   * Sometimes it is necessary to save calibration/duty cycle/output
-   * information in the device. Particularly if the
-   * device is part of a subsystem that can be replaced.
+	 *
+	 * Sometimes it is necessary to save calibration/duty cycle/output
+	 * information in the device. Particularly if the
+	 * device is part of a subsystem that can be replaced.
 	 *
 	 * @param newValue  Value for custom parameter.
 	 * @param paramIndex  Index of custom parameter. [0-1]
 	 * @param timeoutMs  Timeout value in ms. If nonzero, function will wait for
-   *            config success and report an error if it times out.
-   *            If zero, no blocking or checking is performed.
+	 *            config success and report an error if it times out.
+	 *            If zero, no blocking or checking is performed.
 	 * @return Error Code generated by function. 0 indicates no error.
 	 */
 	ErrorCode ConfigSetCustomParam(int newValue, int paramIndex,
 			int timeoutMs = 0);
 	/**
 	 * Gets the value of a custom parameter. This is for arbitrary use.
-   *
-   * Sometimes it is necessary to save calibration/duty cycle/output
-   * information in the device. Particularly if the
-   * device is part of a subsystem that can be replaced.
+	 *
+	 * Sometimes it is necessary to save calibration/duty cycle/output
+	 * information in the device. Particularly if the
+	 * device is part of a subsystem that can be replaced.
 	 *
 	 * @param paramIndex Index of custom parameter. [0-1]
 	 * @param timeoutMs  Timeout value in ms. If nonzero, function will wait for
-   *            config success and report an error if it times out.
-   *            If zero, no blocking or checking is performed.
+	 *            config success and report an error if it times out.
+	 *            If zero, no blocking or checking is performed.
 	 * @return Value of the custom param.
 	 */
 	int ConfigGetCustomParam(int paramIndex,
@@ -310,10 +445,10 @@ public:
 	//------ Generic Param API, typically not used ----------//
 	/**
 	 * Sets a parameter. Generally this is not used.
-   * This can be utilized in
-   * - Using new features without updating API installation.
-   * - Errata workarounds to circumvent API implementation.
-   * - Allows for rapid testing / unit testing of firmware.
+	 * This can be utilized in
+	 * - Using new features without updating API installation.
+	 * - Errata workarounds to circumvent API implementation.
+	 * - Allows for rapid testing / unit testing of firmware.
 	 *
 	 * @param param Parameter enumeration.
 	 * @param value Value of parameter.
@@ -328,20 +463,39 @@ public:
 			uint8_t subValue, int ordinal, int timeoutMs = 0);
 	/**
 	 * Gets a parameter. Generally this is not used.
-   * This can be utilized in
-   * - Using new features without updating API installation.
-   * - Errata workarounds to circumvent API implementation.
-   * - Allows for rapid testing / unit testing of firmware.
+	 * This can be utilized in
+	 * - Using new features without updating API installation.
+	 * - Errata workarounds to circumvent API implementation.
+	 * - Allows for rapid testing / unit testing of firmware.
 	 *
 	 * @param param Parameter enumeration.
 	 * @param ordinal  Ordinal of parameter.
 	 * @param timeoutMs Timeout value in ms. If nonzero, function will wait for
-   *            config success and report an error if it times out.
-   *            If zero, no blocking or checking is performed.
+	 *            config success and report an error if it times out.
+	 *            If zero, no blocking or checking is performed.
 	 * @return Value of parameter.
 	 */
 	double ConfigGetParameter(ParamEnum param, int ordinal, int timeoutMs = 0);
     
+	/**
+	 * Gets a parameter by passing an int by reference
+	 * 
+	 * @param param
+	 * 			  Parameter enumeration
+	 * @param valueToSend
+	 * 			  Value to send to parameter
+	 * @param valueReceived
+	 * 			  Reference to integer to receive
+	 * @param subValue
+	 * 			  SubValue of parameter
+	 * @param ordinal
+	 * 			  Ordinal of parameter
+	 * @param timeoutMs
+	 *            Timeout value in ms. If nonzero, function will wait for
+	 *            config success and report an error if it times out.
+	 *            If zero, no blocking or checking is performed.
+	 * @return Error Code generated by function. 0 indicates no error.
+	 */
     ErrorCode ConfigGetParameter(ParamEnum param, int32_t valueToSend,
             int32_t & valueReceived, uint8_t & subValue, int32_t ordinal,
             int32_t timeoutMs);
@@ -353,8 +507,8 @@ public:
 	 * @param statusFrame  Frame whose period is to be changed.
 	 * @param periodMs Period in ms for the given frame.
 	 * @param timeoutMs Timeout value in ms. If nonzero, function will wait for
-   *            config success and report an error if it times out.
-   *            If zero, no blocking or checking is performed.
+	 *            config success and report an error if it times out.
+	 *            If zero, no blocking or checking is performed.
 	 * @return Error Code generated by function. 0 indicates no error.
 	 */
 	ErrorCode SetStatusFramePeriod(CANifierStatusFrame statusFrame,

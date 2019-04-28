@@ -51,6 +51,8 @@ class Drivetrain {
 
   OpenLoopDrive open_loop_;
   ClosedLoopDrive closed_loop_;
+
+  uint64_t timestamp_;
 };
 
 }  // namespace drivetrain

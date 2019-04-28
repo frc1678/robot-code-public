@@ -7,7 +7,7 @@ using muan::queues::QueueManager;
 using muan::subsystems::drivetrain::TalonOutput;
 
 constexpr double kWheelRadius = 4.0 * 0.0254 / 2.0;
-constexpr double kDriveConversionFactor = 4096 / (2. * M_PI * kWheelRadius);
+constexpr double kDriveConversionFactor = 4096 / (2. * M_PI);
 
 constexpr uint32_t kShifter = 0;
 
@@ -24,7 +24,7 @@ constexpr double kHighGearPositionF = 0.;
 constexpr double kHighGearVelocityP = 0.9;
 constexpr double kHighGearVelocityI = 0;
 constexpr double kHighGearVelocityD = 10.;
-constexpr double kHighGearVelocityF = 0.12;
+constexpr double kHighGearVelocityF = 0.18;
 
 constexpr double kTurningP = 2.0;
 constexpr double kTurningI = 0.0;
@@ -71,12 +71,6 @@ void DrivetrainInterface::LoadGains() {
   right_master_.Config_kD(kTurningSlot, kTurningD, kSetupTimeout);
   right_master_.Config_kF(kTurningSlot, kTurningF, kSetupTimeout);
   right_master_.Config_IntegralZone(kTurningSlot, 400, kSetupTimeout);
-
-  /* right_master_.ConfigNeutralDeadband(0, kPositionSlot); */
-  /* left_master_.ConfigNeutralDeadband(0, kPositionSlot); */
-
-  /* right_master_.ConfigNeutralDeadband(0.04, kVelocitySlot); */
-  /* left_master_.ConfigNeutralDeadband(0.04, kVelocitySlot); */
 }
 
 void DrivetrainInterface::SetBrakeMode(bool mode) {
@@ -98,6 +92,18 @@ DrivetrainInterface::DrivetrainInterface()
                             ->MakeReader()} {
   right_master_.ConfigFactoryDefault();
   left_master_.ConfigFactoryDefault();
+
+  right_slave_a_.ConfigFactoryDefault();
+  right_slave_b_.ConfigFactoryDefault();
+
+  left_slave_a_.ConfigFactoryDefault();
+  left_slave_b_.ConfigFactoryDefault();
+
+  pigeon_.ConfigFactoryDefault();
+
+  right_master_.OverrideLimitSwitchesEnable(false);
+  left_master_.OverrideLimitSwitchesEnable(false);
+
   left_master_.ConfigSelectedFeedbackSensor(
       FeedbackDevice::CTRE_MagEncoder_Relative, kPositionSlot, kSetupTimeout);
   right_master_.ConfigSelectedFeedbackSensor(
@@ -109,18 +115,10 @@ DrivetrainInterface::DrivetrainInterface()
 
   pigeon_.SetYaw(0, 100);
 
-  /* right_master_.ConfigRemoteFeedbackFilter(left_master_.GetDeviceID(),
-   * RemoteSensorSource::RemoteSensorSource_TalonSRX_SelectedSensor, 0, 100); */
   right_master_.ConfigRemoteFeedbackFilter(
       left_slave_a_.GetDeviceID(),
       RemoteSensorSource::RemoteSensorSource_GadgeteerPigeon_Yaw, 1, 100);
 
-  /* right_master_.ConfigSensorTerm(SensorTerm::SensorTerm_Sum0,
-   * FeedbackDevice::RemoteSensor0, 100); */
-  /* right_master_.ConfigSensorTerm(SensorTerm::SensorTerm_Sum1,
-   * FeedbackDevice::CTRE_MagEncoder_Relative, 100); */
-  /* right_master_.ConfigSelectedFeedbackSensor(FeedbackDevice::SensorSum, 0,
-   * 100); */
   right_master_.ConfigSelectedFeedbackSensor(FeedbackDevice::RemoteSensor1, 1,
                                              100);
   right_master_.ConfigSelectedFeedbackCoefficient((3600. / 8192.), 1, 100);
@@ -128,6 +126,10 @@ DrivetrainInterface::DrivetrainInterface()
   left_master_.EnableVoltageCompensation(true);
   left_master_.ConfigVoltageCompSaturation(12.0, 100);
   left_master_.ConfigVoltageMeasurementFilter(32, 100);
+
+  right_master_.EnableVoltageCompensation(true);
+  right_master_.ConfigVoltageCompSaturation(12.0, 100);
+  right_master_.ConfigVoltageMeasurementFilter(32, 100);
 
   left_master_.ConfigMotionCruiseVelocity(2000, 100);
   right_master_.ConfigMotionCruiseVelocity(2000, 100);
@@ -170,10 +172,21 @@ DrivetrainInterface::DrivetrainInterface()
   pigeon_offset_ = pigeon_.GetFusedHeading();
 
   right_master_.ConfigAllowableClosedloopError(kTurningSlot, 0, 100);
+
+  right_master_.SetStatusFramePeriod(StatusFrameEnhanced::Status_2_Feedback0, 5, 100);
+  left_master_.SetStatusFramePeriod(StatusFrameEnhanced::Status_2_Feedback0, 5, 100);
+
+  right_master_.ConfigVelocityMeasurementPeriod(VelocityMeasPeriod::Period_50Ms, 100);
+
+  right_master_.ConfigVelocityMeasurementWindow(VelocityMeasPeriod::Period_50Ms, 100);
+
+  left_slave_a_.SetStatusFramePeriod(StatusFrameEnhanced::Status_11_UartGadgeteer, 10, 10);
 }
 
 void DrivetrainInterface::ReadSensors() {
   InputProto sensors;
+
+  sensors->set_pigeon_ready(true);
 
   sensors->set_left_encoder(left_master_.GetSelectedSensorPosition(0) /
                             kDriveConversionFactor);
@@ -192,6 +205,8 @@ void DrivetrainInterface::ReadSensors() {
 
   sensors->set_left_voltage(left_master_.GetMotorOutputVoltage());
   sensors->set_right_voltage(right_master_.GetMotorOutputVoltage());
+
+  sensors->set_right_bus(right_master_.GetBusVoltage());
 
   input_queue_->WriteMessage(sensors);
 }
@@ -260,8 +275,6 @@ void DrivetrainInterface::WriteActuators() {
       left_master_.Follow(right_master_, FollowerType::FollowerType_AuxOutput1);
       break;
   }
-
-  // shifter_.Set(false);
 }
 
 }  // namespace interfaces

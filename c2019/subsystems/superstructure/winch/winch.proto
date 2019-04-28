@@ -17,14 +17,16 @@ message WinchInput {
 
 message WinchOutput {
   required uint64 timestamp = 1;
-  required double winch_voltage = 2;
-  required bool drop_forks = 3; // For the buddy climb
+  required double right_winch_voltage = 2;
+  required double left_winch_voltage = 3;
+  required bool drop_forks = 4; // For the buddy climb
 }
 
 message WinchGoal {
   required uint64 timestamp = 1;
   required ClimbType climb_goal = 2;
-  required bool winch = 3;
+  required bool winch_right = 3;
+  required bool winch_left = 4;
 }
 
 message WinchStatus {

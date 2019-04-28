@@ -8,7 +8,7 @@ namespace muan {
 namespace wpilib {
 
 CanWrapper::CanWrapper(PdpWrapper::Queue* pdp_queue) {
-  pdp_.SetQueue(pdp_queue);
+  /* pdp_.SetQueue(pdp_queue); */
 }
 
 void CanWrapper::operator()() {
@@ -22,14 +22,14 @@ void CanWrapper::operator()() {
 
   while (running_) {
     phased_loop.SleepUntilNext();
-    pdp_.SendValues();
+    /* pdp_.SendValues(); */
     pcm_.Flush();
   }
 }
 
 void CanWrapper::Stop() { running_ = false; }
 
-PdpWrapper* CanWrapper::pdp() { return &pdp_; }
+/* PdpWrapper* CanWrapper::pdp() { return &pdp_; } */
 PcmWrapper* CanWrapper::pcm() { return &pcm_; }
 
 }  // namespace wpilib

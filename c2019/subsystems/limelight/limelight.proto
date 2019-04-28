@@ -34,6 +34,8 @@ message LimelightStatus {
   required double latency = 27;
   required bool back_limelight_ok = 28;
   required bool bottom_limelight_ok = 29;
+  required double bottom_skew = 30;
+  required bool bottom_to_the_left = 31;
 }
 
 enum LimelightState {
