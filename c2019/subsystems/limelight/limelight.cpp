@@ -45,6 +45,7 @@ void Limelight::Update() {
   double skew = table->GetEntry("ts").GetDouble(-1000);
   double bottom_skew = pricey_table->GetEntry("ts").GetDouble(-1000);
   double target_horizontal_angle = table->GetEntry("tx").GetDouble(-1000);
+
   double has_target = table->GetEntry("tv").GetDouble(0);
   double latency = table->GetEntry("tl").GetDouble(-1000);
 
@@ -56,6 +57,7 @@ void Limelight::Update() {
       pricey_table->GetEntry("tx").GetDouble(0);
   double pricey_target_vertical_angle =
       pricey_table->GetEntry("ty").GetDouble(0);
+
   double bottom_latency = pricey_table->GetEntry("tl").GetDouble(-1000);
 
   if (latency == prev_latency_) {
@@ -117,6 +119,7 @@ void Limelight::Update() {
   status->set_back_target_dist(back_target_dist_);
   status->set_back_has_target(
       static_cast<bool>(back_table->GetEntry("tv").GetDouble(0)));
+
   pricey_horiz_angle_ = (pricey_target_horizontal_angle * (M_PI / 180.));
 
   status->set_pricey_horiz_angle(pricey_horiz_angle_);

@@ -469,12 +469,8 @@ void TeleopBase::SendSuperstructureMessage() {
   if (drop_forks_->is_pressed() && climb_mode_) {
     superstructure_goal->set_score_goal(c2019::superstructure::DROP_FORKS);
   }
-  if (winch_left_->is_pressed()) {
-    superstructure_goal->set_manual_left_winch(true);
-  }
-  if (winch_right_->is_pressed()) {
-    superstructure_goal->set_manual_right_winch(true);
-  }
+  superstructure_goal->set_manual_left_winch(winch_left_->is_pressed());
+  superstructure_goal->set_manual_right_winch(winch_right_->is_pressed());
 
   if (hp_hatch_intake_->is_pressed() && hp_hatch_outtake_->is_pressed() &&
       cargo_intake_->is_pressed() && cargo_outtake_->is_pressed()) {

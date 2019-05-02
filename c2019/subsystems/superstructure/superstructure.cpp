@@ -353,13 +353,8 @@ void Superstructure::Update() {
     output->set_crawler_voltage(0.);
   }
 
-  if (goal->manual_right_winch()) {
-    winch_right_ = true;
-  }
-
-  if (goal->manual_left_winch()) {
-    winch_left_ = true;
-  }
+  winch_right_ = goal->manual_left_winch();
+  winch_left_ = goal->manual_right_winch();
 
   // Write those queues after Updating the controllers
   status_queue_->WriteMessage(status_);
