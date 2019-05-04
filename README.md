@@ -15,11 +15,13 @@ The code for specific robots is in a directory starting with either the letter "
 
 ## Building the Code
 
-We use [bazel](https://bazel.io) to build our code. You must be running linux to use bazel. A typical bazel build command would look like this:
+We use [bazel](https://bazel.build) to build our code. You must be running linux to use bazel. A typical bazel build command would look like this:
+  * For example, if you want to build main.cpp in o2016 folder:
 
 ```
-bazel build //o2016 --cpu=roborio
+bazel build //o2016:main
 ```
+Keep in mind that you DO NOT include the file type in the name while building or testing
 
 You should also test anything that you change:
 
@@ -27,10 +29,10 @@ You should also test anything that you change:
 bazel test //c2018/submarine_subsystem/...
 ```
 
-Before you push your code, you can run our automated test script. This is what Jenkins CI runs, so if you don't like failed Jenkins builds you should always run it before pushing:
+Before you push your code, you can run our automated test script. This is what Buildkite runs, so if you don't like failed Buildkite builds you should always run it before pushing:
 
 ```
-./scripts/tests.py
+./scripts/tests.sh
 ```
 
 ## Style Guide
@@ -46,9 +48,9 @@ Particularly, you should make sure to write your commits in the imperative mood 
 
 Additionally, you should try to make your commits as small as possible (often referred to as making "atomic" commits). This helps other people understand what you are doing.
 
-We also use bazel's [Buildifier](https://github.com/bazelbuild/buildifier) to format BUILD files. The formatter
+We also use bazel's [Buildtools](https://github.com/bazelbuild/buildtools) to format BUILD files. The formatter
 establishes quite a few
-[conventions](https://github.com/bazelbuild/bazel/blob/master/site/versions/master/docs/skylark/build-style.md).
+[conventions](https://github.com/bazelbuild/bazel/blob/master/site/docs/skylark/build-style.md).
 Highlights include:
 
  - Use four spaces for indenting
@@ -62,14 +64,16 @@ Here's how to get your code into the main robot repository:
 
 ### If you've just joined the team:
 1. Make an account on [GitHub](https://github.com/).
-2. Ask the robot programming lead to add your account to the frc1678 robot programming team.
+2. Ask the Software Robot lead to add your account to the frc1678 Software Robot team.
 
 ### If it's the first time you've contributed to this repo:
 1. Fork this repo
   1. Log onto github and navigate to the repo [robot-code](https://github.com/frc1678/robot-code).
   2. Click the "Fork" button in the upper right corner of the screen.
-2. Clone your forked repo.
-  * `git clone https://github.com/<your_name>/robot-code.git`, where <your_name> is your github username.
+2. Clone from the master.
+  * `git clone https://github.com/frc1678/robot-code.git`.
+3. Add yourself as a remote.
+  * 'git remote add <your_name> https://github.com/<your_username>/robot-code', where <your_username> is your github username.
 
 ### Any time you want to make a change:
 1. Create and checkout a new branch.
@@ -80,12 +84,14 @@ Here's how to get your code into the main robot repository:
   * Follow [these](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html) conventions for commit messages. Or else.
   * If your change is anything more than a few lines or small fixes, don't skip the extended description. If you are always using `git commit` with the `-m` option, stop doing that.
 4. Push to your forked repo.
-  * `git push origin <your_branch_name>`.
+  * `git push <your_remote> <your_branch>`.
+    * <your_remote> is the name of your forked repo on your computer
+    * <your_branch> is the name of the brach you created
 5. Submit a pull request.
   1. Log into github.
   2. Go to the page for your forked repo.
   3. Select the branch that you just pushed from the "Branch" dropdown menu.
-  4. Click "New Pull Request".
+  4. Click "Comapare & Pull Request".
   5. Review the changes that you made.
   6. If you are happy with your changes, click "Create Pull Request".
 6. Wait
@@ -95,11 +101,13 @@ Here's how to get your code into the main robot repository:
       2. 2 experienced students and one other person have approved
   * If there are any concerns about your pull request, fix them. Depending on how severe the concerns are, the pull request may be merged without it, but everyone will be happier if you fix your code. To update your PR, just push to the branch on your forked repo.
   * Don't dismiss someone's review when you make changes - instead, ask them to re-review it.
-7. Merge your changes into master
-  * If there are no conflicts, push the "Squash and merge" button, write a good commit message, and merge the changes.
-  * If there are conflicts, fix them locally on your branch, push them, wait for Jenkins to pass, and then squash and merge.
-8. ???
-9. Profit
+7. Ask for approval
+  * Ask at least one reviewer with write access to approve your pull request before merging it into master, becasue even if it complies, it might not do what you want it to do.
+8. Merge your changes into master
+  * If there are no conflicts, push the "Merge Pull Request" button, write a good commit message, and merge the changes.
+  * If there are conflicts, fix them locally on your branch, push them, wait for Buildkite to pass, and then merge.
+9. ???
+10. Profit
 
 ## Helpful Tips
 
@@ -124,6 +132,7 @@ Although we have a third_party directory for the majority of our dependencies, o
     * `glog` (apt/aor/aur package: none (compile from source required); pip package: `glog`)
   * WPILib toolchain (apt ppa: `ppa:wpilib/toolchain`, apt package: `frc-toolchain`, aur package: `frc-2017`)
   * Bazel: (apt users: follow instructions at https://bazel.build/versions/master/docs/install.html#ubuntu; aur: `bazel`)
+    * Use Bazel version 0.16.1, newer versions might not work
 
 If you're running Arch/Manjaro or Ubuntu/Debian (_should work with debian_), then simply clone this repository and run:
 `./scripts/setup/frcsetup-arch` or `./scripts/setup/frcsetup-ubuntu`
